@@ -138,7 +138,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 
             };
             
-            
+                        
+            /*
+             * @author Eduar Garcia
+             * @param{function} callback
+             * Hace la peticion al API ara validar que la caja no este cerrada
+             */
             self.validarCaja = function(callback){
                 var cliente = (pedido.getTipo() === '2') ? pedido.getFarmacia() : pedido.getCliente();
                  
@@ -159,9 +164,53 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     }
                 };
                 
-                console.log("validar caja ", obj);
+                
+                 Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        var obj = data.obj.movimientos_bodegas;
+                        if (!obj.caja_valida) {
+                            
+                            callback(false, "La caja se encuentra cerrada");
+                        } else {
+                            callback(true);
+                        }
+                    } else {
+                        
+                        callback(false, data.msj);
+                    }
+                 });       
                 
                 
+            };
+            
+            /*
+             * @author Eduar Garcia
+             * @param{function} callback
+             * Hace la peticion al API ara asignar una caja al producto
+             */
+            self.asignarCaja = function(callback){
+                var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_CAJA_TEMPORALES;
+                var producto = pedido.getProductoSeleccionado();
+                
+                var obj = {
+                    session: $scope.rootVentanaCantidad.session,
+                    data: {
+                        documento_temporal: {
+                            temporales: [producto.getItemId()],
+                            numero_caja: $scope.rootVentanaCantidad.numero_caja,
+                            tipo: $scope.rootVentanaCantidad.tipoCaja.id
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        callback(true, "Caja asignada correctamente");
+                    } else {
+                        callback(false, "Se ha generado un error asignado la caja");
+                    }
+                });
             };
             
             /*
@@ -220,9 +269,19 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     return;
                 }
                 
-                console.log("enviar cajas");
-                self.validarCaja(function(respuesta){
-                    
+                self.validarCaja(function(continuar, msj){
+                    if(continuar){
+                        self.asignarCaja(function(continuar, msj){
+                             
+                           AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                            
+                            if(continuar){
+                                $scope.cerrar();
+                            }
+                        });
+                    } else {
+                        SeparacionService.mostrarAlerta("Error", msj);
+                    }
                 });
                 
             };

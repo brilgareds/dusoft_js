@@ -59,7 +59,7 @@ define(["angular", "js/controllers",
                * @returns {undefined}
                */
              self.ventanaListarProductos = function() {
-                 
+                var pedido =  EmpresaPedido.getPedidoSeleccionado();
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -68,7 +68,12 @@ define(["angular", "js/controllers",
                     
                     templateUrl: 'views/separacionpedidos/separacionProductosPendientes.html',
                     scope: $scope,
-                    controller: "SeparacionProductosPendientesController"
+                    controller: "SeparacionProductosPendientesController",
+                    resolve: {
+                        pedido:function(){
+                            return pedido;
+                        }
+                    }
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
@@ -408,6 +413,19 @@ define(["angular", "js/controllers",
                 }
             });
             
+                        
+           /**
+            * @author Eduar Garcia
+            * +Descripcion:Evento que se dispara desde la ventana de lista de productos
+            */
+            self.onMostarProductoEnPosicion = $scope.$on("onMostarProductoEnPosicion", function(e,index){
+                $scope.rootSeparacion.paginaactual = parseInt(index);
+                self.seleccionarProductoPorPosicion(function(){
+                    self.marcarSeparados();
+                });
+            });
+           
+            
             
             /**
              * @author Cristian Ardila
@@ -503,7 +521,8 @@ define(["angular", "js/controllers",
                 $scope.$emit('mostrarDetallePedidos');
              
             };
-           
+            
+
             $scope.onSeleccionTipo = function(tipo) {
                 $scope.tipo = tipo;
             };
@@ -530,6 +549,7 @@ define(["angular", "js/controllers",
                 $scope.rootSeparacion = {};
                 self.mostrarDetallePedidos();
                 self.onFinalizar();
+                self.onMostarProductoEnPosicion();
                 $scope.$$watchers = null;
                 localStorageService.remove("pedidoSeparacion");
             });

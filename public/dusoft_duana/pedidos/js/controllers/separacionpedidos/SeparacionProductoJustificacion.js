@@ -4,11 +4,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
     controllers.controller('SeparacionProductoJustificacion',[
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService", "$state",
-        "Usuario", "$modalInstance", "SeparacionService","pedido",
+        "Usuario", "$modalInstance", "SeparacionService","pedido", "$modalInstance",
         function($scope,$rootScope,Request,
                  API,socket,AlertService,$modal,
                  localStorageService,$state, Usuario, $modalInstance,
-                 SeparacionService, pedido){
+                 SeparacionService, pedido, $modalInstance){
          
             var self = this;
             
@@ -108,6 +108,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 } else {
                     self.justificar(justificacion);
                 }
+            };
+            
+           /**
+             * @author Eduar garcia
+             * +Descripcion: Handler del boton de cerrar
+             */
+            $scope.cerrar = function(){
+                $modalInstance.close();
             };
 
             self.init(function(){

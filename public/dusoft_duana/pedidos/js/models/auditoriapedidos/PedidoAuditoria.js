@@ -182,6 +182,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                     
                     var lote =  modeloLote.get(_producto.lote, _producto.fecha_vencimiento);
                     lote.setCantidadIngresada(parseInt(_producto.cantidad_ingresada));
+                    lote.setNumeroCaja(_producto.numero_caja);
+                    
                     
                     producto.agregarLote(lote);
                     this.agregarProducto(producto); 

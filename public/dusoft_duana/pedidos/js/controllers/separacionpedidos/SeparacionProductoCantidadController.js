@@ -21,9 +21,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 };
                 
                 $scope.rootVentanaCantidad.tiposCaja = [
-                    {nombre:"Tipo", id:0},
-                    {nombre: "Caja", id: 1},
-                    {nombre: "Nevera", id: 2}
+                    {nombre:"Tipo", id:-1},
+                    {nombre: "Caja", id: 0},
+                    {nombre: "Nevera", id: 1}
                 ];
                 
                 $scope.rootVentanaCantidad.tipoCaja = $scope.rootVentanaCantidad.tiposCaja[0];
@@ -260,7 +260,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
              * permite Handler del boton para seleccionar la caja
              */
             $scope.onSeleccionarCaja = function(){
-                if($scope.rootVentanaCantidad.tipoCaja.id === 0){
+                if($scope.rootVentanaCantidad.tipoCaja.id === -1){
                     SeparacionService.mostrarAlerta("Error", "Debe seleccionar la caja");
                     return;
                 }

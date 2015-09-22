@@ -300,9 +300,17 @@ define(["angular", "js/controllers",
                     return;
                 }
                 
-                var producto = EmpresaPedido.getPedidoSeleccionado().getProductoSeleccionado();                
-                var lotes = producto.getLotesSeleccionados();
+                var producto = EmpresaPedido.getPedidoSeleccionado().getProductoSeleccionado();  
                 var pedido = $scope.rootSeparacion.documento.getPedido();
+                
+                //Se separaron todos los lotes
+                if(!producto && pedido.getTemporalId() !== 0){
+                    SeparacionService.mostrarAlerta("Separación", "No hay mas productos por separar, favor revisar el detalle del temporal");
+                    return;
+                }
+                
+                
+                var lotes = producto.getLotesSeleccionados();
                 for(var i in lotes){
                     var lote = lotes[i];
                     

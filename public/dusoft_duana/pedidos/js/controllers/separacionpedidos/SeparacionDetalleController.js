@@ -438,7 +438,8 @@ define(["angular", "js/controllers",
              * */
             $scope.onGenerarAuditar = function(){               
               self.confirm("Generar y auditar", "Desea generar y auditar la separacion de los productos",function(confirmar){                 
-                  if(confirmar){                      
+                  if(confirmar){ 
+                      console.log($scope.rootDetalle.pedido)
                       self.generarAuditar();
                   }
               });  

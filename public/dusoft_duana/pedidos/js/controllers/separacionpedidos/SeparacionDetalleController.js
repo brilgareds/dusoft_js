@@ -5,11 +5,11 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('SeparacionDetalleController', [
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService",
-        "$state", "SeparacionService", "Usuario",
+        "$state", "SeparacionService", "Usuario","DocumentoDespacho",
         function($scope, $rootScope, Request,
                 API, socket, AlertService, $modal,
                 localStorageService, $state, SeparacionService,
-                Usuario) {
+                Usuario,DocumentoDespacho) {
 
 
             var self = this;
@@ -293,29 +293,72 @@ define(["angular", "js/controllers",
               });  
             };
             
-            
-             /**
-             * +Descripcion: Datos de prueba
+            /**
+             * +Descripcion: Metodo encargado de consultar los tipos de documento
+             * despachp
+             * @author:Cristian Ardila
+             * @fecha: 22/09/2015
+             * @param {type} callback
+             * @returns {undefined}
              */
-            $scope.dataDocumentoDespacho = [
-                {nombre: 'Acetaminofen', codigo: 10},
-                {nombre: 'Acetaminofen', codigo: 10},
-                {nombre: 'Acetaminofen', codigo: 10},
-                {nombre: 'Acetaminofen', codigo: 10},
-                {nombre: 'Acetaminofen', codigo: 10}
+            self.traerListadoDocumentosDespacho = function(callback) {
+             
+               var empresa = Usuario.getUsuarioActual().getEmpresa();
+               var obj = {
+                   session: $scope.rootDetalle.session,
+                    data: {
+                        movimientos_bodegas: {
+                            centro_utilidad_id: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            tipo_documento: 'E008'
+                        }
+                    }
+                };  
                 
-            ];
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
+                    if (data.status === 200) {  
+                        
+                        
+                        callback(data);
+                        self.renderDocumentosDespachos(data);
+                    }
+                });
+            };
+            
+            self.renderDocumentosDespachos = function(data){
+                
+             
+                 $scope.documentos = [];
+                        for (var i in data.obj.movimientos_bodegas) {
+                         var _documentos = data.obj.movimientos_bodegas[i];
+                         
+                         
+                        var documentos = DocumentoDespacho.get(_documentos.bodegas_doc_id, _documentos.prefijo, '', '') ;
+                         documentos.set_descripcion (_documentos.descripcion);  
+                         documentos.set_tipo(_documentos.tipo_doc_bodega_id);
+                         documentos.set_tipo_clase_documento(_documentos.tipo_clase_documento);
+                         $scope.documentos.push(documentos);
+                        }
+                
+                
+            }
+           
             
              $scope.listarDocumentoDespacho = {
-                data: 'dataDocumentoDespacho',
-                
+                data: 'documentos',              
+                afterSelectionChange:function(rowItem){
+                     if(rowItem.selected){
+                         self.onSeleccionDocumento(rowItem.entity);
+                     }
+                },        
                 enableColumnResize: true,
                 enableRowSelection: true,
                 keepLastSelected:false,
                 multiSelect:false,
                 columnDefs: [
-                    {field: 'nombre', displayName: 'Descripcion'},
-                    {field: 'codigo', displayName: 'Codigo'}
+                    
+                    {field: 'get_tipo()', displayName: 'Codigo'},
+                    {field: 'get_descripcion()', displayName: 'Descripcion'}
                    
                      
                 ]
@@ -323,6 +366,11 @@ define(["angular", "js/controllers",
             };
  
             
+            self.onSeleccionDocumento = function(entity){
+                    
+                    console.log(entity)
+                
+            };
             /*
              * +descripcion: confirmar que se genera y audita la separacion
              * si acepta se generara y auditara la separacion invocando al metodo 
@@ -344,7 +392,11 @@ define(["angular", "js/controllers",
             });*/
 
             self.init(function() {
-
+                
+                 self.traerListadoDocumentosDespacho(function(){
+                console.log("Trayendo documentos despacho")
+            });
+            
             });
 
         }]);

@@ -283,7 +283,7 @@ define(["angular", "js/controllers",
             //Trae el Listado de Documentos de Usuario
             $scope.traerListadoDocumentosUsuario = function(obj, callback) {
 
-
+                
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
 
                     if (data.status === 200) {

@@ -585,7 +585,10 @@ define(["angular", "js/controllers",
                 });
 
             };
-
+            /**
+             * +Descripcion: metodo que se emite al auditar un producto prosiguiendo
+             * a consultar los productos auditados
+             */
             $rootScope.$on("productoAuditado", function(e, producto, DocumentoTemporal) {
                 if (DocumentoTemporal.getPedido() === undefined) {
                     return;

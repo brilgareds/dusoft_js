@@ -1009,7 +1009,9 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
 
     //seleccionar el auditor
     that.m_pedidos_farmacias.obtener_responsables_del_pedido(numero_pedido, function(err, responsables) {
-
+        
+        console.log("<<<<<<<<<<<**************responsables ********************>>>>>>>>>>>>>>>>>>>>");
+        console.log("responsables ", responsables.length);
         //valida que sea el usuario que creo el pedido
         var existe_estado_auditoria = false;
         var _responsables = [];
@@ -1130,7 +1132,10 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-
+    
+    console.log("<<<<<<<<<<<<<<<<<<<<<<<<auditarProductoDocumentoTemporal>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    
+    console.log(args);
 
     if (!args.documento_temporal.justificacionPendiente) {
 
@@ -1189,7 +1194,7 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
     var numero_caja = args.documento_temporal.numero_caja || 0;
 
 
-
+    console.log("args.documento_temporal.justificacion != ", args.documento_temporal.justificacion);
     if (args.documento_temporal.justificacion !== undefined) {
         // Auditar con Justificacion.
         var doc_tmp_id = args.documento_temporal.justificacion.documento_temporal_id;
@@ -1238,12 +1243,13 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
         });
     } else {
 
-
+        console.log("CUANDO LA JUSTIFICACION SE CUMPLEESTA VACIA OSEA QUE SI SE ENVIAN TODOS LOS LOTES PARA LOS PRODUCTOS")
 
         var usuario_id = args.documento_temporal.usuario_id;
         var doc_tmp_id = args.documento_temporal.documento_temporal_id;
         var codigo_producto = args.documento_temporal.codigo_producto;
-
+        
+        console.log("args.documento_temporal.justificacion == ", args.documento_temporal.justificacion);
         // Auditar sin Justificar.
         that.m_movimientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
 

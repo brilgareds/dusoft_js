@@ -222,6 +222,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 
                 if(!validacion.valido){
                     console.log("no valido ", validacion);
+                    SeparacionService.mostrarAlerta("Error", validacion.mensaje);
                     return;
                 }
                                 

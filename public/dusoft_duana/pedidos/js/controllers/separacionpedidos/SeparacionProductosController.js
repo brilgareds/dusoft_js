@@ -29,19 +29,14 @@ define(["angular", "js/controllers",
                 $scope.rootSeparacion.nombreCliente = "";
                 $scope.rootSeparacion.documento;
                 
-                $scope.justificaciones = [
-                    {nombre: "Guia", id: 1},
-                    {nombre: "Transportador", id: 2},
-                    {nombre: "Estado", id: 3}
-                ];
                 $scope.filtros = [
+                    {nombre: "Seleccionar", id:0},
                     {nombre: "Justificar", id: 1},
                     {nombre: "Listar productos", id: 2},
-                    {nombre: "Refrescar", id: 2}
+                    {nombre: "Refrescar", id: 3}
                 ];
 
                  $scope.filtro = $scope.filtros[0];
-                 $scope.justificacion = $scope.justificaciones[0];
                  callback();
             };
                    
@@ -362,7 +357,7 @@ define(["angular", "js/controllers",
                     
                     _pedido.agregarDetallePedido(ProductoPedido, productos, true, LoteProductoPedido);
                     
-                    console.log("pedido del doc tmp", doc);
+                    //console.log("pedido del doc tmp", doc);
                     
                     $scope.rootSeparacion.documento.setPedido(_pedido);
                     
@@ -543,8 +538,10 @@ define(["angular", "js/controllers",
                     self.ventanaJustificaciones();
                 } else if(filtro.id === 2){
                     self.ventanaListarProductos();
-                } else {
-                    
+                } else if(filtro.id === 3) {
+                    self.refrescarProducto(function(){
+                        
+                    });
                 }
             };
             

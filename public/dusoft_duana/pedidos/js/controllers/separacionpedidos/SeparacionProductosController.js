@@ -39,13 +39,7 @@ define(["angular", "js/controllers",
                     {nombre: "Listar productos", id: 2},
                     {nombre: "Refrescar", id: 2}
                 ];
-                
-                $scope.tipos = [
-                    {nombre: "Tipo 1", id: 1},
-                    {nombre: "Tipo 2", id: 2},
-                    {nombre: "Tipo 3", id: 3}
-                ];
-                 $scope.tipo = $scope.tipos[0];
+
                  $scope.filtro = $scope.filtros[0];
                  $scope.justificacion = $scope.justificaciones[0];
                  callback();
@@ -515,18 +509,28 @@ define(["angular", "js/controllers",
              * 
              */
             $scope.mostrarDetallePedidos = function() {
+                var mostrar = true;
                 
-
+                if(!$scope.rootSeparacion.documento){
+                    mostrar = false;
+                } else if($scope.rootSeparacion.documento.getPedido().getTemporalId() === 0){
+                    mostrar = false;
+                } else if($scope.rootSeparacion.documento.getPedido().getProductos().length === 0){
+                    mostrar = false;
+                }
+                
+                if(!mostrar){
+                    SeparacionService.mostrarAlerta("Error", "No se han separado productos");
+                    return;
+                }
+                
+                
                 $scope.slideurl = "views/separacionpedidos/separacionDetalle.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarDetallePedidos');
              
             };
             
 
-            $scope.onSeleccionTipo = function(tipo) {
-                $scope.tipo = tipo;
-            };
-            
             $scope.onSeleccionJustificacion = function(justificacion) {
                 $scope.justificacion = justificacion;
             };

@@ -20,6 +20,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
                 
+                $scope.rootVentanaCantidad.tiposCaja = [
+                    {nombre:"Tipo", id:0},
+                    {nombre: "Caja", id: 1},
+                    {nombre: "Nevera", id: 2}
+                ];
+                
+                $scope.rootVentanaCantidad.tipoCaja = $scope.rootVentanaCantidad.tiposCaja[0];
+                
             };
             
             
@@ -119,12 +127,40 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
+                      var itemId = data.obj.documento_temporal.item_id || 0;
+                      producto.setItemId(itemId);
                       callback(true, "Producto guardado correctamente");
 
                     } else {
                       callback(false, "Se genero un error...");
                     }
                 });
+                
+            };
+            
+            
+            self.validarCaja = function(callback){
+                var cliente = (pedido.getTipo() === '2') ? pedido.getFarmacia() : pedido.getCliente();
+                 
+                var url = API.DOCUMENTOS_TEMPORALES.VALIDAR_CAJA;
+                var obj = {
+                    session: $scope.rootVentanaCantidad.session,
+                    data: {
+                        documento_temporal: {
+                            documento_temporal_id: pedido.getTemporalId(),
+                            numero_caja: $scope.rootVentanaCantidad.numero_caja,
+                            numero_pedido: pedido.get_numero_pedido(),
+                           /* direccion_cliente: cliente.getDireccion() || cliente.get_nombre_farmacia(),
+                            nombre_cliente: cliente.getNombre() || cliente.get_nombre_farmacia(),*/
+                            direccion_cliente: cliente.direccion || cliente.nombre_farmacia,
+                            nombre_cliente: cliente.nombre_tercero || cliente.nombre_farmacia,
+                            tipo: $scope.rootVentanaCantidad.tipoCaja.id
+                        }
+                    }
+                };
+                
+                console.log("validar caja ", obj);
+                
                 
             };
             
@@ -146,7 +182,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                            
                             self.agregarItemADocumento(function(continuar){
                                 AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
-                                $modalInstance.close();
                             });
                             
                        } else {
@@ -156,10 +191,40 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 } else {
                     self.agregarItemADocumento(function(continuar, msj){
                         AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
-                        $modalInstance.close();
                     });
                 }
 
+            };
+            
+            
+            /*
+             * @author Eduar Garcia
+             * permite Handler del boton seleccionar caja
+             */
+            $scope.onSeleccionTipoCaja = function(tipoCaja) {
+                $scope.rootVentanaCantidad.tipoCaja = tipoCaja;
+            };
+            
+             /*
+             * @author Eduar Garcia
+             * permite Handler del boton para seleccionar la caja
+             */
+            $scope.onSeleccionarCaja = function(){
+                if($scope.rootVentanaCantidad.tipoCaja.id === 0){
+                    SeparacionService.mostrarAlerta("Error", "Debe seleccionar la caja");
+                    return;
+                }
+                
+                if(parseInt($scope.rootVentanaCantidad.numero_caja) === 0){
+                    SeparacionService.mostrarAlerta("Error", "El número de caja no es valido");
+                    return;
+                }
+                
+                console.log("enviar cajas");
+                self.validarCaja(function(respuesta){
+                    
+                });
+                
             };
             
             $scope.cerrar = function(){

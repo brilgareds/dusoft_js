@@ -228,7 +228,7 @@ define(["angular", "js/services"], function(angular, services) {
                     dialogFade: false,
                     keyboard: true,
                     template: ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <button type="button" class="close" ng-click="cerrar()">&times;</button>\
                                         <h4 class="modal-title">'+titulo+'</h4>\
                                     </div>\
                                     <div class="modal-body">\

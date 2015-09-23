@@ -527,7 +527,8 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-
+            
+            
             /*
              * +descripcion: confirmar que se genera y audita la separacion
              * si acepta se desplegara una ventana modal con la lista de tipos
@@ -547,29 +548,64 @@ define(["angular", "js/controllers",
                 self.confirm("Generar y auditar", "Desea generar y auditar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
                         var productos = $scope.rootDetalle.pedido.getProductos();
-
-                        var productoValido = true;
+                        var productosInvalidos = [];
+                        
                         for (var i in productos) {
 
                             var numCaja = productos[i].getLotesSeleccionados()[0].getNumeroCaja();
 
                             if (numCaja === null || numCaja === 0 || numCaja === undefined) {
 
-                                SeparacionService.mostrarAlerta("Error", "No se puede auditar el pedido por que hay lotes sin caja");
-                                productoValido = false;
+                                
+                                productosInvalidos.push(productos[i]);
 
-                                break;
                             }
                         }
-                        if (productoValido) {
+                        if (productosInvalidos.length === 0) {
 
                             self.generarAuditar();
 
+                        } else {
+                            self.mostrarProductosSinCaja(productosInvalidos);
                         }
                     }
                 });
             };
+            
+            self.mostrarProductosSinCaja = function(productosInvalidos){
+                $scope.productos = productosInvalidos; 
+                $scope.opts = {
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                     template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="cerrarGenerarAuditar();">&times;</button>\
+                                    <h4 class="modal-title">Los siguientes productos no tiene caja asignada</h4>\
+                                </div>\
+                                <div class="modal-body row">\
+                                    <div class="col-md-12">\
+                                        <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                            <div class="list-group">\
+                                                <div ng-repeat="producto in productos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                    {{ producto.getCodigoProducto()}} - {{producto.getDescripcion()}}\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="cerrarGenerarAuditar();" ng-disabled="" >Aceptar</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
 
+                        $scope.cerrarGenerarAuditar = function() {
+                            $modalInstance.close();
+
+                        };
+                    }
+                };
+                self.ventanaAuditoria = $modal.open($scope.opts);                
+            };
             /**
              * +Descripcion: Funcion encargada de validar los productos pendientes
              * Si tienen justificacion

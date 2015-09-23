@@ -20,7 +20,7 @@
                 <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad solicitada</div> 
                     {{rootVentanaCantidad.pedido.getProductoSeleccionado().getCantidadSolicitada()}}</div>
                 <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad disponible</div><div>
-                        {{rootVentanaCantidad.pedido.getProductoSeleccionado().getDisponible()}}
+                        {{rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getDisponible()}}
                     </div></div>
             </div>
 
@@ -42,9 +42,11 @@
                     <div class="input-group input-group-sm">
 
                         <input type="text" role="group" ng-model="rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().cantidad_ingresada" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero />
-                        
-                        <button class="btn btn-primary pull-right" ng-click="onGuardarCantidad()" ng-disabled="rootVentanaCantidad.pedido.getProductoSeleccionado().getItemId() != 0" style="margin-right:20px;">Guardar</button>
-
+                       
+                        <div class="input-group-btn" >
+                              <button class="btn btn-default" ng-click="onGuardarCantidad()" ng-disabled="rootVentanaCantidad.pedido.getProductoSeleccionado().getItemId() != 0" style="margin-right:20px;">Guardar</button>                           
+                        </div>
+                       
                     </div>
                     
                 </div>
@@ -69,7 +71,8 @@
 
                         <input type="text" role="group" ng-model="rootVentanaCantidad.numero_caja" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero />
                         <div class="input-group-btn" role="group">
-                            <button ng-disabled="rootVentanaCantidad.pedido.getProductoSeleccionado().getItemId() === 0" type="button"  class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> 
+                            <button ng-disabled="rootVentanaCantidad.pedido.getProductoSeleccionado().getItemId() === 0" 
+                                    type="button"  class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> 
                                 {{rootVentanaCantidad.tipoCaja.nombre}} 
                                 <span class="caret"></span>
                             </button>

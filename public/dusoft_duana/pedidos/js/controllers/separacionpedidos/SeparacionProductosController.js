@@ -117,7 +117,7 @@ define(["angular", "js/controllers",
                         var modalInstance = $modal.open($scope.opts);
 
                         modalInstance.result.then(function() {
-                            console.log("ventana justificacion cerrada code 1");
+                       
                         }, function() {
 
                         });
@@ -428,8 +428,7 @@ define(["angular", "js/controllers",
                      * +Descripcion: Evento que se dispara cuando el detalle de separacion cierra
                      */
                     self.closeDetallePedidos = $scope.$on("closeDetallePedidos", function(e, datos) {
-                        console.log("cerrar detalle pedidos");
-
+                     
                         if (!datos.finalizar) {
                             self.refrescarProducto(function() {
 

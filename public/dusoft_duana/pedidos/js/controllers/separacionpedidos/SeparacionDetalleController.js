@@ -290,10 +290,10 @@ define(["angular", "js/controllers",
              * */
             $scope.onGenerarDocumento = function() {
 
-                /*if (!self.validarProductos()) {
+                if (!self.validarProductos()) {
                     SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
                     return;
-                }*/
+                }
 
                 self.confirm("Generar separacion", "Desea generar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
@@ -544,10 +544,10 @@ define(["angular", "js/controllers",
             $scope.onGenerarAuditar = function() {
 
 
-                /*if (!self.validarProductos()) {
+                if (!self.validarProductos()) {
                     SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
                     return;
-                }*/
+                }
 
                 self.confirm("Generar y auditar", "Desea generar y auditar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
@@ -610,6 +610,19 @@ define(["angular", "js/controllers",
                 };
                 self.ventanaAuditoria = $modal.open($scope.opts);                
             };
+            
+            
+             self.validarProductoRepetido = function(cantidadPendiente){
+                    var productosArreglo = [];
+                    productosArreglo.push(cantidadPendiente)
+                  for (var i =0; i<productosArreglo.length; i++) {
+                         
+                         if(cantidadPendiente !== productosArreglo[i])
+                         
+                           console.log(productosArreglo[i])
+                         
+                     }
+            }
             /**
              * +Descripcion: Funcion encargada de validar los productos pendientes
              * Si tienen justificacion
@@ -618,25 +631,34 @@ define(["angular", "js/controllers",
              * @returns {Boolean}
              */
             self.validarProductos = function() {
-
+                var validarLote = true;
                 var productos = $scope.rootDetalle.pedido.getProductos();
-                console.log(productos)
-                var productoValido = true;
-
-                for (var i in productos) {
-
-                    var cantidadPendiente = productos[i].getCantidadPendiente();
-                    var justificacion = productos[i].getJustificacion();
-
-                    if (justificacion === null || justificacion === undefined || justificacion.length === 0 && cantidadPendiente > 0) {
-
-                        productoValido = false;
-
-                        break;
+               
+                for(var i in  productos){
+                    var justificacion = productos[i].getJustificacion(); 
+                    var producto = productos[i];
+                    var cantidadIngresada = 0;
+                    
+                    for(var ii in productos){
+                        var _producto = productos[ii];
+                        if(_producto.getCodigoProducto() === producto.getCodigoProducto() ){
+                            cantidadIngresada += _producto.lotesSeleccionados[0].cantidad_ingresada;
+                        }
                     }
+                   
+                    if(justificacion === null || justificacion === undefined || justificacion.length === 0 &&
+                      cantidadIngresada < producto.cantidad_solicitada){
+                       
+                        validarLote = false;
+                    }                    
+                    
                 }
-                return productoValido;
+                
+           
+                return validarLote;
             };
+            
+           
             /**
              * +Descripcion: Metodo principal, el cual al iniciar la aplicacion
              * ejecuta la funcion encargada de consultar los tipos de documento

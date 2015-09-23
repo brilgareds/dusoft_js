@@ -70,6 +70,12 @@ define(["angular", "js/controllers",
                     seleccion: $scope.seleccion
                 };
                 $scope.items = items;
+                
+                                
+                if(!localStorageService.get("auditoriaFarmacia")){
+                    that.obtenerPedido();
+                }
+                
             });
 
 
@@ -195,10 +201,6 @@ define(["angular", "js/controllers",
             } else {
                 $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
                 $scope.listarEmpresas("");
-                
-                if(!localStorageService.get("auditoriaFarmacia")){
-                    that.obtenerPedido();
-                }
                 
             }
             

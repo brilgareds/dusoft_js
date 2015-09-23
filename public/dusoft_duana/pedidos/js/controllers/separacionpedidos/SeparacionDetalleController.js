@@ -390,10 +390,7 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'get_prefijo()', displayName: 'Codigo'},
                     {field: 'get_descripcion()', displayName: 'Descripcion'}
-
-
                 ]
-
             };
 
             /**
@@ -623,7 +620,7 @@ define(["angular", "js/controllers",
             self.validarProductos = function() {
 
                 var productos = $scope.rootDetalle.pedido.getProductos();
-
+                console.log(productos)
                 var productoValido = true;
 
                 for (var i in productos) {

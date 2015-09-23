@@ -791,14 +791,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         var estado_pedido = '1';
         if (filtro !== undefined) {
 
-            if (filtro.estado.asignados || filtro.asignados) {
+            if ((filtro.estado && filtro.estado.asignados) || filtro.asignados) {
                  this.whereRaw("  h.doc_tmp_id IS NULL and  g.usuario_id  = ? ", [responsable]);
             }
 
-            if (filtro.estado.temporales || filtro.temporales) {
+            if ((filtro.estado && filtro.estado.temporales) || filtro.temporales) {
                 this.whereRaw("  h.doc_tmp_id IS NOT NULL AND h.estado = '0' and g.usuario_id = ? ", [responsable]);
             }
-            if (filtro.estado.finalizados || filtro.finalizados) {
+            if ((filtro.estado && filtro.estado.finalizados) || filtro.finalizados) {
                 estado_pedido = '7';
                 this.whereRaw(" g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id ) and  i.usuario_id = ?", [responsable]);
             }

@@ -32,6 +32,7 @@ define(["angular", "js/controllers",
                             + " -- " + $scope.rootDetalle.pedido.getFarmacia().getNombreBodega();
                 }
 
+
                 callback();
             };
 
@@ -186,7 +187,6 @@ define(["angular", "js/controllers",
              */
             self.generarAuditar = function() {
                 $scope.opts = {
-                  
                     backdrop: 'static',
                     dialogClass: "editarproductomodal",
                     templateUrl: 'views/separacionpedidos/separacionSeleccionDocumentoDespacho.html',
@@ -289,6 +289,12 @@ define(["angular", "js/controllers",
              * @fecha: 10/09/2015
              * */
             $scope.onGenerarDocumento = function() {
+
+                if (!self.validarProductos()) {
+                    SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
+                    return;
+                }
+
                 self.confirm("Generar separacion", "Desea generar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
                         self.generarDocumento(function(continuar) {
@@ -336,7 +342,7 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-            
+
             /**
              * +Descripcion: Metodo encargado de mapear contra el modelo
              * DocumentoDespacho la respuesta del servicio que consulta la lista
@@ -377,7 +383,6 @@ define(["angular", "js/controllers",
                         self.onSeleccionDocumento(rowItem.entity);
                     }
                 },
-                        
                 enableColumnResize: true,
                 enableRowSelection: true,
                 keepLastSelected: false,
@@ -477,7 +482,7 @@ define(["angular", "js/controllers",
 
 
                 if (cantidadPendiente > 0) {
-                  
+
                     obj.data.documento_temporal.justificacion = {
                         documento_temporal_id: $scope.rootDetalle.pedido.getTemporalId(),
                         codigo_producto: producto.getCodigoProducto(),
@@ -506,7 +511,7 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             self.renderDocumentoTemporalClienteFarmacia = function(obj, tipo, callback) {
-                
+
                 var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES;
                 if (tipo === '2') {
                     url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS;
@@ -522,7 +527,7 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-            
+
             /*
              * +descripcion: confirmar que se genera y audita la separacion
              * si acepta se desplegara una ventana modal con la lista de tipos
@@ -532,6 +537,13 @@ define(["angular", "js/controllers",
              * @fecha: 10/09/2015
              * */
             $scope.onGenerarAuditar = function() {
+
+
+                if (!self.validarProductos()) {
+                    SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
+                    return;
+                }
+
                 self.confirm("Generar y auditar", "Desea generar y auditar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
                         var productos = $scope.rootDetalle.pedido.getProductos();
@@ -552,13 +564,42 @@ define(["angular", "js/controllers",
                         if (productoValido) {
 
                             self.generarAuditar();
-                         
+
                         }
                     }
                 });
             };
 
+            /**
+             * +Descripcion: Funcion encargada de validar los productos pendientes
+             * Si tienen justificacion
+             * @author Cristian Ardila
+             * @fecha  23/09/2015
+             * @returns {Boolean}
+             */
+            self.validarProductos = function() {
 
+                var productos = $scope.rootDetalle.pedido.getProductos();
+
+                var productoValido = true;
+
+                for (var i in productos) {
+
+                    var cantidadPendiente = productos[i].getCantidadPendiente();
+                    var justificacion = productos[i].getJustificacion();
+
+                    if (justificacion === null || justificacion === undefined || justificacion.length === 0
+                            && cantidadPendiente > 0
+                            ) {
+
+
+                        productoValido = false;
+
+                        break;
+                    }
+                }
+                return productoValido;
+            };
             /**
              * +Descripcion: Metodo principal, el cual al iniciar la aplicacion
              * ejecuta la funcion encargada de consultar los tipos de documento
@@ -568,7 +609,8 @@ define(["angular", "js/controllers",
             self.init(function() {
 
                 self.traerListadoDocumentosDespacho(function() {
-              
+
+
                 });
 
             });

@@ -155,6 +155,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 var cantidadPendiente =  Number(_producto.cantidad_pendiente);
                 producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
                 producto.setCantidadPendiente(cantidadPendiente);
+                
                 if(_producto.justificacion){
                      producto.setJustificacion(_producto.justificacion);
                 }
@@ -169,7 +170,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                             producto.setPorcentajeGravament(parseFloat(_producto.porcentaje_iva));
                         }
                         this.agregarProducto(producto); 
-                        
+                        //return;
                     } 
                 } else {
 
@@ -188,7 +189,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                     producto.agregarLote(lote);
                     this.agregarProducto(producto); 
                 }
-                
+               // this.agregarProducto(producto); 
             }
         };
         

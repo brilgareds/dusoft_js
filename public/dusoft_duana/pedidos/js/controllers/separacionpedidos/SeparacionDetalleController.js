@@ -100,12 +100,9 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        $scope.cerrarDetallePedidos();
-                        $state.go("SeparacionPedidos");
-                        AlertService.mostrarMensaje("success", "Separacion finalizada");
+                        
                         callback(true);
                     } else {
-                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
                         callback(false);
                     }
                 });
@@ -203,7 +200,7 @@ define(["angular", "js/controllers",
                         };
                     }
                 };
-                var modalInstance = $modal.open($scope.opts);
+                self.ventanaAuditoria = $modal.open($scope.opts);
             };
 
 
@@ -289,7 +286,16 @@ define(["angular", "js/controllers",
             $scope.onGenerarDocumento = function() {
                 self.confirm("Generar separacion", "Desea generar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
-                        self.generarDocumento();
+                        self.generarDocumento(function(continuar){
+                            if(continuar){
+                                
+                                $scope.cerrarDetallePedidos();
+                                $state.go("SeparacionPedidos");
+                                AlertService.mostrarMensaje("success", "Separacion finalizada");
+                            } else {
+                                SeparacionService.mostrarAlerta("Error", "Se genero un error");
+                            }
+                        });
                     }
                 });
             };
@@ -342,7 +348,7 @@ define(["angular", "js/controllers",
                 }
 
 
-            }
+            };
 
 
             $scope.listarDocumentoDespacho = {
@@ -384,23 +390,76 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                self.renderDocumentoTemporalClienteFarmacia(obj, pedido.getTipo(), function(data) {
-
+                self.renderDocumentoTemporalClienteFarmacia(obj, pedido.getTipo(), function(continuar) {
+                    if(!continuar){
+                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                    }
+                    
+                    var productos = angular.copy($scope.rootDetalle.pedido.getProductos());
+                    
+                    console.log("productos para auditar ", productos);
+                    
+                    self.auditarLotes(productos,0, function(continuar, msj){
+                        AlertService.mostrarMensaje("success", msj);
+                        if(continuar){
+                            self.ventanaAuditoria.close();
+                            $scope.cerrarDetallePedidos();
+                            $state.go("SeparacionPedidos");
+                        }
+                    }); 
+                    
+                    
                 });
-                /*    
-                 $scope.validarDocumentoUsuario(obj, 2, function(data) {
-                 if (data.status === 200) {
-                 
-                 $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion.bodegas_doc_id;
-                 $scope.DocumentoTemporal.auditor.usuario_id = $scope.session.usuario_id;
-                 AlertService.mostrarMensaje("success", data.msj);
-                 } else {
-                 AlertService.mostrarMensaje("warning", data.msj);
-                 }
-                 });
-                 */
 
             };
+            
+            
+            self.auditarLotes = function(productos, index, callback){
+                
+                var producto = productos[index];
+                
+                console.log("producto a auditar ", producto,  "index ", index);
+                
+                if(!producto){
+                    callback(true, "Productos auditados");
+                    return;
+                }
+                
+                var cantidadPendiente = producto.getCantidadPendiente();
+                
+                var lote =  producto.getLotesSeleccionados()[0];
+                
+                    var obj = {
+                        session: $scope.rootDetalle.session,
+                        data: {
+                            documento_temporal: {
+                                item_id: producto.getItemId(),
+                                auditado: true,
+                                numero_caja: lote.getNumeroCaja()
+                            }
+                        }
+                    };
+
+                
+                    if (cantidadPendiente > 0) {
+                        console.log("se justifica un pendiente ", producto, cantidadPendiente);
+                        obj.data.documento_temporal.justificacion = {
+                            documento_temporal_id: $scope.rootDetalle.pedido.getTemporalId(),
+                            codigo_producto: producto.getCodigoProducto(),
+                            cantidad_pendiente: cantidadPendiente,
+                            justificacion_auditor: producto.getJustificacion(),
+                            existencia: lote.existencia_actual,
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            justificacion: producto.getJustificacion()
+                        };
+                    }
+
+                    Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
+                        index++;
+                        self.auditarLotes(productos, index, callback);
+                    });
+            };
+            
             /**
              * +Descripcion: Metodo encargado de acutalizar el tipo de documento
              * temporal, dependiendo del tipo que se le envie, si es 1 actualiza
@@ -414,20 +473,20 @@ define(["angular", "js/controllers",
                 var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES;
 
 
-                if (tipo === 2) {
+                if (tipo === '2') {
                     url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log(data)
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
+                        callback(true);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
+                        callback(false);
                     }
-                    callback(data);
                 });
-            }
+            };
             /*
              * +descripcion: confirmar que se genera y audita la separacion
              * si acepta se generara y auditara la separacion invocando al metodo 
@@ -459,9 +518,10 @@ define(["angular", "js/controllers",
                                 
                                 if(continuar){
                                      self.generarAuditar();
-
+                                } else {
+                                    SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
                                 }
-                            })
+                            });
                         }
                     }
                 });

@@ -41,7 +41,6 @@ define(["angular", "js/controllers",
 
             $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {
 
-                //console.log("información Documento Temporal: ", datos[1]);
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 2, $scope.resultadoBusquedaDocumento);
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
@@ -112,7 +111,7 @@ define(["angular", "js/controllers",
 
             $scope.resultasdoListadoDocumentosUsuario = function(data) {
                 if (data.obj.movimientos_bodegas !== undefined) {
-                    //$scope.DocumentoTemporal.bodegas_doc_id
+                
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;
                 }
             };
@@ -120,7 +119,7 @@ define(["angular", "js/controllers",
             $scope.resultadoBusquedaDocumento = function(data, paginando) {
 
                 data = data.obj.documento_temporal[0];
-                //console.log("documento temporal ========", data);
+              
                 $scope.items = data.lista_productos.length;
 
                 //se valida que hayan registros en una siguiente pagina
@@ -258,7 +257,7 @@ define(["angular", "js/controllers",
             });
  
             $scope.valorSeleccionado = function() {
-             
+                
                 that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
                 var obj = {
                     session: $scope.session,
@@ -275,9 +274,8 @@ define(["angular", "js/controllers",
                
                 $scope.validarDocumentoUsuario(obj, 2, function(data) {
                     if (data.status === 200) {
-                     
-                       $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion.bodegas_doc_id;
-                       $scope.DocumentoTemporal.auditor.usuario_id = $scope.session.usuario_id;
+                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion.bodegas_doc_id;
+                        $scope.DocumentoTemporal.auditor.usuario_id = $scope.session.usuario_id;
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -294,7 +292,7 @@ define(["angular", "js/controllers",
                         $scope.documento_despacho = doc;
                         $scope.seleccion.prefijo = doc.prefijo;
                         $scope.seleccion.descripcion  = doc.descripcion;
-                        console.log("documento seleccionado ", doc);
+                       
                         break;
                     }
                 }

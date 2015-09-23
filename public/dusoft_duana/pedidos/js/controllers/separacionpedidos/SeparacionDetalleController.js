@@ -290,10 +290,10 @@ define(["angular", "js/controllers",
              * */
             $scope.onGenerarDocumento = function() {
 
-                if (!self.validarProductos()) {
+                /*if (!self.validarProductos()) {
                     SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
                     return;
-                }
+                }*/
 
                 self.confirm("Generar separacion", "Desea generar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
@@ -437,7 +437,14 @@ define(["angular", "js/controllers",
                                 if (continuar) {
                                     self.ventanaAuditoria.close();
                                     $scope.cerrarDetallePedidos(true);
-                                    $state.go("SeparacionPedidos");
+                                    
+                                    if(pedido.getTipo() === '1'){
+                                        localStorageService.set("auditoriaCliente", pedido.get_numero_pedido());
+                                    } else {
+                                        localStorageService.set("auditoriaFarmacia", pedido.get_numero_pedido());
+                                    }
+                                    
+                                    $state.go("AuditarPedidos");
                                 }
                             });
                         } else {
@@ -540,10 +547,10 @@ define(["angular", "js/controllers",
             $scope.onGenerarAuditar = function() {
 
 
-                if (!self.validarProductos()) {
+                /*if (!self.validarProductos()) {
                     SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
                     return;
-                }
+                }*/
 
                 self.confirm("Generar y auditar", "Desea generar y auditar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
@@ -624,10 +631,7 @@ define(["angular", "js/controllers",
                     var cantidadPendiente = productos[i].getCantidadPendiente();
                     var justificacion = productos[i].getJustificacion();
 
-                    if (justificacion === null || justificacion === undefined || justificacion.length === 0
-                            && cantidadPendiente > 0
-                            ) {
-
+                    if (justificacion === null || justificacion === undefined || justificacion.length === 0 && cantidadPendiente > 0) {
 
                         productoValido = false;
 

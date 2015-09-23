@@ -38,6 +38,7 @@ define(["angular", "js/controllers",
             $scope.cajasSinCerrar = [];
             $scope.notificacionclientes = 0;
             $scope.notificacionfarmacias = 0;
+            $scope.activarTabFarmacias = false;
             $scope.filtro = {
                 codigo_barras: false
             };
@@ -141,7 +142,16 @@ define(["angular", "js/controllers",
 
                 return documento_temporal;
             };
-
+            
+           $scope.obtenerDocumento = function(numero, tipo){
+                var documentos = Empresa.getDocumentoTemporal(tipo);
+                for(var i in documentos){
+                    var documento = documentos[i];
+                    if(documento.getPedido().get_numero_pedido() === numero){
+                        return documento;
+                    }
+                }
+            };
 
 
             $scope.renderPedidosSeparados = function(data, paginando, tipo) {
@@ -149,7 +159,7 @@ define(["angular", "js/controllers",
                 var items = data.documentos_temporales.length;
                 var evento = (tipo === 1) ? "Cliente" : "Farmacia";
 
-                $scope.$broadcast("onPedidosSeparadosRender" + evento, items);
+                
 
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && items === 0) {
@@ -167,6 +177,8 @@ define(["angular", "js/controllers",
                     // documento_temporal.esDocumentoNuevo = true;  
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
+                
+                $scope.$broadcast("onPedidosSeparadosRender" + evento, items);
             };
 
 

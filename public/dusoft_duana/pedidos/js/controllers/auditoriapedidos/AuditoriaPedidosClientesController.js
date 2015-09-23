@@ -8,8 +8,11 @@ define(["angular", "js/controllers",
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Cliente', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
-        "socket", "AlertService", "Usuario",
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoAuditoria, Separador, DocumentoTemporal, API, socket, AlertService, Usuario) {
+        "socket", "AlertService", "Usuario","localStorageService",
+        function($scope, $rootScope, Request, Empresa,
+                 Cliente, PedidoAuditoria, Separador, DocumentoTemporal,
+                 API, socket, AlertService, Usuario,
+                 localStorageService) {
 
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
@@ -95,6 +98,13 @@ define(["angular", "js/controllers",
             $scope.$on("onPedidosSeparadosRenderCliente", function(e, items) {
 
                 $scope.items = items;
+                
+                if(localStorageService.get("auditoriaCliente")){
+                    var numero = parseInt(localStorageService.get("auditoriaCliente"));
+                    var documento =  $scope.obtenerDocumento(numero, 1);
+                    that.mostrarDetalle(documento);
+                }
+                
             });
 
             $scope.$on("onPedidosSeparadosNoEncotradosCliente", function(e) {
@@ -113,10 +123,14 @@ define(["angular", "js/controllers",
             $scope.onRowClick = function(row) {
                 row.entity.esDocumentoNuevo = false;
                 $scope.notificacionclientes--;
-                $scope.slideurl = "views/auditoriapedidos/pedidoseparadocliente.html?time=" + new Date().getTime();
-                $scope.$emit('mostrardetallecliente', row.entity);
+                that.mostrarDetalle(row.entity);
             };
-
+            
+            that.mostrarDetalle = function(documento){
+                $scope.slideurl = "views/auditoriapedidos/pedidoseparadocliente.html?time=" + new Date().getTime();
+                $scope.$emit('mostrardetallecliente', documento);
+                localStorageService.remove("auditoriaCliente");
+            };
 
 
             //eventos de widgets
@@ -162,7 +176,16 @@ define(["angular", "js/controllers",
             } else if(!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
                 $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para generar pedidos de clientes", tipo:"warning"});
             } else {
-                $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                
+                //se valida si se debe consultar un producto desde separacion
+                if(localStorageService.get("auditoriaCliente")){
+                    var numero = parseInt(localStorageService.get("auditoriaCliente"));
+                    $scope.termino_busqueda = numero;
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                } else {
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                }
+                
             }
             
 

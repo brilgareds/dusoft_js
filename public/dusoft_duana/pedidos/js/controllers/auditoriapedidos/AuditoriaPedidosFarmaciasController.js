@@ -70,10 +70,12 @@ define(["angular", "js/controllers",
                     seleccion: $scope.seleccion
                 };
                 $scope.items = items;
-                
                                 
-                if(!localStorageService.get("auditoriaFarmacia")){
-                    that.obtenerPedido();
+                if(localStorageService.get("auditoriaFarmacia")){
+                    var numero = parseInt(localStorageService.get("auditoriaFarmacia"));
+                    console.log("buscar pedido de auditoria de separacion code 2 ", numero);
+                    var documento =  $scope.obtenerDocumento(numero, 2);
+                    that.mostrarDetalle(documento);
                 }
                 
             });
@@ -140,19 +142,12 @@ define(["angular", "js/controllers",
                 that.mostrarDetalle(row.entity);
             };
             
-            that.mostrarDetalle = function(pedido){
+            that.mostrarDetalle = function(documento){
                 $scope.slideurl = "views/auditoriapedidos/pedidoseparadofarmacia.html?time=" + new Date().getTime();
-                $scope.$emit('mostrardetallefarmacia', row.entity);
+                $scope.$emit('mostrardetallefarmacia', documento);
+                localStorageService.remove("auditoriaFarmacia");
             };
             
-            that.obtenerPedido = function(){
-                var documentos = Empresa.getDocumentoTemporal(2);
-                
-                for(var i in documentos){
-                    var documento = documentos[i];
-                    console.log(documento);
-                }
-            };
             
             /**
              * +Descripcion: Metodo que se carga cuando se selecciona un documento
@@ -199,31 +194,22 @@ define(["angular", "js/controllers",
             } else if(!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
                 $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para auditar pedidos", tipo:"warning"});
             } else {
-                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                
                 $scope.listarEmpresas("");
+                
+                if(localStorageService.get("auditoriaFarmacia")){
+                    var numero = parseInt(localStorageService.get("auditoriaFarmacia"));
+                    $scope.termino_busqueda = numero;
+                    $scope.activarTabFarmacias = true;
+                    
+                    console.log("buscar pedido de auditoria de separacion ", numero);
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                } else {
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                }
                 
             }
             
-            
-            
-            
-             /*var test = {
-                session: $scope.session,
-                data: {
-                    movimientos_bodegas: {
-                        empresa: '03',
-                        numero: '82913',
-                        prefijo: 'EFC'
-                    }
-                }
-            };
-            Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
-                if(data.status === 200){
-                    var nombre = data.obj.movimientos_bodegas.nombre_pdf;
-                    $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
-                }
-                
-            });*/
 
         }]);
 });

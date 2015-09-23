@@ -107,10 +107,6 @@ define(["angular", "js/controllers",
             self.seleccionarProductoPorPosicion = function(callback){
                 var pedido = EmpresaPedido.getPedidoSeleccionado();
                 
-                if(!pedido){
-                    return;
-                }
-                
                 var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];
                 pedido.setProductoSeleccionado(producto);
                 

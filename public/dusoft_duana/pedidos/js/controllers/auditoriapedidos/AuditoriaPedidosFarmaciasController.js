@@ -9,8 +9,11 @@ define(["angular", "js/controllers",
         'EmpresaPedido', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "Usuario",
-        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoAuditoria, Separador, DocumentoTemporal, API, socket, AlertService, Usuario) {
-
+        "localStorageService",
+        function($scope, $rootScope, Request, Empresa, 
+                 Farmacia, PedidoAuditoria, Separador, 
+                 DocumentoTemporal, API, socket, AlertService, Usuario,
+                 localStorageService) {
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
             $scope.empresas = [];
@@ -128,9 +131,21 @@ define(["angular", "js/controllers",
             $scope.onRowClick = function(row) {
                 row.entity.esDocumentoNuevo = false;
                 $scope.notificacionfarmacias--;
+                that.mostrarDetalle(row.entity);
+            };
+            
+            that.mostrarDetalle = function(pedido){
                 $scope.slideurl = "views/auditoriapedidos/pedidoseparadofarmacia.html?time=" + new Date().getTime();
                 $scope.$emit('mostrardetallefarmacia', row.entity);
-                //console.log("Presionado Botón Auditar Farmacia: ", row.entity);
+            };
+            
+            that.obtenerPedido = function(){
+                var documentos = Empresa.getDocumentoTemporal(2);
+                
+                for(var i in documentos){
+                    var documento = documentos[i];
+                    console.log(documento);
+                }
             };
             
             /**
@@ -180,6 +195,10 @@ define(["angular", "js/controllers",
             } else {
                 $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
                 $scope.listarEmpresas("");
+                
+                if(!localStorageService.get("auditoriaFarmacia")){
+                    that.obtenerPedido();
+                }
                 
             }
             

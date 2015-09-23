@@ -66,7 +66,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             };
             
             $scope.onFiltrarProducto = function(){
-                console.log()
                 $scope.rootListaProductos.productos = angular.copy(pedido.getProductos());
                 
                 var productos = $filter('filter')($scope.rootListaProductos.productos, {codigo_producto:$scope.rootListaProductos.filtro.termino});

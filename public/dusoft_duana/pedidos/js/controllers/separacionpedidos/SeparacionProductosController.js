@@ -32,7 +32,7 @@ define(["angular", "js/controllers",
                         $scope.filtros = [
                             {nombre: "Seleccionar", id: 0},
                             {nombre: "Justificar", id: 1},
-                            {nombre: "Listar productos", id: 2},
+                           //No borrar {nombre: "Listar productos", id: 2},
                             {nombre: "Refrescar", id: 3}
                         ];
 
@@ -46,38 +46,23 @@ define(["angular", "js/controllers",
                     };
 
 
-                    self.onFiltrarProducto = function(producto) {
+                    $scope.onFiltrarProducto = function() {
                         var index = -1;
-                         var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
-                        for (var i in pedido.getProductos()) {
-                            var _producto = pedido.getProductos()[i];
+                        var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
 
-                            if (_producto.getCodigoProducto() === producto.getCodigoProducto()) {
-
+                        for (var i in pedido) {
+                            
+                            var _producto = pedido[i];
+                           
+                            if (_producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
+                               
                                 index = i;
                                 break;
                             }
                         }
-
-                      
-                    };
-
-
-
-                    $scope.onFiltrarProducto = function($event) {
-                        var index = -1;
-                        var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
-                      
-                        console.log(pedido);
-                        // console.log($event);
-
-                        $scope.rootSeparacion.productos = pedido;
-
-                        var productos = $filter('filter')($scope.rootSeparacion.productos, {codigo_producto: $scope.rootSeparacion.filtro.termino});
-
-                        $scope.rootSeparacion.productos = productos;
-
-                        console.log("$scope.rootSeparacion.productos ", productos)
+                        
+                        $scope.$emit("onMostarProductoEnPosicion", index);
+                        
                     };
 
                     /**
@@ -458,6 +443,9 @@ define(["angular", "js/controllers",
                      * +Descripcion:Evento que se dispara desde la ventana de lista de productos
                      */
                     self.onMostarProductoEnPosicion = $scope.$on("onMostarProductoEnPosicion", function(e, index) {
+                        if(index === -1){
+                            return;
+                          }
                         $scope.rootSeparacion.paginaactual = parseInt(index);
                         self.seleccionarProductoPorPosicion(function() {
                             self.marcarSeparados();

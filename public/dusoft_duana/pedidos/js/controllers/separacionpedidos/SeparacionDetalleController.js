@@ -100,7 +100,7 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        
+
                         callback(true);
                     } else {
                         callback(false);
@@ -186,10 +186,9 @@ define(["angular", "js/controllers",
              */
             self.generarAuditar = function() {
                 $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: true,
-                    keyboard: true,
+                  
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
                     templateUrl: 'views/separacionpedidos/separacionSeleccionDocumentoDespacho.html',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
@@ -209,6 +208,9 @@ define(["angular", "js/controllers",
              * un producto de la lista de separacion, si acepta se ejecutara un
              * metodo mas encargado de invocar el servicio para eliminacion,
              * si presiona el boton cancelar, se cancelara el proceso
+             * @author Cristian Ardila
+             * @fecha 10/09/2015
+             * @returns {void}
              */
             $scope.onEliminarLote = function(producto) {
 
@@ -220,9 +222,11 @@ define(["angular", "js/controllers",
             };
 
             /**
-             * @author Cristian Ardila
              * +Descripcion: Grilla en comun para pedidos asignados 
-             *  clientes y pedidos temporales clientes
+             * clientes y pedidos temporales clientes
+             * @author Cristian Ardila
+             * @fecha 10/09/2015
+             * @returns {void}
              */
             $scope.detalleSeparacionProducto = {
                 data: 'rootDetalle.pedido.productos',
@@ -251,10 +255,11 @@ define(["angular", "js/controllers",
              * +Descripcion: Metodo encargado de cerrar la ventana slider del 
              * detalle de separacion de productos
              * @author Cristian Ardila
+             * @fecha 10/09/2015
+             * @returns {void}
              */
             $scope.cerrarDetallePedidos = function(finalizar) {
 
-                // self.mostrarDetallePedidosCompleto();
                 $scope.$emit('closeDetallePedidos', {animado: true, finalizar: finalizar});
             };
 
@@ -286,10 +291,10 @@ define(["angular", "js/controllers",
             $scope.onGenerarDocumento = function() {
                 self.confirm("Generar separacion", "Desea generar la separacion de los productos", function(confirmar) {
                     if (confirmar) {
-                        self.generarDocumento(function(continuar){
-                            if(continuar){
-                                
-                                $scope.cerrarDetallePedidos();
+                        self.generarDocumento(function(continuar) {
+                            if (continuar) {
+
+                                $scope.cerrarDetallePedidos(true);
                                 $state.go("SeparacionPedidos");
                                 AlertService.mostrarMensaje("success", "Separacion finalizada");
                             } else {
@@ -302,11 +307,11 @@ define(["angular", "js/controllers",
 
             /**
              * +Descripcion: Metodo encargado de consultar los tipos de documento
-             * despachp
+             * despacho
              * @author:Cristian Ardila
              * @fecha: 22/09/2015
-             * @param {type} callback
-             * @returns {undefined}
+             * @param {function} callback
+             * @returns {void}
              */
             self.traerListadoDocumentosDespacho = function(callback) {
 
@@ -331,14 +336,22 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-
+            
+            /**
+             * +Descripcion: Metodo encargado de mapear contra el modelo
+             * DocumentoDespacho la respuesta del servicio que consulta la lista
+             * de documentos almacenando cada objeto creado en un arreglo
+             * @author Cristian Ardila
+             * @fecha  23/09/2015
+             * @param {type} data
+             * @returns {void}
+             */
             self.renderDocumentosDespachos = function(data) {
 
 
                 $scope.documentos = [];
                 for (var i in data.obj.movimientos_bodegas) {
                     var _documentos = data.obj.movimientos_bodegas[i];
-
 
                     var documentos = DocumentoDespacho.get(_documentos.bodegas_doc_id, _documentos.prefijo, '', '');
                     documentos.set_descripcion(_documentos.descripcion);
@@ -350,7 +363,13 @@ define(["angular", "js/controllers",
 
             };
 
-
+            /**
+             * +Descripcion: Componente grid que se visualizara en el popup
+             *  Generar y auditar, para seleccionar el tipo de documento
+             *  que se pretende realizar
+             *  @author Cristian Ardila
+             *  @fecha 23/09/2015
+             */
             $scope.listarDocumentoDespacho = {
                 data: 'documentos',
                 afterSelectionChange: function(rowItem) {
@@ -358,12 +377,13 @@ define(["angular", "js/controllers",
                         self.onSeleccionDocumento(rowItem.entity);
                     }
                 },
+                        
                 enableColumnResize: true,
                 enableRowSelection: true,
                 keepLastSelected: false,
                 multiSelect: false,
                 columnDefs: [
-                    {field: 'get_tipo()', displayName: 'Codigo'},
+                    {field: 'get_prefijo()', displayName: 'Codigo'},
                     {field: 'get_descripcion()', displayName: 'Descripcion'}
 
 
@@ -371,12 +391,20 @@ define(["angular", "js/controllers",
 
             };
 
-
+            /**
+             * +Descripcion: Metodo que se activa con el evento 
+             * (afterSelectionChange)del componente GridView al instante
+             * que se selecciona un documento, procediendo a generar el documento
+             * y despues auditando los lotes.
+             * @author Cristian Ardila
+             * @fecha  23/09/2015
+             * @param {string} entity
+             * @returns {void}
+             */
             self.onSeleccionDocumento = function(entity) {
 
                 var pedido = $scope.rootDetalle.pedido;
 
-                /* that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);*/
                 var obj = {
                     session: $scope.rootDetalle.session,
                     data: {
@@ -391,88 +419,95 @@ define(["angular", "js/controllers",
                 };
 
                 self.renderDocumentoTemporalClienteFarmacia(obj, pedido.getTipo(), function(continuar) {
-                    if(!continuar){
+                    if (!continuar) {
                         SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
                     }
-                    
-                    var productos = angular.copy($scope.rootDetalle.pedido.getProductos());
-                    
-                    console.log("productos para auditar ", productos);
-                    
-                    self.auditarLotes(productos,0, function(continuar, msj){
-                        AlertService.mostrarMensaje("success", msj);
-                        if(continuar){
-                            self.ventanaAuditoria.close();
-                            $scope.cerrarDetallePedidos();
-                            $state.go("SeparacionPedidos");
-                        }
-                    }); 
-                    
-                    
-                });
 
+                    var productos = angular.copy($scope.rootDetalle.pedido.getProductos());
+                    self.generarDocumento(function(continuar) {
+
+                        if (continuar) {
+                            self.auditarLotes(productos, 0, function(continuar, msj) {
+                                AlertService.mostrarMensaje("success", msj);
+                                if (continuar) {
+                                    self.ventanaAuditoria.close();
+                                    $scope.cerrarDetallePedidos(true);
+                                    $state.go("SeparacionPedidos");
+                                }
+                            });
+                        } else {
+                            SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                        }
+                    })
+                });
             };
-            
-            
-            self.auditarLotes = function(productos, index, callback){
-                
+
+            /*
+             * +Descripcion: Funcion encargada de auditar los lotes en grupo
+             * @author Edu Gracia
+             * @Fecha  23/09/2015
+             * @param {type} productos
+             * @param {type} index
+             * @param {type} callback
+             * @returns {unresolved}
+             */
+            self.auditarLotes = function(productos, index, callback) {
+
                 var producto = productos[index];
-                
-                console.log("producto a auditar ", producto,  "index ", index);
-                
-                if(!producto){
+
+                if (!producto) {
                     callback(true, "Productos auditados");
                     return;
                 }
-                
+
                 var cantidadPendiente = producto.getCantidadPendiente();
-                
-                var lote =  producto.getLotesSeleccionados()[0];
-                
-                    var obj = {
-                        session: $scope.rootDetalle.session,
-                        data: {
-                            documento_temporal: {
-                                item_id: producto.getItemId(),
-                                auditado: true,
-                                numero_caja: lote.getNumeroCaja()
-                            }
+
+                var lote = producto.getLotesSeleccionados()[0];
+
+                var obj = {
+                    session: $scope.rootDetalle.session,
+                    data: {
+                        documento_temporal: {
+                            item_id: producto.getItemId(),
+                            auditado: true,
+                            numero_caja: lote.getNumeroCaja()
                         }
-                    };
-
-                
-                    if (cantidadPendiente > 0) {
-                        console.log("se justifica un pendiente ", producto, cantidadPendiente);
-                        obj.data.documento_temporal.justificacion = {
-                            documento_temporal_id: $scope.rootDetalle.pedido.getTemporalId(),
-                            codigo_producto: producto.getCodigoProducto(),
-                            cantidad_pendiente: cantidadPendiente,
-                            justificacion_auditor: producto.getJustificacion(),
-                            existencia: lote.existencia_actual,
-                            usuario_id: Usuario.getUsuarioActual().getId(),
-                            justificacion: producto.getJustificacion()
-                        };
                     }
+                };
 
-                    Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
-                        index++;
-                        self.auditarLotes(productos, index, callback);
-                    });
+
+                if (cantidadPendiente > 0) {
+                  
+                    obj.data.documento_temporal.justificacion = {
+                        documento_temporal_id: $scope.rootDetalle.pedido.getTemporalId(),
+                        codigo_producto: producto.getCodigoProducto(),
+                        cantidad_pendiente: cantidadPendiente,
+                        justificacion_auditor: producto.getJustificacion(),
+                        existencia: lote.existencia_actual,
+                        usuario_id: Usuario.getUsuarioActual().getId(),
+                        justificacion: producto.getJustificacion()
+                    };
+                }
+
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
+                    index++;
+                    self.auditarLotes(productos, index, callback);
+                });
             };
-            
+
             /**
              * +Descripcion: Metodo encargado de acutalizar el tipo de documento
-             * temporal, dependiendo del tipo que se le envie, si es 1 actualiza
-             * clientes y si es 2 acutaliza farmacias.
+             * temporal, dependiendo del tipo que se le envie, 
+             * si es 1 actualiza clientes
+             * si es 2 acutaliza farmacias.
              * @param {type} obj
-             * @param {type} tipo
-             * @param {type} callback
-             * @returns {undefined}
+             * @param {string} tipo
+             * @param {function} callback
+             * @returns {void}
              */
             self.renderDocumentoTemporalClienteFarmacia = function(obj, tipo, callback) {
+                
                 var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES;
-
-
                 if (tipo === '2') {
                     url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
@@ -487,10 +522,11 @@ define(["angular", "js/controllers",
                     }
                 });
             };
+            
             /*
              * +descripcion: confirmar que se genera y audita la separacion
-             * si acepta se generara y auditara la separacion invocando al metodo 
-             * method(generarAuditar)
+             * si acepta se desplegara una ventana modal con la lista de tipos
+             * de documentos 
              * si no acepta, se cancelara el proceso.
              * @author Cristian Ardila
              * @fecha: 10/09/2015
@@ -502,37 +538,37 @@ define(["angular", "js/controllers",
 
                         var productoValido = true;
                         for (var i in productos) {
-                          
+
                             var numCaja = productos[i].getLotesSeleccionados()[0].getNumeroCaja();
 
                             if (numCaja === null || numCaja === 0 || numCaja === undefined) {
-                                
-                               SeparacionService.mostrarAlerta("Error", "No se puede auditar el pedido por que hay lotes sin caja");
+
+                                SeparacionService.mostrarAlerta("Error", "No se puede auditar el pedido por que hay lotes sin caja");
                                 productoValido = false;
 
                                 break;
                             }
                         }
                         if (productoValido) {
-                            self.generarDocumento(function(continuar){
-                                
-                                if(continuar){
-                                     self.generarAuditar();
-                                } else {
-                                    SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
-                                }
-                            });
+
+                            self.generarAuditar();
+                         
                         }
                     }
                 });
             };
 
 
-
+            /**
+             * +Descripcion: Metodo principal, el cual al iniciar la aplicacion
+             * ejecuta la funcion encargada de consultar los tipos de documento
+             * @author Cristian Ardila
+             * @fecha  23/09/2015
+             */
             self.init(function() {
 
                 self.traerListadoDocumentosDespacho(function() {
-                    console.log("Trayendo documentos despacho")
+              
                 });
 
             });

@@ -46,9 +46,9 @@ define(["angular", "js/controllers",
                     };
 
 
-                    self.onSeleccionProducto = function(producto) {
+                    self.onFiltrarProducto = function(producto) {
                         var index = -1;
-
+                         var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
                         for (var i in pedido.getProductos()) {
                             var _producto = pedido.getProductos()[i];
 
@@ -59,8 +59,7 @@ define(["angular", "js/controllers",
                             }
                         }
 
-                        $scope.$emit("onMostarProductoEnPosicion", index);
-                        $scope.cerrar();
+                      
                     };
 
 
@@ -68,15 +67,7 @@ define(["angular", "js/controllers",
                     $scope.onFiltrarProducto = function($event) {
                         var index = -1;
                         var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
-                        /* for(var i in pedido.getProductos()){
-                         var _producto = pedido.getProductos()[i];
-                         
-                         if(_producto.getCodigoProducto() === producto.getCodigoProducto()){
-                         
-                         index = i;
-                         break;
-                         }
-                         }*/
+                      
                         console.log(pedido);
                         // console.log($event);
 
@@ -86,7 +77,7 @@ define(["angular", "js/controllers",
 
                         $scope.rootSeparacion.productos = productos;
 
-
+                        console.log("$scope.rootSeparacion.productos ", productos)
                     };
 
                     /**

@@ -402,7 +402,9 @@ define(["angular", "js/controllers",
            * @author Eduar Garcia
            * +Descripcion: Evento que se dispara cuando el detalle de separacion cierra
            */
-            self.mostrarDetallePedidos = $rootScope.$on("closeDetallePedidos", function(e, datos){
+            self.closeDetallePedidos = $scope.$on("closeDetallePedidos", function(e, datos){
+                console.log("cerrar detalle pedidos");
+                
                 if(!datos.finalizar){
                     self.refrescarProducto(function(){
 
@@ -556,15 +558,16 @@ define(["angular", "js/controllers",
             
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.rootSeparacion = {};
-                self.mostrarDetallePedidos();
                 self.onFinalizar();
                 self.onMostarProductoEnPosicion();
+                self.closeDetallePedidos();
                 $scope.$$watchers = null;
                 localStorageService.remove("pedidoSeparacion");
             });
             
 
             self.init(function() {
+                console.log("on init >>>>>>>>>>>>>>");
                 if($scope.ventana){
                     return;
                 }

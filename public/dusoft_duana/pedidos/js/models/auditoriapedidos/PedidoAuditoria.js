@@ -169,7 +169,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                             producto.setValorUnitario(parseFloat(_producto.valor_unitario));
                             producto.setPorcentajeGravament(parseFloat(_producto.porcentaje_iva));
                         }
-                        this.agregarProducto(producto); 
+                      // this.agregarProducto(producto); 
                         //return;
                     } 
                 } else {
@@ -187,9 +187,9 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                     
                     
                     producto.agregarLote(lote);
-                    this.agregarProducto(producto); 
+                    //this.agregarProducto(producto); 
                 }
-               // this.agregarProducto(producto); 
+                this.agregarProducto(producto); 
             }
         };
         

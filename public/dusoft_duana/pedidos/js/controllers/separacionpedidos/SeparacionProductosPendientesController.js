@@ -71,7 +71,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 var productos = $filter('filter')($scope.rootListaProductos.productos, {codigo_producto:$scope.rootListaProductos.filtro.termino});
                 
                 $scope.rootListaProductos.productos = productos;
-                console.log(productos)
+              
             };
             
             self.init();

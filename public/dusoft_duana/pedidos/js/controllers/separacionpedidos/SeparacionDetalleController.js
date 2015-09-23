@@ -339,7 +339,7 @@ define(["angular", "js/controllers",
                 for (var i in data.obj.movimientos_bodegas) {
                     var _documentos = data.obj.movimientos_bodegas[i];
 
-
+                    console.log("_documentos ", _documentos);
                     var documentos = DocumentoDespacho.get(_documentos.bodegas_doc_id, _documentos.prefijo, '', '');
                     documentos.set_descripcion(_documentos.descripcion);
                     documentos.set_tipo(_documentos.tipo_doc_bodega_id);
@@ -350,7 +350,13 @@ define(["angular", "js/controllers",
 
             };
 
-
+            /**
+             * +Descripcion: Componente grid que se visualizara en el popup
+             *  Generar y auditar, para seleccionar el tipo de documento
+             *  que se pretende realizar
+             *  @author Cristian Ardila
+             *  @fecha 23/09/2015
+             */
             $scope.listarDocumentoDespacho = {
                 data: 'documentos',
                 afterSelectionChange: function(rowItem) {
@@ -363,7 +369,7 @@ define(["angular", "js/controllers",
                 keepLastSelected: false,
                 multiSelect: false,
                 columnDefs: [
-                    {field: 'get_tipo()', displayName: 'Codigo'},
+                    {field: 'get_prefijo()', displayName: 'Codigo'},
                     {field: 'get_descripcion()', displayName: 'Descripcion'}
 
 
@@ -396,8 +402,6 @@ define(["angular", "js/controllers",
                     }
                     
                     var productos = angular.copy($scope.rootDetalle.pedido.getProductos());
-                    
-                    console.log("productos para auditar ", productos);
                     
                     self.auditarLotes(productos,0, function(continuar, msj){
                         AlertService.mostrarMensaje("success", msj);
@@ -514,14 +518,16 @@ define(["angular", "js/controllers",
                             }
                         }
                         if (productoValido) {
-                            self.generarDocumento(function(continuar){
+                            
+                               self.generarAuditar();
+                         /*   self.generarDocumento(function(continuar){
                                 
                                 if(continuar){
                                      self.generarAuditar();
                                 } else {
                                     SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
                                 }
-                            });
+                            });*/
                         }
                     }
                 });

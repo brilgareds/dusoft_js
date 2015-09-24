@@ -611,21 +611,10 @@ define(["angular", "js/controllers",
                 self.ventanaAuditoria = $modal.open($scope.opts);                
             };
             
-            
-             self.validarProductoRepetido = function(cantidadPendiente){
-                    var productosArreglo = [];
-                    productosArreglo.push(cantidadPendiente)
-                  for (var i =0; i<productosArreglo.length; i++) {
-                         
-                         if(cantidadPendiente !== productosArreglo[i])
-                         
-                           console.log(productosArreglo[i])
-                         
-                     }
-            }
+          
             /**
              * +Descripcion: Funcion encargada de validar los productos pendientes
-             * Si tienen justificacion
+             * Y si tienen justificacion
              * @author Cristian Ardila
              * @fecha  23/09/2015
              * @returns {Boolean}
@@ -650,11 +639,9 @@ define(["angular", "js/controllers",
                       cantidadIngresada < producto.cantidad_solicitada){
                        
                         validarLote = false;
-                    }                    
-                    
-                }
-                
-           
+                        break;
+                    }                                       
+                }                           
                 return validarLote;
             };
             

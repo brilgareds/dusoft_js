@@ -177,8 +177,8 @@ define(["angular", "js/controllers",
                     // documento_temporal.esDocumentoNuevo = true;  
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
-                
                 $scope.$broadcast("onPedidosSeparadosRender" + evento, items);
+                
             };
 
 
@@ -203,6 +203,7 @@ define(["angular", "js/controllers",
                 });
 
             };
+            
 
             that.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback) {
 

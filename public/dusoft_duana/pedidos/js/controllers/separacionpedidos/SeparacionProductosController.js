@@ -595,6 +595,11 @@ define(["angular", "js/controllers",
 
 
                     self.init(function() {
+                        /*localStorageService.set("auditoriaCliente", 49514);
+                                    
+                         $state.go("AuditarPedidos");
+                        return;*/
+                        
                         if ($scope.ventana) {
                             return;
                         }

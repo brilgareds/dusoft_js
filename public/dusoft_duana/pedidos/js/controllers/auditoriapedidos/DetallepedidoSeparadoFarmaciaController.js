@@ -39,7 +39,7 @@ define(["angular", "js/controllers",
                 $scope.$emit('onDetalleCerrado');
             };
 
-            $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {
+            $scope.$on("detalleFarmaciaCompleto", function(e, datos) {
 
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 2, $scope.resultadoBusquedaDocumento);

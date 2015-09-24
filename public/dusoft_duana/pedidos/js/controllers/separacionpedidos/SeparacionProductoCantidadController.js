@@ -230,7 +230,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     self.agregarEncabezado(function(continuar, msj){
                        if(continuar){
                            
-                            self.agregarItemADocumento(function(continuar){
+                            self.agregarItemADocumento(function(continuar, msj){
                                 AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
                             });
                             

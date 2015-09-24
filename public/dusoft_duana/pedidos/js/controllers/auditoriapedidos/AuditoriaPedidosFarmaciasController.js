@@ -146,7 +146,12 @@ define(["angular", "js/controllers",
                 $scope.slideurl = "views/auditoriapedidos/pedidoseparadofarmacia.html?time=" + new Date().getTime();
                 $scope.$emit('mostrardetallefarmacia', documento);
                 localStorageService.remove("auditoriaFarmacia");
+                
             };
+            
+            $scope.$on("mostrardetallefarmaciaCompleto",function(e, datos){
+                $scope.$broadcast("detalleFarmaciaCompleto", datos);
+            });
             
             
             /**

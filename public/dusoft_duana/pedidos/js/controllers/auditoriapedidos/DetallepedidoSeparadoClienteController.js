@@ -40,11 +40,11 @@ define(["angular", "js/controllers",
                 $scope.$emit('onDetalleCerrado');
             };
 
-            $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
+            $scope.$on("detalleClienteCompleto", function(e, datos) {
 
 
                 $scope.DocumentoTemporal = datos[1];
-                console.log("información Documento Temporal: ", $scope.DocumentoTemporal);
+                console.log("información Documento Temporal: ", $scope.DocumentoTemporal, e);
                 $scope.buscarDetalleDocumentoTemporal(that.obtenerParametros(), false, 1, that.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;

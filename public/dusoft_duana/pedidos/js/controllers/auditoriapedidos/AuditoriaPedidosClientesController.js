@@ -130,7 +130,13 @@ define(["angular", "js/controllers",
                 $scope.slideurl = "views/auditoriapedidos/pedidoseparadocliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrardetallecliente', documento);
                 localStorageService.remove("auditoriaCliente");
+                
             };
+            
+            $scope.$on("mostrardetalleclienteCompleto",function(e, datos){
+                console.log("evento recibido del padre mostrardetalleclienteCompleto");
+                $scope.$broadcast("detalleClienteCompleto", datos);
+            });
 
 
             //eventos de widgets

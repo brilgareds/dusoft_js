@@ -9,11 +9,12 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
              //console.log(attrs)
           },
           
-          scope: {
+          /*scope: {
             'closeCallback' : '=',
             'openCallback' : '='
-          },
+          },*/
           controller: ["$scope", "$element", "$attrs",function($scope, $element, $attrs) {
+              
               
               if(($attrs.closeCallback === undefined || $attrs.closeCallback.length === 0) || 
                   ($attrs.openCallback === undefined || $attrs.openCallback.length === 0)){
@@ -60,21 +61,16 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
                     $(document.body).append($element.detach());
                   }
                   
-                  /*$scope.$parent.$on($attrs.openCallback, function($event) {
-                      var datos = arguments;
-                     slide.mostrarslide($element, modalslide, $attrs, datos);
-                  });*/
-                  
-                  $rootScope.$on($attrs.openCallback, function($event) {
+                  $scope.$on($attrs.openCallback, function($event) {
                       var datos = arguments;
                      slide.mostrarslide($element, modalslide, $attrs, datos, $scope);
                   });
 
-                  $rootScope.$on($attrs.closeCallback, function($event, datos) {
+                  $scope.$on($attrs.closeCallback, function($event, datos) {
                       if(!datos){
                           datos = {animado :false};
                       }
-                      slide.cerrarslide($element, datos.animado, modalslide, $attrs);
+                      slide.cerrarslide($element, datos.animado, modalslide, $attrs, $scope);
                   });
               });  
           }],
@@ -85,32 +81,28 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
               var height = parent.height();
               //console.log("configure slide with width "+width);
               $element.width(width +25);
-              
               contenedor.height(document.body.scrollHeight);
-              console.log("slide height >>>>>>>>>>> ", document.body.scrollHeight);
           },
 
           mostrarslide: function($element, contenedor, $attrs, datos, scope){
-            console.log("on mostrar slide");
             $element.css({"display":"block"});
             contenedor.show();
             $element.transition({ x: '0px', duration:1000}, function(){
-               // console.log("emit event "+$attrs.openCallback)
+                //console.log("open callback completo ", $attrs.openCallback);
                 scope.$emit($attrs.openCallback+"Completo", datos);
             });
            
           },
 
-          cerrarslide: function($element, animado, contenedor, $attrs){
+          cerrarslide: function($element, animado, contenedor, $attrs, scope){
             contenedor.hide();
             var rootWidth = $(window).width() +slide.margen;
-            console.log("cerrarslide "+rootWidth + " animad "+animado);
             var duration = (animado)?1000:0;
             $element.transition({ x: rootWidth+"px", duration:duration},function(){
                $element.css({"display":"none"});
               
                if($attrs){
-                   $rootScope.$emit($attrs.closeCallback+"Completo");
+                   scope.$emit($attrs.closeCallback+"Completo");
                }
                 
             });

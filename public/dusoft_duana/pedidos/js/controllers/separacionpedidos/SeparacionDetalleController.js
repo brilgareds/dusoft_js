@@ -66,6 +66,7 @@ define(["angular", "js/controllers",
                 data: 'rootDetalle.pedido.productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                showFilter: true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Producto', width: "600",
                         cellTemplate: '<div class="ngCellText">\

@@ -455,13 +455,17 @@ define(["angular", "js/controllers",
             };
 
 
-            
-           self.validarCantidadIngresada = function(productoLotes){
+            /**
+             * +Descripcion: Funcion que obtiene la cantidad ingresada de un producto
+             * sumando todos los lotes a disposicion
+             * @author Cristian Ardila
+             * @fecha  24/09/2015
+             * @param {type} productoLotes
+             * @returns {Number}
+             */
+           self.obtenerCantidadIngresada = function(productoLotes){
                 
-                var validarLote = true;
-                var productos = $scope.rootDetalle.pedido.getProductos();
-            
-               
+                var productos = $scope.rootDetalle.pedido.getProductos();           
                     var cantidadIngresada = 0;
                     for(var i in productos){
                         var _producto = productos[i];
@@ -469,9 +473,7 @@ define(["angular", "js/controllers",
                         if(_producto.getCodigoProducto() === productoLotes.getCodigoProducto()){
                             cantidadIngresada += _producto.lotesSeleccionados[0].cantidad_ingresada;
                         }
-                    }
-                 
-                   
+                    }                                 
                     return cantidadIngresada;
                 };                     
               
@@ -495,7 +497,7 @@ define(["angular", "js/controllers",
                     return;
                 }
 
-                var cantidadPendiente = self.validarCantidadIngresada(producto);
+                var cantidadIngresada = self.obtenerCantidadIngresada(producto);
 
                 var lote = producto.getLotesSeleccionados()[0];
 
@@ -511,12 +513,12 @@ define(["angular", "js/controllers",
                 };
 
 
-                if (cantidadPendiente > 0) {
+                if (cantidadIngresada < producto.getCantidadSolicitada()) {
 
                     obj.data.documento_temporal.justificacion = {
                         documento_temporal_id: $scope.rootDetalle.pedido.getTemporalId(),
                         codigo_producto: producto.getCodigoProducto(),
-                        cantidad_pendiente: cantidadPendiente,
+                        cantidad_pendiente: producto.getCantidadSolicitada() - cantidadIngresada,
                         justificacion_auditor: producto.getJustificacion(),
                         existencia: lote.existencia_actual,
                         usuario_id: Usuario.getUsuarioActual().getId(),
@@ -648,7 +650,7 @@ define(["angular", "js/controllers",
             self.validarProductos = function() {
                 var validarLote = true;
                 var productos = $scope.rootDetalle.pedido.getProductos();
-               
+                
                 for(var i in  productos){
                     var justificacion = productos[i].getJustificacion(); 
                     var producto = productos[i];
@@ -662,7 +664,7 @@ define(["angular", "js/controllers",
                     }
                    
                     if(justificacion === null || justificacion === undefined || justificacion.length === 0 &&
-                      cantidadIngresada < producto.cantidad_solicitada){
+                      cantidadIngresada < producto.getCantidadSolicitada()){
                        
                         validarLote = false;
                         break;

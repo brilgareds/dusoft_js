@@ -135,7 +135,9 @@ define(["angular", "js/controllers",
                         var modalInstance = $modal.open($scope.opts);
 
                         modalInstance.result.then(function() {
+                              self.refrescarProducto(function() {
 
+                            });
                         }, function() {
 
                         });

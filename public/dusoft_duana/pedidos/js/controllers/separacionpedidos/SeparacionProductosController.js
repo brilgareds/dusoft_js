@@ -45,7 +45,7 @@ define(["angular", "js/controllers",
                         callback();
                     };
 
-                   /**
+                    /**
                      * +Descripcion: Funcion encargada de buscar el detalle del
                      * pedido, bien sea por codigo de producto, como por codigo
                      * de barra
@@ -58,7 +58,7 @@ define(["angular", "js/controllers",
                         if ($scope.rootSeparacion.filtro.codigoBarras === true) {
 
                             if ($event.which === 13) {
-                               self.renderFiltrarProducto();
+                                self.renderFiltrarProducto();
                             }
                         } else {
 
@@ -67,19 +67,19 @@ define(["angular", "js/controllers",
                             }
                         }
                     };
-                    
-                    self.renderFiltrarProducto = function(){
-                        
+
+                    self.renderFiltrarProducto = function() {
+
                         var index = -1;
                         var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
 
-                                for (var i in pedido) {
-                                    var _producto = pedido[i];
-                                    if (_producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
-                                        index = i;
-                                        break;
-                                    }
-                                }
+                        for (var i in pedido) {
+                            var _producto = pedido[i];
+                            if (_producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
+                                index = i;
+                                break;
+                            }
+                        }
                         $scope.$emit("onMostarProductoEnPosicion", index);
                     };
 
@@ -135,7 +135,7 @@ define(["angular", "js/controllers",
                         var modalInstance = $modal.open($scope.opts);
 
                         modalInstance.result.then(function() {
-                              self.refrescarProducto(function() {
+                            self.refrescarProducto(function() {
 
                             });
                         }, function() {
@@ -238,9 +238,9 @@ define(["angular", "js/controllers",
                         }
 
                         SeparacionService[metodo]($scope.rootSeparacion.session, filtro, 1, filtroPedido.numeroPedido, function(pedidos) {
-                            
-                            
-                            
+
+
+
                             EmpresaPedido.setPedidoSeleccionado((pedidos.length > 0) ? pedidos[0] : null);
                             self.renderDescripcionPedido();
                             callback();
@@ -483,11 +483,6 @@ define(["angular", "js/controllers",
                      */
                     $scope.separacionProducto = {
                         data: 'rootSeparacion.empresa.getPedidoSeleccionado().getProductoSeleccionado().getLotesSeleccionados()',
-                        /*afterSelectionChange:function(rowItem){
-                         if(rowItem.selected){
-                         self.ventanaCantidad(rowItem.entity);
-                         }
-                         },*/
                         enableColumnResize: true,
                         enableRowSelection: false,
                         keepLastSelected: false,
@@ -528,7 +523,7 @@ define(["angular", "js/controllers",
                         var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];
 
                         if (producto.getJustificacion().length === 0 && producto.getCantidadPendiente() > 0) {
-                         
+
                             AlertService.mostrarMensaje("warning", "El producto no tiene justificacion");
                             return;
                         }
@@ -617,10 +612,7 @@ define(["angular", "js/controllers",
 
 
                     self.init(function() {
-                        /*localStorageService.set("auditoriaCliente", 49514);
-                         
-                         $state.go("AuditarPedidos");
-                         return;*/
+                        
 
                         if ($scope.ventana) {
                             return;

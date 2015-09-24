@@ -36,7 +36,139 @@ define(["angular", "js/controllers",
                 callback();
             };
 
+            
+             /**
+             * +Descripcion: Metodo para confirmar la eliminacion de
+             * un producto de la lista de separacion, si acepta se ejecutara un
+             * metodo mas encargado de invocar el servicio para eliminacion,
+             * si presiona el boton cancelar, se cancelara el proceso
+             * @author Cristian Ardila
+             * @fecha 10/09/2015
+             * @returns {void}
+             */
+            $scope.onEliminarLote = function(producto) {
 
+                self.confirm("Eliminar producto", "Desea eliminar el producto", function(confirmar) {
+                    if (confirmar) {
+                        self.eliminarLote(producto);
+                    }
+                });
+            };
+
+            /**
+             * +Descripcion: Grilla en comun para pedidos asignados 
+             * clientes y pedidos temporales clientes
+             * @author Cristian Ardila
+             * @fecha 10/09/2015
+             * @returns {void}
+             */
+            $scope.detalleSeparacionProducto = {
+                data: 'rootDetalle.pedido.productos',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Producto', width: "600",
+                        cellTemplate: '<div class="ngCellText">\
+                                        {{row.entity.codigo_producto}} - {{row.entity.descripcion}}\
+                                   </div>'
+                    },
+                    {field: 'lotesSeleccionados[0].codigo_lote', displayName: 'Lote'},
+                    {field: 'lotesSeleccionados[0].fecha_vencimiento', displayName: 'F Vencimiento'},
+                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
+                    {field: 'lotesSeleccionados[0].cantidad_ingresada', displayName: 'Ingresado'},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente'},
+                    {displayName: "", cellClass: "txt-center dropdown-button", width: "50",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarLote(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        </div>'
+                    }
+                ]
+            };
+
+            /**
+             * +Descripcion: Metodo encargado de cerrar la ventana slider del 
+             * detalle de separacion de productos
+             * @author Cristian Ardila
+             * @fecha 10/09/2015
+             * @returns {void}
+             */
+            $scope.cerrarDetallePedidos = function(finalizar) {
+
+                $scope.$emit('closeDetallePedidos', {animado: true, finalizar: finalizar});
+            };
+
+
+            /*
+             * +descripcion: confirmar la eliminacion de todos los productos de 
+             * la lista de detalle de separacion, si acepta, se ejecutara un 
+             * metodo mas que invocara el servicio para la eliminacion,
+             * si no acepta, se cancelara el proceso.
+             * @author Cristian Ardila
+             * @fecha: 10/09/2015
+             * */
+            $scope.onEliminarTemporal = function() {
+                self.confirm("Eliminar toda la separacion", "Desea eliminar la separacion", function(confirmar) {
+                    if (confirmar) {
+                        self.eliminarTemporal();
+                    }
+                });
+            };
+
+            /*
+             * +descripcion: confirmar la generacion de la separacion 
+             * si acepta se generara la separacion invocando al metodo 
+             * method(generarSeparacion)
+             * si no acepta, se cancelara el proceso.
+             * @author Cristian Ardila
+             * @fecha: 10/09/2015
+             * */
+            $scope.onGenerarDocumento = function() {
+
+                if (!self.validarProductos()) {
+                    SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
+                    return;
+                }
+
+                self.confirm("Generar separacion", "Desea generar la separacion de los productos", function(confirmar) {
+                    if (confirmar) {
+                        self.generarDocumento(function(continuar) {
+                            if (continuar) {
+
+                                $scope.cerrarDetallePedidos(true);
+                                $state.go("SeparacionPedidos");
+                                AlertService.mostrarMensaje("success", "Separacion finalizada");
+                            } else {
+                                SeparacionService.mostrarAlerta("Error", "Se genero un error");
+                            }
+                        });
+                    }
+                });
+            };
+
+            /**
+             * +Descripcion: Componente grid que se visualizara en el popup
+             *  Generar y auditar, para seleccionar el tipo de documento
+             *  que se pretende realizar
+             *  @author Cristian Ardila
+             *  @fecha 23/09/2015
+             */
+            $scope.listarDocumentoDespacho = {
+                data: 'documentos',
+                afterSelectionChange: function(rowItem) {
+                    if (rowItem.selected) {
+                        self.onSeleccionDocumento(rowItem.entity);
+                    }
+                },
+                enableColumnResize: true,
+                enableRowSelection: true,
+                keepLastSelected: false,
+                multiSelect: false,
+                columnDefs: [
+                    {field: 'get_prefijo()', displayName: 'Codigo'},
+                    {field: 'get_descripcion()', displayName: 'Descripcion'}
+                ]
+            };
+           
             /**
              * +Descripcion: Metodo para prototipo de confirm y ser reutilizado
              * en la clase
@@ -179,6 +311,7 @@ define(["angular", "js/controllers",
                 });
             };
 
+            
             /**
              * +Descripcion: Metodo encargado de generar y auditar la separacion
              * @author Cristian Ardila
@@ -202,116 +335,7 @@ define(["angular", "js/controllers",
                 self.ventanaAuditoria = $modal.open($scope.opts);
             };
 
-
-            /**
-             * +Descripcion: Metodo para confirmar la eliminacion de
-             * un producto de la lista de separacion, si acepta se ejecutara un
-             * metodo mas encargado de invocar el servicio para eliminacion,
-             * si presiona el boton cancelar, se cancelara el proceso
-             * @author Cristian Ardila
-             * @fecha 10/09/2015
-             * @returns {void}
-             */
-            $scope.onEliminarLote = function(producto) {
-
-                self.confirm("Eliminar producto", "Desea eliminar el producto", function(confirmar) {
-                    if (confirmar) {
-                        self.eliminarLote(producto);
-                    }
-                });
-            };
-
-            /**
-             * +Descripcion: Grilla en comun para pedidos asignados 
-             * clientes y pedidos temporales clientes
-             * @author Cristian Ardila
-             * @fecha 10/09/2015
-             * @returns {void}
-             */
-            $scope.detalleSeparacionProducto = {
-                data: 'rootDetalle.pedido.productos',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Producto', width: "600",
-                        cellTemplate: '<div class="ngCellText">\
-                                        {{row.entity.codigo_producto}} - {{row.entity.descripcion}}\
-                                   </div>'
-                    },
-                    {field: 'lotesSeleccionados[0].codigo_lote', displayName: 'Lote'},
-                    {field: 'lotesSeleccionados[0].fecha_vencimiento', displayName: 'F Vencimiento'},
-                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
-                    {field: 'lotesSeleccionados[0].cantidad_ingresada', displayName: 'Ingresado'},
-                    {field: 'cantidad_pendiente', displayName: 'Pendiente'},
-                    {displayName: "", cellClass: "txt-center dropdown-button", width: "50",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="onEliminarLote(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
-                                        </div>'
-                    }
-                ]
-            };
-
-            /**
-             * +Descripcion: Metodo encargado de cerrar la ventana slider del 
-             * detalle de separacion de productos
-             * @author Cristian Ardila
-             * @fecha 10/09/2015
-             * @returns {void}
-             */
-            $scope.cerrarDetallePedidos = function(finalizar) {
-
-                $scope.$emit('closeDetallePedidos', {animado: true, finalizar: finalizar});
-            };
-
-
-            /*
-             * +descripcion: confirmar la eliminacion de todos los productos de 
-             * la lista de detalle de separacion, si acepta, se ejecutara un 
-             * metodo mas que invocara el servicio para la eliminacion,
-             * si no acepta, se cancelara el proceso.
-             * @author Cristian Ardila
-             * @fecha: 10/09/2015
-             * */
-            $scope.onEliminarTemporal = function() {
-                self.confirm("Eliminar toda la separacion", "Desea eliminar la separacion", function(confirmar) {
-                    if (confirmar) {
-                        self.eliminarTemporal();
-                    }
-                });
-            };
-
-            /*
-             * +descripcion: confirmar la generacion de la separacion 
-             * si acepta se generara la separacion invocando al metodo 
-             * method(generarSeparacion)
-             * si no acepta, se cancelara el proceso.
-             * @author Cristian Ardila
-             * @fecha: 10/09/2015
-             * */
-            $scope.onGenerarDocumento = function() {
-
-                if (!self.validarProductos()) {
-                    SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
-                    return;
-                }
-
-                self.confirm("Generar separacion", "Desea generar la separacion de los productos", function(confirmar) {
-                    if (confirmar) {
-                        self.generarDocumento(function(continuar) {
-                            if (continuar) {
-
-                                $scope.cerrarDetallePedidos(true);
-                                $state.go("SeparacionPedidos");
-                                AlertService.mostrarMensaje("success", "Separacion finalizada");
-                            } else {
-                                SeparacionService.mostrarAlerta("Error", "Se genero un error");
-                            }
-                        });
-                    }
-                });
-            };
-
-            /**
+             /**
              * +Descripcion: Metodo encargado de consultar los tipos de documento
              * despacho
              * @author:Cristian Ardila
@@ -342,8 +366,7 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-
-            /**
+             /**
              * +Descripcion: Metodo encargado de mapear contra el modelo
              * DocumentoDespacho la respuesta del servicio que consulta la lista
              * de documentos almacenando cada objeto creado en un arreglo
@@ -367,30 +390,6 @@ define(["angular", "js/controllers",
                 }
 
 
-            };
-
-            /**
-             * +Descripcion: Componente grid que se visualizara en el popup
-             *  Generar y auditar, para seleccionar el tipo de documento
-             *  que se pretende realizar
-             *  @author Cristian Ardila
-             *  @fecha 23/09/2015
-             */
-            $scope.listarDocumentoDespacho = {
-                data: 'documentos',
-                afterSelectionChange: function(rowItem) {
-                    if (rowItem.selected) {
-                        self.onSeleccionDocumento(rowItem.entity);
-                    }
-                },
-                enableColumnResize: true,
-                enableRowSelection: true,
-                keepLastSelected: false,
-                multiSelect: false,
-                columnDefs: [
-                    {field: 'get_prefijo()', displayName: 'Codigo'},
-                    {field: 'get_descripcion()', displayName: 'Descripcion'}
-                ]
             };
 
             /**

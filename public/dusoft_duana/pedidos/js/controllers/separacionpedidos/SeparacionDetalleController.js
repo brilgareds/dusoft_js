@@ -426,6 +426,9 @@ define(["angular", "js/controllers",
                     }
 
                     var productos = angular.copy($scope.rootDetalle.pedido.getProductos());
+                    
+                   
+                    
                     self.generarDocumento(function(continuar) {
 
                         if (continuar) {
@@ -453,35 +456,27 @@ define(["angular", "js/controllers",
 
 
             
-           self.validarCantidadSolicitadaLote = function(productoLotes){
+           self.validarCantidadIngresada = function(productoLotes){
                 
                 var validarLote = true;
                 var productos = $scope.rootDetalle.pedido.getProductos();
-                
-               /* for(var i in  productos){
-                    var justificacion = productos[i].getJustificacion(); 
-                    var producto = productos[i];
-                    var cantidadIngresada = 0;*/
+            
+               
                     var cantidadIngresada = 0;
-                    for(var ii in productos){
-                        var _producto = productos[ii];
-                        if(_producto.getCodigoProducto() === productoLotes.getCodigoProducto() ){
+                    for(var i in productos){
+                        var _producto = productos[i];
+                      
+                        if(_producto.getCodigoProducto() === productoLotes.getCodigoProducto()){
                             cantidadIngresada += _producto.lotesSeleccionados[0].cantidad_ingresada;
                         }
                     }
+                 
                    
-                   console.log("productos ", productos);
-                   console.log("productoLotes ", productos);
-                   /* if(justificacion === null || justificacion === undefined || justificacion.length === 0 &&
-                      cantidadIngresada < producto.cantidad_solicitada){
-                       
-                        validarLote = false;
-                        break;
-                    }                                       
-                }   */                        
-                return validarLote;
+                    return cantidadIngresada;
+                };                     
+              
                 
-            }
+            
             /*
              * +Descripcion: Funcion encargada de auditar los lotes en grupo
              * @author Edu Gracia
@@ -494,13 +489,13 @@ define(["angular", "js/controllers",
             self.auditarLotes = function(productos, index, callback) {
 
                 var producto = productos[index];
-
+                
                 if (!producto) {
                     callback(true, "Productos auditados");
                     return;
                 }
 
-                var cantidadPendiente = producto.getCantidadPendiente();
+                var cantidadPendiente = self.validarCantidadIngresada(producto);
 
                 var lote = producto.getLotesSeleccionados()[0];
 

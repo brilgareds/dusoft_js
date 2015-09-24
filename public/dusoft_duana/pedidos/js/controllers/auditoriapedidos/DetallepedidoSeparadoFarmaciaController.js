@@ -40,7 +40,7 @@ define(["angular", "js/controllers",
             };
 
             $scope.$on("detalleFarmaciaCompleto", function(e, datos) {
-
+                console.log("detalle farmacia completo mostrando >>>>>>>>>> ");
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 2, $scope.resultadoBusquedaDocumento);
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
@@ -79,14 +79,14 @@ define(["angular", "js/controllers",
 
             });
 
-            $rootScope.$on("cerrardetallefarmaciaCompleto", function(e) {
+            $scope.$on("detalleFarmaciaCerradoCompleto", function(e) {
                 $scope.filtro.termino_busqueda = "";
 
                 if ($scope.DocumentoTemporal.getPedido() !== undefined) {
 
                     $scope.DocumentoTemporal.getPedido().vaciarProductos();
                 }
-                $scope.$$watchers = null;
+                //$scope.$$watchers = null;
 
             });
 

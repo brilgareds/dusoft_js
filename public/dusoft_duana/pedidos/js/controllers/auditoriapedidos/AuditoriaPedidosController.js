@@ -526,8 +526,10 @@ define(["angular", "js/controllers",
 
 
                         $scope.$broadcast("onRefrescarListadoPedidos");
-                        $scope.$emit('cerrardetallecliente', {animado: true});
-                        $scope.$emit('cerrardetallefarmacia', {animado: true});
+                        
+                        $scope.$broadcast("cerrarDetalleCliente");
+                        
+                        $scope.$broadcast("cerrarDetalleFarmacia");
 
                         $scope.documento_generado = data.obj.movimientos_bodegas;
                         $scope.opts = {

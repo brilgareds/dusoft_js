@@ -42,9 +42,8 @@ define(["angular", "js/controllers",
 
             $scope.$on("detalleClienteCompleto", function(e, datos) {
 
-
+                console.log("detalle cliente completo mostrando >>>>>>>>>> ");
                 $scope.DocumentoTemporal = datos[1];
-                console.log("información Documento Temporal: ", $scope.DocumentoTemporal, e);
                 $scope.buscarDetalleDocumentoTemporal(that.obtenerParametros(), false, 1, that.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
@@ -80,7 +79,7 @@ define(["angular", "js/controllers",
             });
 
 
-            $rootScope.$on("cerrardetalleclienteCompleto", function(e) {
+            $scope.$on("detalleClienteCerradoCompleto", function(e) {
                 $scope.filtro.termino_busqueda = "";
                 if ($scope.DocumentoTemporal !== undefined) {
                     if ($scope.DocumentoTemporal.pedido !== undefined) {
@@ -88,7 +87,7 @@ define(["angular", "js/controllers",
                     }
 
                 }
-                $scope.$$watchers = null;
+               // $scope.$$watchers = null;
 
             });
 

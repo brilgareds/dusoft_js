@@ -94,7 +94,13 @@ define(["angular", "js/controllers",
                 return row.entity.auditor.usuario_id === $scope.session.usuario_id;
             };
 
-
+            $scope.onRowClick = function(row) {
+                row.entity.esDocumentoNuevo = false;
+                $scope.notificacionclientes--;
+                that.mostrarDetalle(row.entity);
+            };
+            
+            
             $scope.$on("onPedidosSeparadosRenderCliente", function(e, items) {
 
                 $scope.items = items;
@@ -115,16 +121,10 @@ define(["angular", "js/controllers",
             });
 
 
-            $rootScope.$on("cerrardetalleclienteCompleto", function(e) {
+            $scope.$on("cerrardetalleclienteCompleto", function(e) {
                 $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                $scope.$broadcast("detalleClienteCerradoCompleto");
             });
-
-
-            $scope.onRowClick = function(row) {
-                row.entity.esDocumentoNuevo = false;
-                $scope.notificacionclientes--;
-                that.mostrarDetalle(row.entity);
-            };
             
             that.mostrarDetalle = function(documento){
                 $scope.slideurl = "views/auditoriapedidos/pedidoseparadocliente.html?time=" + new Date().getTime();
@@ -136,6 +136,11 @@ define(["angular", "js/controllers",
             $scope.$on("mostrardetalleclienteCompleto",function(e, datos){
                 console.log("evento recibido del padre mostrardetalleclienteCompleto");
                 $scope.$broadcast("detalleClienteCompleto", datos);
+            });
+            
+            $scope.$on("cerrarDetalleCliente", function(){
+                console.log("cerrar slider  cliete");
+                $scope.$emit('cerrardetallecliente', {animado: true});
             });
 
 

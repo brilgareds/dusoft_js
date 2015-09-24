@@ -64,35 +64,6 @@ define(["angular", "js/controllers",
                 return obj;
             };
 
-            $scope.$on("onPedidosSeparadosRenderFarmacia", function(e, items) {
-                $scope.ultima_busqueda = {
-                    termino_busqueda: $scope.termino_busqueda,
-                    seleccion: $scope.seleccion
-                };
-                $scope.items = items;
-                                
-                if(localStorageService.get("auditoriaFarmacia")){
-                    var numero = parseInt(localStorageService.get("auditoriaFarmacia"));
-                    console.log("buscar pedido de auditoria de separacion code 2 ", numero);
-                    var documento =  $scope.obtenerDocumento(numero, 2);
-                    that.mostrarDetalle(documento);
-                }
-                
-            });
-
-
-            $scope.$on("onPedidosSeparadosNoEncotradosFarmacia", function(e) {
-                if ($scope.paginaactual > 1) {
-                    $scope.paginaactual--;
-                }
-                AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
-            });
-
-            $rootScope.$on("cerrardetallefarmaciaCompleto", function(e) {
-                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
-            });
-
-
 
             $scope.listarEmpresas = function() {
                 $scope.empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
@@ -149,9 +120,46 @@ define(["angular", "js/controllers",
                 
             };
             
+            $scope.$on("onPedidosSeparadosRenderFarmacia", function(e, items) {
+                $scope.ultima_busqueda = {
+                    termino_busqueda: $scope.termino_busqueda,
+                    seleccion: $scope.seleccion
+                };
+                $scope.items = items;
+                                
+                if(localStorageService.get("auditoriaFarmacia")){
+                    var numero = parseInt(localStorageService.get("auditoriaFarmacia"));
+                    console.log("buscar pedido de auditoria de separacion code 2 ", numero);
+                    var documento =  $scope.obtenerDocumento(numero, 2);
+                    that.mostrarDetalle(documento);
+                }
+                
+            });
+
+
+            $scope.$on("onPedidosSeparadosNoEncotradosFarmacia", function(e) {
+                if ($scope.paginaactual > 1) {
+                    $scope.paginaactual--;
+                }
+                AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+            });
+
+            $scope.$on("cerrardetallefarmaciaCompleto", function(e) {
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                 $scope.$broadcast("detalleFarmaciaCerradoCompleto");
+            });
+            
+            
             $scope.$on("mostrardetallefarmaciaCompleto",function(e, datos){
                 $scope.$broadcast("detalleFarmaciaCompleto", datos);
             });
+            
+            
+            $scope.$on("cerrarDetalleFarmacia", function(){
+                console.log("cerrar slider  farmacias");
+                $scope.$emit('cerrardetallefarmacia', {animado: true});
+            });
+            
             
             
             /**
@@ -207,7 +215,6 @@ define(["angular", "js/controllers",
                     $scope.termino_busqueda = numero;
                     $scope.activarTabFarmacias = true;
                     
-                    console.log("buscar pedido de auditoria de separacion ", numero);
                     $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
                 } else {
                     $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);

@@ -54,32 +54,30 @@ define(["angular", "js/controllers",
                      * @param {type} $event
                      */
                     $scope.onFiltrarProducto = function($event) {
-
-                        if ($scope.rootSeparacion.filtro.codigoBarras === true) {
-
-                            if ($event.which === 13) {
-                                self.renderFiltrarProducto();
-                            }
-                        } else {
-
-                            if ($event.which === 13) {
-                                self.renderFiltrarProducto();
-                            }
+                        if ($event.which === 13) {
+                            self.renderFiltrarProducto($scope.rootSeparacion.filtro.codigoBarras);
                         }
-                    };
 
-                    self.renderFiltrarProducto = function() {
+                    };
+                    
+                    self.renderFiltrarProducto = function(codigoBarras) {
 
                         var index = -1;
                         var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
-
+                       // console.log("pedido ", pedido);
+                       
                         for (var i in pedido) {
                             var _producto = pedido[i];
-                            if (_producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
+                            
+                            if (!codigoBarras && _producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
+                                index = i;
+                                break;
+                            } else if(codigoBarras && _producto.getCodigoBarras() === $scope.rootSeparacion.filtro.termino ) {
                                 index = i;
                                 break;
                             }
                         }
+                      
                         $scope.$emit("onMostarProductoEnPosicion", index);
                     };
 
@@ -150,10 +148,10 @@ define(["angular", "js/controllers",
                      */
                     self.seleccionarProductoPorPosicion = function(callback) {
                         var pedido = EmpresaPedido.getPedidoSeleccionado();
-
+                        $scope.rootSeparacion.filtro.termino = "";
                         var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];
                         pedido.setProductoSeleccionado(producto);
-
+                        
                         if (!producto) {
                             callback(false);
                             return;

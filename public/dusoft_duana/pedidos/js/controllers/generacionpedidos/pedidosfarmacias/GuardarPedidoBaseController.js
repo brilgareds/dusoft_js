@@ -285,16 +285,7 @@ define(["angular", "js/controllers",
                     return false;
                 }
             };
-            
-             /*
-             * @Author: Eduar
-             * +Descripcion: Handler del boton de finalizar
-             */
-            $scope.onIncluirProductos = function(event) {
-                $scope.slideurl = "views/generacionpedidos/pedidosfarmacias/seleccionproducto.html?time=" + new Date().getTime();
-                $scope.$emit('mostrarSeleccionProducto');
-                
-            };
+
             
             /*
              * @Author: Eduar

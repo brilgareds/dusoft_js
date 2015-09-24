@@ -273,7 +273,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              * @param {Object} datos
              * +Descripcion: Evento que espera que el slide termine la animacion
              */
-            $scope.root.mostrarSeleccionProductoCompleto = $rootScope.$on("mostrarSeleccionProductoCompleto", function(e, datos) {
+            $scope.root.mostrarSeleccionProductoCompleto = $scope.$on("seleccionProductoCompleto", function(e, datos) {
                 self.init();
                 self.buscarProductos();
             });

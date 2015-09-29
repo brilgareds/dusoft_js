@@ -385,7 +385,7 @@ div.ngHeaderCell	{
 
 /**media query*/
 
-@media screen and ( max-width: 1700px ) and (min-width: 769px) {
+@media screen and ( max-width: 2700px /*1700*/ ) and (min-width: 769px) {
     .contenedormenu .botonmenu{
         position:absolute;
         top:2px;
@@ -427,6 +427,10 @@ div.ngHeaderCell	{
 
     div.contenidoPrincipal{
         width: 100%;
+    }
+    
+    .container.contenidoPrincipal{
+        margin-left:15px;
     }
     
 }

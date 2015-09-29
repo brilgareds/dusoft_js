@@ -27,6 +27,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             $scope.filtro = {};
             
+            $scope.filtros = [
+                {nombre : "Descripcion", tipo_busqueda:0}, 
+                {nombre : "Molecula", tipo_busqueda:1},
+                {nombre : "Codigo", tipo_busqueda:2}
+            ];
+            
+            $scope.filtroProducto = $scope.filtros[0];
+            
            
             $scope.fechainicial = $filter('date')(new Date("05/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
@@ -78,6 +86,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     AlertService.mostrarMensaje("warning", "Debe seleccionar una bodega");
                     return;
                 }
+                
+                $scope.filtroProducto.termino = termino_busqueda;
+                
                 Request.realizarRequest(
                         API.KARDEX.LISTAR_PRODUCTOS,
                         "POST",
@@ -85,7 +96,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             session: $scope.session,
                             data: {
                                 kardex: {
-                                    termino_busqueda: termino_busqueda,
+                                    termino_busqueda: $scope.filtroProducto,
                                     pagina_actual: $scope.paginaactual,
                                     empresa_id: $scope.filtro.empresa_seleccion,
                                     centro_utilidad: $scope.filtro.centro_seleccion,
@@ -176,6 +187,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     {field: 'porc_iva', displayName: 'Iva', width: "50", cellClass :"gridNumber"},
                     {field: 'movimiento', displayName: "", cellClass: "txt-center", width: "50", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
+            };
+            
+
+            $scope.onSeleccionFiltro = function(filtro){
+                $scope.filtroProducto = filtro;
             };
 
 

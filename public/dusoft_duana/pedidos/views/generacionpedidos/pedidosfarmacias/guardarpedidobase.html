@@ -113,7 +113,7 @@
 
                                         <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
-                                            <ui-select-choices repeat="centro in root.pedido.getFarmaciaDestino().getCentrosUtilidad() | filter:$select.search">
+                                            <ui-select-choices repeat="centro in root.pedido.getFarmaciaDestino().getCentrosUtilidad() | filter:{nombre: $select.search}">
                                                 {{centro.getNombre()}}
                                             </ui-select-choices>
                                         </ui-select>

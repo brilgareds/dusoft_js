@@ -96,9 +96,12 @@ if (program.prod) {
  * =========================================*/
 
 //determina el numero de procesadores del servidor, de modo que se concrete los workers que permite el balanceo de carga
-G.knex = require('./lib/Knex').
-         create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
-         connect().getInstance();
+G.db.setCredentials(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName, function(){
+    
+    G.knex = require('./lib/Knex').
+             create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
+             connect().getInstance();
+});
  
 
 
@@ -159,7 +162,7 @@ if (cluster.isMaster) {
     /*=========================================
      * Inicializacion y Conexion a la Base de Datos
      * =========================================*/
-    G.db.setCredentials(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName);
+   // G.db.setCredentials(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName);
 
     /*=========================================
      * Configuracion Express.js

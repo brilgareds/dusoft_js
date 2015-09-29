@@ -147,7 +147,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoAuditoria.prototype.getBodegaDestino = function() {
             return this.bodegaDestino;
         };
-                
+            
+        
         PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos, temporal, modeloLote) {
             for(var i in productos){
                 var _producto = productos[i];
@@ -155,7 +156,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 var cantidadPendiente =  Number(_producto.cantidad_pendiente);
                 producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
                 producto.setCantidadPendiente(cantidadPendiente);
-                
+                producto.setCodigoBarras(_producto.codigo_barras);
                 if(_producto.justificacion){
                      producto.setJustificacion(_producto.justificacion);
                 }

@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             //Campos exclusivos pedido clientes
             this.codigo_cum = "";
             this.codigo_invima = "";
+            this.codigo_barra = "";
             this.vencimiento_codigo_invima = "";
             this.iva = 0;
             this.precio_regulado = 0;
@@ -139,6 +140,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.vencimiento_codigo_invima = vencimiento_codigo_invima;
         };
         
+        ProductoPedido.prototype.setCodigoBarras = function(codigo_barra) {
+           this.codigo_barra = codigo_barra;
+        };
+        
+        ProductoPedido.prototype.getCodigoBarras = function() {
+          return this.codigo_barra;
+        };
+        
         ProductoPedido.prototype.getVencimientoCodigoInvima = function() {
             return this.vencimiento_codigo_invima;
         };
@@ -187,6 +196,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.total_con_iva = (parseFloat(this.precio) + ((parseFloat(this.precio)*parseFloat(this.iva))/100)) * parseInt(this.cantidad_solicitada);            
             this.total_con_iva = this.total_con_iva.toFixed(2);
         };
+        
+        
         
         ProductoPedido.prototype.getTotalConIva = function() {
             return this.total_con_iva;

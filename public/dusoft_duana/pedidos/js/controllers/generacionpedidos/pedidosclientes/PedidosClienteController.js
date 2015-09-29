@@ -42,6 +42,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones
             };
+            
+            $scope.items =null;
             // Inicializacion Pedido o cotizacion           
             $scope.Pedido = Pedido.get(
                     Sesion.getUsuarioActual().getEmpresa().getCodigo(),
@@ -198,6 +200,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
                     $scope.Pedido.set_productos(producto);
                 });
+               
+                
+                $scope.items = $scope.Pedido.get_productos().length;
             };
             // Pedidos 
 

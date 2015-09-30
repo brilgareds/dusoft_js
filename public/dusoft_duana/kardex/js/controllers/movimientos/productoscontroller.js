@@ -130,7 +130,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.items = data.lista_productos.length;
                 for (var i in data.lista_productos) {
                     var obj = data.lista_productos[i];
-                    
+                    console.log(obj);
                     var producto = ProductoMovimiento.get(
                             obj.codigo_producto,
                             obj.nombre_producto,
@@ -147,6 +147,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     producto.setTipoProductoId(obj.tipo_producto_id);
                     producto.setCodigoCum(obj.codigo_cum);
                     producto.setPrecioRegulado(obj.precio_regulado);
+                    producto.setDescripcionMolecula(obj.descripcion_molecula);
                     
                     
                     $scope.Empresa.agregarProducto(
@@ -176,7 +177,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
                                             </div>'
                     },
-                    {field: 'descripcion', displayName: 'Nombre',  cellTemplate: '<div class="ngCellText"  ng-class="col.colIndex()">{{row.entity.descripcion}}</div>' },
+                    {field: 'descripcion', displayName: 'Nombre', 
+                     cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>' },
                     {field: 'codigoCum', displayName: 'Cum', width:"90", cellClass :"gridNumber"},
                     {field: 'existencia', displayName: 'Stock', width:"80", cellClass :"gridNumber"},  
                     {field: 'precioRegulado', displayName: 'P.Reg', width:"80",  cellClass :"gridNumber"},

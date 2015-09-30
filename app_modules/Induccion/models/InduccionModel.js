@@ -8,16 +8,19 @@ var InduccionModel = function () {
 * @param {type} callback
 * @returns {datos de consulta}
 */
-InduccionModel.prototype.getListarEmpresas = function (callback) {
+InduccionModel.prototype.getListarEmpresas = function (empresaNombre,callback) {
 
     var column = [
         "empresa_id",
         "razon_social"
     ];
 
-    G.knex.column(column)
+ var query=   G.knex.column(column)
             .select()
             .from('empresas')
+            .where(G.knex.raw("razon_social :: varchar"), G.constants.db().LIKE, "%" + empresaNombre + "%")
+            .limit(5)//;
+//             callback(false, query.toSQL());
             .then(function (rows) {
                 callback(false, rows);
             })
@@ -83,8 +86,11 @@ InduccionModel.prototype.getListarProducto = function (empresaId, centroUtilidad
 
     var column = [
         "ip.codigo_producto",
-        "ip.descripcion"
+        "ip.descripcion",
+        "eb.sw_control_fecha_vencimiento",
+        "eb.existencia",
     ];
+         
     var query = G.knex.column(column)
             .select()
             .from('existencias_bodegas as eb')
@@ -93,8 +99,10 @@ InduccionModel.prototype.getListarProducto = function (empresaId, centroUtilidad
                 "eb.centro_utilidad": centroUtilidadId,
                 "eb.bodega": bodegaId})
             .where(G.knex.raw("ip.descripcion :: varchar"), G.constants.db().LIKE, "%" + nombreProducto + "%")
+
             .limit(G.settings.limit)
             .offset((pagina - 1) * G.settings.limit)
+
             .then(function (rows) {
                 callback(false, rows);
             })

@@ -20,4 +20,9 @@ module.exports = function(app, di_container) {
         c_induccion.listarProducto(req, res);
     });
     
+    //generar rotulo por caja
+    app.post('/api/induccion/imprimirRotulo', function(req, res){
+       c_induccion.imprimirRotulo(req, res); 
+    });
+    
 };

@@ -1,7 +1,8 @@
 
-var Induccion = function(induccion) {
+var Induccion = function(induccion,imprimir_productos) {
 
     this.m_induccion = induccion;
+    this.m_imprimir_productos = imprimir_productos;
 
 };
 /*
@@ -14,8 +15,12 @@ Induccion.prototype.listarEmpresas = function(req, res) {
     
     var that = this;
     var args = req.body.data;
-   
-    that.m_induccion.getListarEmpresas(function(err, empresas ) {
+    var empresa = args.listar_empresas.empresaName;
+     if (empresa === undefined) {
+        res.send(G.utils.r(req.url, 'empresa, No esta definida', 404, {}));
+        return;
+    }
+    that.m_induccion.getListarEmpresas(empresa,function(err, empresas ) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las empresas', 500, {listar_empresas: err}));
@@ -96,14 +101,81 @@ Induccion.prototype.listarProducto = function(req, res) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }                                                   
-    that.m_induccion.getListarProducto(empresaIds,centroUtilidadId,nombreProducto,bodegaId,pagina,function(err, bodega ) { 
+    that.m_induccion.getListarProducto(empresaIds,centroUtilidadId,nombreProducto,bodegaId,pagina,function(err, rows ) { 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando Producto', 500, {listar_Producto: err}));
         } else {
-            res.send(G.utils.r(req.url, 'Lista de Producto OK', 200, {listar_Producto: bodega}));
+            res.send(G.utils.r(req.url, 'Lista de Producto OK', 200, {listar_Producto: rows}));
         }
     });
 };
+
+
+
+
+Induccion.prototype.imprimirRotulo = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    var empresaIds = args.documento_temporal.empresaId;
+    var centroUtilidadId = args.documento_temporal.centroUtilidadId;
+    var bodegaId = args.documento_temporal.bodegaId;
+    var nombreProducto = args.documento_temporal.nombreProducto;
+    var pagina = args.documento_temporal.pagina;
+    console.log("paginaactual",args.documento_temporal);
+    if (empresaIds === undefined || centroUtilidadId === undefined || bodegaId === undefined || nombreProducto === undefined  ) { 
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    } 
+
+
+ that.m_induccion.getListarProducto(empresaIds,centroUtilidadId,nombreProducto,bodegaId,pagina,function(err, rows ) { 
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando Producto', 500, {imprimir_productos: {}}));
+            return;
+        } 
+        if (rows.length === 0) {
+            res.send(G.utils.r(req.url, 'No se encontro la caja para el pedido', 404, {}));
+            return;
+        }
+        
+        var obj = {
+            detalle : rows,
+            serverUrl : req.protocol + '://' + req.get('host')+ "/"
+        };
+        
+         _generarInforme(obj, function(nombreTmp) {
+            res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {imprimir_productos: {nombre_reporte: nombreTmp}}));
+        });
+    });
+};
+
+function _generarInforme(obj, callback) {
+        G.jsreport.render({
+            template: {
+                content: G.fs.readFileSync('app_modules/Induccion/reports/rotulos.html', 'utf8'),
+                helpers: G.fs.readFileSync('app_modules/Induccion/reports/javascripts/rotulos.js', 'utf8'),
+                recipe: "phantom-pdf",
+                engine: 'jsrender'
+            },
+            data: obj
+        }, function (err, response) {            
+            response.body(function (body) {
+                var fecha = new Date();
+                var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+                G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        callback(nombreTmp);
+                    }
+                });
+
+
+            });
+
+        });
+    }
 
 Induccion.$inject = ["m_induccion"];
 

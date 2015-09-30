@@ -29,6 +29,10 @@ define(["angular", "js/models", "includes/classes/Empresa"], function (angular, 
                 return this.centrosUtilidad;
             };
 
+//            EmpresaInduccion.prototype.vaciarEmpresa= function () {
+//                this.centrosUtilidad = [];
+//            }
+            
             EmpresaInduccion.prototype.vaciarCentroUtilidad = function () {
                 this.centrosUtilidad = [];
             }

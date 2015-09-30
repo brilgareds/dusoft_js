@@ -565,49 +565,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
 
 // Seleccionar Pedido Por un numero de pedido
 PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callback) {
-
-    /*var sql = " select \
-                a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
-                a.farmacia_id, \
-                d.empresa_id, \
-                a.centro_utilidad, \
-                a.bodega as bodega_id, \
-                d.razon_social as nombre_farmacia, \
-                b.descripcion as nombre_bodega,\
-                a.usuario_id, \
-                e.nombre as nombre_usuario ,\
-                a.estado as estado_actual_pedido, \
-                case when a.estado = '0' then 'No Asignado' \
-                     when a.estado = '1' then 'Asignado' \
-                     when a.estado = '2' then 'Auditado' \
-                     when a.estado = '3' then 'En Zona Despacho' \
-                     when a.estado = '4' then 'Despachado' \
-                     when a.estado = '5' then 'Despachado con Pendientes' \
-                     when a.estado = '6' then 'Separacion Finalizada'  \
-                     when a.estado = '7' then 'En auditoria'  \
-                     when a.estado = '8' then 'Auditado con pdtes'  \
-                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
-                f.estado as estado_separacion, \
-                to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro, \
-                a.fecha_registro as fecha_registro_pedido,\
-                a.empresa_destino,\
-                a.centro_destino,\
-                a.bodega_destino,\
-                a.observacion\
-                from solicitud_productos_a_bodega_principal as a \
-                inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
-                inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
-                inner join empresas as d ON c.empresa_id = d.empresa_id \
-                inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
-                left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id \
-                where a.solicitud_prod_a_bod_ppal_id = $1 \
-                order by 1 desc";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });*/
-    
-    
+  
     var columnas = [
         "a.solicitud_prod_a_bod_ppal_id as numero_pedido", 
         "a.farmacia_id", 
@@ -791,14 +749,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         var estado_pedido = '1';
         if (filtro !== undefined) {
 
-            if (filtro.asignados) {
+            if ((filtro.estado && filtro.estado.asignados) || filtro.asignados) {
                  this.whereRaw("  h.doc_tmp_id IS NULL and  g.usuario_id  = ? ", [responsable]);
             }
 
-            if (filtro.temporales) {
+            if ((filtro.estado && filtro.estado.temporales) || filtro.temporales) {
                 this.whereRaw("  h.doc_tmp_id IS NOT NULL AND h.estado = '0' and g.usuario_id = ? ", [responsable]);
             }
-            if (filtro.finalizados) {
+            if ((filtro.estado && filtro.estado.finalizados) || filtro.finalizados) {
                 estado_pedido = '7';
                 this.whereRaw(" g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id ) and  i.usuario_id = ?", [responsable]);
             }
@@ -808,10 +766,15 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         
     }).
     andWhere(function(){
-        this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        if(filtro.estado && filtro.estado.numeroPedido){
+            this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), "=", termino_busqueda);
+        } else {
+            
+            this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        }
     });
        
     

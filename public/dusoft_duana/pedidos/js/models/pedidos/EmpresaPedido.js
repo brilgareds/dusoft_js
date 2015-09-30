@@ -44,6 +44,10 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             this.pedidos = [];
         };
         
+        EmpresaPedido.setPedidos = function(pedidos){
+            this.pedidos = pedidos;
+        };
+        
         // Pedidos Farmacias
         EmpresaPedido.agregarPedidoFarmacia = function(pedido) {
             this.pedidosFarmacias.push(pedido);

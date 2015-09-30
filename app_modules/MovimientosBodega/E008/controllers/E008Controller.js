@@ -146,7 +146,7 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.empresa_id === undefined || args.documento_temporal.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion no estan definidos ', 404, {}));
+        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion no estan definidos.. ', 404, {}));
         return;
     }
 
@@ -193,7 +193,17 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
 
 };
 
-// Finalizar Documento Temporal Clientes
+/**
+ * +Descripcion: Funcion encargada del proceso despues de separar los productos
+ * del pedido por parte del operario logistico a traves de DusotfMovil,
+ * este proceso es almacenado en un temporal cambiandole el estado al pedido
+ * como Separacion finalizada.
+ * @author Camilo Garcia Orozco
+ * @param {type} req
+ * @param {type} res
+ * @returns {void}
+ * 
+ */
 E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res) {
 
     var that = this;
@@ -851,12 +861,15 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
 
 // Actualizar bodegas_doc_id en documento temporal Clientes.
 E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req, res) {
-
+    
+    console.log("********* actualizarTipoDocumentoTemporalClientes *************")
     var that = this;
 
     var args = req.body.data;
-
-    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined || args.documento_temporal.bodegas_doc_id === undefined) {
+    
+    console.log(args);
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || 
+            args.documento_temporal.usuario_id === undefined || args.documento_temporal.bodegas_doc_id === undefined) {
         res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o bodegas_doc_id NO estan definidos', 404, {}));
         return;
     }
@@ -887,7 +900,13 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
     var estado_pedido = '7'; //En auditora
 
     that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function(err, responsables) {
-
+        
+        console.log(" *************** obtener_responsables_del_pedido ******************* ");
+        
+        console.log("numero_pedido ",numero_pedido);
+        
+        console.log("err ",err);
+        console.log("responsables ",responsables);
         var existe_estado_auditoria = false;
         var _responsables = [];
 
@@ -999,7 +1018,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
 
     //seleccionar el auditor
     that.m_pedidos_farmacias.obtener_responsables_del_pedido(numero_pedido, function(err, responsables) {
-
+        
         //valida que sea el usuario que creo el pedido
         var existe_estado_auditoria = false;
         var _responsables = [];
@@ -1054,7 +1073,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
                                         // Emitir evento para actualizar la lista de Documentos Temporales
                                         that.e_e008.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});
 
-                                        res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {}}));
+                                        res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamente', 200, {movimientos_bodegas: {}}));
                                     });
                                 }
 
@@ -1120,7 +1139,10 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-
+    
+    console.log("<<<<<<<<<<<<<<<<<<<<<<<<auditarProductoDocumentoTemporal>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    
+    console.log(args);
 
     if (!args.documento_temporal.justificacionPendiente) {
 
@@ -1179,7 +1201,7 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
     var numero_caja = args.documento_temporal.numero_caja || 0;
 
 
-
+    console.log("args.documento_temporal.justificacion != ", args.documento_temporal.justificacion);
     if (args.documento_temporal.justificacion !== undefined) {
         // Auditar con Justificacion.
         var doc_tmp_id = args.documento_temporal.justificacion.documento_temporal_id;
@@ -1228,12 +1250,13 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
         });
     } else {
 
-
+        console.log("CUANDO LA JUSTIFICACION SE CUMPLEESTA VACIA OSEA QUE SI SE ENVIAN TODOS LOS LOTES PARA LOS PRODUCTOS")
 
         var usuario_id = args.documento_temporal.usuario_id;
         var doc_tmp_id = args.documento_temporal.documento_temporal_id;
         var codigo_producto = args.documento_temporal.codigo_producto;
-
+        
+        console.log("args.documento_temporal.justificacion == ", args.documento_temporal.justificacion);
         // Auditar sin Justificar.
         that.m_movimientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
 
@@ -1982,13 +2005,18 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
 };
 
-// Validar que la caja este abierta
+/**
+ * +Descripcion: Metodo encargado de validar Validar que la caja este abierta
+ * @param {type} req
+ * @param {type} res
+ * @returns {unresolved}
+ */
 E008Controller.prototype.validarCajaProducto = function(req, res) {
 
     var that = this;
 
     var args = req.body.data;
-
+    
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
         args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
         res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
@@ -2021,7 +2049,14 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var contenido = "";
     var usuario_id = req.session.user.usuario_id;
     var tipo = args.documento_temporal.tipo;
-
+    
+    /**
+     * +Descripcion: funcion que consulta el numero mayor de rotulo en la tabla 
+     * inv_rotulo_caja
+     * @param {String} documento_temporal_id Es el id documento
+     * @param {String} numero_pedido Es el numero de pedido
+     * @param {integer} tipo si es caja o nevera
+     */
     that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -2035,6 +2070,13 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
             return;
         }
         
+        /**
+         * +Descripcion: Se consultar la existencia del rotulo de la caja en la
+         * tabla inv_rotulo_caja
+         * @param {String} documento_temporal_id Es el id documento
+         * @param {String} numero_pedido Es el numero de pedido
+         * @param {integer} tipo si es caja o nevera
+         */
         that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -2115,7 +2157,13 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
 
 };
 
-
+/**
+ * +Descripcion: Metodo encargado de ejecutar el modelo para actualizar
+ * una caja y los lotes que se le quieran añadir
+ * @param {type} req
+ * @param {type} res
+ * @returns {unresolved}
+ */
 E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
     var that = this;
 

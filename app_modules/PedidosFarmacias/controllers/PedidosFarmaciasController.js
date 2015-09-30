@@ -592,7 +592,7 @@ PedidosFarmacias.prototype.eliminarResponsablesPedido = function(req, res) {
  */
 
 PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
-
+  
     var that = this;
 
     var args = req.body.data;
@@ -612,7 +612,6 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 
     var termino_busqueda = args.pedidos_farmacias.termino_busqueda;
-    //var operario_bodega = args.pedidos_farmacias.operario_id;
     var operario_bodega = req.session.user.usuario_id;
     var pagina_actual = args.pedidos_farmacias.pagina_actual;
     var limite = args.pedidos_farmacias.limite;
@@ -629,7 +628,8 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
         var i = lista_pedidos_farmacias.length;
 
         lista_pedidos_farmacias.forEach(function(pedido) {
-
+            
+            console.log("Pedido ====>>>>", pedido)
             // Calcular el tiempo de separacion del pedido
             var fecha_separacion = 0;
             var tiempo_separacion = 0;

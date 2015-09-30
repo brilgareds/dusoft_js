@@ -330,10 +330,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
 
                 if ($scope.Pedido.get_numero_pedido() > 0) {
-                    console.log('== por aca ===');
+                  
                     that.gestionar_pedidos();
                 } else {
-                    console.log('== o por por qui ===');
+                  
                     that.gestionar_cotizaciones();
                 }
             };
@@ -346,19 +346,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%", enableCellEdit: false,
+                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "125", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                             <span ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >{{row.entity.get_abreviacion_tipo_producto()}}</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                         </div>'},
                     {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},
-                    {field: 'get_codigo_invima()', displayName: 'Invima', width: "7%"},
-                    {field: 'get_fecha_vencimiento_invima()', displayName: 'Venc. Invima', width: "7%", cellFilter: "date:'dd/MM/yyyy'"},
-                    {field: 'get_iva()', displayName: 'IVA', width: "5%"},
-                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "7%", cellFilter: "currency:'$ '",
+                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},                
+                    {field: 'get_iva()', displayName: 'IVA', width: "50"},
+                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >Reg.</span>\
+                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
                                         </div>'},
                     {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
@@ -367,7 +365,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
                     {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {width: "7%", displayName: "Opcion", cellClass: "txt-center",
+                    {width: "60", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
                                             <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
                                             <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\

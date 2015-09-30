@@ -33,6 +33,11 @@
                     "module": "PedidosFarmacias",
                     "model": "PedidosFarmaciasModel",
                     "alias": "m_pedidos_farmacias"
+                },
+                 "pedidos_log_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteLog",
+                    "alias": "m_pedidos_clientes_log"
                 }
             }],
         "events": [{

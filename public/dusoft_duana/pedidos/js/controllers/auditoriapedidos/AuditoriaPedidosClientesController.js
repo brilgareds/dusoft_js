@@ -8,8 +8,11 @@ define(["angular", "js/controllers",
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Cliente', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
-        "socket", "AlertService", "Usuario",
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoAuditoria, Separador, DocumentoTemporal, API, socket, AlertService, Usuario) {
+        "socket", "AlertService", "Usuario","localStorageService",
+        function($scope, $rootScope, Request, Empresa,
+                 Cliente, PedidoAuditoria, Separador, DocumentoTemporal,
+                 API, socket, AlertService, Usuario,
+                 localStorageService) {
 
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
@@ -91,10 +94,23 @@ define(["angular", "js/controllers",
                 return row.entity.auditor.usuario_id === $scope.session.usuario_id;
             };
 
-
+            $scope.onRowClick = function(row) {
+                row.entity.esDocumentoNuevo = false;
+                $scope.notificacionclientes--;
+                that.mostrarDetalle(row.entity);
+            };
+            
+            
             $scope.$on("onPedidosSeparadosRenderCliente", function(e, items) {
 
                 $scope.items = items;
+                
+                if(localStorageService.get("auditoriaCliente")){
+                    var numero = parseInt(localStorageService.get("auditoriaCliente"));
+                    var documento =  $scope.obtenerDocumento(numero, 1);
+                    that.mostrarDetalle(documento);
+                }
+                
             });
 
             $scope.$on("onPedidosSeparadosNoEncotradosCliente", function(e) {
@@ -105,18 +121,27 @@ define(["angular", "js/controllers",
             });
 
 
-            $rootScope.$on("cerrardetalleclienteCompleto", function(e) {
+            $scope.$on("cerrardetalleclienteCompleto", function(e) {
                 $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                $scope.$broadcast("detalleClienteCerradoCompleto");
             });
-
-
-            $scope.onRowClick = function(row) {
-                row.entity.esDocumentoNuevo = false;
-                $scope.notificacionclientes--;
+            
+            that.mostrarDetalle = function(documento){
                 $scope.slideurl = "views/auditoriapedidos/pedidoseparadocliente.html?time=" + new Date().getTime();
-                $scope.$emit('mostrardetallecliente', row.entity);
+                $scope.$emit('mostrardetallecliente', documento);
+                localStorageService.remove("auditoriaCliente");
+                
             };
-
+            
+            $scope.$on("mostrardetalleclienteCompleto",function(e, datos){
+                console.log("evento recibido del padre mostrardetalleclienteCompleto");
+                $scope.$broadcast("detalleClienteCompleto", datos);
+            });
+            
+            $scope.$on("cerrarDetalleCliente", function(){
+                console.log("cerrar slider  cliete");
+                $scope.$emit('cerrardetallecliente', {animado: true});
+            });
 
 
             //eventos de widgets
@@ -162,7 +187,16 @@ define(["angular", "js/controllers",
             } else if(!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
                 $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para generar pedidos de clientes", tipo:"warning"});
             } else {
-                $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                
+                //se valida si se debe consultar un producto desde separacion
+                if(localStorageService.get("auditoriaCliente")){
+                    var numero = parseInt(localStorageService.get("auditoriaCliente"));
+                    $scope.termino_busqueda = numero;
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                } else {
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                }
+                
             }
             
 

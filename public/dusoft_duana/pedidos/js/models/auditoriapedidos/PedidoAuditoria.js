@@ -17,6 +17,11 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tiempoSeparacion = 0;
             this.cantidadProductos = 0;
             this.farmaciaId;
+            this.empresaDestino;
+            this.centroDestino;
+            this.bodegaDestino;
+            this.temporalId = 0;
+            this.productoSeleccionado = {};
         }
 
          PedidoAuditoria.prototype = Object.create(Pedido.getClass().prototype);
@@ -38,8 +43,32 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.productos.push(producto);
         };
 
+        PedidoAuditoria.prototype.setTemporalId = function(temporalId) {
+            this.temporalId = temporalId;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getTemporalId = function() {
+            return this.temporalId;
+        };
+        
+        
         PedidoAuditoria.prototype.setTipo = function(tipo) {
             this.tipo = tipo;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getTipo = function() {
+            return this.tipo;
+        };
+        
+        
+        PedidoAuditoria.prototype.setProductoSeleccionado = function(productoSeleccionado) {
+            this.productoSeleccionado = productoSeleccionado;
+        };
+        
+        PedidoAuditoria.prototype.getProductoSeleccionado = function() {
+            return this.productoSeleccionado;
         };
         
         PedidoAuditoria.prototype.getProductos = function() {
@@ -92,26 +121,76 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             return this.cantidadProductos;
         };
         
-        PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos) {
+        PedidoAuditoria.prototype.setEmpresaDestino = function(empresaDestino) {
+            this.empresaDestino = empresaDestino;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getEmpresaDestino = function() {
+            return this.empresaDestino;
+        };   
+        
+        PedidoAuditoria.prototype.setCentroDestino = function(centroDestino) {
+            this.centroDestino = centroDestino;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getCentroDestino = function() {
+            return this.centroDestino;
+        };
+        
+        PedidoAuditoria.prototype.setBodegaDestino= function(bodegaDestino) {
+            this.bodegaDestino = bodegaDestino;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getBodegaDestino = function() {
+            return this.bodegaDestino;
+        };
+            
+        
+        PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos, temporal, modeloLote) {
             for(var i in productos){
                 var _producto = productos[i];
                 var producto = modeloProducto.get(_producto.codigo_producto, _producto.descripcion_producto);
                 var cantidadPendiente =  Number(_producto.cantidad_pendiente);
-                			
-                if(cantidadPendiente > 0){
-                    producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
-                    producto.setCantidadPendiente(cantidadPendiente);
-                    producto.setJustificacion(_producto.justificacion);
+                producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
+                producto.setCantidadPendiente(cantidadPendiente);
+                producto.setCodigoBarras(_producto.codigo_barras);
+                if(_producto.justificacion){
+                     producto.setJustificacion(_producto.justificacion);
+                }
+                
+                if(!temporal){
+                    
+                    if(cantidadPendiente > 0){
+                        if(_producto.valor_iva){
+                            producto.setValorIva(parseFloat(_producto.valor_iva));
+                            producto.setValorUnitarioConIva(parseFloat(_producto.valor_unitario_con_iva));
+                            producto.setValorUnitario(parseFloat(_producto.valor_unitario));
+                            producto.setPorcentajeGravament(parseFloat(_producto.porcentaje_iva));
+                        }
+                      // this.agregarProducto(producto); 
+                        //return;
+                    } 
+                } else {
 
-                    if(_producto.valor_iva){
-                        producto.setValorIva(parseFloat(_producto.valor_iva));
-                        producto.setValorUnitarioConIva(parseFloat(_producto.valor_unitario_con_iva));
-                        producto.setValorUnitario(parseFloat(_producto.valor_unitario));
-                        producto.setPorcentajeGravament(parseFloat(_producto.porcentaje_iva));
+                    producto.setItemId(parseInt(_producto.item_id));
+                    producto.setValorIva(parseFloat(_producto.valor_iva));
+                    
+                    if(_producto.valor_unitario){
+                         producto.setValorUnitario(parseFloat(_producto.valor_unitario));
                     }
-
-                    this.agregarProducto(producto); 
-                } 
+                    
+                    var lote =  modeloLote.get(_producto.lote, _producto.fecha_vencimiento);
+                    lote.setCantidadIngresada(parseInt(_producto.cantidad_ingresada));
+                    lote.setNumeroCaja(_producto.numero_caja);
+                    
+                    
+                    producto.agregarLote(lote);
+                    //this.agregarProducto(producto); 
+                }
+                this.agregarProducto(producto); 
             }
         };
         

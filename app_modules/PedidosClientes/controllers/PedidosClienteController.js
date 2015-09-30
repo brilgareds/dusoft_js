@@ -1,7 +1,6 @@
 
-var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos, m_terceros, emails, pedidos_farmacias) {
+var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos, m_terceros, emails, pedidos_farmacias,m_pedidos_clientes_log) {
 
-    console.log("Modulo Pedidos Cliente  Cargado ");
 
     this.m_pedidos_clientes = pedidos_clientes;
     this.m_pedidos_farmacias = pedidos_farmacias;
@@ -10,6 +9,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
     this.m_pedidos = m_pedidos;
     this.m_terceros = m_terceros;
     this.emails = emails;
+    this.m_pedidos_clientes_log = m_pedidos_clientes_log;
 };
 
 /**
@@ -554,7 +554,10 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
  * Descripcion : Modificar detalle cotizacion
  */
 PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
-
+    
+    
+    console.log("<<<<<<<<<< PedidosCliente.prototype.modificarDetalleCotizacion >>>>>>>>>>>>");
+    
     var that = this;
 
     var args = req.body.data;
@@ -599,7 +602,38 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
     }
 
     cotizacion.usuario_id = req.session.user.usuario_id;
-
+    
+    var paramLogCliente = {
+        /*cabecera:{
+        cotizacion:cotizacion.numero_cotizacion,
+        accion: 1,
+        usuario: cotizacion.usuario_id
+        },*/
+        detalle:{
+         cotizacion: cotizacion.numero_cotizacion,
+         tipo_cotizacion_pedido: 1,
+         producto: producto.codigo_producto,
+         tipo_pedido:0,
+         descripcion: "descripcion(iva: "+ producto.iva + 
+                     "| cantidad_nueva: " + producto.cantidad_solicitada + 
+                     "| cantidad_inicial: " + producto.cantidad_inicial + 
+                     "| precio_venta: " + producto.precio_venta +" )",
+         accion: 1,
+         usuario: cotizacion.usuario_id
+        }
+    };
+  
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    that.m_pedidos_clientes_log.logModificarProductoCotizacion(paramLogCliente, function(){
+        
+        
+    });
     that.m_pedidos_clientes.modificar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
@@ -611,6 +645,35 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
         }
     });
 };
+
+
+/*
+ * Author : Eduar Garcia
+ * Descripcion :  Cambia el estado de una cotizacion
+ */
+PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+    var cotizacion = args.pedidos_clientes.cotizacion;
+    
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+        
+    G.Q.nfcall(that.m_pedidos_clientes.modificarEstadoCotizacion,cotizacion).
+    then(function(rows){
+        res.send(G.utils.r(req.url, 'Cotizacion cambiada correctamente', 200, {pedidos_clientes:[]}));
+    }).
+    fail(function(err){
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
+    }).
+    done();
+    
+};
+
 
 /*
  * Autor : Camilo Orozco
@@ -753,7 +816,7 @@ PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
 PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
 
     var that = this;
-
+           
     var args = req.body.data;
 
     // Cotizacion
@@ -780,7 +843,39 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
         return;
     }
-
+    
+     cotizacion.usuario_id = req.session.user.usuario_id;
+    
+    var paramLogCliente = {
+    
+        detalle:{
+         cotizacion: cotizacion.numero_cotizacion,
+         tipo_cotizacion_pedido: 1,
+         producto: producto.codigo_producto,
+         tipo_pedido:0,
+         descripcion: "descripcion(iva: "+ producto.iva + 
+                     "| cantidad_nueva: " + producto.cantidad_solicitada + 
+                     "| cantidad_inicial: " + producto.cantidad_inicial + 
+                     "| precio_venta: " + producto.precio_venta +" )",
+         accion: 0,
+         usuario: cotizacion.usuario_id
+        }
+    };
+  
+  
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento para cuando se quiera eliminar un producto
+     * de una cotizacion
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function(){
+        
+        
+    });
+    
     that.m_pedidos_clientes.eliminar_producto_cotizacion(cotizacion, producto, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
@@ -875,15 +970,18 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     var cantidad_productos = 0;
     var limite_productos = 25;
 
-    __subir_archivo_plano(req.files, function(continuar, contenido) {
-
+                   
+                
+    __subir_archivo_plano(req.files, function(continuar, contenido) {       
+        
         if (continuar) {
 
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
                 cantidad_productos = productos_validos.length;
 
-                if (cantidad_productos >= limite_productos) {
+                if (cantidad_productos > limite_productos) {
+                    
                     res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
                     return;
                 }
@@ -898,9 +996,11 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                     // Validar que si suben varios archivos, siempre se limite la cantidad de productos a ingresar ala cotizacion
                     that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, '', function(err, lista_productos) {
 
-                        cantidad_productos += lista_productos.length;
+                        cantidad_productos = lista_productos.length;
+                     
+                        if (cantidad_productos > limite_productos) {
+                             
 
-                        if (cantidad_productos >= limite_productos) {
                             res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
                             return;
                         }
@@ -936,7 +1036,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                                     _productos_invalidos.push(producto);
                                                 }
                                                 if (--i === 0) {
-                                                    res.send(G.utils.r(req.url, 'Cotizacion regitrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                                                    res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
                                                     return;
                                                 }
                                             });
@@ -952,7 +1052,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                             _productos_invalidos.push(producto);
                                         }
                                         if (--i === 0) {
-                                            res.send(G.utils.r(req.url, 'Cotizacion regitrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                                            res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
                                             return;
                                         }
                                     });
@@ -1367,7 +1467,35 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     }
 
     pedido.usuario_id = req.session.user.usuario_id;
-
+    
+     var paramLogCliente = {
+       
+        detalle:{
+         cotizacion: pedido.numero_cotizacion,
+         tipo_cotizacion_pedido: 0,
+         producto: producto.codigo_producto,
+         tipo_pedido:0,
+         descripcion: "descripcion(iva: "+ producto.iva + 
+                     "| cantidad_nueva: " + producto.cantidad_solicitada + 
+                     "| cantidad_inicial: " + producto.cantidad_inicial + 
+                     "| precio_venta: " + producto.precio_venta +" )",
+         accion: 1,
+         usuario: pedido.usuario_id
+        }
+    };
+  
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento cuando se modifica un pedido
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    that.m_pedidos_clientes_log.logModificarProductoCotizacion(paramLogCliente, function(){
+        
+        
+    });
+    
     that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
@@ -1427,7 +1555,37 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
         return;
     }
-
+     pedido.usuario_id = req.session.user.usuario_id;
+    var paramLogCliente = {
+     
+        detalle:{
+         cotizacion: pedido.numero_cotizacion,
+         tipo_cotizacion_pedido: 0,
+         producto: producto.codigo_producto,
+         tipo_pedido:0,
+         descripcion: "descripcion(iva: "+ producto.iva + 
+                     "| cantidad_nueva: " + producto.cantidad_solicitada + 
+                     "| cantidad_inicial: " + producto.cantidad_inicial + 
+                     "| precio_venta: " + producto.precio_venta +" )",
+         accion: 0,
+         usuario: pedido.usuario_id
+        }
+    };
+  
+  
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento para cuando se quiera eliminar un producto
+     * de una cotizacion o un pedido
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function(){
+        
+        
+    });
+    
     that.m_pedidos_clientes.eliminar_producto_pedido(pedido, producto, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
@@ -1871,6 +2029,12 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 }
 ;
 
-PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos", "m_terceros", "emails", "m_pedidos_farmacias"];
+PedidosCliente.$inject = ["m_pedidos_clientes", 
+                          "e_pedidos_clientes", 
+                          "m_productos", 
+                          "m_pedidos", 
+                          "m_terceros", 
+                          "emails", 
+                          "m_pedidos_farmacias", "m_pedidos_clientes_log"];
 
 module.exports = PedidosCliente;

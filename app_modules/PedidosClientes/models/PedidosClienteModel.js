@@ -540,14 +540,22 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         
         this.where("a.estado_pedido", estado_pedido);
         
-    }).
-    andWhere(function(){
-        this.where(G.knex.raw("a.pedido_cliente_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     });
+    
+    if(filtro.numeroPedido){
+        
+        query.where(G.knex.raw("a.pedido_cliente_id :: varchar"), "=",termino_busqueda);
+    } else {
+        
+        query.andWhere(function(){
+            this.where(G.knex.raw("a.pedido_cliente_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        });
+    }
+    
     
     query.totalRegistros = 0;
     query.then(function(total){
@@ -850,7 +858,7 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
         G.knex.raw("COALESCE(a.sw_terminado,'0') as sw_terminado")
     ];
     
-    G.knex.columns(columnas).
+   var sql = G.knex.columns(columnas).
     from("ventas_ordenes_pedidos_estado as a").
     innerJoin("system_usuarios as c", "a.usuario_id", "c.usuario_id").
     leftJoin("operarios_bodega as b", "a.responsable_id", "b.operario_id").
@@ -1415,32 +1423,58 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
 
 
 /*
- * Author : Camilo Orozco
- * Descripcion :  SQL Insertar Detalle Pedido
+ * Autor : Camilo Orozco
+ * Descripcion : Transaccion para la generación del pedido
  */
-PedidosClienteModel.prototype.insertar_detalle_pedido = function(pedido, producto, callback) {
+PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
+{
+    G.db.begin(function() {
 
-    var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
-                    pedido_cliente_id, \
-                    codigo_producto, \
-                    porc_iva, \
-                    numero_unidades, \
-                    valor_unitario, \
-                    usuario_id,    \
-                    fecha_registro\
-                ) VALUES ( $1, $2, $3, $4, $5, $6, NOW() ) ;";
+        // Ingresar encabezado pedido
+        __insertar_encabezado_pedido_cliente(cotizacion, function(err, rows, result) {
 
-    var params = [
-        pedido.numero_pedido,
-        producto.codigo_producto,
-        producto.iva,
-        producto.cantidad_solicitada,
-        producto.precio_venta,
-        pedido.usuario_id
-    ];
+            if (err) {
+                callback(err);
+                return;
+            }
 
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
+            var pedido = {numero_pedido: (rows.rows.length > 0) ? rows.rows[0].numero_pedido : 0, estado: 0};
+
+            // ingresar detalle del pedido, a partir de la cotizacion
+            __generar_detalle_pedido_cliente(cotizacion, pedido, function(err, rows, result) {
+
+                if (err) {
+                    callback(err);
+                    return;
+                }
+
+                // Inactivar cotizacion
+                cotizacion.estado = '0';
+
+                __actualizar_estado_cotizacion(cotizacion, function(err, rows, result) {
+
+                    // Finalizar Transacción.
+                    G.db.commit(function() {
+                        callback(err, rows, pedido);
+                    });
+
+                });
+            });
+        });
+    });
+};
+
+
+
+/*
+ * Author : Eduar Garcia
+ * Descripcion :  Cambia el estado de una cotizacion
+ */
+PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, callback) {
+    __actualizar_estado_cotizacion(cotizacion, function(err, rows, result) {
+
+        callback(err, rows);
+
     });
 };
 

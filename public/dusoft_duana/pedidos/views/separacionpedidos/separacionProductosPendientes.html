@@ -1,14 +1,46 @@
-<!--
-To change this template, choose Tools | Templates
-and open the template in the editor.
--->
-<!DOCTYPE html>
-<html>
-    <head>
-        <title></title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<div >
+
+    <div class="row paddingToptZero">
+        <div class="col-sm-12 col-md-12">
+
+            <div class="panel panel-info ">
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom"><span >Separacion de pedidos</span> </h4>
+                </div>
+
+                <div class ="row">
+                    <br>
+                    <div class="col-md-6 pull-right">
+
+                        <p class="input-group">
+                            <input type="text" class="form-control" 
+                                   ng-keyup="onFiltrarProducto($event);" 
+                                   ng-model="rootListaProductos.filtro.termino" 
+                                   placeholder="Buscar" name="" id="" 
+                             />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default"  type="submit" ng-click="onFiltrarProducto({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                            </span>
+                        </p>
+                    </div>
+
+                    <div class="pull-right " ng-show="false">
+                        <label class ="checkbox-listarproductos">Codigo barras</label>
+                        <input-check ng-model="rootListaProductos.filtro.codigoBarras" ></input-check>
+
+                    </div>
+                </div>
+                <br>
+                <div class="table-responsive" >
+                    <div class="gridStyle2" ng-grid="listarProductos" > </div>
+                </div>
+
+            </div>
+            <div class="col-lg-2 pull-right">
+                <button class="btn btn-warning" ng-click="cerrar()">Cancelar</button>
+
+            </div>
+        </div>
+    </div> 
+</div>
+

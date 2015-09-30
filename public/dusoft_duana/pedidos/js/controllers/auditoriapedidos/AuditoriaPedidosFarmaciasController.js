@@ -9,8 +9,11 @@ define(["angular", "js/controllers",
         'EmpresaPedido', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "Usuario",
-        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoAuditoria, Separador, DocumentoTemporal, API, socket, AlertService, Usuario) {
-
+        "localStorageService",
+        function($scope, $rootScope, Request, Empresa, 
+                 Farmacia, PedidoAuditoria, Separador, 
+                 DocumentoTemporal, API, socket, AlertService, Usuario,
+                 localStorageService) {
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
             $scope.empresas = [];
@@ -61,27 +64,6 @@ define(["angular", "js/controllers",
                 return obj;
             };
 
-            $scope.$on("onPedidosSeparadosRenderFarmacia", function(e, items) {
-                $scope.ultima_busqueda = {
-                    termino_busqueda: $scope.termino_busqueda,
-                    seleccion: $scope.seleccion
-                };
-                $scope.items = items;
-            });
-
-
-            $scope.$on("onPedidosSeparadosNoEncotradosFarmacia", function(e) {
-                if ($scope.paginaactual > 1) {
-                    $scope.paginaactual--;
-                }
-                AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
-            });
-
-            $rootScope.$on("cerrardetallefarmaciaCompleto", function(e) {
-                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
-            });
-
-
 
             $scope.listarEmpresas = function() {
                 $scope.empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
@@ -128,11 +110,62 @@ define(["angular", "js/controllers",
             $scope.onRowClick = function(row) {
                 row.entity.esDocumentoNuevo = false;
                 $scope.notificacionfarmacias--;
-                $scope.slideurl = "views/auditoriapedidos/pedidoseparadofarmacia.html?time=" + new Date().getTime();
-                $scope.$emit('mostrardetallefarmacia', row.entity);
-                //console.log("Presionado Botón Auditar Farmacia: ", row.entity);
+                that.mostrarDetalle(row.entity);
             };
+            
+            that.mostrarDetalle = function(documento){
+                $scope.slideurl = "views/auditoriapedidos/pedidoseparadofarmacia.html?time=" + new Date().getTime();
+                $scope.$emit('mostrardetallefarmacia', documento);
+                localStorageService.remove("auditoriaFarmacia");
+                
+            };
+            
+            $scope.$on("onPedidosSeparadosRenderFarmacia", function(e, items) {
+                $scope.ultima_busqueda = {
+                    termino_busqueda: $scope.termino_busqueda,
+                    seleccion: $scope.seleccion
+                };
+                $scope.items = items;
+                                
+                if(localStorageService.get("auditoriaFarmacia")){
+                    var numero = parseInt(localStorageService.get("auditoriaFarmacia"));
+                    console.log("buscar pedido de auditoria de separacion code 2 ", numero);
+                    var documento =  $scope.obtenerDocumento(numero, 2);
+                    that.mostrarDetalle(documento);
+                }
+                
+            });
 
+
+            $scope.$on("onPedidosSeparadosNoEncotradosFarmacia", function(e) {
+                if ($scope.paginaactual > 1) {
+                    $scope.paginaactual--;
+                }
+                AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+            });
+
+            $scope.$on("cerrardetallefarmaciaCompleto", function(e) {
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                 $scope.$broadcast("detalleFarmaciaCerradoCompleto");
+            });
+            
+            
+            $scope.$on("mostrardetallefarmaciaCompleto",function(e, datos){
+                $scope.$broadcast("detalleFarmaciaCompleto", datos);
+            });
+            
+            
+            $scope.$on("cerrarDetalleFarmacia", function(){
+                console.log("cerrar slider  farmacias");
+                $scope.$emit('cerrardetallefarmacia', {animado: true});
+            });
+            
+            
+            
+            /**
+             * +Descripcion: Metodo que se carga cuando se selecciona un documento
+             * @param {type} valor
+             */
             $scope.valorSeleccionado = function(valor) {
                 $scope.termino_busqueda = "";
                 $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
@@ -174,31 +207,21 @@ define(["angular", "js/controllers",
             } else if(!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
                 $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para auditar pedidos", tipo:"warning"});
             } else {
-                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                
                 $scope.listarEmpresas("");
+                
+                if(localStorageService.get("auditoriaFarmacia")){
+                    var numero = parseInt(localStorageService.get("auditoriaFarmacia"));
+                    $scope.termino_busqueda = numero;
+                    $scope.activarTabFarmacias = true;
+                    
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                } else {
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                }
                 
             }
             
-            
-            
-            
-             /*var test = {
-                session: $scope.session,
-                data: {
-                    movimientos_bodegas: {
-                        empresa: '03',
-                        numero: '82913',
-                        prefijo: 'EFC'
-                    }
-                }
-            };
-            Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
-                if(data.status === 200){
-                    var nombre = data.obj.movimientos_bodegas.nombre_pdf;
-                    $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
-                }
-                
-            });*/
 
         }]);
 });

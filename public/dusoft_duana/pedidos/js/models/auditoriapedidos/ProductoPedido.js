@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             //Campos exclusivos pedido clientes
             this.codigo_cum = "";
             this.codigo_invima = "";
+            this.codigo_barra = "";
             this.vencimiento_codigo_invima = "";
             this.iva = 0;
             this.precio_regulado = 0;
@@ -46,6 +47,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.justificacion = "";
             this.valorIva = 0;
             this.valorUnitarioConIva = 0;
+            this.itemId = 0;
             
         }
 
@@ -59,8 +61,6 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.lote;
         };
         
-        
-        
         ProductoPedido.prototype.setCantidadSolicitada = function(cantidad_solicitada) {
             this.cantidad_solicitada = cantidad_solicitada;
             return this;
@@ -69,6 +69,25 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         ProductoPedido.prototype.getCantidadSolicitada = function() {
             return this.cantidad_solicitada;
         };        
+
+        ProductoPedido.prototype.setItemId = function(itemId) {
+            this.itemId = itemId;
+            return this;
+        };
+        
+        ProductoPedido.prototype.getItemId = function() {
+            return this.itemId;
+        };
+        
+        
+        ProductoPedido.prototype.setDisponible = function(disponible) {
+            this.disponible = disponible;
+            return this;
+        };
+        
+        ProductoPedido.prototype.getDisponible = function() {
+            return this.disponible;
+        };   
         
         
         ProductoPedido.prototype.setCantidadPendiente = function(cantidad_pendiente) {
@@ -121,6 +140,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.vencimiento_codigo_invima = vencimiento_codigo_invima;
         };
         
+        ProductoPedido.prototype.setCodigoBarras = function(codigo_barra) {
+           this.codigo_barra = codigo_barra;
+        };
+        
+        ProductoPedido.prototype.getCodigoBarras = function() {
+          return this.codigo_barra;
+        };
+        
         ProductoPedido.prototype.getVencimientoCodigoInvima = function() {
             return this.vencimiento_codigo_invima;
         };
@@ -170,6 +197,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.total_con_iva = this.total_con_iva.toFixed(2);
         };
         
+        
+        
         ProductoPedido.prototype.getTotalConIva = function() {
             return this.total_con_iva;
         };
@@ -210,12 +239,20 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.lotesSeleccionados.push(lote);
         };
         
+        ProductoPedido.prototype.vaciarLotes = function() {
+            this.lotesSeleccionados = [];
+        };
+        
+        ProductoPedido.prototype.getLotesSeleccionados = function() {
+            return this.lotesSeleccionados;
+        };
+        
         ProductoPedido.prototype.setJustificacion = function(justificacion) {
             this.justificacion = justificacion;
         };  
         
         ProductoPedido.prototype.getJustificacion = function() {
-            this.justificacion;
+            return this.justificacion;
         };
 
         ProductoPedido.prototype.setValorIva = function(valorIva) {
@@ -223,7 +260,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         };  
         
         ProductoPedido.prototype.getValorIva = function() {
-            this.valorIva;
+            return this.valorIva;
         };
         
         ProductoPedido.prototype.setValorUnitarioConIva = function(valorUnitarioConIva) {
@@ -231,7 +268,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         };  
         
         ProductoPedido.prototype.getValorUnitarioConIva = function() {
-            this.valorUnitarioConIva;
+            return this.valorUnitarioConIva;
         };
                 
         ProductoPedido.prototype.obtenerCantidadSeleccionada = function() {

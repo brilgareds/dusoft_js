@@ -1,14 +1,14 @@
 //Este controlador sirve como parent para los controladores DetallepedidoSeparadoCliente y DetallepedidoSeparadoFarmacia, encapsula logica en comun por estos dos ultimos
-define(["angular", "js/controllers", 
+define(["angular", "js/controllers",
     'includes/slide/slideContent',
-    'models/auditoriapedidos/ClientePedido', 
-    'models/auditoriapedidos/PedidoAuditoria', 
-    'models/auditoriapedidos/Separador', 
+    'models/auditoriapedidos/ClientePedido',
+    'models/auditoriapedidos/PedidoAuditoria',
+    'models/auditoriapedidos/Separador',
     'models/auditoriapedidos/Auditor',
-    'models/auditoriapedidos/DocumentoTemporal', 
+    'models/auditoriapedidos/DocumentoTemporal',
     'models/auditoriapedidos/Caja',
-    "controllers/auditoriapedidos/AuditoriaPedidosClientesController", 
-    "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController", 
+    "controllers/auditoriapedidos/AuditoriaPedidosClientesController",
+    "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
     "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [
@@ -26,8 +26,8 @@ define(["angular", "js/controllers",
             $scope.Empresa = Empresa;
 
             $scope.session = {
-                 usuario_id: Usuario.getUsuarioActual().getId(),
-                 auth_token: Usuario.getUsuarioActual().getToken()
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
             };
 
             $scope.termino_busqueda = "";
@@ -38,13 +38,14 @@ define(["angular", "js/controllers",
             $scope.cajasSinCerrar = [];
             $scope.notificacionclientes = 0;
             $scope.notificacionfarmacias = 0;
+            $scope.activarTabFarmacias = false;
             $scope.filtro = {
                 codigo_barras: false
             };
-            
-            
+
+
             var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-            
+
             //permisos auditoria
             $scope.opcionesModulo = {
                 btnAuditarClientes: {
@@ -52,9 +53,9 @@ define(["angular", "js/controllers",
                 },
                 btnAuditarFarmacias: {
                     'click': opciones.sw_auditar_farmacias
-                }       
+                }
             };
-            
+
 
             var obj = {
                 session: $scope.session,
@@ -91,7 +92,7 @@ define(["angular", "js/controllers",
 
 
             that.crearDocumentoTemporal = function(obj, tipo) {
-                //console.log("datos obj ",obj)
+
                 var documento_temporal = DocumentoTemporal.get();
                 documento_temporal.setDatos(obj);
 
@@ -111,7 +112,7 @@ define(["angular", "js/controllers",
                             obj.tipo_id_cliente,
                             obj.identificacion_cliente,
                             obj.telefono_cliente
-                    );
+                            );
 
                     pedido.setCliente(cliente);
 
@@ -121,7 +122,7 @@ define(["angular", "js/controllers",
                             obj.bodega_id,
                             obj.nombre_farmacia,
                             obj.nombre_bodega
-                    );
+                            );
 
                     pedido.setFarmacia(farmacia);
                 }
@@ -138,10 +139,19 @@ define(["angular", "js/controllers",
                 documento_temporal.setSeparador(separador);
                 documento_temporal.setAuditor(auditor);
 
-                //console.log("documento >>>>>>>>>>>>>>", documento_temporal)
+
                 return documento_temporal;
             };
-
+            
+           $scope.obtenerDocumento = function(numero, tipo){
+                var documentos = Empresa.getDocumentoTemporal(tipo);
+                for(var i in documentos){
+                    var documento = documentos[i];
+                    if(documento.getPedido().get_numero_pedido() === numero){
+                        return documento;
+                    }
+                }
+            };
 
 
             $scope.renderPedidosSeparados = function(data, paginando, tipo) {
@@ -149,7 +159,7 @@ define(["angular", "js/controllers",
                 var items = data.documentos_temporales.length;
                 var evento = (tipo === 1) ? "Cliente" : "Farmacia";
 
-                $scope.$broadcast("onPedidosSeparadosRender" + evento, items);
+                
 
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && items === 0) {
@@ -167,6 +177,8 @@ define(["angular", "js/controllers",
                     // documento_temporal.esDocumentoNuevo = true;  
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
+                $scope.$broadcast("onPedidosSeparadosRender" + evento, items);
+                
             };
 
 
@@ -183,7 +195,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        //console.log("detalle ", data)
+                       
                         if (data.obj.documento_temporal !== undefined) {
                             callback(data, paginando);
                         }
@@ -191,6 +203,7 @@ define(["angular", "js/controllers",
                 });
 
             };
+            
 
             that.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback) {
 
@@ -222,12 +235,10 @@ define(["angular", "js/controllers",
 
                     var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj, tipo);
 
-                    documento.getPedido().agregarProducto(producto_pedido_separado, true); 
+                    documento.getPedido().agregarProducto(producto_pedido_separado, true);
 
                 }
 
-                // console.log("productos creados >>>>>>>>>>>>>");
-                //console.log(documento.getPedido().getProductos());
             };
 
 
@@ -237,7 +248,7 @@ define(["angular", "js/controllers",
                 that.buscarProductosSeparadosEnDocumento(params, tipo, function(data) {
                     if (data.status === 200) {
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
-                        console.log("productos encontrados ", productos);
+                       
 
                         that.renderDetalleDocumentoTemporal(documento, productos, 1);
                     }
@@ -245,7 +256,6 @@ define(["angular", "js/controllers",
             };
 
             that.crearProductoPedidoDocumentoTemporal = function(obj, tipo) {
-                //console.log("=============================================== code 1 ",obj);
 
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
 
@@ -272,14 +282,11 @@ define(["angular", "js/controllers",
                 producto_pedido_separado.cantidad_despachada = obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada = producto_pedido_separado.cantidad_solicitada - obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada_real = obj.cantidad_solicitada;
-
-                //console.log("producto >>>>>>>>>>>>>>>>>>");
-                //  console.log(producto_pedido_separado);                                                      
+                                               
 
                 producto_pedido_separado.setLote(lote_pedido);
 
 
-                //console.log("Estructura del Objeto Producto", producto_pedido_separado, obj);
 
                 return producto_pedido_separado;
 
@@ -289,7 +296,7 @@ define(["angular", "js/controllers",
             //Trae el Listado de Documentos de Usuario
             $scope.traerListadoDocumentosUsuario = function(obj, callback) {
 
-
+                
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -328,9 +335,6 @@ define(["angular", "js/controllers",
 
             $scope.onAbrirVentanaLotes = function(documento, documento_despacho, row) {
 
-               /* console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho code 1 ");
-                console.log(documento_despacho);
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");*/
                 //almacenar lotes del mismo producto
                 var productos = [];
                 var producto = row.entity;
@@ -340,7 +344,7 @@ define(["angular", "js/controllers",
                     var _producto = documento.getPedido().getProductos()[i];
 
                     if (_producto.codigo_producto === producto.codigo_producto) {
-                        //console.log(_producto, "productos en la lista ");
+                       
                         _producto.lote.cantidad_ingresada = _producto.cantidad_separada;
                         productos.push(_producto);
                     }
@@ -349,7 +353,6 @@ define(["angular", "js/controllers",
 
 
                 $scope.opts = {
-                    //backdrop: true,
                     size: 'lg',
                     backdrop: 'static',
                     dialogClass: "editarproductomodal",
@@ -381,7 +384,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        console.log(data, "productos auditados");
+                      
                         that.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados, $scope.productosAuditados);
                     }
 
@@ -424,7 +427,6 @@ define(["angular", "js/controllers",
 
             $scope.onEliminarProductoAuditado = function(DocumentoTemporal, row) {
 
-                console.log("row entity ", row.entity.lote.item_id);
 
                 var obj = {
                     session: $scope.session,
@@ -462,16 +464,16 @@ define(["angular", "js/controllers",
                         documento_temporal: {
                             documento_temporal_id: caja.documento_id,
                             numero_caja: caja.numero_caja,
-                            tipo:caja.tipo
+                            tipo: caja.tipo
                         }
                     }
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log(data.status, " tipo de estado ", typeof data.status);
+                  
                     if (data.status === 200) {
                         caja.caja_cerrada = '1';
-                        //that.sacarCaja(caja);
+                       
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
                     }
@@ -483,9 +485,9 @@ define(["angular", "js/controllers",
             that.sacarCaja = function(caja) {
                 for (var i in $scope.cajasSinCerrar) {
                     var _caja = $scope.cajasSinCerrar[i];
-                    // console.log("caja a borrar ",_caja, " buscando con caja ", caja);
+
                     if (_caja.numero_caja === caja.numero_caja && caja.documento_id === _caja.documento_id) {
-                        console.log("caja a borrar ", _caja);
+
                         $scope.cajasSinCerrar.splice(i, 1);
                         break;
                     }
@@ -493,15 +495,12 @@ define(["angular", "js/controllers",
             };
 
             $scope.generarDocumento = function(documento) {
-                console.log("generar documento ",documento);
+
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
                     url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-
-                console.log(typeof documento.pedido.tipo, ">>>>> generando documento ", typeof documento.pedido.TIPO_FARMACIA, url);
-                //return;
 
                 var obj = {
                     session: $scope.session,
@@ -525,10 +524,12 @@ define(["angular", "js/controllers",
                         $scope.cajasSinCerrar = [];
                         $scope.productosAuditados = [];
 
-                        console.log("respuesta al generar documento " + data);
+
                         $scope.$broadcast("onRefrescarListadoPedidos");
-                        $scope.$emit('cerrardetallecliente', {animado: true});
-                        $scope.$emit('cerrardetallefarmacia', {animado: true});
+                        
+                        $scope.$broadcast("cerrarDetalleCliente");
+                        
+                        $scope.$broadcast("cerrarDetalleFarmacia");
 
                         $scope.documento_generado = data.obj.movimientos_bodegas;
                         $scope.opts = {
@@ -556,7 +557,7 @@ define(["angular", "js/controllers",
                         };
                         var modalInstance = $modal.open($scope.opts);
 
-                        
+
                         //generar el pdf
                         var obj = {
                             session: $scope.session,
@@ -564,7 +565,7 @@ define(["angular", "js/controllers",
                                 movimientos_bodegas: {
                                     empresa: $scope.documento_generado.empresa_id,
                                     numero: $scope.documento_generado.numero_documento,
-                                    prefijo:$scope.documento_generado.prefijo_documento
+                                    prefijo: $scope.documento_generado.prefijo_documento
                                 }
                             }
                         };
@@ -599,7 +600,10 @@ define(["angular", "js/controllers",
                 });
 
             };
-
+            /**
+             * +Descripcion: metodo que se emite al auditar un producto prosiguiendo
+             * a consultar los productos auditados
+             */
             $rootScope.$on("productoAuditado", function(e, producto, DocumentoTemporal) {
                 if (DocumentoTemporal.getPedido() === undefined) {
                     return;
@@ -641,7 +645,7 @@ define(["angular", "js/controllers",
                         documento_temporal: {
                             numero_pedido: numero_pedido,
                             numero_caja: numero_caja,
-                            tipo:tipoCaja
+                            tipo: tipoCaja
                         }
                     }
                 };
@@ -649,7 +653,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
-                        console.log("reporte generado")
+
                         $scope.visualizarReporte("/reports/" + nombre_reporte, "Rotulo_" + numero_caja, "download");
                     } else {
 
@@ -659,7 +663,7 @@ define(["angular", "js/controllers",
 
 
             $scope.$on("onDetalleCerrado", function() {
-                console.log("========================= onDetalleCerrado");
+
                 $scope.productosAuditados = [];
                 $scope.productosNoAuditados = [];
                 $scope.productosPendientes = [];
@@ -667,7 +671,7 @@ define(["angular", "js/controllers",
             });
 
             socket.on("onListarDocumentosTemporalesClientes", function(data) {
-                console.log("onListarDocumentosTemporalesClientes", data);
+
                 if (data.status === 200) {
                     $scope.notificacionclientes++;
                     for (var i in data.obj.documento_temporal_clientes) {
@@ -675,13 +679,13 @@ define(["angular", "js/controllers",
                         var documento_temporal = that.crearDocumentoTemporal(obj, 1);
                         documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
-                        console.log("object added client ", obj);
+                       
                     }
                 }
             });
 
             socket.on("onListarDocumentosTemporalesFarmacias", function(data) {
-                console.log("onListarDocumentosTemporalesFarmacias", data);
+
                 if (data.status === 200) {
                     $scope.notificacionfarmacias++;
                     for (var i in data.obj.documento_temporal_farmacias) {
@@ -689,13 +693,9 @@ define(["angular", "js/controllers",
                         var documento_temporal = that.crearDocumentoTemporal(obj, 2);
                         documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
-                        console.log("object added client ", obj);
+
                     }
                 }
             });
-
-
-
-
         }]);
 });

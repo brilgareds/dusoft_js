@@ -9,11 +9,11 @@
             <div class="col-sm-12 col-md-12"  ng-controller="ContenedorSeparacionController">
 
 
-                <button type="button" class="btn btn-default pull-right boton-separacion-cancelar btn-sm" ng-click="closeDetallePedidos()"  
+                <button type="button" class="btn btn-default pull-right boton-separacion-cancelar btn-sm" ng-click="cerrarDetallePedidos()"  
                         aria-haspopup="true" aria-expanded="false" ><span class="glyphicon glyphicon glyphicon-remove-circle"></span> Cerrar </button>
 
 
-                <div class="panel panel-default marginBottom5">
+                <div class="panel panel-info marginBottom5">
 
                     <div class="panel-heading">
                         <h4 class="h4MarginTopBottom"><span >Separacion de pedidos</span> </h4>
@@ -21,36 +21,34 @@
 
                     <div class="panel-body">
 
-                        <table id="tablaSeparacion">
-                            <tr><th>Cliente </th><td>FARMACIA DUANA</td></tr>
-                            <tr><th>Observacion &nbsp;</th><td>Se solicita pedido por tutela</td></tr>
-                            <tr><th>  </th><td> </td></tr>
-                            <tr>
-                                <th>  </th>
-                                <td> 
-
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="row">
+                            <div class ="col-md-1">
+                                <div class="lbl_editar_producto">Pedido</div>
+                                 {{rootDetalle.pedido.get_numero_pedido()}}
+                            </div>
+                            <div class="col-md-3"><div class="lbl_editar_producto">Cliente</div>{{rootDetalle.nombreCliente}}</div>
+                        </div>
                     </div>
 
                 </div>
             </div>
         </div> 
-        <div class="panel panel-default ">
+        <div class="panel panel-info ">
             <div class="panel-heading">                                   
             </div>
-            <div class="panel-body">
-                <div class="grid-separacion-producto grid-responsive" ng-grid="detalleSeparacionProducto" > </div>
+            <div class="panel-body ">
+                <div class="table-responsive">
+                    <div class="grid-separacion-producto grid-responsive" ng-grid="detalleSeparacionProducto" > </div>
+                </div>
             </div>
         </div>
         
-        <div class="modal-footer">                                
-            <button class="btn btn-default" ng-click="onEliminarProductosTodos()">
-                <span class="glyphicon glyphicon-ok" ></span> Eliminar
+        <div class="modal-footer ">                                
+            <button class="btn btn-warning" ng-click="onEliminarTemporal()">
+                <span class="glyphicon glyphicon-remove" ></span> Eliminar
             </button>   
             
-            <button class="btn btn-default" ng-click="onGenerarSeparacion()">
+            <button class="btn btn-default" ng-click="onGenerarDocumento()">
                 <span class="glyphicon glyphicon-ok" ></span> Generar
             </button> 
             

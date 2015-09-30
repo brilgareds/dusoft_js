@@ -4,19 +4,21 @@
         <div class="col-md-3 pull-right">
             <p class="input-group">
                 <input type="text" class="form-control" 
-                       ng-keypress="buscadorDocumentosPlanilla($event);" 
-                       ng-model="datos_view.termino_busqueda_documentos" 
+                       ng-keypress="traerPedidosAsignados($event);" 
+                       ng-model="rootSeparacionFarmacias.terminoBusqueda" 
                        placeholder="Buscar" name="" id="" 
                        />
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="submit" ng-click="buscadorDocumentosPlanilla($event)"><i class="glyphicon glyphicon-search"></i></button>
+                    <button class="btn btn-default" type="submit" ng-click="traerPedidosAsignados({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                 </span>
             </p>
         </div>
     </div>
-    <div class="table-responsive" >
-        <div class="defaultGrid grid-responsive" ng-grid="pedidosFarmacias" > </div>
-    </div>
+    
+    <div class="table-responsive" style="clear:both; padding-top: 10px;">
+    <div class="defaultGrid grid-responsive" ng-grid="pedidosFarmacias"></div>
+</div>
+    </br>
     <div class="row text-center">
         <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactualFarmacias == 1" ng-click="paginaAnteriorFarmacias()">
             <span class="glyphicon glyphicon-chevron-left" ></span>

@@ -5,10 +5,11 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('SeparacionFarmaciasController', [
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal","PedidoAuditoria","Farmacia",
-        "SeparacionService",
+        "SeparacionService","EmpresaPedido",
         function($scope, $rootScope, Request,
                 API, socket, AlertService, $modal, 
-                PedidoAuditoria, Farmacia, SeparacionService) {
+                PedidoAuditoria, Farmacia, SeparacionService,
+                EmpresaPedido) {
 
 
             var self = this;
@@ -18,7 +19,8 @@ define(["angular", "js/controllers",
                 $scope.rootSeparacionFarmacias = {};
                 $scope.rootSeparacionFarmacias.paginaActual = 1;
                 $scope.rootSeparacionFarmacias.terminoBusqueda = "";
-                $scope.rootSeparacionFarmacias.listaPedidos = [];
+                $scope.rootSeparacionFarmacias.empresa = EmpresaPedido;
+                $scope.rootSeparacionFarmacias.filtroPedido = {};
                 callback();
             };
             
@@ -29,14 +31,14 @@ define(["angular", "js/controllers",
              * +Descripcion: Trae los pedidos asignados al tercero o los que estan en separacion
              */
             self.traerPedidosAsignados = function(esTemporal, callback) {
-                
-                var filtro = (esTemporal)? {temporales : true} : {asignados : true};
+                var filtro = {};
+                filtro.estado = (esTemporal)? {temporales : true} : {asignados : true};
 
                 SeparacionService.traerPedidosAsignadosFarmacias($scope.root.session, filtro,
                 $scope.rootSeparacionFarmacias.paginaActual, $scope.rootSeparacionFarmacias.terminoBusqueda, function(pedidos){
                     
                     if(pedidos){
-                        $scope.rootSeparacionFarmacias.listaPedidos = pedidos;
+                        EmpresaPedido.setPedidos(pedidos);
                     }
                 });
             };
@@ -47,7 +49,7 @@ define(["angular", "js/controllers",
              *  farmacias y pedidos temporales farmacias
              */
             $scope.pedidosFarmacias = {
-                data: 'rootSeparacionFarmacias.listaPedidos',
+                data: 'rootSeparacionFarmacias.empresa.getPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
@@ -58,12 +60,21 @@ define(["angular", "js/controllers",
                     {field: 'detalle', width: "10%",
                         displayName: "Cantidad",
                         cellClass: "txt-center",
-                        cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detallePedido(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
+                        cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detallePedido(row.entity, rootSeparacionFarmacias.filtroPedido)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
 
                     }
                 ]
             };
+            
+            
+            $scope.traerPedidosAsignados = function(event){
+                
+                if(event.which === 13){
+                    self.traerPedidosAsignados($scope.root.esTemporal, function(){
 
+                    });
+                }
+            };
             
 
             /**
@@ -101,16 +112,17 @@ define(["angular", "js/controllers",
                  });*/
             };
 
-
             /*
              * @Author: Eduar
              * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionFarmacias
              */
             $scope.$on('$destroy', function iVeBeenDismissed() {
+                EmpresaPedido.vaciarPedidos();
                 $scope.rootSeparacionFarmacias = null;
             });
 
             self.init(function() {
+                $scope.rootSeparacionFarmacias.filtroPedido = {temporal:$scope.root.esTemporal};
                 self.traerPedidosAsignados($scope.root.esTemporal, function(){
                     
                 });

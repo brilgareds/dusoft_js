@@ -12,6 +12,23 @@ define(["angular", "js/models"], function(angular, models) {
             this.fecha_vencimiento = fecha_vencimiento;
         }
         
+        
+        Lote.prototype.getCodigo = function(){
+            return this.codigo_lote;
+        };
+        
+        Lote.prototype.setLote = function(codigoLote){
+            this.codigo_lote = codigoLote;
+        };
+        
+        Lote.prototype.getFechaVencimiento = function(){
+            return this.fecha_vencimiento;
+        };
+        
+        Lote.prototype.setFechaVencimiento = function(fechaVencimiento){
+            this.fecha_vencimiento = fechaVencimiento;
+        };
+        
         this.getClass = function(){
             return Lote;
         };

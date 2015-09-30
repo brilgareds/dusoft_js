@@ -4,14 +4,13 @@ define(["angular", "js/services"], function(angular, services) {
     services.factory('SeparacionService', 
                     ['$rootScope', 'Request', 'API',
                      "$modal", "Usuario","PedidoAuditoria", "Cliente",
-                     "Farmacia","ProductoPedido",
+                     "Farmacia","ProductoPedido", "$modal","localStorageService",
         function($rootScope, Request, API,
                  $modal, Usuario,PedidoAuditoria, Cliente,
-                 Farmacia, ProductoPedido) {
+                 Farmacia, ProductoPedido, $modal, localStorageService) {
 
             var self = this;
             
-             
             /*
              * @Author: Eduar
              * @param {Boolean} esTemporal
@@ -24,7 +23,7 @@ define(["angular", "js/services"], function(angular, services) {
                     session: session,
                     data: {
                         pedidos_clientes: {
-                            filtro: filtro,
+                            filtro: filtro.estado,
                             operario_id:0,
                             pagina_actual:pagina,
                             limite:25,
@@ -38,8 +37,9 @@ define(["angular", "js/services"], function(angular, services) {
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
 
-                       var pedidos = self.renderPedidosOperario('1', data.obj.pedidos_clientes);
+                       var pedidos = self.serializarPedidosOperario('1', data.obj.pedidos_clientes);
                        callback(pedidos);
+                       
 
                     } else {
                         callback(false);
@@ -71,8 +71,8 @@ define(["angular", "js/services"], function(angular, services) {
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-
-                       var pedidos = self.renderPedidosOperario('2', data.obj.pedidos_farmacias);
+                        console.log(data)
+                       var pedidos = self.serializarPedidosOperario('2', data.obj.pedidos_farmacias);
                        callback(pedidos);
 
                     } else {
@@ -83,11 +83,89 @@ define(["angular", "js/services"], function(angular, services) {
             
             /*
              * @Author: Eduar
+             * @param {Object} parametros
+             * @param {function} callback
+             * +Descripcion: Realiza la peticion para traer los pedidos de farmacias
+             */
+           self.traerDocumentoTemporal = function(session, pedido, callback) {
+               var url = API.SEPARACION_PEDIDOS.CLIENTES.CONSULTAR_TEMPORAL_CLIENTES;
+               if(pedido.getTipo() === '2'){
+                   url = API.SEPARACION_PEDIDOS.FARMACIAS.CONSULTAR_TEMPORAL_FARMACIAS;
+               }
+               
+                var obj = {
+                    session: session,
+                    data: {
+                        documento_temporal: {
+                            numero_pedido: pedido.get_numero_pedido()
+                        }
+                    }
+                };
+                
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                      callback(); 
+                      console.log("pedidos clientes >>>>>>>> ", data);
+
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+            
+            
+            self.agregarEncabezadoTemporal = function(pedido, session, callback){
+                var url = API.SEPARACION_PEDIDOS.CLIENTES.E008_DOCUMENTO_TEMPORAL_CLIENTES;
+                var obj = {
+                    numero_pedido : pedido.get_numero_pedido(),
+                    empresa_id : pedido.getEmpresaDestino(),
+                    observacion : "Pedido #"+pedido.get_numero_pedido()
+                };
+                
+                
+                if(pedido.getTipo() === '2'){
+                    url = API.SEPARACION_PEDIDOS.FARMACIAS.E008_DOCUMENTO_TEMPORAL_FARMACIAS;
+                } else {
+                    obj.tercero_id = pedido.getCliente().getId();
+                    obj.tipo_tercero_id = pedido.getCliente().getTipoId();
+                }
+                
+               var obj = {
+                    session: session,
+                    data: {
+                        documento_temporal: obj
+                    }
+               };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                      var id = data.obj.documento_temporal;
+                      id =  (!id.documento_temporal_id)? parseInt(id.doc_tmp_id): parseInt(id.documento_temporal_id);
+                      pedido.setTemporalId(id);
+                      
+                      //El pedido tiene un documento temporal por lo tanto pasa de asignados a temporales separados
+                      var filtroPedido = {};
+                      filtroPedido.temporal = true;
+                      filtroPedido.numeroPedido = pedido.get_numero_pedido();
+                      filtroPedido.tipoPedido  = pedido.getTipo();
+                      localStorageService.set("pedidoSeparacion", filtroPedido);
+                      
+                      callback(true);
+
+                    } else {
+                      callback(false);
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
              * @param {String} tipoPedido
              * @param {Array<Object>} pedidos
              * +Descripcion: Serializa los objetos necesarios del modulo
              */
-            self.renderPedidosOperario = function(tipoPedido, pedidos){
+            self.serializarPedidosOperario = function(tipoPedido, pedidos){
                 var listaPedidos  = [];
                 for(var i in pedidos){
                     var _pedido = pedidos[i];
@@ -117,16 +195,67 @@ define(["angular", "js/services"], function(angular, services) {
                             
                             pedido.setFarmacia(farmacia);
                         }
-
+                        
                         pedido.setDatos(_pedido);
                         pedido.agregarDetallePedido(ProductoPedido, _pedido.lista_productos);
                         pedido.setCantidadProductos(pedido.getProductos().length);
+                        
+                        if(_pedido.empresa_destino){
+                                pedido.setEmpresaDestino(_pedido.empresa_destino);
+                        }
+
+                        if(_pedido.centro_destino){
+                                pedido.setCentroDestino(_pedido.centro_destino);
+                        }
+
+                        if(_pedido.bodega_destino){
+                                pedido.setBodegaDestino(_pedido.bodega_destino);
+                        }
+                        
                         listaPedidos.push(pedido);
                     }
                 }
                 
                 return listaPedidos;
                                 
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {String} titulo
+             * @param {Array<Object>} mensaje
+             * @param {function} callback
+             * +Descripcion: Muestra alerta que se reutiliza en la aplicacion de separacion
+             */
+            self.mostrarAlerta = function(titulo, mensaje,callback){ 
+                
+               var opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="cerrar()">&times;</button>\
+                                        <h4 class="modal-title">'+titulo+'</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <p style="font-size:15px;">'+mensaje+'</p>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-primary"  ng-click="cerrar()">Cerrar</button>\
+                                    </div>',
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cerrar = function() {                           
+                            $modalInstance.close();
+                             if(callback){
+                                callback();
+                             }
+                        };
+
+                    }
+                };
+                var modalInstance = $modal.open(opts);
             };
            
 

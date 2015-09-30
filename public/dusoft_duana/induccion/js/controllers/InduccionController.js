@@ -211,7 +211,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.onImprimirRotulo(paginaactual, empresa, centroUtilidad, bodega, producto);
                     });
 
-                    $scope.onImprimirRotulo = function (paginaactual, empresas, centroUtilidad, bodega, producto) {
+                    $scope.onImprimirRotulo = function () {
                         var empresa = $scope.root.empresaSeleccionada;
                         var url = API.INDUCCION.IMPRIMIR_PRODUCTOS;
 

@@ -614,7 +614,10 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
          tipo_cotizacion_pedido: 1,
          producto: producto.codigo_producto,
          tipo_pedido:0,
-         descripcion: "descripcion ( iva: "+ producto.iva + " cantidad: " + producto.cantidad_solicitada + " producto.precio_venta: " + producto.precio_venta,
+         descripcion: "descripcion(iva: "+ producto.iva + 
+                     "| cantidad_nueva: " + producto.cantidad_solicitada + 
+                     "| cantidad_inicial: " + producto.cantidad_inicial + 
+                     "| precio_venta: " + producto.precio_venta +" )",
          accion: 1,
          usuario: cotizacion.usuario_id
         }
@@ -854,7 +857,10 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
          tipo_cotizacion_pedido: 1,
          producto: producto.codigo_producto,
          tipo_pedido:0,
-         descripcion: "descripcion ( iva: "+ producto.iva + " cantidad: " + producto.cantidad_solicitada + " producto.precio_venta: " + producto.precio_venta,
+         descripcion: "descripcion(iva: "+ producto.iva + 
+                     "| cantidad_nueva: " + producto.cantidad_solicitada + 
+                     "| cantidad_inicial: " + producto.cantidad_inicial + 
+                     "| precio_venta: " + producto.precio_venta +" )",
          accion: 1,
          usuario: cotizacion.usuario_id
         }

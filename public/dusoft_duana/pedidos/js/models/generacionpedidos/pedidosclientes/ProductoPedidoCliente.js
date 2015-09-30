@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.valor_total_sin_iva = 0;
                 this.valor_iva = 0;
                 this.valor_total_con_iva = 0;
+                this.cantidad_inicial = 0;
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
@@ -135,6 +136,19 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoPedidoCliente.prototype.get_cantidad_solicitada = function() {
                 return this.cantidad_solicitada;
             };
+            
+            
+             // Cantidad Inicial
+            ProductoPedidoCliente.prototype.set_cantidad_inicial = function(cantidad_inicial) {
+                this.cantidad_inicial = cantidad_inicial;
+                return this;
+            };
+            // Obteniendo Cantidad inicial
+            ProductoPedidoCliente.prototype.get_cantidad_inicial = function() {
+                return this.cantidad_inicial;
+            };
+            
+            
 
             // Estado
             ProductoPedidoCliente.prototype.set_estado = function(estado) {

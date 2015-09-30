@@ -196,6 +196,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 productos.forEach(function(data) {
 
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
+                    producto.set_cantidad_inicial(data.cantidad_solicitada);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
                     $scope.Pedido.set_productos(producto);
@@ -534,6 +535,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var obj = {};
                 var url = '';
+              
                 // Cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
 

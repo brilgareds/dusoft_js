@@ -130,7 +130,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.items = data.lista_productos.length;
                 for (var i in data.lista_productos) {
                     var obj = data.lista_productos[i];
-                    console.log(obj);
                     var producto = ProductoMovimiento.get(
                             obj.codigo_producto,
                             obj.nombre_producto,

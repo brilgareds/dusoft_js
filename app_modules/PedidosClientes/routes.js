@@ -125,5 +125,11 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/reportePedido', function(req, res) {
         c_pedidos_clientes.reportePedido(req, res);
     });
+    
+    app.post('/api/PedidosClientes/modificarEstadoCotizacion', function(req, res) {
+        c_pedidos_clientes.modificarEstadoCotizacion(req, res);
+    });
+    
+    
 
 };

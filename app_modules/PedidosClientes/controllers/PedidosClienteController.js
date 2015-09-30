@@ -612,6 +612,35 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
     });
 };
 
+
+/*
+ * Author : Eduar Garcia
+ * Descripcion :  Cambia el estado de una cotizacion
+ */
+PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+    var cotizacion = args.pedidos_clientes.cotizacion;
+    
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+        
+    G.Q.nfcall(that.m_pedidos_clientes.modificarEstadoCotizacion,cotizacion).
+    then(function(rows){
+        res.send(G.utils.r(req.url, 'Cotizacion cambiada correctamente', 200, {pedidos_clientes:[]}));
+    }).
+    fail(function(err){
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
+    }).
+    done();
+    
+};
+
+
 /*
  * Autor : Camilo Orozco
  * Descripcion : Listar Cotizaciones

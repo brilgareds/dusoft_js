@@ -1,16 +1,16 @@
 <div style="padding-top:8px">
     <div class="row">
-        <div class="col-md-3">
-           
-                <button type="button" class="btn btn-default pull-left" ng-click="onIrVistaGuardarPedidoTemporal()" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" name="btnCrearPedido">
-                    <span class="glyphicon glyphicon-plus"></span> Crear Pedido
-                </button>
-        
+        <div class="pull-left" style="padding-left:15px">
+
+            <button type="button" class="btn btn-default" ng-click="onIrVistaGuardarPedidoTemporal()" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" name="btnCrearPedido">
+                <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+            </button>
+
         </div>
-        
-        
-        <div class="col-md-4">
-           <!-- <p class="input-group " >//-->
+
+
+        <div class="col-md-3">
+            <!-- <p class="input-group " >//-->
 
             <ui-select ng-model="rootPedidosFarmacias.empresaSeleccionada"  
                        theme="select2" 
@@ -21,11 +21,11 @@
                     {{ empresa.getNombre() }}
                 </ui-select-choices>
             </ui-select>  
-          <!--  </p>//-->
+            <!--  </p>//-->
         </div>
 
         <!--  Contenedor que agrupa dropdown, buscador y boton search//-->
-        
+
         <div class="col-md-3 pull-right">
             <div class="input-group">
 
@@ -50,11 +50,11 @@
 </div>
 
 
- <p class="input-group">
-     
-<div class="table-responsive" style="clear:both; padding-top: 10px;">
-    <div class="defaultGrid grid-responsive" ng-grid="rootPedidosFarmacias.lista_pedidos_farmacias"></div>
-</div>
+<p class="input-group">
+
+    <div class="table-responsive" style="clear:both;">
+        <div class="defaultGrid grid-responsive" ng-grid="rootPedidosFarmacias.lista_pedidos_farmacias"></div>
+    </div>
 </p>
 </br>
 

@@ -1,29 +1,44 @@
-<button type="button" class="btn btn-default pull-left" ng-click="onIrVistaGuardarPedidoTemporal()" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" name="btnCrearPedido">
-    <span class="glyphicon glyphicon-plus"></span> Crear Pedido
-</button>
+<div class="row" style="padding-top:8px">
 
-<div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
+    <div class="pull-left" style="padding-left:15px">
+
+        <button type="button" class="btn btn-default pull-left" ng-click="onIrVistaGuardarPedidoTemporal()" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" name="btnCrearPedido">
+            <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+        </button>
+    </div>
+    <div class="col-md-3">
+
+        <ui-select ng-model="rootPedidosTempFarmacias.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onBuscarPedidos()">
+            <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.getNombre() }}</ui-select-match>
+            <ui-select-choices  refresh-delay="0" repeat="empresa in root.empresasFarmacias | filter:$select.search">
+                {{ empresa.getNombre() }}
+            </ui-select-choices>
+        </ui-select>  
+    </div>
     
-    <ui-select ng-model="rootPedidosTempFarmacias.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onBuscarPedidos()">
-        <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.getNombre() }}</ui-select-match>
-        <ui-select-choices  refresh-delay="0" repeat="empresa in root.empresasFarmacias | filter:$select.search">
-            {{ empresa.getNombre() }}
-        </ui-select-choices>
-    </ui-select>  
+    
+    
+    
+     <div class="col-md-3 pull-right">
+        <div class="input-group">
+
+           <input type="text" class="form-control pull-right" ng-keypress="onCampoBuscarPedidos($event)" ng-model="rootPedidosTempFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
+
+            <div class="input-group-btn">
+                <button class="btn btn-default" type="submit" ng-click="onBuscarPedidos()"><i class="glyphicon glyphicon-search"></i></button>
+            </div>
+        </div>
+    </div> 
+    
+
 </div>
 
-<div class="input-group navbar-form buscadorgeneral">
-    <input type="text" class="form-control pull-right" ng-keypress="onCampoBuscarPedidos($event)" ng-model="rootPedidosTempFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-    <span class="input-group-btn" >
-        <button class="btn btn-default" type="submit" ng-click="onBuscarPedidos()"><i class="glyphicon glyphicon-search"></i></button>
-    </span>
-</div>
-
+<p class="input-group">
 <div class="table-responsive">
     <div class="defaultGrid grid-responsive" ng-grid="rootPedidosTempFarmacias.lista_pedidos_temporales_farmacias"></div>
 </div>
 
-
+</p>
 
 <div class="row text-center">
     <br/>

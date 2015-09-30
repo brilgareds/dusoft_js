@@ -5,9 +5,9 @@ define(["angular", "js/directive"], function(angular, directive) {
             var directive = {};
 
             directive.restrict = 'E';
-            directive.template = '<div class="input-group input-group-sm col-md-5">\
+            directive.template = '<div class="input-group input-group-sm col-md-5" style="padding-top:0px;">\
                                     <input type="text" class="form-control inputSearchTree" placeholder="Buscar" aria-describedby="basic-addon1">\
-                                    <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-search"></i></span>\
+                                    <span class="input-group-addon botonmenu" id="basic-addon1"><span class="glyphicon glyphicon-align-justify" ></span></span>\
                                   </div>';
 
             directive.scope = {

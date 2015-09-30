@@ -38,11 +38,12 @@ body{
 }
 
 
-.botonmenu{
-    width: 22px;
+span.botonmenu{
+    /*width: 22px;
     height: 22px;
-    padding:4px;
+    padding:4px;*/
     background-color: #428bca!important;
+    color:white;
 }
 
 .buscadorMenuPrincipal input[type='text']{
@@ -52,7 +53,7 @@ body{
 }
 
 .buscadorMenuPrincipal .input-group{
-    width:60%;
+    width:100%;
     padding:2px 0px 5px 0px;
     margin-left:2px;
 }
@@ -62,7 +63,7 @@ div{
     padding-bottom: 0px;	
 }
 
-.contenedormenu .botonmenu{
+.botonmenu{
     display: none;
 
 }
@@ -73,8 +74,9 @@ div{
 
 
 .contenedorArbol{
-    height:604px;
+    height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 
@@ -386,19 +388,19 @@ div.ngHeaderCell	{
 /**media query*/
 
 @media screen and ( max-width: 2700px /*1700*/ ) and (min-width: 769px) {
-    .contenedormenu .botonmenu{
+    /*.contenedormenu .botonmenu{
         position:absolute;
         top:2px;
         right: 0px;
         display:inline;
-    }
+    }*/
 
     div.contenedormenu {
         position: fixed;
         z-index: 5;
-        width: 300px;
+        width: 350px;
         top:53px;
-        height: 760px;
+        height: 100%;
     }
 
     div.contenedormenu .navbar{
@@ -411,7 +413,7 @@ div.ngHeaderCell	{
     }
 
     div.cerrarmenu{
-        left: -261px;
+        left: -308px;
     }
 
 

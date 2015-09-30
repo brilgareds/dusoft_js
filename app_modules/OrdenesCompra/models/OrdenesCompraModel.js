@@ -232,7 +232,8 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 a.codigo_unidad_negocio,\
                 d.descripcion,\
                 d.imagen,\
-                a.estado,\
+                a.estado, \
+                j.id as nit,\
                 CASE WHEN a.estado = '0' THEN 'Ingresada en bodega' \
                      WHEN a.estado = '1' THEN 'Activa' \
                      WHEN a.estado = '2' THEN 'Anulado' \
@@ -253,6 +254,7 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
                 CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal \
                 FROM compras_ordenes_pedidos a \
+                INNER JOIN empresas j ON j.empresa_id=a.empresa_id \
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id \
                 inner join terceros e on b.tipo_id_tercero = e.tipo_id_tercero and b.tercero_id = e.tercero_id \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\

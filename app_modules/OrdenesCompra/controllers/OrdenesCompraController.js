@@ -1,8 +1,7 @@
 
 var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails) {
 
-    console.log("Modulo Ordenes Compra  Cargado ");
-
+  
     this.m_ordenes_compra = ordenes_compras;
     this.m_productos = productos;
     this.e_ordenes_compra = eventos_ordenes_compras;
@@ -307,7 +306,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
-
+      
         if (err || orden_compra.length === 0) {
             res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
             return;
@@ -814,7 +813,7 @@ OrdenesCompra.prototype.consultarArchivosNovedades = function(req, res) {
 
 // Generar Reporte Orden Compra
 OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
-
+   
     var that = this;
 
     var args = req.body.data;
@@ -850,7 +849,7 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
     var enviar_email = args.ordenes_compras.enviar_email;
 
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
-
+        
         if (err || orden_compra.length === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
             return;
@@ -865,7 +864,10 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
 
                     var orden = orden_compra[0];
 
-                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function(nombre_reporte) {
+                    _generar_reporte_orden_compra({orden_compra: orden, 
+                                                   lista_productos: lista_productos, 
+                                                   usuario_imprime: req.session.user.nombre_usuario, 
+                                                   serverUrl: req.protocol + '://' + req.get('host') + "/"}, function(nombre_reporte) {
 
                         if (enviar_email) {
 
@@ -1413,8 +1415,7 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
     productos.forEach(function(row) {
 
         var codigo_producto = row.codigo_producto;
-        console.log("buscar producto con codigo ",codigo_producto );
-
+       
         that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, null, function(err, lista_productos) {
 
             if (err || lista_productos.length === 0) {
@@ -1441,7 +1442,8 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 
 // Funcion que genera el reporte en formato PDF usando la libreria JSReport
 function _generar_reporte_orden_compra(rows, callback) {
-
+    
+    
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
@@ -1467,7 +1469,8 @@ function _generar_reporte_orden_compra(rows, callback) {
             G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
 
                 if (err) {
-                    console.log('=== Se ha generado un error generando el reporte ====');
+                   
+                     res.send(G.utils.r(req.url, 'Se ha generado un error generando el reporte', 200, {nombre_reporte: {}}));
                 } else {
                     callback(nombre_reporte);
                 }

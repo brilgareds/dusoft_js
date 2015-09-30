@@ -847,11 +847,7 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
      cotizacion.usuario_id = req.session.user.usuario_id;
     
     var paramLogCliente = {
-        cabecera:{
-        cotizacion:cotizacion.numero_cotizacion,
-        accion: 1,
-        usuario: cotizacion.usuario_id
-        },
+    
         detalle:{
          cotizacion: cotizacion.numero_cotizacion,
          tipo_cotizacion_pedido: 1,
@@ -861,7 +857,7 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
                      "| cantidad_nueva: " + producto.cantidad_solicitada + 
                      "| cantidad_inicial: " + producto.cantidad_inicial + 
                      "| precio_venta: " + producto.precio_venta +" )",
-         accion: 1,
+         accion: 0,
          usuario: cotizacion.usuario_id
         }
     };
@@ -1471,7 +1467,35 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     }
 
     pedido.usuario_id = req.session.user.usuario_id;
-
+    
+     var paramLogCliente = {
+       
+        detalle:{
+         cotizacion: pedido.numero_cotizacion,
+         tipo_cotizacion_pedido: 0,
+         producto: producto.codigo_producto,
+         tipo_pedido:0,
+         descripcion: "descripcion(iva: "+ producto.iva + 
+                     "| cantidad_nueva: " + producto.cantidad_solicitada + 
+                     "| cantidad_inicial: " + producto.cantidad_inicial + 
+                     "| precio_venta: " + producto.precio_venta +" )",
+         accion: 1,
+         usuario: pedido.usuario_id
+        }
+    };
+  
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento cuando se modifica un pedido
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    that.m_pedidos_clientes_log.logModificarProductoCotizacion(paramLogCliente, function(){
+        
+        
+    });
+    
     that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
@@ -1531,7 +1555,37 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
         return;
     }
-
+     pedido.usuario_id = req.session.user.usuario_id;
+    var paramLogCliente = {
+     
+        detalle:{
+         cotizacion: pedido.numero_cotizacion,
+         tipo_cotizacion_pedido: 0,
+         producto: producto.codigo_producto,
+         tipo_pedido:0,
+         descripcion: "descripcion(iva: "+ producto.iva + 
+                     "| cantidad_nueva: " + producto.cantidad_solicitada + 
+                     "| cantidad_inicial: " + producto.cantidad_inicial + 
+                     "| precio_venta: " + producto.precio_venta +" )",
+         accion: 0,
+         usuario: pedido.usuario_id
+        }
+    };
+  
+  
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento para cuando se quiera eliminar un producto
+     * de una cotizacion o un pedido
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function(){
+        
+        
+    });
+    
     that.m_pedidos_clientes.eliminar_producto_pedido(pedido, producto, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {

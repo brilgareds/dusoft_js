@@ -94,8 +94,25 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         }
     }).
     andWhere(function() {
-       this.where("b.codigo_producto", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-       orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+
+       var termino = termino_busqueda;
+       if(typeof termino_busqueda ===  'object'){
+           termino = termino_busqueda.termino;
+           
+            if(termino_busqueda.tipo_busqueda === 0){
+               this.where("b.descripcion", G.constants.db().LIKE, "%" + termino + "%");
+            } else if(termino_busqueda.tipo_busqueda === 1){
+                this.where("e.descripcion", G.constants.db().LIKE, "%" + termino + "%");
+            } else {
+                this.where("a.codigo_producto", G.constants.db().LIKE, "%" + termino + "%");
+            }
+           
+       } else {
+           
+            this.where("b.codigo_producto", G.constants.db().LIKE, "%" + termino + "%").
+            orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino + "%");
+       }
+        
     }).        
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).

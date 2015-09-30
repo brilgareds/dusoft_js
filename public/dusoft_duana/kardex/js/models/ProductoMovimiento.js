@@ -21,6 +21,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.precioContratacion;
                 this.codigoCum;
                 this.precioRegulado = 0;
+                this.descripcionMolecula = "";
             }
 
             //herencia
@@ -91,7 +92,17 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoMovimiento.prototype.setPrecioRegulado = function(precioRegulado) {
                 return this.precioRegulado = precioRegulado;
             };
-
+            
+            
+            ProductoMovimiento.prototype.getDescripcionMolecula = function() {
+                return this.descripcionMolecula;
+            };
+            
+            ProductoMovimiento.prototype.setDescripcionMolecula = function(descripcionMolecula) {
+                return this.descripcionMolecula = descripcionMolecula;
+            };
+               
+            
 
             this.get = function(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva) {
                 return new ProductoMovimiento(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva);

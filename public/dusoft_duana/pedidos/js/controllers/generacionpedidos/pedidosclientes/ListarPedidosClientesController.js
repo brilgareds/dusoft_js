@@ -121,6 +121,9 @@ define(["angular", "js/controllers",
                     },
                     btn_email_cotizaciones: {
                         'click': $scope.datos_view.opciones.sw_enviar_email_cotizaciones
+                    },
+                    btn_modificar_estado :{
+                        'click': $scope.datos_view.opciones.sw_modificar_estado_cotizacion
                     }
                 };
 
@@ -308,6 +311,7 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
+                                            <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
                                                 <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_visualizar_cotizaciones }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
                                                 <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_cotizaciones }}" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
@@ -317,6 +321,10 @@ define(["angular", "js/controllers",
                                        </div>'
                     }
                 ]
+            };
+            
+            $scope.activarCotizacion = function(cotizacion){
+                that.cambiarEstadoCotizacion(cotizacion.get_numero_cotizacion(), '1');
             };
 
             // Agregar Clase de acuerdo al estado del pedido
@@ -341,6 +349,27 @@ define(["angular", "js/controllers",
                 if (ev.which === 13) {
                     that.buscar_pedidos();
                 }
+            };
+            
+            that.cambiarEstadoCotizacion = function(numero, estado){
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: {numero_cotizacion:numero, estado:estado}
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_ESTADO_COTIZACION, "POST", obj, function(data) {
+
+
+                    if (data.status === 200) {
+                        that.buscar_cotizaciones();
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se genero un error");
+                    }
+                });
             };
 
             that.buscar_pedidos = function() {

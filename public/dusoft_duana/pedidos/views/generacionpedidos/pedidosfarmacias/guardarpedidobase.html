@@ -113,8 +113,8 @@
 
                                         <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
-                                            <ui-select-choices repeat="centro in root.pedido.getFarmaciaDestino().getCentrosUtilidad() | filter:$select.search">
-                                                {{centro.getNombre()}}
+                                            <ui-select-choices repeat="centro in root.pedido.getFarmaciaDestino().getCentrosUtilidad() | filter:{nombre: $select.search}">
+                                                {{centro.getNombre()}} 
                                             </ui-select-choices>
                                         </ui-select>
 
@@ -266,7 +266,7 @@
             </tabset>  
         </div>    
     </div>
-
+    </br>
     <div class="col-sm-12 btn-toolbar">
         <button type="submit" ng-show="!root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGenerarPedido()"
                  ng-validate-events="{{root.servicio.getOpcionesModulo().btnGenerarPedido}}" ng-disabled="!root.pedido.getEsTemporal()" >

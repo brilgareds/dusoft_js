@@ -59,14 +59,32 @@
 
 
         <div class="col-lg-2 pull-right">
-            <p class="input-group">
+            
+            <div class="input-group">
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtroProducto.nombre}} <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li ng-repeat="filtro in filtros">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                    </li>
+                  </ul>
+                </div><!-- /btn-group -->
+                <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+              </div><!-- /input-group -->
+            
+            
+            <!-- p class="input-group">
 
                 <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </span>
-            </p>
+            </p -->
         </div>
 
     </div>

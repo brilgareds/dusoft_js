@@ -55,6 +55,7 @@ define(["angular"], function(angular) {
                     'INSERTAR_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/insertarDetallePedido',                   
                     'MODIFICAR_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/modificarDetallePedido',
                     'REPORTE_PEDIDO': BASE_URL + '/PedidosClientes/reportePedido',
+                    'ACTUALIZAR_ESTADO_COTIZACION': BASE_URL +'/PedidosClientes/modificarEstadoCotizacion'
                 },
                 FARMACIAS :{
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/buscarProductos',

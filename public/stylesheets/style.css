@@ -63,8 +63,8 @@ div{
     padding-bottom: 0px;	
 }
 
-.contenedormenu .botonmenu{
-    /*display: none;*/
+.botonmenu{
+    display: none;
 
 }
 
@@ -413,7 +413,7 @@ div.ngHeaderCell	{
     }
 
     div.cerrarmenu{
-        left: -311px;
+        left: -308px;
     }
 
 

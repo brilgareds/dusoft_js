@@ -330,10 +330,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
 
                 if ($scope.Pedido.get_numero_pedido() > 0) {
-                    console.log('== por aca ===');
+                  
                     that.gestionar_pedidos();
                 } else {
-                    console.log('== o por por qui ===');
+                  
                     that.gestionar_cotizaciones();
                 }
             };
@@ -352,9 +352,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                         </div>'},
                     {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},
-                    /*{field: 'get_codigo_invima()', displayName: 'Invima', width: "7%"},
-                    {field: 'get_fecha_vencimiento_invima()', displayName: 'Venc. Invima', width: "7%", cellFilter: "date:'dd/MM/yyyy'"},*/
+                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},                
                     {field: 'get_iva()', displayName: 'IVA', width: "50"},
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\

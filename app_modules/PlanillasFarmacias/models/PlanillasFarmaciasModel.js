@@ -244,15 +244,6 @@ PlanillasFarmaciasModel.prototype.ingresarDocumentosPlanillaFarmacia = function(
     var cantidad_neveras = (cantidad_neveras === '') ? 0 : cantidad_neveras;
     var temperatura_neveras = (temperatura_neveras === '') ? 0 : temperatura_neveras;
 
-  /*  var sql = "INSERT INTO inv_planillas_farmacia_devolucion_detalle\
-(id_inv_planilla_farmacia_devolucion,empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id, fecha_registro)\
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,now())RETURNING id_inv_planilla_farmacia_devolucion_detalle;";
-
-
-    G.db.query(sql, [id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
-
-    });*/
      G.knex("inv_planillas_farmacia_devolucion_detalle").
     returning("id_inv_planilla_farmacia_devolucion_detalle").
     insert({

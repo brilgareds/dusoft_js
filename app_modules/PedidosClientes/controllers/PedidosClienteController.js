@@ -1,7 +1,6 @@
 
-var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos, m_terceros, emails, pedidos_farmacias) {
+var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos, m_terceros, emails, pedidos_farmacias,m_pedidos_clientes_log) {
 
-    console.log("Modulo Pedidos Cliente  Cargado ");
 
     this.m_pedidos_clientes = pedidos_clientes;
     this.m_pedidos_farmacias = pedidos_farmacias;
@@ -10,6 +9,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
     this.m_pedidos = m_pedidos;
     this.m_terceros = m_terceros;
     this.emails = emails;
+    this.m_pedidos_clientes_log = m_pedidos_clientes_log;
 };
 
 /**
@@ -554,7 +554,10 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
  * Descripcion : Modificar detalle cotizacion
  */
 PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
-
+    
+    
+    console.log("<<<<<<<<<< PedidosCliente.prototype.modificarDetalleCotizacion >>>>>>>>>>>>");
+    
     var that = this;
 
     var args = req.body.data;
@@ -599,7 +602,35 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
     }
 
     cotizacion.usuario_id = req.session.user.usuario_id;
-
+    
+    var paramLogCliente = {
+        /*cabecera:{
+        cotizacion:cotizacion.numero_cotizacion,
+        accion: 1,
+        usuario: cotizacion.usuario_id
+        },*/
+        detalle:{
+         cotizacion: cotizacion.numero_cotizacion,
+         tipo_cotizacion_pedido: 1,
+         producto: producto.codigo_producto,
+         tipo_pedido:0,
+         descripcion: "descripcion ( iva: "+ producto.iva + " cantidad: " + producto.cantidad_solicitada + " producto.precio_venta: " + producto.precio_venta,
+         accion: 1,
+         usuario: cotizacion.usuario_id
+        }
+    };
+  
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    that.m_pedidos_clientes_log.logModificarProductoCotizacion(paramLogCliente, function(){
+        
+        
+    });
     that.m_pedidos_clientes.modificar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
@@ -753,7 +784,7 @@ PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
 PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
 
     var that = this;
-
+           
     var args = req.body.data;
 
     // Cotizacion
@@ -780,7 +811,40 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
         return;
     }
-
+    
+     cotizacion.usuario_id = req.session.user.usuario_id;
+    
+    var paramLogCliente = {
+        cabecera:{
+        cotizacion:cotizacion.numero_cotizacion,
+        accion: 1,
+        usuario: cotizacion.usuario_id
+        },
+        detalle:{
+         cotizacion: cotizacion.numero_cotizacion,
+         tipo_cotizacion_pedido: 1,
+         producto: producto.codigo_producto,
+         tipo_pedido:0,
+         descripcion: "descripcion ( iva: "+ producto.iva + " cantidad: " + producto.cantidad_solicitada + " producto.precio_venta: " + producto.precio_venta,
+         accion: 1,
+         usuario: cotizacion.usuario_id
+        }
+    };
+  
+  
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento para cuando se quiera eliminar un producto
+     * de una cotizacion
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function(){
+        
+        
+    });
+    
     that.m_pedidos_clientes.eliminar_producto_cotizacion(cotizacion, producto, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
@@ -1876,6 +1940,12 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 }
 ;
 
-PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos", "m_terceros", "emails", "m_pedidos_farmacias"];
+PedidosCliente.$inject = ["m_pedidos_clientes", 
+                          "e_pedidos_clientes", 
+                          "m_productos", 
+                          "m_pedidos", 
+                          "m_terceros", 
+                          "emails", 
+                          "m_pedidos_farmacias", "m_pedidos_clientes_log"];
 
 module.exports = PedidosCliente;

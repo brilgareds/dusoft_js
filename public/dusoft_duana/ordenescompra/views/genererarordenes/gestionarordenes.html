@@ -19,7 +19,10 @@
 
                                 <div class="row">
                                     <div class="col-md-7"> 
-                                        <ui-select ng-disabled="vista_previa"  ng-model="unidad_negocio_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_unidad_negocio(unidad_negocio_id)">
+                                        <ui-select ng-disabled="vista_previa"  ng-model="unidad_negocio_id" 
+                                                   theme="select2" 
+                                                   class="form-control selectgeneral pull-left" 
+                                                   ng-change="seleccionar_unidad_negocio(unidad_negocio_id)">
                                             <ui-select-match  placeholder="Seleccionar unidad">{{ $select.selected.get_nombre() }}</ui-select-match>
                                             <ui-select-choices repeat="unidad_negocio in  Empresa.get_unidades_negocios() | filter:$select.search">
                                                 {{ unidad_negocio.get_nombre() }}

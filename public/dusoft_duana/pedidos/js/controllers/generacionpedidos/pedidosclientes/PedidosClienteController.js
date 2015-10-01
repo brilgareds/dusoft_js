@@ -40,7 +40,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 cartera: false,
                 visualizar: false,
                 // Opciones del Modulo 
-                opciones: Sesion.getUsuarioActual().getModuloActual().opciones
+                opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
+                progresoArchivo:0
+                        
             };
             
             $scope.items =null;
@@ -172,6 +174,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.buscar_detalle_cotizacion();
                 }
             };
+            
+          /*
+           * @Author: Eduar
+           * +Descripcion: Evento que actualiza la barra de progreso
+           */
+           socket.on("onNotificarProgresoArchivoPlanoClientes", function(datos) {
+                $scope.datos_view.progresoArchivo = datos.porcentaje;
+            }); 
+            
+            
             that.buscar_detalle_cotizacion = function() {
 
                 var obj = {
@@ -242,6 +254,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
             };
+            
             that.buscar_detalle_pedido = function() {
 
                 var obj = {
@@ -260,6 +273,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
+            
             that.render_productos_pedidos = function(productos) {
 
                 $scope.Pedido.limpiar_productos();
@@ -272,6 +286,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.Pedido.set_productos(producto);
                 });
             };
+            
             // Clientes
             $scope.listar_clientes = function(termino_busqueda) {
 
@@ -641,7 +656,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.opciones_archivo = $flow;
             };
             $scope.subir_archivo_plano = function() {
-
+                $scope.datos_view.progresoArchivo = 2;
 
                 $scope.opciones_archivo.opts.query.data = JSON.stringify({
                     pedidos_clientes: {
@@ -696,6 +711,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             scope: $scope,
                             controller: function($scope, $modalInstance) {
                                 $scope.close = function() {
+                                    $scope.datos_view.progresoArchivo = 0;
                                     $modalInstance.close();
                                 };
                             }

@@ -973,9 +973,8 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
 
     var cantidad_productos = 0;
     var limite_productos = 25;
-
-                   
-                
+    var usuario = req.session.user;
+    
     __subir_archivo_plano(req.files, function(continuar, contenido) {       
         
         if (continuar) {
@@ -1021,6 +1020,8 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                             }
 
                             var i = _productos_validos.length;
+                            var index = 1;
+                            var cantidad = _productos_validos.length;
 
                             if (cotizacion.numero_cotizacion === 0) {
                                 //Crear cotizacion e insertar productos
@@ -1031,36 +1032,23 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                         return;
                                     } else {
 
-                                        cotizacion.numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
-
-                                        _productos_validos.forEach(function(producto) {
-
-                                            that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
-                                                if (err) {
-                                                    _productos_invalidos.push(producto);
-                                                }
-                                                if (--i === 0) {
-                                                    res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
-                                                    return;
-                                                }
-                                            });
-                                        });
+                                      cotizacion.numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
+                                      __insertarDetalleCotizacion(that, 0, usuario, cotizacion, _productos_validos, _productos_invalidos, function(){
+                                    
+                                            res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                                            return;
+                                       });
                                     }
                                 });
                             } else {
                                 // Insertar productos a la cotizacion
-                                _productos_validos.forEach(function(producto) {
-
-                                    that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
-                                        if (err) {
-                                            _productos_invalidos.push(producto);
-                                        }
-                                        if (--i === 0) {
-                                            res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
-                                            return;
-                                        }
-                                    });
+                                
+                                __insertarDetalleCotizacion(that, 0, usuario, cotizacion, _productos_validos, _productos_invalidos, function(){
+                                    
+                                     res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                                     return;
                                 });
+                                
                             }
                         });
                     });
@@ -1073,6 +1061,33 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     });
 };
 
+
+function __insertarDetalleCotizacion(that, index, usuario, cotizacion, _productos_validos, _productos_invalidos, callback){
+    
+    var producto = _productos_validos[index];
+    
+    if(!producto){
+        callback(false, _productos_validos, _productos_invalidos);
+        return;
+    }
+    
+    that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
+        if (err) {
+            _productos_invalidos.push(producto);
+        }
+        
+        index++;
+        var porcentaje = (index * 100) /  _productos_validos.length;
+        that.e_pedidos_clientes.onNotificarProgresoArchivoPlanoClientes(usuario, porcentaje, function(){
+            
+            setTimeout(function(){
+
+                __insertarDetalleCotizacion(that, index, usuario, cotizacion, _productos_validos, _productos_invalidos, callback);
+            }, 300);
+        });
+        
+    });
+}
 
 /*
  * Autor : Camilo Orozco

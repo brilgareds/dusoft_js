@@ -206,17 +206,22 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = funct
 };
 
 
-PedidosClientesEvents.prototype.onNotificarProgresoArchivoPlanoClientes = function(usuario_id, porcentaje) {
+PedidosClientesEvents.prototype.onNotificarProgresoArchivoPlanoClientes = function(usuario, porcentaje, callback) {
 
     var that = this;
-    
-    G.auth.getSessionsUser(usuario_id, function(err, sessions) {
+    G.auth.getSessionsUser(usuario.usuario_id, function(err, sessions) {
 
          //Se recorre cada una de las sesiones abiertas por el usuario
-         sessions.forEach(function(session) {
+         for(var i in sessions){
              //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-             that.io.sockets.socket(session.socket_id).emit('onNotificarProgresoArchivoPlanoFarmacias', {porcentaje: porcentaje});
-         });
+             var session = sessions[i];
+             if(session.token === usuario.auth_token){
+                that.io.sockets.socket(session.socket_id).emit('onNotificarProgresoArchivoPlanoClientes', {porcentaje: porcentaje});
+                callback();
+                break;
+             }
+         }
+         
 
      });
 };

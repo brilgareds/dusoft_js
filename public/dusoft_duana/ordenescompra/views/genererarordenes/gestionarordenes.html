@@ -19,7 +19,10 @@
 
                                 <div class="row">
                                     <div class="col-md-7"> 
-                                        <ui-select ng-disabled="vista_previa"  ng-model="unidad_negocio_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_unidad_negocio(unidad_negocio_id)">
+                                        <ui-select ng-disabled="vista_previa"  ng-model="unidad_negocio_id" 
+                                                   theme="select2" 
+                                                   class="form-control selectgeneral pull-left" 
+                                                   ng-change="seleccionar_unidad_negocio(unidad_negocio_id)">
                                             <ui-select-match  placeholder="Seleccionar unidad">{{ $select.selected.get_nombre() }}</ui-select-match>
                                             <ui-select-choices repeat="unidad_negocio in  Empresa.get_unidades_negocios() | filter:$select.search">
                                                 {{ unidad_negocio.get_nombre() }}
@@ -34,7 +37,8 @@
                                 <legend>Proveedor</legend> 
                                 <div class="row">
                                     <div class="col-md-7"> 
-                                        <ui-select ng-disabled="numero_orden > 0"  ng-model="codigo_proveedor_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(codigo_proveedor_id)">
+                                        <!-- ng-disabled="numero_orden > 0" //-->
+                                        <ui-select ng-disabled="vista_previa"  ng-model="codigo_proveedor_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(codigo_proveedor_id)">
                                             <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
                                             <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
                                                 {{ proveedor.get_nombre() }}

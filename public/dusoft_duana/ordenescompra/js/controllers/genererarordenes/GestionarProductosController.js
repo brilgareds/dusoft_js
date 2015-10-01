@@ -46,9 +46,6 @@ define(["angular", "js/controllers",
 
             $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
 
-                //console.log('=============== Iniciando Slider =============');
-                //console.log($scope.orden_compra);
-
                 that.buscar_productos();
                 that.buscar_laboratorios();
             });
@@ -243,9 +240,6 @@ define(["angular", "js/controllers",
 
             $scope.seleccionar_laboratorio = function(laboratorio) {
 
-                console.log('=== seleccionar_laboratorio ===');
-                console.log(laboratorio);
-
                 $scope.laboratorio_id = "";
                 if (laboratorio !== undefined)
                     $scope.laboratorio_id = laboratorio.get_id();
@@ -284,10 +278,6 @@ define(["angular", "js/controllers",
 
             $scope.$on('ngGridEventEndCellEdit', function(event) {
 
-                //console.log('=========== ngGridEventEndCellEdit ===========');
-                //console.log(event.targetScope.row.entity);
-                //var producto = event.targetScope.row.entity;
-                //producto.set_cantidad_seleccionada(event.targetScope.row.entity[event.targetScope.col.field]);
             });
 
             $scope.solicitar_producto = function(row) {

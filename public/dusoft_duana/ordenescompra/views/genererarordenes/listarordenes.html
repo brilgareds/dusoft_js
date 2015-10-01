@@ -1,16 +1,16 @@
 <div ng-controller="ListarOrdenesController">
 
     <div class="row">        
-        <div class="col-md-3">
-            <p class="input-group">
+        <div class="pull-left btn-principal" >
+           
 
                 <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_orden_compra()">
                     <span class="glyphicon glyphicon-plus"></span> Generar Orden de Compra
                 </button>
-            </p>
+            
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_inicial" is-open="datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
@@ -21,7 +21,7 @@
             </p>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_final" is-open="datepicker_fecha_final" min="fecha_inicial"  readonly  close-text="Cerrar"
@@ -44,7 +44,7 @@
         </div -->
         
         
-        <div class="col-md-3 pull-right">                                
+        <div class="col-md-2 pull-right">                                
 
                  <div class="input-group">
                      <div class="input-group-btn">

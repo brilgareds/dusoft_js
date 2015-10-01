@@ -225,6 +225,27 @@ define(["angular", "js/controllers",
                     that.buscar_cotizaciones();
                 }
             };
+            
+           $scope.abrir_fecha_inicial = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.datos_view.datepicker_fecha_inicial = true;
+                $scope.datos_view.datepicker_fecha_final = false;
+
+            };
+
+            $scope.abrir_fecha_final = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.datos_view.datepicker_fecha_inicial = false;
+                $scope.datos_view.datepicker_fecha_final = true;
+
+            };
+            
 
             that.buscar_cotizaciones = function() {
 

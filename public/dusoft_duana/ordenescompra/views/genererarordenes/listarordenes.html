@@ -1,15 +1,11 @@
 <div ng-controller="ListarOrdenesController">
 
     <div class="row">        
-        <div class="pull-left btn-principal" >
-           
-
-                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_orden_compra()">
-                    <span class="glyphicon glyphicon-plus"></span> Generar Orden de Compra
-                </button>
-            
+        <div class="pull-left btn-principal" >         
+            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_orden_compra()">
+                <span class="glyphicon glyphicon-plus"></span> Generar Orden de Compra
+            </button>         
         </div>
-
         <div class="col-md-2">
             <p class="input-group">
 
@@ -32,7 +28,6 @@
                 </span>
             </p>
         </div>
-
         <!-- div class="col-md-2 pull-right">
             <p class="input-group">
 
@@ -41,33 +36,24 @@
                     <button class="btn btn-default" type="submit" ng-click="buscar_ordenes_compras(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
                 </span>
             </p>
-        </div -->
-        
-        
+        </div -->             
         <div class="col-md-2 pull-right">                                
 
-                 <div class="input-group">
-                     <div class="input-group-btn">
-                       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtro.nombre}} <span class="caret"></span></button>
-                       <ul class="dropdown-menu">
-                         <li ng-repeat="filtro in filtros">
-                             <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
-                         </li>
-                       </ul>
-                     </div>
-                     <input type="text" class="form-control" ng-keypress="buscador_ordenes_compras($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
-                    <div class="input-group-btn" >
-                       <button class="btn btn-default" type="submit" ng-click="buscar_ordenes_compras(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
-                    </div>
-               </div>
-
-
-
-         </div>
-        
-        
-        
-
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtro.nombre}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="filtro in filtros">
+                            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <input type="text" class="form-control" ng-keypress="buscador_ordenes_compras($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="buscar_ordenes_compras(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div>
+        </div>                     
     </div>
 
 

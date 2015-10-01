@@ -414,11 +414,6 @@ Usuarios.prototype.asignarRolUsuario = function(req, res) {
             return;
         }
         
-        if(err){
-            res.send(G.utils.r(req.url, 'Se genero un error guardando el rol', 403, {}));
-            return;
-        }
-        
        that.m_usuarios.obtenerEmpresasPredeterminadas(that, empresa_id, login_id, function(err, rows){
             if(err){
                res.send(G.utils.r(req.url, 'Se genero un error seleccionando la empresa como predeterminado', 403, {}));

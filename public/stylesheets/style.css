@@ -14,7 +14,7 @@ a {
 
 .alertcontenido{
     /*max-width: 500px;*/
-    width: auto;
+   /* width: auto;*/
     margin: 0 auto;
     height: 30px;
     line-height: 1px;
@@ -351,6 +351,8 @@ div.ngHeaderCell	{
     right:0px;
     bottom:0px;
     text-align: center;
+    max-width: 400px;
+    margin:0 auto;
 }
 
 .tabledisplay{

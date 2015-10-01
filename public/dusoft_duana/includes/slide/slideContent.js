@@ -34,6 +34,8 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
                   }
                   
                   modalslide.css({"background-color":"rgba(112,112,112, 0.2)"});
+                  
+                  //modalslide.html($element);
 
                   //asegura que el slide este cerrado
                   slide.cerrarslide($element, false, modalslide);

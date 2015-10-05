@@ -28,7 +28,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
 
             pedido.forEach(function(datos) {
 
-                var fecha_registro_pedido = datos.fecha_registro_pedido;
+                var fecha_registro_pedido = datos.fecha_registro_pedido; 
 
 
                 consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {

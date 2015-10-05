@@ -335,12 +335,16 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                 inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad \
                 inner join empresas f ON e.empresa_id = f.empresa_id \
                 inner join system_usuarios g ON c.usuario_id = g.usuario_id \
-                where a.solicitud_prod_a_bod_ppal_id = $1 ";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-
-        callback(err, rows);
+                where a.solicitud_prod_a_bod_ppal_id = ? ";
+    
+    G.knex.raw(sql, [numero_pedido]).
+    then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
+    
+    
 };
 
 // Eliminar Documento Temporal Clientes

@@ -724,14 +724,15 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
                 from inv_bodegas_movimiento_tmp a \
                 inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
-                where a.doc_tmp_id = $1 and a.usuario_id = $2 ";
+                where a.doc_tmp_id = :1 and a.usuario_id = :2 ";
 
-    G.db.query(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
-
-        callback(err, rows);
+    G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id}).
+    then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
-}
-;
+};
 
 
 function __obtenerItemDocumentoTemporal(item_id, callback) {

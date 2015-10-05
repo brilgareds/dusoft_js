@@ -229,11 +229,15 @@ PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(em
 
     var sql = " SELECT farmacia_id, centro_utilidad, bodega, empresa_destino, centro_destino, bogega_destino as bodega_destino, observacion, usuario_id\
                 FROM solicitud_Bodega_principal_aux\
-                WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
-
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+                WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4";
+    
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id}).
+    then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
@@ -669,11 +673,15 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                        )\
                     ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                where a.solicitud_prod_a_bod_ppal_id= $1 order by e.descripcion ; ";
+                where a.solicitud_prod_a_bod_ppal_id= ? order by e.descripcion ; ";
 
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+   G.knex.raw(sql, [numero_pedido]).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+
 
 };
 

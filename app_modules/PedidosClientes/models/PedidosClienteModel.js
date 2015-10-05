@@ -885,12 +885,16 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido, e
 
     estados = estados.join(",");
 
-    var sql = "update ventas_ordenes_pedidos_estado set sw_terminado = $2\
-               where  pedido_cliente_id = $1 and estado :: integer in(" + estados + ") and (sw_terminado is null or sw_terminado = '0')";
-
-    G.db.query(sql, [numero_pedido, terminado], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = "update ventas_ordenes_pedidos_estado set sw_terminado = :2\
+               where  pedido_cliente_id = :1 and estado :: integer in(" + estados + ") and (sw_terminado is null or sw_terminado = '0')";
+    
+    G.knex.raw(sql, {1:numero_pedido, 2:terminado}).
+    then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 // obtiene informacion del rotulo para imprimir

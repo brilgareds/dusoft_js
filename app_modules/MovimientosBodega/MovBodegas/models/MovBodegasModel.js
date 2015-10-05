@@ -121,21 +121,29 @@ MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal =
 // Auditar Producto del Documento Temporal 0 = false ; 1 = true
 MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = function(item_id, auditado, numero_caja, callback) {
 
-    var sql = " UPDATE  inv_bodegas_movimiento_tmp_d SET auditado = $2, numero_caja = $3 WHERE item_id = $1  ; ";
-
-    G.db.query(sql, [item_id, auditado ? 1 : 0, numero_caja], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = " UPDATE  inv_bodegas_movimiento_tmp_d SET auditado = :2, numero_caja = :3 WHERE item_id = :1  ; ";
+   
+    auditado = auditado ? 1 : 0;
+    
+    G.knex.raw(sql, {1:item_id, 2:auditado, 3: numero_caja}).
+    then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 
 MovimientosBodegasModel.prototype.borrarJustificacionAuditor = function(usuario_id, doc_tmp_id, codigo_producto, callback) {
     console.log("borrarJustificacionAuditor usuario_id >>>>>>>>>>>>>>>>>> ", usuario_id, " doc_tmp_id ", doc_tmp_id, " codigo producto ", codigo_producto)
-    var sql = " UPDATE  inv_bodegas_movimiento_tmp_justificaciones_pendientes SET justificacion_auditor = '' WHERE usuario_id = $1 and doc_tmp_id = $2\
-                and codigo_producto = $3 ";
+    var sql = " UPDATE  inv_bodegas_movimiento_tmp_justificaciones_pendientes SET justificacion_auditor = '' WHERE usuario_id = :1 and doc_tmp_id = :2\
+                and codigo_producto = :3 ";
 
-    G.db.query(sql, [usuario_id, doc_tmp_id, codigo_producto], function(err, rows, result) {
-        callback(err, rows, result);
+    G.knex.raw(sql, {1:usuario_id, 2:doc_tmp_id, 3:codigo_producto}).
+    then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -298,10 +306,13 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
 MovimientosBodegasModel.prototype.actualizar_tipo_documento_temporal = function(documento_temporal_id, usuario_id, bodegas_doc_id, callback) {
     console.log(documento_temporal_id, " ", usuario_id, " ", bodegas_doc_id, " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
-    var sql = " update inv_bodegas_movimiento_tmp set bodegas_doc_id = $3 where doc_tmp_id = $1  and usuario_id = $2 ";
-
-    G.db.query(sql, [documento_temporal_id, usuario_id, bodegas_doc_id], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = " update inv_bodegas_movimiento_tmp set bodegas_doc_id = :3 where doc_tmp_id = :1  and usuario_id = :2 ";
+    
+    G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id, 3:bodegas_doc_id}).
+    then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 };
 

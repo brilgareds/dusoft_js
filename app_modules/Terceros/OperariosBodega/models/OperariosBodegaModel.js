@@ -141,21 +141,27 @@ OperariosBodegaModel.prototype.listar_operarios_bodega = function(termino_busque
  */                            
 OperariosBodegaModel.prototype.seleccionar_operario_bodega = function(operario_id, callback) {
 
-    var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where operario_id = $1";
-
-    G.db.query(sql, [operario_id], function(err, rows, result) {
-        callback(err, rows);
-    });
+   var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where operario_id = ?";
+    
+   G.knex.raw(sql, [operario_id]).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   }); 
 
 };
 
 OperariosBodegaModel.prototype.seleccionar_operario_por_usuario_id = function(usuario_id, callback) {
 
-    var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where usuario_id = $1";
-
-    G.db.query(sql, [usuario_id], function(err, rows, result) {
-        callback(err, rows);
-    });
+   var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where usuario_id = ?";
+    
+   G.knex.raw(sql, [usuario_id]).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
     
 };
 

@@ -445,7 +445,7 @@ DocuemntoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = 
             callback(err, justificaciones);
             return;
         } else {
-            if (justificaciones.length > 0) {  
+            if (justificaciones.length > 0) {    
                 // Modificar
                 that.actualizar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback);
                 return;
@@ -464,11 +464,13 @@ DocuemntoBodegaE008.prototype.consultar_justificaciones_temporales_pendientes = 
     console.log('========= consultar_justificaciones_temporales_pendientes =========');
 
     var sql = " SELECT * FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes a\
-                WHERE a.doc_tmp_id = $1 and a.usuario_id = $2 and a.codigo_producto = $3 ;";
-
-    G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto], function(err, rows, result) {
-
-        callback(err, rows);
+                WHERE a.doc_tmp_id = :1 and a.usuario_id = :2 and a.codigo_producto = :3 ;";
+    
+    G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -479,12 +481,15 @@ DocuemntoBodegaE008.prototype.ingresar_justificaciones_temporales_pendientes = f
     console.log('========= ingresar_justificaciones_temporales_pendientes =========');
 
     var sql = " INSERT INTO inv_bodegas_movimiento_tmp_justificaciones_pendientes ( doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, observacion, existencia, justificacion_auditor ) \
-                VALUES ($1, $2, $3, $4, $5, $6, $7 ); ";
+                VALUES ( :1, :2, :3, :4, :5, :6, :7 ); ";
 
-    G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor], function(err, rows, result) {
-
-        callback(err, rows, result);
+    G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto, 4:cantidad_pendiente, 5:justificacion, 6:existencia, 7:justificacion_auditor}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 // Actualizar Justificacion de Productos Pendientes
@@ -530,11 +535,13 @@ DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_producto = fun
 // Actualizar estado documento temporal de clientes 0 = En Proceso separacion, 1 = Separacion Finalizada, 2 = En auditoria
 DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_clientes = function(numero_pedido, estado, callback) {
 
-    var sql = " UPDATE inv_bodegas_movimiento_tmp_despachos_clientes SET estado = $2 WHERE pedido_cliente_id = $1 ;";
-
-    G.db.query(sql, [numero_pedido, estado], function(err, rows, result) {
-
-        callback(err, rows, result);
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_despachos_clientes SET estado = :2 WHERE pedido_cliente_id = :1 ;";
+    
+    G.knex.raw(sql, {1:numero_pedido, 2:estado}).
+    then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -610,8 +617,8 @@ DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
 };
 
 DocuemntoBodegaE008.prototype.actualizarCajaDeTemporal = function(item_id, numero_caja, tipo, callback) {
-   var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET numero_caja=:2, tipo_caja = :3 WHERE item_id = :1 ";
-    
+   var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET numero_caja= :2, tipo_caja = :3 WHERE item_id = :1 ";
+       
    G.knex.raw(sql, {1:item_id, 2:numero_caja, 3:tipo}).
    then(function(resultado){
        callback(false, resultado.rows, resultado);

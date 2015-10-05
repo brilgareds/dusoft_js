@@ -245,11 +245,14 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                       pedido.eliminarProductoSeleccionado(index);
                        
-                       if(pedido.getProductosSeleccionados().length === 0){
-                           self.eliminarPedidoTemporal();
-                       }
+                       self.consultarDetallePedidoTemporal(function(){
+                            $scope.root.filtroGrid.filterText = " ";
+                            if(pedido.getProductosSeleccionados().length === 0){
+                                self.eliminarPedidoTemporal();
+                            }
+                       });
+                       
                        
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error al eliminar el producto");

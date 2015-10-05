@@ -146,7 +146,10 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                       pedido.eliminarProductoSeleccionado(index);
+                       //pedido.eliminarProductoSeleccionado(index);
+                       self.consultarDetallePedido(function(consultaDetalle) {
+                           $scope.root.filtroGrid.filterText = " ";
+                       });
                        
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);

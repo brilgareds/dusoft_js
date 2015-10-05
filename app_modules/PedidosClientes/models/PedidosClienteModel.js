@@ -389,11 +389,14 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                                 )\
                         ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11 \
                     ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                    where a.pedido_cliente_id = $1  order by e.descripcion ;";
+                    where a.pedido_cliente_id = ?  order by e.descripcion ;";
 
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+   G.knex.raw(sql, [numero_pedido]).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 
 };
 
@@ -823,12 +826,16 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes_
 
     var sql = " SELECT b.codigo_producto, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
                 INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
-                WHERE b.codigo_producto = $1 and a.estado = '1' AND a.fecha_registro < $2\
+                WHERE b.codigo_producto = :1 and a.estado = '1' AND a.fecha_registro < :2\
                 GROUP BY b.codigo_producto";
-
-    G.db.query(sql, [codigo_producto, fecha_registro_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+    
+   G.knex.raw(sql, {1 : codigo_producto, 2 : fecha_registro_pedido}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+    
 };
 
 

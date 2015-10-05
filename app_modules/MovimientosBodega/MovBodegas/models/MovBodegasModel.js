@@ -30,16 +30,18 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
         function(empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id, callback) {
 
 
-            var sql = " INSERT INTO inv_bodegas_movimiento_tmp_d (doc_tmp_id, empresa_id, centro_utilidad, bodega, codigo_producto, cantidad, \
-                        porcentaje_gravamen, total_costo, fecha_vencimiento, lote, local_prod, total_costo_pedido, valor_unitario, usuario_id) \
-                        VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING item_id; ";
+  var sql = " INSERT INTO inv_bodegas_movimiento_tmp_d (doc_tmp_id, empresa_id, centro_utilidad, bodega, codigo_producto, cantidad, \
+                porcentaje_gravamen, total_costo, fecha_vencimiento, lote, local_prod, total_costo_pedido, valor_unitario, usuario_id) \
+                VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14) RETURNING item_id; ";
 
-
-            G.db.query(sql, [doc_tmp_id, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad, iva, total_costo, fecha_vencimiento, lote, '', total_costo_pedido, valor_unitario, usuario_id], function(err, rows, result) {
-
-                callback(err, rows);
-            });
-        };
+   G.knex.raw(sql, {1:doc_tmp_id, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 6:cantidad, 7:iva, 8:total_costo, 9:fecha_vencimiento, 10:lote, 11:'', 12:total_costo_pedido, 13:valor_unitario, 14:usuario_id}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+    
+};
 
 MovimientosBodegasModel.prototype.modificar_detalle_movimiento_bodega_temporal = function(item_id, valor_unitario, cantidad, lote, fecha_vencimiento, usuario_id, empresa_id,
         centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, iva, callback) {
@@ -105,11 +107,14 @@ MovimientosBodegasModel.prototype.eliminar_detalle_movimiento_bodega_temporal = 
 // Eliminar Producto del Documento Temporal
 MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal = function(item_id, callback) {
 
-    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE item_id = $1 ; ";
+   var sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE item_id = ? ; ";
 
-    G.db.query(sql, [item_id], function(err, rows, result) {
-        callback(err, rows);
-    });
+   G.knex.raw(sql, [item_id]).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 
 };
 
@@ -279,12 +284,14 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
                 inner join inv_bodegas_documentos b on a.documento_id = b.documento_id and b.empresa_id = a.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega\
                 inner join documentos c on b.documento_id = c.documento_id and b.empresa_id = c.empresa_id\
                 inner join tipos_doc_generales d on c.tipo_doc_general_id = d.tipo_doc_general_id\
-                where a.usuario_id = $1 and a.centro_utilidad = $2 and a.bodega= $3 " + sql_aux + " order by tipo_movimiento, tipo_doc_bodega_id ";
-
-    G.db.query(sql, [usuario_id, centro_utilidad_id, bodega_id], function(err, rows, result) {
-
-        callback(err, rows);
-    });
+                where a.usuario_id = :1 and a.centro_utilidad = :2 and a.bodega= :3 " + sql_aux + " order by tipo_movimiento, tipo_doc_bodega_id ";
+        
+   G.knex.raw(sql, {1:usuario_id, 2:centro_utilidad_id, 3:bodega_id}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 };
 
 // Actualizar bodegas_doc_id en documento temporal.

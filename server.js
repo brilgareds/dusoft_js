@@ -100,6 +100,7 @@ G.db.setCredentials(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassw
     G.knex = require('./lib/Knex').
              create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
              connect().getInstance();
+     
 });
  
 
@@ -149,7 +150,7 @@ if (cluster.isMaster) {
             pub,
             sub,
             client
-            ));
+    ));
 
 
     /*=========================================

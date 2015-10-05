@@ -1039,13 +1039,16 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
 
 PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias_por_fecha = function(codigo_producto, fecha_registro_pedido, callback) {
     
-    var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
-                and fecha_registro < $2\
+    var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = :1\
+                and fecha_registro < :2\
                 group by codigo_producto "; 
     
-    G.db.query(sql, [codigo_producto, fecha_registro_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+   G.knex.raw(sql, {1 : codigo_producto, 2 : fecha_registro_pedido}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 };
 
 /**

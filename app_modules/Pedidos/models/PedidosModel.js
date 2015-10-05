@@ -24,7 +24,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
     if (identificador === 'FM') {
 
         // Consulta el pedido de farmacia para obtener la fecha de registro
-        that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, pedido) {
+        that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, pedido) {  
 
             pedido.forEach(function(datos) {
 
@@ -113,7 +113,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                 var fecha_registro_pedido = datos.fecha_registro;
 
 
-                consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {
+                consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {  
 
                     cantidad_total_pendiente = (cantidad_total.length === 1) ? cantidad_total[0].cantidad_total_pendiente : 0;
 
@@ -266,23 +266,31 @@ function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto
                   select b.codigo_producto, coalesce(SUM( b.cantidad_pendiente),0) AS cantidad_total_pendiente\
                   from solicitud_productos_a_bodega_principal a \
                   inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
-                  where a.empresa_destino = $1 and b.codigo_producto = $2 and b.cantidad_pendiente > 0 \
-                  and a.fecha_registro < $3 GROUP BY 1\
+                  where a.empresa_destino = :1 and b.codigo_producto = :2 and b.cantidad_pendiente > 0 \
+                  and a.fecha_registro < :3 GROUP BY 1\
                   union\
                   SELECT\
                   b.codigo_producto,\
                   coalesce(SUM((b.numero_unidades - b.cantidad_despachada)),0) as cantidad_total_pendiente\
                   FROM ventas_ordenes_pedidos a\
                   inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                  where a.empresa_id = $1 and b.codigo_producto = $2 and (b.numero_unidades - b.cantidad_despachada) > 0  \
-                  and a.fecha_registro < $3 and a.estado = '1' GROUP BY 1\
+                  where a.empresa_id = :1 and b.codigo_producto = :2 and (b.numero_unidades - b.cantidad_despachada) > 0  \
+                  and a.fecha_registro < :3 and a.estado = '1' GROUP BY 1\
                 ) as a";
 
-    G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
+    /*G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
         callback(err, rows);
-    });
-}
-;
+    });*/
+    
+    
+   G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto, 3 :fecha_registro_pedido}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+    
+};
 
 
 

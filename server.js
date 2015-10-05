@@ -81,7 +81,6 @@ if (program.config) {
     G.settings.outputConfig();
     return;
 }
-;
 
 /*=========================================
  * Monitoring Server only Production
@@ -115,6 +114,7 @@ var cluster = require('cluster'),
 if (cluster.isMaster) {
 
     var numCPUs = require('os').cpus().length;
+    console.log("number of CPUS ", numCPUs );
 
     for (var i = 0; i < numCPUs; i++) {
         cluster.fork();

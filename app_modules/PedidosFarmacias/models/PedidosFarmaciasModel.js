@@ -441,7 +441,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "a.centro_utilidad", 
         "a.bodega as bodega_id", 
         "d.razon_social as nombre_farmacia", 
-        "b.descripcion as nombre_bodega",
+        "c.descripcion as nombre_bodega",
         "a.usuario_id", 
         "e.nombre as nombre_usuario" ,
         "a.estado as estado_actual_pedido",
@@ -457,7 +457,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                      when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
         "f.estado as estado_separacion", 
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
-        "c.descripcion as nombre_centro_utilidad",
+        "b.descripcion as nombre_centro_utilidad",
         "a.empresa_destino as empresa_origen_id",
         "a.observacion",
         "g.empresa_id as despacho_empresa_id",
@@ -469,17 +469,17 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     
     G.knex.column(columns).
     from("solicitud_productos_a_bodega_principal as a").
-    innerJoin("bodegas as b", function(){
+    innerJoin("centros_utilidad as b", function(){
          this.on("a.farmacia_id", "b.empresa_id" ).
-         on("a.centro_utilidad", "b.centro_utilidad").
-         on("a.bodega", "b.bodega");
+         on("a.centro_utilidad", "b.centro_utilidad");
     }).
-    innerJoin("centros_utilidad as c", function(){
-         this.on("b.empresa_id", "c.empresa_id" ).
-         on("b.centro_utilidad", "c.centro_utilidad");
+    leftJoin("bodegas as c", function(){
+         this.on("c.empresa_id", "b.empresa_id" ).
+         on("c.centro_utilidad", "b.centro_utilidad").
+         on("a.bodega", "c.bodega");
     }).
     innerJoin("empresas as d", function(){
-         this.on("c.empresa_id", "d.empresa_id" );
+         this.on("b.empresa_id", "d.empresa_id" );
     }).
     innerJoin("system_usuarios as e", function(){
          this.on("a.usuario_id", "e.usuario_id" );
@@ -511,7 +511,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     }).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
-    //orderByRaw("1 DESC").
+    orderByRaw("1 DESC").
     then(function(rows){
         callback(false, rows);
     }).

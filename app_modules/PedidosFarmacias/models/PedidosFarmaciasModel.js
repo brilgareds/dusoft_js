@@ -511,7 +511,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     }).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
-    orderByRaw("1 DESC").
+    //orderByRaw("1 DESC").
     then(function(rows){
         callback(false, rows);
     }).

@@ -1071,9 +1071,9 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 
-PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = function(numero_pedido, callback) {
-    
-     var sql = " select b.codigo_producto, b.cantidad_solic, sum(coalesce(c.cantidad_despachada,0)) as cantidad_despachada,\
+PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = function(numero_pedido, transaccion, callback) {
+        
+    var sql = " select b.codigo_producto, b.cantidad_solic, sum(coalesce(c.cantidad_despachada,0)) as cantidad_despachada,\
                  b.cantidad_solic - sum(coalesce(c.cantidad_despachada,0)) as cantidad_pendiente from\
                 solicitud_productos_a_bodega_principal a\
                 inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
@@ -1081,43 +1081,44 @@ PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = fun
                 select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero \
                 from inv_bodegas_movimiento_despachos_farmacias a \
                 inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
-                where a.solicitud_prod_a_bod_ppal_id = $1 group by 1,3,4\
+                where a.solicitud_prod_a_bod_ppal_id = :1 group by 1,3,4\
                 ) as c on b.codigo_producto = c.codigo_producto\
-                where a.solicitud_prod_a_bod_ppal_id = $1 group by 1,2 ";
-    
-    
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-       
-        
-        if(err){
-            callback(err, null);
-            return;
-        }
-        
-        var length = rows.length;
-        
-        G.db.begin(function() {
-            rows.forEach(function(row){
-                
-                var cantidad_pendiente = parseInt(row.cantidad_pendiente);
-                 sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
-                        SET cantidad_pendiente= $1 WHERE solicitud_prod_a_bod_ppal_id= $2 AND\
-                        codigo_producto=$3; ";
+                where a.solicitud_prod_a_bod_ppal_id = :1 group by 1,2 ";
 
 
-                G.db.transaction(sql, [cantidad_pendiente, numero_pedido, row.codigo_producto], function(err, rows, result) {
+    G.knex.raw(sql, {1:numero_pedido}).
+    transacting(transaccion).
+    then(function(resultado){
 
-                     if (--length === 0) {
-                         G.db.commit(function(){
-                            callback(err, rows);
-                            return;
-                         });
-                    }
-                });
+        var length = resultado.rows.length;
 
+        resultado.rows.forEach(function(row) {
+
+            var cantidad_pendiente = parseInt(row.cantidad_pendiente);
+            sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
+                        SET cantidad_pendiente = :1 WHERE solicitud_prod_a_bod_ppal_id = :2 AND\
+                        codigo_producto = :3 ; ";
+
+
+            G.knex.raw(sql, {1:cantidad_pendiente, 2:numero_pedido, 3:row.codigo_producto}).
+            transacting(transaccion).
+            then(function(resultado2) {
+
+                if (--length === 0) {
+                    transaccion.commit(resultado2.rows);
+                    return;
+                }
+            }).
+            catch(function(err){
+                transaccion.rollback();
             });
+
         });
+        
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 PedidosFarmaciasModel.prototype.consultar_producto_en_farmacia = function(empresa_id, centro_utilidad, bodega, codigo_producto, callback) {

@@ -955,7 +955,6 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
  */
 
 PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido, prefijo_documento, numero_documento, transaccion, callback) {
-    console.log("actualizar_despachos_pedidos_cliente >>>>>>>>>>",arguments);
     var sql = "select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\

@@ -1105,12 +1105,12 @@ PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = fun
             then(function(resultado2) {
 
                 if (--length === 0) {
-                    transaccion.commit(resultado2.rows);
+                    callback(false, resultado2.rows);
                     return;
                 }
             }).
             catch(function(err){
-                transaccion.rollback();
+                callback(err);
             });
 
         });

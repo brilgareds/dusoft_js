@@ -984,12 +984,12 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
             then(function(resultado2) {
 
                 if (--length === 0) {
-                    transaccion.commit(resultado2.rows);
+                    callback(false,resultado2.rows);
                     return;
                 }
             }).
             catch(function(err){
-                transaccion.rollback();
+                callback(err);
             });
 
         });

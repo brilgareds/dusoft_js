@@ -122,46 +122,6 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
         done();        
     });
     
-    
-    
-
-    /*that.m_movimientos_bodegas.obtener_identificicador_movimiento_temporal(usuario_id, function(err, doc_tmp_id) {
-
-        if (err) {
-            callback(err);
-            return;
-        }
-
-        var movimiento_temporal_id = doc_tmp_id;
-
-
-        G.db.begin(function() {
-
-            that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, function(err) {
-
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-                var sql = " INSERT INTO inv_bodegas_movimiento_tmp_despachos_farmacias ( doc_tmp_id, farmacia_id, solicitud_prod_a_bod_ppal_id, usuario_id ) \n\
-                            VALUES ( $1, $2, $3, $4) ; ";
-
-                G.db.transaction(sql, [movimiento_temporal_id, empresa_id, numero_pedido, usuario_id], function(err, rows) {
-
-                    if (err) {
-                        callback(err);
-                        return;
-                    } else {
-                        G.db.commit(function(err, rows) {
-                            callback(err, movimiento_temporal_id, rows);
-                        });
-                    }
-                });
-            });
-        });
-
-    });*/
 };
 
 // Consultar Documentos Temporales Clientes 
@@ -814,6 +774,9 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
             return G.Q.nfcall( that.m_pedidos_farmacias.actualizar_cantidad_pendiente_en_solicitud, numero_pedido,
                                transaccion);
         }).
+        then(function(){
+            transaccion.commit();
+        }).
         fail(function(err){
             console.log("error generado >>>>>>>>>>>>", err);
             transaccion.rollback(err);
@@ -863,18 +826,21 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
             return G.Q.nfcall( that.m_pedidos_clientes.actualizar_despachos_pedidos_cliente, numero_pedido, doc.prefijo_documento,
                               doc.numeracion_documento, transaccion);
         }).
+        then(function(){
+            transaccion.commit();
+        }).
         fail(function(err){
-            console.log("error generado >>>>>>>>>>>>", err);
+            //console.log("error generado >>>>>>>>>>>>", err);
             transaccion.rollback(err);
         }).
         done();
     }).
     then(function(){
-        
+       
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        //console.log("error generado >>>>>>>>>>>>", err);
+        console.log("error generado >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();        

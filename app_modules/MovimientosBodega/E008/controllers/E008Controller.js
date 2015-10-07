@@ -1930,7 +1930,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
                                 if (err) {
                                     console.log("error cambiando estado del pedido ", err);
-                                    res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
+                                    res.send(G.utils.r(req.url, "Se genero un error ...", 500, {movimientos_bodegas: {}}));
                                     return;
                                 }
                                 that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {

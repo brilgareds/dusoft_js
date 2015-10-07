@@ -246,7 +246,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
 // Consultar documento temporal de clientes x numero de pedido
 DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(numero_pedido, callback) {
 
-    var sql = " select \
+   var sql = " select \
                 a.doc_tmp_id as documento_temporal_id,\
                 a.usuario_id,\
                 b.bodegas_doc_id,\
@@ -284,12 +284,15 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(n
                 inner join ventas_ordenes_pedidos c on a.pedido_cliente_id = c.pedido_cliente_id\
                 inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id \
                 inner join vnts_vendedores e on c.tipo_id_vendedor = e.tipo_id_vendedor and c.vendedor_id = e.vendedor_id \
-                where a.pedido_cliente_id = $1 ";
+                where a.pedido_cliente_id = :1 ";
 
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-
-        callback(err, rows);
-    });
+    
+   G.knex.raw(sql, {1 : numero_pedido}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 
 };
 
@@ -341,34 +344,61 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
     });
 };
 
-// Eliminar Documento Temporal Clientes
+// Eliminar Documento Temporal Clientes  //knex transaccion
 DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(doc_tmp_id, usuario_id, callback) {
     var that = this;
-    G.db.begin(function() {
-
+    G.knex.transaction(function(transaccion) {   
+        console.log("transaccion code 1 ", transaccion);
         // Eliminar Detalle del Documento Temporal
         that.m_movimientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
             if (err) {
                 callback(err);
+                transaccion.rollback();
                 return;
             } else {
                 //Eliminar Justificaciones
                 that.eliminar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, function(err) {
                     if (err) {
                         callback(err);
+                        transaccion.rollback();
                         return;
                     } else {
                         // Eliminar Cabecera Documento Temporal Clientes
-                        var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
-                        G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
+                        var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = :1 AND usuario_id = :2;";
+                        
+                        G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id}).
+                        transacting(transaccion).
+                        then(function(resultado){
+                            // Eliminar Cabecera Documento Temporal
+                            that.m_movimientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
+                                if (err) {
+                                    console.log("transaccion code 2 ", transaccion);
+                                    callback(err);
+                                    transaccion.rollback();
+                                    return;
+                                } else {
+                                    transaccion.commit(function(err, rows) {
+                                        callback(false, rows);
+                                    });
+                                }
+                            }, transaccion);
+                        }).catch(function(err){
+                            transaccion.rollback();
+                            callback(err);
+                        });
+                        
+                        
+                       /* G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
                             if (err) {
                                 callback(err);
+                                transaccion.rollback();
                                 return;
                             } else {
                                 // Eliminar Cabecera Documento Temporal
                                 that.m_movimientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
                                     if (err) {
                                         callback(err);
+                                        transaccion.rollback();
                                         return;
                                     } else {
                                         G.db.commit(function(err, rows) {
@@ -377,11 +407,11 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
                                     }
                                 });
                             }
-                        });
+                        });*/
                     }
-                });
+                }, transaccion);
             }
-        });
+        }, transaccion);
     });
 };
 
@@ -500,14 +530,20 @@ DocuemntoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes =
 };
 
 // Eliminar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = function(documento_temporal_id, usuario_id, callback) {
+DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = function(documento_temporal_id, usuario_id, callback, transaccion) {
 
-    var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = $1 AND usuario_id = $2;";
+    var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = :1 AND usuario_id = :2;";    
+    
+    var query = G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id});
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
+    if(transaccion) query.transacting(transaccion);
 
-        callback(err, rows);
+    query.then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 // Eliminar Justificacion de Producto

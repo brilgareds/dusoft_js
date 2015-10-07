@@ -435,6 +435,7 @@ E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, r
 
     that.m_e008.consultar_documentos_temporales_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
         if (err) {
+            console.log("error generado listado ", err);
             res.send(G.utils.r(req.url, 'Error consultado los documentos temporales de clientes', 500, {documentos_temporales: {}}));
             return;
         } else {
@@ -746,6 +747,8 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
             var usuario_id = documento.usuario_id;
 
             that.m_e008.eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, rows) {
+                //console.log("error eliminando temporal ", err);
+                
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Clientes', 500, {}));
                     return;

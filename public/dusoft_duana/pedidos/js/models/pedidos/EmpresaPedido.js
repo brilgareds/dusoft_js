@@ -101,7 +101,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 var doc = arreglo[i];
                  
                 if(doc.documento_temporal_id === documento_temporal.documento_temporal_id && doc.usuario_id === documento_temporal.usuario_id){
-                   // console.log("agregar documento >>>>>>>>>>>>>",documento_temporal, " buscando ", doc); 
+                    console.log("agregar documento >>>>>>>>>>>>>",documento_temporal, " buscando ", doc); 
                     doc.esDocumentoNuevo = documento_temporal.esDocumentoNuevo;
                     return;
                 }

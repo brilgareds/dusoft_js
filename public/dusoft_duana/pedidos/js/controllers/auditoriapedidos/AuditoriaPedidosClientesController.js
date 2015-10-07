@@ -101,8 +101,8 @@ define(["angular", "js/controllers",
             };
             
             
-            $scope.$on("onPedidosSeparadosRenderCliente", function(e, items) {
-
+            $scope.$on("onPedidosSeparadosRenderCliente", function(e, items) { 
+                //console.log("documentos de clientes ", Empresa.getDocumentoTemporal(1))
                 $scope.items = items;
                 
                 if(localStorageService.get("auditoriaCliente")){

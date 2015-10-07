@@ -67,12 +67,65 @@ DocuemntoBodegaE008.prototype.ingresarMovimientoTmpClientes = function(movimient
 };
 
 
+DocuemntoBodegaE008.prototype.ingresarMovimientoTmpFarmacias = function(movimiento_temporal_id, empresa_id, numero_pedido, usuario_id,
+                                                                        transaccion, callback){
+  
+    var sql = "INSERT INTO inv_bodegas_movimiento_tmp_despachos_farmacias ( doc_tmp_id, farmacia_id, solicitud_prod_a_bod_ppal_id, usuario_id ) \n\
+                            VALUES ( :1, :2, :3, :4) ; ";
+    
+    var query = G.knex.raw(sql, {1:movimiento_temporal_id, 2:empresa_id, 3:numero_pedido, 4:usuario_id});
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
+
 // Insertar la cabecera temporal del despacho de un pedido de farmacias
 DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, callback) {
 
     var that = this;
-
+    
     that.m_movimientos_bodegas.obtener_identificicador_movimiento_temporal(usuario_id, function(err, doc_tmp_id) {
+
+        if (err) {
+            callback(err);
+            return;
+        }
+
+        var movimiento_temporal_id = doc_tmp_id;
+        
+        G.knex.transaction(function(transaccion) {  
+            G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal, movimiento_temporal_id, usuario_id, bodegas_doc_id, 
+                       observacion, transaccion).
+            then(function(){
+                 return G.Q.nfcall(that.ingresarMovimientoTmpFarmacias, movimiento_temporal_id, empresa_id, numero_pedido, usuario_id,
+                                   transaccion);
+            }).
+            then(function(){
+                transaccion.commit(movimiento_temporal_id);
+            }).
+            fail(function(err){
+                transaccion.rollback(err);
+            }).
+            done();
+        }).
+        then(function(movimiento_temporal_id){
+            callback(false, movimiento_temporal_id);
+        }).catch(function(err){
+            console.log("error generado >>>>>>>>>>>>", err);
+            callback(err);
+        }).
+        done();        
+    });
+    
+    
+    
+
+    /*that.m_movimientos_bodegas.obtener_identificicador_movimiento_temporal(usuario_id, function(err, doc_tmp_id) {
 
         if (err) {
             callback(err);
@@ -108,7 +161,7 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
             });
         });
 
-    });
+    });*/
 };
 
 // Consultar Documentos Temporales Clientes 
@@ -452,45 +505,58 @@ DocuemntoBodegaE008.prototype.eliminarDespachoTemporalClientes = function(doc_tm
     });
 };
 
+DocuemntoBodegaE008.prototype.eliminarDespachoTemporalFarmacias = function(doc_tmp_id, usuario_id, transaccion, callback){
+
+    var sql = "DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
+                        
+    G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id}).
+    transacting(transaccion).
+    then(function(resultado){
+        // Eliminar Cabecera Documento Temporal
+        callback(false, resultado);
+    }).catch(function(err){
+        transaccion.rollback();
+        callback(err);
+    });
+};
+
 // Eliminar Documento Temporal Farmacias
 DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(doc_tmp_id, usuario_id, callback) {
 
     var that = this;
-
-    // Inicia Transaccion.
-    G.db.begin(function() {
+    
+    
+    G.knex.transaction(function(transaccion) {   
         // Eliminar Detalle del Documento Temporal
-        that.m_movimientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
-            if (err) {
-                callback(err);
-                return;
-            } else {
-                // Eliminar Cabecera Documento Temporal Farmacias
-                var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+        
+        G.Q.nfcall(that.m_movimientos_bodegas.eliminar_detalle_movimiento_bodega_temporal, doc_tmp_id, usuario_id, transaccion).
 
-                G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
-                    if (err) {
-                        callback(err);
-                        return;
-                    } else {
-                        // Eliminar Cabecera Documento Temporal
-                        that.m_movimientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
-                            if (err) {
-                                callback(err);
-                                return;
-                            } else {
-                                // Termina Transaccion.
-                                G.db.commit(function(err, rows) {
-                                    callback(err, rows);
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    });
+        then(function(lista_pedidos_farmacias){
+            return G.Q.nfcall( that.eliminar_justificaciones_temporales_pendientes, doc_tmp_id, usuario_id, transaccion);
+        }).
+        then(function(){
+            return G.Q.nfcall(that.eliminarDespachoTemporalFarmacias,doc_tmp_id, usuario_id, transaccion);
+        }). 
+        then(function(){
+            return G.Q.nfcall(that.m_movimientos_bodegas.eliminar_movimiento_bodega_temporal, doc_tmp_id, usuario_id,transaccion);
+        }).
+        then(function(){
+            transaccion.commit();
+        }).
+        fail(function(err){
+            transaccion.rollback(err);
 
+        }).
+        done();
+
+    }).then(function(re){
+        callback(false);
+    }).catch(function(err){
+        console.log("error generado >>>>>>>>>>>>", err);
+        callback(err);
+    }).
+    done();
+    
 };
 
 // Consultar Justificacion de Productos Pendientes

@@ -163,7 +163,7 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
 
 
     //Validar que el usuario que crea el documento temporal, sea el mismo responsable del pedido
-    __validar_responsable_pedidos_farmacias(that, numero_pedido, usuario_id, '1', function(err, continuar) { 
+    __validar_responsable_pedidos_farmacias(that, numero_pedido, usuario_id, '1', function(err, continuar) {   
 
         if (continuar) {
 

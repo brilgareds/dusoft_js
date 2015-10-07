@@ -335,7 +335,7 @@ MovimientosBodegasModel.prototype.actualizar_tipo_documento_temporal = function(
 };
 
 // Crear documento 
-MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_id, usuario_id, callback) {
+MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_id, usuario_id, transaccion, callback) {
 
     // Consultar cabecera del docuemnto temporal
     __consultar_documento_bodega_temporal(documento_temporal_id, usuario_id, function(err, documento_temporal) {
@@ -345,7 +345,7 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
             callback(err);
             return;
         } else {
-
+            console.log("documento temporal>>>>>>>>>>>>>>>>>>>>>>>> ", documento_temporal, documento_temporal.documento_id);
             var documento_id = documento_temporal.documento_id;
 
             var empresa_id = documento_temporal.empresa_id;
@@ -366,8 +366,8 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
                         console.log('============= Obtener Numeracion ============= ');
                         console.log(err);
-                        console.log(numeracion);
-                        console.log(result);
+                        //console.log(numeracion);
+                       // console.log(result);
                         console.log('============================================= ');
 
                         if (err || numeracion.length === 0) {
@@ -387,22 +387,27 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
                             console.log("resultado de numetacion ", numeracion.rows, result);
 
                             // Ingresar Cabecera Documento temporal
-                            __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, function(err, result) {
+                            __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, transaccion, function(err, result) {
 
                                 console.log('=============== __ingresar_movimiento_bodega ========================');
                                 console.log(err, result);
                                 console.log('=====================================================================');
+                                
+                                if(err){
+                                    callback(err);
+                                    return;
+                                }
 
                                 // Ingresar Detalle Documento temporal
-                                __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, function(err, result) {
+                                __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento,
+                                                                     numeracion_documento,transaccion, function(err, result) {
+                                                                         
+                                    if(err){
+                                        callback(err);
+                                        return;
+                                    }
+                                    callback(err, {empresa_id:empresa_id, prefijo_documento:prefijo_documento, numeracion_documento:numeracion_documento});
 
-                                    callback(err, empresa_id, prefijo_documento, numeracion_documento);
-
-                                    // Eliminar Documento temporal
-                                    /*__eliminar_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function() {
-                                     
-                                     callback(err, empresa_id, prefijo_documento, numeracion_documento);
-                                     });*/
                                 });
                             });
                         }
@@ -503,16 +508,20 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
                 inventarios_productos as b,\
                 unidades as c\
                 WHERE\
-                a.empresa_id = $3\
-                AND a.prefijo = $2\
-                AND a.numero = $1\
+                a.empresa_id = :3\
+                AND a.prefijo = :2\
+                AND a.numero = :1\
                 AND b.codigo_producto = a.codigo_producto\
                 AND c.unidad_id = b.unidad_id\
                 ORDER BY a.codigo_producto";
     
-    G.db.query(sql, [numero, prefijo, empresa], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:numero, 2:prefijo, 3:empresa}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 
@@ -532,9 +541,9 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                             /*b.telefono AS telefono*/\
                             FROM    inv_bodegas_movimiento_despachos_clientes as a,\
                             terceros as b\
-                            WHERE   a.empresa_id = $3\
-                            AND a.prefijo = $2\
-                            AND a.numero = $1\
+                            WHERE   a.empresa_id = :3\
+                            AND a.prefijo = :2\
+                            AND a.numero = :1\
                             AND b.tipo_id_tercero = a.tipo_id_tercero\
                             AND b.tercero_id = a.tercero_id\
                         )\
@@ -553,16 +562,19 @@ MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = functi
                             JOIN centros_utilidad as d ON (c.centro_utilidad = d.centro_utilidad)\
                             AND (c.empresa_id = d.empresa_id)\
                             JOIN empresas as e ON (d.empresa_id = e.empresa_id)\
-                            WHERE   a.empresa_id = $3\
-                            AND a.prefijo = $2\
-                            AND a.numero = $1\
+                            WHERE   a.empresa_id = :3\
+                            AND a.prefijo = :2\
+                            AND a.numero = :1\
                         )\
                     )as x";        
         break;
     }
     
-    G.db.query(sql, [numero, prefijo, empresa_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:numero, 2:prefijo, 3:empresa_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 
 };
@@ -586,56 +598,45 @@ MovimientosBodegasModel.prototype.darFormatoTituloAdicionesDocumento = function(
  * ==================================================================================================================================================================*/
 
 // Consultar numeracion del documento
-function __obtener_numeracion_documento(empresa_id, documento_id, callback) {
+function __obtener_numeracion_documento(empresa_id, documento_id, callback) { 
 
-//    var sql = " LOCK TABLE documentos IN ROW EXCLUSIVE MODE;";
-//
-//    G.db.transaction(sql, [], function(err, rows, result) {
-//
-//        sql = " SELECT prefijo, numeracion FROM documentos WHERE  empresa_id = $1 AND documento_id = $2 ;  ";
-//
-//        G.db.transaction(sql, [empresa_id, documento_id], function(err, rows, result) {
-//
-//            console.log('============= Obtener Numeracio ============= ');
-//            console.log(err, rows, result);
-//            console.log('============================================= ');
-//
-//            sql = " UPDATE documentos SET numeracion = numeracion + 1 WHERE empresa_id = $1 AND  documento_id = $2 ; ";
-//
-//            G.db.transaction(sql, [empresa_id, documento_id], function(_err, _rows, _result) {
-//
-//                callback(err, rows, result);
-//            });
-//        });
-//    });
-
-    var sql = " SELECT prefijo, numeracion FROM documentos WHERE  empresa_id = $1 AND documento_id = $2 ;  ";
-
-    G.db.query(sql, [empresa_id, documento_id], function(err, rows, result) {
-
-        sql = " UPDATE documentos SET numeracion = numeracion + 1 WHERE empresa_id = $1 AND  documento_id = $2 ; ";
-
-        G.db.query(sql, [empresa_id, documento_id], function(_err, _rows, _result) {
-
-            callback(err, rows, result);
-        });
+    var sql = " SELECT prefijo, numeracion FROM documentos WHERE  empresa_id = :1 AND documento_id = :2 ;  ";
+    G.knex.raw(sql, {1:empresa_id, 2:documento_id}).
+    then(function(resultado){
+        sql = " UPDATE documentos SET numeracion = numeracion + 1 WHERE empresa_id = :1 AND  documento_id = :2 ; ";
+        
+        G.knex.raw(sql, {1:empresa_id, 2:documento_id}).
+        then(function(resultado2){
+            callback(false, resultado.rows, resultado);
+        }).catch(function(err){
+            callback(err);
+        })
+        
+    }).catch(function(err){
+        callback(err);
     });
-
-}
-;
+    
+};
 
 // Ingresar cabecera docuemento movimiento
-function __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo, numero, observacion, usuario_id, callback) {
+function __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo, numero, observacion, usuario_id, transaccion, callback) {
 
     var sql = " INSERT INTO inv_bodegas_movimiento (documento_id, empresa_id, centro_utilidad, bodega, prefijo, numero, observacion, sw_estado, usuario_id, fecha_registro, abreviatura ) \
-                VALUES ( $1, $2, $3, $4, $5, $6, $7, '1', $8, NOW(), NULL) ;  ";
-
-    G.db.transaction(sql, [documento_id, empresa_id, centro_utilidad, bodega, prefijo, numero, observacion, usuario_id], callback);
-}
-;
+                VALUES ( :1, :2, :3, :4, :5, :6, :7, '1', :8, NOW(), NULL) ;  ";
+    
+    var query = G.knex.raw(sql, {1:documento_id, 2:empresa_id, 3:centro_utilidad, 4:bodega, 5:prefijo, 6:numero, 7:observacion, 8:usuario_id});
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+    
+};
 
 // Ingresar detalle docuemento movimiento
-function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, callback) {
+function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, transaccion, callback) {
 
     var sql = " INSERT INTO inv_bodegas_movimiento_d ( \
                     empresa_id, \
@@ -656,9 +657,9 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
                     tipo_caja \
                 )\
                     SELECT  \
-                    $3 AS empresa_id, \
-                    $4 AS prefijo, \
-                    $5 AS numeracion, \
+                    :3 AS empresa_id, \
+                    :4 AS prefijo, \
+                    :5 AS numeracion, \
                     a.centro_utilidad, \
                     a.bodega, \
                     a.codigo_producto, \
@@ -676,11 +677,19 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
                     FROM inv_bodegas_movimiento_tmp_d a\
                     inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                     inner join unidades c on b.unidad_id = c.unidad_id \
-                    WHERE a.doc_tmp_id = $1  AND a.usuario_id = $2; ";
+                    WHERE a.doc_tmp_id = :1  AND a.usuario_id = :2; ";
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento], callback);
-}
-;
+    
+    var query = G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id, 3:empresa_id, 4:prefijo_documento, 5:numeracion_documento});
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+    
+};
 
 
 // Consultar documento temporal
@@ -701,13 +710,16 @@ function __consultar_documento_bodega_temporal(documento_temporal_id, usuario_id
                 INNER JOIN inv_bodegas_documentos a ON t.bodegas_doc_id = a.bodegas_doc_id\
                 INNER JOIN documentos b ON a.empresa_id = b.empresa_id AND a.documento_id = b.documento_id\
                 INNER JOIN tipos_doc_generales c ON b.tipo_doc_general_id = c.tipo_doc_general_id\
-                WHERE doc_tmp_id = $1 AND usuario_id = $2;";
-
-    G.db.query(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
-        callback(err, rows.length > 0 ? rows[0] : null);
+                WHERE doc_tmp_id = :1 AND usuario_id = :2;";
+    
+    G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id}).
+    then(function(resultado){
+        callback(false, resultado.rows.length > 0 ? resultado.rows[0] : null);
+    }).catch(function(err){
+        callback(err);
     });
-}
-;
+    
+};
 
 // Consultar detalle movimiento temporal 
 function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, callback) {

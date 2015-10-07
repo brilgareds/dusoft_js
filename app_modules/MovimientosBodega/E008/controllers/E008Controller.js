@@ -1733,7 +1733,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                     return;
                 }
 
-                auditor_id = operario[0].operario_id;
+                auditor_id = operario[0].operario_id;  
 
                 __validar_productos_pedidos_clientes(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
 
@@ -1746,7 +1746,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                             res.send(G.utils.r(req.url, 'Algunos productos no ha sido auditados o tienen pendientes la justificacion', 404, {movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}));
                             return;
                         }
-
+ 
                         __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, function(err, cajas_no_cerradas) {
 
                             if (err) {
@@ -1758,11 +1758,11 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                     res.send(G.utils.r(req.url, 'Algunas cajas no se han cerrado', 404, {movimientos_bodegas: {cajas_no_cerradas: cajas_no_cerradas}}));
                                     return;
                                 }
-
-                                that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+    
+                                that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {  
 
                                     if (err) {
-                                        res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
+                                        res.send(G.utils.r(req.url, "Se genero un error interno...", 500, {movimientos_bodegas: {}}));
                                         return;
                                     }
 
@@ -2312,7 +2312,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                 return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
                             });
 
-                            console.log("producto separarod   >>>>>>>>>>>>>>>>", documento_temporal_id, usuario_id, detalle_documento_temporal, producto_pedido);
+                            //console.log("producto separarod   >>>>>>>>>>>>>>>>", documento_temporal_id, usuario_id, detalle_documento_temporal, producto_pedido);
                             var cantidad_pendiente = producto_pedido.cantidad_pendiente;
 
                             if (producto_separado.length === 0) {

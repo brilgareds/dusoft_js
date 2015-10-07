@@ -674,12 +674,15 @@ DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numer
 };
 
 DocuemntoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento_id, numero_pedido, callback) {
-    var sql = " UPDATE inv_rotulo_caja SET sw_despachado='1' WHERE documento_id = $1 and solicitud_prod_a_bod_ppal_id = $2; ";
-
-    G.db.query(sql, [documento_id, numero_pedido], function(err, rows, result) {
-
-        callback(err, rows, result);
+    var sql = " UPDATE inv_rotulo_caja SET sw_despachado='1' WHERE documento_id = :1 and solicitud_prod_a_bod_ppal_id = :2; ";
+    
+    G.knex.raw(sql, {1:documento_id, 2:numero_pedido}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 // Cierra la caja
@@ -783,64 +786,48 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
 DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, numero_pedido, usuario_id, auditor_id, callback) {
 
     var that = this;
-
-    // Iniciar TransacciÃ³n
-    G.db.begin(function() {
-
-        // Generar Documento de Despacho.
-        that.m_movimientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
-
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            // Asignar Auditor Como Responsable del Despacho.
-            __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, usuario_id, function(err, result) {
-
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-                // Generar Cabecera Documento Despacho.
-                __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
-
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
-                    // Generar Justificaciones Documento Despacho.
-                    __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, function(err, result) {
-                        if (err) {
-                            callback(err);
-                            return;
-                        }
-                        // Eliminar Temporales Despachos Clientes.
-                        __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, result) {
-                            if (err) {
-                                callback(err);
-                                return;
-                            }
-                            // Eliminar Temporales Justificaciones.
-                            that.eliminar_justificaciones_temporales_pendientes(documento_temporal_id, usuario_id, function(err, result) {
-                                if (err) {
-                                    callback(err);
-                                    return;
-                                }
-                                // Finalizar TransacciÃ³n.
-                                G.db.commit(function() {
-                                    that.m_pedidos_clientes.actualizar_despachos_pedidos_cliente(numero_pedido, prefijo_documento, numero_documento, function(err) {
-                                        callback(err, empresa_id, prefijo_documento, numero_documento);
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-    });
+    var doc = {};
+    
+    G.knex.transaction(function(transaccion) {  
+        G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, documento_temporal_id, usuario_id, transaccion).
+        then(function(result){
+             doc = result;
+             return G.Q.nfcall(__asignar_responsable_despacho, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento, usuario_id, transaccion);
+        }).
+        then(function(result){
+             return G.Q.nfcall(__ingresar_documento_despacho_clientes, documento_temporal_id, usuario_id, doc.empresa_id, doc.prefijo_documento,
+                              doc.numeracion_documento, auditor_id, transaccion);
+        }).
+        then(function(result){
+             return G.Q.nfcall(__ingresar_justificaciones_despachos, documento_temporal_id, usuario_id, doc.empresa_id, doc.prefijo_documento,
+                              doc.numeracion_documento, transaccion);
+        }).
+        then(function(result){
+             return G.Q.nfcall(__eliminar_documento_temporal_clientes,documento_temporal_id, usuario_id, transaccion);
+        }).
+        then(function(){
+            return G.Q.nfcall( that.eliminar_justificaciones_temporales_pendientes, documento_temporal_id, usuario_id, transaccion);
+        }).
+        then(function(){
+            return G.Q.nfcall( that.m_pedidos_clientes.actualizar_despachos_pedidos_cliente, numero_pedido, doc.prefijo_documento,
+                              doc.numeracion_documento, transaccion);
+        }).
+        fail(function(err){
+            console.log("error generado >>>>>>>>>>>>", err);
+            transaccion.rollback(err);
+        }).
+        done();
+    }).
+    then(function(){
+        
+       callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
+        
+    }).catch(function(err){
+        //console.log("error generado >>>>>>>>>>>>", err);
+        callback(err);
+    }).
+    done();        
+      
 };
 
 
@@ -858,7 +845,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 g.razon_social as nombre_empresa_destino,\
                 h.descripcion as nombre_bodega_destino,\
                 i.descripcion as nombre_centro_utilidad,\
-                (select nombre from system_usuarios where usuario_id = $4) as usuario_imprime,\
+                (select nombre from system_usuarios where usuario_id = :4) as usuario_imprime,\
                 to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
                 to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido\
                 from  inv_bodegas_movimiento as a\
@@ -871,9 +858,9 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 inner join bodegas h on h.bodega = a.bodega and h.centro_utilidad = a.centro_utilidad and h.empresa_id = a.empresa_id\
                 inner join centros_utilidad i on  i.centro_utilidad = a.centro_utilidad and i.empresa_id = a.empresa_id\
                 inner join ventas_ordenes_pedidos j on j.pedido_cliente_id = e.pedido_cliente_id\
-                where a.empresa_id = $3\
-                and a.prefijo = $2\
-                and a.numero = $1\
+                where a.empresa_id = :3\
+                and a.prefijo = :2\
+                and a.numero = :1\
                 union\
                 select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
                 a.prefijo,\
@@ -887,7 +874,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 g.razon_social as nombre_empresa_destino,\
                 h.descripcion as nombre_bodega_destino,\
                 i.descripcion as nombre_centro_utilidad,\
-                (select nombre from system_usuarios where usuario_id = $4) as usuario_imprime,\
+                (select nombre from system_usuarios where usuario_id = :4) as usuario_imprime,\
                 to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
                 to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido\
                 from  inv_bodegas_movimiento as a\
@@ -900,13 +887,16 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 inner join bodegas h on h.bodega = a.bodega and h.centro_utilidad = a.centro_utilidad and h.empresa_id = a.empresa_id\
                 inner join centros_utilidad i on  i.centro_utilidad = a.centro_utilidad and i.empresa_id = a.empresa_id\
                 inner join solicitud_productos_a_bodega_principal j on j.solicitud_prod_a_bod_ppal_id = e.solicitud_prod_a_bod_ppal_id\
-                where a.empresa_id = $3\
-                and a.prefijo = $2\
-                and a.numero = $1";
+                where a.empresa_id = :3\
+                and a.prefijo = :2\
+                and a.numero = :1";
     
-    G.db.query(sql, [numero, prefijo, empresa, usuario_id], function(err, rows, result) {
-        callback(err, rows);
-
+    
+    G.knex.raw(sql, {1:numero, 2:prefijo, 3:empresa, 4:usuario_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
     
 };
@@ -937,29 +927,45 @@ function __ingresar_documento_despacho_farmacias(documento_temporal_id, usuario_
 
 
 // Ingresar cabecera docuemento despacho clientes
-function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {
+function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, 
+                                                transaccion, callback) {
 
 
     var sql = " INSERT INTO inv_bodegas_movimiento_despachos_clientes(empresa_id, prefijo, numero, tipo_id_tercero, tercero_id, pedido_cliente_id, rutaviaje_destinoempresa_id, observacion, fecha_registro, usuario_id )\
-                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.tipo_id_tercero, a.tercero_id, a.pedido_cliente_id, a.rutaviaje_destinoempresa_id, a.observacion, NOW() as fecha_registro,$2 as usuario_id \
-                FROM inv_bodegas_movimiento_tmp_despachos_clientes a WHERE a.doc_tmp_id =$1 AND a.usuario_id =$2 ";
+                SELECT :3 as empresa_id, :4 as prefijo, :5 as numero, a.tipo_id_tercero, a.tercero_id, a.pedido_cliente_id, a.rutaviaje_destinoempresa_id, a.observacion, NOW() as fecha_registro, :2 as usuario_id \
+                FROM inv_bodegas_movimiento_tmp_despachos_clientes a WHERE a.doc_tmp_id = :1 AND a.usuario_id = :2 ";
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento], callback);
-}
-;
+    
+    var query = G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id, 3:empresa_id, 4:prefijo_documento, 5:numero_documento});
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+    
+};
 
 // Ingresar Justificacion despacho
-function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, callback) {
+function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, transaccion, callback) {
 
-    console.log('========= ingresar_justificaciones_despachos =========');
 
     var sql = " INSERT INTO inv_bodegas_movimiento_justificaciones_pendientes ( empresa_id, prefijo, numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor ) \
-                SELECT $3 AS empresa_id, $4 AS prefijo, $5 AS numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\
-                WHERE doc_tmp_id = $1 AND usuario_id = $2 ;  ";
+                SELECT :3 AS empresa_id, :4 AS prefijo, :5 AS numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\
+                WHERE doc_tmp_id = :1 AND usuario_id = :2 ;  ";
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento], callback);
-}
-;
+    
+    var query = G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id, 3:empresa_id, 4:prefijo_documento, 5:numero_documento});
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+    
+};
 
 // Ingresar Autorizaciones despacho
 function __ingresar_autorizaciones_despachos(documento_temporal_id, usuario_id, callback) {
@@ -1013,16 +1019,34 @@ function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_
 
 
 // Eliminar Documento Temporal Despacho Clientes
-function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, callback) {
+function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, transaccion, callback) {
+
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = :1 AND usuario_id = :2;";
+    
+    var query = G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id});
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = :1 AND usuario_id = :2;";
+        return G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id}).transacting(transaccion);
+        
+    }).
+    then(function(){
+        sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = :1 AND usuario_id = :2";
+        return G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id}).transacting(transaccion);
+    }).
+    then(function(){
+        callback(false);
+    }).
+    catch(function(err){
+        callback(err);
+    });
+    
 
 
 
-    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
-
-
-
-
-    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, result) {
+    /*G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, result) {
         if (err) {
             callback(err);
             return;
@@ -1038,22 +1062,25 @@ function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_i
             G.db.transaction(sql, [documento_temporal_id, usuario_id], callback);
         });
 
-    });
+    });*/
 
 }
 ;
 
 
 // Asignar Auditor Como Responsable del Desapcho
-function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {
-
-    var sql = " UPDATE inv_bodegas_movimiento SET usuario_id = $4 WHERE empresa_id = $1 AND prefijo = $2 AND numero = $3 ;";
-
-    //console.log("usuario id ", auditor_id, " empresa id ", empresa_id, " prefijo ", prefijo_documento, " numero ", numero_documento , " ");
-
-    G.db.transaction(sql, [empresa_id, prefijo_documento, numero_documento, auditor_id], callback);
-}
-;
+function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, transaccion, callback) {
+    var sql = " UPDATE inv_bodegas_movimiento SET usuario_id = :4 WHERE empresa_id = :1 AND prefijo = :2 AND numero = :3 ;";
+    var query = G.knex.raw(sql, {1:empresa_id, 2:prefijo_documento, 3:numero_documento, 4:auditor_id});
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+    
+};
 
 DocuemntoBodegaE008.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
 

@@ -954,45 +954,49 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 
-PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido, prefijo_documento, numero_documento, callback) {
+PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido, prefijo_documento, numero_documento, transaccion, callback) {
+    console.log("actualizar_despachos_pedidos_cliente >>>>>>>>>>",arguments);
     var sql = "select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
-                where a.pedido_cliente_id = $1 and a.numero= $3 and a.prefijo= $2 group by 1,3,4";
+                where a.pedido_cliente_id = :1 and a.numero= :3 and a.prefijo= :2 group by 1,3,4";
 
 
-    G.db.query(sql, [numero_pedido, prefijo_documento, numero_documento], function(err, rows, result) {
+    G.knex.raw(sql, {1:numero_pedido, 2:prefijo_documento, 3:numero_documento}).
+    transacting(transaccion).
+    then(function(resultado){
 
-        if (err) {
-            callback(err, null);
-            return;
-        }
+        var length = resultado.rows.length;
+        console.log("actualizar_despachos_pedidos_cliente code 2 >>>>>>>>>>",resultado.rows.length);
 
-        var length = rows.length;
+        resultado.rows.forEach(function(row) {
 
-        G.db.begin(function() {
-            rows.forEach(function(row) {
+            var cantidad_despachada = parseInt(row.cantidad_despachada);
 
-                var cantidad_despachada = parseInt(row.cantidad_despachada);
-                sql = "UPDATE ventas_ordenes_pedidos_d\
-                        SET cantidad_despachada=cantidad_despachada+$1\
-                        WHERE   pedido_cliente_id=$2\
-                        AND  codigo_producto=$3\
-                        AND cantidad_despachada < numero_unidades ";
+            sql = "UPDATE ventas_ordenes_pedidos_d\
+                    SET cantidad_despachada= cantidad_despachada + :1\
+                    WHERE   pedido_cliente_id = :2\
+                    AND  codigo_producto = :3\
+                    AND cantidad_despachada < numero_unidades ";
 
 
-                G.db.transaction(sql, [cantidad_despachada, numero_pedido, row.codigo_producto], function(err, rows, result) {
+            G.knex.raw(sql, {1:cantidad_despachada, 2:numero_pedido, 3:row.codigo_producto}).
+            transacting(transaccion).
+            then(function(resultado2) {
 
-                    if (--length === 0) {
-                        G.db.commit(function() {
-                            callback(err, rows);
-                            return;
-                        });
-                    }
-                });
-
+                if (--length === 0) {
+                    transaccion.commit(resultado2.rows);
+                    return;
+                }
+            }).
+            catch(function(err){
+                transaccion.rollback();
             });
+
         });
+        
+    }).catch(function(err){
+        callback(err);
     });
 };
 

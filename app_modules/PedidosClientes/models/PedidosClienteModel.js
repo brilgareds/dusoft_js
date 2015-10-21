@@ -366,7 +366,8 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                     b.item_id,\
                     b.tipo_estado_auditoria,\
                     b.cantidad_ingresada,\
-                    COALESCE(b.auditado, '0') as auditado\
+                    COALESCE(b.auditado, '0') as auditado,\
+                    c.codigo_barras \
                     from ventas_ordenes_pedidos_d a \
                     inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
                     inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \

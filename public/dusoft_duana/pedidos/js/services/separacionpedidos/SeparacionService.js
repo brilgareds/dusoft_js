@@ -35,6 +35,7 @@ define(["angular", "js/services"], function(angular, services) {
                 var url = API.SEPARACION_PEDIDOS.CLIENTES.LISTAR_PEDIDOS_OPERARIO_CLIENTE;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
+                   
                     if (data.status === 200) {
 
                        var pedidos = self.serializarPedidosOperario('1', data.obj.pedidos_clientes);

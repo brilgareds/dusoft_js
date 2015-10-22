@@ -2049,6 +2049,8 @@ function __subir_archivo_plano(files, callback) {
                     } else {
                         // Cargar Contenido
                         contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
+                        
+                        console.log("contenido_archivo_plano ", contenido_archivo_plano);
                         // Borrar archivo fisico
                         G.fs.unlinkSync(ruta_nueva);
                         callback(false, contenido_archivo_plano);

@@ -54,6 +54,8 @@ define(["angular", "js/controllers",
                      * @param {type} $event
                      */
                     $scope.onFiltrarProducto = function($event) {
+                        
+                        
                         if ($event.which === 13) {
                             self.renderFiltrarProducto($scope.rootSeparacion.filtro.codigoBarras);
                         }
@@ -61,7 +63,7 @@ define(["angular", "js/controllers",
                     };
                     
                     self.renderFiltrarProducto = function(codigoBarras) {
-
+                      
                         var index = -1;
                         var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
                        // console.log("pedido ", pedido);
@@ -69,10 +71,14 @@ define(["angular", "js/controllers",
                         for (var i in pedido) {
                             var _producto = pedido[i];
                             
+                           
+                            
                             if (!codigoBarras && _producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
+                                  
                                 index = i;
                                 break;
                             } else if(codigoBarras && _producto.getCodigoBarras() === $scope.rootSeparacion.filtro.termino ) {
+                              
                                 index = i;
                                 break;
                             }

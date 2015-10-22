@@ -66,8 +66,7 @@ define(["angular", "js/controllers",
                       
                         var index = -1;
                         var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
-                       // console.log("pedido ", pedido);
-                       
+                    
                         for (var i in pedido) {
                             var _producto = pedido[i];
                             
@@ -140,7 +139,7 @@ define(["angular", "js/controllers",
 
                         modalInstance.result.then(function() {
                             self.refrescarProducto(function() {
-
+                              $scope.onSiguiente();
                             });
                         }, function() {
 
@@ -417,7 +416,7 @@ define(["angular", "js/controllers",
 
                             _pedido.agregarDetallePedido(ProductoPedido, productos, true, LoteProductoPedido);
 
-                            //console.log("pedido del doc tmp", doc);
+                           
 
                             $scope.rootSeparacion.documento.setPedido(_pedido);
 
@@ -522,6 +521,10 @@ define(["angular", "js/controllers",
                      * si es el ultimo
                      */
                     $scope.onSiguiente = function() {
+                        
+                        if ($scope.rootSeparacion.paginaactual === $scope.rootSeparacion.empresa.getPedidoSeleccionado().getProductos().length-1) {
+                            return;
+                        }
                         var cantidadProductos = EmpresaPedido.getPedidoSeleccionado().getProductos().length - 1;
                         var pedido = EmpresaPedido.getPedidoSeleccionado();
                         var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];

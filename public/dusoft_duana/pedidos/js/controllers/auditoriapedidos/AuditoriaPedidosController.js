@@ -499,7 +499,6 @@ define(["angular", "js/controllers",
             
             $scope.generarDocumento = function(documento) {
                 
-                
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -520,7 +519,7 @@ define(["angular", "js/controllers",
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
+                    
                     if (data.status === 200) {
 
                         $scope.productosNoAuditados = [];
@@ -559,9 +558,8 @@ define(["angular", "js/controllers",
                                 };
                             }
                         };
-                        var modalInstance = $modal.open($scope.opts);
-
-
+                       
+                         //var modalInstance = $modal.open($scope.opts);
                         //generar el pdf
                         var obj = {
                             session: $scope.session,
@@ -575,12 +573,20 @@ define(["angular", "js/controllers",
                         };
                         Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", obj, function(data) {
                             if (data.status === 200) {
+                                
+                               
                                 var nombre = data.obj.movimientos_bodegas.nombre_pdf;
                                 var detallado = data.obj.movimientos_bodegas.datos_documento;
+                                
+                                    /**
+                                     * @fecha: 26/10/2015
+                                     * +Descripcion: Se envia el detallado del documento el cual se
+                                     * pintara en una plantilla html y se imprimira posteriormente
+                                     * @author Cristian Ardila
+                                     */
                                     localStorageService.set("DocumentoDespachoImprimir",detallado);
-                                    console.log(detallado)
-                                  // $state.go("DocumentoDespacho");
-                                    window.open("#/DocumentoDespacho");
+                                    window.open("#/DocumentoDespacho", 'popimpr','location=no');
+                                
                                // $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
                             }
 

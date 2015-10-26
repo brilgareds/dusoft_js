@@ -134,12 +134,12 @@ define(["angular", "js/controllers",
             };
             
             $scope.$on("mostrardetalleclienteCompleto",function(e, datos){
-                console.log("evento recibido del padre mostrardetalleclienteCompleto");
+               
                 $scope.$broadcast("detalleClienteCompleto", datos);
             });
             
             $scope.$on("cerrarDetalleCliente", function(){
-                console.log("cerrar slider  cliete");
+                
                 $scope.$emit('cerrardetallecliente', {animado: true});
             });
 

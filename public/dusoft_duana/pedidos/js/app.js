@@ -132,7 +132,7 @@ define([
                 
                  .state('DocumentoDespacho',{
                     url: "/DocumentoDespacho",
-                    templateUrl: "views/auditoriapedidos/prueba.html",
+                    templateUrl: "views/auditoriapedidos/AuditoriaHTMLReport.html",
                     parent_name: "AuditarPedidos",
                     controller: "AuditoriaHTMLReportController"
                 });

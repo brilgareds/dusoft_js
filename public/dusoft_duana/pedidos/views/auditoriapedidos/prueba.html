@@ -1,0 +1,154 @@
+<div ng-controller="AuditoriaHTMLReportController">
+
+  <!-- {{DatosDocumentoDespachado}}//-->
+</div>
+
+
+<html>
+    <head>
+        <style>
+
+            td{
+                font-style: normal;
+                font-variant: normal;
+                font-weight: 400;
+                line-height: 18.5714px;
+                font-size:10px;
+               
+               font-family: Arial;
+            }
+           
+            .title{
+                font-weight:bold;
+                
+                font-style: normal;
+                font-variant: normal;
+               
+                line-height: 18.5714px;
+                font-size:13px;
+               
+               font-family: Arial;
+            }
+            
+            .docInfo{
+                float:right;
+                font-size:9px;
+            }
+            
+            .footer{
+                margin-top:70px;
+                width:100%;
+            }
+            
+            .cantidad{
+                text-align:center;
+            }
+            
+            .fecha_pedido{
+                margin-left:20px;
+            }
+        </style>
+        
+      
+    </head>
+    <body>
+       
+      <!--  <img src="../../../../images/logo.png" style="padding-bottom:20px; text-align:center"  width="100px" /> //-->
+       
+     <!--  <div class='docInfo'>
+           <div style='text-align:right;'><span>{{DatosDocumentoDespachado.encabezado.fecha_impresion}}</span></div>
+           <div>Imprime: <span>{{DatosDocumentoDespachado.encabezado.usuario_imprime}}</span></div>
+       </div> //-->
+      
+       <table class=" " width='100%' >
+            <tr>
+                <td class='title'>Empresa</td><td>{{DatosDocumentoDespachado.encabezado.nombre_empresa_destino}}</td>
+                <td class='title'>Usuario</td><td>{{DatosDocumentoDespachado.encabezado.nombre_usuario}}</td>
+                
+            </tr>
+            <tr>
+                
+                 <td class='title'>Bodega</td><td>{{DatosDocumentoDespachado.encabezado.nombre_bodega_destino}}</td>
+                <td class='title'>Documento</td><td>{{DatosDocumentoDespachado.encabezado.prefijo}} - {{DatosDocumentoDespachado.encabezado.numero}}</td>
+            </tr>
+            <tr>
+                <td class='title'>Pedido</td><td>{{DatosDocumentoDespachado.encabezado.numero_pedido}}<span class='fecha_pedido'>{{DatosDocumentoDespachado.encabezado.fecha_pedido}}</span></td>
+                <td class='title'>Fecha Despacho</td><td>{{DatosDocumentoDespachado.encabezado.fecha_registro}}</td>
+               
+            </tr>
+        </table>
+        
+        <hr/>
+        
+        
+        <div class="">
+            <!--<div class="panel-heading text-center title">Datos adicionales</div>//-->
+             <table class="" width='100%'>
+               <tbody ng-repeat="adicionales in DatosDocumentoDespachado.adicionales">
+                    <tr>
+                        <td class='title'>{{adicionales.titulo}}</td>
+                        <td>{{adicionales.valor}}</td>
+                    </tr>
+               </tbody>
+            </table>
+        </div>
+         <hr/>
+        
+       
+        
+       <table class="" width='100%'>
+            <thead>
+                <tr>
+                    <th width='15%' class='title'>Codigo</th>
+                    <th width='35%' class='title'>Descripci&oacute;n</th>
+                    <th class='title'>Cant.</th>
+                    <th class='title'>Cum</th>
+                    <th class='title'>Invima</th>
+                    <th class='title'>Lote</th>
+                    <th class='title'>F/vto</th>
+                </tr>
+            </thead>
+            
+            <tbody ng-repeat="DatosDocumentoDespachado in DatosDocumentoDespachado.detalle">
+                <tr>
+                  <tr>
+                        <td>{{DatosDocumentoDespachado.codigo_producto}}</td>
+                        <td>{{DatosDocumentoDespachado.nombre}}</td>
+                        <td class='cantidad'>{{DatosDocumentoDespachado.cantidad}}</td>
+                        <td>{{DatosDocumentoDespachado.codigo_cum}}</td>
+                        <td>{{DatosDocumentoDespachado.codigo_invima}}</td>
+                        <td>{{DatosDocumentoDespachado.lote}}</td>
+                        <td>{{DatosDocumentoDespachado.fecha_vencimiento}}</td>
+                    </tr>
+                 
+            </tbody>
+          
+        </table>
+
+        <table class='footer'>
+            <tr align='center'>
+                <td>
+                    _______________________________
+                </td>
+                <td>
+                    _______________________________
+                </td>
+                <td>
+                    _______________________________
+                </td>
+            </tr>
+            <tr align='center'>
+                <td>
+                   Separo
+                </td>
+                <td>
+                   Audito
+                </td>
+                <td>
+                    Verifico
+                </td>
+            </tr>
+        </table>
+        
+    </body>
+</html>

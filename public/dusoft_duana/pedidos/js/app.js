@@ -51,7 +51,10 @@ define([
     "controllers/separacionpedidos/SeparacionProductosPendientesController",
     
     //Nuevo modelo
-    "models/separacionpedidos/DocumentoDespacho"
+    "models/separacionpedidos/DocumentoDespacho",
+    
+    //Nuevo controlador
+    "controllers/auditoriapedidos/AuditoriaHTMLReportController"
     
 ], function(angular) {
     /* App Module and its dependencies */
@@ -125,8 +128,14 @@ define([
                     templateUrl: "views/generacionpedidos/pedidosfarmacias/guardarpedido.html",
                     parent_name: "ListarPedidosFarmacias",
                     controller: "GuardarPedidoBaseController"
+                })
+                
+                 .state('DocumentoDespacho',{
+                    url: "/DocumentoDespacho",
+                    templateUrl: "views/auditoriapedidos/prueba.html",
+                    parent_name: "AuditarPedidos",
+                    controller: "AuditoriaHTMLReportController"
                 });
-
                 // URL's Pedidos Clientes
                 pedidos.stateProvider.state('ListarPedidosClientes', {
                     url: "/ListarPedidosClientes",

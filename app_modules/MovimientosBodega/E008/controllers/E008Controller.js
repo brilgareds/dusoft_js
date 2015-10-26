@@ -2253,7 +2253,10 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
 
                 __generarPdfDespacho(datos_documento, function(nombre_pdf) {
                     console.log("nombre generado ", nombre_pdf);
-                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200, {movimientos_bodegas: {nombre_pdf: nombre_pdf}}));
+                    console.log("datos_documento ", datos_documento);
+                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200,{
+                        movimientos_bodegas: {nombre_pdf: nombre_pdf, datos_documento: datos_documento}
+                    }));
                 });
 
             });

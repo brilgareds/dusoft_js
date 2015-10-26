@@ -11,17 +11,17 @@ define(["angular", "js/controllers",
     "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
     "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
 
-    var fo = controllers.controller('AuditoriaPedidosController', [
+    var fo = controllers.controller('AuditoriaHTMLReportController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Cliente', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
-        "$modal", 'Auditor', 'Usuario',"localStorageService",
+        "$modal", 'Auditor', 'Usuario', "localStorageService", "$state",
         function($scope, $rootScope, Request,
                 Empresa, Cliente, Farmacia,
                 PedidoAuditoria, Separador, DocumentoTemporal,
                 API, socket, AlertService,
-                ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario, localStorageService) {
+                ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario, localStorageService, $state) {
 
             $scope.Empresa = Empresa;
 
@@ -29,7 +29,7 @@ define(["angular", "js/controllers",
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-
+            $scope.DatosDocumentoDespachado="";
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.productosAuditados = [];
@@ -45,7 +45,167 @@ define(["angular", "js/controllers",
 
 
             var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-
+     
+            var dattta = {"encabezado":
+                           {"fecha_registro":"24-10-2015 10:07 am",
+                            "prefijo":"EDFM",
+                            "numero":8129,
+                            "numero_pedido":103395,
+                            "estado_pedido":"2",
+                            "tipo_movimiento":"E",
+                            "tipo_clase_documento":"EGRESOS DESPACHOS DE BODEGA",
+                            "descripcion":"DESPACHOS A FARMACIAS MEDMFEN",
+                            "tipo_doc_bodega_id":"E008",
+                            "nombre_usuario":"MAURICIO BARRIOS",
+                            "nombre_empresa_destino":"DUANA & CIA LTDA.",
+                            "nombre_bodega_destino":"BODEGA DUANA",
+                            "nombre_centro_utilidad":"DUANA",
+                            "usuario_imprime":"MAURICIO BARRIOS",
+                            "fecha_impresion":"24-10-2015 10:07 AM",
+                            "fecha_pedido":"24-10-2015 10:05 AM"
+                            },
+                        "detalle":[
+                    {"codigo_producto":"1101I0850001",
+                        "lote":"888","cantidad":5,
+                        "fecha_vencimiento":"08-09-2016",
+                        "descripcion":"PARALGEN",
+                        "unidad_id":"1",
+                        "contenido_unidad_venta":"8MG",
+                        "descripcion_unidad":"TABLETA",
+                        "codigo_invima":"2014M-0015006",
+                        "codigo_cum":"20063873-01",
+                        "nombre":"PARALGEN 8MG TABLETA | CAJA X 10. LEGRAND",
+                        "iva":0,
+                        "valor_unitario_iva":4335.4,
+                        "valor_total_iva":21677,
+                        "valor_unit_1":4335.4,
+                        "iva_1":0,
+                        "valor_total_1":21677,
+                        "iva_total_1":0},
+                 {"codigo_producto":"1101I0850001",
+                        "lote":"888","cantidad":5,
+                        "fecha_vencimiento":"08-09-2016",
+                        "descripcion":"PARALGEN",
+                        "unidad_id":"1",
+                        "contenido_unidad_venta":"8MG",
+                        "descripcion_unidad":"TABLETA",
+                        "codigo_invima":"2014M-0015006",
+                        "codigo_cum":"20063873-01",
+                        "nombre":"PARALGEN 8MG TABLETA | CAJA X 10. LEGRAND",
+                        "iva":0,
+                        "valor_unitario_iva":4335.4,
+                        "valor_total_iva":21677,
+                        "valor_unit_1":4335.4,
+                        "iva_1":0,
+                        "valor_total_1":21677,
+                        "iva_total_1":0},
+                    {"codigo_producto":"1101I0850001",
+                        "lote":"888","cantidad":5,
+                        "fecha_vencimiento":"08-09-2016",
+                        "descripcion":"PARALGEN",
+                        "unidad_id":"1",
+                        "contenido_unidad_venta":"8MG",
+                        "descripcion_unidad":"TABLETA",
+                        "codigo_invima":"2014M-0015006",
+                        "codigo_cum":"20063873-01",
+                        "nombre":"PARALGEN 8MG TABLETA | CAJA X 10. LEGRAND",
+                        "iva":0,
+                        "valor_unitario_iva":4335.4,
+                        "valor_total_iva":21677,
+                        "valor_unit_1":4335.4,
+                        "iva_1":0,
+                        "valor_total_1":21677,
+                        "iva_total_1":0},
+                    {"codigo_producto":"1101I0850001",
+                        "lote":"888","cantidad":5,
+                        "fecha_vencimiento":"08-09-2016",
+                        "descripcion":"PARALGEN",
+                        "unidad_id":"1",
+                        "contenido_unidad_venta":"8MG",
+                        "descripcion_unidad":"TABLETA",
+                        "codigo_invima":"2014M-0015006",
+                        "codigo_cum":"20063873-01",
+                        "nombre":"PARALGEN 8MG TABLETA | CAJA X 10. LEGRAND",
+                        "iva":0,
+                        "valor_unitario_iva":4335.4,
+                        "valor_total_iva":21677,
+                        "valor_unit_1":4335.4,
+                        "iva_1":0,
+                        "valor_total_1":21677,
+                        "iva_total_1":0},
+                    {"codigo_producto":"1101I0850001",
+                        "lote":"888","cantidad":5,
+                        "fecha_vencimiento":"08-09-2016",
+                        "descripcion":"PARALGEN",
+                        "unidad_id":"1",
+                        "contenido_unidad_venta":"8MG",
+                        "descripcion_unidad":"TABLETA",
+                        "codigo_invima":"2014M-0015006",
+                        "codigo_cum":"20063873-01",
+                        "nombre":"PARALGEN 8MG TABLETA | CAJA X 10. LEGRAND",
+                        "iva":0,
+                        "valor_unitario_iva":4335.4,
+                        "valor_total_iva":21677,
+                        "valor_unit_1":4335.4,
+                        "iva_1":0,
+                        "valor_total_1":21677,
+                        "iva_total_1":0},
+                    {"codigo_producto":"1101I0850001",
+                        "lote":"888","cantidad":5,
+                        "fecha_vencimiento":"08-09-2016",
+                        "descripcion":"PARALGEN",
+                        "unidad_id":"1",
+                        "contenido_unidad_venta":"8MG",
+                        "descripcion_unidad":"TABLETA",
+                        "codigo_invima":"2014M-0015006",
+                        "codigo_cum":"20063873-01",
+                        "nombre":"PARALGEN 8MG TABLETA | CAJA X 10. LEGRAND",
+                        "iva":0,
+                        "valor_unitario_iva":4335.4,
+                        "valor_total_iva":21677,
+                        "valor_unit_1":4335.4,
+                        "iva_1":0,
+                        "valor_total_1":21677,
+                        "iva_total_1":0},
+                    {"codigo_producto":"1101I0850001",
+                        "lote":"888","cantidad":5,
+                        "fecha_vencimiento":"08-09-2016",
+                        "descripcion":"PARALGEN",
+                        "unidad_id":"1",
+                        "contenido_unidad_venta":"8MG",
+                        "descripcion_unidad":"TABLETA",
+                        "codigo_invima":"2014M-0015006",
+                        "codigo_cum":"20063873-01",
+                        "nombre":"PARALGEN 8MG TABLETA | CAJA X 10. LEGRAND",
+                        "iva":0,
+                        "valor_unitario_iva":4335.4,
+                        "valor_total_iva":21677,
+                        "valor_unit_1":4335.4,
+                        "iva_1":0,
+                        "valor_total_1":21677,
+                        "iva_total_1":0},
+                    {"codigo_producto":"1101I0850001",
+                        "lote":"888","cantidad":5,
+                        "fecha_vencimiento":"08-09-2016",
+                        "descripcion":"PARALGEN",
+                        "unidad_id":"1",
+                        "contenido_unidad_venta":"8MG",
+                        "descripcion_unidad":"TABLETA",
+                        "codigo_invima":"2014M-0015006",
+                        "codigo_cum":"20063873-01",
+                        "nombre":"PARALGEN 8MG TABLETA | CAJA X 10. LEGRAND",
+                        "iva":0,
+                        "valor_unitario_iva":4335.4,
+                        "valor_total_iva":21677,
+                        "valor_unit_1":4335.4,
+                        "iva_1":0,
+                        "valor_total_1":21677,
+                        "iva_total_1":0}
+                ],
+                        "adicionales":{"tipo_de_despacho":{"valor":"FARMACIAS","titulo":"TIPO DE DESPACHO"},"cliente":{"valor":"03 - DUANA & CIA LTDA. ::: BODEGA DUANA","titulo":"CLIENTE"}},"serverUrl":"http://localhost:3000/"};
+             
+            //$scope.DatosDocumentoDespachado = localStorageService.get("DocumentoDespachoImprimir");
+            $scope.DatosDocumentoDespachado = dattta;
             //permisos auditoria
             $scope.opcionesModulo = {
                 btnAuditarClientes: {
@@ -55,7 +215,7 @@ define(["angular", "js/controllers",
                     'click': opciones.sw_auditar_farmacias
                 }
             };
-
+            
 
             var obj = {
                 session: $scope.session,
@@ -142,12 +302,12 @@ define(["angular", "js/controllers",
 
                 return documento_temporal;
             };
-            
-           $scope.obtenerDocumento = function(numero, tipo){
+
+            $scope.obtenerDocumento = function(numero, tipo) {
                 var documentos = Empresa.getDocumentoTemporal(tipo);
-                for(var i in documentos){
+                for (var i in documentos) {
                     var documento = documentos[i];
-                    if(documento.getPedido().get_numero_pedido() === numero){
+                    if (documento.getPedido().get_numero_pedido() === numero) {
                         return documento;
                     }
                 }
@@ -159,7 +319,7 @@ define(["angular", "js/controllers",
                 var items = data.documentos_temporales.length;
                 var evento = (tipo === 1) ? "Cliente" : "Farmacia";
 
-               // console.log("documentos de ", evento, data.documentos_temporales);
+                // console.log("documentos de ", evento, data.documentos_temporales);
 
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && items === 0) {
@@ -178,7 +338,7 @@ define(["angular", "js/controllers",
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
                 $scope.$broadcast("onPedidosSeparadosRender" + evento, items);
-                
+
             };
 
 
@@ -195,7 +355,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                       
+
                         if (data.obj.documento_temporal !== undefined) {
                             callback(data, paginando);
                         }
@@ -203,7 +363,7 @@ define(["angular", "js/controllers",
                 });
 
             };
-            
+
 
             that.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback) {
 
@@ -248,7 +408,7 @@ define(["angular", "js/controllers",
                 that.buscarProductosSeparadosEnDocumento(params, tipo, function(data) {
                     if (data.status === 200) {
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
-                       
+
 
                         that.renderDetalleDocumentoTemporal(documento, productos, 1);
                     }
@@ -282,7 +442,7 @@ define(["angular", "js/controllers",
                 producto_pedido_separado.cantidad_despachada = obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada = producto_pedido_separado.cantidad_solicitada - obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada_real = obj.cantidad_solicitada;
-                                               
+
 
                 producto_pedido_separado.setLote(lote_pedido);
 
@@ -296,7 +456,7 @@ define(["angular", "js/controllers",
             //Trae el Listado de Documentos de Usuario
             $scope.traerListadoDocumentosUsuario = function(obj, callback) {
 
-                
+
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -344,7 +504,7 @@ define(["angular", "js/controllers",
                     var _producto = documento.getPedido().getProductos()[i];
 
                     if (_producto.codigo_producto === producto.codigo_producto) {
-                       
+
                         _producto.lote.cantidad_ingresada = _producto.cantidad_separada;
                         productos.push(_producto);
                     }
@@ -384,7 +544,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                      
+
                         that.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados, $scope.productosAuditados);
                     }
 
@@ -470,10 +630,10 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                  
+
                     if (data.status === 200) {
                         caja.caja_cerrada = '1';
-                       
+
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
                     }
@@ -493,13 +653,42 @@ define(["angular", "js/controllers",
                     }
                 }
             };
-            
+
+
           
+           $scope.cambiar = function(){
+                that.detalladoProductosInduccion = localStorageService.get("productoInduccion");
+                console.log(  that.detalladoProductosInduccion );
+                
+                $scope.saludo = that.detalladoProductosInduccion;
+                
+              // $state.go("DocumentoDespacho");
+              //  window.open("#/DocumentoDespacho");
+           };
            
-            
+           
+           
             $scope.generarDocumento = function(documento) {
-                
-                
+              
+                localStorageService.set("productoInduccion", "objasasasasasa");
+               
+                console.log("$scope.saludo ", $scope.saludo)
+                var txt;
+                var r = confirm("Press a button!");
+                if (r == true) {
+                    txt = "You pressed OK!";
+                       $scope.saludo = "HOLASSSSSS"; 
+                } else {
+                    txt = "You pressed Cancel!";
+                }
+                alert(txt)
+                 
+                //  localStorageService.set("Prueba", obj);
+                // $state.go("DocumentoDespacho");
+                  
+
+
+
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -530,9 +719,9 @@ define(["angular", "js/controllers",
 
 
                         $scope.$broadcast("onRefrescarListadoPedidos");
-                        
+
                         $scope.$broadcast("cerrarDetalleCliente");
-                        
+
                         $scope.$broadcast("cerrarDetalleFarmacia");
 
                         $scope.documento_generado = data.obj.movimientos_bodegas;
@@ -576,12 +765,7 @@ define(["angular", "js/controllers",
                         Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", obj, function(data) {
                             if (data.status === 200) {
                                 var nombre = data.obj.movimientos_bodegas.nombre_pdf;
-                                var detallado = data.obj.movimientos_bodegas.datos_documento;
-                                    localStorageService.set("DocumentoDespachoImprimir",detallado);
-                                    console.log(detallado)
-                                  // $state.go("DocumentoDespacho");
-                                    window.open("#/DocumentoDespacho");
-                               // $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
                             }
 
                         });
@@ -688,7 +872,7 @@ define(["angular", "js/controllers",
                         var documento_temporal = that.crearDocumentoTemporal(obj, 1);
                         documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
-                       
+
                     }
                 }
             });

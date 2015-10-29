@@ -958,11 +958,21 @@ PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,
     });
 };
 // Pedidos en Donde esta pendiente por entregar el Producto
+/**
+ * 
+ * @param {type} empresa
+ * @param {type} codigo_producto
+ * @param {type} callback
+ * +Descripcion: se agrega campo destino
+ * @fecha: 29/10/2015
+ * @returns {undefined}
+ */
 PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
 
     var sql = " select \
                 a.farmacia_id,\
                 c.razon_social,\
+                (select g.descripcion FROM bodegas g WHERE g.empresa_id = a.farmacia_id AND g.centro_utilidad = a.centro_utilidad AND g.bodega = a.bodega) as destino,\
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                 b.cantidad_solic as cantidad_solicitada,\
                 b.cantidad_pendiente,\

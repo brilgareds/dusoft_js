@@ -162,7 +162,7 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                                                     that.m_kardex.obtener_detalle_movimientos_producto(empresa_id, movimiento.tipo_documento, movimiento.prefijo, movimiento.numero, function(err, detalle_movimiento) {
 
                                                         if (err) {
-                                                            res.send(G.utils.r(req.url, 'Error Seleccionado el detalle del Movimiento', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
+                                                            res.send(G.utils.r(req.url, 'Error Seleccionando el detalle del Movimiento', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
                                                             return;
                                                         } else {
 

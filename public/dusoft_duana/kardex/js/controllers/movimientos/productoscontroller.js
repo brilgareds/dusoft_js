@@ -231,6 +231,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                 if (data.obj.movimientos_producto.length > 0) {
 
                                     $scope.$emit('mostrardetallekardex', row.entity, data.obj);
+                                  
                                 } else {
                                     AlertService.mostrarMensaje("warning", "El producto no tiene movimientos");
                                 }

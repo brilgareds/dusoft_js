@@ -32,6 +32,12 @@ G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
 G.constants =  require("./lib/Constants").create();
+/**
+ * +Descripcion:Se añade dependencia para importar archivo .XLS
+ * @fecha: 29/10/2015
+ * 
+ * */
+G.xls = require("xls-to-json");
 
 
 

@@ -493,6 +493,8 @@ define(["angular", "js/controllers",
              */
             $scope.cargarArchivoPlano = function($flow) {
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo = $flow;
+                
+                
             };
             
             /*
@@ -501,7 +503,10 @@ define(["angular", "js/controllers",
              */
             $scope.subirArchivoPlano = function() {
                  var pedido = $scope.root.pedido;
-                 $scope.rootPedidoFarmaciaTemporal.progresoArchivo = 1;
+                 $scope.rootPedidoFarmaciaTemporal.progresoArchivo = 1; 
+                 var nombreArchivo = $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.files[0].name;
+                 var extension = nombreArchivo.substr(nombreArchivo.indexOf("."),nombreArchivo.length);   
+                   
                  self.guardarEncabezadoPedidoTemporal(function(creacionCompleta) {
                     if (creacionCompleta) {
                         pedido.setEsTemporal(true);
@@ -514,7 +519,8 @@ define(["angular", "js/controllers",
                                     empresa_destino_id: pedido.getFarmaciaDestino().getCodigo(),
                                     centro_utilidad_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
                                     bodega_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                                    tipo_producto:pedido.getTipoPedido()
+                                    tipo_producto:pedido.getTipoPedido(),
+                                    extension: extension.trim()
                                 }
                          });
                          
@@ -537,9 +543,9 @@ define(["angular", "js/controllers",
                 
                 if(datos.status === 200){
                     self.consultarDetallePedidoTemporal(function(){
-                        if(datos.obj.productosInvalidos.length > 0){
+                         if(datos.obj.pedido_farmacia.productosInvalidos.length > 0){
                             
-                            self.mostrarProductosNoValidos(datos.obj.productosInvalidos);
+                            self.mostrarProductosNoValidos(datos.obj.pedido_farmacia.productosInvalidos);
                         }
                         $scope.rootPedidoFarmaciaTemporal.tabListaPedidos = true;
                     });

@@ -37,7 +37,7 @@ define(["angular", "js/controllers",
              * +Descripcion: Determina si se muestra la columna de modificar cantidad
              */
             self.visualizarColumnaModificarCantidad = function(){
-                console.log("modificacion ", $scope.root.pedido.getTipoModificacion());
+               
                 if( $scope.root.pedido.getTipoModificacion() === '1' || $scope.root.pedido.getTipoModificacion() === '3' ){
                     return true;
                 }

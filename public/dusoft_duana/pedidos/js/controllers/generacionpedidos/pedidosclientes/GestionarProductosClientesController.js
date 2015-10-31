@@ -288,28 +288,25 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto.set_codigo_cum(data.codigo_cum).set_codigo_invima(data.codigo_invima).set_fecha_vencimiento_invima(data.vencimiento_codigo_invima);
                     producto.set_regulado(data.sw_regulado).set_precio_regulado(data.precio_regulado);
                     producto.set_pactado(data.tiene_precio_pactado).set_precio_venta(data.precio_producto);
+                    
+                    if(data.tiene_precio_pactado){
+                         producto.setColorInputPrecioPactador('rgba(86, 157, 131, 0.9)');
+                         producto.setColorTextoPrecioPactador('white');
+                    }else{
+                         producto.setColorInputPrecioPactador('white');
+                         producto.setColorTextoPrecioPactador('black');
+                    }
+                    
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
-                    
-                  
-                    
+                
                 });
                 
-                 $scope.Empresa.get_productos().forEach(function(data) {
-                     
-                     if(data.es_pactado()){
-                         $scope.colorPrecioPactado = 'rgba(86, 157, 131, 0.9)';
-                         $scope.colorPrecioPactadoTexto = 'white';
-                     }else{
-                         $scope.colorPrecioPactado = 'white';
-                         $scope.colorPrecioPactadoTexto = 'black';
-                     }
-                      
-                 });
                 
-                  
             };
 
+            
+            
             
             $scope.habilitar_seleccion_producto = function() {
 
@@ -381,7 +378,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 ng-model="row.entity.precio_venta" \
                                 validacion-numero-entero \
                                 ng-disabled = "row.entity.sw_pactado"\n\
-                                ng-style="{background: colorPrecioPactado,color:colorPrecioPactadoTexto}"\n\
+                                ng-style="{background: row.entity.colorInputPrecioPactador,color:row.entity.colorTextoPrecioPactador}"\n\
                                  class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},

@@ -302,6 +302,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          $scope.colorPrecioPactadoTexto = 'white';
                      }else{
                          $scope.colorPrecioPactado = 'white';
+                         $scope.colorPrecioPactadoTexto = 'black';
                      }
                       
                  });

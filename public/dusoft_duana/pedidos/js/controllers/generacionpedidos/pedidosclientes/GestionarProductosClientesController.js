@@ -290,10 +290,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto.set_pactado(data.tiene_precio_pactado).set_precio_venta(data.precio_producto);
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
+                    
+                  
+                    
                 });
+                
+                 $scope.Empresa.get_productos().forEach(function(data) {
+                     
+                     if(data.es_pactado()){
+                         $scope.colorPrecioPactado = 'rgba(86, 157, 131, 0.9)';
+                         $scope.colorPrecioPactadoTexto = 'white';
+                     }else{
+                         $scope.colorPrecioPactado = 'white';
+                     }
+                      
+                 });
+                
+                  
             };
 
-
+            
             $scope.habilitar_seleccion_producto = function() {
 
                 // Pedido
@@ -360,7 +376,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
                                         </div>'},
                     {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.precio_venta" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" \
+                                ng-model="row.entity.precio_venta" \
+                                validacion-numero-entero \
+                                ng-disabled = "row.entity.sw_pactado"\n\
+                                ng-style="{background: colorPrecioPactado,color:colorPrecioPactadoTexto}"\n\
+                                 class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
                     {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",

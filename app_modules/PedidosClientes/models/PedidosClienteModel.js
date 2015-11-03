@@ -1230,7 +1230,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                      when a.estado = '1' then 'Activo'\
                      when a.estado = '2' then 'Anulado'\
                      when a.estado = '3' then 'Aprobado cartera'\
-                     when a.estado = '4' then 'Desaprobado por cartera' end as descripcion_estado,\
+                     when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\

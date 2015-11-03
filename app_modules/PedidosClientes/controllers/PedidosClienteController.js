@@ -556,8 +556,6 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
     
     
-    console.log("<<<<<<<<<< PedidosCliente.prototype.modificarDetalleCotizacion >>>>>>>>>>>>");
-    
     var that = this;
 
     var args = req.body.data;
@@ -667,7 +665,7 @@ PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'Cotizacion cambiada correctamente', 200, {pedidos_clientes:[]}));
     }).
     fail(function(err){
-        console.log("error generado ", err);
+       
         res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
     }).
     done();

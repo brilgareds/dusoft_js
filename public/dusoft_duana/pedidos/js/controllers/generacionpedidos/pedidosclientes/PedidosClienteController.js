@@ -755,7 +755,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 // Observacion cartera para pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
-
+                
                     url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
                     obj = {
                         session: $scope.session,

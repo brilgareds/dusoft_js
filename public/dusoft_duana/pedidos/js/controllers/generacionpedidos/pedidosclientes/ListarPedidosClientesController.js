@@ -63,7 +63,8 @@ define(["angular", "js/controllers",
                     "btn btn-danger btn-xs",
                     "btn btn-primary btn-xs",
                     "btn btn-danger btn-xs",
-                    "btn btn-success btn-xs"
+                    "btn btn-success btn-xs",
+                     "btn btn-warning btn-xs"
                 ],
                 estados_pedidos: [
                     "btn btn-danger btn-xs",
@@ -313,6 +314,8 @@ define(["angular", "js/controllers",
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
+                
+               
             };
 
             $scope.lista_cotizaciones_clientes = {

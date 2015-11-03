@@ -192,7 +192,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         callback(false, rows);
     }).
     catch(function(err){
-       console.log("error generado en lista pedidos farmacias ", err);
+    
        callback(err);
     });
 };
@@ -305,7 +305,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
     then(function(rows){
         callback(false, rows);
     }).catch(function(err){
-        console.log("error >>>>>>>> ", err);
+      
         callback(err);
     }).done();
     
@@ -575,7 +575,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         callback(false, rows, query.totalRegistros);
     }).
     catch(function(err){
-        console.log("error ", err);
+      
         callback(err);
     }).
     done();
@@ -666,7 +666,7 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
     returning("venta_orden_pedido_estado_id").
     insert({pedido_cliente_id:numero_pedido, estado:estado_pedido, responsable_id:responsable, fecha: 'now()', usuario_id:usuario}).
     then(function(resultado){
-        console.log("resultado de insertar en ventas_ordenes estado ", resultado);
+      
         callback(false, resultado);
     }).catch(function(err){
         callback(err);
@@ -734,7 +734,7 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pe
     then(function(rows){
         callback(false, rows);
     }).catch(function(err){
-        console.log("ventas ordenes error al borrar ", err);
+     
         callback(err);
     }).done();
     
@@ -771,7 +771,7 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_
     G.knex("ventas_ordenes_pedidos").
     where("pedido_cliente_id", numero_pedido).
     update({estado_pedido : estado_pedido}).then(function(resultado){
-        //console.log("resultado ", resultado);
+       
         callback(false, resultado);
     }).catch(function(err){
         callback(err);
@@ -875,7 +875,7 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
     then(function(rows){
         callback(false, rows);
     }).catch(function(err){
-        console.log("err ", err);
+     
         callback(err);
     }).done();
     
@@ -967,8 +967,7 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
     then(function(resultado){
 
         var length = resultado.rows.length;
-        console.log("actualizar_despachos_pedidos_cliente code 2 >>>>>>>>>>",resultado.rows.length);
-
+       
         resultado.rows.forEach(function(row) {
 
             var cantidad_despachada = parseInt(row.cantidad_despachada);
@@ -1091,9 +1090,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) ";
     
     
-    console.log('== Datos ==');
-    console.log([empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%']);
-    
+ 
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
             
         callback(err, rows );
@@ -1232,7 +1229,8 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                 case when a.estado = '0' then 'Inactivo'\
                      when a.estado = '1' then 'Activo'\
                      when a.estado = '2' then 'Anulado'\
-                     when a.estado = '3' then 'Aprobado cartera' end as descripcion_estado ,\
+                     when a.estado = '3' then 'Aprobado cartera'\
+                     when a.estado = '4' then 'Desaprobado por cartera' end as descripcion_estado,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
@@ -1291,7 +1289,8 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                 case when a.estado = '0' then 'Inactivo'\
                      when a.estado = '1' then 'Activo'\
                      when a.estado = '2' then 'Anulado'\
-                     when a.estado = '3' then 'Aprobado cartera' end as descripcion_estado ,\
+                     when a.estado = '3' then 'Aprobado cartera'\
+                     when a.estado = '4' then 'Desaprobado por cartera' end as descripcion_estado,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
@@ -1361,7 +1360,7 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion
  */
 PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizacion, callback)
 {
-    var sql_aux = " ,estado = '1'"; // Estado Activo
+    var sql_aux = " ,estado = '4'"; // Estado Activo
 
     if (cotizacion.aprobado_cartera === 1)
         sql_aux = " ,estado = '3'"; // Estado Aprobado Cartera

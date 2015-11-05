@@ -144,7 +144,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         G.knex.raw("case when a.estado = '0' then 'Inactivo '\
                     when a.estado = '1' then 'Activo'\
                     when a.estado = '2' then 'Anulado'\
-                    when a.estado = '3' then 'Entregado' end as descripcion_estado"), 
+                    when a.estado = '3' then 'Entregado'\
+                    when a.estado = '4' then 'Autorizar nuevamente cartera' end as descripcion_estado"), 
         "a.estado_pedido as estado_actual_pedido",        
  G.knex.raw("case when a.estado_pedido = '0' AND a.estado != '4' then 'No Asignado'\
                     when a.estado_pedido = '1' then 'Asignado'\

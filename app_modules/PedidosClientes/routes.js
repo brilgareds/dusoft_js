@@ -130,6 +130,11 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.modificarEstadoCotizacion(req, res);
     });
     
+    app.post('/api/PedidosClientes/consultarEstadoPedido', function(req, res) {
+        c_pedidos_clientes.consultarEstadoPedido(req, res);
+    });
+    
+    
     
 
 };

@@ -145,8 +145,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                     when a.estado = '1' then 'Activo'\
                     when a.estado = '2' then 'Anulado'\
                     when a.estado = '3' then 'Entregado' end as descripcion_estado"), 
-        "a.estado_pedido as estado_actual_pedido", 
-        G.knex.raw("case when a.estado_pedido = '0' then 'No Asignado'\
+        "a.estado_pedido as estado_actual_pedido",        
+ G.knex.raw("case when a.estado_pedido = '0' AND a.estado != '4' then 'No Asignado'\
                     when a.estado_pedido = '1' then 'Asignado'\
                     when a.estado_pedido = '2' then 'Auditado'\
                     when a.estado_pedido = '3' then 'En Zona Despacho'\
@@ -155,7 +155,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                     when a.estado_pedido = '6' then 'Separacion Finalizada'\
                     when a.estado_pedido = '7' then 'En Auditoria'\
                     when a.estado_pedido = '8' then 'Auditado con pdtes'\
-                    when a.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
+                    when a.estado_pedido = '9' then 'En zona con pdtes'\
+                    when a.estado = '4' then 'Autorizar nuevamente cartera' end as descripcion_estado_actual_pedido"),
         "d.estado as estado_separacion", 
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro") 
     ];
@@ -1230,6 +1231,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                      when a.estado = '1' then 'Activo'\
                      when a.estado = '2' then 'Anulado'\
                      when a.estado = '3' then 'Aprobado cartera'\
+                     when a.estado = '5' then 'Tiene un pedido'\
                      when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
@@ -1290,6 +1292,7 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                      when a.estado = '1' then 'Activo'\
                      when a.estado = '2' then 'Anulado'\
                      when a.estado = '3' then 'Aprobado cartera'\
+                     when a.estado = '5' then 'Tiene un pedido'\
                      when a.estado = '4' then 'Desaprobado por cartera' end as descripcion_estado,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
@@ -1364,7 +1367,8 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizaci
 
     if (cotizacion.aprobado_cartera === 1)
         sql_aux = " ,estado = '3'"; // Estado Aprobado Cartera
-
+    
+    
     var sql = "UPDATE ventas_ordenes_pedidos_tmp SET observacion_cartera = $2, sw_aprobado_cartera = $3 " + sql_aux + " WHERE pedido_cliente_id_tmp = $1";
 
     var params = [cotizacion.numero_cotizacion, cotizacion.observacion_cartera, cotizacion.aprobado_cartera];
@@ -1373,6 +1377,9 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizaci
         callback(err, rows, result);
     });
 };
+
+
+
 
 /*
  * Autor : Camilo Orozco
@@ -1394,52 +1401,125 @@ PedidosClienteModel.prototype.observacion_cartera_pedido = function(pedido, call
 
 
 /*
- * Autor : Camilo Orozco
- * Descripcion : Transaccion para la generación del pedido
+ * @Autor : Cristian Ardila
+ * +Descripcion : Actualizar estado de pedido a aprobado por cartera - No asignado
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del modelo:
+ *  --PedidosCliente.prototype.observacionCarteraPedido
  */
-PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
+PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function(pedido, callback)
 {
-    G.db.begin(function() {
 
-        // Ingresar encabezado pedido
-        __insertar_encabezado_pedido_cliente(cotizacion, function(err, rows, result) {
+    var sql = "UPDATE ventas_ordenes_pedidos SET observacion_cartera = $2, sw_aprobado_cartera = $3, estado = '1' WHERE pedido_cliente_id = $1";
 
-            if (err) {
-                callback(err);
-                return;
-            }
+    var params = [pedido.numero_pedido, pedido.observacion_cartera, pedido.aprobado_cartera];
 
-            var pedido = {numero_pedido: (rows.rows.length > 0) ? rows.rows[0].numero_pedido : 0, estado: 0};
-
-            // ingresar detalle del pedido, a partir de la cotizacion
-            __generar_detalle_pedido_cliente(cotizacion, pedido, function(err, rows, result) {
-
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-                // Inactivar cotizacion
-                cotizacion.estado = '0';
-
-                __actualizar_estado_cotizacion(cotizacion, function(err, rows, result) {
-
-                    // Finalizar Transacción.
-                    G.db.commit(function() {
-                        callback(err, rows, pedido);
-                    });
-
-                });
-            });
-        });
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 
+/*
+ * @Autor : Cristian Ardila
+ * +Descripcion : Actualizar estado de la cotizacion cuando se crea el pedido
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del modelo:
+ *  --PedidosClienteModel.prototype.generar_pedido_cliente
+ */
+function __CambioEstadoCotizacionCreacionProducto (cotizacion, callback)
+{
+    var sql_aux = " ,estado = '5'"; 
+    
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET sw_aprobado_cartera = $2 " + sql_aux + " WHERE pedido_cliente_id_tmp = $1";
+
+    var params = [cotizacion.numero_cotizacion,'5'];
+  
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+/*
+ * @Autor : Cristian Ardila
+ * +Descripcion : Funcion encargada de actualizar el estado del pedido a 4 (Autorizar nuevamente cartera)
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del modelo:
+ *  --PedidosCliente.prototype.modificarDetallePedido
+ */
+PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido,estado_pedido, callback)
+{
+   
+    var aprobacionCartera;
+     if(estado_pedido === 4){
+         
+        aprobacionCartera=pedido.aprobado_cartera;  
+       
+      }else{
+           aprobacionCartera=0;  
+          
+      }
+      
+    var sql = "UPDATE ventas_ordenes_pedidos SET observacion_cartera = $2, sw_aprobado_cartera = $3, estado= $4 WHERE pedido_cliente_id = $1 ";
+
+    var params = [pedido.numero_pedido, pedido.observacion_cartera,aprobacionCartera,estado_pedido];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion: Funcion encargada de consultar el valor total en un pedido
+ * @fecha: 04/11/2015
+ * @param {string} numero_pedido
+ * @param {type} callback
+ * @returns {void}
+ * @funciones que hacen uso del modelo:
+ *    --PedidosCliente.prototype.modificarDetallePedido  
+ */
+PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero_pedido,callback) {
+
+    var sql = "SELECT (a.total_unidades * a.total_cantidad)as total \
+               FROM(SELECT sum(numero_unidades) as total_unidades,\
+                           sum(valor_unitario) as total_cantidad,\
+                           pedido_cliente_id,\
+                           porc_iva FROM ventas_ordenes_pedidos_d \
+                    WHERE pedido_cliente_id = $1\
+                    GROUP BY pedido_cliente_id,porc_iva\n\
+                )as a";
+    
+    
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar el estado de un pedido
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.consultarEstadoPedido
+ */
+PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido,callback) {
+    
+     var sql = "SELECT a.estado FROM ventas_ordenes_pedidos a WHERE a.pedido_cliente_id = $1";
+        
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+}
 
 /*
  * Autor : Camilo Orozco
  * Descripcion : Transaccion para la generación del pedido
- */
+ * +Modificacion: Se modifica la funcion reemplazando la funcion interna (__actualizar_estado_cotizacion)
+ *                por la siguiente (__CambioEstadoCotizacionCreacionProducto)
+ *                esto con el objetivo de añadirle un nuevo estado = 5 el cual consiste en indicar
+ *                que la cotizacion ya tiene un pedido asignado
+ */    
 PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
 {
     G.db.begin(function() {
@@ -1463,9 +1543,10 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
                 }
 
                 // Inactivar cotizacion
-                cotizacion.estado = '0';
+         //       cotizacion.estado = '0';
 
-                __actualizar_estado_cotizacion(cotizacion, function(err, rows, result) {
+    
+    __CambioEstadoCotizacionCreacionProducto(cotizacion, function(err, rows, result) {
 
                     // Finalizar Transacción.
                     G.db.commit(function() {
@@ -1473,10 +1554,19 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
                     });
 
                 });
+             /*   __actualizar_estado_cotizacion(cotizacion, function(err, rows, result) {
+
+                    // Finalizar Transacción.
+                    G.db.commit(function() {
+                        callback(err, rows, pedido);
+                    });
+
+                });*/
             });
         });
     });
 };
+
 
 
 
@@ -1493,6 +1583,7 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
 };
 
 
+
 /*
  * Author : Camilo Orozco
  * Descripcion :  SQL Modificar Detalle Pedido
@@ -1503,7 +1594,7 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
                 WHERE  pedido_cliente_id = $1 AND codigo_producto = $2 ;";
 
     var params = [
-        pedido.numero_pedido,
+        pedido.numero_pedido,    
         producto.codigo_producto,
         producto.iva,
         producto.cantidad_solicitada,

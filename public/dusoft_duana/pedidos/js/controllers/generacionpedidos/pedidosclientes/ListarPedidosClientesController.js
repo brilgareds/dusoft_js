@@ -64,7 +64,8 @@ define(["angular", "js/controllers",
                     "btn btn-primary btn-xs",
                     "btn btn-danger btn-xs",
                     "btn btn-success btn-xs",
-                     "btn btn-warning btn-xs"
+                    "btn btn-warning btn-xs",
+                    "btn btn-success btn-xs"
                 ],
                 estados_pedidos: [
                     "btn btn-danger btn-xs",
@@ -167,9 +168,10 @@ define(["angular", "js/controllers",
             };
 
             $scope.modificar_pedido_cliente = function(pedido) {
-
+                
                 localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido()});
-                $state.go('PedidoCliente');
+               
+                $state.go('PedidoCliente'); 
             };
 
 
@@ -315,6 +317,7 @@ define(["angular", "js/controllers",
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
                 
+          
                
             };
 
@@ -420,7 +423,7 @@ define(["angular", "js/controllers",
                     $scope.datos_view.ultima_busqueda_pedidos = $scope.datos_view.termino_busqueda_pedidos;
 
                     if (data.status === 200) {
-
+                        
                         $scope.datos_view.cantidad_items_pedidos = data.obj.pedidos_clientes.length;
 
                         if ($scope.datos_view.paginando_pedidos && $scope.datos_view.cantidad_items_pedidos === 0) {
@@ -452,9 +455,10 @@ define(["angular", "js/controllers",
                     pedido.setNumeroPedido(data.numero_pedido).set_vendedor(vendedor).setCliente(cliente);
                     pedido.set_descripcion_estado_actual_pedido(data.descripcion_estado_actual_pedido);
                     pedido.setFechaRegistro(data.fecha_registro);
-
+                    pedido.setEstado(data.estado);
                     $scope.Empresa.set_pedidos(pedido);
-                });
+                });  
+                    console.log("$scope.Empresa",$scope.Empresa.get_pedidos())
             };
 
             $scope.lista_pedidos_clientes = {

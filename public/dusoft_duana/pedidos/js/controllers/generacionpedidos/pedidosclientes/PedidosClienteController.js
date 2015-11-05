@@ -41,11 +41,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 visualizar: false,
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
-                progresoArchivo:0
-                        
+                progresoArchivo: 0
+
             };
-            
-            $scope.items =null;
+
+            $scope.items = null;
+            $scope.pedidoCotizacion = 8;
             // Inicializacion Pedido o cotizacion           
             $scope.Pedido = Pedido.get(
                     Sesion.getUsuarioActual().getEmpresa().getCodigo(),
@@ -63,11 +64,40 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             } else if (localStorageService.get("pedido")) {
                 //Pedido
                 var pedido = localStorageService.get("pedido");
+
                 $scope.Pedido.setNumeroPedido(parseInt(pedido.numero_pedido) || 0);
+
                 $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
+
+                
+                /*
+                 * +Descripcion: Se consulta el estado del pedido 
+                 */
+                var urlEstadoPedido = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
+                var objEstadoPedido = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            pedido: pedido.numero_pedido
+
+                        }
+                    }
+                };
+                Request.realizarRequest(urlEstadoPedido, "POST", objEstadoPedido, function(data) {
+
+                    if (data.status === 200) {
+                        $scope.Pedido.setEstado(data.obj.pedidos_clientes);
+                        console.log("data ", $scope.Pedido.getEstado());
+                    }
+                });
+                
+
+                
+
             }
 
+           
             // cargar permisos del modulo
             that.cargar_permisos = function() {
 
@@ -153,6 +183,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         callback(false);
                     }
                 });
+
             };
             that.render_cotizacion = function(data) {
 
@@ -174,16 +205,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.buscar_detalle_cotizacion();
                 }
             };
-            
-          /*
-           * @Author: Eduar
-           * +Descripcion: Evento que actualiza la barra de progreso
-           */
-           socket.on("onNotificarProgresoArchivoPlanoClientes", function(datos) {
+
+            /*
+             * @Author: Eduar
+             * +Descripcion: Evento que actualiza la barra de progreso
+             */
+            socket.on("onNotificarProgresoArchivoPlanoClientes", function(datos) {
                 $scope.datos_view.progresoArchivo = datos.porcentaje;
-            }); 
-            
-            
+            });
+
+
             that.buscar_detalle_cotizacion = function() {
 
                 var obj = {
@@ -213,8 +244,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
                     $scope.Pedido.set_productos(producto);
                 });
-               
-                
+
+
                 $scope.items = $scope.Pedido.get_productos().length;
             };
             // Pedidos 
@@ -254,7 +285,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
             };
-            
+
             that.buscar_detalle_pedido = function() {
 
                 var obj = {
@@ -273,7 +304,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
-            
+
             that.render_productos_pedidos = function(productos) {
 
                 $scope.Pedido.limpiar_productos();
@@ -286,7 +317,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.Pedido.set_productos(producto);
                 });
             };
-            
+
             // Clientes
             $scope.listar_clientes = function(termino_busqueda) {
 
@@ -510,6 +541,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.confirmar_modificar_producto = function(producto) {
 
+
                 $scope.datos_view.producto_seleccionado = producto;
                 $scope.opts = {
                     backdrop: true,
@@ -548,9 +580,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.modificar_producto = function() {
 
+
                 var obj = {};
                 var url = '';
-              
+
                 // Cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
 
@@ -566,6 +599,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                 }
 
+
                 // Pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
 
@@ -579,9 +613,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
                     };
+
+
                 }
 
+
                 Request.realizarRequest(url, "POST", obj, function(data) {
+
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     $scope.datos_view.producto_seleccionado = Producto.get();
@@ -591,6 +629,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         if ($scope.Pedido.get_numero_pedido() > 0)
                             that.gestionar_consultas_pedidos();
                     }
+
+
                 });
             };
             // Lista Productos Seleccionados
@@ -755,7 +795,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 // Observacion cartera para pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
-                
+
                     url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
                     obj = {
                         session: $scope.session,
@@ -775,6 +815,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
+
+
             // Gestionar la creacion del pedido
             $scope.gestionar_pedido = function() {
 
@@ -809,7 +851,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
+
+
+
+
+
+
+
             $scope.generar_pedido_cliente = function() {
+
 
                 var obj = {
                     session: $scope.session,
@@ -898,6 +948,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 // set localstorage
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);
+                localStorageService.get("estadoPedido", null);
                 // datos view
                 //$scope.datos_view = null;
             });

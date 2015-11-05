@@ -1448,10 +1448,15 @@ PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
        
        var numeroPedido = args.pedidos_clientes.pedido;
            that.m_pedidos_clientes.consultarEstadoPedido(numeroPedido, function(err, rows, result) {
-
-           res.send(G.utils.r(req.url, 'Consutalndo estado del pedido', 200, {pedidos_clientes: rows[0].estado}));
-        return;
-        
+              if(err || rows.length ===0){
+                   res.send(G.utils.r(req.url, '', 500, {pedidos_clientes: []}));
+                 
+                    return;
+               } else {
+                    res.send(G.utils.r(req.url, 'Consultando estado del pedido', 200, {pedidos_clientes: rows[0].estado}));
+                 return;
+                }  
+          
     });
 };
 
@@ -1465,16 +1470,22 @@ PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
  * @returns {undefined}
  */
 PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
-   
+  
        var that = this;
        
        var args = req.body.data;
        
        var numeroCotizacion = args.pedidos_clientes.cotizacion;
            that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows, result) {
-
-           res.send(G.utils.r(req.url, 'Consutalndo estado de la cotizacion', 200, {pedidos_clientes: rows[0].estado}));
-        return;
+               
+               if(err || rows.length ===0){
+                   res.send(G.utils.r(req.url, '', 500, {pedidos_clientes: []}));
+                 
+                    return;
+               } else {
+                    res.send(G.utils.r(req.url, 'Consultando estado de la cotizacion', 200, {pedidos_clientes: rows[0].estado}));
+                 return;
+                }  
         
     });
 };
@@ -1573,20 +1584,20 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     var totalCantidadSolicitada = 0;
     for (var i = 0; i < productos.length; i++) {
         totalPrecioVenta += parseFloat(productos[i].precio_venta);
-        totalCantidadSolicitada += productos[i].cantidad_solicitada;
+        totalCantidadSolicitada += parseInt(productos[i].cantidad_solicitada);
     }
 
-
+      
     var totalValorPedido = totalPrecioVenta * totalCantidadSolicitada;
 
 
     that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, rows, result) {
-
         
+    
         var totalValorPedidoNuevo = parseFloat(totalValorPedido.toFixed(2));
         var totalValorPedidoActual = rows[0].total;
         
-       
+      
         var estado_pedido = 0;
         if (totalValorPedidoNuevo > totalValorPedidoActual){
             estado_pedido = 4;

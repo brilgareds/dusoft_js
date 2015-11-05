@@ -57,6 +57,7 @@ define(["angular"], function(angular) {
                     'REPORTE_PEDIDO': BASE_URL + '/PedidosClientes/reportePedido',
                     'ACTUALIZAR_ESTADO_COTIZACION': BASE_URL +'/PedidosClientes/modificarEstadoCotizacion',
                     'CONSULTAR_ESTADO_PEDIDO': BASE_URL + '/PedidosClientes/consultarEstadoPedido',
+                    'CONSULTAR_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/consultarEstadoCotizacion',
                 },
                 FARMACIAS :{
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/buscarProductos',

@@ -133,6 +133,9 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/consultarEstadoPedido', function(req, res) {
         c_pedidos_clientes.consultarEstadoPedido(req, res);
     });
+    app.post('/api/PedidosClientes/consultarEstadoCotizacion', function(req, res) {
+        c_pedidos_clientes.consultarEstadoCotizacion(req, res);
+    });
     
     
     

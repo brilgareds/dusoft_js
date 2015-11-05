@@ -44,7 +44,39 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 progresoArchivo: 0
 
             };
+            that.consultarEstadoPedidoCotizacion = function(tipo,numero){
+                
+                var url ='';
+                var obj = {};
+                
+                if(tipo === 1){
+                
+                 url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
+                 obj = {
+                    session: $scope.session,
+                    data: { pedidos_clientes: { pedido: numero } }
+                };
+                
+                }
+                
+                if(tipo === 2){
+                
+                 url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
+                 obj = {
+                    session: $scope.session,
+                    data: { pedidos_clientes: { cotizacion: numero } }
+                };
+                
+                }
+                Request.realizarRequest(url, "POST", obj, function(data) {
 
+                    if (data.status === 200) {
+                        $scope.Pedido.setEstado(data.obj.pedidos_clientes);
+                      
+                    }
+                });
+                
+            }
             $scope.items = null;
             $scope.pedidoCotizacion = 8;
             // Inicializacion Pedido o cotizacion           
@@ -57,10 +89,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
             //Cotizacion
             if (localStorageService.get("cotizacion")) {
+             
                 var cotizacion = localStorageService.get("cotizacion");
                 $scope.Pedido.set_numero_cotizacion(parseInt(cotizacion.numero_cotizacion) || 0);
                 $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (cotizacion.visualizar === '1') ? true : false;
+                
+                 /*
+                 * +Descripcion: Se consulta el estado de la cotizacion
+                 */
+                that.consultarEstadoPedidoCotizacion(2,cotizacion.numero_cotizacion);
+             
+                
             } else if (localStorageService.get("pedido")) {
                 //Pedido
                 var pedido = localStorageService.get("pedido");
@@ -70,31 +110,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
 
-                
                 /*
                  * +Descripcion: Se consulta el estado del pedido 
                  */
-                var urlEstadoPedido = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
-                var objEstadoPedido = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            pedido: pedido.numero_pedido
-
-                        }
-                    }
-                };
-                Request.realizarRequest(urlEstadoPedido, "POST", objEstadoPedido, function(data) {
-
-                    if (data.status === 200) {
-                        $scope.Pedido.setEstado(data.obj.pedidos_clientes);
-                        console.log("data ", $scope.Pedido.getEstado());
-                    }
-                });
-                
-
-                
-
+                that.consultarEstadoPedidoCotizacion(1,pedido.numero_pedido);
             }
 
            
@@ -316,6 +335,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     producto.set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.valor_unitario_con_iva * data.cantidad_solicitada);
                     $scope.Pedido.set_productos(producto);
                 });
+                
+                
             };
 
             // Clientes
@@ -661,6 +682,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                     <td class="left"><strong>Total</strong></td>\
                                                     <td class="right">{{ Pedido.get_total() | currency : "$" }}</td>                                        \
                                                 </tr>\
+                                             <tr>\
+                                                    <td class="left"><strong>Estados</strong></td>\
+                                                    <td class="right">{{ Pedido.getEstado()}}</td>                                        \
+                                                </tr>\
                                             </tbody>\
                                         </table>\
                                     </div>\
@@ -669,15 +694,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="habilitar_eliminacion_producto()" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 " ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
                     {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-toolbar">\
-                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]

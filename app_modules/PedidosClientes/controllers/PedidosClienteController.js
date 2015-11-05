@@ -1454,7 +1454,30 @@ PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
         
     });
 };
- 
+
+
+/**
+ * @author: Cristian Ardila
+ * +Descripcion: Funcion encargada de invocar el modelo que consultara el estado
+ *               de un pedido, enviando como parametro el numero de pedido
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
+   
+       var that = this;
+       
+       var args = req.body.data;
+       
+       var numeroCotizacion = args.pedidos_clientes.cotizacion;
+           that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows, result) {
+
+           res.send(G.utils.r(req.url, 'Consutalndo estado de la cotizacion', 200, {pedidos_clientes: rows[0].estado}));
+        return;
+        
+    });
+};
 /*
  * Autor : Camilo Orozco
  * Descripcion : Modificar detalle pedido

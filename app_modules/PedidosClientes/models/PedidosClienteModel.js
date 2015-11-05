@@ -1513,6 +1513,23 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido,cal
     });
 }
 
+
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar el estado de una cotizacion
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.consultarEstadoCotizacion
+ */
+PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numero_pedido,callback) {
+    
+     var sql = "SELECT a.estado FROM ventas_ordenes_pedidos_tmp a WHERE a.pedido_cliente_id_tmp = $1";
+        
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+}
+
 /*
  * Autor : Camilo Orozco
  * Descripcion : Transaccion para la generación del pedido

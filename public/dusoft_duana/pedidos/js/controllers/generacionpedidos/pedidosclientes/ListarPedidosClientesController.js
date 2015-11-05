@@ -165,6 +165,8 @@ define(["angular", "js/controllers",
 
                 localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0'});
                 $state.go('Cotizaciones');
+                
+                
             };
 
             $scope.modificar_pedido_cliente = function(pedido) {

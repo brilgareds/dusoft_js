@@ -1406,31 +1406,80 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     }
 
     pedido.usuario_id = req.session.user.usuario_id;
+   
+    
+    /**
+     * +Descripcion: Proceso para validar que al modificar las cantidades de los 
+     *               productos o añadirle mas productos a un pedido el total es 
+     *               mayor > igual = ó menor < al actual y en base a esto modificar
+     *               el estado del pedido, si el nuevo valor total del pedido es
+     *               mayor al actual se actualizara el estado de 1 a estado_pedido =4
+     *               y el pedido debera ser autorizado nuevamente por cartera
+     *               si el nuevo valor total del pedido es menor, su estado quedara
+     *               igual (No asignado)
+     * @fecha: 04/11/2015
+     */
+    var numeroPedido = pedido.numero_pedido;
+    var productos = pedido.productos;
+    var totalPrecioVenta = 0;
+    var totalCantidadSolicitada = 0;
+    for (var i = 0; i < productos.length; i++) {
+        totalPrecioVenta += parseFloat(productos[i].precio_venta);
+        totalCantidadSolicitada += parseInt(productos[i].cantidad_solicitada);
+    }
 
-    that.m_pedidos_clientes.insertar_detalle_pedido(pedido, producto, function(err, rows, result) {
+      
+    var totalValorPedido = totalPrecioVenta * totalCantidadSolicitada;
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-            return;
-        } else {
+    
+    that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, rows, result) {
+        
+    
+        var totalValorPedidoNuevo = parseFloat(totalValorPedido.toFixed(2));
+        var totalValorPedidoActual = rows[0].total;
+        
+      
+        var estado_pedido = 0;
+        if (totalValorPedidoNuevo > totalValorPedidoActual){
+            estado_pedido = 4;
+            
 
-            pedido.aprobado_cartera = '0';
-            pedido.observacion_cartera = '';
-
-            that.m_pedidos_clientes.observacion_cartera_pedido(pedido, function(err, rows, result) {
-
-                if (err || result.rowCount === 0) {
-                    res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                    return;
-                } else {
-                    res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {pedidos_clientes: {}}));
-                    return;
-                }
-            });
-
+        }else{
+            estado_pedido = 0;
         }
+        
+   /**
+     * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
+     *               por lo cual se crea la funcion insertarDetallePedido
+     */
+       that.m_pedidos_clientes.insertarDetallePedido(pedido, producto, function(err, rows, result) {
+
+            if (err || result.rowCount === 0) {
+                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                return;
+            } else {
+
+                pedido.aprobado_cartera = '0';
+                pedido.observacion_cartera = '';
+                
+               
+                that.m_pedidos_clientes.actualizarEstadoPedido(pedido,estado_pedido, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                        return;
+                    }
+                });
+
+            }
+        });
+
     });
 };
+
 
 /**
  * @author: Cristian Ardila
@@ -1641,6 +1690,9 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
 /*
  * Autor : Camilo Orozco
  * Descripcion : Eliminar Producto Pedido
+ * +Modificacion: Se modifica la funcion eliminarProductoPedido con el objetivo
+ *                de cambiar el estado de un pedido cuando se elimine un producto
+ *                
  */
 PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
@@ -1701,28 +1753,75 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
 
     });
+/**
+     * +Descripcion: Proceso para validar que al modificar las cantidades de los 
+     *               productos o añadirle mas productos a un pedido el total es 
+     *               mayor > igual = ó menor < al actual y en base a esto modificar
+     *               el estado del pedido, si el nuevo valor total del pedido es
+     *               mayor al actual se actualizara el estado de 1 a estado_pedido =4
+     *               y el pedido debera ser autorizado nuevamente por cartera
+     *               si el nuevo valor total del pedido es menor, su estado quedara
+     *               igual (No asignado)
+     * @fecha: 04/11/2015
+     */
+    var numeroPedido = pedido.numero_pedido;
+    var productos = pedido.productos;
+    var totalPrecioVenta = 0;
+    var totalCantidadSolicitada = 0;
+    for (var i = 0; i < productos.length; i++) {
+        totalPrecioVenta += parseFloat(productos[i].precio_venta);
+        totalCantidadSolicitada += parseInt(productos[i].cantidad_solicitada);
+    }
 
-    that.m_pedidos_clientes.eliminar_producto_pedido(pedido, producto, function(err, rows, result) {
+      
+    var totalValorPedido = totalPrecioVenta * totalCantidadSolicitada;
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Eliminando el producto', 500, {pedidos_clientes: []}));
-            return;
-        } else {
+    
+    that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, rows, result) {
+        
+    
+        var totalValorPedidoNuevo = parseFloat(totalValorPedido.toFixed(2));
+        var totalValorPedidoActual = rows[0].total;
+        
+      
+        var estado_pedido = 0;
+        if (totalValorPedidoNuevo > totalValorPedidoActual){
+            estado_pedido = 4;
+            
 
-            pedido.aprobado_cartera = '0';
-            pedido.observacion_cartera = '';
-
-            that.m_pedidos_clientes.observacion_cartera_pedido(pedido, function(err, rows, result) {
-
-                if (err || result.rowCount === 0) {
-                    res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                    return;
-                } else {
-                    res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {pedidos_clientes: []}));
-                    return;
-                }
-            });
+        }else{
+            estado_pedido = 0;
         }
+         
+   /**
+     * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
+     *               por lo cual se crea la funcion insertarDetallePedido
+     */
+      that.m_pedidos_clientes.eliminar_producto_pedido(pedido, producto, function(err, rows, result) {
+
+            if (err || result.rowCount === 0) {
+                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                return;
+            } else {
+
+                pedido.aprobado_cartera = '0';
+                pedido.observacion_cartera = '';
+                
+               
+                that.m_pedidos_clientes.actualizarEstadoPedido(pedido,estado_pedido, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                        return;
+                    }
+                });
+
+            }
+        });
+
     });
 };
 

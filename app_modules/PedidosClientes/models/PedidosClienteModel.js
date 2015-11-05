@@ -1380,27 +1380,6 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizaci
 };
 
 
-
-
-/*
- * Autor : Camilo Orozco
- * Descripcion : Generar las observaciones ingresadas por el area de cartera
- */
-PedidosClienteModel.prototype.observacion_cartera_pedido = function(pedido, callback)
-{
-    /*if(pedido.aprobado_cartera === 0)
-     pedido.observacion_cartera = 'NO APROBADO --'+ pedido.observacion_cartera;*/
-
-    var sql = "UPDATE ventas_ordenes_pedidos SET observacion_cartera = $2, sw_aprobado_cartera = $3 WHERE pedido_cliente_id = $1";
-
-    var params = [pedido.numero_pedido, pedido.observacion_cartera, pedido.aprobado_cartera];
-
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
-    });
-};
-
-
 /*
  * @Autor : Cristian Ardila
  * +Descripcion : Actualizar estado de pedido a aprobado por cartera - No asignado
@@ -1490,7 +1469,7 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
                     GROUP BY pedido_cliente_id,porc_iva\n\
                 )as a";
     
-    
+     
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
@@ -1530,6 +1509,37 @@ PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numero_pedido
     });
 }
 
+
+/*
+ * Author : Cristian Ardila
+ * Descripcion :  SQL Insertar Detalle Cotizacion
+ */
+PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto, callback) {
+    
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
+                pedido_cliente_id, \
+                codigo_producto, \
+                porc_iva, \
+                numero_unidades, \
+                valor_unitario, \
+                fecha_registro, \
+                usuario_id ) \
+                VALUES($1, $2, $3, $4, $5, NOW(), $6);";
+   
+    var params = [
+        pedido.numero_pedido,
+        producto.codigo_producto,
+        producto.iva,
+        producto.cantidad_solicitada,
+        producto.precio_venta,
+        pedido.usuario_id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
 /*
  * Autor : Camilo Orozco
  * Descripcion : Transaccion para la generación del pedido

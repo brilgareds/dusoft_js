@@ -682,10 +682,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                     <td class="left"><strong>Total</strong></td>\
                                                     <td class="right">{{ Pedido.get_total() | currency : "$" }}</td>                                        \
                                                 </tr>\
-                                             <tr>\
-                                                    <td class="left"><strong>Estados</strong></td>\
-                                                    <td class="right">{{ Pedido.getEstado()}}</td>                                        \
-                                                </tr>\
                                             </tbody>\
                                         </table>\
                                     </div>\

@@ -1404,6 +1404,7 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
  * +Descripcion : Actualizar estado de la cotizacion cuando se crea el pedido
  * @fecha: 05/11/2015
  * @Funciones que hacen uso del modelo:
+ *  Model: PedidosClienteModel
  *  --PedidosClienteModel.prototype.generar_pedido_cliente
  */
 function __CambioEstadoCotizacionCreacionProducto (cotizacion, callback)
@@ -1424,7 +1425,10 @@ function __CambioEstadoCotizacionCreacionProducto (cotizacion, callback)
  * +Descripcion : Funcion encargada de actualizar el estado del pedido a 4 (Autorizar nuevamente cartera)
  * @fecha: 05/11/2015
  * @Funciones que hacen uso del modelo:
+ *  Controller: PedidosClienteController
  *  --PedidosCliente.prototype.modificarDetallePedido
+ *  --PedidosCliente.prototype.insertarDetallePedido
+ *  --PedidosCliente.prototype.eliminarProductoPedido
  */
 PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido,estado_pedido, callback)
 {
@@ -1456,7 +1460,10 @@ PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido,estado_pe
  * @param {type} callback
  * @returns {void}
  * @funciones que hacen uso del modelo:
- *    --PedidosCliente.prototype.modificarDetallePedido  
+ *  Controller: PedidosClienteController
+ *  --PedidosCliente.prototype.modificarDetallePedido
+ *  --PedidosCliente.prototype.insertarDetallePedido
+ *  --PedidosCliente.prototype.eliminarProductoPedido  
  */
 PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero_pedido,callback) {
 

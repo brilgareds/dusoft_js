@@ -881,8 +881,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.generar_pedido_cliente = function() {
 
-
-                var obj = {
+                console.log("$scope.Pedido ", $scope.Pedido)
+                /*var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
@@ -896,7 +896,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if (data.status === 200) {
                         $scope.cancelar_cotizacion();
                     }
-                });
+                });*/
             };
             $scope.habilitar_generacion_reporte = function() {
 

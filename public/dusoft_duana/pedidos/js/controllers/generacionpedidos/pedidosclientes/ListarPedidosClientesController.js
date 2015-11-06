@@ -65,7 +65,8 @@ define(["angular", "js/controllers",
                     "btn btn-danger btn-xs",
                     "btn btn-success btn-xs",
                     "btn btn-warning btn-xs",
-                    "btn btn-success btn-xs"
+                    "btn btn-success btn-xs",
+                    "btn btn-warning btn-xs"
                 ],
                 estados_pedidos: [
                     "btn btn-danger btn-xs",
@@ -126,6 +127,9 @@ define(["angular", "js/controllers",
                     },
                     btn_modificar_estado :{
                         'click': $scope.datos_view.opciones.sw_modificar_estado_cotizacion
+                    },
+                    btn_solicitar_autorizacion_cotizaciones :{
+                        'click': $scope.datos_view.opciones.sw_solicitar_autorizacion
                     }
                 };
 
@@ -153,7 +157,7 @@ define(["angular", "js/controllers",
 
             };
 
-
+           
             // Acciones Botones 
             $scope.gestionar_cotizacion_cliente = function() {
 
@@ -168,7 +172,9 @@ define(["angular", "js/controllers",
                 
                 
             };
-
+            
+           
+            
             $scope.modificar_pedido_cliente = function(pedido) {
                 
                 localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido()});
@@ -194,7 +200,8 @@ define(["angular", "js/controllers",
                         return {'click': obj.getEstadoActualPedido() === '0'};
                 }
             };
-
+            
+            
             $scope.generar_observacion_cartera = function(obj) {
 
                 // Observacion cartera para la cotizacion
@@ -318,11 +325,9 @@ define(["angular", "js/controllers",
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
-                
-          
                
             };
-
+           
             $scope.lista_cotizaciones_clientes = {
                 data: 'Empresa.get_cotizaciones()',
                 enableColumnResize: true,
@@ -343,6 +348,7 @@ define(["angular", "js/controllers",
                                             <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
                                                 <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_visualizar_cotizaciones }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
                                                 <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_cotizaciones }}" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-validate-events="" ng-click="solicitarAutorizacion(row.entity)" >Solicitar autorizacion</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_reporte_cotizaciones }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_email_cotizaciones }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
@@ -355,7 +361,13 @@ define(["angular", "js/controllers",
             $scope.activarCotizacion = function(cotizacion){
                 that.cambiarEstadoCotizacion(cotizacion.get_numero_cotizacion(), '1');
             };
-
+            
+             $scope.solicitarAutorizacion = function(cotizacion){
+                
+               that.cambiarEstadoCotizacionAutorizacion(cotizacion);
+            };
+            
+            
             // Agregar Clase de acuerdo al estado del pedido
             $scope.agregar_clase_cotizacion = function(estado) {
                 return $scope.datos_view.estados_cotizaciones[estado];
@@ -400,7 +412,35 @@ define(["angular", "js/controllers",
                     }
                 });
             };
+            
+            /**
+             * +Descripcion: FUncion encargada de actualizar el estado de una cotizacion
+             *               estado =6 (Se solicita autorizacion)
+             * @param {type} cotizacion
+             * @returns {undefined}
+             */
+            that.cambiarEstadoCotizacionAutorizacion = function(cotizacion){
+                
+               var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: {numeroCotizacion:cotizacion.get_numero_cotizacion(), estado:'6'}
+                        }
+                    }
+                };
 
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                         that.buscar_cotizaciones();
+                       
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se genero un error");
+                    }
+                });
+            };
+            
             that.buscar_pedidos = function() {
 
                 if ($scope.datos_view.ultima_busqueda_pedidos !== $scope.datos_view.termino_busqueda_pedidos) {

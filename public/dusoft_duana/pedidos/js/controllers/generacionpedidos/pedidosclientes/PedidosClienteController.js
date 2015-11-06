@@ -72,11 +72,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if (data.status === 200) {
                         $scope.Pedido.setEstado(data.obj.pedidos_clientes);
-                      
+                        
                     }
-                });
-                
-            }
+                });                
+            };
             $scope.items = null;
             $scope.pedidoCotizacion = 8;
             // Inicializacion Pedido o cotizacion           
@@ -407,11 +406,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     var vendedor = Vendedor.get(data.nombre, data.tipo_id_vendedor, data.vendedor_id, data.telefono);
                     $scope.Empresa.set_vendedores(vendedor);
                 });
+                
             };
-            // Productos
-
+            
+             $scope.prioridad  = [
+                    {nombre:"Activo", id:1},
+                    {nombre: "Aprobar urgente", id: 6}
+                ];
+          
+            $scope.seleccionarAprobacion = function(model){
+                $scope.Pedido.setEstado(model.id.id)
+                console.log("$scope.Pedido ", $scope.Pedido.getEstado())
+            
+            };
+            
             $scope.validacion_buscar_productos = function() {
-
+                
+                console.log("$scope.Pedido.getEstado() ", $scope.Pedido.getEstado());
                 var disabled = false;
                 // Validaciones Generales
                 if ($scope.Pedido.getCliente().get_descripcion() === undefined || $scope.Pedido.getCliente().get_descripcion() === '')
@@ -419,6 +430,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if ($scope.Pedido.get_vendedor().get_descripcion() === undefined || $scope.Pedido.get_vendedor().get_descripcion() === '')
                     disabled = true;
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
+                    disabled = true;
+                
+                if ($scope.Pedido.getEstado() === undefined || $scope.Pedido.getEstado() <= 0)
                     disabled = true;
                 // Cartera
                 if ($scope.datos_view.cartera)
@@ -428,7 +442,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if ($scope.Pedido.get_aprobado_cartera() === '1')
                         disabled = true;
                 }
-
+                
                 // Solo visualizar
                 if ($scope.datos_view.visualizar)
                     disabled = true;
@@ -881,8 +895,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.generar_pedido_cliente = function() {
 
-                console.log("$scope.Pedido ", $scope.Pedido)
-                /*var obj = {
+
+                var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
@@ -896,7 +910,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if (data.status === 200) {
                         $scope.cancelar_cotizacion();
                     }
-                });*/
+                });
             };
             $scope.habilitar_generacion_reporte = function() {
 

@@ -77,7 +77,7 @@
                                     <legend>Observación</legend>                                 
                                     <div class="row">  
                                         <div class="col-md-12">                                          
-                                            <textarea  ng-model="Pedido.observacion" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                            <textarea  ng-model="Pedido.observacion" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0 || Pedido.get_estado_cotizacion() ==5" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -91,7 +91,18 @@
                                         </div>
                                     </div>
                                 </fieldset>
-                            </div>                               
+                            </div>   
+                       <!--     <div class="col-md-2">                            
+                               <fieldset>
+                                    <legend>Prioridad</legend>                                 
+                                    <ui-select ng-model="Prioridad.id" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionarAprobacion(Prioridad)">
+                                        <ui-select-match  placeholder="Seleccionar prioridad de cotizacion">{{ $select.selected.nombre }}</ui-select-match>
+                                        <ui-select-choices repeat="Prioridad in prioridad | filter:$select.search">
+                                            {{ Prioridad.nombre }}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </fieldset>
+                            </div> //--> 
                         </div>     
                         <br>                    
                         <br>                      
@@ -108,7 +119,7 @@
                                                     <div class="">
                                                         <div class="col-md-3">
                                                             <p class="input-group">
-                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos()" ng-click="buscar_productos()" > 
+                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos() || Pedido.get_aprobado_cartera() ==5" ng-click="buscar_productos()" > 
                                                                     <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                                 </button>
                                                             </p>
@@ -195,7 +206,7 @@
                                 </div> 
                                 <!--Acciones Cartera-->
                                 <div class="modal-footer col-md-12" ng-if="datos_view.cartera">                                                             
-                                    <button class="btn btn-default" ng-click="gestion_cartera(4)" ng-disabled ="Pedido.get_estado_cotizacion() ==5 ">
+                                    <button class="btn btn-default" ng-click="gestion_cartera(4)" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">
                                         <span class="glyphicon glyphicon-remove" ></span> Denegado Cartera
                                     </button>
                                    <button class="btn btn-default" ng-click="gestion_cartera(1)" ng-disabled ="Pedido.getEstado() !=4 && !items >0 || Pedido.get_estado_cotizacion() ==5">

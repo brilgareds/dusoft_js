@@ -137,6 +137,14 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.consultarEstadoCotizacion(req, res);
     });
     
+    /**
+     * +Descripcion: Servicio para actualizar el estado de una cotizacion 
+     *               Aprobar con prioridad
+     */
+    app.post('/api/PedidosClientes/solicitarAutorizacion', function(req, res) {
+        c_pedidos_clientes.solicitarAutorizacion(req, res);
+    });
+    
     
     
 

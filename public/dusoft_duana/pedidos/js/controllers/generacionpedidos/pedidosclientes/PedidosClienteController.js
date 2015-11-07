@@ -432,8 +432,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
                     disabled = true;
                 
-                if ($scope.Pedido.getEstado() === undefined || $scope.Pedido.getEstado() <= 0)
-                    disabled = true;
+               /* if ($scope.Pedido.getEstado() === undefined || $scope.Pedido.getEstado() <= 0)
+                    disabled = true;*/
                 // Cartera
                 if ($scope.datos_view.cartera)
                     disabled = true;

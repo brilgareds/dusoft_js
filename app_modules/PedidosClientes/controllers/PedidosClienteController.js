@@ -644,6 +644,49 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
     });
 };
 
+/**
+ * @author Cristian Ardila
+ * +Descripcion: Controlador encargado de invocar el model que actualizara
+ *               la cabecera de la cotizacion
+ * @fecha  09/11/2015
+ * @param {type} req
+ * @param {type} res
+ * @returns {unresolved}
+ */
+PedidosCliente.prototype.actualizarCabeceraCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+    
+    console.log("************************actualizarCabeceraCotizacion*******************************************");
+    
+    console.log("args ", args);
+    // Cotizacion
+    if (args.pedidos_clientes === undefined  || args.pedidos_clientes === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+
+    if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+   
+    that.m_pedidos_clientes.actualizarCabeceraCotizacion(cotizacion, function(estado, rows) {
+
+        if (!estado) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {pedidos_clientes: rows }));
+            return;
+        }
+    });
+};
 
 /*
  * Author : Eduar Garcia
@@ -1809,10 +1852,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             } else {
                 estado_pedido = 0;
             }
-            /**
-             * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
-             *               por lo cual se crea la funcion insertarDetallePedido
-             */
+            
             that.m_pedidos_clientes.eliminar_producto_pedido(pedido, producto, function(err, rows, result) {
 
                 if (err || result.rowCount === 0) {

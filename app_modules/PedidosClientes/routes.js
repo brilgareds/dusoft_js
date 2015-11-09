@@ -146,6 +146,16 @@ module.exports = function(app, di_container) {
     });
     
     
+    /**
+     * +Descripcion: Servicio para actualizar el estado de una cotizacion 
+     *               Aprobar con prioridad
+     */
+    app.post('/api/PedidosClientes/actualizarCabeceraCotizacion', function(req, res) {
+        c_pedidos_clientes.actualizarCabeceraCotizacion(req, res);
+    });
+    
+    
+    
     
 
 };

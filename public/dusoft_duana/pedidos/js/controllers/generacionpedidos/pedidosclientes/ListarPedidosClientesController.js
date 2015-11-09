@@ -127,9 +127,6 @@ define(["angular", "js/controllers",
                     },
                     btn_modificar_estado :{
                         'click': $scope.datos_view.opciones.sw_modificar_estado_cotizacion
-                    },
-                    btn_solicitar_autorizacion_cotizaciones :{
-                        'click': true
                     }
                 };
 
@@ -510,7 +507,7 @@ define(["angular", "js/controllers",
                     pedido.setEstado(data.estado);
                     $scope.Empresa.set_pedidos(pedido);
                 });  
-                    console.log("$scope.Empresa",$scope.Empresa.get_pedidos())
+                 
             };
 
             $scope.lista_pedidos_clientes = {

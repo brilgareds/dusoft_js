@@ -1546,7 +1546,31 @@ PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizac
     });
 };
 
+/*
+ * @Autor : Cristian Ardila
+ * +Descripcion : Actualizar la cabecera de una cotizacion
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del modelo:
+ *  Model: PedidosClienteModel
+ *  --PedidosClienteModel.prototype.actualizarCabeceraCotizacion
+ */
+PedidosClienteModel.prototype.actualizarCabeceraCotizacion = function(cotizacion, callback)
+{
+  
+  G.knex('ventas_ordenes_pedidos_tmp')
+  .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
+  .update({
+  
+    observaciones: cotizacion.observacion
+  })
+   .then(function(rows) {
+        callback(rows,true);
+    })
+     .catch(function(error) {
+        callback(error,false);
+    });
 
+};
 /*
  * Author : Cristian Ardila
  * Descripcion :  Funcion encargada de almacenar el detalle del pedido

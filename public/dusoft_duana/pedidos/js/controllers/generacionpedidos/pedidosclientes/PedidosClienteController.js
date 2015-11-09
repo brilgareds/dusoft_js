@@ -416,13 +416,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           
             $scope.seleccionarAprobacion = function(model){
                 $scope.Pedido.setEstado(model.id.id)
-                console.log("$scope.Pedido ", $scope.Pedido.getEstado())
-            
+             
             };
             
             $scope.validacion_buscar_productos = function() {
                 
-                console.log("$scope.Pedido.getEstado() ", $scope.Pedido.getEstado());
+              
                 var disabled = false;
                 // Validaciones Generales
                 if ($scope.Pedido.getCliente().get_descripcion() === undefined || $scope.Pedido.getCliente().get_descripcion() === '')
@@ -806,7 +805,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             //Aceptar la cotizacion
             $scope.aceptar_cotizacion = function() {
+                that.actualizarCabeceraPedidoCliente();
                 $state.go('ListarPedidosClientes');
+            };
+            
+            /**
+             * +Descripcion: funcion encargada de actualizar la cabecera de
+             *               una cotizacion cuando se selecciona la opcion
+             *               de modificando
+             * @author Cristian Ardila
+             * @fecha  09/11/2015
+             * @returns {undefined}
+             */
+            that.actualizarCabeceraPedidoCliente = function(){
+              
+               var obj = {};
+               var url = '';
+               
+                // Observacion cartera para cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.ACTUALIZAR_CABECERA_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido
+                            }
+                        }
+                    };
+                }
+                
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    
+                    console.log("data ", data)
+                    AlertService.mostrarMensaje("warning", data.msj);
+                    if (data.status === 200) {
+                        console.log("VALORES")
+                    }
+                });
+                
             };
             // Gestiona la aprobacion o no del departamento de cartera
             $scope.gestion_cartera = function(aprobado) {

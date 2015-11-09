@@ -1464,6 +1464,8 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
  */
 PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_pedido, callback)
 {
+    console.log("**************************PedidosClienteModel.prototype.actualizarEstadoPedido*************************************");
+    console.log("estado_pedido  ", estado_pedido);
     var aprobacionCartera;
     if (estado_pedido === 4) {
         aprobacionCartera = pedido.aprobado_cartera;

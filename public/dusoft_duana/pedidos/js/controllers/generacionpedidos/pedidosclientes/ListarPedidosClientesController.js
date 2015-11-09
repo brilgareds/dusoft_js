@@ -588,9 +588,10 @@ define(["angular", "js/controllers",
             /*
              * @Author: Cristian Ardila
              * @param {PedidoFarmacia} pedido
-             * +Descripcion: Permite reemplazar un objeto pedido que viene del socket
+             * +Descripcion: Permite refrescar  la lista de cotizaciones
+             *               en tiempo real a traves de los sockets
              */
-            that.reemplazarPedidoEstado = function(pedido) {
+            that.refrescarListaCotizacionesEstado = function(pedido) {
               
                  that.buscar_cotizaciones();
 
@@ -598,13 +599,25 @@ define(["angular", "js/controllers",
                //referencia del socket io
             socket.on("onListarEstadoCotizacion", function(datos) {
              
-                if (datos.status === 200) {
+               // if (datos.status === 200) {
  
-                  that.reemplazarPedidoEstado(datos.obj);
+                  that.refrescarListaCotizacionesEstado(datos.obj);
 
-                }
+               // }
             }); 
             
+            
+                //referencia del socket io
+            socket.on("onNotificarEstadoPedido", function(datos) {
+             
+               
+               // if (datos.status === 200) {
+ 
+                  that.buscar_pedidos();
+
+               // }
+            }); 
+           
             that.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

@@ -1499,7 +1499,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                         return;
                     } else {
-                           
+                        that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                         return;
                     }
@@ -1715,7 +1715,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             } else {
                 estado_pedido = 0;
             }
-
+            
             that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, rows, result) {
 
                 if (err || result.rowCount === 0) {
@@ -1733,6 +1733,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
                             res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                             return;
                         } else {
+                            that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
                             res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                             return;
                         }
@@ -1861,6 +1862,8 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             
             var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
             var estado_pedido = 0;
+           
+            
             if (totalValorPedidoNuevo > totalValorPedidoActual) {
                 estado_pedido = 4;
             } else {
@@ -1884,6 +1887,8 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
                             res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                             return;
                         } else {
+                            
+                            that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
                             res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                             return;
                         }

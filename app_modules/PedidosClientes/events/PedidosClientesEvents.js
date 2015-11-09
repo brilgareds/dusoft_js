@@ -81,23 +81,34 @@ PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCot
   
     var that = this;
    
-    this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado,rows) {
+    /*this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado,rows) {
          
-        if(estado){
+        if(estado){*/
        
         var response = G.utils.r('onListarEstadoCotizacion', 'nuevo estado de cotizacion Actualizado', 200, 
                         {
                          numeroCotizacion: numeroCotizacion,
-                         estado: rows
+                       //  estado: rows
                         });
             that.io.sockets.emit('onListarEstadoCotizacion',response);
            
-        }
+       // }
        
 
-    });
+  //  });
     
 };
+
+PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(datos) {
+  
+    var that = this;
+  
+  //  this.m_pedidos_clientes.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_actualizados) {
+        var response = G.utils.r('onNotificarEstadoPedido', 'Lista Pedidos Clientes Actualizados', 200, {pedidos_clientes: datos});
+        that.io.sockets.emit('onNotificarEstadoPedido', response);
+         /*});*/
+};
+
 
 /**
  * @api {event} onNotificacionOperarioPedidosAsignados Notificación Pedidos Asignados 

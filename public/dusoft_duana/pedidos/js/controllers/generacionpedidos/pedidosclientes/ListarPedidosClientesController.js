@@ -584,8 +584,27 @@ define(["angular", "js/controllers",
               
             
             };
+            
+            /*
+             * @Author: Cristian Ardila
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: Permite reemplazar un objeto pedido que viene del socket
+             */
+            that.reemplazarPedidoEstado = function(pedido) {
+              
+                 that.buscar_cotizaciones();
 
+            };
+               //referencia del socket io
+            socket.on("onListarEstadoCotizacion", function(datos) {
+             
+                if (datos.status === 200) {
+ 
+                  that.reemplazarPedidoEstado(datos.obj);
 
+                }
+            }); 
+            
             that.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

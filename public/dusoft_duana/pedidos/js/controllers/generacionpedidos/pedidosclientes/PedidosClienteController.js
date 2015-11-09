@@ -838,11 +838,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    
-                    console.log("data ", data)
+                 
                     AlertService.mostrarMensaje("warning", data.msj);
                     if (data.status === 200) {
-                        console.log("VALORES")
+                      
                     }
                 });
                 

@@ -127,9 +127,6 @@ define(["angular", "js/controllers",
                     },
                     btn_modificar_estado :{
                         'click': $scope.datos_view.opciones.sw_modificar_estado_cotizacion
-                    },
-                    btn_solicitar_autorizacion_cotizaciones :{
-                        'click': $scope.datos_view.opciones.sw_solicitar_autorizacion
                     }
                 };
 
@@ -348,7 +345,7 @@ define(["angular", "js/controllers",
                                             <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
                                                 <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_visualizar_cotizaciones }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
                                                 <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_cotizaciones }}" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
-                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-validate-events="" ng-click="solicitarAutorizacion(row.entity)" >Solicitar autorizacion</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);"  ng-click="solicitarAutorizacion(row.entity)" >Solicitar autorizacion</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_reporte_cotizaciones }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_email_cotizaciones }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
@@ -362,9 +359,19 @@ define(["angular", "js/controllers",
                 that.cambiarEstadoCotizacion(cotizacion.get_numero_cotizacion(), '1');
             };
             
-             $scope.solicitarAutorizacion = function(cotizacion){
+             $scope.solicitarAutorizacion = function(cotizacion){              
                 
-               that.cambiarEstadoCotizacionAutorizacion(cotizacion);
+                var estadoCotizacion = cotizacion.get_estado_cotizacion()
+                  
+                 if(estadoCotizacion === '6' || estadoCotizacion === '3' || estadoCotizacion === '5' ){
+                    
+                       AlertService.mostrarMensaje("warning", "Accion no permitida");
+                       
+                       return;
+                 }else{
+                     that.cambiarEstadoCotizacionAutorizacion(cotizacion);
+                 }
+               
             };
             
             
@@ -500,7 +507,7 @@ define(["angular", "js/controllers",
                     pedido.setEstado(data.estado);
                     $scope.Empresa.set_pedidos(pedido);
                 });  
-                    console.log("$scope.Empresa",$scope.Empresa.get_pedidos())
+                 
             };
 
             $scope.lista_pedidos_clientes = {
@@ -563,7 +570,7 @@ define(["angular", "js/controllers",
                 that.buscar_pedidos();
             };
 
-
+           
             that.init = function() {
 
                 that.validacion_inicial();
@@ -573,6 +580,9 @@ define(["angular", "js/controllers",
                 that.buscar_cotizaciones();
 
                 that.buscar_pedidos();
+                
+              
+            
             };
 
 

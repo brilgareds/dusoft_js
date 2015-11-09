@@ -250,7 +250,7 @@ define(["angular",
                     if(err.err){
                         AlertService.mostrarMensaje("warning", err.msj);
                     } else if(archivo) {
-                        $scope.visualizarReporte("/reports/" + archivo, archivo, "download");
+                        $scope.visualizarReporte("/reports/" + archivo, archivo, "_blank");
                     }
                 });
             };
@@ -334,7 +334,7 @@ define(["angular",
                 Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
                     if (data.status === 200) {
                         var nombre = data.obj.movimientos_bodegas.nombre_pdf;
-                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                     }
 
                 });

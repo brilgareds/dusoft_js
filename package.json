@@ -25,6 +25,7 @@
     "pg-query": "0.x",
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
-    "q":"*"
+    "q":"*",
+    "xls-to-json":"*"
   }
 }

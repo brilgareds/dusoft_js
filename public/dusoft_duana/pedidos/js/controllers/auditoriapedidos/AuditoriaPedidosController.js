@@ -585,9 +585,8 @@ define(["angular", "js/controllers",
                                      * @author Cristian Ardila
                                      */
                                     localStorageService.set("DocumentoDespachoImprimir",detallado);
-                                    window.open("#/DocumentoDespacho", 'popimpr','location=no');
                                 
-                               // $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                                   $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                             }
 
                         });

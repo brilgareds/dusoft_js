@@ -3,45 +3,55 @@
         <style>
 
             td{
-                 font-weight:bold;
-                font-size:10px;
+                font-size:7pt;
                
-                font-family: sans-serif;
             }
+            
+             BODY { 
+                font: 7pt Verdana, Geneva, Arial, Helvetica, sans-serif; 
+                margin: 1 0 1 0px; 
+                background-color: #ffffff; 
+            } 
             
             .title{
                 font-weight:bold;
                 /*font-family:"Times New Roman", Georgia, Serif;*/
-                font-family: monospace;
-                font-size:14px;
+                font-size:7pt;
             }
             
             .docInfo{
                 float:right;
-                font-size:9px;
+                font-size:7pt;
             }
             
             .footer{
-                margin-top:120px;
+                margin-top:80px;
                 width:100%;
             }
             
-            .cantidad{
-                text-align:center;
-            }
+
             
             .fecha_pedido{
                 margin-left:20px;
             }
+            
+            th{
+                text-align: left;
+            }
+            
+           @page 
+            {
+                size: auto;   /* auto is the initial value */
+                margin: 0mm;  /* this affects the margin in the printer settings */
+            }
+
         </style>
         
-        <link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css">
+        <!-- link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css" / -->
         
     </head>
     <body>
-       
-       <img src="{{:serverUrl}}images/logo.png" style="padding-bottom:20px; text-align:center"  width="100px" /> 
-       
+              
        <div class='docInfo'>
            <div style='text-align:right;'><span>{{:encabezado.fecha_impresion}}</span></div>
            <div>Imprime: <span>{{:encabezado.usuario_imprime}}</span></div>
@@ -66,10 +76,8 @@
         
         <hr/>
         
-        </br>
         <div class="panel panel-default">
-            <div class="panel-heading text-center title">Datos adicionales</div>
-             <table class="table table-bordered" width='100%'>
+             <table class="table" width='100%'>
                 {{props   adicionales}}
                     <tr>
                         <td class='title'>{{>prop.titulo}}</td>
@@ -78,11 +86,9 @@
                 {{/props}}
             </table>
         </div>
+                
         
-        </br>
-        
-        
-       <table class="table table-bordered" width='100%'>
+       <table class="table table-bordered detalle" width='100%'>
             <thead>
                 <tr>
                     <th width='50' class='title'>Codigo</th>

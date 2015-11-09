@@ -362,7 +362,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         var nombre = data.obj.reporte_pedido.nombre_reporte;
-                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                     }  else {
                         AlertService.mostrarMensaje("warning", "Error generando el pdf");
                     }
@@ -376,7 +376,7 @@ define(["angular", "js/controllers",
                     if(err.err){
                         AlertService.mostrarMensaje("warning", err.msj);
                     } else if(archivo) {
-                        $scope.visualizarReporte("/reports/" + archivo, archivo, "download");
+                        $scope.visualizarReporte("/reports/" + archivo, archivo, "_blank");
                     }
                 });
             };

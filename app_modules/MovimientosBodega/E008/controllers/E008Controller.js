@@ -2537,7 +2537,7 @@ function __generarPdfDespacho(datos, callback) {
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/despacho.html', 'utf8'),
-            recipe: "phantom-pdf",
+            recipe: "html",
             engine: 'jsrender',
             phantom: {
                 margin: "10px",
@@ -2549,7 +2549,7 @@ function __generarPdfDespacho(datos, callback) {
         
         response.body(function(body) {
            var fecha = new Date();
-           var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+           var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + "_" + fecha.toFormat('DD-MM-YYYY') + ".html";
            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
                 if(err) {
                     console.log(err);

@@ -2024,6 +2024,12 @@ function __agruparProductosPorTipo(that, productos, callback) {
  */
 
 function __subir_archivo_plano(files, extension, callback) {
+    
+    
+    if (!extension === ".xlsx" || !extension === ".xls") {
+        callback(true);
+        return;
+    }
 
     var ruta_tmp = files.file.path;
     var ext = G.path.extname(ruta_tmp);
@@ -2046,16 +2052,14 @@ function __subir_archivo_plano(files, extension, callback) {
                         return;
                     } else {
 
-                        if (extension === ".xlsx") {
+                        //if (extension === ".xlsx") {
                             // Cargar Contenido
-                            contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
+                            contenido_archivo_plano = G.xls.parse(ruta_nueva);
                             // Borrar archivo fisico     
                             G.fs.unlinkSync(ruta_nueva);
 
                             callback(false, contenido_archivo_plano[0].data);
-                        }
-
-                        if (extension === ".xls") {
+                       /* } else if (extension === ".xls") {
 
                             G.xls({
                                 input: ruta_nueva, // input xls 
@@ -2070,7 +2074,7 @@ function __subir_archivo_plano(files, extension, callback) {
                                     callback(false, result);
                                 }
                             });
-                        }
+                        } */
 
                     }
                 });

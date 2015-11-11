@@ -145,7 +145,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                     when a.estado = '1' then 'Activo'\
                     when a.estado = '2' then 'Anulado'\
                     when a.estado = '3' then 'Entregado'\
-                    when a.estado = '4' then 'Autorizar nuevamente cartera' end as descripcion_estado"),
+                    when a.estado = '4' then 'Debe autorizar cartera' end as descripcion_estado"),
         "a.estado_pedido as estado_actual_pedido",
         G.knex.raw("case when a.estado_pedido = '0' AND a.estado != '4' then 'No Asignado'\
                     when a.estado_pedido = '1' then 'Asignado'\
@@ -561,8 +561,6 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                     orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
         });
     }
-
-
     query.totalRegistros = 0;
     query.then(function(total) {
         var registros = query.
@@ -1464,8 +1462,7 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
  */
 PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_pedido, callback)
 {
-    console.log("**************************PedidosClienteModel.prototype.actualizarEstadoPedido*************************************");
-    console.log("estado_pedido  ", estado_pedido);
+   
     var aprobacionCartera;
     if (estado_pedido === 4) {
         aprobacionCartera = pedido.aprobado_cartera;
@@ -1526,8 +1523,48 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
         callback(false, error);
     });
 };
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar el estado de un pedido
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.consultarEstadoPedido
+ */
+PedidosClienteModel.prototype.consultarEstadoPedidoEstado = function(numero_pedido, callback) {
+
+    G.knex('ventas_ordenes_pedidos').where({
+        pedido_cliente_id: numero_pedido,
+        
+    }).select('estado','estado_pedido')
+            .then(function(rows) {
+        callback(true, rows);
+    })
+            . catch (function(error) {
+        callback(false, error);
+    });
+};
 
 
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar si la cotizacion ya tiene un pedido
+ * @fecha: 11/11/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.generarPedido
+ */
+PedidosClienteModel.prototype.consultarExistenciaPedidoCotizacion = function(numeroCotizacion, callback) {
+
+    G.knex('ventas_ordenes_pedidos').where({
+        pedido_cliente_id_tmp: numeroCotizacion
+        
+    }).select('pedido_cliente_id_tmp')
+            .then(function(rows) {
+        callback(true, rows);
+    })
+            . catch (function(error) {
+        callback(false, error);
+    });
+};
 /*
  * @author : Cristian Ardila
  * Descripcion : Funcion encargada de consultar el estado de una cotizacion
@@ -1535,6 +1572,7 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
  * @Funciones que hacen uso del model : 
  *  --PedidosCliente.prototype.consultarEstadoCotizacion
  *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
+ *  --PedidosCliente.prototype.generarPedido
  */
 PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizacion, callback) {
 

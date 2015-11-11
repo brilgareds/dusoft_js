@@ -8,7 +8,7 @@ define(["angular","js/directive"], function(angular, directive){
             
             element.bind("keydown", function(event) {
                 
-                console.log($.inArray(event.which,keyCode));
+                console.log("Numero",$.inArray(event.which,keyCode));
                 //console.log(event.which);
                 if($.inArray(event.which,keyCode) == -1) {
                     scope.$apply(function(){

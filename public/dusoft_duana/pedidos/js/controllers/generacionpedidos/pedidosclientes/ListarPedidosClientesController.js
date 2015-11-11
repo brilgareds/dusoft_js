@@ -300,7 +300,7 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-
+             
             that.render_cotizaciones = function(cotizaciones) {
 
                 $scope.Empresa.limpiar_cotizaciones();
@@ -322,7 +322,7 @@ define(["angular", "js/controllers",
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
-               
+                     
             };
            
             $scope.lista_cotizaciones_clientes = {
@@ -487,7 +487,7 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-
+          
             that.render_pedidos = function(pedidos) {
 
                 $scope.Empresa.limpiar_pedidos();
@@ -581,10 +581,11 @@ define(["angular", "js/controllers",
 
                 that.buscar_pedidos();
                 
-              
+               console.log("init >>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
             
             };
             
+             that.init();
             /*
              * @Author: Cristian Ardila
              * @param {PedidoFarmacia} pedido
@@ -592,33 +593,48 @@ define(["angular", "js/controllers",
              *               en tiempo real a traves de los sockets
              */
             that.refrescarListaCotizacionesEstado = function(pedido) {
-              
-                 that.buscar_cotizaciones();
+                    
+                    console.log("pedido ", pedido)
+                // that.buscar_cotizaciones();
 
             };
                //referencia del socket io
             socket.on("onListarEstadoCotizacion", function(datos) {
-             
+                
+          
+              $scope.Empresa.get_cotizaciones().forEach(function(data) {
+                  
+                  if(datos.obj.numeroCotizacion === data.get_numero_cotizacion()){
+                       console.log("data ", data.get_numero_cotizacion());
+                       console.log("Estado ", datos.obj.estado[0].estado);
+                       console.log("Cotizacion ", data);
+                       
+                       data.setEstado(datos.obj.estado[0].estado);
+                  }
+                  
+                   console.log($scope.Empresa.get_cotizaciones())
+                //   if(data.)
+              });
                // if (datos.status === 200) {
- 
-                  that.refrescarListaCotizacionesEstado(datos.obj);
+              
+                  //that.refrescarListaCotizacionesEstado(datos.obj);
 
                // }
             }); 
             
             
                 //referencia del socket io
-            socket.on("onNotificarEstadoPedido", function(datos) {
+           // socket.on("onNotificarEstadoPedido", function(datos) {
              
                
                // if (datos.status === 200) {
  
-                  that.buscar_pedidos();
+              //    that.buscar_pedidos();
 
                // }
-            }); 
+           // }); 
            
-            that.init();
+           
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

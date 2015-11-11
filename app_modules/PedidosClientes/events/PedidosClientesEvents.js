@@ -70,32 +70,28 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
  * Descripcion : Funcion encargada de refrescar en tiempo real la lista de
  *               cotizaciones
  * @fecha: 05/11/2015
- * @Funciones que hacen uso del model : 
+ * @Funciones que hacen uso del eventp : 
  *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  *  --PedidosCliente.prototype.observacionCarteraCotizacion
  *  --PedidosCliente.prototype.generarPedido
  *  --PedidosCliente.prototype.solicitarAutorizacion
- *  --PedidosCliente.prototype.modificarEstadoCotizacion
+ *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  */
 PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCotizacion) {
   
     var that = this;
    
-    /*this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado,rows) {
-         
-        if(estado){*/
-       
+    this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado,rows) {        
+        if(estado){      
         var response = G.utils.r('onListarEstadoCotizacion', 'nuevo estado de cotizacion Actualizado', 200, 
                         {
                          numeroCotizacion: numeroCotizacion,
-                       //  estado: rows
+                         estado: rows
                         });
-            that.io.sockets.emit('onListarEstadoCotizacion',response);
-           
-       // }
-       
-
-  //  });
+            
+            that.io.sockets.emit('onListarEstadoCotizacion',response);          
+        }   
+   });
     
 };
 

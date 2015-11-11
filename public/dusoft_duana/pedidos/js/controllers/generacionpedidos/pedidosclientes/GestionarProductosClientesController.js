@@ -376,14 +376,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="col-xs-12"> <input type="text" \
                                 ng-model="row.entity.precio_venta" \
-                                validacion-numero-entero \
+                                validacion-numero \
                                 ng-disabled = "row.entity.sw_pactado"\n\
                                 ng-style="{background: row.entity.colorInputPrecioPactador,color:row.entity.colorTextoPrecioPactador}"\n\
                                  class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
                     {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12"> \
+                                      <input type="text" \
+                                       ng-model="row.entity.cantidad_solicitada" \
+                                       validacion-numero-entero \
+                                       class="form-control grid-inline-input" \n\
+                                       name="" id="" /> </div>'},
                     {width: "60", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
                                             <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
@@ -407,7 +412,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.datos_form.pagina_actual++;
                 that.buscar_productos_clientes();
             };
-
+            
+            
+            
+            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
             });

@@ -283,11 +283,6 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
             return;
         }
 
-        //En la separacion de la version web no se necesita el detalle inmediatamente
-        /* if(!detalle){
-         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes, total_registros: total_registros}));
-         return;
-         }*/
 
         var i = lista_pedidos_clientes.length;
 
@@ -479,7 +474,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
 
             var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
 
-            res.send(G.utils.r(req.url, 'Cotizacion regitrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
+            res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
             return;
         }
     });
@@ -536,13 +531,41 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
     cotizacion.usuario_id = req.session.user.usuario_id;
 
-    that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-            return;
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+        /**
+         * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
+         *               satisfactoriamente
+         */
+
+        if (estado) {
+            /**
+             * +Descripcion: Se valida si el estado de la cotizacion es 
+             *               1 activo 
+             *               4 activo (desaprobado por cartera)
+             */
+
+            if (rows[0].estado === '1' || rows[0].estado === '4') {
+
+
+                that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
+                        return;
+                    }
+                });
+
+            } else {
+                res.send(G.utils.r(req.url, 'La cotizacion debe encontrarse activa o desaprobada por cartera', 500, {pedidos_clientes: []}));
+                return;
+            }
+
         } else {
-            res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
             return;
         }
     });
@@ -632,15 +655,42 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
 
 
     });
-    that.m_pedidos_clientes.modificar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-            return;
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+        /**
+         * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
+         *               satisfactoriamente
+         */
+        if (estado) {
+            /**
+             * +Descripcion: Se valida si el estado de la cotizacion es 
+             *               1 activo 
+             *               4 activo (desaprobado por cartera)
+             */
+
+            if (rows[0].estado === '1' || rows[0].estado === '4') {
+
+                that.m_pedidos_clientes.modificar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                        return;
+                    }
+                });
+
+            } else {
+                res.send(G.utils.r(req.url, 'La cotizacion debe encontrarse activa o desaprobada por cartera', 500, {pedidos_clientes: []}));
+                return;
+            }
+
         } else {
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
             return;
         }
+
     });
 };
 
@@ -658,9 +708,9 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-  
+
     // Cotizacion
-    if (args.pedidos_clientes === undefined  || args.pedidos_clientes === '') {
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
         return;
     }
@@ -672,14 +722,14 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function(req, res) {
         return;
     }
 
-   
+
     that.m_pedidos_clientes.actualizarCabeceraCotizacion(cotizacion, function(estado, rows) {
 
         if (!estado) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {pedidos_clientes: rows }));
+            res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {pedidos_clientes: rows}));
             return;
         }
     });
@@ -699,7 +749,7 @@ PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
         return;
     }
-    
+
     G.Q.nfcall(that.m_pedidos_clientes.modificarEstadoCotizacion, cotizacion).
             then(function(rows) {
         that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
@@ -901,26 +951,52 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
     };
 
 
-    /**
-     * +Descripcion: Se invoca un modelo encargado de insertar los registros
-     * a una tabla log de seguimiento para cuando se quiera eliminar un producto
-     * de una cotizacion
-     * @fecha: 29/09/2015
-     * @author Cristian Ardila
-     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
-     */
-    that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function() {
+
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+        /**
+         * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
+         *               satisfactoriamente
+         */
+
+        if (estado) {
+            /**
+             * +Descripcion: Se valida si el estado de la cotizacion es 
+             *               1 activo 
+             *               4 activo (desaprobado por cartera)
+             */
+            if (rows[0].estado === '1' || rows[0].estado === '4') {
+                /**
+                 * +Descripcion: Se invoca un modelo encargado de insertar los registros
+                 * a una tabla log de seguimiento para cuando se quiera eliminar un producto
+                 * de una cotizacion
+                 * @fecha: 29/09/2015
+                 * @author Cristian Ardila
+                 * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+                 */
+                that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function() {
 
 
-    });
+                });
 
-    that.m_pedidos_clientes.eliminar_producto_cotizacion(cotizacion, producto, function(err, rows, result) {
+                that.m_pedidos_clientes.eliminar_producto_cotizacion(cotizacion, producto, function(err, rows, result) {
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Eliminando el producto', 500, {pedidos_clientes: []}));
-            return;
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error Eliminando el producto', 500, {pedidos_clientes: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {pedidos_clientes: []}));
+                        return;
+                    }
+                });
+
+
+            } else {
+                res.send(G.utils.r(req.url, 'Para modificar la cotizacion debe estar activa', 500, {pedidos_clientes: []}));
+                return;
+            }
+
         } else {
-            res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {pedidos_clientes: []}));
+            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
             return;
         }
     });
@@ -1165,7 +1241,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
             return;
         } else {
             that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-            res.send(G.utils.r(req.url, 'Observacion regitrada correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Observacion registrada correctamente', 200, {pedidos_clientes: {}}));
             return;
         }
     });
@@ -1364,40 +1440,93 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
     cotizacion.usuario_id = req.session.user.usuario_id;
 
-
-    // Generar pedido
-    that.m_pedidos_clientes.generar_pedido_cliente(cotizacion, function(err, rows, pedido) {
-
-        if (!err) {
-            res.send(G.utils.r(req.url, 'Error Interno al generar el pedido', 500, {pedidos_clientes: []}));
-            return;
-        } else {
+    /**
+     * +Descripcion: Funcion encargada de verificar si el numero de cotizacion
+     *               ya tiene un pedido asignado
+     */
+    that.m_pedidos_clientes.consultarExistenciaPedidoCotizacion(cotizacion.numero_cotizacion, function(estadoExistenciaPedido, rowsExistenciaPedido) {
+        /**
+        * +Descripcion: Se valida que la consulta se ejecute satisfactoriamente 
+        */
+      
+        if (estadoExistenciaPedido) {
+            /**
+             * +Descripcion: Se valida si el numero de cotizacion se encuentra
+             *               en la tabla de pedidos
+             */
            
-            // Asignar responsables
-            that.m_pedidos_clientes.asignar_responsables_pedidos(pedido.numero_pedido, pedido.estado, null, cotizacion.usuario_id, function(err, rows, responsable_estado_pedido) {
-
-                if (err) {
-                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Responsables', 500, {pedidos_clientes: []}));
-                    return;
-                }
+            if (rowsExistenciaPedido.length === 0) {
                 
-                // Actualizar estado del nuevo pedido
-                that.m_pedidos_clientes.terminar_estado_pedido(pedido.numero_pedido, [pedido.estado], '1', function(err, rows, results) {
+                /**
+                 * +Descripcion: FUncion encargada de verificar el estado de una cotizacion
+                 */
+                that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+                    /**
+                     * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
+                     *               satisfactoriamente
+                     */
+                    if (estado) {
+                        /**
+                         * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
+                         */
+                        if (rows[0].estado === '3') {
 
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'Error finalizando el estado del pedido', 500, {pedidos_clientes: []}));
+                            // Generar pedido
+                            that.m_pedidos_clientes.generar_pedido_cliente(cotizacion, function(err, rows, pedido) {
+
+                                if (!err) {
+                                    res.send(G.utils.r(req.url, 'Error Interno al generar el pedido', 500, {pedidos_clientes: []}));
+                                    return;
+                                } else {
+
+                                    // Asignar responsables
+                                    that.m_pedidos_clientes.asignar_responsables_pedidos(pedido.numero_pedido, pedido.estado, null, cotizacion.usuario_id, function(err, rows, responsable_estado_pedido) {
+
+                                        if (err) {
+                                            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Responsables', 500, {pedidos_clientes: []}));
+                                            return;
+                                        }
+
+                                        // Actualizar estado del nuevo pedido
+                                        that.m_pedidos_clientes.terminar_estado_pedido(pedido.numero_pedido, [pedido.estado], '1', function(err, rows, results) {
+
+                                            if (err) {
+                                                res.send(G.utils.r(req.url, 'Error finalizando el estado del pedido', 500, {pedidos_clientes: []}));
+                                                return;
+                                            }
+
+                                            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
+                                            res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + pedido.numero_pedido, 200, {pedidos_clientes: pedido}));
+                                            return;
+                                        });
+                                    });
+                                }
+                            });
+
+                        } else {
+                            res.send(G.utils.r(req.url, 'La cotizacion no se encuentra aprobada por cartera', 500, {pedidos_clientes: []}));
+                            return;
+                        }
+
+                    } else {
+                        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
                         return;
-                    }
-                   
-                    that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-                    res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + pedido.numero_pedido, 200, {pedidos_clientes: pedido}));
-                    return;
+                    }//estado consultarEstadoCotizacion
+
                 });
-            });
-        }
-    });
+
+            } else {
+                res.send(G.utils.r(req.url, 'La cotizacion ya se encuentra con un pedido asignado', 500, {pedidos_clientes: []}));
+                return;
+            }//rowsExistenciaPedido*/
+            
+        } else {
+            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
+            return;
+        }//estadoExistenciaPedido
 
 
+    });//consultarExistenciaPedidoCotizacion
 };
 
 
@@ -1467,51 +1596,75 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
 
-    that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
+
+    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
+
 
         if (estado) {
 
-        var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
-        var estado_pedido = 0;
-        if (totalValorPedidoNuevo > totalValorPedidoActual) {
-            estado_pedido = 4;
-        } else {
-            estado_pedido = 0;
-        }
-        /**
-         * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
-         *               por lo cual se crea la funcion insertarDetallePedido
-         */
-        that.m_pedidos_clientes.insertarDetallePedido(pedido, producto, function(err, rows, result) {
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
+                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
 
-            if (err || result.rowCount === 0) {
-                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                return;
-            } else {
+                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
-                pedido.aprobado_cartera = '0';
-                pedido.observacion_cartera = '';
+                    if (estado) {
 
-             
-                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+                        var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
+                        var estado_pedido = 0;
+                        if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                            estado_pedido = 4;
+                        } else {
+                            estado_pedido = 1;
+                        }
+                        /**
+                         * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
+                         *               por lo cual se crea la funcion insertarDetallePedido
+                         */
+                        that.m_pedidos_clientes.insertarDetallePedido(pedido, producto, function(err, rows, result) {
 
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                        return;
+                            if (err || result.rowCount === 0) {
+                                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                                return;
+                            } else {
+
+                                pedido.aprobado_cartera = '0';
+                                pedido.observacion_cartera = '';
+
+
+                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+
+                                    if (err || result.rowCount === 0) {
+                                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                                        return;
+                                    } else {
+                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido);
+                                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                                        return;
+                                    }
+                                });
+
+                            }
+                        });
                     } else {
-                        that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
-                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
                         return;
                     }
                 });
 
+            } else {
+                res.send(G.utils.r(req.url, 'El pedido debe estar activo o para autorizar nuevamente por cartera', 500, {pedidos_clientes: []}));
+                return;
             }
-        });
-        }else{
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+
+        } else {
+            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
+
             return;
         }
+
+
     });
+
 };
 
 
@@ -1525,19 +1678,19 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
  * @returns {undefined}
  */
 PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
-    
+
     var that = this;
 
     var args = req.body.data;
 
     var numeroPedido = args.pedidos_clientes.pedido;
-    that.m_pedidos_clientes.consultarEstadoPedido(numeroPedido, function(estado,rows) {
-       
-        if(estado){
+    that.m_pedidos_clientes.consultarEstadoPedido(numeroPedido, function(estado, rows) {
+
+        if (estado) {
             res.send(G.utils.r(req.url, 'Consultando estado del pedido', 200, {pedidos_clientes: rows[0].estado}));
             return;
         }
-        else{
+        else {
             res.send(G.utils.r(req.url, '', 500, {pedidos_clientes: []}));
 
             return;
@@ -1560,19 +1713,19 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
 
     var args = req.body.data;
     var cotizacion = args.pedidos_clientes.cotizacion;
-    
-    
-    that.m_pedidos_clientes.solicitarAutorizacion(cotizacion, function(estado,rows) {
-        
-     
-         if(estado){
-            
-            res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes:[]}));
-            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion);
+
+
+    that.m_pedidos_clientes.solicitarAutorizacion(cotizacion, function(estado, rows) {
+
+
+        if (estado) {
+
+            res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes: []}));
+           that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion);
             return;
         }
-        else{
-           
+        else {
+
             res.send(G.utils.r(req.url, '', 500, {pedidos_clientes: []}));
 
             return;
@@ -1597,14 +1750,14 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
     var args = req.body.data;
 
     var numeroCotizacion = args.pedidos_clientes.cotizacion;
-   
-    that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado,rows) {
-           
-        if(estado){
+
+    that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado, rows) {
+
+        if (estado) {
             res.send(G.utils.r(req.url, 'Consultando estado de la cotizacion', 200, {pedidos_clientes: rows[0].estado}));
             return;
         }
-        else{
+        else {
             res.send(G.utils.r(req.url, '', 500, {pedidos_clientes: []}));
             return;
         }
@@ -1703,53 +1856,71 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
 
-    that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
+    console.log("****************that.m_pedidos_clientes.modificarDetallePedido(numeroPedido, function(estado,rows)************************");
+    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
+        console.log("estado ", estado);
         if (estado) {
 
-            var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
-            var estado_pedido = 0;
-            
-            if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                estado_pedido = 4;
-            } else {
-                estado_pedido = 0;
-            }
-            
-            that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, rows, result) {
-
-                if (err || result.rowCount === 0) {
-                    res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                    return;
-                } else {
-
-                    pedido.aprobado_cartera = '0';
-                    pedido.observacion_cartera = '';
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
+                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
+                console.log("rows[0].estado ", rows[0].estado);
+                console.log("rows[0].estado_pedido ", rows[0].estado_pedido);
 
 
-                    that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
-                        if (err || result.rowCount === 0) {
-                            res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                            return;
+                    if (estado) {
+
+                        var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
+                        var estado_pedido = 0;
+
+                        if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                            estado_pedido = 4;
                         } else {
-                            that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
-                            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
-                            return;
+                            estado_pedido = 1;
                         }
-                    });
 
-                }
-            });
+                        that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, rows, result) {
 
+                            if (err || result.rowCount === 0) {
+                                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                                return;
+                            } else {
+
+                                pedido.aprobado_cartera = '0';
+                                pedido.observacion_cartera = '';
+
+
+                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+
+                                    if (err || result.rowCount === 0) {
+                                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                                        return;
+                                    } else {
+                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido);
+                                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                                        return;
+                                    }
+                                });
+
+                            }
+                        });
+                    } else {
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {}}));
+                        return;
+                    }
+                });
+            } else {
+                res.send(G.utils.r(req.url, 'El pedido debe estar activo o para autorizar nuevamente por cartera', 500, {pedidos_clientes: []}));
+                return;
+            }
         } else {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
             return;
         }
 
-
     });
-
 
 };
 
@@ -1856,50 +2027,72 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
 
-    that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
+
+    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
         if (estado) {
-            
-            var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
-            var estado_pedido = 0;
-           
-            
-            if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                estado_pedido = 4;
-            } else {
-                estado_pedido = 0;
-            }
-            
-            that.m_pedidos_clientes.eliminar_producto_pedido(pedido, producto, function(err, rows, result) {
 
-                if (err || result.rowCount === 0) {
-                    res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                    return;
-                } else {
-
-                    pedido.aprobado_cartera = '0';
-                    pedido.observacion_cartera = '';
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
+                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
 
 
-                    that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
-                        if (err || result.rowCount === 0) {
-                            res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                            return;
+                    if (estado) {
+
+                        var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
+                        var estado_pedido = 0;
+
+
+                        if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                            estado_pedido = 4;
                         } else {
-                            
-                            that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
-                            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
-                            return;
+                            estado_pedido = 1;
                         }
-                    });
 
-                }
-            });
+                        that.m_pedidos_clientes.eliminar_producto_pedido(pedido, producto, function(err, rows, result) {
+
+                            if (err || result.rowCount === 0) {
+                                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                                return;
+                            } else {
+
+                                pedido.aprobado_cartera = '0';
+                                pedido.observacion_cartera = '';
+
+
+                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+
+                                    if (err || result.rowCount === 0) {
+                                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                                        return;
+                                    } else {
+
+                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido);
+                                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                                        return;
+                                    }
+                                });
+
+                            }
+                        });
+                    } else {
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                        return;
+                    }
+                });
+
+            } else {
+                res.send(G.utils.r(req.url, 'El pedido debe estar activo o para autorizar nuevamente por cartera', 500, {pedidos_clientes: []}));
+                return;
+            }
+
         } else {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
+
             return;
         }
+
     });
 };
 

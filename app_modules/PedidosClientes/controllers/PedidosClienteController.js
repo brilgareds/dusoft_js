@@ -2073,8 +2073,7 @@ function __subir_archivo_plano(files, callback) {
     } else {
         callback(false);
     }
-}
-;
+};
 
 
 /*

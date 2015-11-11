@@ -278,14 +278,14 @@ PedidosFarmacias.prototype.listarPedidosTemporalesFarmacias = function(req, res)
     var usuario = req.session.user.usuario_id;
 
     G.Q.nfcall(this.m_pedidos_farmacias.listar_pedidos_temporales_farmacias, empresa_id, termino_busqueda, pagina_actual, usuario).
-            then(function(lista_pedidos_farmacias) {
+    then(function(lista_pedidos_farmacias) {
         res.send(G.utils.r(req.url, 'Lista Pedidos Temporales Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
     }).
-            fail(function(err) {
+    fail(function(err) {
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_farmacias: []}));
     }).
-            done();
+    done();
 
 };
 
@@ -1380,7 +1380,7 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
                 });
             });
         } else {
-            res.send(G.utils.r(req.url, 'Se ha generado error subiendo el archivo Plano. Revise el formato!', 500, {}));
+            res.send(G.utils.r(req.url, 'Se ha generado error subiendo el archivo Plano. Revise el formato o encabezado!', 500, {}));
             return;
         }
     });
@@ -1869,10 +1869,6 @@ PedidosFarmacias.prototype.consultarProductoEnFarmacia = function(req, res) {
 
 };
 
-
-
-
-
 /*
  * @Author: Eduar
  * +Descripcion: Funcion recursiva que valida cada producto filtrado del archivo plano (Valida existencia en la farmacia destino) y guarda el temporal
@@ -2025,66 +2021,42 @@ function __agruparProductosPorTipo(that, productos, callback) {
 
 function __subir_archivo_plano(files, extension, callback) {
     
-    
-    if (!extension === ".xlsx" || !extension === ".xls") {
-        callback(true);
-        return;
-    }
-
     var ruta_tmp = files.file.path;
     var ext = G.path.extname(ruta_tmp);
     var nombre_archivo = G.random.randomKey(3, 3) + ext;
     var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
-    var contenido_archivo_plano = [];
 
     if (G.fs.existsSync(ruta_tmp)) {
         // Copiar Archivo
-        G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
-            if (err) {
-                // Borrar archivo fisico
-                G.fs.unlinkSync(ruta_tmp);
+        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
+        then(function() {
+            return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
+        }).
+        then(function(){
+            var parser = G.XlsParser;
+            var workbook = parser.readFile(ruta_nueva);
+            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad']);
+
+            if(!filas){
                 callback(true);
                 return;
             } else {
-                G.fs.unlink(ruta_tmp, function(err) {
-                    if (err) {
-                        callback(true);
-                        return;
-                    } else {
-
-                        //if (extension === ".xlsx") {
-                            // Cargar Contenido
-                            contenido_archivo_plano = G.xls.parse(ruta_nueva);
-                            // Borrar archivo fisico     
-                            G.fs.unlinkSync(ruta_nueva);
-
-                            callback(false, contenido_archivo_plano[0].data);
-                       /* } else if (extension === ".xls") {
-
-                            G.xls({
-                                input: ruta_nueva, // input xls 
-                                output: "output.json", // output json 
-                                sheet: "Hoja1", // specific sheetname 
-                            }, function(err, result) {
-                                if (err) {
-                                    callback(false, result);
-                                } else {
-                                    G.fs.unlinkSync(ruta_nueva);
-
-                                    callback(false, result);
-                                }
-                            });
-                        } */
-
-                    }
-                });
+                G.fs.unlinkSync(ruta_nueva);
+                //console.log("filas a procesar ", filas);
+                callback(false, filas);
             }
-        });
+        }).
+        fail(function(err) {
+            G.fs.unlinkSync(ruta_tmp);
+            callback(true);
+        }).
+        done();
+
     } else {
-        callback(false);
+        callback(true);
     }
-}
-;
+
+};
 
 /*
  * @Author: Eduar
@@ -2094,96 +2066,42 @@ function __subir_archivo_plano(files, extension, callback) {
  * @fecha: 30/10/2015
  */
 
-function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, extension, callback) {
+function __validar_productos_archivo_plano(contexto, filas, extension, callback) {
 
     var that = contexto;
 
     var productos_validos = [];
     var productos_invalidos = [];
-    var filas = [];
+    var i = filas.length;
 
-    /**
-     * +Descripcion: Se valida si es un archivo xlsx
-     * @author Cristian Ardila
-     * @fecha: 30/10/2015
-     */
-    if (extension === ".xlsx") {
-        contenido_archivo_plano.splice(0, 1)
-        contenido_archivo_plano.forEach(function(row) {
-            filas.push(row);
+    filas.forEach(function(row) {
+        var codigo_producto = row.codigo || '';
+        var cantidad_solicitada = row.cantidad || 0;
+
+        that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
+
+
+            var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
+
+            if (existe_producto.length > 0 && cantidad_solicitada > 0) {
+
+                producto.tipoProductoId = existe_producto[0].tipo_producto_id;
+                producto.descripcion = existe_producto[0].descripcion_producto;
+                productos_validos.push(producto);
+
+            } else {
+                producto.mensajeError = "No existe en inventario";
+                producto.existeInventario = false;
+                productos_invalidos.push(producto);
+            }
+
+            if (--i === 0) {
+                callback(productos_validos, productos_invalidos);
+            }
         });
+    });
 
-        var i = filas.length;
-
-        filas.forEach(function(row) {
-            var codigo_producto = row[0] || '';
-            var cantidad_solicitada = row[1] || 0;
-
-            that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
-
-
-                var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
-
-                if (existe_producto.length > 0 && cantidad_solicitada > 0) {
-
-                    producto.tipoProductoId = existe_producto[0].tipo_producto_id;
-                    producto.descripcion = existe_producto[0].descripcion_producto;
-                    productos_validos.push(producto);
-
-                } else {
-                    producto.mensajeError = "No existe en inventario";
-                    producto.existeInventario = false;
-                    productos_invalidos.push(producto);
-                }
-
-                if (--i === 0) {
-                    callback(productos_validos, productos_invalidos);
-                }
-            });
-        });
-    }
-
-    /**
-     * +Descripcion: Se valida si es un archivo xls
-     * @author Cristian Ardila
-     * @fecha: 30/10/2015
-     */
-    if (extension === ".xls") {
-        for (var i = 0; i < contenido_archivo_plano.length; i++) {
-            filas.push(contenido_archivo_plano[i]);
-        }
-
-        filas.forEach(function(row) {
-
-            var codigo_producto = row.codigo || '';
-            var cantidad_solicitada = row.cantidad || 0;
-
-            that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
-
-
-                var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
-
-                if (existe_producto.length > 0 && cantidad_solicitada > 0) {
-
-                    producto.tipoProductoId = existe_producto[0].tipo_producto_id;
-                    producto.descripcion = existe_producto[0].descripcion_producto;
-                    productos_validos.push(producto);
-
-                } else {
-                    producto.mensajeError = "No existe en inventario";
-                    producto.existeInventario = false;
-                    productos_invalidos.push(producto);
-
-                }
-
-                if (--i === 0) {
-                    callback(productos_validos, productos_invalidos);
-                }
-            });
-        });
-    }
-}
-;
+};
 
 
 function _generarDocumentoPedido(obj, callback) {

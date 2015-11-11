@@ -303,11 +303,11 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                 on(G.knex.raw("f.estado = '1'"));
     }).
             where("a.pedido_cliente_id", numero_pedido).
-            orderByRaw("1 desc").
-            then(function(rows) {
+            orderByRaw("1 desc")
+      .then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
-
+        console.log("err ", err)
         callback(err);
     }).done();
 
@@ -1411,21 +1411,22 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
  */
 function __CambioEstadoCotizacionCreacionProducto(cotizacion, callback)
 {
-  
-  G.knex('ventas_ordenes_pedidos_tmp')
-  .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
-  .update({
-    sw_aprobado_cartera: '1',
-    estado: '5'
-  })
-   .then(function(rows) {
-        callback(rows,true);
+
+    G.knex('ventas_ordenes_pedidos_tmp')
+            .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
+            .update({
+        sw_aprobado_cartera: '1',
+        estado: '5'
     })
-     .catch(function(error) {
-        callback(error,false);
+            .then(function(rows) {
+        callback(rows, true);
+    })
+            . catch (function(error) {
+        callback(error, false);
     });
 
-};
+}
+;
 
 /*
  * @Autor : Cristian Ardila
@@ -1437,18 +1438,17 @@ function __CambioEstadoCotizacionCreacionProducto(cotizacion, callback)
  */
 PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callback)
 {
-  
-  G.knex('ventas_ordenes_pedidos_tmp')
-  .where('pedido_cliente_id_tmp', cotizacion.numeroCotizacion)
-  .update({
-  
-    estado: cotizacion.estado
-  })
-   .then(function(rows) {
-        callback(rows,true);
+
+    G.knex('ventas_ordenes_pedidos_tmp')
+            .where('pedido_cliente_id_tmp', cotizacion.numeroCotizacion)
+            .update({
+        estado: cotizacion.estado
     })
-     .catch(function(error) {
-        callback(error,false);
+            .then(function(rows) {
+        callback(rows, true);
+    })
+            . catch (function(error) {
+        callback(error, false);
     });
 
 };
@@ -1464,6 +1464,8 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
  */
 PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_pedido, callback)
 {
+    console.log("**************************PedidosClienteModel.prototype.actualizarEstadoPedido*************************************");
+    console.log("estado_pedido  ", estado_pedido);
     var aprobacionCartera;
     if (estado_pedido === 4) {
         aprobacionCartera = pedido.aprobado_cartera;
@@ -1496,10 +1498,10 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id: numero_pedido
     }).select('valor_total_cotizacion')
-     .then(function(rows) {
+            .then(function(rows) {
         callback(rows, true);
     })
-     .catch(function(error) {
+            . catch (function(error) {
         callback(error, false);
     });
 
@@ -1517,11 +1519,11 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id: numero_pedido
     }).select('estado')
-    .then(function(rows) {
-        callback(true,rows);
+            .then(function(rows) {
+        callback(true, rows);
     })
-    .catch(function(error) {
-        callback(false,error);
+            . catch (function(error) {
+        callback(false, error);
     });
 };
 
@@ -1532,17 +1534,18 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
  * @fecha: 05/11/2015
  * @Funciones que hacen uso del model : 
  *  --PedidosCliente.prototype.consultarEstadoCotizacion
+ *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
  */
 PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizacion, callback) {
 
     G.knex('ventas_ordenes_pedidos_tmp').where({
         pedido_cliente_id_tmp: numeroCotizacion
     }).select('estado')
-    .then(function(rows) {
-        callback(true,rows);
+            .then(function(rows) {
+        callback(true, rows);
     })
-    .catch(function(error) {
-        callback(false,error);
+            . catch (function(error) {
+        callback(false, error);
     });
 };
 
@@ -1556,23 +1559,23 @@ PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizac
  */
 PedidosClienteModel.prototype.actualizarCabeceraCotizacion = function(cotizacion, callback)
 {
-  
-  G.knex('ventas_ordenes_pedidos_tmp')
-  .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
-  .update({
-  
-    observaciones: cotizacion.observacion
-  })
-   .then(function(rows) {
-        callback(rows,true);
+
+    G.knex('ventas_ordenes_pedidos_tmp')
+            .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
+            .update({
+        observaciones: cotizacion.observacion
     })
-     .catch(function(error) {
-        callback(error,false);
+            .then(function(rows) {
+        callback(true, rows);
+    })
+            . catch (function(error) {
+        callback(false, error);
     });
 
 };
 /*
- * Author : Cristian Ardila
+ * @author : Cristian Ardila
+ * @fecha:  05/11/2015
  * Descripcion :  Funcion encargada de almacenar el detalle del pedido
  */
 PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto, callback) {
@@ -1596,6 +1599,7 @@ PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto,
         pedido.usuario_id
     ];
 
+
     G.db.query(sql, params, function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1610,6 +1614,7 @@ PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto,
  *                que la cotizacion ya tiene un pedido asignado
  * @fecha: 04/11/2015
  */
+
 PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
 {
     G.db.begin(function() {
@@ -1636,15 +1641,16 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
                 //       cotizacion.estado = '0';
 
 
-                __CambioEstadoCotizacionCreacionProducto(cotizacion, function(rows,estado) {
+                __CambioEstadoCotizacionCreacionProducto(cotizacion, function(rows, estado) {
                     
+               
                     // Finalizar Transacción.
                     G.db.commit(function() {
                         callback(estado, rows, pedido);
                     });
 
                 });
-              
+
             });
         });
     });

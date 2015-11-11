@@ -65,6 +65,51 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
 };
 
 
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de refrescar en tiempo real la lista de
+ *               cotizaciones
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosClienteController.prototype.modificarEstadoCotizacion
+ *  --PedidosCliente.prototype.observacionCarteraCotizacion
+ *  --PedidosCliente.prototype.generarPedido
+ *  --PedidosCliente.prototype.solicitarAutorizacion
+ *  --PedidosCliente.prototype.modificarEstadoCotizacion
+ */
+PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCotizacion) {
+  
+    var that = this;
+   
+    /*this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado,rows) {
+         
+        if(estado){*/
+       
+        var response = G.utils.r('onListarEstadoCotizacion', 'nuevo estado de cotizacion Actualizado', 200, 
+                        {
+                         numeroCotizacion: numeroCotizacion,
+                       //  estado: rows
+                        });
+            that.io.sockets.emit('onListarEstadoCotizacion',response);
+           
+       // }
+       
+
+  //  });
+    
+};
+
+PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(datos) {
+  
+    var that = this;
+  
+  //  this.m_pedidos_clientes.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_actualizados) {
+        var response = G.utils.r('onNotificarEstadoPedido', 'Lista Pedidos Clientes Actualizados', 200, {pedidos_clientes: datos});
+        that.io.sockets.emit('onNotificarEstadoPedido', response);
+         /*});*/
+};
+
+
 /**
  * @api {event} onNotificacionOperarioPedidosAsignados Notificación Pedidos Asignados 
  * @apiName Notificación Pedidos Asignados

@@ -584,8 +584,40 @@ define(["angular", "js/controllers",
               
             
             };
+            
+            /*
+             * @Author: Cristian Ardila
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: Permite refrescar  la lista de cotizaciones
+             *               en tiempo real a traves de los sockets
+             */
+            that.refrescarListaCotizacionesEstado = function(pedido) {
+              
+                 that.buscar_cotizaciones();
 
+            };
+               //referencia del socket io
+            socket.on("onListarEstadoCotizacion", function(datos) {
+             
+               // if (datos.status === 200) {
+ 
+                  that.refrescarListaCotizacionesEstado(datos.obj);
 
+               // }
+            }); 
+            
+            
+                //referencia del socket io
+            socket.on("onNotificarEstadoPedido", function(datos) {
+             
+               
+               // if (datos.status === 200) {
+ 
+                  that.buscar_pedidos();
+
+               // }
+            }); 
+           
             that.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

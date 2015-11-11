@@ -658,10 +658,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-    
-    console.log("************************actualizarCabeceraCotizacion*******************************************");
-    
-    console.log("args ", args);
+  
     // Cotizacion
     if (args.pedidos_clientes === undefined  || args.pedidos_clientes === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
@@ -702,9 +699,10 @@ PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
         return;
     }
-
+    
     G.Q.nfcall(that.m_pedidos_clientes.modificarEstadoCotizacion, cotizacion).
             then(function(rows) {
+        that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
         res.send(G.utils.r(req.url, 'Cotizacion cambiada correctamente', 200, {pedidos_clientes: []}));
     }).
             fail(function(err) {
@@ -1166,6 +1164,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
             return;
         } else {
+            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
             res.send(G.utils.r(req.url, 'Observacion regitrada correctamente', 200, {pedidos_clientes: {}}));
             return;
         }
@@ -1373,6 +1372,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Interno al generar el pedido', 500, {pedidos_clientes: []}));
             return;
         } else {
+           
             // Asignar responsables
             that.m_pedidos_clientes.asignar_responsables_pedidos(pedido.numero_pedido, pedido.estado, null, cotizacion.usuario_id, function(err, rows, responsable_estado_pedido) {
 
@@ -1380,7 +1380,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
                     res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Responsables', 500, {pedidos_clientes: []}));
                     return;
                 }
-
+                
                 // Actualizar estado del nuevo pedido
                 that.m_pedidos_clientes.terminar_estado_pedido(pedido.numero_pedido, [pedido.estado], '1', function(err, rows, results) {
 
@@ -1388,7 +1388,8 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
                         res.send(G.utils.r(req.url, 'Error finalizando el estado del pedido', 500, {pedidos_clientes: []}));
                         return;
                     }
-
+                   
+                    that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
                     res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + pedido.numero_pedido, 200, {pedidos_clientes: pedido}));
                     return;
                 });
@@ -1491,13 +1492,14 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
                 pedido.aprobado_cartera = '0';
                 pedido.observacion_cartera = '';
 
-
+             
                 that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                         return;
                     } else {
+                        that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                         return;
                     }
@@ -1543,22 +1545,34 @@ PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
 
     });
 };
-
+/**
+ * @author Cristian Ardila
+ * @fecha 09/11/2015
+ * +Descripcion: COntrolador encargado de actualizar el estado de la cotizacion
+ *               para solicitar aprobacion por cartera
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
-    
-     var that = this;
+
+    var that = this;
 
     var args = req.body.data;
     var cotizacion = args.pedidos_clientes.cotizacion;
     
     
     that.m_pedidos_clientes.solicitarAutorizacion(cotizacion, function(estado,rows) {
-
+        
+     
          if(estado){
+            
             res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes:[]}));
+            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion);
             return;
         }
         else{
+           
             res.send(G.utils.r(req.url, '', 500, {pedidos_clientes: []}));
 
             return;
@@ -1701,7 +1715,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             } else {
                 estado_pedido = 0;
             }
-
+            
             that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, rows, result) {
 
                 if (err || result.rowCount === 0) {
@@ -1719,6 +1733,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
                             res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                             return;
                         } else {
+                            that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
                             res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                             return;
                         }
@@ -1847,6 +1862,8 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             
             var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
             var estado_pedido = 0;
+           
+            
             if (totalValorPedidoNuevo > totalValorPedidoActual) {
                 estado_pedido = 4;
             } else {
@@ -1870,6 +1887,8 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
                             res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                             return;
                         } else {
+                            
+                            that.e_pedidos_clientes.onNotificarEstadoPedido( pedido.numero_pedido);
                             res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                             return;
                         }

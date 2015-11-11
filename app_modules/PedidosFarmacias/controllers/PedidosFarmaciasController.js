@@ -1334,10 +1334,10 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
     args.pedidos_farmacias.observacion = "Archivo plano";
     var extension = args.pedidos_farmacias.extension;
 
-    __subir_archivo_plano(req.files, extension, function(error, contenido) {
+    __subir_archivo_plano(req.files, function(error, contenido) {
         if (!error) {
 
-            __validar_productos_archivo_plano(that, contenido, extension, function(productosValidadosArchivo, productosInvalidosArchivo) {
+            __validar_productos_archivo_plano(that, contenido, function(productosValidadosArchivo, productosInvalidosArchivo) {
 
                 if (productosValidadosArchivo.length === 0) {
                     res.send(G.utils.r(req.url, 'Lista de Productos', 200,
@@ -2019,7 +2019,7 @@ function __agruparProductosPorTipo(that, productos, callback) {
  * @fecha: 30/10/2015
  */
 
-function __subir_archivo_plano(files, extension, callback) {
+function __subir_archivo_plano(files, callback) {
     
     var ruta_tmp = files.file.path;
     var ext = G.path.extname(ruta_tmp);
@@ -2042,12 +2042,11 @@ function __subir_archivo_plano(files, extension, callback) {
                 return;
             } else {
                 G.fs.unlinkSync(ruta_nueva);
-                //console.log("filas a procesar ", filas);
                 callback(false, filas);
             }
         }).
         fail(function(err) {
-            G.fs.unlinkSync(ruta_tmp);
+            G.fs.unlinkSync(ruta_nueva);
             callback(true);
         }).
         done();
@@ -2066,7 +2065,7 @@ function __subir_archivo_plano(files, extension, callback) {
  * @fecha: 30/10/2015
  */
 
-function __validar_productos_archivo_plano(contexto, filas, extension, callback) {
+function __validar_productos_archivo_plano(contexto, filas, callback) {
 
     var that = contexto;
 

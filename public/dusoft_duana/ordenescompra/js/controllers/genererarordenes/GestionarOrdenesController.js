@@ -736,6 +736,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     },500);
 
                 } else {
+                    $scope.opciones_archivo.cancel();
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
             };

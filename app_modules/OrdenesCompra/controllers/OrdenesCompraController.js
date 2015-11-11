@@ -928,9 +928,9 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
     var numero_orden = args.ordenes_compras.numero_orden;
 
-    __subir_archivo_plano(req.files, function(continuar, contenido) {
+    __subir_archivo_plano(req.files, function(error, contenido) {
 
-        if (continuar) {
+        if (!error) {
 
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
@@ -1287,39 +1287,40 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
 };
 
 function __subir_archivo_plano(files, callback) {
-
     var ruta_tmp = files.file.path;
     var ext = G.path.extname(ruta_tmp);
     var nombre_archivo = G.random.randomKey(3, 3) + ext;
     var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
-    var contenido_archivo_plano = [];
 
     if (G.fs.existsSync(ruta_tmp)) {
         // Copiar Archivo
-        G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
-            if (err) {
-                // Borrar archivo fisico
-                G.fs.unlinkSync(ruta_tmp);
-                callback(false);
-                return;
+        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
+        then(function() {
+            return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
+        }).
+        then(function(){
+            var parser = G.XlsParser;
+            var workbook = parser.readFile(ruta_nueva);
+            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'costo']);
+            console.log("filas generadas ", filas);
+            if(filas){
+                G.fs.unlinkSync(ruta_nueva);
+                callback(false, filas);
             } else {
-                G.fs.unlink(ruta_tmp, function(err) {
-                    if (err) {
-                        callback(false);
-                        return;
-                    } else {
-                        // Cargar Contenido
-                        contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
-                        // Borrar archivo fisico
-                        G.fs.unlinkSync(ruta_nueva);
-                        callback(true, contenido_archivo_plano);
-                    }
-                });
+                throw "Error serializando el archivo";
             }
-        });
+        }).
+        fail(function(err) {
+            console.log("error generado >>>>>>>>>> ", err);
+            G.fs.unlinkSync(ruta_nueva);
+            callback(true);
+        }).
+        done();
+
     } else {
-        callback(false);
+        callback(true);
     }
+    
 }
 
 
@@ -1350,32 +1351,24 @@ function __subir_archivo_novedad(data, files, callback) {
             }
         });
     } else {
-        callback(false);
+        callback(true);
     }
-}
-;
+};
 
 // Funcion que valida que los codigos de los productos del archivo plano sean validos.
-function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, callback) {
+function __validar_productos_archivo_plano(contexto, filas, callback) {
 
     var that = contexto;
 
     var productos_validos = [];
     var productos_invalidos = [];
-    var rows = [];
 
-    contenido_archivo_plano.forEach(function(obj) {
-        obj.data.forEach(function(row) {
-            rows.push(row);
-        });
-    });
+    var i = filas.length;
 
-    var i = rows.length;
-
-    rows.forEach(function(row) {
-        var codigo_producto = row[0] || '';
-        var cantidad_solicitada = row[1] || 0;
-        var costo = row[2] || '';
+    filas.forEach(function(row) {
+        var codigo_producto = row.codigo || '';
+        var cantidad_solicitada = row.cantidad || 0;
+        var costo = row.costo || '';
 
         that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
 
@@ -1392,8 +1385,7 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
             }
         });
     });
-}
-;
+};
 
 
 // Funcion que valida que los datos del archivo plano tengan el costo del producto.

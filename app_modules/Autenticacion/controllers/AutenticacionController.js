@@ -206,15 +206,14 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
 
     //var smtpTransport = this.emails.createTransport();
     var smtpTransport = this.emails.createTransport("SMTP", {
-        host: "kartal.websitewelcome.com", // hostname
+        host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL
-        port: 465, // port for secure SMTP
+        port: G.settings.email_port, // port for secure SMTP
         auth: {
-            user: "info@duanaltda.net",
-            pass: "301206."
+            user: G.settings.email_user,
+            pass: G.settings.email_password
         }
     });
-
 
     this.m_usuarios.obtenerUsuarioPorLogin(nombre_usuario, function(err, rows) {
 

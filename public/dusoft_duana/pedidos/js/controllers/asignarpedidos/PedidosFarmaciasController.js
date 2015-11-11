@@ -372,6 +372,7 @@ define(["angular",
             //delegados del socket io
             socket.on("onListarPedidosFarmacias", function(datos) {
                 //console.log(datos);
+                console.log("socket >>>>>>>>>>>>>>>>>> onListarPedidosFarmacias ");
                 if (datos.status === 200) {
                     var obj = datos.obj.pedidos_farmacias[0];
                     var pedido = $scope.crearPedido(obj);
@@ -414,6 +415,7 @@ define(["angular",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.Empresa.vaciarPedidosFarmacia();
+                socket.removeAllListeners();
             });
 
 

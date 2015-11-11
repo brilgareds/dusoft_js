@@ -56,6 +56,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
+                
+                console.log("usuario ", $scope.usuario);
 
                 Request.realizarRequest("/forgout", "POST", obj, function(datos) {
                     

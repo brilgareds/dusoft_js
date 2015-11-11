@@ -379,6 +379,8 @@ define(["angular",
 
             //delegados del socket io
             socket.on("onListarPedidosClientes", function(datos) {
+                
+                console.log("socket >>>>>>>>>>>>>>>>>> onListarPedidosClientes ");
                 if (datos.status === 200) {
                     var obj = datos.obj.pedidos_clientes[0];
                     var pedido = that.crearPedido(obj);

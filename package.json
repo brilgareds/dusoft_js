@@ -15,17 +15,18 @@
     "express": "3.4.7",
     "fs-extra": "~0.12.0",
     "intravenous": "latest",
+    "j": "^0.4.3",
     "jade": "*",
     "jsreport": "0.2.1",
     "jsreport-client": "*",
     "knex": "^0.8.6",
     "node-xlsx": "~0.5.1",
-    "nodemailer": "0.6.1",
+    "nodemailer": "^0.6.1",
     "pg": "2.x",
     "pg-query": "0.x",
+    "q": "*",
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
-    "q":"*",
-    "xls-to-json":"*"
+    "xls-to-json": "*"
   }
 }

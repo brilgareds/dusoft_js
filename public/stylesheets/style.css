@@ -12,13 +12,24 @@ a {
     /*font-size: 14px;*/
 }
 
-.alertcontenido{
+#systemAlerlt .alertcontenido{
     /*max-width: 500px;*/
    /* width: auto;*/
     margin: 0 auto;
     height: 30px;
-    line-height: 1px;
+    /*line-height: 2px;*/
     display: table;
+    padding:10px;
+}
+
+.btnCerrarAlertaSistema{
+    margin-left: 5px;
+}
+
+.mensajeAlertaSistema{
+    
+    padding:5px 5px 0px 5px;
+    line-height: 2;
 }
 
 .alertcontenido .modal-body {
@@ -351,7 +362,7 @@ div.ngHeaderCell	{
     right:0px;
     bottom:0px;
     text-align: center;
-    max-width: 400px;
+    max-width: 500px;
     margin:0 auto;
 }
 
@@ -451,6 +462,10 @@ div.ngHeaderCell	{
         position:absolute; 
         top:0px;
         right:90px;
+    }
+    
+    #systemAlerlt{
+        top:inherit;
     }
 
 }

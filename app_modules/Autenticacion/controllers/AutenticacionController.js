@@ -204,15 +204,16 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
     var constrasenia = G.random.randomKey(2, 8);
 
 
-    var smtpTransport = this.emails.createTransport();
-//    var smtpTransport = this.emails.createTransport("SMTP", {
-//        service: "Gmail",
-//        auth: {
-//            user: "desarrollo1@duanaltda.com",
-//            pass: "S0p0rt3."
-//        }
-//    });
-
+    //var smtpTransport = this.emails.createTransport();
+    var smtpTransport = this.emails.createTransport("SMTP", {
+        host: G.settings.email_host, // hostname
+        secureConnection: true, // use SSL
+        port: G.settings.email_port, // port for secure SMTP
+        auth: {
+            user: G.settings.email_user,
+            pass: G.settings.email_password
+        }
+    });
 
     this.m_usuarios.obtenerUsuarioPorLogin(nombre_usuario, function(err, rows) {
 
@@ -236,6 +237,8 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
 
                 smtpTransport.sendMail(configuracion_email, function(error, response) {
                     if (error) {
+                        console.log(error);
+                        console.log(response);
                         res.send(G.utils.r(req.url, 'No se ha podido Enviar el Correo', 500, {}));
                         return;
                     } else {

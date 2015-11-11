@@ -204,14 +204,16 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
     var constrasenia = G.random.randomKey(2, 8);
 
 
-    var smtpTransport = this.emails.createTransport();
-//    var smtpTransport = this.emails.createTransport("SMTP", {
-//        service: "Gmail",
-//        auth: {
-//            user: "desarrollo1@duanaltda.com",
-//            pass: "S0p0rt3."
-//        }
-//    });
+    //var smtpTransport = this.emails.createTransport();
+    var smtpTransport = this.emails.createTransport("SMTP", {
+        host: "kartal.websitewelcome.com", // hostname
+        secureConnection: true, // use SSL
+        port: 465, // port for secure SMTP
+        auth: {
+            user: "info@duanaltda.net",
+            pass: "301206."
+        }
+    });
 
 
     this.m_usuarios.obtenerUsuarioPorLogin(nombre_usuario, function(err, rows) {
@@ -236,6 +238,8 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
 
                 smtpTransport.sendMail(configuracion_email, function(error, response) {
                     if (error) {
+                        console.log(error);
+                        console.log(response);
                         res.send(G.utils.r(req.url, 'No se ha podido Enviar el Correo', 500, {}));
                         return;
                     } else {

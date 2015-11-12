@@ -1856,26 +1856,21 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
 
-    console.log("****************that.m_pedidos_clientes.modificarDetallePedido(numeroPedido, function(estado,rows)************************");
+   
     that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
-        console.log("estado ", estado);
         if (estado) {
 
             if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
                     rows[0].estado === '4' && rows[0].estado_pedido === '0') {
-                console.log("rows[0].estado ", rows[0].estado);
-                console.log("rows[0].estado_pedido ", rows[0].estado_pedido);
-
-
+                
                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
                     if (estado) {
 
                         var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
                         var estado_pedido = 0;
-                        console.log("totalValorPedidoNuevo, ", totalValorPedidoNuevo);
-                        console.log("totalValorPedidoActual, ", totalValorPedidoActual);
+                       
                         if (totalValorPedidoNuevo > totalValorPedidoActual) {
                             estado_pedido = 4;
                         } else {

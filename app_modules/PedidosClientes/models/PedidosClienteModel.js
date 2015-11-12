@@ -304,7 +304,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
     }).
             where("a.pedido_cliente_id", numero_pedido).
             orderByRaw("1 desc")
-      .then(function(rows) {
+            .then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
         console.log("err ", err)
@@ -1462,7 +1462,7 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
  */
 PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_pedido, callback)
 {
-   
+
     var aprobacionCartera;
     if (estado_pedido === 4) {
         aprobacionCartera = pedido.aprobado_cartera;
@@ -1491,31 +1491,25 @@ PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_p
  *  --PedidosCliente.prototype.eliminarProductoPedido  
  */
 PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero_pedido, callback) {
-    
-    console.log("*************PedidosClienteModel.prototype.consultarTotalValorPedidoCliente********************************");
-    console.log("*************PedidosClienteModel.prototype.consultarTotalValorPedidoCliente********************************");
-    console.log("*************PedidosClienteModel.prototype.consultarTotalValorPedidoCliente********************************");
-    console.log("*************PedidosClienteModel.prototype.consultarTotalValorPedidoCliente********************************");
-    console.log("numero_pedido ",numero_pedido)
-    
-    
+
+
     G.knex.select(
-		G.knex.raw('sum(ventas_ordenes_pedidos_d_tmp.valor_unitario * ventas_ordenes_pedidos_d_tmp.numero_unidades) as valor_total_cotizacion')
-        )
-.from('ventas_ordenes_pedidos_d_tmp')
-.leftJoin('ventas_ordenes_pedidos',
-		  'ventas_ordenes_pedidos_d_tmp.pedido_cliente_id_tmp', 
-          'ventas_ordenes_pedidos.pedido_cliente_id_tmp')
-.where('ventas_ordenes_pedidos.pedido_cliente_id', numero_pedido)
- /*   G.knex('ventas_ordenes_pedidos').where({
-        pedido_cliente_id: numero_pedido
-    }).select('valor_total_cotizacion')*/
+            G.knex.raw('sum(ventas_ordenes_pedidos_d_tmp.valor_unitario * ventas_ordenes_pedidos_d_tmp.numero_unidades) as valor_total_cotizacion')
+            )
+            .from('ventas_ordenes_pedidos_d_tmp')
+            .leftJoin('ventas_ordenes_pedidos',
+            'ventas_ordenes_pedidos_d_tmp.pedido_cliente_id_tmp',
+            'ventas_ordenes_pedidos.pedido_cliente_id_tmp')
+            .where('ventas_ordenes_pedidos.pedido_cliente_id', numero_pedido)
+            /*   G.knex('ventas_ordenes_pedidos').where({
+             pedido_cliente_id: numero_pedido
+             }).select('valor_total_cotizacion')*/
             .then(function(rows) {
         callback(rows, true);
-         console.log("rows ", rows)
+        console.log("rows ", rows)
     })
             . catch (function(error) {
-       
+
         callback(error, false);
     });
 
@@ -1551,8 +1545,7 @@ PedidosClienteModel.prototype.consultarEstadoPedidoEstado = function(numero_pedi
 
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id: numero_pedido,
-        
-    }).select('estado','estado_pedido')
+    }).select('estado', 'estado_pedido')
             .then(function(rows) {
         callback(true, rows);
     })
@@ -1573,7 +1566,7 @@ PedidosClienteModel.prototype.consultarExistenciaPedidoCotizacion = function(num
 
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id_tmp: numeroCotizacion
-        
+
     }).select('pedido_cliente_id_tmp')
             .then(function(rows) {
         callback(true, rows);
@@ -1697,8 +1690,8 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
 
 
                 __CambioEstadoCotizacionCreacionProducto(cotizacion, function(rows, estado) {
-                    
-               
+
+
                     // Finalizar Transacción.
                     G.db.commit(function() {
                         callback(estado, rows, pedido);

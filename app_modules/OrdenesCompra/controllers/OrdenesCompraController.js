@@ -1477,7 +1477,15 @@ function _generar_reporte_orden_compra(rows, callback) {
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
     //var smtpTransport = that.emails.createTransport();
-    var smtpTransport = that.emails.createTransport('direct', { debug: true });
+    var smtpTransport = that.emails.createTransport("SMTP", {
+        host: G.settings.email_host, // hostname
+        secureConnection: true, // use SSL
+        port: G.settings.email_port, // port for secure SMTP
+        auth: {
+            user: G.settings.email_user,
+            pass: G.settings.email_password
+        }
+    });
 
     var settings = {
         from: G.settings.email_sender,
@@ -1498,8 +1506,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
             return;
         }
     });
-}
-;
+};
 
 OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails"];
 

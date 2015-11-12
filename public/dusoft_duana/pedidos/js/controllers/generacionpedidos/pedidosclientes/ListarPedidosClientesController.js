@@ -333,7 +333,9 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'get_descripcion_estado_cotizacion()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
-                        cellTemplate: "<button type='button' ng-class='agregar_clase_cotizacion(row.entity.get_estado_cotizacion())'> <span ng-class=''></span> {{ row.entity.get_descripcion_estado_cotizacion() }} </button>"},
+                        cellTemplate: "<button type='button' \n\
+                                        ng-class='agregar_clase_cotizacion(row.entity.get_estado_cotizacion())'> \n\
+                                        <span ng-class=''></span> {{ row.entity.get_descripcion_estado_cotizacion() }} </button>"},
                     {field: 'get_numero_cotizacion()', displayName: 'No. Cotización', width: "10%"},
                     {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
                     {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
@@ -580,8 +582,7 @@ define(["angular", "js/controllers",
                 that.buscar_cotizaciones();
 
                 that.buscar_pedidos();
-                
-               console.log("init >>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+              
             
             };
             
@@ -591,53 +592,42 @@ define(["angular", "js/controllers",
              * @param {PedidoFarmacia} pedido
              * +Descripcion: Permite refrescar  la lista de cotizaciones
              *               en tiempo real a traves de los sockets
-             */
-            that.refrescarListaCotizacionesEstado = function(pedido) {
-                    
-                    console.log("pedido ", pedido)
-                // that.buscar_cotizaciones();
-
-            };
-               //referencia del socket io
+             */ 
             socket.on("onListarEstadoCotizacion", function(datos) {
-                
-          
-              $scope.Empresa.get_cotizaciones().forEach(function(data) {
+             
+             if (datos.status === 200) {
+                var estado = ['Inactivo','Activo','Anulado','Aprobado cartera','No autorizado por cartera','Tiene un pedido','Se solicita autorizacion']
+                 $scope.Empresa.get_cotizaciones().forEach(function(data) {
                   
                   if(datos.obj.numeroCotizacion === data.get_numero_cotizacion()){
-                       console.log("data ", data.get_numero_cotizacion());
-                       console.log("Estado ", datos.obj.estado[0].estado);
-                       console.log("Cotizacion ", data);
                        
-                       data.setEstado(datos.obj.estado[0].estado);
-                  }
-                  
-                   console.log($scope.Empresa.get_cotizaciones())
-                //   if(data.)
-              });
-               // if (datos.status === 200) {
-              
-                  //that.refrescarListaCotizacionesEstado(datos.obj);
-
-               // }
+                       data.set_descripcion_estado_cotizacion(estado[datos.obj.estado[0].estado]);
+                       data.set_estado_cotizacion(datos.obj.estado[0].estado);    
+                  }                
+              });     
+             }
+             
             }); 
             
             
                 //referencia del socket io
-           // socket.on("onNotificarEstadoPedido", function(datos) {
+            socket.on("onListarEstadoPedido", function(datos) {
              
-               
-               // if (datos.status === 200) {
+             console.log(" estado ", datos.obj.pedidos_clientes.estado)
+             console.log(" estado_pedido ", datos.obj.pedidos_clientes.estado_pedido)
+              // console.log("datos ", datos);
+              /*  if (datos.status === 200) {
  
-              //    that.buscar_pedidos();
-
-               // }
-           // }); 
+                    
+                }*/
+            }); 
            
            
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                
+                socket.removeAllListeners();
             });
 
         }]);

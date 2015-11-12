@@ -78,31 +78,38 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
  *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  */
 PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCotizacion) {
-  
+
     var that = this;
-   
-    this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado,rows) {        
-        if(estado){      
-        var response = G.utils.r('onListarEstadoCotizacion', 'nuevo estado de cotizacion Actualizado', 200, 
-                        {
-                         numeroCotizacion: numeroCotizacion,
-                         estado: rows
-                        });
-            
-            that.io.sockets.emit('onListarEstadoCotizacion',response);          
-        }   
-   });
-    
+
+    this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado, rows) {
+        if (estado) {
+            var response = G.utils.r('onListarEstadoCotizacion', 'nuevo estado de cotizacion Actualizado', 200,
+                    {
+                        numeroCotizacion: numeroCotizacion,
+                        estado: rows
+                    });
+
+            that.io.sockets.emit('onListarEstadoCotizacion', response);
+        }
+    });
+
 };
 
-PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(datos) {
-  
+PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(numero_pedido) {
+    
+    console.log("*****************PedidosClientesEvents.prototype.onNotificarEstadoPedido**********************");
     var that = this;
-  
-  //  this.m_pedidos_clientes.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_actualizados) {
-        var response = G.utils.r('onNotificarEstadoPedido', 'Lista Pedidos Clientes Actualizados', 200, {pedidos_clientes: datos});
-        that.io.sockets.emit('onNotificarEstadoPedido', response);
-         /*});*/
+    this.m_pedidos_clientes.consultarEstadoPedidoEstado(numero_pedido, function(estado, rows) {
+       
+     if (estado) {
+        var response = G.utils.r('onListarEstadoPedido', 'Estado del pedido', 200, 
+                    {
+                        pedidos_clientes: rows
+                    });
+        that.io.sockets.emit('onListarEstadoPedido', response);
+        
+         }
+    });
 };
 
 
@@ -229,14 +236,14 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = funct
     this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
 
         operarios_bodega.forEach(function(operario) {
-           
+
 
             // Selecciona la sesion del usuario para obtener conexion a los sockets.
             G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
 
                 //Se recorre cada una de las sesiones abiertas por el usuario
                 sessions.forEach(function(session) {
-                 
+
                     //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
                     that.io.sockets.socket(session.socket_id).emit('onPedidosClientesReasignados', {pedidos_clientes: datos.numero_pedidos});
                 });
@@ -252,19 +259,19 @@ PedidosClientesEvents.prototype.onNotificarProgresoArchivoPlanoClientes = functi
     var that = this;
     G.auth.getSessionsUser(usuario.usuario_id, function(err, sessions) {
 
-         //Se recorre cada una de las sesiones abiertas por el usuario
-         for(var i in sessions){
-             //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-             var session = sessions[i];
-             if(session.token === usuario.auth_token){
+        //Se recorre cada una de las sesiones abiertas por el usuario
+        for (var i in sessions) {
+            //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+            var session = sessions[i];
+            if (session.token === usuario.auth_token) {
                 that.io.sockets.socket(session.socket_id).emit('onNotificarProgresoArchivoPlanoClientes', {porcentaje: porcentaje});
                 callback();
                 break;
-             }
-         }
-         
+            }
+        }
 
-     });
+
+    });
 };
 
 PedidosClientesEvents.$inject = ["socket", "m_pedidos_clientes", "m_terceros"];

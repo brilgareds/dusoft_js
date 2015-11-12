@@ -711,5 +711,9 @@ define(["angular", "js/controllers",
                     }
                 }
             });
+            
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                socket.removeAllListeners();
+            });
         }]);
 });

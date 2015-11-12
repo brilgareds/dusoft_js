@@ -369,6 +369,9 @@ define(["angular",
                 }
             }); 
             
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                socket.removeAllListeners();
+            });
             
             localStorageService.remove("pedidoFarmacia");
             self.buscarPedidos();

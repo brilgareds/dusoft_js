@@ -203,8 +203,6 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
     var nombre_usuario = args.login.usuario;
     var constrasenia = G.random.randomKey(2, 8);
 
-
-    //var smtpTransport = this.emails.createTransport();
     var smtpTransport = this.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
         secureConnection: true, // use SSL

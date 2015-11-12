@@ -2152,7 +2152,16 @@ function __consultarStockProducto(that, empresa_destino_id, producto, callback) 
 
 function __enviarCorreoElectronico(that, to, ruta_archivo, nombre_archivo, asunto, mensaje, callback) {
 
-    var smtpTransport = that.emails.createTransport();
+     var smtpTransport = that.emails.createTransport("SMTP", {
+        host: G.settings.email_host, // hostname
+        secureConnection: true, // use SSL
+        port: G.settings.email_port, // port for secure SMTP
+        auth: {
+            user: G.settings.email_user,
+            pass: G.settings.email_password
+        }
+    });
+    
     var settings = {
         from: G.settings.email_sender,
         to: to,

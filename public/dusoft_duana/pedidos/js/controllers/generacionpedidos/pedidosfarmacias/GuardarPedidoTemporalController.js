@@ -578,7 +578,7 @@ define(["angular", "js/controllers",
                 $scope.rootPedidoFarmaciaTemporal = {};
                 $scope.$$watchers = null;
                 localStorageService.remove("pedidotemporal");
-                
+                socket.removeAllListeners();
 
             });
 

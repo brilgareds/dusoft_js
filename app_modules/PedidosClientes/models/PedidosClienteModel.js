@@ -1491,14 +1491,31 @@ PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_p
  *  --PedidosCliente.prototype.eliminarProductoPedido  
  */
 PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero_pedido, callback) {
-
-    G.knex('ventas_ordenes_pedidos').where({
+    
+    console.log("*************PedidosClienteModel.prototype.consultarTotalValorPedidoCliente********************************");
+    console.log("*************PedidosClienteModel.prototype.consultarTotalValorPedidoCliente********************************");
+    console.log("*************PedidosClienteModel.prototype.consultarTotalValorPedidoCliente********************************");
+    console.log("*************PedidosClienteModel.prototype.consultarTotalValorPedidoCliente********************************");
+    console.log("numero_pedido ",numero_pedido)
+    
+    
+    G.knex.select(
+		G.knex.raw('sum(ventas_ordenes_pedidos_d_tmp.valor_unitario * ventas_ordenes_pedidos_d_tmp.numero_unidades) as valor_total_cotizacion')
+        )
+.from('ventas_ordenes_pedidos_d_tmp')
+.leftJoin('ventas_ordenes_pedidos',
+		  'ventas_ordenes_pedidos_d_tmp.pedido_cliente_id_tmp', 
+          'ventas_ordenes_pedidos.pedido_cliente_id_tmp')
+.where('ventas_ordenes_pedidos.pedido_cliente_id', numero_pedido)
+ /*   G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id: numero_pedido
-    }).select('valor_total_cotizacion')
+    }).select('valor_total_cotizacion')*/
             .then(function(rows) {
         callback(rows, true);
+         console.log("rows ", rows)
     })
             . catch (function(error) {
+       
         callback(error, false);
     });
 

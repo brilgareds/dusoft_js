@@ -1874,7 +1874,8 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
 
                         var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
                         var estado_pedido = 0;
-
+                        console.log("totalValorPedidoNuevo, ", totalValorPedidoNuevo);
+                        console.log("totalValorPedidoActual, ", totalValorPedidoActual);
                         if (totalValorPedidoNuevo > totalValorPedidoActual) {
                             estado_pedido = 4;
                         } else {

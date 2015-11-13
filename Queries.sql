@@ -1310,6 +1310,19 @@ COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."observacion_cartera"
 IS 'Observacion ingresada por cartera';
 
 
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "pedido_cliente_id_tmp" integer;
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."pedido_cliente_id_tmp"
+IS 'Campo que almacenara la cotizacion del pedido';
+
+
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "valor_total_cotizacion" numeric(15,2);
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."valor_total_cotizacion"
+IS 'Campo que almacena el valor total de la cotizacion';
+
 
 /*==== Agregar sw_aprobado_cartera a tabala de  ventas_ordenes_pedidos_tmp =========*/
 

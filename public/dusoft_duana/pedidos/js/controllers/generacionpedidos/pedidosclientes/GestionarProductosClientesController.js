@@ -21,7 +21,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             var that = this;
 
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
-
+                
+               
+                  $scope.rootSeleccionProducto = {};
+                  $scope.rootSeleccionProducto.filtros = [
+                    {nombre : "Descripcion", tipo_busqueda:0}, 
+                    {nombre : "Molecula", tipo_busqueda:1},
+                    {nombre : "Codigo", tipo_busqueda:2}
+                ];
+                
+                $scope.rootSeleccionProducto.filtro  = $scope.rootSeleccionProducto.filtros[0];
+                
+                
                 // Variables del View
                 $scope.datos_form = {
                     clases_tipo_producto: ["", "label label-success", "label label-danger", "label label-info", "label label-warning", "label label-default"],
@@ -230,9 +241,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
                
             };
-
+            
+            $scope.onSeleccionFiltro = function(filtro){
+                $scope.rootSeleccionProducto.filtro = filtro;
+            };
+            
             that.buscar_productos_clientes = function() {
-
+                
+                
+                
                 if ($scope.datos_form.ultima_busqueda !== $scope.datos_form.termino_busqueda) {
                     $scope.datos_form.pagina_actual = 1;
                 }
@@ -251,6 +268,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             laboratorio_id: $scope.datos_form.laboratorio.get_id(),
                             numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
                             numero_pedido: $scope.Pedido.get_numero_pedido()
+                            //filtro: $scope.rootSeleccionProducto.filtro
                         }
                     }
                 };

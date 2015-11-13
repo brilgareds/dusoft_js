@@ -1018,7 +1018,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);
             };
             that.init = function() {
-
+                
+                
                 that.cargar_permisos();
                 if ($scope.Pedido.get_numero_pedido() > 0){
                     that.gestionar_consultas_pedidos();

@@ -281,7 +281,9 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
         "a.sw_aprobado_cartera",
         G.knex.raw("coalesce(a.tipo_producto,'') as tipo_producto"),
         G.knex.raw("coalesce(e.descripcion,'') as descripcion_tipo_producto"),
-        "a.fecha_registro"
+        "a.fecha_registro",
+        "g.nombre",
+        "h.razon_social"
     ];
 
     G.knex.column(columnas).
@@ -301,13 +303,16 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                 on("b.tercero_id", "f.tercero_id").
                 on("a.empresa_id", "f.empresa_id").
                 on(G.knex.raw("f.estado = '1'"));
-    }).
-            where("a.pedido_cliente_id", numero_pedido).
+    }) 
+           .innerJoin("system_usuarios as g", "g.usuario_id", "a.usuario_id")
+           .innerJoin("empresas as h", "h.empresa_id", "a.empresa_id")
+           
+            .where("a.pedido_cliente_id", numero_pedido).
             orderByRaw("1 desc")
             .then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
-        console.log("err ", err)
+        
         callback(err);
     }).done();
 
@@ -369,7 +374,9 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                     b.tipo_estado_auditoria,\
                     b.cantidad_ingresada,\
                     COALESCE(b.auditado, '0') as auditado,\
-                    c.codigo_barras \
+                    c.codigo_barras, \
+                   (a.numero_unidades * a.valor_unitario)  as subtotal,\
+                   ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total\
                     from ventas_ordenes_pedidos_d a \
                     inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
                     inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \

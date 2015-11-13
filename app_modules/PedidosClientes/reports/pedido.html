@@ -80,7 +80,7 @@
                     </tr>
                     <tr>
                         <th style='border-style:solid'>Origen</th>
-                        <td><center>Empresa Origen ?</center></td>
+                        <td><center>{{:pedido.razon_social}}</center></td>
                     </tr>
 
                 </table>
@@ -139,8 +139,9 @@
                                 <td>{{:cantidad_solicitada}}</td>
                                 <td>{{:porcentaje_iva}}</td>
                                 <td>{{:valor_unitario}}</td>
-                                <td>$0.0 Vlr SIn Iva</td>
-                                <td>$0.0 Vlr SIn Iva</td>
+                                <td>{{:~formatMoney(subtotal)}}</td>
+                                <td>{{:~formatMoney(total)}}</td>
+                                
                             </tr>
                             {{/for}}
                             <tr>
@@ -149,8 +150,8 @@
                                 <td></td>
                                 <td></td>
                                 <th>TOTAL</th>
-                                <td>$0.0 Total SIn Iva</td>
-                                <td>$0.0 Total SIn Iva</td>
+                                <td>{{:~formatMoney(total_sin_iva)}}</td>
+                                <td>{{:~formatMoney(total_con_iva)}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -168,13 +169,13 @@
                 <div class="col-md-12">
                     <hr />
                     <span>
-                        <strong>Realiza : </strong>  Usuario Realiza Pedido 
+                        <strong>Realiza : </strong>  {{:pedido.nombre}}
                     </span>
                     <span>
-                        <strong>Imprime : </strong>  {{:pedido.usuario_imprime}} 
+                        <strong>Imprime : </strong>  {{:usuario_imprime}} 
                     </span>                    
                     <span>
-                        <strong>Fecha Impresión : </strong>{{:fecha_actual}}                        
+                        <strong>Fecha Impresi&oacuten : </strong>{{:fecha_actual}}                        
                     </span>
                     <span>
                         <strong>Fecha Pedido : </strong>{{:pedido.fecha_registro}}                        

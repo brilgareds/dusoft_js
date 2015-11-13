@@ -157,7 +157,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                     when a.estado_pedido = '7' then 'En Auditoria'\
                     when a.estado_pedido = '8' then 'Auditado con pdtes'\
                     when a.estado_pedido = '9' then 'En zona con pdtes'\
-                    when a.estado = '4' then 'Autorizar nuevamente cartera' end as descripcion_estado_actual_pedido"),
+                    when a.estado = '4' then 'Debe autorizar cartera' end as descripcion_estado_actual_pedido"),
         "d.estado as estado_separacion",
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro")
     ];
@@ -1262,8 +1262,8 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
  * Descripcion :  SQL Consultar Cotizacion
  */
 PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callback) {
-
-    var sql = " select \
+//
+    var sql = " select\
                 a.empresa_id,\
                 a.centro_destino as centro_utilidad_id,\
                 a.bodega_destino as bodega_id,\
@@ -1295,7 +1295,9 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                      when a.estado = '5' then 'Tiene un pedido'\
                      when a.estado = '6' then 'Se solicita autorizacion'\
                      when a.estado = '4' then 'Desaprobado por cartera' end as descripcion_estado,\
-                a.fecha_registro\
+                a.fecha_registro,\
+                j.razon_social,\
+                k.nombre as usuario_cotizacion\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
                 inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
@@ -1304,6 +1306,8 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                 inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
                 left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
                 left join vnts_contratos_clientes h ON b.tipo_id_tercero = h.tipo_id_tercero AND b.tercero_id = h.tercero_id and a.empresa_id = h.empresa_id and h.estado = '1' \
+                INNER JOIN empresas j ON j.empresa_id = a.empresa_id \
+                INNER JOIN system_usuarios k ON k.usuario_id = a.usuario_id\
                 where a.pedido_cliente_id_tmp = $1 ";
 
 

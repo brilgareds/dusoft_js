@@ -1002,6 +1002,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: function($scope, $modalInstance) {
 
                         $scope.descargar_reporte_pdf = function() {
+                            
                             $scope.generar_reporte($scope.Pedido, true);
                             $modalInstance.close();
                         };

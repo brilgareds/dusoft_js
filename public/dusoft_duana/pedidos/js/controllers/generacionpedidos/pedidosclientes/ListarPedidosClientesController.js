@@ -612,14 +612,20 @@ define(["angular", "js/controllers",
             
                 //referencia del socket io
             socket.on("onListarEstadoPedido", function(datos) {
+         
+              if (datos.status === 200) {
+                  
+                var estado = ['Inactivo','No asignado','Anulado',
+                              'Entregado','Debe autorizar cartera']
+              $scope.Empresa.get_pedidos().forEach(function(data) {
+                  
+                  if(datos.obj.numero_pedido === data.get_numero_pedido()){
+                      
+                      data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);    
+                  }                
+              });   
+              }
              
-             console.log(" estado ", datos.obj.pedidos_clientes.estado)
-             console.log(" estado_pedido ", datos.obj.pedidos_clientes.estado_pedido)
-              // console.log("datos ", datos);
-              /*  if (datos.status === 200) {
- 
-                    
-                }*/
             }); 
            
            

@@ -1305,16 +1305,34 @@ PedidosCliente.prototype.reporteCotizacion = function(req, res) {
                 }
 
                 datos_cotizacion = datos_cotizacion[0];
+                
+                 var subTotal = 0;
+                 var total = 0;
 
+                 /**
+                  * +Descripcion: Se totaliza el valor de total de los productos
+                  *               con iva y sin iva
+                  */
+                for(var i=0; i<lista_productos.length; i++){
+                    
+                    subTotal +=  parseFloat(lista_productos[i].subtotal);
+                    total +=  parseFloat(lista_productos[i].total);
+                   
+                 
+                }
+               
                 var datos_reporte = {
                     cotizacion: datos_cotizacion,
                     lista_productos: lista_productos,
                     usuario_imprime: req.session.user.nombre_usuario,
-                    serverUrl: req.protocol + '://' + req.get('host') + "/"
+                    serverUrl: req.protocol + '://' + req.get('host') + "/",
+                    total_sin_iva: subTotal,
+                    total_con_iva: total
                 };
-
+                
+               
                 _generar_reporte_cotizacion(datos_reporte, function(nombre_reporte) {
-
+                  
                     if (enviar_email) {
 
                         var path = G.dirname + "/public/reports/" + nombre_reporte;
@@ -1637,7 +1655,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
                                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                                         return;
                                     } else {
-                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido);
+                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido,estado_pedido);
                                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                                         return;
                                     }
@@ -1894,7 +1912,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
                                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                                         return;
                                     } else {
-                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido);
+                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido,estado_pedido);
                                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                                         return;
                                     }
@@ -2064,7 +2082,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
                                         return;
                                     } else {
 
-                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido);
+                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido,estado_pedido);
                                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                                         return;
                                     }
@@ -2420,7 +2438,9 @@ function _generar_reporte_cotizacion(rows, callback) {
             lista_productos: rows.lista_productos,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
             usuario_imprime: rows.usuario_imprime,
-            serverUrl: rows.serverUrl
+            serverUrl: rows.serverUrl,
+            total_sin_iva: rows.total_sin_iva,
+            total_con_iva: rows.total_con_iva
         }
     }, function(err, response) {
 

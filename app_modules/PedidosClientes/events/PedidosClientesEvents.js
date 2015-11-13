@@ -95,16 +95,18 @@ PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCot
 
 };
 
-PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(numero_pedido) {
+PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(numero_pedido,estadoPedido) {
     
-    console.log("*****************PedidosClientesEvents.prototype.onNotificarEstadoPedido**********************");
+   
     var that = this;
     this.m_pedidos_clientes.consultarEstadoPedidoEstado(numero_pedido, function(estado, rows) {
        
      if (estado) {
         var response = G.utils.r('onListarEstadoPedido', 'Estado del pedido', 200, 
                     {
-                        pedidos_clientes: rows
+                        pedidos_clientes: rows,
+                        numero_pedido: numero_pedido,
+                        estado: estadoPedido
                     });
         that.io.sockets.emit('onListarEstadoPedido', response);
         

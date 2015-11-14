@@ -138,6 +138,7 @@ module.exports = function(app, di_container) {
     });
     
     /**
+     * @author Cristian Ardila
      * +Descripcion: Servicio para actualizar el estado de una cotizacion 
      *               Aprobar con prioridad
      */
@@ -147,6 +148,7 @@ module.exports = function(app, di_container) {
     
     
     /**
+     * @author Cristian Ardila
      * +Descripcion: Servicio para actualizar el estado de una cotizacion 
      *               Aprobar con prioridad
      */

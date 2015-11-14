@@ -667,6 +667,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 });
             };
+            
+            $scope.validarNumero = function(valor){
+                
+                console.log("valor ", valor)
+            }
             // Lista Productos Seleccionados
             $scope.lista_productos = {
                 data: 'Pedido.get_productos()',
@@ -703,7 +708,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 " ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                                        <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 " \n\
+                                        ng-model="row.entity.cantidad_solicitada" \n\
+                                        validacion-numero-entero \n\
+                                        class="form-control grid-inline-input" \n\
+                                        name="" id="" /> </div>'},
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
                     {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
@@ -846,6 +856,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
                 
             };
+            
+            
             // Gestiona la aprobacion o no del departamento de cartera
             $scope.gestion_cartera = function(aprobado) {
 
@@ -990,6 +1002,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: function($scope, $modalInstance) {
 
                         $scope.descargar_reporte_pdf = function() {
+                            
                             $scope.generar_reporte($scope.Pedido, true);
                             $modalInstance.close();
                         };
@@ -1005,19 +1018,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);
             };
             that.init = function() {
-
+                
+                
                 that.cargar_permisos();
-                if ($scope.Pedido.get_numero_pedido() > 0)
+                if ($scope.Pedido.get_numero_pedido() > 0){
                     that.gestionar_consultas_pedidos();
-                else
+                } else {
                     that.gestionar_consultas_cotizaciones();
+                }
+               
+                
             };
             that.init();
+            
+            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.$$watchers = null;
                 // Set Datas
-                $scope.Empresa.set_default();
+                //$scope.Empresa.set_default();
                 // set localstorage
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);

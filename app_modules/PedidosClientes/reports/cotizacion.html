@@ -81,7 +81,7 @@
                     </tr>
                     <tr>
                         <th style='border-style:solid'>Origen</th>
-                        <td><center>Empresa Origen ?</center></td>
+                        <td><center>{{:cotizacion.razon_social}}</center></td>
                     </tr>
 
                 </table>
@@ -148,8 +148,8 @@
                                 <td></td>
                                 <td></td>
                                 <th>TOTAL</th>
-                                <td>$0.0 Total sin IVA</td>
-                                <td>$0.0 Total con IVA</td>
+                                <td>{{:~formatMoney(total_sin_iva)}}</td>
+                                <td>{{:~formatMoney(total_con_iva)}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -166,16 +166,16 @@
                 <div class="col-md-12">
                     <hr />
                     <span>
-                        <strong>Realiza : </strong>  Usuario Realiza Cotizacion
+                        <strong>Realiza : </strong> {{:cotizacion.usuario_cotizacion}}
                     </span>
                     <span>
                         <strong>Imprime : </strong>  {{:usuario_imprime}}
                     </span>                    
                     <span>
-                        <strong>Fecha Impresión : </strong>{{:fecha_actual}}                        
+                        <strong>Fecha Impresi&oacuten : </strong>{{:fecha_actual}}                        
                     </span>
                     <span>
-                        <strong>Fecha Cotizacion : </strong> {{:cotizacion.fecha_registro}}                     
+                        <strong>Fecha Cotizaci&oacuten : </strong> {{:cotizacion.fecha_registro}}                     
                     </span>
                 </div>
             </div> 

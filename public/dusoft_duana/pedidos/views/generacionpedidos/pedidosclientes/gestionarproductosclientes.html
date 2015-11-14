@@ -7,9 +7,9 @@
                 <div class="panel panel-default">
                     <div class="panel-heading clearfix">
                         <!--                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Imagen</h4>-->
-                        <div class="pull-left col-md-11">
-                            <h4 class="text-center"><strong>Buscar Productos</strong></h4>
-                        </div>
+                         <div class="panel-heading">
+                             <h4 class="h4MarginTopBottom" align="center">Selección de Producto para Clientes</h4>
+                         </div>
                         <div class="pull-right">
                             <div>
                                 <button ng-click="cerrar_busqueda_productos()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
@@ -47,7 +47,29 @@
                                         <h4>No se pueden agregar mas productos, el pedido ya contiene el limite de productos</h4>                                                                            
                                     </p>
                                 </div>
+                                    
+                                <!--<div class="col-md-3 pull-right" style="margin-top: 35px;">                                
+                                
+                                <div class="input-group">
+                                <div class="input-group-btn">
+                                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootSeleccionProducto.filtro.nombre}} <span class="caret"></span></button>
+                                  <ul class="dropdown-menu">
+                                    <li ng-repeat="filtro in rootSeleccionProducto.filtros">
+                                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                                    </li>
+                                  </ul>
+                                </div><!-- /btn-group -->
+                               <!-- <input type="text" class="form-control" ng-keypress="buscador_productos($event, datos_form.termino_busqueda);" 
+                                       ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+                              </div><!-- /input-group -->
+                            
 
+                               <!-- <div class="input-group-btn" >
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13})">
+                                        <i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                            
+                            </div>//-->
                                 <div class="col-md-3 pull-right" style="margin-top: 35px;">
                                     <p class="input-group">
                                         <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="datos_form.termino_busqueda" placeholder="Buscar" name="" id="" />

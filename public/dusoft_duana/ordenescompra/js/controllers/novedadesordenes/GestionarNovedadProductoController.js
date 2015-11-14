@@ -112,12 +112,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             that.render_observaciones = function(observaciones) {
-
+                console.log("observaciones novedad ", observaciones);
                 $scope.Empresa.limpiar_observaciones();
 
                 observaciones.forEach(function(data) {
 
-                    var observacion = Observacion.get(data.id, data.codigo, data.descripcion);
+                    var observacion = Observacion.get(data.id, data.codigo, data.descripcion, data.tipo_entrada);
                     $scope.Empresa.set_observaciones(observacion);
                 });                
             };
@@ -148,7 +148,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.close = function() {
                 $modalInstance.close();
             };
-
+            
+            $scope.onDescargarArchivo = function(archivo){
+                console.log("onDescargarArchivo ", archivo);
+                $scope.visualizarReporte("/OrdenesCompras/Novedades/" + archivo.descripcion, archivo.descripicion, "blank");
+            };
+            
+            $scope.onSeleccionarNovedad = function(){
+                console.log("on seleccionar novedad ", $scope.producto_seleccionado.novedad);
+            };
 
             that.buscar_observaciones();
             that.buscar_archivos_novedad();

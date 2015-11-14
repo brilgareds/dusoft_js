@@ -1286,6 +1286,7 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
     });
 };
 
+
 function __subir_archivo_plano(files, callback) {
     var ruta_tmp = files.file.path;
     var ext = G.path.extname(ruta_tmp);
@@ -1488,7 +1489,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     });
 
     var settings = {
-        from: G.settings.email_sender,
+        from: G.settings.email_compras,
         to: to,
         subject: subject,
         html: message,

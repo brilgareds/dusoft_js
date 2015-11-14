@@ -396,7 +396,7 @@ define(["angular", "js/controllers",
                 if (orden_compra.get_sw_estado_digitacion() === '1') {
 
                     $scope.datos_view.orden_compra_seleccionada = orden_compra;
-                    $scope.datos_view.email_subject = 'Orden de Compra No-' + $scope.datos_view.orden_compra_seleccionada.get_numero_orden();
+                    $scope.datos_view.email_subject = 'Orden de Compra de DUANA Y CIA LTDA - COSMITET LTDA No-' + $scope.datos_view.orden_compra_seleccionada.get_numero_orden();
                     $scope.datos_view.email_message = 'Orden de Compra No-' + $scope.datos_view.orden_compra_seleccionada.get_numero_orden() + '.\nPara el Proveedor ' + $scope.datos_view.orden_compra_seleccionada.get_proveedor().get_nombre();
                     $scope.datos_view.email_attachment_name = "OrdenCompraNo-" + $scope.datos_view.orden_compra_seleccionada.get_numero_orden() + '.pdf';
 

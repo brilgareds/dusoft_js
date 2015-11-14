@@ -129,7 +129,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 };
 
 
-ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, termino_busqueda, pagina, callback) {
+ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, termino_busqueda, pagina, callback) { 
 
     G.knex.column("a.existencia", "b.codigo_producto","b.descripcion as producto","b.cantidad",
     "b.codigo_alterno", "b.contenido_unidad_venta", "c.empresa_id", "c.razon_social", "d.descripcion AS centro",
@@ -154,7 +154,8 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
         }
     }).     
     andWhere(function() {
-       this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       //this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       this.where(G.knex.raw("fc_descripcion_producto(b.codigo_producto)"), G.constants.db().LIKE, termino_busqueda +"%").
        orWhere("b.codigo_producto", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     }).
     limit(G.settings.limit).

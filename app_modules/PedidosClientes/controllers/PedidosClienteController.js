@@ -323,6 +323,8 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  */
 PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
+
+
     var that = this;
 
     var args = req.body.data;
@@ -371,9 +373,14 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
     };
 
+    var filtros = args.pedidos_clientes.filtro;
+
+
+
+
     var pagina = args.pedidos_clientes.pagina_actual;
 
-    that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, function(err, lista_productos) {
+    that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, filtros, function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));
@@ -547,14 +554,43 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
             if (rows[0].estado === '1' || rows[0].estado === '4') {
 
+                /**
+                 * +Descripcion: Se valida si la cotizacion ya cuenta con ese producto en el detalle
+                 */
+                that.m_pedidos_clientes.consultarProductoDetalleCotizacion(cotizacion.numero_cotizacion, producto.codigo_producto, function(estado, rows) {
 
-                that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
+                    /**
+                     * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
+                     */
 
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                        return;
+                    if (estado) {
+
+                        /**
+                         * +Descripcion: Se valida si el producto es diferente al del detalle
+                         *               y si es asi se procede a modficar el detalle
+                         */
+
+                        if (rows.length === 0) {
+
+                            that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
+
+                                if (err || result.rowCount === 0) {
+                                    res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                                    return;
+                                } else {
+                                    res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
+                                    return;
+                                }
+                            });
+
+                        } else {
+                            res.send(G.utils.r(req.url, 'El producto ya aparece registrado en la cotizacion', 500, {pedidos_clientes: []}));
+                            return;
+                        }
+
+
                     } else {
-                        res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
+                        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
                         return;
                     }
                 });
@@ -669,6 +705,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
              */
 
             if (rows[0].estado === '1' || rows[0].estado === '4') {
+
 
                 that.m_pedidos_clientes.modificar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
 
@@ -809,6 +846,8 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
     var fecha_final = args.pedidos_clientes.fecha_final;
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
+
+
 
     that.m_pedidos_clientes.listar_cotizaciones(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_cotizaciones) {
 
@@ -1087,21 +1126,21 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     var limite_productos = 25;
     var usuario = req.session.user;
 
-    
- 
+
+
     that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
         /**
          * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
          *               satisfactoriamente
          */
-       
+
         if (estado) {
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 
              *               1 activo 
              *               4 activo (desaprobado por cartera)
              */
-            
+
             if (rows[0].estado === '1' || rows[0].estado === '4') {
 
 
@@ -1662,35 +1701,69 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
                         } else {
                             estado_pedido = 1;
                         }
+
+
+
+
                         /**
-                         * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
-                         *               por lo cual se crea la funcion insertarDetallePedido
+                         * +Descripcion: Se valida si el pedido ya cuenta con ese producto en el detalle
                          */
-                        that.m_pedidos_clientes.insertarDetallePedido(pedido, producto, function(err, rows, result) {
+                        that.m_pedidos_clientes.consultarProductoDetallePedido(pedido.numero_pedido, producto.codigo_producto, function(estado, rows) {
 
-                            if (err || result.rowCount === 0) {
-                                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                                return;
+                            /**
+                             * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
+                             */
+
+                            if (estado) {
+
+                                /**
+                                 * +Descripcion: Se valida si el producto es diferente al del detalle
+                                 *               y si es asi se procede a modficar el detalle
+                                 */
+
+                                if (rows.length === 0) {
+
+
+                                    /**
+                                     * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
+                                     *               por lo cual se crea la funcion insertarDetallePedido
+                                     */
+                                    that.m_pedidos_clientes.insertarDetallePedido(pedido, producto, function(err, rows, result) {
+
+                                        if (err || result.rowCount === 0) {
+                                            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                                            return;
+                                        } else {
+
+                                            pedido.aprobado_cartera = '0';
+                                            pedido.observacion_cartera = '';
+
+
+                                            that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+
+                                                if (err || result.rowCount === 0) {
+                                                    res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                                                    return;
+                                                } else {
+                                                    that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
+                                                    res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                                                    return;
+                                                }
+                                            });
+
+                                        }
+                                    });
+
+                                } else {
+                                    res.send(G.utils.r(req.url, 'El producto ya aparece registrado en el pedido', 500, {pedidos_clientes: []}));
+                                    return;
+                                }
                             } else {
-
-                                pedido.aprobado_cartera = '0';
-                                pedido.observacion_cartera = '';
-
-
-                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
-
-                                    if (err || result.rowCount === 0) {
-                                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                                        return;
-                                    } else {
-                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-                                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
-                                        return;
-                                    }
-                                });
-
+                                res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
+                                return;
                             }
                         });
+
                     } else {
                         res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
                         return;
@@ -2321,15 +2394,15 @@ function __subir_archivo_plano(files, callback) {
     if (G.fs.existsSync(ruta_tmp)) {
         // Copiar Archivo
         G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
-        then(function() {
+                then(function() {
             return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
         }).
-        then(function(){
+                then(function() {
             var parser = G.XlsParser;
             var workbook = parser.readFile(ruta_nueva);
             var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad']);
 
-            if(!filas){
+            if (!filas) {
                 callback(true);
                 return;
             } else {
@@ -2337,11 +2410,11 @@ function __subir_archivo_plano(files, callback) {
                 callback(false, filas);
             }
         }).
-        fail(function(err) {
+                fail(function(err) {
             G.fs.unlinkSync(ruta_nueva);
             callback(true);
         }).
-        done();
+                done();
 
     } else {
         callback(true);
@@ -2356,7 +2429,7 @@ function __subir_archivo_plano(files, callback) {
  */
 function __validar_productos_archivo_plano(contexto, filas, callback) {
 
-     var that = contexto;
+    var that = contexto;
 
     var productos_validos = [];
     var productos_invalidos = [];
@@ -2389,7 +2462,8 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
         });
     });
 
-};
+}
+;
 
 
 

@@ -48,7 +48,7 @@
                                     </p>
                                 </div>
                                     
-                                <!--<div class="col-md-3 pull-right" style="margin-top: 35px;">                                
+                                <div class="col-md-3 pull-right" style="margin-top: 35px;">                                
                                 
                                 <div class="input-group">
                                 <div class="input-group-btn">
@@ -59,25 +59,27 @@
                                     </li>
                                   </ul>
                                 </div><!-- /btn-group -->
-                               <!-- <input type="text" class="form-control" ng-keypress="buscador_productos($event, datos_form.termino_busqueda);" 
-                                       ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
-                              </div><!-- /input-group -->
-                            
-
-                               <!-- <div class="input-group-btn" >
+                                <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);" 
+                                       ng-model="datos_form.termino_busqueda" placeholder="Buscar Producto" name="" id="">
+                                
+                                 <div class="input-group-btn" >
                                     <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13})">
                                         <i class="glyphicon glyphicon-search"></i></button>
                                 </div>
+                              </div><!-- /input-group -->
                             
-                            </div>//-->
-                                <div class="col-md-3 pull-right" style="margin-top: 35px;">
+
+                            
+                            
+                            </div>
+                               <!-- <div class="col-md-3 pull-right" style="margin-top: 35px;">
                                     <p class="input-group">
                                         <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="datos_form.termino_busqueda" placeholder="Buscar" name="" id="" />
                                         <span class="input-group-btn">
                                             <button class="btn btn-default" type="submit" ng-click="buscador_productos({which:13});"><i class="glyphicon glyphicon-search"></i></button>
                                         </span>
                                     </p>
-                                </div>
+                                </div>//-->
                             </div>
 
                             <div class="" style="height: 650px" ng-grid="lista_productos" > </div>

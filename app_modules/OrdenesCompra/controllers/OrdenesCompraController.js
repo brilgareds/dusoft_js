@@ -682,6 +682,7 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
     var observacion_id = args.ordenes_compras.observacion_id;
     var descripcion_novedad = args.ordenes_compras.descripcion;
     var usuario_id = req.session.user.usuario_id;
+    var descripcionEntrada = args.ordenes_compras.descripcionEntrada || "";
 
 
 
@@ -693,7 +694,7 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
         } else {
 
             if (novedades.length === 0) {
-                that.m_ordenes_compra.insertar_novedad_producto(item_id, observacion_id, descripcion_novedad, usuario_id, function(err, rows, result) {
+                that.m_ordenes_compra.insertar_novedad_producto(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error registrando la novedad', 500, {ordenes_compras: []}));
@@ -704,7 +705,7 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
                     }
                 });
             } else {
-                that.m_ordenes_compra.modificar_novedad_producto(novedad_id, observacion_id, descripcion_novedad, usuario_id, function(err, rows, result) {
+                that.m_ordenes_compra.modificar_novedad_producto(novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada,  function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error modificando la novedad', 500, {ordenes_compras: []}));

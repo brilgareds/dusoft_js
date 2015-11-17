@@ -1500,8 +1500,8 @@ COMMENT ON COLUMN "public"."observaciones_ordenes_compras"."tipo_entrada"
 IS 'Tipo de input usado en la interfaz 0 = fecha';
 
 
-ALTER TABLE "public"."archivos_novedades_ordenes_compras"
+ALTER TABLE "public"."novedades_ordenes_compras"
   ADD COLUMN "descripcion_entreda_novedad" CHAR varying(255);
 
-COMMENT ON COLUMN "public"."archivos_novedades_ordenes_compras"."descripcion_entreda_novedad"
+COMMENT ON COLUMN "public"."novedades_ordenes_compras"."descripcion_entreda_novedad"
 IS 'Descripcion de la entrada de la novedad, fecha de disponibilidad, numero etc';

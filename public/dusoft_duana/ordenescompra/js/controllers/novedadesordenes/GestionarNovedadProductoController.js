@@ -2,8 +2,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
     controllers.controller('GestionarNovedadProductoController', [
         '$scope', '$rootScope', 'API',
-        '$modalInstance', 'AlertService', 'Request', 'ObservacionOrdenCompra', 'NovedadOrdenCompra', 'ArchivoNovedadOrdenCompra',
-        function($scope, $rootScope, API, $modalInstance, AlertService, Request, Observacion, Novedad, Archivo) {
+        '$modalInstance', 'AlertService', 'Request', 'ObservacionOrdenCompra', 'NovedadOrdenCompra',
+        'ArchivoNovedadOrdenCompra','$filter',
+        function($scope, $rootScope, API, $modalInstance, AlertService, Request, Observacion, Novedad,
+                 Archivo, $filter) {
 
             var that = this;
 
@@ -15,8 +17,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.flow.query = {
                 session: JSON.stringify($scope.session)
             };
-
-
+            
+            // Variables
+            var fecha_actual = new Date();
+            $scope.fechaMinima = new Date();
+            $scope.fecha_inicial = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
+            $scope.datepickerFechaInicial = false;
+            
+            console.log("fecha minima ", $scope.fechaMinima);
+            
             that.buscar_observaciones = function() {
 
                 var obj = {session: $scope.session, data: {observaciones: {termino_busqueda: ""}}};
@@ -48,19 +57,25 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             };
 
-            that.gestionar_novedades = function() {
-
+            that.gestionar_novedades = function() {   
+                
+                var entrada = "";
+                if($scope.producto_seleccionado.novedad.observacion.getTipoEntrada() === '0'){
+                    entrada =  $filter('date')($scope.producto_seleccionado.get_novedad().getDescripcionEntrada(), "yyyy-MM-dd");
+                }
+                               
                 var obj = {session: $scope.session,
                     data: {
                         ordenes_compras: {                            
                             novedad_id: $scope.producto_seleccionado.get_novedad().get_id() || 0,
                             item_id: $scope.producto_seleccionado.get_id(),
                             observacion_id: $scope.producto_seleccionado.get_novedad().get_observacion().get_id(),
-                            descripcion: $scope.producto_seleccionado.get_novedad().get_descripcion()
+                            descripcion: $scope.producto_seleccionado.get_novedad().get_descripcion(),
+                            descripcionEntrada:entrada
                         }
                     }
                 };
-
+                
                 Request.realizarRequest(API.ORDENES_COMPRA.GESTIONAR_NOVEDADES, "POST", obj, function(data) {
 
 
@@ -139,7 +154,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.flow = $flow;
                 
             };
+            
+            $scope.abrir_fecha_inicial = function($event) {
 
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.datepickerFechaInicial = true;
+                
+                console.log("datepicker_fecha_inicial ", $scope.datepickerFechaInicial);
+
+            };
+            
 
             $scope.aceptar = function() {
                 that.gestionar_novedades();
@@ -156,6 +182,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             $scope.onSeleccionarNovedad = function(){
                 console.log("on seleccionar novedad ", $scope.producto_seleccionado.novedad);
+                
+                if($scope.producto_seleccionado.novedad.observacion.getTipoEntrada() === '0'){
+                      $scope.producto_seleccionado.get_novedad().setDescripcionEntrada($filter('date')(new Date(), "yyyy-MM-dd"));
+                }
+                
             };
 
             that.buscar_observaciones();

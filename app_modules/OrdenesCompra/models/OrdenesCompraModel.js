@@ -478,20 +478,20 @@ OrdenesCompraModel.prototype.consultar_novedad_producto = function(novedad_id, c
 
 
 // Registrar Novedad Producto Orden de Compra
-OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, callback) {
+OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
 
-    var sql = "  INSERT INTO novedades_ordenes_compras (item_id, observacion_orden_compra_id, descripcion, usuario_id) \
-                 VALUES ( $1, $2, $3, $4) RETURNING id as novedad_id ; ";
-    G.db.query(sql, [item_id, observacion_id, descripcion_novedad, usuario_id], function(err, rows, result) {
+    var sql = "  INSERT INTO novedades_ordenes_compras (item_id, observacion_orden_compra_id, descripcion, usuario_id, descripcion_entrada) \
+                 VALUES ( $1, $2, $3, $4, $5) RETURNING id as novedad_id ; ";
+    G.db.query(sql, [item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
 
 // Modificar Novedad Producto Orden de Compra 
-OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, observacion_id, descripcion_novedad, usuario_id, callback) {
+OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
 
-    var sql = " UPDATE novedades_ordenes_compras SET  observacion_orden_compra_id =$2 , descripcion =$3 , usuario_id = $4 WHERE id = $1 ; ";
-    G.db.query(sql, [novedad_id, observacion_id, descripcion_novedad, usuario_id], function(err, rows, result) {
+    var sql = " UPDATE novedades_ordenes_compras SET  observacion_orden_compra_id =$2 , descripcion =$3 , usuario_id = $4 , descripcion_entrada = $5  WHERE id = $1 ; ";
+    G.db.query(sql, [novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada], function(err, rows, result) {
         callback(err, rows, result);
     });
 };

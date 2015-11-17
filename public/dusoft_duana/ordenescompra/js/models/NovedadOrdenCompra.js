@@ -8,6 +8,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.observacion = observacion || '';
                 this.cantidad_archivos = cantidad_archivos || '';
                 this.archivos = [];
+                this.descripcionEntrada = "";
             }
 
             this.get = function(id, descripcion, observacion, cantidad_archivos) {
@@ -53,6 +54,14 @@ define(["angular", "js/models"], function(angular, models) {
             
             NovedadOrdenCompra.prototype.get_archivos = function() {
                 return this.archivos;
+            };
+            
+            NovedadOrdenCompra.prototype.setDescripcionEntrada = function(descripcionEntrada) {
+                this.descripcionEntrada = descripcionEntrada;
+            };
+            
+            NovedadOrdenCompra.prototype.getDescripcionEntrada = function() {
+                return this.descripcionEntrada;
             };
             
             NovedadOrdenCompra.prototype.limpiar_archivos = function() {

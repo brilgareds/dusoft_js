@@ -267,8 +267,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             tipo_producto: $scope.datos_form.tipo_producto,
                             laboratorio_id: $scope.datos_form.laboratorio.get_id(),
                             numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
-                            numero_pedido: $scope.Pedido.get_numero_pedido()
-                            //filtro: $scope.rootSeleccionProducto.filtro
+                            numero_pedido: $scope.Pedido.get_numero_pedido(),
+                            filtro: $scope.rootSeleccionProducto.filtro
                         }
                     }
                 };

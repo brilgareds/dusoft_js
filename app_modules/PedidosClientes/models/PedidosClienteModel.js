@@ -303,16 +303,16 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                 on("b.tercero_id", "f.tercero_id").
                 on("a.empresa_id", "f.empresa_id").
                 on(G.knex.raw("f.estado = '1'"));
-    }) 
-           .innerJoin("system_usuarios as g", "g.usuario_id", "a.usuario_id")
-           .innerJoin("empresas as h", "h.empresa_id", "a.empresa_id")
-           
+    })
+            .innerJoin("system_usuarios as g", "g.usuario_id", "a.usuario_id")
+            .innerJoin("empresas as h", "h.empresa_id", "a.empresa_id")
+
             .where("a.pedido_cliente_id", numero_pedido).
             orderByRaw("1 desc")
             .then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
-        
+
         callback(err);
     }).done();
 
@@ -1010,27 +1010,35 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Author : Camilo Orozco
  * Descripcion :  SQL listado de productos para la seleccion de medicamentos en una cotizacion o en un pedido de cliente.
  */
-PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, callback) {
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina,filtros, callback) {
 
+    var filtroProducto ="";
     var sql_aux = "";
     var termino_busqueda = filtro.termino_busqueda;
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
-    var numero_cotizacion = filtro.numero_cotizacion;
-    var numero_pedido = filtro.numero_pedido;
 
+    
+    
     if (tipo_producto !== undefined && tipo_producto !== '')
         sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
 
     if (laboratorio_id !== undefined && laboratorio_id !== '')
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
 
-    if (numero_cotizacion !== undefined && numero_cotizacion !== '' && numero_cotizacion !== '0')
-        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = " + numero_cotizacion + " ) ";
-
-    if (numero_pedido !== undefined && numero_pedido !== '' && numero_pedido !== '0')
-        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d where pedido_cliente_id = " + numero_pedido + " ) ";
-
+    if(filtros.tipo_busqueda === 0)
+        filtroProducto = "b.descripcion ilike $5";
+    
+    
+    if(filtros.tipo_busqueda === 1)
+        filtroProducto = "e.descripcion ilike $5";
+    
+    
+    if(filtros.tipo_busqueda === 2)
+        filtroProducto = "a.codigo_producto ilike $5";
+    
+    
+    
     var sql = " select \
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
@@ -1091,13 +1099,8 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     ) aa group by 1,2\
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + " \
-                and (\
-                    a.codigo_producto ilike $5 or \
-                    b.descripcion ilike $5\
-                ) ";
-
-
-
+                and (" + filtroProducto + ")";
+               
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
 
         callback(err, rows);
@@ -1208,59 +1211,61 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
  * Descripcion :  SQL Listar Cotizaciones
  */
 PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
+    
+  
 
-    var sql = " select \
-                a.empresa_id,\
-                a.centro_destino as centro_utilidad_id,\
-                a.bodega_destino as bodega_id,\
-                a.pedido_cliente_id_tmp as numero_cotizacion,\
-                a.tipo_id_tercero,\
-                a.tercero_id,\
-                b.nombre_tercero,\
-                b.direccion,\
-                b.telefono,\
-                b.email,\
-                e.pais,\
-                d.departamento,\
-                c.municipio,\
-                f.tipo_id_vendedor,\
-                f.vendedor_id,\
-                f.nombre as nombre_vendendor,\
-                f.telefono as telefono_vendedor,\
-                a.observaciones,\
-                coalesce(a.observacion_cartera, '') as observacion_cartera,\
-                coalesce(a.sw_aprobado_cartera, '') as sw_aprobado_cartera,\
-                coalesce(a.tipo_producto,'') as tipo_producto,\
-                coalesce(g.descripcion,'') as descripcion_tipo_producto,\
-                a.estado,\
-                case when a.estado = '0' then 'Inactivo'\
-                     when a.estado = '1' then 'Activo'\
-                     when a.estado = '2' then 'Anulado'\
-                     when a.estado = '3' then 'Aprobado cartera'\
-                     when a.estado = '5' then 'Tiene un pedido'\
-                     when a.estado = '6' then 'Se solicita autorizacion'\
-                     when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
-                a.fecha_registro\
-                from ventas_ordenes_pedidos_tmp a\
-                inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
-                inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
-                inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
-                inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
-                inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
-                left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
-                where a.empresa_id= $1 and a.fecha_registro between $2 and $3 and\
-                (\
-                    a.pedido_cliente_id_tmp::varchar ilike $4 or\
-                    a.tercero_id ilike $4 or	\
-                    b.nombre_tercero ilike $4 or\
-                    f.vendedor_id ilike $4 or	\
-                    f.nombre ilike $4 \
-                )\
-                order by 4 desc ";
-
-    G.db.paginated(sql, [empresa_id, fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
-    });
+     var sql = " select \
+     a.empresa_id,\
+     a.centro_destino as centro_utilidad_id,\
+     a.bodega_destino as bodega_id,\
+     a.pedido_cliente_id_tmp as numero_cotizacion,\
+     a.tipo_id_tercero,\
+     a.tercero_id,\
+     b.nombre_tercero,\
+     b.direccion,\
+     b.telefono,\
+     b.email,\
+     e.pais,\
+     d.departamento,\
+     c.municipio,\
+     f.tipo_id_vendedor,\
+     f.vendedor_id,\
+     f.nombre as nombre_vendendor,\
+     f.telefono as telefono_vendedor,\
+     a.observaciones,\
+     coalesce(a.observacion_cartera, '') as observacion_cartera,\
+     coalesce(a.sw_aprobado_cartera, '') as sw_aprobado_cartera,\
+     coalesce(a.tipo_producto,'') as tipo_producto,\
+     coalesce(g.descripcion,'') as descripcion_tipo_producto,\
+     a.estado,\
+     case when a.estado = '0' then 'Inactivo'\
+     when a.estado = '1' then 'Activo'\
+     when a.estado = '2' then 'Anulado'\
+     when a.estado = '3' then 'Aprobado cartera'\
+     when a.estado = '5' then 'Tiene un pedido'\
+     when a.estado = '6' then 'Se solicita autorizacion'\
+     when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
+     a.fecha_registro\
+     from ventas_ordenes_pedidos_tmp a\
+     inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
+     inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
+     inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
+     inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
+     inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
+     left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
+     where a.empresa_id= $1 and a.fecha_registro between $2 and $3 and\
+     (\
+     a.pedido_cliente_id_tmp::varchar ilike $4 or\
+     a.tercero_id ilike $4 or	\
+     b.nombre_tercero ilike $4 or\
+     f.vendedor_id ilike $4 or	\
+     f.nombre ilike $4 \
+     )\
+     order by 4 desc ";
+     
+     G.db.paginated(sql, [empresa_id, fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+     callback(err, rows);
+     });
 
 };
 
@@ -1542,6 +1547,56 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
         callback(true, rows);
     })
             . catch (function(error) {
+        callback(false, error);
+    });
+};
+
+
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar ela existencia de un producto en
+ *               la cotizacion
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.consultarEstadoPedido
+ */
+PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(numero_pedido,codigo_producto, callback) {
+
+    G.knex('ventas_ordenes_pedidos_d_tmp').where({
+        pedido_cliente_id_tmp: numero_pedido,
+        codigo_producto: codigo_producto
+    }).select('pedido_cliente_id_tmp')
+         .then(function(rows) {
+       
+        callback(true, rows); 
+     
+    })
+        . catch (function(error) {
+        callback(false, error);
+    });
+};
+
+
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar ela existencia de un producto en
+ *               un producto
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.consultarEstadoPedido
+ */
+PedidosClienteModel.prototype.consultarProductoDetallePedido = function(numero_pedido,codigo_producto, callback) {
+
+    G.knex('ventas_ordenes_pedidos_d').where({
+        pedido_cliente_id: numero_pedido,
+        codigo_producto: codigo_producto
+    }).select('pedido_cliente_id')
+         .then(function(rows) {
+       
+        callback(true, rows); 
+     
+    })
+        . catch (function(error) {
         callback(false, error);
     });
 };

@@ -323,6 +323,9 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  */
 PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
+console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
+console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
+console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
 
 
     var that = this;
@@ -381,7 +384,9 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     var pagina = args.pedidos_clientes.pagina_actual;
 
     that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, filtros, function(err, lista_productos) {
-
+        
+        console.log("lista_productos ", lista_productos);
+        
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));
             return;

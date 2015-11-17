@@ -875,7 +875,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                     
                  Request.realizarRequest(url, "POST", obj, function(data) {
-                   
+                     
+                     
+                     
                     if (data.status === 200) {
                       $state.go('ListarPedidosClientes');
                       AlertService.mostrarMensaje("warning", data.msj);
@@ -930,7 +932,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
             // Gestiona la aprobacion o no del departamento de cartera
             $scope.gestion_cartera = function(aprobado) {
-
+               
                 var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);
@@ -966,7 +968,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     if (data.status === 200) {
-                        $scope.cancelar_cotizacion();
+                      $scope.volver_cotizacion();
                     }
                 });
             };

@@ -861,6 +861,76 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
     });
 };
 
+
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion: Controlador encargado de invocar el model que eliminara una 
+ *               cotizacion siempre y cuando esta no tenga un pedido       
+ * @fecha  09/11/2015
+ * @param {type} req
+ * @param {type} res
+ * @returns {unresolved}
+ */
+PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
+
+
+    var that = this;
+
+    var args = req.body.data;
+
+
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes === '') {
+        res.send(G.utils.r(req.url, 'La cotizacion no esta definidos', 404, {}));
+        return;
+    }
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+
+    if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'el numero de cotizacion no esta definido o esta vacío', 404, {}));
+        return;
+    }
+
+    /**
+     * +Descripcion: Se valida si ya se genero un pedido por medio de la cotizacion
+     */
+    that.m_pedidos_clientes.consultaCotizacionEnPedido(cotizacion.numero_cotizacion, function(estado, rows) {
+        /**
+         * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
+         */
+        if (estado) {
+            /**
+             * +Descripcion: Se valida si el numero de la cotizacion ya se encuentra
+             *               en la tabla ventas_ordenes_pedidos
+             */          
+           if (rows.length === 0) {   
+                /**
+                 * +Descripcion: Funcion encargada de eliminar por completo una cotizacion
+                 *               junto con todo su detalle siempre y cuando no haya
+                 *               generado ningun pedido
+                 */
+                that.m_pedidos_clientes.eliminarDetalleCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+
+                    if (!estado) {
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Se elimino la cotizacion correctamente', 200, {pedidos_clientes: rows}));
+                        return;
+                    }
+                });                
+            } else {              
+                res.send(G.utils.r(req.url, 'La cotizacion ya genero un pedido', 404, {pedidos_clientes: []}));
+                return;
+            }
+        } else {
+            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
+            return;
+        }
+    });
+};
 /*
  * Autor : Camilo Orozco
  * Descripcion : Consultar Cotizacion
@@ -1701,10 +1771,6 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
                         } else {
                             estado_pedido = 1;
                         }
-
-
-
-
                         /**
                          * +Descripcion: Se valida si el pedido ya cuenta con ese producto en el detalle
                          */

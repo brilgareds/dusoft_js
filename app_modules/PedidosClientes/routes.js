@@ -156,7 +156,13 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.actualizarCabeceraCotizacion(req, res);
     });
     
-    
+    /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para eliminar la cotizacion
+     */
+    app.post('/api/PedidosClientes/eliminarCotizacion', function(req, res) {
+        c_pedidos_clientes.eliminarCotizacion(req, res);
+    });
     
     
 

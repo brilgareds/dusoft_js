@@ -810,7 +810,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             // Acciones Botones       
 
             // Cancelar la cotizacion
-            $scope.cancelar_cotizacion = function() {
+            $scope.volver_cotizacion = function() {
                 $state.go('ListarPedidosClientes');
             };
             //Aceptar la cotizacion
@@ -819,6 +819,76 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $state.go('ListarPedidosClientes');
             };
             
+            /**
+             * @author Cristian Ardila
+             * @fecha  17/11/2015
+             * +Descripcion: FUncion encargada de cancelar la cotizacion
+             */
+            $scope.cancelar_cotizacion = function() {
+              
+              if($scope.Pedido.get_numero_cotizacion() === 0){
+                      $state.go('ListarPedidosClientes');
+               }else{
+                $scope.opts = {
+                    backdrop: true, 
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Eliminando cotizacion ?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea cancelar la cotizacion para el cliente.</h4>\
+                                    <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            that.eliminarCotizacionDetalle();
+                            $modalInstance.close();
+                        };
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+               }
+            };
+            
+            that.eliminarCotizacionDetalle = function(){
+                
+                 var url = API.PEDIDOS.CLIENTES.ELIMINAR_COTIZACION;
+                  var obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido
+                            }
+                        }
+                    };
+                    
+                 Request.realizarRequest(url, "POST", obj, function(data) {
+                     
+                    if (data.status === 200) {
+                      $state.go('ListarPedidosClientes');
+                      AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                    
+                     if (data.status === 404) {
+                      
+                      AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+                
+             
+            };
             /**
              * +Descripcion: funcion encargada de actualizar la cabecera de
              *               una cotizacion cuando se selecciona la opcion

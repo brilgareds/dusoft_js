@@ -1467,8 +1467,6 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
 
 };
 
-
-
 /*
  * @author : Cristian Ardila
  * @fecha   17/11/2015
@@ -1480,16 +1478,19 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
 PedidosClienteModel.prototype.eliminarDetalleCotizacion = function(cotizacion, callback)
 {
    
-   G.knex('ventas_ordenes_pedidos_tmp')
+ G.knex('ventas_ordenes_pedidos_tmp')
   .where('pedido_cliente_id_tmp', cotizacion)
   .del()
   .then(function(rows) {
         callback(rows, true);
     })
-  . catch (function(error) {
+  .catch (function(error) {
         callback(error, false);
     });
 };
+
+
+
 
 /*
  * @author : Cristian Ardila
@@ -1504,10 +1505,10 @@ PedidosClienteModel.prototype.consultaCotizacionEnPedido = function(cotizacion, 
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id_tmp: cotizacion
     }).select('pedido_cliente_id_tmp')
-            .then(function(rows) {
+     .then(function(rows) {
         callback(true, rows);
     })
-            . catch (function(error) {
+     .catch (function(error) {
         callback(false, error);
     });
 };
@@ -1695,6 +1696,7 @@ PedidosClienteModel.prototype.consultarExistenciaPedidoCotizacion = function(num
  *  --PedidosCliente.prototype.consultarEstadoCotizacion
  *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
  *  --PedidosCliente.prototype.generarPedido
+ *  --PedidosCliente.prototype.eliminarCotizacion
  */
 PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizacion, callback) {
 

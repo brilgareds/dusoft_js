@@ -875,7 +875,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                     
                  Request.realizarRequest(url, "POST", obj, function(data) {
-                     
+                   
                     if (data.status === 200) {
                       $state.go('ListarPedidosClientes');
                       AlertService.mostrarMensaje("warning", data.msj);

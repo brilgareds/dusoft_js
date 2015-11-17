@@ -893,10 +893,11 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
         return;
     }
 
-    /**
-     * +Descripcion: Se valida si ya se genero un pedido por medio de la cotizacion
-     */
-    that.m_pedidos_clientes.consultaCotizacionEnPedido(cotizacion.numero_cotizacion, function(estado, rows) {
+
+
+
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+
         /**
          * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
          */
@@ -904,29 +905,52 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
             /**
              * +Descripcion: Se valida si el numero de la cotizacion ya se encuentra
              *               en la tabla ventas_ordenes_pedidos
-             */          
-           if (rows.length === 0) {   
-                /**
-                 * +Descripcion: Funcion encargada de eliminar por completo una cotizacion
-                 *               junto con todo su detalle siempre y cuando no haya
-                 *               generado ningun pedido
-                 */
-                that.m_pedidos_clientes.eliminarDetalleCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+             */
+            if (rows.length === 0 || rows[0].estado === '1') {
 
-                    if (!estado) {
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                        return;
+                /**
+                 * +Descripcion: Se valida si ya se genero un pedido por medio de la cotizacion
+                 */
+                that.m_pedidos_clientes.consultaCotizacionEnPedido(cotizacion.numero_cotizacion, function(estado, rows) {
+                    /**
+                     * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
+                     */
+                    if (estado) {
+                        /**
+                         * +Descripcion: Se valida si el numero de la cotizacion ya se encuentra
+                         *               en la tabla ventas_ordenes_pedidos
+                         */
+                        if (rows.length === 0) {
+                            /**
+                             * +Descripcion: Funcion encargada de eliminar por completo una cotizacion
+                             *               junto con todo su detalle siempre y cuando no haya
+                             *               generado ningun pedido
+                             */
+                            that.m_pedidos_clientes.eliminarDetalleCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+                                if (!estado) {
+                                    res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                                    return;
+                                } else {
+                                    res.send(G.utils.r(req.url, 'Se elimino la cotizacion correctamente', 200, {pedidos_clientes: rows}));
+                                    return;
+                                }
+                            });
+                        } else {
+                            res.send(G.utils.r(req.url, 'La cotizacion ya genero un pedido', 404, {pedidos_clientes: []}));
+                            return;
+                        }
                     } else {
-                        res.send(G.utils.r(req.url, 'Se elimino la cotizacion correctamente', 200, {pedidos_clientes: rows}));
+                        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
                         return;
                     }
-                });                
-            } else {              
-                res.send(G.utils.r(req.url, 'La cotizacion ya genero un pedido', 404, {pedidos_clientes: []}));
-                return;
-            }
-        } else {
-            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
+                });
+
+            }else {
+                    res.send(G.utils.r(req.url, 'La cotizacion solo debe estar en estado activo', 404, {pedidos_clientes: []}));
+                     return;
+           }
+        }else {
+          res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
             return;
         }
     });

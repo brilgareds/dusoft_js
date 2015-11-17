@@ -193,7 +193,7 @@
                                 <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
                                     
                                     
-                                     <button class="btn btn-default" ng-click="cancelar_cotizacion()">
+                                     <button class="btn btn-default" ng-click="cancelar_cotizacion()" ng-if="Pedido.get_estado_cotizacion() ==1">
                                         <span class="glyphicon glyphicon-remove" ></span> Cancelar cotizacion
                                     </button>
                                     

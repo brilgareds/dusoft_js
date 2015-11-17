@@ -220,7 +220,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             $scope.buscador_productos_orden_compra = function(ev, termino_busqueda) {
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscar_detalle_orden_compra(termino_busqueda);
                 }
             };

@@ -192,6 +192,7 @@ if (cluster.isMaster) {
     app.use(G.auth.validate());
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, 'files')));
 
     /*=========================================
      * error handlers

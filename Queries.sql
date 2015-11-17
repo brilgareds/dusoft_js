@@ -1491,4 +1491,17 @@ CREATE TABLE "public"."inv_planillas_farmacia_devolucion_detalle" (
 
 COMMENT ON TABLE "public"."inv_planillas_farmacia_devolucion_detalle"
 IS 'Almacenas los documentos de farmacias devueltos';
->>>>>>> 667c1498150eb314b7735f3c7c7454021177f41f
+
+
+ALTER TABLE "public"."observaciones_ordenes_compras"
+  ADD COLUMN "tipo_entrada" 	character varying(2);
+
+COMMENT ON COLUMN "public"."observaciones_ordenes_compras"."tipo_entrada"
+IS 'Tipo de input usado en la interfaz 0 = fecha';
+
+
+ALTER TABLE "public"."archivos_novedades_ordenes_compras"
+  ADD COLUMN "descripcion_entreda_novedad" CHAR varying(255);
+
+COMMENT ON COLUMN "public"."archivos_novedades_ordenes_compras"."descripcion_entreda_novedad"
+IS 'Descripcion de la entrada de la novedad, fecha de disponibilidad, numero etc';

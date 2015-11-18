@@ -845,6 +845,12 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
+console.log("******************PedidosCliente.prototype.listarCotizaciones************************************00");
+console.log("******************PedidosCliente.prototype.listarCotizaciones************************************00");
+console.log("******************PedidosCliente.prototype.listarCotizaciones************************************00");
+console.log("******************PedidosCliente.prototype.listarCotizaciones************************************00");
+
+console.log("args.pedidos_clientes ", args.pedidos_clientes)
 
     var empresa_id = args.pedidos_clientes.empresa_id;
     var fecha_inicial = args.pedidos_clientes.fecha_inicial;
@@ -852,9 +858,9 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
 
+    var estadoCotizacion = args.pedidos_clientes.estado_cotizacion;
 
-
-    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_cotizaciones) {
+    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina_actual,estadoCotizacion, function(err, lista_cotizaciones) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));

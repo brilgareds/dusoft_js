@@ -24,7 +24,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                     var decimalCheck = clean.split('.');
 
                     if (!angular.isUndefined(decimalCheck[1])) {
-                        decimalCheck[1] = decimalCheck[1].slice(0, 2);
+                        decimalCheck[1] = decimalCheck[1].slice(0, 4);
                         clean = decimalCheck[0] + '.' + decimalCheck[1];
                     }
 

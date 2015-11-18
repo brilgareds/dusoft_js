@@ -32,7 +32,7 @@
                         </ui-select>
                         
                         <div ng-switch="producto_seleccionado.novedad.observacion.getTipoEntrada()">
-                           <p class="input-group" ng-switch-when="0">
+                           <p class="input-group input-group-sm" ng-switch-when="0">
 
                                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}"
                                  ng-model="producto_seleccionado.novedad.descripcionEntrada" is-open="$parent.datepickerFechaInicial" min-date="$parent.fechaMinima"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />

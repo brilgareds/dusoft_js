@@ -3,9 +3,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('GestionarNovedadProductoController', [
         '$scope', '$rootScope', 'API',
         '$modalInstance', 'AlertService', 'Request', 'ObservacionOrdenCompra', 'NovedadOrdenCompra',
-        'ArchivoNovedadOrdenCompra','$filter',
+        'ArchivoNovedadOrdenCompra','$filter','producto','nuevaNovedad',
         function($scope, $rootScope, API, $modalInstance, AlertService, Request, Observacion, Novedad,
-                 Archivo, $filter) {
+                 Archivo, $filter, producto, nuevaNovedad) {
 
             var that = this;
 
@@ -14,6 +14,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.flow.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_NOVEDAD;
             $scope.flow.testChunks = false;
             $scope.flow.singleFile = true;
+            $scope.producto = producto;
+            
+            //Si la novedad es nueva se setea un objeto novedad vacio
+            if(nuevaNovedad){
+                var novedad = Novedad.get();
+                producto.set_novedad(novedad);
+            } 
+            
             $scope.flow.query = {
                 session: JSON.stringify($scope.session)
             };
@@ -25,7 +33,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.datepickerFechaInicial = false;
             
             console.log("fecha minima ", $scope.fechaMinima);
-            
+          
             that.buscar_observaciones = function() {
 
                 var obj = {session: $scope.session, data: {observaciones: {termino_busqueda: ""}}};
@@ -43,7 +51,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var obj = {session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            novedad_id: $scope.producto_seleccionado.get_novedad().get_id()
+                            novedad_id: $scope.producto.get_novedad().get_id()
                         }
                     }
                 };
@@ -60,17 +68,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             that.gestionar_novedades = function() {   
                 
                 var entrada = "";
-                if($scope.producto_seleccionado.novedad.observacion.getTipoEntrada() === '0'){
-                    entrada =  $filter('date')($scope.producto_seleccionado.get_novedad().getDescripcionEntrada(), "yyyy-MM-dd");
+                if($scope.producto.novedad.observacion.getTipoEntrada() === '0'){
+                    entrada =  $filter('date')($scope.producto.get_novedad().getDescripcionEntrada(), "yyyy-MM-dd");
                 }
                                
                 var obj = {session: $scope.session,
                     data: {
                         ordenes_compras: {                            
-                            novedad_id: $scope.producto_seleccionado.get_novedad().get_id() || 0,
-                            item_id: $scope.producto_seleccionado.get_id(),
-                            observacion_id: $scope.producto_seleccionado.get_novedad().get_observacion().get_id(),
-                            descripcion: $scope.producto_seleccionado.get_novedad().get_descripcion(),
+                            novedad_id: $scope.producto.get_novedad().get_id() || 0,
+                            item_id: $scope.producto.get_id(),
+                            observacion_id: $scope.producto.get_novedad().get_observacion().get_id(),
+                            descripcion: $scope.producto.get_novedad().get_descripcion(),
                             descripcionEntrada:entrada
                         }
                     }
@@ -83,15 +91,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     if (data.status === 200) {
 
-                        var novedad_id = (data.obj.ordenes_compras.length === 0) ? $scope.producto_seleccionado.get_novedad().get_id() : data.obj.ordenes_compras[0].novedad_id;
-                        $scope.producto_seleccionado.get_novedad().set_id(novedad_id);
-                        $scope.producto_seleccionado.set_novedad($scope.producto_seleccionado.get_novedad());
+                        var novedad_id = (data.obj.ordenes_compras.length === 0) ? $scope.producto.get_novedad().get_id() : data.obj.ordenes_compras[0].novedad_id;
+                        $scope.producto.get_novedad().set_id(novedad_id);
+                        $scope.producto.set_novedad($scope.producto.get_novedad());
 
                         //Subir Archivo
                         if ($scope.flow.files.length > 0) {
                             that.subir_archivo_novedad();
                         } else {
-                            $scope.buscar_detalle_orden_compra();
 
                             $modalInstance.close();
                         }
@@ -103,7 +110,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 $scope.flow.opts.query.data = JSON.stringify({
                     ordenes_compras: {
-                        novedad_id: $scope.producto_seleccionado.get_novedad().get_id()
+                        novedad_id: $scope.producto.get_novedad().get_id()
                     }
                 });
 
@@ -139,12 +146,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             that.render_archivos_novedad = function(archivos) {
 
-                $scope.producto_seleccionado.get_novedad().limpiar_archivos();
+                $scope.producto.get_novedad().limpiar_archivos();
 
                 archivos.forEach(function(data) {
 
                     var archivo = Archivo.get(data.id, data.descripcion_archivo);
-                    $scope.producto_seleccionado.get_novedad().set_archivos(archivo);
+                    $scope.producto.get_novedad().set_archivos(archivo);
                 });
             };
 
@@ -181,10 +188,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
             
             $scope.onSeleccionarNovedad = function(){
-                console.log("on seleccionar novedad ", $scope.producto_seleccionado.novedad);
+                console.log("on seleccionar novedad ", $scope.producto.novedad);
                 
-                if($scope.producto_seleccionado.novedad.observacion.getTipoEntrada() === '0'){
-                      $scope.producto_seleccionado.get_novedad().setDescripcionEntrada($filter('date')(new Date(), "yyyy-MM-dd"));
+                if($scope.producto.novedad.observacion.getTipoEntrada() === '0'){
+                      $scope.producto.get_novedad().setDescripcionEntrada($filter('date')(new Date(), "yyyy-MM-dd"));
                 }
                 
             };

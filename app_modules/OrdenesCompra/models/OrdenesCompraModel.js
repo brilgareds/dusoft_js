@@ -297,13 +297,48 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
                     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
                     a.estado,\
+                    f.politicas_producto\
+                    from compras_ordenes_pedidos_detalle a\
+                    inner join compras_ordenes_pedidos e on a.orden_pedido_id  = e.orden_pedido_id \
+                    left join (\
+                        select a.codigo_proveedor_id ,  b.codigo_producto , c.politica as politicas_producto\
+                        from contratacion_produc_proveedor a \
+                        inner join contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
+                        left join contratacion_produc_proveedor_politicas c on b.contrato_produc_prov_det_id = c.contrato_produc_prov_det_id \
+                    ) as f on e.codigo_proveedor_id = f.codigo_proveedor_id and a.codigo_producto = f.codigo_producto\
+                ) AS a where a.numero_orden = :1 and a.estado = '1' and ( a.codigo_producto ilike :2 or  a.descripcion_producto ilike :2 ) ";
+
+
+    G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
+    });
+};
+
+OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(numero_orden, termino_busqueda, pagina, callback){
+     var sql = " select * from (\
+                    select\
+                    a.item_id, \
+                    a.orden_pedido_id as numero_orden,\
+                    a.codigo_producto,\
+                    fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                    a.numero_unidades::integer as cantidad_solicitada,\
+                    a.valor,\
+                    a.porc_iva,\
+                    (a.numero_unidades::integer * a.valor) as subtotal,\
+                    ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
+                    ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
+                    a.estado,\
                     f.politicas_producto,\
                     b.id as novedad_id,\
                     b.descripcion as descripcion_novedad,\
                     c.id as id_observacion,\
                     c.codigo as codigo_observacion,\
                     c.descripcion as descripcion_observacion,\
-                    d.cantidad_archivos\
+                    d.cantidad_archivos,\
+                    coalesce(g.total_novedades, 0) as total_novedades\
                     from compras_ordenes_pedidos_detalle a\
                     inner join compras_ordenes_pedidos e on a.orden_pedido_id  = e.orden_pedido_id \
                     left join novedades_ordenes_compras b on a.item_id = b.item_id\
@@ -318,13 +353,20 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                         inner join contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
                         left join contratacion_produc_proveedor_politicas c on b.contrato_produc_prov_det_id = c.contrato_produc_prov_det_id \
                     ) as f on e.codigo_proveedor_id = f.codigo_proveedor_id and a.codigo_producto = f.codigo_producto\
-                ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";
-
-    G.db.query(sql, [numero_orden, "%" + termino_busqueda + "%"], function(err, rows, result, total_records) {
-        callback(err, rows);
+                    left join(\
+                	select count(a.item_id) as total_novedades, a.item_id from novedades_ordenes_compras a group by 2\
+                    ) as g on g.item_id = a.item_id\
+                ) AS a where a.numero_orden = :1 and a.estado = '1' and ( a.codigo_producto ilike :2 or  a.descripcion_producto ilike :2 )\
+                order by 19 desc ";
+    
+    G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
-};
 
+}
 
 // Ingresar Cabecera Orden de Compra
 OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, callback) {
@@ -470,9 +512,25 @@ OrdenesCompraModel.prototype.finalizar_orden_compra = function(numero_orden, ord
 // Consultar Novedad Producto Orden de Compra
 OrdenesCompraModel.prototype.consultar_novedad_producto = function(novedad_id, callback) {
 
-    var sql = "  SELECT  * FROM novedades_ordenes_compras a WHERE a.id = $1 ; ";
-    G.db.query(sql, [novedad_id], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = "  SELECT  * FROM novedades_ordenes_compras a WHERE a.id = :1 ; ";
+    
+    G.knex.raw(sql, {1:novedad_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
+    });
+};
+
+OrdenesCompraModel.prototype.consultarNovedadPorObservacion = function(novedadId, observacionId, callback) {
+
+    var sql = "  SELECT  * FROM novedades_ordenes_compras a WHERE a.id = :1 and observacion_orden_compra_id = :2; ";
+    
+    G.knex.raw(sql, {1:novedadId, 2:observacionId}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -481,19 +539,29 @@ OrdenesCompraModel.prototype.consultar_novedad_producto = function(novedad_id, c
 OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
 
     var sql = "  INSERT INTO novedades_ordenes_compras (item_id, observacion_orden_compra_id, descripcion, usuario_id, descripcion_entrada) \
-                 VALUES ( $1, $2, $3, $4, $5) RETURNING id as novedad_id ; ";
-    G.db.query(sql, [item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada], function(err, rows, result) {
-        callback(err, rows, result);
+                 VALUES ( :1, :2, :3, :4, :5 ) RETURNING id as novedad_id ; ";
+
+    G.knex.raw(sql, {1:item_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       console.log("error generando novedad ", err);
+       callback(err);
     });
 };
 
 // Modificar Novedad Producto Orden de Compra 
 OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
 
-    var sql = " UPDATE novedades_ordenes_compras SET  observacion_orden_compra_id =$2 , descripcion =$3 , usuario_id = $4 , descripcion_entrada = $5  WHERE id = $1 ; ";
-    G.db.query(sql, [novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = " UPDATE novedades_ordenes_compras SET  observacion_orden_compra_id = :2 , descripcion = :3 , usuario_id = :4 , descripcion_entrada = :5  WHERE id = :1 ; ";
+    
+    G.knex.raw(sql, {1:novedad_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 
@@ -501,9 +569,13 @@ OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, o
 OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(novedad_id, nombre_archivo, descripcion_archivo, usuario_id, callback) {
 
     var sql = " INSERT INTO archivos_novedades_ordenes_compras (novedad_orden_compra_id, nombre_archivo, descripcion_archivo, usuario_id, fecha_registro) \
-                VALUES ( $1, $2, $3, $4, now() ) ; ";
-    G.db.query(sql, [novedad_id, nombre_archivo, descripcion_archivo, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
+                VALUES ( :1, :2, :3, :4, now() ) ; ";
+    
+    G.knex.raw(sql, {1:novedad_id, 2:nombre_archivo, 3:descripcion_archivo, 4:usuario_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

@@ -29,7 +29,8 @@ define([
     "controllers/recepcionmercancia/ListarRecepcionesController",
     "controllers/recepcionmercancia/GestionarRecepcionesController",
     "controllers/recepcionmercancia/VerificarRecepcionesController",
-    "includes/helpersdirectives/visualizarReporte"
+    "includes/helpersdirectives/visualizarReporte",
+    "webNotification"
 ], function(angular) {
     /* App Module and its dependencies */
 
@@ -44,7 +45,8 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'flow'
+        'flow',
+        'angular-web-notification'
     ]);
 
     ordenes_compras.urlRouterProvider;

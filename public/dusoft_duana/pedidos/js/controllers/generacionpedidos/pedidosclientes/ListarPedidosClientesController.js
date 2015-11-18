@@ -601,9 +601,9 @@ define(["angular", "js/controllers",
 
 
             that.notificarSolicitud = function(title, body) {
-                
-                 $scope.notificacionClientesAutorizar++;
-                
+
+                $scope.notificacionClientesAutorizar++;
+
                 webNotification.showNotification(title, {
                     body: body,
                     icon: 'my-icon.ico',
@@ -642,17 +642,14 @@ define(["angular", "js/controllers",
 
                             data.set_descripcion_estado_cotizacion(estado[datos.obj.estado[0].estado]);
                             data.set_estado_cotizacion(datos.obj.estado[0].estado);
-
-                            if (datos.obj.estado[0].estado === '6') {
-                               
-
-                                if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
-
-                                    that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + data.get_numero_cotizacion());
-                                }
-                            }
                         }
                     });
+                    
+                    if (datos.obj.estado[0].estado === '6') {
+                        if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {                            
+                            that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + datos.obj.numeroCotizacion );
+                        }
+                    }
                 }
             });
 

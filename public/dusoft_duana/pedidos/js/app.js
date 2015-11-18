@@ -17,7 +17,7 @@ define([
     "dragndropfile",
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
-    "includes/validation/validacionNumeroDecimal",
+    "includes/validation/ValidacionNumeroDecimal",
     "includes/widgets/InputCheck",
     "includes/menu/menucontroller",
     "includes/alert/Alert",

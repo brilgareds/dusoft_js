@@ -121,6 +121,7 @@ Induccion.prototype.imprimirRotulo = function(req, res) {
     var centroUtilidadId = args.documento_temporal.centroUtilidadId;
     var bodegaId = args.documento_temporal.bodegaId;
     var nombreProducto = args.documento_temporal.nombreProducto;
+    var pdf = args.documento_temporal.pdf;
     var pagina = args.documento_temporal.pagina;
     console.log("paginaactual",args.documento_temporal);
     if (empresaIds === undefined || centroUtilidadId === undefined || bodegaId === undefined || nombreProducto === undefined  ) { 
@@ -143,26 +144,40 @@ Induccion.prototype.imprimirRotulo = function(req, res) {
             detalle : rows,
             serverUrl : req.protocol + '://' + req.get('host')+ "/"
         };
-        
-         _generarInforme(obj, function(nombreTmp) {
+        console.log(pdf);
+         _generarInforme(obj,pdf ,function(nombreTmp) {
             res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {imprimir_productos: {nombre_reporte: nombreTmp}}));
         });
     });
 };
 
-function _generarInforme(obj, callback) {
+function _generarInforme(obj,pdf,callback) {
+    var recips="";
+    var extencion="";
+    if(pdf==1){
+        recips="phantom-pdf";
+        extencion="pdf";
+    }else if(pdf==0){
+        recips="html-to-xlsx";
+        extencion="csv";    
+    }else{
+        recips="text";
+        extencion="txt";
+    }
+    console.log("_generarInforme: "+pdf)
         G.jsreport.render({
             template: {
                 content: G.fs.readFileSync('app_modules/Induccion/reports/rotulos.html', 'utf8'),
                 helpers: G.fs.readFileSync('app_modules/Induccion/reports/javascripts/rotulos.js', 'utf8'),
-                recipe: "phantom-pdf",
+                recipe: recips,
                 engine: 'jsrender'
             },
             data: obj
         }, function (err, response) {            
             response.body(function (body) {
                 var fecha = new Date();
-                var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+              //  var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+                var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + "."+extencion;
                 G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function (err) {
                     if (err) {
                         console.log(err);

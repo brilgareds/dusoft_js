@@ -1,10 +1,10 @@
-define(["angular", "js/controllers"], function (angular, controllers) {
+define(["angular", "js/controllers"], function(angular, controllers) {
 
     controllers.controller('InduccionController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
                 'EmpresaInduccion', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion',
                 "$timeout",
-                function ($scope, $rootScope, Request, API, AlertService, Usuario,
+                function($scope, $rootScope, Request, API, AlertService, Usuario,
                         EmpresaInduccion, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion,
                         $timeout) {
 
@@ -23,7 +23,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @param {type} callback
                      * @returns {void}
                      */
-                    that.init = function (empresa, callback) {
+                    that.init = function(empresa, callback) {
                         $scope.root = {};
                         $scope.root.empresaSeleccionada = EmpresaInduccion.get("TODAS LAS EMPRESAS", -1);
                         $scope.root.empresaNombre;
@@ -36,7 +36,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                         callback();
 
-                        $timeout(function () {
+                        $timeout(function() {
                         }, 3000);
 
 
@@ -46,7 +46,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion obtiene las empresas del servidor
                      * @returns {json empresas}
                      */
-                    that.listarEmpresas = function (callback) {
+                    that.listarEmpresas = function(callback) {
                         var obj = {
                             session: $scope.session,
                             data: {
@@ -57,7 +57,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         };
 
-                        Request.realizarRequest(API.INDUCCION.LISTAR_EMPRESAS, "POST", obj, function (data) {
+                        Request.realizarRequest(API.INDUCCION.LISTAR_EMPRESAS, "POST", obj, function(data) {
                             $scope.empresas = [];
                             if (data.status === 200) {
                                 AlertService.mostrarMensaje("info", data.msj);
@@ -70,7 +70,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
 
-                    that.render_empresas = function (empresas) {
+                    that.render_empresas = function(empresas) {
                         for (var i in empresas) {
                             var _empresa = EmpresaInduccion.get(empresas[i].razon_social, empresas[i].empresa_id);
                             $scope.empresas.push(_empresa);
@@ -81,7 +81,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion obtiene las centros de utilidad del servidor
                      * @returns {json centros de utilidad}
                      */
-                    that.listarCentroUtilidad = function (callback) {
+                    that.listarCentroUtilidad = function(callback) {
                         var obj = {
                             session: $scope.session,
                             data: {
@@ -90,8 +90,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 }
                             }
                         };
-                        
-                        Request.realizarRequest(API.INDUCCION.LISTAR_CENTROS_UTILIDAD, "POST", obj, function (data) {
+
+                        Request.realizarRequest(API.INDUCCION.LISTAR_CENTROS_UTILIDAD, "POST", obj, function(data) {
                             if (data.status === 200) {
                                 AlertService.mostrarMensaje("info", data.msj);
                                 for (var i in data.obj.listar_CentroUtilidad) {
@@ -110,7 +110,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion obtiene las Bodegas del servidor
                      * @returns {json centros de utilidad}
                      */
-                    that.listarBodegas = function (callback) {
+                    that.listarBodegas = function(callback) {
 
                         var empresa = $scope.root.empresaSeleccionada;
                         var obj = {
@@ -123,7 +123,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 }
                             }
                         };
-                        Request.realizarRequest(API.INDUCCION.LISTAR_BODEGAS, "POST", obj, function (data) {
+                        Request.realizarRequest(API.INDUCCION.LISTAR_BODEGAS, "POST", obj, function(data) {
 
 
                             if (data.status === 200) {
@@ -147,7 +147,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion obtiene las Productos del servidor
                      * @returns {json Productos}
                      */
-                    that.listarProducto = function (callback) {
+                    that.listarProducto = function(callback) {
 
                         var empresa = $scope.root.empresaSeleccionada;
 
@@ -177,7 +177,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             }
                         };
 
-                        Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function (data) {
+                        Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
                             if (data.status === 200) {
                                 $scope.ultima_busqueda = $scope.termino_busqueda;
                                 $scope.items = data.obj.listar_Producto.length
@@ -207,39 +207,73 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     //////////////////////////// 
 
-                    that.onGenerarPdfRotulo = $rootScope.$on("onGenerarPdfRotulo", function (e, paginaactual, empresa, centroUtilidad, bodega, producto) {
+                    that.onGenerarPdfRotulo = $rootScope.$on("onGenerarPdfRotulo", function(e, paginaactual, empresa, centroUtilidad, bodega, producto) {
                         $scope.onImprimirRotulo(paginaactual, empresa, centroUtilidad, bodega, producto);
                     });
 
-                    $scope.onImprimirRotulo = function () {
+                    function validar() {
+                        var empresa = $scope.root.empresaSeleccionada;
+                        if ((empresa.getCodigo() === '-1') ? "" : empresa.getCodigo() == "") {
+                            AlertService.mostrarMensaje("info", "Seleccione la Empresa ");
+                            return false;
+                        }
+
+                        try {
+                            if (empresa.getCentroUtilidadSeleccionado().getCodigo() === undefined) {
+                                //AlertService.mostrarMensaje("info", "Seleccione la Empresa");
+                            }
+                        }
+                        catch (err) {
+                            AlertService.mostrarMensaje("info", "Seleccione la Empresa" + err.message);
+                            return false;
+                        }
+                        try {
+                            if (empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getCodigo() === undefined) {
+                               // AlertService.mostrarMensaje("info", "Seleccione la Bodega");
+                            }
+                        }
+                        catch (err) {
+                            AlertService.mostrarMensaje("info", "Seleccione la Bodega" + err.message);
+                            return false;
+                        }
+                        if ($scope.termino_busqueda == "") {
+                            AlertService.mostrarMensaje("info", "Digite el termino de Busqueda");
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    $scope.onImprimirRotulo = function() {
                         var empresa = $scope.root.empresaSeleccionada;
                         var url = API.INDUCCION.IMPRIMIR_PRODUCTOS;
-
-                        var obj = {
-                            session: $scope.session,
-                            data: {
-                                documento_temporal: {
-                                    pagina: "",
-                                    empresaId: (empresa.getCodigo() === '-1') ? "" : empresa.getCodigo(),
-                                    centroUtilidadId: empresa.getCentroUtilidadSeleccionado().getCodigo(),
-                                    bodegaId: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getCodigo(),
-                                    nombreProducto: $scope.termino_busqueda
+                        if (validar()) {
+                            var obj = {
+                                session: $scope.session,
+                                data: {
+                                    documento_temporal: {
+                                        pagina: "",
+                                        empresaId: (empresa.getCodigo() === '-1') ? "" : empresa.getCodigo(),
+                                        centroUtilidadId: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                        bodegaId: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getCodigo(),
+                                        nombreProducto: $scope.termino_busqueda,
+                                        pdf: $scope.pdf
+                                    }
                                 }
-                            }
-                        };
+                            };
 
-                        Request.realizarRequest(url, "POST", obj, function (data) {
-                            if (data.status === 200) {
-                                var nombre_reporte = data.obj.imprimir_productos.nombre_reporte;
-                                console.log("reporte generado")
-                                $scope.visualizarReporte("/reports/" + nombre_reporte, nombre_reporte, "download");
-                            } else {
+                            Request.realizarRequest(url, "POST", obj, function(data) {
+                                if (data.status === 200) {
+                                    var nombre_reporte = data.obj.imprimir_productos.nombre_reporte;
+                                    console.log("reporte generado")
+                                    $scope.visualizarReporte("/reports/" + nombre_reporte, nombre_reporte, "download");
+                                } else {
 
-                            }
-                        });
+                                }
+                            });
+                        }
                     };
                     ////////////////
-                    $scope.seleccionar_empresa = function (empresa) {
+                    $scope.seleccionar_empresa = function(empresa) {
                         $scope.codigo_empresa_id = empresa;
                     };
                     ////////////////////////////////////        
@@ -247,20 +281,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion ejecuta listarCentroUtilidad
                      * @returns {lista CentroUtilidad}
                      */
-                    $scope.onSeleccionarEmpresa = function (empresa_Nombre) {
+                    $scope.onSeleccionarEmpresa = function(empresa_Nombre) {
 
                         if (empresa_Nombre.length < 3) {
                             return;
                         }
                         $scope.datos_view.termino_busqueda_empresa = empresa_Nombre;
-                        that.listarEmpresas(function () {
+                        that.listarEmpresas(function() {
                         });
 
                     };
 
-                    $scope.seleccionar_Empresas = function (codigo_empresa_id) {
+                    $scope.seleccionar_Empresas = function(codigo_empresa_id) {
                         $scope.root.empresaSeleccionada = codigo_empresa_id;
-                        that.listarCentroUtilidad(function () {
+                        that.listarCentroUtilidad(function() {
                         });
                     };
 
@@ -268,8 +302,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion ejecuta listarBodegas
                      * @returns {lista Bodegas}
                      */
-                    $scope.onSeleccionarCentroUtilidad = function () {
-                        that.listarBodegas(function () {
+                    $scope.onSeleccionarCentroUtilidad = function() {
+                        that.listarBodegas(function() {
 
                         });
                     };
@@ -278,12 +312,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion ejecuta listarProducto
                      * @returns {lista Producto}
                      */
-                    $scope.onSeleccionarProducto = function ($event) {
+                    $scope.onSeleccionarProducto = function($event) {
                         $scope.paginaactual = 1;
                         console.log("evento: ", $event);
                         if ($event.which === 13) {
                             producto = 1;
-                            that.listarProducto(function () {
+                            that.listarProducto(function() {
                             });
                         }
                     };
@@ -292,13 +326,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion asigana variable global bodegaSS a 1
                      * @returns {lista Producto}
                      */
-                    $scope.onSeleccionarTodas = function () {
+                    $scope.onSeleccionarTodas = function() {
                         bodegaSS = 1;
                     };
 
-                    that.init(empresa, function () {
+                    that.init(empresa, function() {
                         console.log("empresa_init::::: ", $scope.seleccionada);
-                        that.listarEmpresas(function (estado) {
+                        that.listarEmpresas(function(estado) {
                             if (estado) {
                             }
                         });
@@ -308,11 +342,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion para paginar anterior
                      * @returns {lista datos}
                      */
-                    $scope.paginaAnterior = function () {
+                    $scope.paginaAnterior = function() {
                         if ($scope.paginaactual === 1)
                             return;
                         $scope.paginaactual--;
-                        that.listarProducto(function () {
+                        that.listarProducto(function() {
                         });
                     };
 
@@ -320,9 +354,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * funcion para paginar siguiente
                      * @returns {lista datos}
                      */
-                    $scope.paginaSiguiente = function () {
+                    $scope.paginaSiguiente = function() {
                         $scope.paginaactual++;
-                        that.listarProducto(function () {
+                        that.listarProducto(function() {
                         });
                     };
 
@@ -390,26 +424,26 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     ];
 
 
-                    $scope.xFunction = function () {
-                        return function (d) {
+                    $scope.xFunction = function() {
+                        return function(d) {
                             return d.key;
                         };
                     };
 
-                    $scope.yFunction = function () {
-                        return function (d) {
+                    $scope.yFunction = function() {
+                        return function(d) {
                             return d.y;
                         };
                     };
 
-                    $scope.descriptionFunction = function () {
-                        return function (d) {
+                    $scope.descriptionFunction = function() {
+                        return function(d) {
                             return d.key;
                         };
                     };
 
-                    $scope.toolTipContentFunction = function () {
-                        return function (key, x, y, e, graph) {
+                    $scope.toolTipContentFunction = function() {
+                        return function(key, x, y, e, graph) {
                             return  '<h4>' + key + '</h4>' +
                                     '<p>' + y + ' en ' + x + '</p>';
                         };

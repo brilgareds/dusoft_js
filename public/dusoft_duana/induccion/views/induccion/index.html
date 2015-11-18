@@ -59,12 +59,28 @@
             </button>
         </div>
     </div>
-
-    <div class="panel-body paddingRightZero">
-        <button type="button" ng-click="onImprimirRotulo()"  class="btn btn-default" >
-            <span class="glyphicon glyphicon-print"></span> Imprimir
-        </button>
-    </div>
+    
+    <table>
+        <tr>
+            <td>
+                TIPO DE INFORME: 
+                <select ng-model="pdf" name="mySelect" id="mySelect" >
+                    <option value="">CSV</option>
+                    <option value="1">PDF</option>                    
+                    <option value="2">TXT</option>                    
+                </select>
+            </td>
+            <td>
+                <div class="panel-body paddingRightZero">
+                    <button type="button" ng-click="onImprimirRotulo();"  class="btn btn-default" >
+                        <span class="glyphicon glyphicon-print"></span> Imprimir
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+   
     
     <nvd3-pie-chart
         id="exampleId"

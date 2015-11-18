@@ -1,0 +1,282 @@
+<div ng-controller="AuditoriaHTMLReportController">
+
+</div>
+
+
+<html> 
+    <head> 
+
+
+    </head>
+
+    <body>
+        <div id="muestra"> 
+
+            <style type="text/css" media="print">
+
+                BODY { 
+                    font: 8pt Verdana, Geneva, Arial, Helvetica, sans-serif; 
+                    margin: 10 0 10 0px; 
+                    text-align: center; 
+                    background-color: #ffffff; 
+                } 
+                #contenedor{ 
+                    text-align: left; 
+                    width: 600px; 
+                    margin: auto; 
+                } 
+                #cabecera{ 
+                    visibility:hidden; 
+                    display: none; 
+                } 
+
+                #logo{ 
+                    visibility:visible; 
+                    display: block; 
+                    margin-left: 20px; 
+                } 
+
+                #cuerpo{ 
+                    margin: 10 0 10 0px; 
+                } 
+                #lateral{ 
+                    visibility:hidden; 
+                    display: none; 
+                } 
+
+                #pie{ 
+                    background-color: #cccccc; 
+                    padding: 3 10 3 10px; 
+                    text-align:right; 
+                    clear: both; 
+                } 
+
+                #principal{ 
+                    background-color: #ffffff; 
+                    padding: 0 0 0 20px; 
+                    width: 600px; 
+                    float: left; 
+                } 
+
+                #principal table{ 
+                    background-color: #ffffff; 
+                    width: 600px; 
+                    border: 2px solid #cccccc; 
+                    font-size:10pt; 
+                }
+                /* td{
+                       font-style: normal;
+                       font-variant: normal;
+                       
+                       line-height: 18.5714px;
+                       /*Courier New,*/
+                /* font: 8pt  Draft; 
+                
+             }*/
+
+            </style>
+
+
+            <style type="text/css">
+
+                BODY { 
+                    font: 8pt Verdana, Geneva, Arial, Helvetica, sans-serif; 
+                    margin: 1 0 1 0px; 
+                    text-align: center; 
+                    background-color: #ffffff; 
+                } 
+                #contenedor{ 
+                    text-align: left; 
+                    width: 1024px; 
+                    margin: auto; 
+                } 
+                #cabecera{ 
+                    background-color: #d0d0ff; 
+                    color: #333300; 
+                    font-size:12pt; 
+                    font-weight: bold; 
+                    padding: 3 3 3 10px; 
+                } 
+
+                #logo{ 
+                    visibility:hidden; 
+                    display: none; 
+                } 
+
+                #cuerpo{ 
+                    margin: 10 0 10 0px; 
+                } 
+                #lateral{ 
+                    width: 160px; 
+                    background-color: #d0d0ff; 
+                    float:left; 
+                } 
+                #lateral ul{ 
+                    margin : 0 0 0 0px; 
+                    padding: 0 0 0 0px; 
+                    list-style: none; 
+                } 
+                #lateral li{ 
+                    background-color: #ffffff; 
+                    margin: 2 2 2 2px; 
+                    padding: 2 2 2 2px; 
+                    font-weight: bold; 
+                } 
+                #lateral a{ 
+                    color: #3333cc; 
+                    text-decoration: none; 
+                } 
+
+                #pie{ 
+                    background-color: #cccccc; 
+                    padding: 3 10 3 10px; 
+                    text-align:right; 
+                    clear: both; 
+                } 
+
+                #principal{ 
+                    background-color: #ffffff; 
+                    padding: 0 0 0 1px; 
+                    width: 1024; 
+                    float: left; 
+                } 
+
+                #principal table{ 
+                    background-color: #ffffff; 
+                    width: 1024px; 
+
+                    border: 1px  #cccccc; 
+                    font-size: 10pt;
+                } 
+
+            </style>
+        </head> 
+
+        <body> 
+
+            <div id="contenedor"> 
+
+
+                <div id="cuerpo"> 
+
+                    <div id=""> 
+                        <div id="principal"> 
+                            <table id="principal" border="0" >
+                                <tr>
+                                    <td class='title'>Empresa</td><td>{{DatosDocumentoDespachado.encabezado.nombre_empresa_destino}}</td>
+                                    <td class='title'>Usuario</td><td>{{DatosDocumentoDespachado.encabezado.nombre_usuario}}</td>
+
+                                </tr>
+                                <tr>
+
+                                    <td class='title'>Bodega</td><td>{{DatosDocumentoDespachado.encabezado.nombre_bodega_destino}}</td>
+                                    <td class='title'>Documento</td><td>{{DatosDocumentoDespachado.encabezado.prefijo}} - {{DatosDocumentoDespachado.encabezado.numero}}</td>
+                                </tr>
+                                <tr>
+                                    <td class='title'>Pedido</td><td>{{DatosDocumentoDespachado.encabezado.numero_pedido}}<span class='fecha_pedido'>{{DatosDocumentoDespachado.encabezado.fecha_pedido}}</span></td>
+                                    <td class='title'>Fecha Despacho</td><td>{{DatosDocumentoDespachado.encabezado.fecha_registro}}</td>
+
+                                </tr>
+                            </table>
+
+                            <hr/>
+
+                            <div class="principal">
+
+                                <table id="principal" width='100%'  border="0">
+                                    <tbody ng-repeat="adicionales in DatosDocumentoDespachado.adicionales">
+                                        <tr>
+                                            <td class='title'>{{adicionales.titulo}}</td>
+                                            <td>{{adicionales.valor}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <hr/>
+
+
+                            <table id="principal"  border="0">
+                                <thead>
+                                    <tr>
+                                        <th width='15%' class='title'>Codigo</th>
+                                        <th width='30%' class='title'>Descripci&oacute;n</th>
+                                        <th width='8%' class='title'>Cant.</th>
+                                        <!-- <th class='title'>Cum</th>//-->
+                                        <th width='13%' class='title'>Invima</th>
+                                        <th width='10%' class='title'>Lote</th>
+                                        <th width='13%' class='title'>F/vto</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody ng-repeat="DatosDocumentoDespachado in DatosDocumentoDespachado.detalle">
+                                    <tr>
+                                    <tr>
+                                        <td>{{DatosDocumentoDespachado.codigo_producto}}</td>
+                                        <td>{{DatosDocumentoDespachado.nombre}}</td>
+                                        <td class='cantidad'>{{DatosDocumentoDespachado.cantidad}}</td>
+                                        <!--  <td>{{DatosDocumentoDespachado.codigo_cum}}</td>//-->
+                                        <td>{{DatosDocumentoDespachado.codigo_invima}}</td>
+                                        <td>{{DatosDocumentoDespachado.lote}}</td>
+                                        <td>{{DatosDocumentoDespachado.fecha_vencimiento}}</td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                            <table class='footer'>
+
+                                <tr align='center'>
+                                    <td>
+                                        _______________________________
+                                    </td>
+                                    <td>
+                                        _______________________________
+                                    </td>
+                                    <td>
+                                        _______________________________
+                                    </td>
+                                </tr>
+                                <tr align='center'>
+                                    <td>
+                                        Separo
+                                    </td>
+                                    <td>
+                                        Audito
+                                    </td>
+                                    <td>
+                                        Verifico
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div> 
+                    </div> 
+                </div> 
+
+            </div> 
+
+        </body> 
+
+        <script type="text/javascript">
+            function imprimirTablaDocumentoDespacho(muestra)
+            {
+                var ficha = document.getElementById(muestra);
+                var ventimp = window.open(' ', 'popimpr');
+                ventimp.document.write(ficha.innerHTML);
+                ventimp.document.close();
+                ventimp.print();
+                ventimp.close();
+            }
+        </script>
+
+        <table class=" " width='100%' >
+            <tr>
+                <td><a href="javascript:imprimirTablaDocumentoDespacho('muestra')">
+                        <img class="glyphicon glyphicon-print" width="" height="" alt="Imprimir" />
+
+                    </a></td></tr>
+        </table>
+
+        <br>
+        </html> 

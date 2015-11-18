@@ -130,6 +130,40 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.modificarEstadoCotizacion(req, res);
     });
     
+    app.post('/api/PedidosClientes/consultarEstadoPedido', function(req, res) {
+        c_pedidos_clientes.consultarEstadoPedido(req, res);
+    });
+    app.post('/api/PedidosClientes/consultarEstadoCotizacion', function(req, res) {
+        c_pedidos_clientes.consultarEstadoCotizacion(req, res);
+    });
+    
+    /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para actualizar el estado de una cotizacion 
+     *               Aprobar con prioridad
+     */
+    app.post('/api/PedidosClientes/solicitarAutorizacion', function(req, res) {
+        c_pedidos_clientes.solicitarAutorizacion(req, res);
+    });
+    
+    
+    /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para actualizar el estado de una cotizacion 
+     *               Aprobar con prioridad
+     */
+    app.post('/api/PedidosClientes/actualizarCabeceraCotizacion', function(req, res) {
+        c_pedidos_clientes.actualizarCabeceraCotizacion(req, res);
+    });
+    
+    /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para eliminar la cotizacion
+     */
+    app.post('/api/PedidosClientes/eliminarCotizacion', function(req, res) {
+        c_pedidos_clientes.eliminarCotizacion(req, res);
+    });
+    
     
 
 };

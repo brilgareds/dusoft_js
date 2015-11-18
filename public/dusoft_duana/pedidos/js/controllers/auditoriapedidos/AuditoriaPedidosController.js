@@ -16,12 +16,12 @@ define(["angular", "js/controllers",
         'EmpresaPedido', 'Cliente', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
-        "$modal", 'Auditor', 'Usuario',
+        "$modal", 'Auditor', 'Usuario',"localStorageService",
         function($scope, $rootScope, Request,
                 Empresa, Cliente, Farmacia,
                 PedidoAuditoria, Separador, DocumentoTemporal,
                 API, socket, AlertService,
-                ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario) {
+                ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario, localStorageService) {
 
             $scope.Empresa = Empresa;
 
@@ -159,7 +159,7 @@ define(["angular", "js/controllers",
                 var items = data.documentos_temporales.length;
                 var evento = (tipo === 1) ? "Cliente" : "Farmacia";
 
-                
+               // console.log("documentos de ", evento, data.documentos_temporales);
 
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && items === 0) {
@@ -493,9 +493,12 @@ define(["angular", "js/controllers",
                     }
                 }
             };
-
+            
+          
+           
+            
             $scope.generarDocumento = function(documento) {
-
+                
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -516,7 +519,7 @@ define(["angular", "js/controllers",
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
+                    
                     if (data.status === 200) {
 
                         $scope.productosNoAuditados = [];
@@ -555,9 +558,8 @@ define(["angular", "js/controllers",
                                 };
                             }
                         };
-                        var modalInstance = $modal.open($scope.opts);
-
-
+                       
+                         //var modalInstance = $modal.open($scope.opts);
                         //generar el pdf
                         var obj = {
                             session: $scope.session,
@@ -571,8 +573,20 @@ define(["angular", "js/controllers",
                         };
                         Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", obj, function(data) {
                             if (data.status === 200) {
+                                
+                               
                                 var nombre = data.obj.movimientos_bodegas.nombre_pdf;
-                                $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                                var detallado = data.obj.movimientos_bodegas.datos_documento;
+                                
+                                    /**
+                                     * @fecha: 26/10/2015
+                                     * +Descripcion: Se envia el detallado del documento el cual se
+                                     * pintara en una plantilla html y se imprimira posteriormente
+                                     * @author Cristian Ardila
+                                     */
+                                    localStorageService.set("DocumentoDespachoImprimir",detallado);
+                                
+                                   $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                             }
 
                         });
@@ -696,6 +710,10 @@ define(["angular", "js/controllers",
 
                     }
                 }
+            });
+            
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                socket.removeAllListeners();
             });
         }]);
 });

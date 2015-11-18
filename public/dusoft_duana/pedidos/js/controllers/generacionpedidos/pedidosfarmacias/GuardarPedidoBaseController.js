@@ -33,6 +33,7 @@ define(["angular", "js/controllers",
                         
             $scope.root.pedido = PedidoFarmacia.get();
             $scope.root.servicio = PedidosFarmaciasService;
+            $scope.root.filtroGrid = { filterText: '', useExternalFilter: false };
             
             $scope.root.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
@@ -47,6 +48,7 @@ define(["angular", "js/controllers",
                 enableHighlighting:true,
                 multiSelect: false,
                 showFilter:true,
+                filterOptions:$scope.root.filtroGrid,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width:150,
                         cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
@@ -360,7 +362,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         var nombre = data.obj.reporte_pedido.nombre_reporte;
-                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                     }  else {
                         AlertService.mostrarMensaje("warning", "Error generando el pdf");
                     }
@@ -374,7 +376,7 @@ define(["angular", "js/controllers",
                     if(err.err){
                         AlertService.mostrarMensaje("warning", err.msj);
                     } else if(archivo) {
-                        $scope.visualizarReporte("/reports/" + archivo, archivo, "download");
+                        $scope.visualizarReporte("/reports/" + archivo, archivo, "_blank");
                     }
                 });
             };
@@ -451,8 +453,10 @@ define(["angular", "js/controllers",
              */
             self.onConfirmarEliminarProducto = function(producto, index){
                 if($scope.root.pedido.getEsTemporal()){
+                    console.log("eliminar temporal ");
                     $scope.$broadcast('onEliminarProductoTemporal', producto, index);
                 } else if($scope.root.pedido.get_numero_pedido()) {
+                    console.log("eliminar pedido real");
                     $scope.$broadcast('onEliminarProducto', producto, index);
                 }
             };

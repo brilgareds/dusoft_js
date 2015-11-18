@@ -94,3 +94,9 @@ legend.medium-letter{
 .ng-cell-green {
     background-color: #DFFFDF;
 }
+
+.btn-principal{
+    
+    padding-left:15px; 
+    padding-right: 15px;
+}

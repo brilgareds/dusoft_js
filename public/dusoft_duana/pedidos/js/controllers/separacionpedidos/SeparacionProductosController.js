@@ -54,6 +54,8 @@ define(["angular", "js/controllers",
                      * @param {type} $event
                      */
                     $scope.onFiltrarProducto = function($event) {
+                        
+                        
                         if ($event.which === 13) {
                             self.renderFiltrarProducto($scope.rootSeparacion.filtro.codigoBarras);
                         }
@@ -61,18 +63,21 @@ define(["angular", "js/controllers",
                     };
                     
                     self.renderFiltrarProducto = function(codigoBarras) {
-
+                      
                         var index = -1;
                         var pedido = EmpresaPedido.getPedidoSeleccionado().getProductos();
-                       // console.log("pedido ", pedido);
-                       
+                    
                         for (var i in pedido) {
                             var _producto = pedido[i];
                             
+                           
+                            
                             if (!codigoBarras && _producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
+                                  
                                 index = i;
                                 break;
                             } else if(codigoBarras && _producto.getCodigoBarras() === $scope.rootSeparacion.filtro.termino ) {
+                              
                                 index = i;
                                 break;
                             }
@@ -134,7 +139,7 @@ define(["angular", "js/controllers",
 
                         modalInstance.result.then(function() {
                             self.refrescarProducto(function() {
-
+                              $scope.onSiguiente();
                             });
                         }, function() {
 
@@ -411,7 +416,7 @@ define(["angular", "js/controllers",
 
                             _pedido.agregarDetallePedido(ProductoPedido, productos, true, LoteProductoPedido);
 
-                            //console.log("pedido del doc tmp", doc);
+                           
 
                             $scope.rootSeparacion.documento.setPedido(_pedido);
 
@@ -516,6 +521,10 @@ define(["angular", "js/controllers",
                      * si es el ultimo
                      */
                     $scope.onSiguiente = function() {
+                        
+                        if ($scope.rootSeparacion.paginaactual === $scope.rootSeparacion.empresa.getPedidoSeleccionado().getProductos().length-1) {
+                            return;
+                        }
                         var cantidadProductos = EmpresaPedido.getPedidoSeleccionado().getProductos().length - 1;
                         var pedido = EmpresaPedido.getPedidoSeleccionado();
                         var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];

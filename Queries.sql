@@ -1310,6 +1310,19 @@ COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."observacion_cartera"
 IS 'Observacion ingresada por cartera';
 
 
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "pedido_cliente_id_tmp" integer;
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."pedido_cliente_id_tmp"
+IS 'Campo que almacenara la cotizacion del pedido';
+
+
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "valor_total_cotizacion" numeric(15,2);
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."valor_total_cotizacion"
+IS 'Campo que almacena el valor total de la cotizacion';
+
 
 /*==== Agregar sw_aprobado_cartera a tabala de  ventas_ordenes_pedidos_tmp =========*/
 
@@ -1478,4 +1491,21 @@ CREATE TABLE "public"."inv_planillas_farmacia_devolucion_detalle" (
 
 COMMENT ON TABLE "public"."inv_planillas_farmacia_devolucion_detalle"
 IS 'Almacenas los documentos de farmacias devueltos';
->>>>>>> 667c1498150eb314b7735f3c7c7454021177f41f
+
+
+ALTER TABLE "public"."observaciones_ordenes_compras"
+  ADD COLUMN "tipo_entrada" 	character varying(2);
+
+COMMENT ON COLUMN "public"."observaciones_ordenes_compras"."tipo_entrada"
+IS 'Tipo de input usado en la interfaz 0 = fecha';
+
+
+ALTER TABLE "public"."novedades_ordenes_compras"
+  ADD COLUMN "descripcion_entreda_novedad" CHAR varying(255);
+
+COMMENT ON COLUMN "public"."novedades_ordenes_compras"."descripcion_entreda_novedad"
+IS 'Descripcion de la entrada de la novedad, fecha de disponibilidad, numero etc';
+
+
+ALTER TABLE "public"."novedades_ordenes_compras"
+  DROP CONSTRAINT "novedades_ordenes_compras_UNIQUE" RESTRICT;

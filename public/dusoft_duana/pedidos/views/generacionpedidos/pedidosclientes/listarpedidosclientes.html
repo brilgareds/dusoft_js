@@ -1,14 +1,12 @@
 <div>
     <div class="row">
-        <div class="col-md-3">
-            <p class="input-group">
-                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_crear_cotizaciones }}" ng-click="gestionar_cotizacion_cliente()">
-                    <span class="glyphicon glyphicon-plus"></span> Crear Cotización
-                </button>
-            </p>
+        <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
+            <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_crear_cotizaciones }}" ng-click="gestionar_cotizacion_cliente()">
+                <span class="glyphicon glyphicon-plus"></span> Crear Cotización
+            </button>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="datos_view.fecha_inicial_pedidos" is-open="datos_view.datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
@@ -19,7 +17,7 @@
             </p>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="datos_view.fecha_final_pedidos" is-open="datos_view.datepicker_fecha_final" min="datos_view.fecha_inicial"  readonly  close-text="Cerrar"

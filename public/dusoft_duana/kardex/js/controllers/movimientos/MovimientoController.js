@@ -83,7 +83,8 @@ define([
                             {field: 'pedido.numero_pedido', displayName: 'Solicitud'},
                             {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
                             {field: 'pedido.cantidad_pendiente', displayName: 'Cant Pendiente'},
-                            {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia'},
+                            {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia destino'},
+                            {field: 'pedido.farmacia.fechaRegistro', displayName: 'Fecha pedido'},
                             {field: 'pedido.usuario', displayName: 'Usuario'},
                             {field: 'pedido.justificacionSeparador', displayName: 'Justificación separador'},
                             {field: 'pedido.justificacionAuditor', displayName: 'Justificación auditor'}
@@ -181,7 +182,7 @@ define([
                         //pendientes farmacia
                         for (var i in movimientos.pendientes_farmacias) {
                             var obj = movimientos.pendientes_farmacias[i];
-
+                             
                             var pendiente = Pendiente.get(obj.fecha_registro);
                             var pedido = PedidoKardex.get(
                                     {
@@ -198,12 +199,14 @@ define([
                             var farmacia = FarmaciaKardex.get(
                                     obj.farmacia_id,
                                     null,
-                                    obj.razon_social
+                                    obj.destino
+                                    //obj.razon_social
                             );
-
+                            
+                            farmacia.setFechaRegistro(obj.fecha_registro);
                             pedido.setFarmacia(farmacia);
                             pendiente.setPedido(pedido);
-
+                         
                             $scope.producto.agregarPendienteFarmacia(pendiente);
                         }
 

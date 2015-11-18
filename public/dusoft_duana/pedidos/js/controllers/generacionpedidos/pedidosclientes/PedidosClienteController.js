@@ -40,10 +40,44 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 cartera: false,
                 visualizar: false,
                 // Opciones del Modulo 
-                opciones: Sesion.getUsuarioActual().getModuloActual().opciones
+                opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
+                progresoArchivo: 0
+
             };
-            
-            $scope.items =null;
+            that.consultarEstadoPedidoCotizacion = function(tipo,numero){
+                
+                var url ='';
+                var obj = {};
+                
+                if(tipo === 1){
+                
+                 url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_PEDIDO;
+                 obj = {
+                    session: $scope.session,
+                    data: { pedidos_clientes: { pedido: numero } }
+                };
+                
+                }
+                
+                if(tipo === 2){
+                
+                 url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
+                 obj = {
+                    session: $scope.session,
+                    data: { pedidos_clientes: { cotizacion: numero } }
+                };
+                
+                }
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        $scope.Pedido.setEstado(data.obj.pedidos_clientes);
+                        
+                    }
+                });                
+            };
+            $scope.items = null;
+            $scope.pedidoCotizacion = 8;
             // Inicializacion Pedido o cotizacion           
             $scope.Pedido = Pedido.get(
                     Sesion.getUsuarioActual().getEmpresa().getCodigo(),
@@ -54,18 +88,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
             //Cotizacion
             if (localStorageService.get("cotizacion")) {
+             
                 var cotizacion = localStorageService.get("cotizacion");
                 $scope.Pedido.set_numero_cotizacion(parseInt(cotizacion.numero_cotizacion) || 0);
                 $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (cotizacion.visualizar === '1') ? true : false;
+                
+                 /*
+                 * +Descripcion: Se consulta el estado de la cotizacion
+                 */
+                that.consultarEstadoPedidoCotizacion(2,cotizacion.numero_cotizacion);
+             
+                
             } else if (localStorageService.get("pedido")) {
                 //Pedido
                 var pedido = localStorageService.get("pedido");
+
                 $scope.Pedido.setNumeroPedido(parseInt(pedido.numero_pedido) || 0);
+
                 $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
+
+                /*
+                 * +Descripcion: Se consulta el estado del pedido 
+                 */
+                that.consultarEstadoPedidoCotizacion(1,pedido.numero_pedido);
             }
 
+           
             // cargar permisos del modulo
             that.cargar_permisos = function() {
 
@@ -151,6 +201,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         callback(false);
                     }
                 });
+
             };
             that.render_cotizacion = function(data) {
 
@@ -172,6 +223,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.buscar_detalle_cotizacion();
                 }
             };
+
+            /*
+             * @Author: Eduar
+             * +Descripcion: Evento que actualiza la barra de progreso
+             */
+            socket.on("onNotificarProgresoArchivoPlanoClientes", function(datos) {
+                $scope.datos_view.progresoArchivo = datos.porcentaje;
+            });
+
+
             that.buscar_detalle_cotizacion = function() {
 
                 var obj = {
@@ -201,8 +262,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
                     $scope.Pedido.set_productos(producto);
                 });
-               
-                
+
+
                 $scope.items = $scope.Pedido.get_productos().length;
             };
             // Pedidos 
@@ -242,6 +303,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
             };
+
             that.buscar_detalle_pedido = function() {
 
                 var obj = {
@@ -260,6 +322,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
+
             that.render_productos_pedidos = function(productos) {
 
                 $scope.Pedido.limpiar_productos();
@@ -271,7 +334,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     producto.set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.valor_unitario_con_iva * data.cantidad_solicitada);
                     $scope.Pedido.set_productos(producto);
                 });
+                
+                
             };
+
             // Clientes
             $scope.listar_clientes = function(termino_busqueda) {
 
@@ -340,11 +406,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     var vendedor = Vendedor.get(data.nombre, data.tipo_id_vendedor, data.vendedor_id, data.telefono);
                     $scope.Empresa.set_vendedores(vendedor);
                 });
+                
             };
-            // Productos
-
+            
+             $scope.prioridad  = [
+                    {nombre:"Activo", id:1},
+                    {nombre: "Aprobar urgente", id: 6}
+                ];
+          
+            $scope.seleccionarAprobacion = function(model){
+                $scope.Pedido.setEstado(model.id.id)
+             
+            };
+            
             $scope.validacion_buscar_productos = function() {
-
+                
+              
                 var disabled = false;
                 // Validaciones Generales
                 if ($scope.Pedido.getCliente().get_descripcion() === undefined || $scope.Pedido.getCliente().get_descripcion() === '')
@@ -353,6 +430,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     disabled = true;
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
                     disabled = true;
+                
+               /* if ($scope.Pedido.getEstado() === undefined || $scope.Pedido.getEstado() <= 0)
+                    disabled = true;*/
                 // Cartera
                 if ($scope.datos_view.cartera)
                     disabled = true;
@@ -361,7 +441,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if ($scope.Pedido.get_aprobado_cartera() === '1')
                         disabled = true;
                 }
-
+                
                 // Solo visualizar
                 if ($scope.datos_view.visualizar)
                     disabled = true;
@@ -495,6 +575,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.confirmar_modificar_producto = function(producto) {
 
+
                 $scope.datos_view.producto_seleccionado = producto;
                 $scope.opts = {
                     backdrop: true,
@@ -533,9 +614,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.modificar_producto = function() {
 
+
                 var obj = {};
                 var url = '';
-              
+
                 // Cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
 
@@ -551,6 +633,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                 }
 
+
                 // Pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
 
@@ -564,9 +647,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
                     };
+
+
                 }
 
+
                 Request.realizarRequest(url, "POST", obj, function(data) {
+
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     $scope.datos_view.producto_seleccionado = Producto.get();
@@ -576,8 +663,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         if ($scope.Pedido.get_numero_pedido() > 0)
                             that.gestionar_consultas_pedidos();
                     }
+
+
                 });
             };
+            
+            $scope.validarNumero = function(valor){
+                
+                console.log("valor ", valor)
+            }
             // Lista Productos Seleccionados
             $scope.lista_productos = {
                 data: 'Pedido.get_productos()',
@@ -614,15 +708,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="habilitar_eliminacion_producto()" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                                        <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 " \n\
+                                        ng-model="row.entity.cantidad_solicitada" \n\
+                                        validacion-numero-entero \n\
+                                        class="form-control grid-inline-input" \n\
+                                        name="" id="" /> </div>'},
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
                     {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-toolbar">\
-                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
@@ -641,7 +740,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.opciones_archivo = $flow;
             };
             $scope.subir_archivo_plano = function() {
-
+                $scope.datos_view.progresoArchivo = 2;
 
                 $scope.opciones_archivo.opts.query.data = JSON.stringify({
                     pedidos_clientes: {
@@ -696,6 +795,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             scope: $scope,
                             controller: function($scope, $modalInstance) {
                                 $scope.close = function() {
+                                    $scope.datos_view.progresoArchivo = 0;
                                     $modalInstance.close();
                                 };
                             }
@@ -710,16 +810,129 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             // Acciones Botones       
 
             // Cancelar la cotizacion
-            $scope.cancelar_cotizacion = function() {
+            $scope.volver_cotizacion = function() {
                 $state.go('ListarPedidosClientes');
             };
             //Aceptar la cotizacion
             $scope.aceptar_cotizacion = function() {
+                that.actualizarCabeceraPedidoCliente();
                 $state.go('ListarPedidosClientes');
             };
+            
+            /**
+             * @author Cristian Ardila
+             * @fecha  17/11/2015
+             * +Descripcion: FUncion encargada de cancelar la cotizacion
+             */
+            $scope.cancelar_cotizacion = function() {
+              
+              if($scope.Pedido.get_numero_cotizacion() === 0){
+                      $state.go('ListarPedidosClientes');
+               }else{
+                $scope.opts = {
+                    backdrop: true, 
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Eliminando cotizacion ?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea cancelar la cotizacion para el cliente.</h4>\
+                                    <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            that.eliminarCotizacionDetalle();
+                            $modalInstance.close();
+                        };
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+               }
+            };
+            
+            that.eliminarCotizacionDetalle = function(){
+                
+                 var url = API.PEDIDOS.CLIENTES.ELIMINAR_COTIZACION;
+                  var obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido
+                            }
+                        }
+                    };
+                    
+                 Request.realizarRequest(url, "POST", obj, function(data) {
+                     
+                     
+                     
+                    if (data.status === 200) {
+                      $state.go('ListarPedidosClientes');
+                      AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                    
+                     if (data.status === 404) {
+                      
+                      AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+                
+             
+            };
+            /**
+             * +Descripcion: funcion encargada de actualizar la cabecera de
+             *               una cotizacion cuando se selecciona la opcion
+             *               de modificando
+             * @author Cristian Ardila
+             * @fecha  09/11/2015
+             * @returns {undefined}
+             */
+            that.actualizarCabeceraPedidoCliente = function(){
+              
+               var obj = {};
+               var url = '';
+               
+                // Observacion cartera para cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.ACTUALIZAR_CABECERA_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido
+                            }
+                        }
+                    };
+                }
+                
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                 
+                    AlertService.mostrarMensaje("warning", data.msj);
+                    if (data.status === 200) {
+                      
+                    }
+                });
+                
+            };
+            
+            
             // Gestiona la aprobacion o no del departamento de cartera
             $scope.gestion_cartera = function(aprobado) {
-
+               
                 var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);
@@ -755,10 +968,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     if (data.status === 200) {
-                        $scope.cancelar_cotizacion();
+                      $scope.volver_cotizacion();
                     }
                 });
             };
+
+
             // Gestionar la creacion del pedido
             $scope.gestionar_pedido = function() {
 
@@ -793,7 +1008,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
+
+
+
+
+
+
+
             $scope.generar_pedido_cliente = function() {
+
 
                 var obj = {
                     session: $scope.session,
@@ -807,7 +1030,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     if (data.status === 200) {
-                        $scope.cancelar_cotizacion();
+                        $scope.volver_cotizacion();
                     }
                 });
             };
@@ -851,6 +1074,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: function($scope, $modalInstance) {
 
                         $scope.descargar_reporte_pdf = function() {
+                            
                             $scope.generar_reporte($scope.Pedido, true);
                             $modalInstance.close();
                         };
@@ -866,22 +1090,29 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);
             };
             that.init = function() {
-
+                
+                
                 that.cargar_permisos();
-                if ($scope.Pedido.get_numero_pedido() > 0)
+                if ($scope.Pedido.get_numero_pedido() > 0){
                     that.gestionar_consultas_pedidos();
-                else
+                } else {
                     that.gestionar_consultas_cotizaciones();
+                }
+               
+                
             };
             that.init();
+            
+            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.$$watchers = null;
                 // Set Datas
-                $scope.Empresa.set_default();
+                //$scope.Empresa.set_default();
                 // set localstorage
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);
+                localStorageService.get("estadoPedido", null);
                 // datos view
                 //$scope.datos_view = null;
             });

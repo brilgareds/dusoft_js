@@ -1,16 +1,12 @@
 <div ng-controller="ListarOrdenesController">
 
     <div class="row">        
-        <div class="col-md-3">
-            <p class="input-group">
-
-                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_orden_compra()">
-                    <span class="glyphicon glyphicon-plus"></span> Generar Orden de Compra
-                </button>
-            </p>
+        <div class="pull-left btn-principal" >         
+            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_orden_compra()">
+                <span class="glyphicon glyphicon-plus"></span> Generar Orden de Compra
+            </button>         
         </div>
-
-        <div class="col-md-3">
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_inicial" is-open="datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
@@ -21,7 +17,7 @@
             </p>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_final" is-open="datepicker_fecha_final" min="fecha_inicial"  readonly  close-text="Cerrar"
@@ -32,7 +28,6 @@
                 </span>
             </p>
         </div>
-
         <!-- div class="col-md-2 pull-right">
             <p class="input-group">
 
@@ -41,33 +36,24 @@
                     <button class="btn btn-default" type="submit" ng-click="buscar_ordenes_compras(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
                 </span>
             </p>
-        </div -->
-        
-        
-        <div class="col-md-3 pull-right">                                
+        </div -->             
+        <div class="col-md-2 pull-right">                                
 
-                 <div class="input-group">
-                     <div class="input-group-btn">
-                       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtro.nombre}} <span class="caret"></span></button>
-                       <ul class="dropdown-menu">
-                         <li ng-repeat="filtro in filtros">
-                             <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
-                         </li>
-                       </ul>
-                     </div>
-                     <input type="text" class="form-control" ng-keypress="buscador_ordenes_compras($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
-                    <div class="input-group-btn" >
-                       <button class="btn btn-default" type="submit" ng-click="buscar_ordenes_compras(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
-                    </div>
-               </div>
-
-
-
-         </div>
-        
-        
-        
-
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtro.nombre}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="filtro in filtros">
+                            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <input type="text" class="form-control" ng-keypress="buscador_ordenes_compras($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="buscar_ordenes_compras(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div>
+        </div>                     
     </div>
 
 

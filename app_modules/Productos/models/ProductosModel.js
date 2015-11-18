@@ -100,7 +100,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
            termino = termino_busqueda.termino;
            
             if(termino_busqueda.tipo_busqueda === 0){
-               this.where("b.descripcion", G.constants.db().LIKE, "%" + termino + "%");
+               this.where(G.knex.raw("fc_descripcion_producto(b.codigo_producto)"), G.constants.db().LIKE,   termino +"%");
             } else if(termino_busqueda.tipo_busqueda === 1){
                 this.where("e.descripcion", G.constants.db().LIKE, "%" + termino + "%");
             } else {
@@ -129,7 +129,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 };
 
 
-ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, termino_busqueda, pagina, callback) {
+ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, termino_busqueda, pagina, callback) { 
 
     G.knex.column("a.existencia", "b.codigo_producto","b.descripcion as producto","b.cantidad",
     "b.codigo_alterno", "b.contenido_unidad_venta", "c.empresa_id", "c.razon_social", "d.descripcion AS centro",
@@ -154,7 +154,8 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
         }
     }).     
     andWhere(function() {
-       this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       //this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       this.where(G.knex.raw("fc_descripcion_producto(b.codigo_producto)"), G.constants.db().LIKE, termino_busqueda +"%").
        orWhere("b.codigo_producto", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     }).
     limit(G.settings.limit).
@@ -179,11 +180,14 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
     var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
-                where a.empresa_id = $1 and a.codigo_producto = $2 and a.estado = '1' and c.estado = '1'";
-
-    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
-    });
+                where a.empresa_id = :1 and a.codigo_producto = :2 and a.estado = '1' and c.estado = '1'";
+    
+   G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 };
 
 
@@ -200,19 +204,23 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, c
                 to_char(a.fecha_vencimiento, 'dd-mm-yyyy') AS fecha_vencimiento,\
                 a.existencia_actual\
                 from existencias_bodegas_lote_fv a \
-                inner join existencias_bodegas b on a.empresa_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.codigo_producto = b.codigo_producto and a.centro_utilidad = $3 and a.bodega= $4\
+                inner join existencias_bodegas b on a.empresa_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.codigo_producto = b.codigo_producto and a.centro_utilidad = :3 and a.bodega= :4\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and b.empresa_id = c.empresa_id\
                 inner join inventarios_productos d on c.codigo_producto = d.codigo_producto\
-                where a.empresa_id = $1 \
-                and a.codigo_producto = $2 \
+                where a.empresa_id = :1 \
+                and a.codigo_producto = :2 \
                 and a.existencia_actual > 0\
                 and a.estado = '1'\
                 and d.estado = '1'\
                 order by a.fecha_vencimiento desc ;";
 
-    G.db.query(sql, [empresa_id, codigo_producto, centro_utilidad, bodega], function(err, rows, result) {
-        callback(err, rows);
-    });
+    
+   G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto, 3 :centro_utilidad, 4 :bodega}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 };
 
 

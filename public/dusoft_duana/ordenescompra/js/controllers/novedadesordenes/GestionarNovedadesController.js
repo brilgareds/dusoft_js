@@ -16,7 +16,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "ObservacionOrdenCompra",
         "UsuarioOrdenCompra",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Novedad, Observacion, Usuario, Sesion) {
+        "webNotification",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Novedad, Observacion, Usuario, Sesion,webNotification) {
 
             var that = this;
 
@@ -126,7 +127,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 var obj = {session: $scope.session, data: {ordenes_compras: {numero_orden: $scope.numero_orden, termino_busqueda: termino, pagina_actual: $scope.pagina_actual}}};
 
-                Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
+                Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_DETALLE_ORDEN_COMPRA_NOVEDADES, "POST", obj, function(data) {
 
                     $scope.ultima_busqueda = $scope.termino_busqueda;
 
@@ -220,7 +221,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             $scope.buscador_productos_orden_compra = function(ev, termino_busqueda) {
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscar_detalle_orden_compra(termino_busqueda);
                 }
             };
@@ -287,38 +288,56 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'novedad.get_observacion().get_descripcion()', displayName: "Novedad", width: "15%"},
                     {field: 'novedad.get_descripcion()', displayName: 'Observacion', width: "21%"},
                     {field: 'novedad.get_cantidad_archivos()', displayName: 'Archivos', width: "5%"},
-                    {displayName: "Opcion", cellClass: "txt-center", width: "7%",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="novedades_producto_orden_compra(row)" ><span class="glyphicon glyphicon-file"></span> Novedad </button>\
-                                        </div>'}
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate:'<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="novedades_producto_orden_compra(row, true);" >Agregar Novedad</a></li>\
+                                                <li ng-if="row.entity.get_novedad().get_id() != \'\' " ><a href="javascript:void(0);" ng-click="novedades_producto_orden_compra(row)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.get_novedad().get_id().length > 0"><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Eliminar</a></li>\
+                                            </ul>\
+                                        </div>' }
                 ]
             };
-
-
-            $scope.novedades_producto_orden_compra = function(row) {
-
+            
+           
+            $scope.novedades_producto_orden_compra = function(row, nuevaNovedad) {
+                
                 var producto = row.entity;
                 var index = row.rowIndex;
                 producto.set_cantidad_seleccionada(producto.cantidad);
 
                 $scope.producto_seleccionado = producto;
+                
 
                 $scope.opts = {
-                    backdrop: true,
                     backdropClick: true,
                     dialogFade: false,
                     keyboard: true,
+                    backdrop: 'static',
                     templateUrl: 'views/novedadesordenes/gestionarnovedadproducto.html',
                     controller: "GestionarNovedadProductoController",
                     scope: $scope,
                     resolve: {
                         index: function() {
                             return index;
+                        }, 
+                        producto: function(){
+                            return producto
+                        },
+                        nuevaNovedad:function(){
+                            return nuevaNovedad
                         }
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
-            };
+                
+                modalInstance.result.then(function() {
+                    $scope.buscar_detalle_orden_compra();
+
+                }, function() {
+                });
+                };
 
             $scope.pagina_anterior = function() {
                 $scope.pagina_actual--;

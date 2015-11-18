@@ -773,7 +773,15 @@ function _generar_reporte_planilla_despacho(rows, callback) {
 
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
-    var smtpTransport = that.emails.createTransport();
+    var smtpTransport = that.emails.createTransport("SMTP", {
+        host: G.settings.email_host, // hostname
+        secureConnection: true, // use SSL
+        port: G.settings.email_port, // port for secure SMTP
+        auth: {
+            user: G.settings.email_user,
+            pass: G.settings.email_password
+        }
+    });
 
     var settings = {
         from: G.settings.email_sender,
@@ -794,8 +802,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
             return;
         }
     });
-}
-;
+};
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 

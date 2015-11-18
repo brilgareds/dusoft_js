@@ -3,20 +3,34 @@
         <div class="row">        
             <div class="col-md-12">
                 <tabset>
-                    <tab>
-                        <tab-heading>
+                    <tab  ng-click="cargarListaNotificacionCotizacion('')">
+                        <tab-heading >
                             <i class="glyphicon glyphicon-time"></i> Cotizaciones
                         </tab-heading>
                         <br> 
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarcotizacionesclientes.html'"></div>
                     </tab>                        
                     <tab>
-                        <tab-heading>
-                            <i class="glyphicon glyphicon-th"></i> Pedidos Clientes
+                        <tab-heading ng-click="notificacionClientesAutorizar=0">
+                             Pedidos Clientes 
+                             <!--<span ng-show="notificacionClientesAutorizar > 0" class="badge badge-warning">{{notificacionClientesAutorizar}}</span>//-->
+                         <!--   <i class="glyphicon glyphicon-th"></i> Pedidos Clientes//-->
                         </tab-heading>
                         <br>                    
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarpedidosclientes.html'"></div>
-                    </tab>                                                                             
+                    </tab>   
+                    
+                    <tab  ng-click="cargarListaNotificacionCotizacion(6)">
+                        <tab-heading>
+                            <i class="glyphicon glyphicon-time"></i> Notificaciones
+                            
+                            <span ng-show="notificacionClientesAutorizar > 0" class="badge badge-warning">{{notificacionClientesAutorizar}}</span>
+                        
+                        </tab-heading>
+                        <br> 
+                        <div ng-include="'views/generacionpedidos/pedidosclientes/listarnotificacioncotizaciones.html'"></div>
+                    </tab>  
+                    
                 </tabset>                                      
             </div>
         </div>    

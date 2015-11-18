@@ -66,8 +66,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     'click': that.opciones.sw_modificar_orden
                 }
             };
-
-
+            
+            console.log("Empresa.get_unidades_negocios() ", $scope.Empresa.get_ordenes_compras());
+            
             that.set_orden_compra = function() {
 
                 $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
@@ -111,7 +112,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var obj = {session: $scope.session, data: {ordenes_compras: {numero_orden: $scope.numero_orden}}};
 
                 Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_ORDEN_COMPRA, "POST", obj, function(data) {
-
+                    
+                    console.log("data ", data);
+                    
                     if (data.status === 200 && data.obj.orden_compra.length > 0) {
 
                         var datos = data.obj.orden_compra[0];
@@ -524,8 +527,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             $scope.modificarDetalle = function(producto){
-                console.log("producto a modificar ", producto);
-
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -734,16 +736,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     },500);
 
                 } else {
+                    $scope.opciones_archivo.cancel();
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
             };
 
             that.gestionar_consultas();
 
-
+            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 $scope.Empresa.limpiar_proveedores();
+                socket.removeAllListeners();
             });
 
         }]);

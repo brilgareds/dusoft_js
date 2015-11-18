@@ -32,6 +32,13 @@ G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
 G.constants =  require("./lib/Constants").create();
+G.XlsParser =  require("./lib/XlsParser");
+/**
+ * +Descripcion:Se añade dependencia para importar archivo .XLS
+ * @fecha: 29/10/2015
+ * 
+ * */
+G.xls = require("xls-to-json");
 
 
 
@@ -81,7 +88,6 @@ if (program.config) {
     G.settings.outputConfig();
     return;
 }
-;
 
 /*=========================================
  * Monitoring Server only Production
@@ -98,9 +104,10 @@ if (program.prod) {
 //determina el numero de procesadores del servidor, de modo que se concrete los workers que permite el balanceo de carga
 G.db.setCredentials(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName, function(){
     
-G.knex = require('./lib/Knex').
-         create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
-         connect().getInstance();
+    G.knex = require('./lib/Knex').
+             create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
+             connect().getInstance();
+     
 });
  
 
@@ -115,6 +122,7 @@ var cluster = require('cluster'),
 if (cluster.isMaster) {
 
     var numCPUs = require('os').cpus().length;
+    console.log("number of CPUS ", numCPUs );
 
     for (var i = 0; i < numCPUs; i++) {
         cluster.fork();
@@ -149,7 +157,7 @@ if (cluster.isMaster) {
             pub,
             sub,
             client
-            ));
+    ));
 
 
     /*=========================================
@@ -184,6 +192,7 @@ if (cluster.isMaster) {
     app.use(G.auth.validate());
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, 'files')));
 
     /*=========================================
      * error handlers

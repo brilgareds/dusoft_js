@@ -1,8 +1,6 @@
 
 var OrdenesCompraEvents = function(socket, ordenes_compras) {
 
-    console.log("Eventos OrdenesCompra  Cargado ");
-
     this.io = socket;
     this.m_ordenes_compras = ordenes_compras;
 };

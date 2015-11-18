@@ -90,7 +90,7 @@ define(["angular",
 
 
                 }
-
+             
             };
 
             that.crearPedido = function(obj) {
@@ -122,6 +122,8 @@ define(["angular",
                         break;
                     }
                 }
+                
+               
             };
 
 
@@ -134,7 +136,7 @@ define(["angular",
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
-                                " ng-disabled='habilitar_asignacion_pedidos(row.entity)'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                                " ng-disabled='habilitar_asignacion_pedidos(row.entity) || row.entity.estado ==4'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>", width: "220"},
                     {field: 'numero_pedido', displayName: 'Pedido'},
@@ -377,6 +379,8 @@ define(["angular",
 
             //delegados del socket io
             socket.on("onListarPedidosClientes", function(datos) {
+                
+                console.log("socket >>>>>>>>>>>>>>>>>> onListarPedidosClientes ");
                 if (datos.status === 200) {
                     var obj = datos.obj.pedidos_clientes[0];
                     var pedido = that.crearPedido(obj);

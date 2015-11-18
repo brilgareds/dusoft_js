@@ -21,12 +21,24 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.aprobado_cartera = '0';
                 this.estado_cotizacion = '';
                 this.descripcion_estado_cotizacion = '';
+                this.estado ='0';
             }
             ;
 
             PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);
 
-
+            
+            //estado
+            PedidoCliente.prototype.setEstado = function(estado) {
+                this.estado = estado;
+                return this;
+            };
+            
+            //estado
+            PedidoCliente.prototype.getEstado = function() {
+                
+                return this.estado;
+            };
             // Empresa
             PedidoCliente.prototype.set_empresa_id = function(empresa_id) {
                 this.empresa_id = empresa_id;

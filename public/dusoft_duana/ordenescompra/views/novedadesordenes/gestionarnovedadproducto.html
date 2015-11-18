@@ -24,12 +24,25 @@
                 <legend>Novedad</legend> 
                 <div class="row">                                       
                     <div class="col-md-12">  
-                        <ui-select ng-model="producto_seleccionado.novedad.observacion"  theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_observacion()">
+                        <ui-select ng-model="producto_seleccionado.novedad.observacion"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarNovedad()">
                             <ui-select-match  placeholder="Seleccionar observacion">{{ $select.selected.get_descripcion() }}</ui-select-match>
                             <ui-select-choices repeat="observacion in Empresa.get_observaciones() | filter:$select.search">
                                 {{ observacion.get_descripcion() }}
                             </ui-select-choices>
                         </ui-select>
+                        
+                        <div ng-switch="producto_seleccionado.novedad.observacion.getTipoEntrada()">
+                           <p class="input-group input-group-sm" ng-switch-when="0">
+
+                                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}"
+                                 ng-model="producto_seleccionado.novedad.descripcionEntrada" is-open="$parent.datepickerFechaInicial" min-date="$parent.fechaMinima"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </p>
+                        </div>
+                        
                     </div>                    
                 </div>
             </fieldset>
@@ -57,7 +70,7 @@
                     <div class="list-group">
                         <a ng-repeat="archivo in producto_seleccionado.get_novedad().get_archivos()" class="list-group-item defaultcursor" href="javascript:void(0)">
                             <span class="glyphicon glyphicon-file"></span>
-                            <button class="btn btn-default btn-xs pull-right" ng-click=""><span class="glyphicon glyphicon-cloud-download"></span></button>
+                            <button class="btn btn-default btn-xs pull-right" ng-click="onDescargarArchivo(archivo)"><span class="glyphicon glyphicon-cloud-download"></span></button>
                             {{archivo.id}}-{{archivo.descripcion}}
                         </a>
                     </div>
@@ -108,3 +121,5 @@
     </div>
 
 </div>
+
+<visualizar-reporte></visualizar-reporte>

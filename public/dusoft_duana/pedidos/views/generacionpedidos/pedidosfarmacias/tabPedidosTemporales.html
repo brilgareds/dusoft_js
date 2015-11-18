@@ -1,12 +1,12 @@
 <div class="row" style="padding-top:8px">
 
-    <div class="pull-left" style="padding-left:15px">
+    <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
 
         <button type="button" class="btn btn-default pull-left" ng-click="onIrVistaGuardarPedidoTemporal()" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" name="btnCrearPedido">
             <span class="glyphicon glyphicon-plus"></span> Crear Pedido
         </button>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
 
         <ui-select ng-model="rootPedidosTempFarmacias.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onBuscarPedidos()">
             <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.getNombre() }}</ui-select-match>

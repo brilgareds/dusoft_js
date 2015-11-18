@@ -40,6 +40,8 @@ define(["angular", "js/controllers",
                         //console.log("$scope.rootSeparacionClientes.empresa", $scope.rootSeparacionClientes.empresa);
                         EmpresaPedido.setPedidos(pedidos);
                         
+                     
+                        
                     }
                 });
                 

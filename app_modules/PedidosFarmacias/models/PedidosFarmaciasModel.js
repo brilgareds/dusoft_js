@@ -229,11 +229,15 @@ PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(em
 
     var sql = " SELECT farmacia_id, centro_utilidad, bodega, empresa_destino, centro_destino, bogega_destino as bodega_destino, observacion, usuario_id\
                 FROM solicitud_Bodega_principal_aux\
-                WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
-
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+                WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4";
+    
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id}).
+    then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
@@ -437,7 +441,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "a.centro_utilidad", 
         "a.bodega as bodega_id", 
         "d.razon_social as nombre_farmacia", 
-        "b.descripcion as nombre_bodega",
+        "c.descripcion as nombre_bodega",
         "a.usuario_id", 
         "e.nombre as nombre_usuario" ,
         "a.estado as estado_actual_pedido",
@@ -453,7 +457,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                      when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
         "f.estado as estado_separacion", 
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
-        "c.descripcion as nombre_centro_utilidad",
+        "b.descripcion as nombre_centro_utilidad",
         "a.empresa_destino as empresa_origen_id",
         "a.observacion",
         "g.empresa_id as despacho_empresa_id",
@@ -465,17 +469,17 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     
     G.knex.column(columns).
     from("solicitud_productos_a_bodega_principal as a").
-    innerJoin("bodegas as b", function(){
+    innerJoin("centros_utilidad as b", function(){
          this.on("a.farmacia_id", "b.empresa_id" ).
-         on("a.centro_utilidad", "b.centro_utilidad").
-         on("a.bodega", "b.bodega");
+         on("a.centro_utilidad", "b.centro_utilidad");
     }).
-    innerJoin("centros_utilidad as c", function(){
-         this.on("b.empresa_id", "c.empresa_id" ).
-         on("b.centro_utilidad", "c.centro_utilidad");
+    leftJoin("bodegas as c", function(){
+         this.on("c.empresa_id", "b.empresa_id" ).
+         on("c.centro_utilidad", "b.centro_utilidad").
+         on("a.bodega", "c.bodega");
     }).
     innerJoin("empresas as d", function(){
-         this.on("c.empresa_id", "d.empresa_id" );
+         this.on("b.empresa_id", "d.empresa_id" );
     }).
     innerJoin("system_usuarios as e", function(){
          this.on("a.usuario_id", "e.usuario_id" );
@@ -669,11 +673,15 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                        )\
                     ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                where a.solicitud_prod_a_bod_ppal_id= $1 order by e.descripcion ; ";
+                where a.solicitud_prod_a_bod_ppal_id= ? order by e.descripcion ; ";
 
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+   G.knex.raw(sql, [numero_pedido]).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+
 
 };
 
@@ -950,11 +958,21 @@ PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,
     });
 };
 // Pedidos en Donde esta pendiente por entregar el Producto
+/**
+ * 
+ * @param {type} empresa
+ * @param {type} codigo_producto
+ * @param {type} callback
+ * +Descripcion: se agrega campo destino
+ * @fecha: 29/10/2015
+ * @returns {undefined}
+ */
 PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
 
     var sql = " select \
                 a.farmacia_id,\
                 c.razon_social,\
+                (select g.descripcion FROM bodegas g WHERE g.empresa_id = a.farmacia_id AND g.centro_utilidad = a.centro_utilidad AND g.bodega = a.bodega) as destino,\
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                 b.cantidad_solic as cantidad_solicitada,\
                 b.cantidad_pendiente,\
@@ -1039,13 +1057,16 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
 
 PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias_por_fecha = function(codigo_producto, fecha_registro_pedido, callback) {
     
-    var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
-                and fecha_registro < $2\
+    var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = :1\
+                and fecha_registro < :2\
                 group by codigo_producto "; 
     
-    G.db.query(sql, [codigo_producto, fecha_registro_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+   G.knex.raw(sql, {1 : codigo_producto, 2 : fecha_registro_pedido}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 };
 
 /**
@@ -1060,9 +1081,9 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 
-PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = function(numero_pedido, callback) {
-    
-     var sql = " select b.codigo_producto, b.cantidad_solic, sum(coalesce(c.cantidad_despachada,0)) as cantidad_despachada,\
+PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = function(numero_pedido, transaccion, callback) {
+        
+    var sql = " select b.codigo_producto, b.cantidad_solic, sum(coalesce(c.cantidad_despachada,0)) as cantidad_despachada,\
                  b.cantidad_solic - sum(coalesce(c.cantidad_despachada,0)) as cantidad_pendiente from\
                 solicitud_productos_a_bodega_principal a\
                 inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
@@ -1070,43 +1091,44 @@ PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = fun
                 select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero \
                 from inv_bodegas_movimiento_despachos_farmacias a \
                 inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
-                where a.solicitud_prod_a_bod_ppal_id = $1 group by 1,3,4\
+                where a.solicitud_prod_a_bod_ppal_id = :1 group by 1,3,4\
                 ) as c on b.codigo_producto = c.codigo_producto\
-                where a.solicitud_prod_a_bod_ppal_id = $1 group by 1,2 ";
-    
-    
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-       
-        
-        if(err){
-            callback(err, null);
-            return;
-        }
-        
-        var length = rows.length;
-        
-        G.db.begin(function() {
-            rows.forEach(function(row){
-                
-                var cantidad_pendiente = parseInt(row.cantidad_pendiente);
-                 sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
-                        SET cantidad_pendiente= $1 WHERE solicitud_prod_a_bod_ppal_id= $2 AND\
-                        codigo_producto=$3; ";
+                where a.solicitud_prod_a_bod_ppal_id = :1 group by 1,2 ";
 
 
-                G.db.transaction(sql, [cantidad_pendiente, numero_pedido, row.codigo_producto], function(err, rows, result) {
+    G.knex.raw(sql, {1:numero_pedido}).
+    transacting(transaccion).
+    then(function(resultado){
 
-                     if (--length === 0) {
-                         G.db.commit(function(){
-                            callback(err, rows);
-                            return;
-                         });
-                    }
-                });
+        var length = resultado.rows.length;
 
+        resultado.rows.forEach(function(row) {
+
+            var cantidad_pendiente = parseInt(row.cantidad_pendiente);
+            sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
+                        SET cantidad_pendiente = :1 WHERE solicitud_prod_a_bod_ppal_id = :2 AND\
+                        codigo_producto = :3 ; ";
+
+
+            G.knex.raw(sql, {1:cantidad_pendiente, 2:numero_pedido, 3:row.codigo_producto}).
+            transacting(transaccion).
+            then(function(resultado2) {
+
+                if (--length === 0) {
+                    callback(false, resultado2.rows);
+                    return;
+                }
+            }).
+            catch(function(err){
+                callback(err);
             });
+
         });
+        
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 PedidosFarmaciasModel.prototype.consultar_producto_en_farmacia = function(empresa_id, centro_utilidad, bodega, codigo_producto, callback) {

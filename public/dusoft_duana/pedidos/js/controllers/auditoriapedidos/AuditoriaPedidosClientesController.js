@@ -101,8 +101,8 @@ define(["angular", "js/controllers",
             };
             
             
-            $scope.$on("onPedidosSeparadosRenderCliente", function(e, items) {
-
+            $scope.$on("onPedidosSeparadosRenderCliente", function(e, items) { 
+                //console.log("documentos de clientes ", Empresa.getDocumentoTemporal(1))
                 $scope.items = items;
                 
                 if(localStorageService.get("auditoriaCliente")){
@@ -134,12 +134,12 @@ define(["angular", "js/controllers",
             };
             
             $scope.$on("mostrardetalleclienteCompleto",function(e, datos){
-                console.log("evento recibido del padre mostrardetalleclienteCompleto");
+               
                 $scope.$broadcast("detalleClienteCompleto", datos);
             });
             
             $scope.$on("cerrarDetalleCliente", function(){
-                console.log("cerrar slider  cliete");
+                
                 $scope.$emit('cerrardetallecliente', {animado: true});
             });
 

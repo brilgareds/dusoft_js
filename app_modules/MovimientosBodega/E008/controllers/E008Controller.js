@@ -163,7 +163,7 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
 
 
     //Validar que el usuario que crea el documento temporal, sea el mismo responsable del pedido
-    __validar_responsable_pedidos_farmacias(that, numero_pedido, usuario_id, '1', function(err, continuar) { 
+    __validar_responsable_pedidos_farmacias(that, numero_pedido, usuario_id, '1', function(err, continuar) {   
 
         if (continuar) {
 
@@ -435,6 +435,7 @@ E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, r
 
     that.m_e008.consultar_documentos_temporales_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
         if (err) {
+            console.log("error generado listado ", err);
             res.send(G.utils.r(req.url, 'Error consultado los documentos temporales de clientes', 500, {documentos_temporales: {}}));
             return;
         } else {
@@ -746,6 +747,8 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
             var usuario_id = documento.usuario_id;
 
             that.m_e008.eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, rows) {
+                //console.log("error eliminando temporal ", err);
+                
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Clientes', 500, {}));
                     return;
@@ -1730,7 +1733,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                     return;
                 }
 
-                auditor_id = operario[0].operario_id;
+                auditor_id = operario[0].operario_id;  
 
                 __validar_productos_pedidos_clientes(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
 
@@ -1743,7 +1746,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                             res.send(G.utils.r(req.url, 'Algunos productos no ha sido auditados o tienen pendientes la justificacion', 404, {movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}));
                             return;
                         }
-
+ 
                         __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, function(err, cajas_no_cerradas) {
 
                             if (err) {
@@ -1755,11 +1758,11 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                     res.send(G.utils.r(req.url, 'Algunas cajas no se han cerrado', 404, {movimientos_bodegas: {cajas_no_cerradas: cajas_no_cerradas}}));
                                     return;
                                 }
-
-                                that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+    
+                                that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {  
 
                                     if (err) {
-                                        res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
+                                        res.send(G.utils.r(req.url, "Se genero un error interno...", 500, {movimientos_bodegas: {}}));
                                         return;
                                     }
 
@@ -1927,7 +1930,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
                                 if (err) {
                                     console.log("error cambiando estado del pedido ", err);
-                                    res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
+                                    res.send(G.utils.r(req.url, "Se genero un error ...", 500, {movimientos_bodegas: {}}));
                                     return;
                                 }
                                 that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
@@ -2249,8 +2252,11 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
                 datos_documento.serverUrl = req.protocol + '://' + req.get('host')+ "/";
 
                 __generarPdfDespacho(datos_documento, function(nombre_pdf) {
-                    console.log("nombre generado ", nombre_pdf);
-                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200, {movimientos_bodegas: {nombre_pdf: nombre_pdf}}));
+                    
+                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200,{
+                      //  movimientos_bodegas: {nombre_pdf: nombre_pdf}
+                        movimientos_bodegas: {nombre_pdf: nombre_pdf, datos_documento: datos_documento}
+                    }));
                 });
 
             });
@@ -2309,7 +2315,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                 return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
                             });
 
-                            console.log("producto separarod   >>>>>>>>>>>>>>>>", documento_temporal_id, usuario_id, detalle_documento_temporal, producto_pedido);
+                            //console.log("producto separarod   >>>>>>>>>>>>>>>>", documento_temporal_id, usuario_id, detalle_documento_temporal, producto_pedido);
                             var cantidad_pendiente = producto_pedido.cantidad_pendiente;
 
                             if (producto_separado.length === 0) {
@@ -2531,7 +2537,7 @@ function __generarPdfDespacho(datos, callback) {
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/despacho.html', 'utf8'),
-            recipe: "phantom-pdf",
+            recipe: "html",
             engine: 'jsrender',
             phantom: {
                 margin: "10px",
@@ -2543,7 +2549,7 @@ function __generarPdfDespacho(datos, callback) {
         
         response.body(function(body) {
            var fecha = new Date();
-           var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+           var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + "_" + fecha.toFormat('DD-MM-YYYY') + ".html";
            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
                 if(err) {
                     console.log(err);

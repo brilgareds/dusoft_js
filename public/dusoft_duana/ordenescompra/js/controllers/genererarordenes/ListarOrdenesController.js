@@ -192,7 +192,6 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'numero_orden_compra', displayName: '# Orden', width: "5%"},
                     {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "30%"},
-                    //{field: 'descripcion_estado', displayName: "Estado"},
                     {field: 'descripcion_estado', displayName: "Estado", cellClass: "txt-center",
                         cellTemplate: "<button type='button' ng-class='agregar_clase_btn(row.entity.estado)'>{{row.entity.descripcion_estado}} </button>", width: "220"},
                     {field: 'estado_digitacion', displayName: "Digitacion"},
@@ -373,7 +372,7 @@ define(["angular", "js/controllers",
                     };
 
                     Request.realizarRequest(API.ORDENES_COMPRA.REPORTE_ORDEN_COMPRA, "POST", obj, function(data) {
-
+                        
                         if (data.status === 200) {
                             var nombre_reporte = data.obj.ordenes_compras.nombre_reporte;
 
@@ -397,7 +396,7 @@ define(["angular", "js/controllers",
                 if (orden_compra.get_sw_estado_digitacion() === '1') {
 
                     $scope.datos_view.orden_compra_seleccionada = orden_compra;
-                    $scope.datos_view.email_subject = 'Orden de Compra No-' + $scope.datos_view.orden_compra_seleccionada.get_numero_orden();
+                    $scope.datos_view.email_subject = 'Orden de Compra de DUANA Y CIA LTDA - COSMITET LTDA No-' + $scope.datos_view.orden_compra_seleccionada.get_numero_orden();
                     $scope.datos_view.email_message = 'Orden de Compra No-' + $scope.datos_view.orden_compra_seleccionada.get_numero_orden() + '.\nPara el Proveedor ' + $scope.datos_view.orden_compra_seleccionada.get_proveedor().get_nombre();
                     $scope.datos_view.email_attachment_name = "OrdenCompraNo-" + $scope.datos_view.orden_compra_seleccionada.get_numero_orden() + '.pdf';
 
@@ -578,6 +577,7 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                socket.removeAllListeners();
             });
 
         }]);

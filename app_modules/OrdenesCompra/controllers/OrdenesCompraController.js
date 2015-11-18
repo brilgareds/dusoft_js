@@ -1,8 +1,7 @@
 
 var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails) {
 
-    console.log("Modulo Ordenes Compra  Cargado ");
-
+  
     this.m_ordenes_compra = ordenes_compras;
     this.m_productos = productos;
     this.e_ordenes_compra = eventos_ordenes_compras;
@@ -164,6 +163,52 @@ OrdenesCompra.prototype.consultarDetalleOrdenCompra = function(req, res) {
     });
 };
 
+// Consultar Orden de Compra por numero de orden
+OrdenesCompra.prototype.consultarDetalleOrdenCompraConNovedades = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.termino_busqueda === undefined || args.ordenes_compras.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'termino_busqueda, pagina_actual no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.pagina_actual === '' || args.ordenes_compras.pagina_actual === 0 || args.ordenes_compras.pagina_actual === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    var termino_busqueda = args.ordenes_compras.termino_busqueda;
+    var pagina_actual = args.ordenes_compras.pagina_actual;
+
+    that.m_ordenes_compra.consultarDetalleOrdenCompraConNovedades(numero_orden, termino_busqueda, pagina_actual, function(err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
+            return;
+        } else {
+
+            res.send(G.utils.r(req.url, 'Orden de Compra', 200, {lista_productos: lista_productos}));
+            return;
+        }
+    });
+};
+
+
+
 
 // Listar productos para ordenes de compra
 OrdenesCompra.prototype.listarProductos = function(req, res) {
@@ -307,7 +352,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
-
+      
         if (err || orden_compra.length === 0) {
             res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
             return;
@@ -683,10 +728,10 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
     var observacion_id = args.ordenes_compras.observacion_id;
     var descripcion_novedad = args.ordenes_compras.descripcion;
     var usuario_id = req.session.user.usuario_id;
+    var descripcionEntrada = args.ordenes_compras.descripcionEntrada || "";
 
 
-
-    that.m_ordenes_compra.consultar_novedad_producto(novedad_id, function(err, novedades) {
+    that.m_ordenes_compra.consultarNovedadPorObservacion(novedad_id, observacion_id, function(err, novedades) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultando la novedad', 500, {ordenes_compras: []}));
@@ -694,7 +739,7 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
         } else {
 
             if (novedades.length === 0) {
-                that.m_ordenes_compra.insertar_novedad_producto(item_id, observacion_id, descripcion_novedad, usuario_id, function(err, rows, result) {
+                that.m_ordenes_compra.insertar_novedad_producto(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error registrando la novedad', 500, {ordenes_compras: []}));
@@ -705,7 +750,7 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
                     }
                 });
             } else {
-                that.m_ordenes_compra.modificar_novedad_producto(novedad_id, observacion_id, descripcion_novedad, usuario_id, function(err, rows, result) {
+                that.m_ordenes_compra.modificar_novedad_producto(novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada,  function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error modificando la novedad', 500, {ordenes_compras: []}));
@@ -814,7 +859,7 @@ OrdenesCompra.prototype.consultarArchivosNovedades = function(req, res) {
 
 // Generar Reporte Orden Compra
 OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
-
+   
     var that = this;
 
     var args = req.body.data;
@@ -850,7 +895,7 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
     var enviar_email = args.ordenes_compras.enviar_email;
 
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
-
+        
         if (err || orden_compra.length === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
             return;
@@ -865,7 +910,10 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
 
                     var orden = orden_compra[0];
 
-                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function(nombre_reporte) {
+                    _generar_reporte_orden_compra({orden_compra: orden, 
+                                                   lista_productos: lista_productos, 
+                                                   usuario_imprime: req.session.user.nombre_usuario, 
+                                                   serverUrl: req.protocol + '://' + req.get('host') + "/"}, function(nombre_reporte) {
 
                         if (enviar_email) {
 
@@ -926,9 +974,9 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
     var numero_orden = args.ordenes_compras.numero_orden;
 
-    __subir_archivo_plano(req.files, function(continuar, contenido) {
+    __subir_archivo_plano(req.files, function(error, contenido) {
 
-        if (continuar) {
+        if (!error) {
 
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
@@ -1284,40 +1332,42 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
     });
 };
 
-function __subir_archivo_plano(files, callback) {
 
+function __subir_archivo_plano(files, callback) {
     var ruta_tmp = files.file.path;
     var ext = G.path.extname(ruta_tmp);
     var nombre_archivo = G.random.randomKey(3, 3) + ext;
     var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
-    var contenido_archivo_plano = [];
 
     if (G.fs.existsSync(ruta_tmp)) {
         // Copiar Archivo
-        G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
-            if (err) {
-                // Borrar archivo fisico
-                G.fs.unlinkSync(ruta_tmp);
-                callback(false);
-                return;
+        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
+        then(function() {
+            return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
+        }).
+        then(function(){
+            var parser = G.XlsParser;
+            var workbook = parser.readFile(ruta_nueva);
+            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'costo']);
+            console.log("filas generadas ", filas);
+            if(filas){
+                G.fs.unlinkSync(ruta_nueva);
+                callback(false, filas);
             } else {
-                G.fs.unlink(ruta_tmp, function(err) {
-                    if (err) {
-                        callback(false);
-                        return;
-                    } else {
-                        // Cargar Contenido
-                        contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
-                        // Borrar archivo fisico
-                        G.fs.unlinkSync(ruta_nueva);
-                        callback(true, contenido_archivo_plano);
-                    }
-                });
+                throw "Error serializando el archivo";
             }
-        });
+        }).
+        fail(function(err) {
+            console.log("error generado >>>>>>>>>> ", err);
+            G.fs.unlinkSync(ruta_nueva);
+            callback(true);
+        }).
+        done();
+
     } else {
-        callback(false);
+        callback(true);
     }
+    
 }
 
 
@@ -1348,32 +1398,24 @@ function __subir_archivo_novedad(data, files, callback) {
             }
         });
     } else {
-        callback(false);
+        callback(true);
     }
-}
-;
+};
 
 // Funcion que valida que los codigos de los productos del archivo plano sean validos.
-function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, callback) {
+function __validar_productos_archivo_plano(contexto, filas, callback) {
 
     var that = contexto;
 
     var productos_validos = [];
     var productos_invalidos = [];
-    var rows = [];
 
-    contenido_archivo_plano.forEach(function(obj) {
-        obj.data.forEach(function(row) {
-            rows.push(row);
-        });
-    });
+    var i = filas.length;
 
-    var i = rows.length;
-
-    rows.forEach(function(row) {
-        var codigo_producto = row[0] || '';
-        var cantidad_solicitada = row[1] || 0;
-        var costo = row[2] || '';
+    filas.forEach(function(row) {
+        var codigo_producto = row.codigo || '';
+        var cantidad_solicitada = row.cantidad || 0;
+        var costo = row.costo || '';
 
         that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
 
@@ -1390,8 +1432,7 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
             }
         });
     });
-}
-;
+};
 
 
 // Funcion que valida que los datos del archivo plano tengan el costo del producto.
@@ -1413,8 +1454,7 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
     productos.forEach(function(row) {
 
         var codigo_producto = row.codigo_producto;
-        console.log("buscar producto con codigo ",codigo_producto );
-
+       
         that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, null, function(err, lista_productos) {
 
             if (err || lista_productos.length === 0) {
@@ -1441,7 +1481,8 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 
 // Funcion que genera el reporte en formato PDF usando la libreria JSReport
 function _generar_reporte_orden_compra(rows, callback) {
-
+    
+    
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
@@ -1467,7 +1508,8 @@ function _generar_reporte_orden_compra(rows, callback) {
             G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
 
                 if (err) {
-                    console.log('=== Se ha generado un error generando el reporte ====');
+                   
+                     res.send(G.utils.r(req.url, 'Se ha generado un error generando el reporte', 200, {nombre_reporte: {}}));
                 } else {
                     callback(nombre_reporte);
                 }
@@ -1482,10 +1524,18 @@ function _generar_reporte_orden_compra(rows, callback) {
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
     //var smtpTransport = that.emails.createTransport();
-    var smtpTransport = that.emails.createTransport('direct', { debug: true });
+    var smtpTransport = that.emails.createTransport("SMTP", {
+        host: G.settings.email_host, // hostname
+        secureConnection: true, // use SSL
+        port: G.settings.email_port, // port for secure SMTP
+        auth: {
+            user: G.settings.email_user,
+            pass: G.settings.email_password
+        }
+    });
 
     var settings = {
-        from: G.settings.email_sender,
+        from: G.settings.email_compras,
         to: to,
         subject: subject,
         html: message,
@@ -1503,8 +1553,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
             return;
         }
     });
-}
-;
+};
 
 OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails"];
 

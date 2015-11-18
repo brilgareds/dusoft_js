@@ -23,7 +23,8 @@ define(["angular","js/services"], function(angular, services){
             if(msg){
                 this.mostrandoMensaje = true;
                 console.log(msg);
-                that.el.html("<p class='alertcontenido alert alert-"+msg.tipo+"'>"+msg.msg+"</p>").show();
+                that.el.html("<p class='alertcontenido alert alert-"+msg.tipo+"'>\
+                                "+msg.msg+"</p>").show();
 
                 this.timer = setTimeout(function(){
                     that.el.html("<p>"+msg.msg+"</p>").hide();
@@ -43,10 +44,9 @@ define(["angular","js/services"], function(angular, services){
         }
       };
 
-
       this.destruirIntervalo =function(){
         clearTimeout(this.timer);
-         this.timer = null;
+        this.timer = null;
       };
 
       angular.element(document).ready(function () {

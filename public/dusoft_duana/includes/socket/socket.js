@@ -4,6 +4,7 @@ define(["angular","js/services"], function(angular, services){
       return {
         on: function (eventName, callback) {
           socket.on(eventName, function () {  
+            console.log("socket escuchando evento ", eventName);
             var args = arguments;
             
             if(!$rootScope.$$phase) {
@@ -23,7 +24,15 @@ define(["angular","js/services"], function(angular, services){
               }
             });
           })
-        }
+        },
+        removeAllListeners: function (eventName, callback) {
+          socket.removeAllListeners(eventName, function() {
+              var args = arguments;
+              $rootScope.$apply(function () {
+                callback.apply(socket, args);
+              });
+          }); 
+      }
       };
     }]);
 

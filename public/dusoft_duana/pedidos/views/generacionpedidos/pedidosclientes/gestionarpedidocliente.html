@@ -77,7 +77,7 @@
                                     <legend>Observación</legend>                                 
                                     <div class="row">  
                                         <div class="col-md-12">                                          
-                                            <textarea  ng-model="Pedido.observacion" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                            <textarea  ng-model="Pedido.observacion" ng-disabled="Pedido.get_numero_pedido() >0 || Pedido.get_estado_cotizacion() ==5 || Pedido.get_estado_cotizacion() ==3" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -91,7 +91,18 @@
                                         </div>
                                     </div>
                                 </fieldset>
-                            </div>                               
+                            </div>   
+                       <!--     <div class="col-md-2">                            
+                               <fieldset>
+                                    <legend>Prioridad</legend>                                 
+                                    <ui-select ng-model="Prioridad.id" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionarAprobacion(Prioridad)">
+                                        <ui-select-match  placeholder="Seleccionar prioridad de cotizacion">{{ $select.selected.nombre }}</ui-select-match>
+                                        <ui-select-choices repeat="Prioridad in prioridad | filter:$select.search">
+                                            {{ Prioridad.nombre }}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </fieldset>
+                            </div> //--> 
                         </div>     
                         <br>                    
                         <br>                      
@@ -108,7 +119,7 @@
                                                     <div class="">
                                                         <div class="col-md-3">
                                                             <p class="input-group">
-                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos()" ng-click="buscar_productos()" > 
+                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos() || Pedido.get_aprobado_cartera() ==5" ng-click="buscar_productos()" > 
                                                                     <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                                 </button>
                                                             </p>
@@ -148,8 +159,15 @@
                                                         <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
                                                     </div>
                                                     <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
-                                                        Nombre Archivo : <label>{{file.name}}</label>                                                                                                                                                       
-                                                    </div>
+                                                        Nombre Archivo : <label>{{file.name}}</label>   
+                                                        
+                                                        <div class="progress progress-striped" ng-class="{active: file.isUploading()}">
+                                                            <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                                                 aria-valuemax="100" ng-style="{width: datos_view.progresoArchivo + '%'}">
+                                                            </div>
+                                                            <span class="sr-only ng-binding">{{datos_view.progresoArchivo}}% Completado</span>
+                                                        </div>
+                                                    </div> 
                                                 </div>
 
                                                 <br>
@@ -173,14 +191,23 @@
                                
                                 <!--Acciones Cotizacion/ Pedido -->    
                                 <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
-                                    <button class="btn btn-default" ng-click="cancelar_cotizacion()">
-                                        <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                    
+                                    
+                                     <button class="btn btn-default" ng-click="cancelar_cotizacion()" ng-if="Pedido.get_estado_cotizacion() ==1">
+                                        <span class="glyphicon glyphicon-remove" ></span> Cancelar cotizacion
+                                    </button>
+                                    
+                                    <button class="btn btn-default" ng-click="volver_cotizacion()">
+                                        <span class="glyphicon glyphicon-ok" ></span> Volver
                                     </button>
                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
                                     </button>
-                                    <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 ">
-                                        <span class="glyphicon glyphicon-ok" ></span> Aceptar 
+                                   <!-- <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 " >//-->
+                                  <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_estado_cotizacion() ==1 || Pedido.get_estado_cotizacion() ==2 || Pedido.get_estado_cotizacion() ==4 || Pedido.get_estado_cotizacion() ==6" >
+                                        
+                                   
+                                   <span class="glyphicon glyphicon-ok" ></span> Aceptar 
                                     </button>                                
                                     <button class="btn btn-default" ng-click="gestionar_pedido()" ng-if="Pedido.get_numero_cotizacion() > 0 && Pedido.get_aprobado_cartera() === '1'" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
                                         <span class="glyphicon glyphicon-ok" ></span> Generar Pedido
@@ -188,12 +215,14 @@
                                 </div> 
                                 <!--Acciones Cartera-->
                                 <div class="modal-footer col-md-12" ng-if="datos_view.cartera">                                                             
-                                    <button class="btn btn-default" ng-click="gestion_cartera(0)" >
+                                    <button class="btn btn-default" ng-click="gestion_cartera(4)" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">
                                         <span class="glyphicon glyphicon-remove" ></span> Denegado Cartera
                                     </button>
-                                    <button class="btn btn-default" ng-click="gestion_cartera(1)" ng-disabled ="!items > 0">
-                                        <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera
+                                   <button class="btn btn-default" ng-click="gestion_cartera(1)" ng-disabled ="Pedido.getEstado() !=4 && !items >0 || Pedido.get_estado_cotizacion() ==5">
+                                        <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera 
                                     </button>
+                                    
+                                    
                                 </div>                              
                             </div>
                         </div>

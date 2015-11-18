@@ -1569,7 +1569,7 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
              }).select('valor_total_cotizacion')*/
             .then(function(rows) {
         callback(rows, true);
-        console.log("rows ", rows)
+       
     })
             . catch (function(error) {
 

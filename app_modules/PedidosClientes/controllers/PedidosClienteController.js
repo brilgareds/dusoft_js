@@ -323,10 +323,6 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  */
 PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
-console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
-console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
-console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
-
 
     var that = this;
 
@@ -384,9 +380,7 @@ console.log("***********PedidosCliente.prototype.listarProductosClientes********
     var pagina = args.pedidos_clientes.pagina_actual;
 
     that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, filtros, function(err, lista_productos) {
-        
-        console.log("lista_productos ", lista_productos);
-        
+      
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));
             return;
@@ -845,12 +839,7 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
-console.log("******************PedidosCliente.prototype.listarCotizaciones************************************00");
-console.log("******************PedidosCliente.prototype.listarCotizaciones************************************00");
-console.log("******************PedidosCliente.prototype.listarCotizaciones************************************00");
-console.log("******************PedidosCliente.prototype.listarCotizaciones************************************00");
 
-console.log("args.pedidos_clientes ", args.pedidos_clientes)
 
     var empresa_id = args.pedidos_clientes.empresa_id;
     var fecha_inicial = args.pedidos_clientes.fecha_inicial;

@@ -27,7 +27,9 @@ requirejs.config({
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
         dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone",
-        fileupload:"../../javascripts/fileupload/fileupload"
+        fileupload:"../../javascripts/fileupload/fileupload",
+        desktopNotify:"../../javascripts/notifications/desktop-notify-min",
+        webNotification:"../../javascripts/notifications/angular-web-notification",
     },
     shim: {
         "angular": {
@@ -76,6 +78,12 @@ requirejs.config({
         },
         "fileupload":{
             deps:["angular"]
+        },
+        "desktopNotify":{
+            deps:["angular"]
+        },
+        "webNotification":{
+            deps:["desktopNotify"]
         }
     }
 });

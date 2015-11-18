@@ -27,7 +27,7 @@ define(["angular", "js/controllers",
         "Usuario",
         "webNotification",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Pedido, Cliente, Vendedor, Sesion,webNotification) {
+                Empresa, Pedido, Cliente, Vendedor, Sesion, webNotification) {
 
             var that = this;
 
@@ -280,9 +280,9 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-               
+
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_COTIZACIONES, "POST", obj, function(data) {
-                    
+
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
                         return;
@@ -306,13 +306,13 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-            
-            $scope.cargarListaNotificacionCotizacion = function(estado){
-                
+
+            $scope.cargarListaNotificacionCotizacion = function(estado) {
+
                 that.buscar_cotizaciones(estado);
                 $scope.notificacionClientesAutorizar = 0;
             };
-            
+
             that.render_cotizaciones = function(cotizaciones) {
 
                 $scope.Empresa.limpiar_cotizaciones();
@@ -598,11 +598,13 @@ define(["angular", "js/controllers",
 
             };
 
-            
-            
-            that.notificarSolicitud = function(title, body){
+
+
+            that.notificarSolicitud = function(title, body) {
                 
-             webNotification.showNotification(title, {
+                 $scope.notificacionClientesAutorizar++;
+                
+                webNotification.showNotification(title, {
                     body: body,
                     icon: 'my-icon.ico',
                     onClick: function onNotificationClicked() {
@@ -613,7 +615,7 @@ define(["angular", "js/controllers",
                     if (error) {
                         window.alert('Error interno: ' + error.message);
                     } else {
-                    
+
                         setTimeout(function hideNotification() {
                             console.log('Hiding notification....');
                             hide(); //manually close the notification (you can skip this if you use the autoClose option)
@@ -621,7 +623,7 @@ define(["angular", "js/controllers",
                     }
                 });
             }
-            
+
             /*
              * @Author: Cristian Ardila
              * @param {PedidoFarmacia} pedido
@@ -640,45 +642,39 @@ define(["angular", "js/controllers",
 
                             data.set_descripcion_estado_cotizacion(estado[datos.obj.estado[0].estado]);
                             data.set_estado_cotizacion(datos.obj.estado[0].estado);
-                          
+
                             if (datos.obj.estado[0].estado === '6') {
-                               $scope.notificacionClientesAutorizar++;
-                               console.log("$scope.datos_view.opciones.sw_notificar_aprobacion ", $scope.datos_view.opciones.sw_notificar_aprobacion)
-                               if($scope.datos_view.opciones.sw_notificar_aprobacion === true){
                                
-                               that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + data.get_numero_cotizacion());
-                               
-                               }
+
+                                if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
+
+                                    that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + data.get_numero_cotizacion());
+                                }
                             }
                         }
                     });
                 }
-
             });
 
 
             //referencia del socket io
             socket.on("onListarEstadoPedido", function(datos) {
 
-
                 if (datos.status === 200) {
 
                     var estado = ['Inactivo', 'No asignado', 'Anulado',
                         'Entregado', 'Debe autorizar cartera']
                     $scope.Empresa.get_pedidos().forEach(function(data) {
-
                         if (datos.obj.numero_pedido === data.get_numero_pedido()) {
-
                             data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);
                         }
                     });
                 }
-
             });
 
 
             that.init();
-            
+
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
 

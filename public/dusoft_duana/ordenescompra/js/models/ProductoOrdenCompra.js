@@ -12,6 +12,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.presentacion = presentacion || "";
                 this.cantidad_presentacion = cantidad_presentacion || "";
                 this.cantidad_recibida = 0;
+                this.novedad = null;
             }
 
             ProductoOrdenCompra.prototype = Object.create(Producto.getClass().prototype);

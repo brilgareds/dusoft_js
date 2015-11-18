@@ -163,6 +163,52 @@ OrdenesCompra.prototype.consultarDetalleOrdenCompra = function(req, res) {
     });
 };
 
+// Consultar Orden de Compra por numero de orden
+OrdenesCompra.prototype.consultarDetalleOrdenCompraConNovedades = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.termino_busqueda === undefined || args.ordenes_compras.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'termino_busqueda, pagina_actual no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.pagina_actual === '' || args.ordenes_compras.pagina_actual === 0 || args.ordenes_compras.pagina_actual === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    var termino_busqueda = args.ordenes_compras.termino_busqueda;
+    var pagina_actual = args.ordenes_compras.pagina_actual;
+
+    that.m_ordenes_compra.consultarDetalleOrdenCompraConNovedades(numero_orden, termino_busqueda, pagina_actual, function(err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
+            return;
+        } else {
+
+            res.send(G.utils.r(req.url, 'Orden de Compra', 200, {lista_productos: lista_productos}));
+            return;
+        }
+    });
+};
+
+
+
 
 // Listar productos para ordenes de compra
 OrdenesCompra.prototype.listarProductos = function(req, res) {
@@ -684,18 +730,8 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     var descripcionEntrada = args.ordenes_compras.descripcionEntrada || "";
 
-    that.m_ordenes_compra.insertar_novedad_producto(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, function(err, rows, result) {
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error registrando la novedad', 500, {ordenes_compras: []}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Novedad registrada correctamente', 200, {ordenes_compras: rows}));
-            return;
-        }
-    });
-
-   /* that.m_ordenes_compra.consultar_novedad_producto(novedad_id, function(err, novedades) {
+    that.m_ordenes_compra.consultarNovedadPorObservacion(novedad_id, observacion_id, function(err, novedades) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultando la novedad', 500, {ordenes_compras: []}));
@@ -726,7 +762,7 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
                 });
             }
         }
-    });*/
+    });
 };
 
 OrdenesCompra.prototype.subirArchivoNovedades = function(req, res) {

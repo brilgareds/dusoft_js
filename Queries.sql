@@ -1505,3 +1505,7 @@ ALTER TABLE "public"."novedades_ordenes_compras"
 
 COMMENT ON COLUMN "public"."novedades_ordenes_compras"."descripcion_entreda_novedad"
 IS 'Descripcion de la entrada de la novedad, fecha de disponibilidad, numero etc';
+
+
+ALTER TABLE "public"."novedades_ordenes_compras"
+  DROP CONSTRAINT "novedades_ordenes_compras_UNIQUE" RESTRICT;

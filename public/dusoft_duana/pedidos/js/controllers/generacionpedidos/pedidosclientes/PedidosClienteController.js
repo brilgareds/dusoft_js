@@ -1030,7 +1030,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     if (data.status === 200) {
-                        $scope.cancelar_cotizacion();
+                        $scope.volver_cotizacion();
                     }
                 });
             };

@@ -684,9 +684,18 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     var descripcionEntrada = args.ordenes_compras.descripcionEntrada || "";
 
+    that.m_ordenes_compra.insertar_novedad_producto(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, function(err, rows, result) {
 
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error registrando la novedad', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Novedad registrada correctamente', 200, {ordenes_compras: rows}));
+            return;
+        }
+    });
 
-    that.m_ordenes_compra.consultar_novedad_producto(novedad_id, function(err, novedades) {
+   /* that.m_ordenes_compra.consultar_novedad_producto(novedad_id, function(err, novedades) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultando la novedad', 500, {ordenes_compras: []}));
@@ -717,7 +726,7 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
                 });
             }
         }
-    });
+    });*/
 };
 
 OrdenesCompra.prototype.subirArchivoNovedades = function(req, res) {

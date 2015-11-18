@@ -318,10 +318,14 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                         inner join contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
                         left join contratacion_produc_proveedor_politicas c on b.contrato_produc_prov_det_id = c.contrato_produc_prov_det_id \
                     ) as f on e.codigo_proveedor_id = f.codigo_proveedor_id and a.codigo_producto = f.codigo_producto\
-                ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";
+                ) AS a where a.numero_orden = :1 and a.estado = '1' and ( a.codigo_producto ilike :2 or  a.descripcion_producto ilike :2 ) ";
 
-    G.db.query(sql, [numero_orden, "%" + termino_busqueda + "%"], function(err, rows, result, total_records) {
-        callback(err, rows);
+
+    G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -481,9 +485,18 @@ OrdenesCompraModel.prototype.consultar_novedad_producto = function(novedad_id, c
 OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
 
     var sql = "  INSERT INTO novedades_ordenes_compras (item_id, observacion_orden_compra_id, descripcion, usuario_id, descripcion_entrada) \
-                 VALUES ( $1, $2, $3, $4, $5) RETURNING id as novedad_id ; ";
+                 VALUES ( :1, :2, :3, :4, :5) RETURNING id as novedad_id ; ";
     G.db.query(sql, [item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada], function(err, rows, result) {
         callback(err, rows, result);
+    });
+    
+    
+        
+    G.knex.raw(sql, {1:item_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

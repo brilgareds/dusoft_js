@@ -394,10 +394,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="col-xs-12"> <input type="text" \
                                 ng-model="row.entity.precio_venta" \
-                                validacion-numero \
+                                validacion-numero-decimal\
                                 ng-disabled = "row.entity.sw_pactado"\n\
                                 ng-style="{background: row.entity.colorInputPrecioPactador,color:row.entity.colorTextoPrecioPactador}"\n\
-                                 class="form-control grid-inline-input" name="" id="" /> </div>'},
+                                class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
                     {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",

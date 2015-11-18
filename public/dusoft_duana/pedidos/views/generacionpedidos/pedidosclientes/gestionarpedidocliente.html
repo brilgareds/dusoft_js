@@ -191,8 +191,14 @@
                                
                                 <!--Acciones Cotizacion/ Pedido -->    
                                 <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
-                                    <button class="btn btn-default" ng-click="cancelar_cotizacion()">
-                                        <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                    
+                                    
+                                     <button class="btn btn-default" ng-click="cancelar_cotizacion()" ng-if="Pedido.get_estado_cotizacion() ==1">
+                                        <span class="glyphicon glyphicon-remove" ></span> Cancelar cotizacion
+                                    </button>
+                                    
+                                    <button class="btn btn-default" ng-click="volver_cotizacion()">
+                                        <span class="glyphicon glyphicon-ok" ></span> Volver
                                     </button>
                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
@@ -215,6 +221,8 @@
                                    <button class="btn btn-default" ng-click="gestion_cartera(1)" ng-disabled ="Pedido.getEstado() !=4 && !items >0 || Pedido.get_estado_cotizacion() ==5">
                                         <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera 
                                     </button>
+                                    
+                                    
                                 </div>                              
                             </div>
                         </div>

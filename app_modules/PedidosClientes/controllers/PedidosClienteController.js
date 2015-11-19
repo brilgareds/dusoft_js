@@ -323,10 +323,6 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  */
 PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
-console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
-console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
-console.log("***********PedidosCliente.prototype.listarProductosClientes************** ");
-
 
     var that = this;
 
@@ -384,9 +380,7 @@ console.log("***********PedidosCliente.prototype.listarProductosClientes********
     var pagina = args.pedidos_clientes.pagina_actual;
 
     that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, filtros, function(err, lista_productos) {
-        
-        console.log("lista_productos ", lista_productos);
-        
+      
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));
             return;
@@ -846,15 +840,16 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
         return;
     }
 
+
     var empresa_id = args.pedidos_clientes.empresa_id;
     var fecha_inicial = args.pedidos_clientes.fecha_inicial;
     var fecha_final = args.pedidos_clientes.fecha_final;
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
 
+    var estadoCotizacion = args.pedidos_clientes.estado_cotizacion;
 
-
-    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_cotizaciones) {
+    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina_actual,estadoCotizacion, function(err, lista_cotizaciones) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));

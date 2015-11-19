@@ -25,8 +25,9 @@ define(["angular", "js/controllers",
         "ClientePedido",
         "VendedorPedidoCliente",
         "Usuario",
+        "webNotification",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Pedido, Cliente, Vendedor, Sesion) {
+                Empresa, Pedido, Cliente, Vendedor, Sesion, webNotification) {
 
             var that = this;
 
@@ -231,7 +232,7 @@ define(["angular", "js/controllers",
             // Cotizaciones 
             $scope.buscador_cotizaciones = function(ev) {
                 if (ev.which === 13) {
-                    that.buscar_cotizaciones();
+                    that.buscar_cotizaciones('');
                 }
             };
 
@@ -255,9 +256,13 @@ define(["angular", "js/controllers",
 
             };
 
-
-            that.buscar_cotizaciones = function() {
-
+            /**
+             * +Descripcion: Funcion encargada de consultar la lista de cotizaciones
+             * @param {type} estado
+             * @returns {void}
+             */
+            that.buscar_cotizaciones = function(estado) {
+                console.log("Estado ", estado);
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {
                     $scope.datos_view.pagina_actual_cotizaciones = 1;
                 }
@@ -270,7 +275,8 @@ define(["angular", "js/controllers",
                             fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_cotizaciones, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_cotizaciones, "yyyy-MM-dd") + " 23:59:00",
                             termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
-                            pagina_actual: $scope.datos_view.pagina_actual_cotizaciones
+                            pagina_actual: $scope.datos_view.pagina_actual_cotizaciones,
+                            estado_cotizacion: estado
                         }
                     }
                 };
@@ -299,6 +305,12 @@ define(["angular", "js/controllers",
                         that.render_cotizaciones(data.obj.pedidos_clientes.lista_cotizaciones);
                     }
                 });
+            };
+
+            $scope.cargarListaNotificacionCotizacion = function(estado) {
+
+                that.buscar_cotizaciones(estado);
+                $scope.notificacionClientesAutorizar = 0;
             };
 
             that.render_cotizaciones = function(cotizaciones) {
@@ -385,13 +397,13 @@ define(["angular", "js/controllers",
             $scope.pagina_anterior_cotizaciones = function() {
                 $scope.datos_view.paginando_cotizaciones = true;
                 $scope.datos_view.pagina_actual_cotizaciones--;
-                that.buscar_cotizaciones();
+                that.buscar_cotizaciones('');
             };
 
             $scope.pagina_siguiente_cotizaciones = function() {
                 $scope.datos_view.paginando_cotizaciones = true;
                 $scope.datos_view.pagina_actual_cotizaciones++;
-                that.buscar_cotizaciones();
+                that.buscar_cotizaciones('');
             };
 
             // Pedidos
@@ -415,7 +427,7 @@ define(["angular", "js/controllers",
 
 
                     if (data.status === 200) {
-                        that.buscar_cotizaciones();
+                        that.buscar_cotizaciones('');
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error");
                     }
@@ -442,7 +454,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        that.buscar_cotizaciones();
+                        that.buscar_cotizaciones('');
 
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error");
@@ -579,14 +591,39 @@ define(["angular", "js/controllers",
 
                 that.cargar_permisos();
 
-                that.buscar_cotizaciones();
+                that.buscar_cotizaciones('');
 
                 that.buscar_pedidos();
 
 
             };
 
-            that.init();
+
+
+            that.notificarSolicitud = function(title, body) {
+
+                $scope.notificacionClientesAutorizar++;
+
+                webNotification.showNotification(title, {
+                    body: body,
+                    icon: 'my-icon.ico',
+                    onClick: function onNotificationClicked() {
+                        console.log('Notification clicked.');
+                    },
+                    autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+                }, function onShow(error, hide) {
+                    if (error) {
+                        window.alert('Error interno: ' + error.message);
+                    } else {
+
+                        setTimeout(function hideNotification() {
+                            console.log('Hiding notification....');
+                            hide(); //manually close the notification (you can skip this if you use the autoClose option)
+                        }, 90000);
+                    }
+                });
+            }
+
             /*
              * @Author: Cristian Ardila
              * @param {PedidoFarmacia} pedido
@@ -605,37 +642,35 @@ define(["angular", "js/controllers",
 
                             data.set_descripcion_estado_cotizacion(estado[datos.obj.estado[0].estado]);
                             data.set_estado_cotizacion(datos.obj.estado[0].estado);
-                          
-                            if (datos.obj.estado[0].estado === '5') {
-                                $scope.notificacionClientesAutorizar++;
-                            }
                         }
                     });
+                    
+                    if (datos.obj.estado[0].estado === '6') {
+                        if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {                            
+                            that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + datos.obj.numeroCotizacion );
+                        }
+                    }
                 }
-
             });
 
 
             //referencia del socket io
             socket.on("onListarEstadoPedido", function(datos) {
 
-
                 if (datos.status === 200) {
 
                     var estado = ['Inactivo', 'No asignado', 'Anulado',
                         'Entregado', 'Debe autorizar cartera']
                     $scope.Empresa.get_pedidos().forEach(function(data) {
-
                         if (datos.obj.numero_pedido === data.get_numero_pedido()) {
-
                             data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);
                         }
                     });
                 }
-
             });
 
 
+            that.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

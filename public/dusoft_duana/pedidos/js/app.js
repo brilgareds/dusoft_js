@@ -55,7 +55,10 @@ define([
     "models/separacionpedidos/DocumentoDespacho",
     
     //Nuevo controlador
-    "controllers/auditoriapedidos/AuditoriaHTMLReportController"
+    "controllers/auditoriapedidos/AuditoriaHTMLReportController",
+    
+    //Service notificaciones
+    "webNotification"
     
 ], function(angular) {
     /* App Module and its dependencies */
@@ -69,10 +72,10 @@ define([
         'directive',
         'Url',
         'services',
-        //'ui.select2',
         'ui.select',
         'LocalStorageModule',
-        'flow'
+        'flow',
+        'angular-web-notification'
     ]);
 
     // se debe declarar estas propiedades para tener la referencia del urlProvider

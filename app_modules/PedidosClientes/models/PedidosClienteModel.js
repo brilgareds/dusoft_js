@@ -1210,7 +1210,7 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
  * Author : Camilo Orozco
  * Descripcion :  SQL Listar Cotizaciones
  */
-PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
+PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina,estadoCotizacion, callback) {
     
   
 
@@ -1261,9 +1261,9 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      f.vendedor_id ilike $4 or	\
      f.nombre ilike $4 \
      )\
-     order by 4 desc ";
+     AND a.estado ilike $5 order by 4 desc ";
      
-     G.db.paginated(sql, [empresa_id, fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+     G.db.paginated(sql, [empresa_id, fecha_inicial, fecha_final, "%" + termino_busqueda + "%", "%" + estadoCotizacion + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
      callback(err, rows);
      });
 
@@ -1569,7 +1569,7 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
              }).select('valor_total_cotizacion')*/
             .then(function(rows) {
         callback(rows, true);
-        console.log("rows ", rows)
+       
     })
             . catch (function(error) {
 

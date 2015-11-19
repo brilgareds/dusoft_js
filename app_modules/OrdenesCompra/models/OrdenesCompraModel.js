@@ -5,8 +5,10 @@ var OrdenesCompraModel = function() {
 // Listar las Ordenes de Compra 
 OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, filtro, callback) {
 
-     var subQueryTmp = G.knex.column("aa.orden_pedido_id").
+    var subQueryTmp = G.knex.column("aa.orden_pedido_id").
                        from("inv_bodegas_movimiento_tmp_ordenes_compra as aa").as("g");
+               
+    var subQueryNovedades = G.knex("novedades_ordenes_compras as a").select("item_id").sum("item_id as total").groupBy("item_id").as("h");
     
     var columns = [
         "a.orden_pedido_id as numero_orden",
@@ -53,6 +55,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
     innerJoin("system_usuarios as e", "a.usuario_id", "e.usuario_id").
     leftJoin("unidades_negocio as f", "a.codigo_unidad_negocio", "f.codigo_unidad_negocio").
     leftJoin(subQueryTmp,"a.orden_pedido_id", "g.orden_pedido_id").    
+   // leftJoin(subQueryNovedades,"h.item_id",).
     whereBetween('a.fecha_orden', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
     where({
            "a.sw_unificada"  : '0'

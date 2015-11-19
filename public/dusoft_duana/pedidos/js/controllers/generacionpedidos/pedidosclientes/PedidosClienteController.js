@@ -1,7 +1,7 @@
 
 define(["angular", "js/controllers", 'includes/slide/slideContent'
 ], function(angular, controllers) {
-
+    //probando branch de pedidos clientes
     controllers.controller('PedidosClienteController', [
         '$scope',
         '$rootScope',

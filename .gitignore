@@ -8,5 +8,6 @@ data/
 logs/
 tmp/*
 files/*
+files/tmp/*
 dump.rdb
 !.gitignore

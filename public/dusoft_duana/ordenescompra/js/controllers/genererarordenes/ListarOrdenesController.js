@@ -357,7 +357,7 @@ define(["angular", "js/controllers",
 
             $scope.generar_reporte = function(orden_compra) {
 
-
+                //branch ordenes de compras
                 $scope.orden_compra_seleccionada = orden_compra;
 
                // if (orden_compra.get_sw_estado_digitacion() === '1') {

@@ -41,7 +41,13 @@ define(["angular", "js/controllers",
             $scope.Empresa = Empresa;
 
             var fecha_actual = new Date();
-
+            
+            /**
+             * +Descripcion: Contador de notificaciones
+             */
+            $scope.notificacionClientesAutorizar = 0;
+            $scope.notificacionPedidoAutorizar = 0;
+            
             $scope.datos_view = {
                 // Paginacion Cotizaciones
                 termino_busqueda_cotizaciones: '',
@@ -262,7 +268,7 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-                console.log("Estado ", estado);
+                
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {
                     $scope.datos_view.pagina_actual_cotizaciones = 1;
                 }
@@ -306,13 +312,20 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-
+            
+            /**
+             * +Descripcion: Carga la lista de cotizaciones al seleccionar
+             *               el tab de notificacion de cotizaciones
+             *               
+             * @param {type} estado
+             */
             $scope.cargarListaNotificacionCotizacion = function(estado) {
 
                 that.buscar_cotizaciones(estado);
                 $scope.notificacionClientesAutorizar = 0;
             };
-
+            
+            
             that.render_cotizaciones = function(cotizaciones) {
 
                 $scope.Empresa.limpiar_cotizaciones();
@@ -409,7 +422,7 @@ define(["angular", "js/controllers",
             // Pedidos
             $scope.buscador_pedidos = function(ev) {
                 if (ev.which === 13) {
-                    that.buscar_pedidos();
+                    that.buscar_pedidos('','');
                 }
             };
 
@@ -461,8 +474,14 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-
-            that.buscar_pedidos = function() {
+            
+            /**
+             * +Descripcion: Funcion encargada de consultar los pedidos
+             * @param {type} estado
+             * @param {type} estadoSolicitud
+             * @returns {void}
+             */
+            that.buscar_pedidos = function(estado,estadoSolicitud) {
 
                 if ($scope.datos_view.ultima_busqueda_pedidos !== $scope.datos_view.termino_busqueda_pedidos) {
                     $scope.datos_view.pagina_actual_pedidos = 1;
@@ -476,7 +495,9 @@ define(["angular", "js/controllers",
                             fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_pedidos, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00",
                             termino_busqueda: $scope.datos_view.termino_busqueda_pedidos,
-                            pagina_actual: $scope.datos_view.pagina_actual_pedidos
+                            pagina_actual: $scope.datos_view.pagina_actual_pedidos,
+                            estado_pedido: estado,
+                            estado_solicitud: estadoSolicitud
                         }
                     }
                 };
@@ -551,7 +572,31 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
-
+            
+            /**
+             * +Descripcion: Metodo encargado de listar todos los pedidos   
+             *               creados
+             * @param {type} estado
+             * @param {type} estadoSolicitud
+             */
+            $scope.cargarListaPedidos = function(estado,estadoSolicitud) {
+                that.buscar_pedidos(estado,estadoSolicitud);
+                
+            };
+            
+            /**
+             * +Descripcion: Metodo encargado de listar todos los pedidos con
+             *               con estado = 4 ( Debe autorizar cartera )
+             * @param {type} estado
+             * @param {type} estadoSolicitud
+             */
+            $scope.cargarListaNotificacionPedidos = function(estado,estadoSolicitud) {
+               
+                that.buscar_pedidos(estado,estadoSolicitud);
+                
+               $scope.notificacionPedidoAutorizar=0;
+            };
+            
             // Agregar Clase de acuerdo al estado del pedido
             $scope.agregar_clase_pedido = function(estado) {
 
@@ -575,13 +620,13 @@ define(["angular", "js/controllers",
             $scope.pagina_anterior_pedidos = function() {
                 $scope.datos_view.paginando_pedidos = true;
                 $scope.datos_view.pagina_actual_pedidos--;
-                that.buscar_pedidos();
+                that.buscar_pedidos('','');
             };
 
             $scope.pagina_siguiente_pedidos = function() {
                 $scope.datos_view.paginando_pedidos = true;
                 $scope.datos_view.pagina_actual_pedidos++;
-                that.buscar_pedidos();
+                that.buscar_pedidos('','');
             };
 
 
@@ -593,20 +638,26 @@ define(["angular", "js/controllers",
 
                 that.buscar_cotizaciones('');
 
-                that.buscar_pedidos();
+                that.buscar_pedidos('','');
 
 
             };
 
 
-
+            /**
+             * @author Cristian Ardila
+             * +Descripcion: Funcion encargada de mostrar las notificaciones
+             *               (alerts) cada vez que se actualice el estado de
+             *               un pedido ó cotizacion
+             * @param {type} title
+             * @param {type} body
+             * @returns {void}
+             */
             that.notificarSolicitud = function(title, body) {
-
-                $scope.notificacionClientesAutorizar++;
 
                 webNotification.showNotification(title, {
                     body: body,
-                    icon: 'my-icon.ico',
+                    icon: '/images/logo.png',
                     onClick: function onNotificationClicked() {
                         console.log('Notification clicked.');
                     },
@@ -628,10 +679,9 @@ define(["angular", "js/controllers",
              * @Author: Cristian Ardila
              * @param {PedidoFarmacia} pedido
              * +Descripcion: Permite refrescar  la lista de cotizaciones
-             *               en tiempo real a traves de los sockets
-             */
-            $scope.notificacionClientesAutorizar = 0;
-
+             *               en tiempo real a traves de los sockets, cambiando
+             *               actualizando el nuevo estado de la cotizacion
+             */          
             socket.on("onListarEstadoCotizacion", function(datos) {
 
                 if (datos.status === 200) {
@@ -646,7 +696,9 @@ define(["angular", "js/controllers",
                     });
                     
                     if (datos.obj.estado[0].estado === '6') {
-                        if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {                            
+                        
+                        if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) { 
+                            $scope.notificacionClientesAutorizar++;
                             that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + datos.obj.numeroCotizacion );
                         }
                     }
@@ -654,9 +706,14 @@ define(["angular", "js/controllers",
             });
 
 
-            //referencia del socket io
+            /**
+             * @author Cristian Ardila
+             * +Descripcion: Socket que se activa cada vez que se genere un cambio
+             *               en un pedido, de tal forma que cambiara en tiempo real
+             *               el estado del pedido en el gridView de pedidos
+             */
             socket.on("onListarEstadoPedido", function(datos) {
-
+               
                 if (datos.status === 200) {
 
                     var estado = ['Inactivo', 'No asignado', 'Anulado',
@@ -666,9 +723,16 @@ define(["angular", "js/controllers",
                             data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);
                         }
                     });
+                       
+                     if (datos.obj.pedidos_clientes[0].estado === '4') {
+                        
+                        $scope.notificacionPedidoAutorizar++;
+                        if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {                             
+                            that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido );
+                        }
+                    }
                 }
             });
-
 
             that.init();
 

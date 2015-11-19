@@ -150,23 +150,29 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.valor_subtotal = 0;
                         $scope.valor_iva = 0;
                         $scope.valor_total = 0;
-
+                        var _productos = [];
                         lista_productos.forEach(function(data) {
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
 
                             var novedad = Novedad.get(data.novedad_id, data.descripcion_novedad, Observacion.get(data.id_observacion, data.codigo_observacion, data.descripcion_observacion), data.cantidad_archivos);
-
+                            
+                            novedad.setDescripcionEntrada(data.descripcion_entrada);
                             // Set Novedad Producto
                             producto.set_id(data.item_id);
                             producto.set_novedad(novedad);
 
                             $scope.orden_compra.set_productos(producto);
-
-                            // Totales                        
-                            $scope.valor_subtotal += data.subtotal;
-                            $scope.valor_iva += data.valor_iva;
-                            $scope.valor_total += data.total;
+                            
+                            /*Evita que se sume los totales de productos que ya se sumaron, esto es debido a que las novedades pueden retornar
+                              el mismo producto varias veces*/
+                            if(_productos.indexOf(data.codigo_producto) === -1){
+                                // Totales                        
+                                $scope.valor_subtotal += data.subtotal;
+                                $scope.valor_iva += data.valor_iva;
+                                $scope.valor_total += data.total;
+                                _productos.push(data.codigo_producto);
+                            }
 
                         });
 
@@ -283,12 +289,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                     </div>',
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
-                    {field: 'descripcion', displayName: 'Descripcion', width: "40%"},
-                    {field: 'novedad.get_observacion().get_descripcion()', displayName: "Novedad", width: "15%"},
-                    {field: 'novedad.get_descripcion()', displayName: 'Observacion', width: "21%"},
-                    {field: 'novedad.get_cantidad_archivos()', displayName: 'Archivos', width: "5%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "120"},
+                    {field: 'descripcion', displayName: 'Descripcion'},
+                    {field: 'novedad.get_observacion().get_descripcion()', displayName: "Novedad", width: "150",
+                     cellTemplate:'<div class="ngCellText">{{row.entity.novedad.get_observacion().get_descripcion()}}</div>'},
+                    {field: 'novedad.getDescripcionEntrada()', displayName:"F/Disponible", width:'150'},
+                    {field: 'novedad.get_descripcion()', displayName: 'Observacion', width: "200"},
+                    {field: 'novedad.get_cantidad_archivos()', displayName: 'Archivos', width: "80"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width:"150",
                         cellTemplate:'<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\

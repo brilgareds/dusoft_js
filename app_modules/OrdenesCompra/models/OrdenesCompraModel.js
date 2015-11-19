@@ -338,7 +338,8 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
                     c.codigo as codigo_observacion,\
                     c.descripcion as descripcion_observacion,\
                     d.cantidad_archivos,\
-                    coalesce(g.total_novedades, 0) as total_novedades\
+                    coalesce(g.total_novedades, 0) as total_novedades,\
+                    b.descripcion_entrada\
                     from compras_ordenes_pedidos_detalle a\
                     inner join compras_ordenes_pedidos e on a.orden_pedido_id  = e.orden_pedido_id \
                     left join novedades_ordenes_compras b on a.item_id = b.item_id\

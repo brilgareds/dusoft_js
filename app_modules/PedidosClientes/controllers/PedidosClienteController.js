@@ -53,8 +53,10 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
     var filtro = args.pedidos_clientes.filtro;
-
-    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, lista_pedidos_clientes) {
+    var estadoPedido = args.pedidos_clientes.estado_pedido;
+    var estadoSolicitud = args.pedidos_clientes.estado_solicitud;
+    
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido,estadoSolicitud, function(err, lista_pedidos_clientes) {
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
     });
 };

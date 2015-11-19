@@ -321,7 +321,15 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
 
 };
 
-/**
+
+/*
+ * @Autor : Cristian Ardila
+ * +Descripcion : Se consulta el detallado de un pedido que
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del modelo:
+ *  Model: PedidosClienteModel
+ *  --PedidosClienteModel.prototype.consultarDetallePedido
+ *
  * @api {sql} consultar_detalle_pedido Detalle Pedido 
  * @apiName Detalle Pedido
  * @apiGroup PedidosClientes (sql)

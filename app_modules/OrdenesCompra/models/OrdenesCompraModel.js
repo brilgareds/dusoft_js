@@ -10,6 +10,12 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                
     var subQueryNovedades = G.knex("novedades_ordenes_compras as a").select("item_id").sum("item_id as total").groupBy("item_id").as("h");
     
+    /*var subQueryNovedades = G.knex.count('').from(function(){
+        this.column("b.item_id").
+        from("compras_ordenes_pedidos_detalle as a").
+        innerJoin("novedades_ordenes_compras as b", "a.item_id", "b.item_id")
+    });*/
+    
     var columns = [
         "a.orden_pedido_id as numero_orden",
         "a.empresa_id",
@@ -40,7 +46,11 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         G.knex.raw("To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro"),
         G.knex.raw("coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido"),
         G.knex.raw("coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado"),
-        G.knex.raw("CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal") 
+        G.knex.raw("CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal"),
+        G.knex.raw("(SELECT count(bbb.item_id)\
+                    FROM compras_ordenes_pedidos_detalle aaa\
+                    INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
+                    WHERE aaa.orden_pedido_id = a.orden_pedido_id) as total_novedades")
     ];
     
     var query = G.knex.column(columns).
@@ -77,10 +87,14 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
     orderByRaw("1 DESC").
+    
+    /*callback(true, query.toSQL());
+    return;*/
     then(function(rows){
         callback(false, rows);
     }).
     catch(function(err){
+        console.log("error generado ", err);
        callback(err);
     });
     
@@ -132,10 +146,13 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 left join (\
                     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
-                WHERE a.codigo_proveedor_id = $1 and a.estado = '1' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
-
-    G.db.query(sql, [codigo_proveedor_id], function(err, rows, result, total_records) {
-        callback(err, rows);
+                WHERE a.codigo_proveedor_id = :1 and a.estado = '1' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
+    
+    G.knex.raw(sql, {1:codigo_proveedor_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -278,10 +295,13 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 left join (\
                     select bb.codigo_proveedor_id, bb.observaciones as observacion_contrato from contratacion_produc_proveedor bb\
                 ) as i on a.codigo_proveedor_id = i.codigo_proveedor_id\
-                WHERE a.orden_pedido_id = $1 ";
-
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-        callback(err, rows);
+                WHERE a.orden_pedido_id = :1 ";
+    
+    G.knex.raw(sql, {1:numero_orden}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 // Consultar Detalle Ordene de Compra  por numero de orden
@@ -376,11 +396,15 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
 OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, callback) {
 
     var sql = " INSERT INTO compras_ordenes_pedidos ( orden_pedido_id, codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
-                 VALUES((select max(orden_pedido_id) +1 from compras_ordenes_pedidos), $1, $2, $3, $4,$5, '1', NOW() ) RETURNING orden_pedido_id; ";
-
-     G.db.query(sql, [ unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id], function(err, rows, result) {
-         callback(err, rows, result);
-     }); 
+                 VALUES((select max(orden_pedido_id) +1 from compras_ordenes_pedidos), :1, :2, :3, :4, :5, '1', NOW() ) RETURNING orden_pedido_id; ";
+     
+    G.knex.raw(sql, {1:unidad_negocio, 2:codigo_proveedor, 3:empresa_id, 4:observacion, 5:usuario_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
+    });
+     
 };
 
 // Modificar Orden de Compra
@@ -400,9 +424,13 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
     if (estado === '4')
         sql_aux = " ,fecha_verificado = now() ";
 
-    var sql = " UPDATE compras_ordenes_pedidos SET estado = $2 " + sql_aux + " WHERE orden_pedido_id = $1  ";
-    G.db.query(sql, [numero_orden, estado], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = " UPDATE compras_ordenes_pedidos SET estado = :2 " + sql_aux + " WHERE orden_pedido_id = :1  ";
+    
+    G.knex.raw(sql, {1:numero_orden, 2:estado}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -410,19 +438,28 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
 OrdenesCompraModel.prototype.modificar_unidad_negocio = function(numero_orden, unidad_negocio, callback) {
 
 
-    var sql = "  update compras_ordenes_pedidos set codigo_unidad_negocio = $2 where orden_pedido_id = $1 and estado='1' ";
-    G.db.query(sql, [numero_orden, unidad_negocio], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = "  update compras_ordenes_pedidos set codigo_unidad_negocio = :2 where orden_pedido_id = :1 and estado='1' ";
+    
+    G.knex.raw(sql, {1:numero_orden, 2:unidad_negocio}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 // Modificar unidad de negocio de una Orden de Compra
 OrdenesCompraModel.prototype.modificar_observacion = function(numero_orden, observacion, callback) {
 
 
-    var sql = "  update compras_ordenes_pedidos set observacion = $2 where orden_pedido_id = $1 and estado='1' ";
-    G.db.query(sql, [numero_orden, observacion], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = "  update compras_ordenes_pedidos set observacion = :2 where orden_pedido_id = :1 and estado='1' ";
+    
+    G.knex.raw(sql, {1:numero_orden, 2:observacion}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -430,9 +467,13 @@ OrdenesCompraModel.prototype.modificar_observacion = function(numero_orden, obse
 OrdenesCompraModel.prototype.anular_orden_compra = function(numero_orden, callback) {
 
 
-    var sql = " UPDATE compras_ordenes_pedidos SET estado = '2' WHERE orden_pedido_id = $1  ";
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-        callback(err, rows);
+    var sql = " UPDATE compras_ordenes_pedidos SET estado = '2' WHERE orden_pedido_id = :1  ";
+    
+    G.knex.raw(sql, {1:numero_orden}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -441,9 +482,13 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
 
 
     var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado)\
-                VALUES ( $1, $2, $3, $4, $5, 1 );";
-    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada, valor, iva], function(err, rows, result) {
-        callback(err, rows, result);
+                VALUES ( :1, :2, :3, :4, :5, 1 );";
+    
+    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -451,29 +496,43 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
 OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, callback) {
 
 
-    var sql = " UPDATE  compras_ordenes_pedidos_detalle SET numero_unidades = $3, valor = $4 where orden_pedido_id = $1 and codigo_producto = $2";
-    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada, valor], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = " UPDATE  compras_ordenes_pedidos_detalle SET numero_unidades = :3, valor = :4 where orden_pedido_id = :1 and codigo_producto = :2";
+    
+    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 // Eliminar Detalle Orden de Compra
 OrdenesCompraModel.prototype.eliminar_detalle_orden_compra = function(numero_orden, callback) {
 
 
-    var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id = $1 ";
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-        callback(err, rows);
+    var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id = :1 ";
+    
+    G.knex.raw(sql, {1:numero_orden}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 // Eliminar producto Orden de Compra
 OrdenesCompraModel.prototype.eliminar_producto_orden_compra = function(numero_orden, codigo_producto, callback) {
 
 
-    var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id= $1 AND codigo_producto=$2 ";
-    G.db.query(sql, [numero_orden, codigo_producto], function(err, rows, result, total_records) {
-        callback(err, rows, result);
+    var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id= :1 AND codigo_producto= :2 ";
+    
+    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -498,8 +557,13 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
                 inner join system_usuarios e on a.usuario_id = e.usuario_id\
                 where a.empresa_id = $1 and b.codigo_producto = $2 and b.numero_unidades <> COALESCE(b.numero_unidades_recibidas,0)\
                 and a.estado = '1' ; ";
-    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
+
+    
+    G.knex.raw(sql, {1:empresa_id, 2:codigo_producto}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

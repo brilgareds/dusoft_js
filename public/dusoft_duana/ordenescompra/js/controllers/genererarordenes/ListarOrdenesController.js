@@ -376,7 +376,7 @@ define(["angular", "js/controllers",
                         if (data.status === 200) {
                             var nombre_reporte = data.obj.ordenes_compras.nombre_reporte;
 
-                            $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra" + $scope.orden_compra_seleccionada.get_numero_orden(), "blank");
+                            $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra" + $scope.orden_compra_seleccionada.get_numero_orden(), "_blank");
                         } else {
 
                         }

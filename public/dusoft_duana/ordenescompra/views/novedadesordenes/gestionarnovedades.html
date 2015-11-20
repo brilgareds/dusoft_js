@@ -5,7 +5,7 @@
                 <div class="panel-heading clearfix">
                     <!--                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Imagen</h4>-->
                     <div class="pull-left">
-                        <h3 class="text-center"><strong>Logo</strong></h3>
+                        <h3 class="text-center"><strong><img src="/images/logo.png" style="width:100px;" /></strong></h3>
                     </div>
                     <div class="pull-right">
                         <h3 class="text-center"><strong>OC # {{ numero_orden }}</strong></h3>
@@ -91,7 +91,9 @@
                                         </div>
 
                                     </div>
-                                    <div class="" style="height: 240px" ng-grid="lista_productos" > </div>
+                                    <div class="table-responsive">
+                                        <div class="grid-responsive" style="height: 240px" ng-grid="lista_productos" > </div>
+                                    </div>
 
                                     <div class="row text-center col-md-12">
                                         <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">

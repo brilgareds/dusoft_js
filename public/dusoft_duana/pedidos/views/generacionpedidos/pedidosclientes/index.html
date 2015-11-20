@@ -11,7 +11,7 @@
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarcotizacionesclientes.html'"></div>
                     </tab>                        
                     <tab>
-                        <tab-heading ng-click="notificacionClientesAutorizar=0">
+                        <tab-heading ng-click="cargarListaPedidos('','')">
                              Pedidos Clientes 
                              <!--<span ng-show="notificacionClientesAutorizar > 0" class="badge badge-warning">{{notificacionClientesAutorizar}}</span>//-->
                          <!--   <i class="glyphicon glyphicon-th"></i> Pedidos Clientes//-->
@@ -20,9 +20,9 @@
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarpedidosclientes.html'"></div>
                     </tab>   
                     
-                    <tab  ng-click="cargarListaNotificacionCotizacion(6)">
+                    <tab  ng-click="cargarListaNotificacionCotizacion(6)" ng-if="datos_view.opciones.sw_notificar_aprobacion == true">
                         <tab-heading>
-                            <i class="glyphicon glyphicon-time"></i> Notificaciones
+                            <i class="glyphicon glyphicon-time"></i>Aprobacion cotizaciones
                             
                             <span ng-show="notificacionClientesAutorizar > 0" class="badge badge-warning">{{notificacionClientesAutorizar}}</span>
                         
@@ -30,6 +30,21 @@
                         <br> 
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarnotificacioncotizaciones.html'"></div>
                     </tab>  
+                    
+                    
+                    <tab  ng-click="cargarListaNotificacionPedidos(4,0)" ng-if="datos_view.opciones.sw_notificar_aprobacion == true">
+                        <tab-heading>
+                            <i class="glyphicon glyphicon-time"></i>Aprobacion pedidos
+                            
+                            <span ng-show="notificacionPedidoAutorizar > 0" class="badge badge-warning">{{notificacionPedidoAutorizar}}</span>
+                        
+                        </tab-heading>
+                        <br> 
+                        <div ng-include="'views/generacionpedidos/pedidosclientes/listarnotificacionpedidos.html'"></div>
+                    </tab>  
+                    
+                    
+                    
                     
                 </tabset>                                      
             </div>

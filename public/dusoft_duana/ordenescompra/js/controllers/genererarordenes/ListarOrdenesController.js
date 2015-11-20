@@ -357,10 +357,10 @@ define(["angular", "js/controllers",
 
             $scope.generar_reporte = function(orden_compra) {
 
-
+                //branch ordenes de compras
                 $scope.orden_compra_seleccionada = orden_compra;
 
-                if (orden_compra.get_sw_estado_digitacion() === '1') {
+               // if (orden_compra.get_sw_estado_digitacion() === '1') {
 
                     var obj = {
                         session: $scope.session,
@@ -382,10 +382,10 @@ define(["angular", "js/controllers",
                         }
                     });
 
-                } else {
+              /*  } else {
                     AlertService.mostrarMensaje("warning", "La ordend de compra No. " + orden_compra.get_numero_orden() + " no ha sido finalizada!!.");
                     return;
-                }
+                }*/
             };
 
 

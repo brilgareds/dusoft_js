@@ -66,8 +66,7 @@ var PedidosClienteModel = function(productos) {
  *      
  */
 
-PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
-
+PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina,estadoPedido,estadoSolicitud, callback) {
 
     /*=========================================================================*/
     // Se implementa este filtro, para poder filtrar los pedidos por el estado actual
@@ -187,10 +186,13 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                 orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
 
     }).
+            andWhere('a.estado',G.constants.db().LIKE,"%" + estadoPedido + "%").
+            andWhere('a.estado_pedido',G.constants.db().LIKE,"%" + estadoSolicitud + "%").
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).
             orderByRaw("4 DESC").
             then(function(rows) {
+      
         callback(false, rows);
     }).
             catch (function(err) {
@@ -319,7 +321,15 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
 
 };
 
-/**
+
+/*
+ * @Autor : Cristian Ardila
+ * +Descripcion : Se consulta el detallado de un pedido que
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del modelo:
+ *  Model: PedidosClienteModel
+ *  --PedidosClienteModel.prototype.consultarDetallePedido
+ *
  * @api {sql} consultar_detalle_pedido Detalle Pedido 
  * @apiName Detalle Pedido
  * @apiGroup PedidosClientes (sql)
@@ -1569,7 +1579,7 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
              }).select('valor_total_cotizacion')*/
             .then(function(rows) {
         callback(rows, true);
-        console.log("rows ", rows)
+       
     })
             . catch (function(error) {
 

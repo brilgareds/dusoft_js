@@ -21,18 +21,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             var that = this;
 
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
-                
-               
-                  $scope.rootSeleccionProducto = {};
-                  $scope.rootSeleccionProducto.filtros = [
-                    {nombre : "Descripcion", tipo_busqueda:0}, 
-                    {nombre : "Molecula", tipo_busqueda:1},
-                    {nombre : "Codigo", tipo_busqueda:2}
+
+
+                $scope.rootSeleccionProducto = {};
+                $scope.rootSeleccionProducto.filtros = [
+                    {nombre: "Descripcion", tipo_busqueda: 0},
+                    {nombre: "Molecula", tipo_busqueda: 1},
+                    {nombre: "Codigo", tipo_busqueda: 2}
                 ];
-                
-                $scope.rootSeleccionProducto.filtro  = $scope.rootSeleccionProducto.filtros[0];
-                
-                
+
+                $scope.rootSeleccionProducto.filtro = $scope.rootSeleccionProducto.filtros[0];
+
+
                 // Variables del View
                 $scope.datos_form = {
                     clases_tipo_producto: ["", "label label-success", "label label-danger", "label label-info", "label label-warning", "label label-default"],
@@ -234,22 +234,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $scope.buscador_productos = function(ev) {
-                
-              
+
+
                 if (ev.which === 13) {
                     that.buscar_productos_clientes();
                 }
-               
+
             };
-            
-            $scope.onSeleccionFiltro = function(filtro){
+
+            $scope.onSeleccionFiltro = function(filtro) {
                 $scope.rootSeleccionProducto.filtro = filtro;
             };
-            
+
             that.buscar_productos_clientes = function() {
-                
-                
-                
+
+
+
                 if ($scope.datos_form.ultima_busqueda !== $scope.datos_form.termino_busqueda) {
                     $scope.datos_form.pagina_actual = 1;
                 }
@@ -306,26 +306,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto.set_codigo_cum(data.codigo_cum).set_codigo_invima(data.codigo_invima).set_fecha_vencimiento_invima(data.vencimiento_codigo_invima);
                     producto.set_regulado(data.sw_regulado).set_precio_regulado(data.precio_regulado);
                     producto.set_pactado(data.tiene_precio_pactado).set_precio_venta(data.precio_producto);
-                    
-                    if(data.tiene_precio_pactado){
-                         producto.setColorInputPrecioPactador('rgba(86, 157, 131, 0.9)');
-                         producto.setColorTextoPrecioPactador('white');
-                    }else{
-                         producto.setColorInputPrecioPactador('white');
-                         producto.setColorTextoPrecioPactador('black');
+
+                    if (data.tiene_precio_pactado) {
+                        producto.setColorInputPrecioPactador('rgba(86, 157, 131, 0.9)');
+                        producto.setColorTextoPrecioPactador('white');
+                    } else {
+                        producto.setColorInputPrecioPactador('white');
+                        producto.setColorTextoPrecioPactador('black');
                     }
-                    
+
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
-                
+
                 });
-                
-                
+
+
             };
 
-            
-            
-            
+
+
+
             $scope.habilitar_seleccion_producto = function() {
 
                 // Pedido
@@ -350,23 +350,35 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             $scope.solicitar_producto = function(producto) {
 
-                $scope.datos_form.producto_seleccionado = producto;
+                var val = producto.precio_venta;
+                var clean = val.replace(/[^0-9\.]/g, '');
+                var decimalCheck = clean.split('');
 
-                $scope.Pedido.set_productos(producto);
+                if (!angular.isUndefined(decimalCheck[1])) {
+                    decimalCheck[1] = decimalCheck[1].slice(0, 4);
+                    clean = decimalCheck[0] + '.' + decimalCheck[1];
 
-                $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+                    $scope.datos_form.producto_seleccionado = producto;
 
-                if ($scope.datos_form.tipo_producto === '') {
-                    $scope.datos_form.tipo_producto = producto.get_tipo_producto();
-                    $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
-                }
+                    $scope.Pedido.set_productos(producto);
 
-                if ($scope.Pedido.get_numero_pedido() > 0) {
-                  
-                    that.gestionar_pedidos();
-                } else {
-                  
-                    that.gestionar_cotizaciones();
+                    $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+
+                    if ($scope.datos_form.tipo_producto === '') {
+                        $scope.datos_form.tipo_producto = producto.get_tipo_producto();
+                        $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
+                    }
+
+                    if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                        that.gestionar_pedidos();
+                    } else {
+
+                        that.gestionar_cotizaciones();
+                    }
+
+                }else{
+                     AlertService.mostrarMensaje("danger", "El tipo de valor es errado");
                 }
             };
 
@@ -384,20 +396,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                         </div>'},
                     {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},                
+                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},
                     {field: 'get_iva()', displayName: 'IVA', width: "50"},
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                             <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
                                         </div>'},
-                    {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" \
-                                ng-model="row.entity.precio_venta" \
-                                validacion-numero-decimal\
-                                ng-disabled = "row.entity.sw_pactado"\n\
-                                ng-style="{background: row.entity.colorInputPrecioPactador,color:row.entity.colorTextoPrecioPactador}"\n\
-                                class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    /*{field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
+                     cellTemplate: '<div class="col-xs-12"> <input type="text" \
+                     ng-model="row.entity.precio_venta" \
+                     validacion-numero-decimal\
+                     ng-disabled = "row.entity.sw_pactado"\n\
+                     ng-style="{background: row.entity.colorInputPrecioPactador,color:row.entity.colorTextoPrecioPactador}"\n\
+                     class="form-control grid-inline-input" name="" id="" /> </div>'},*/
+                    {field: 'precio_venta', width: "7%", displayName: "$ Venta", cellFilter: "number", enableCellEdit: true, },
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
                     {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",
@@ -412,6 +425,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
                                             <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
+
                 ]
             };
 
@@ -430,10 +444,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.datos_form.pagina_actual++;
                 that.buscar_productos_clientes();
             };
-            
-            
-            
-            
+
+
+
+
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
             });

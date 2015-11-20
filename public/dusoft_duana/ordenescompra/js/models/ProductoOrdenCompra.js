@@ -49,7 +49,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             // Cantidad Presentacion
             ProductoOrdenCompra.prototype.get_cantidad_presentacion = function() {
 
-                return this.cantidad_presentacion;
+                return this.cantidad_presentacion; 
             };
 
             // Costo

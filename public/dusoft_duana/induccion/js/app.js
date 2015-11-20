@@ -24,7 +24,10 @@ define([
     "includes/validation/NgValidateEvents",
     "chart",
     "models/EmpresaInduccion",
-    "controllers/InduccionController"
+    "models/CentroUtilidadInduccion",
+    "models/BodegaInduccion",
+    "models/ProductoInduccion",
+    "controllers/InduccionController"    
 ], function(angular) {
 
         /* App Module and its dependencies */

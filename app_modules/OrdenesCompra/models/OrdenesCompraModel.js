@@ -10,11 +10,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                
     var subQueryNovedades = G.knex("novedades_ordenes_compras as a").select("item_id").sum("item_id as total").groupBy("item_id").as("h");
     
-    /*var subQueryNovedades = G.knex.count('').from(function(){
-        this.column("b.item_id").
-        from("compras_ordenes_pedidos_detalle as a").
-        innerJoin("novedades_ordenes_compras as b", "a.item_id", "b.item_id")
-    });*/
     
     var columns = [
         "a.orden_pedido_id as numero_orden",
@@ -65,7 +60,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
     innerJoin("system_usuarios as e", "a.usuario_id", "e.usuario_id").
     leftJoin("unidades_negocio as f", "a.codigo_unidad_negocio", "f.codigo_unidad_negocio").
     leftJoin(subQueryTmp,"a.orden_pedido_id", "g.orden_pedido_id").    
-   // leftJoin(subQueryNovedades,"h.item_id",).
     whereBetween('a.fecha_orden', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
     where({
            "a.sw_unificada"  : '0'
@@ -571,9 +565,13 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
 OrdenesCompraModel.prototype.finalizar_orden_compra = function(numero_orden, orden_compra_finalizada, callback) {
 
 
-    var sql = "  update compras_ordenes_pedidos set sw_orden_compra_finalizada = $2 where orden_pedido_id = $1 and estado='1' ";
-    G.db.query(sql, [numero_orden, orden_compra_finalizada], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = "  update compras_ordenes_pedidos set sw_orden_compra_finalizada = :2 where orden_pedido_id = :1 and estado='1' ";
+    
+    G.knex.raw(sql, {1:numero_orden, 2:orden_compra_finalizada}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -650,15 +648,19 @@ OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(noveda
 // Consultar Archivo Novedad Producto Orden de Compra
 OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(novedad_id, callback) {
 
-    var sql = "  SELECT * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = $1 ; ";
-
-    G.db.query(sql, [novedad_id], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = "  SELECT * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = :1 ; ";
+    
+    G.knex.raw(sql, {1:novedad_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 
-// Listado de recepciones de mercancia.
+// Listado de recepciones de mercancia. pendiente
 OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
 
     var sql = " select \
@@ -713,6 +715,59 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
     G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
+    
+    
+    
+    var columnas = [
+        "a.id",
+        "a.empresa_id",
+        "b.tipo_id_tercero as tipo_id_empresa",
+        "b.id as nit_empresa",
+        "b.razon_social as nombre_empresa",
+        "a.codigo_proveedor_id",
+        "d.tipo_id_tercero as tipo_id_proveedor",
+        "d.tercero_id as tercero_id",
+        "d.nombre_tercero as nombre_proveedor",
+        "d.direccion as direccion_proveedor",
+        "d.telefono as telefono_proveedor",
+        "a.orden_pedido_id as numero_orden",
+        "a.inv_transportador_id",
+        "e.descripcion as nombre_transportadora",
+        "e.estado as estado_transportadora",
+        "a.novedades_recepcion_id",
+        "f.codigo as codigo_novedad",
+        "f.descripcion as descripcion_novedad",
+        "f.estado as estado_novedad",
+        "a.numero_guia",
+        "a.numero_factura",
+        "a.cantidad_cajas",
+        "a.cantidad_neveras",
+        "a.temperatura_neveras",
+        "a.contiene_medicamentos",
+        "a.contiene_dispositivos",
+        "a.estado",
+        G.knex.raw("CASE WHEN a.estado = '0' THEN 'Anulada'\
+             WHEN a.estado = '1' THEN 'Activa'\
+             WHEN a.estado = '2' THEN 'Finalizada' END as descripcion_estado"), 
+        G.knex.raw("to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion"),
+        G.knex.raw("to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro")
+    ];
+    
+    G.knex.column(columnas).
+    from("recepcion_mercancia as a").
+    innerJoin("empresas as b", "a.empresa_id", "b.empresa_id").
+    innerJoin("terceros_proveedores as c", "a.codigo_proveedor_id", "c.codigo_proveedor_id").
+   /* innerJoin("terceros as d",function(){
+
+    })*/
+    
+    /*innerJoin("inv_subclases_inventarios as c", function(){
+         this.on("a.subclase_id", "c.subclase_id" ).
+         on("a.clase_id", "c.clase_id").
+         on("a.grupo_id", "c.grupo_id");
+    }).*/
+    inner join empresas b on a.empresa_id = b.empresa_id
+    
 };
 
 
@@ -759,11 +814,15 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id=d.tercero_id\
                 inner join inv_transportadoras e on a.inv_transportador_id = e.transportadora_id \
                 left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
-                where a.id = $1 ;";
-
-    G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
-        callback(err, rows);
+                where a.id = :1 ;";
+    
+    G.knex.raw(sql, {1:recepcion_mercancia_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 
@@ -809,35 +868,40 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
                     usuario_id,\
                     fecha_recepcion,\
                     hora_recepcion\
-                ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) returning id; ";
+                ) values ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15 ) returning id; ";
 
-    var parametros = [
-        recepcion_mercancia.empresa_id,
-        recepcion_mercancia.proveedor.codigo_proveedor_id,
-        recepcion_mercancia.orden_compra.numero_orden_compra,
-        recepcion_mercancia.transportadora.id,
-        recepcion_mercancia.novedad.id,
-        recepcion_mercancia.numero_guia,
-        recepcion_mercancia.numero_factura,
-        recepcion_mercancia.cantidad_cajas,
-        recepcion_mercancia.cantidad_neveras,
-        recepcion_mercancia.temperatura_neveras,
-        recepcion_mercancia.contiene_medicamentos,
-        recepcion_mercancia.contiene_dispositivos,
-        recepcion_mercancia.usuario_id,
-        recepcion_mercancia.fecha_ingreso,
-        recepcion_mercancia.hora_ingreso
-    ];
-
-    G.db.query(sql, parametros, function(err, rows, result, total_records) {
-
+    var parametros = {
+        1:recepcion_mercancia.empresa_id,
+        2:recepcion_mercancia.proveedor.codigo_proveedor_id,
+        3:recepcion_mercancia.orden_compra.numero_orden_compra,
+        4:recepcion_mercancia.transportadora.id,
+        5:recepcion_mercancia.novedad.id,
+        6:recepcion_mercancia.numero_guia,
+        7:recepcion_mercancia.numero_factura,
+        8:recepcion_mercancia.cantidad_cajas,
+        9:recepcion_mercancia.cantidad_neveras,
+        10:recepcion_mercancia.temperatura_neveras,
+        11:recepcion_mercancia.contiene_medicamentos,
+        12:recepcion_mercancia.contiene_dispositivos,
+        13:recepcion_mercancia.usuario_id,
+        14:recepcion_mercancia.fecha_ingreso,
+        15:recepcion_mercancia.hora_ingreso
+    };
+    
+    
+    G.knex.raw(sql, parametros).
+    then(function(resultado){
+       
         var estado = '3'; // Recibida
 
         that.actualizar_estado_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, estado, function(_err, _rows, _result) {
 
-            callback(err, rows);
+            callback(false, resultado.rows, resultado);
         });
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 
@@ -852,38 +916,41 @@ OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_
     }
 
     var sql = " update recepcion_mercancia set \
-                empresa_id = $2,\
-                codigo_proveedor_id = $3,\
-                orden_pedido_id = $4,\
-                inv_transportador_id = $5,\
-                novedades_recepcion_id = $6,\
-                numero_guia = $7,\
-                numero_factura = $8,\
-                cantidad_cajas = $9,\
-                cantidad_neveras = $10,\
-                temperatura_neveras = $11,\
-                contiene_medicamentos = $12,\
-                contiene_dispositivos = $13,\
-                where id = $1 ; ";
+                empresa_id = :2,\
+                codigo_proveedor_id = :3,\
+                orden_pedido_id = :4,\
+                inv_transportador_id = :5,\
+                novedades_recepcion_id = :6,\
+                numero_guia = :7,\
+                numero_factura = :8,\
+                cantidad_cajas = :9,\
+                cantidad_neveras = :10,\
+                temperatura_neveras = :11,\
+                contiene_medicamentos = :12,\
+                contiene_dispositivos = :13,\
+                where id = :1 ; ";
 
-    var parametros = [
-        recepcion_mercancia.id,
-        recepcion_mercancia.empresa_id,
-        recepcion_mercancia.codigo_proveedor_id,
-        recepcion_mercancia.orden_pedido_id,
-        recepcion_mercancia.inv_transportador_id,
-        recepcion_mercancia.novedades_recepcion_id,
-        recepcion_mercancia.numero_guia,
-        recepcion_mercancia.numero_factura,
-        recepcion_mercancia.cantidad_cajas,
-        recepcion_mercancia.cantidad_neveras,
-        recepcion_mercancia.temperatura_neveras,
-        recepcion_mercancia.contiene_medicamentos,
-        recepcion_mercancia.contiene_dispositivos
-    ];
-
-    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
-        callback(err, rows);
+    var parametros = {
+        1:recepcion_mercancia.id,
+        2:recepcion_mercancia.empresa_id,
+        3:recepcion_mercancia.codigo_proveedor_id,
+        4:recepcion_mercancia.orden_pedido_id,
+        5:recepcion_mercancia.inv_transportador_id,
+        6:recepcion_mercancia.novedades_recepcion_id,
+        7:recepcion_mercancia.numero_guia,
+        8:recepcion_mercancia.numero_factura,
+        9:recepcion_mercancia.cantidad_cajas,
+        10:recepcion_mercancia.cantidad_neveras,
+        11:recepcion_mercancia.temperatura_neveras,
+        12:recepcion_mercancia.contiene_medicamentos,
+        13:recepcion_mercancia.contiene_dispositivos
+    };
+    
+    G.knex.raw(sql, parametros).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -912,10 +979,13 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 inner join compras_ordenes_pedidos_detalle d on c.orden_pedido_id = d.orden_pedido_id and a.codigo_producto = d.codigo_producto\
                 left join novedades_recepcion_mercancia e on a.novedades_recepcion_id = e.id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
-                where a.recepcion_mercancia_id = $1 ;";
+                where a.recepcion_mercancia_id = :1 ;";
 
-    G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:recepcion_mercancia_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -924,18 +994,21 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
 
 
     var sql = " insert into recepcion_mercancia_detalle  ( recepcion_mercancia_id, novedades_recepcion_id, codigo_producto, cantidad_recibida, usuario_id ) \
-                values ( $1, $2, $3, $4, $5) ; ";
+                values ( :1, :2, :3, :4, :5 ) ; ";
 
-    var parametros = [
-        producto_mercancia.recepcion_mercancia_id,
-        producto_mercancia.novedades_recepcion_id,
-        producto_mercancia.codigo_producto,
-        producto_mercancia.cantidad_recibida,
-        producto_mercancia.usuario_id
-    ];
+    var parametros = {
+        1:producto_mercancia.recepcion_mercancia_id,
+        2:producto_mercancia.novedades_recepcion_id,
+        3:producto_mercancia.codigo_producto,
+        4:producto_mercancia.cantidad_recibida,
+        5:producto_mercancia.usuario_id
+    };
 
-    G.db.query(sql, parametros, function(err, rows, result, total_records) {
-        callback(err, rows);
+    G.knex.raw(sql, parametros).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -955,17 +1028,21 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
     }
 
 
-    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = $3, cantidad_recibida = $4 where  recepcion_mercancia_id = $1 and codigo_producto = $2 ; ";
+    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = :3, cantidad_recibida = :4 where  recepcion_mercancia_id = :1 \
+                and codigo_producto =  :2 ; ";
 
-    var parametros = [
-        recepcion_mercancia.numero_recepcion,
-        producto_mercancia.codigo_producto,
-        producto_mercancia.novedad_recepcion.id,
-        producto_mercancia.cantidad_recibida
-    ];
-
-    G.db.query(sql, parametros, function(err, rows, result, total_records) {
-        callback(err, rows);
+    var parametros = {
+        1:recepcion_mercancia.numero_recepcion,
+        2:producto_mercancia.codigo_producto,
+        3:producto_mercancia.novedad_recepcion.id,
+        4:producto_mercancia.cantidad_recibida
+    };
+    
+    G.knex.raw(sql, parametros).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -973,19 +1050,22 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
 OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion, callback) {
 
     var that = this;
-  
-
-    var sql = " update recepcion_mercancia set estado = '2' where  id = $1 ; ";
-
-    G.db.query(sql, [recepcion.numero_recepcion], function(err, rows, result, total_records) {
-
+    var sql = " update recepcion_mercancia set estado = '2' where  id = :1 ; ";
+    
+    G.knex.raw(sql, {1:recepcion.numero_recepcion}).
+    then(function(resultado){
+       
         var estado = '4'; // Verificada
 
         that.actualizar_estado_orden_compra(recepcion.orden_compra.numero_orden_compra, estado, function(_err, _rows, _result) {
 
-            callback(err, rows);
+            callback(false, resultado.rows, resultado);
         });
+       
+    }).catch(function(err){
+       callback(err);
     });
+
 };
 
 

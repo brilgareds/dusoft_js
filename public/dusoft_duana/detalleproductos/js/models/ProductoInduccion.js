@@ -1,10 +1,10 @@
 
 define(["angular", "js/models", "includes/classes/Producto"], function(angular, models) {
 
-    models.factory('ProductoInduccion', ["Producto", function(Producto) {
+    models.factory('ProductoInduccions', ["Producto", function(Producto) {
 
 
-            function ProductoInduccion(codigo_producto, descripcion, existencia) {
+            function ProductoInduccions(codigo_producto, descripcion, existencia) {
                 Producto.getClass().call(this, codigo_producto, descripcion, existencia);
 
                 this.iva = null;
@@ -13,39 +13,39 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             };
 
-            ProductoInduccion.prototype = Object.create(Producto.getClass().prototype);
+            ProductoInduccions.prototype = Object.create(Producto.getClass().prototype);
 
-            ProductoInduccion.prototype.setIva = function(iva) {
+            ProductoInduccions.prototype.setIva = function(iva) {
                 this.iva = iva;
                 return this;
             };
 
-            ProductoInduccion.prototype.getIva = function() {
+            ProductoInduccions.prototype.getIva = function() {
                 return this.iva;
             };
 
 
-            ProductoInduccion.prototype.setCosto = function(costo) {
+            ProductoInduccions.prototype.setCosto = function(costo) {
                 this.costo = costo;
                 return this;
             };
 
-            ProductoInduccion.prototype.getCosto = function() {
+            ProductoInduccions.prototype.getCosto = function() {
                 return this.costo;
             };
 
-            ProductoInduccion.prototype.setPrecioVenta = function(precio_venta) {
+            ProductoInduccions.prototype.setPrecioVenta = function(precio_venta) {
                 this.precio_venta = precio_venta;
                 return this;
             };
 
-            ProductoInduccion.prototype.getPrecioVenta = function() {
+            ProductoInduccions.prototype.getPrecioVenta = function() {
                 return this.precio_venta;
             };
 
 
             this.get = function(codigo_producto, descripcion, existencia) {
-                return new ProductoInduccion(codigo_producto, descripcion, existencia);
+                return new ProductoInduccions(codigo_producto, descripcion, existencia);
             };
 
 

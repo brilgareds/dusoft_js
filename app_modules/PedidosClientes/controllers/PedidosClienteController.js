@@ -540,13 +540,13 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     cotizacion.usuario_id = req.session.user.usuario_id;
 
 
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
         /**
          * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
          *               satisfactoriamente
          */
 
-        if (estado) {
+        if (!err) {
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 
              *               1 activo 
@@ -693,12 +693,12 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
 
     });
 
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
         /**
          * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
          *               satisfactoriamente
          */
-        if (estado) {
+        if (!err) {
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 
              *               1 activo 
@@ -898,12 +898,12 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
 
 
 
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
 
         /**
          * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
          */
-        if (estado) {
+        if (!err) {
             /**
              * +Descripcion: Se valida si el numero de la cotizacion ya se encuentra
              *               en la tabla ventas_ordenes_pedidos
@@ -1087,13 +1087,13 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
 
 
 
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
         /**
          * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
          *               satisfactoriamente
          */
 
-        if (estado) {
+        if (!err) {
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 
              *               1 activo 
@@ -1223,32 +1223,37 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     var usuario = req.session.user;
 
 
-
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
+        
+        
+            
         /**
          * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
          *               satisfactoriamente
          */
-
-        if (estado) {
+       
+        if (!err) {
+            
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 
              *               1 activo 
              *               4 activo (desaprobado por cartera)
+             *               0 Empezando a crear la cotizacion
              */
-
-            if (rows[0].estado === '1' || rows[0].estado === '4') {
-
-
-
-                __subir_archivo_plano(req.files, function(continuar, contenido) {
-
-                    if (!continuar) {
+            
+            if ( rows.length === 0 ||  rows[0].estado === '1' || rows[0].estado === '4') {
+                
+            
+                __subir_archivo_plano(req.files, function(error, contenido) {
+                    
+                    
+                    if (!error) {
 
                         __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
-
+                            
+                            
                             cantidad_productos = productos_validos.length;
-
+                             
                             if (cantidad_productos > limite_productos) {
 
                                 res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
@@ -1265,9 +1270,8 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                 // Validar que si suben varios archivos, siempre se limite la cantidad de productos a ingresar ala cotizacion
                                 that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, '', function(err, lista_productos) {
 
-                                    cantidad_productos = lista_productos.length;
-
-                                    if (cantidad_productos > limite_productos) {
+                                    console.log("lista_productos ", lista_productos)
+                                    if (lista_productos.length > limite_productos) {
 
 
                                         res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
@@ -1330,7 +1334,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                 return;
             }
         } else {
-            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
+            res.send(G.utils.r(req.url, 'Ha ocurrido un error QUI!!!!', 500, {pedidos_clientes: []}));
             return;
         }
     });
@@ -1641,12 +1645,12 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
                 /**
                  * +Descripcion: FUncion encargada de verificar el estado de una cotizacion
                  */
-                that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+                that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
                     /**
                      * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
                      *               satisfactoriamente
                      */
-                    if (estado) {
+                    if (!err) {
                         /**
                          * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
                          */
@@ -1919,7 +1923,8 @@ PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
  * @returns {undefined}
  */
 PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
-
+    
+   
     var that = this;
 
     var args = req.body.data;
@@ -1928,7 +1933,7 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
 
     that.m_pedidos_clientes.solicitarAutorizacion(cotizacion, function(estado, rows) {
 
-
+    
         if (estado) {
 
             res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes: []}));
@@ -1962,9 +1967,9 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
 
     var numeroCotizacion = args.pedidos_clientes.cotizacion;
 
-    that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {
 
-        if (estado) {
+        if (!err) {
             res.send(G.utils.r(req.url, 'Consultando estado de la cotizacion', 200, {pedidos_clientes: rows[0].estado}));
             return;
         }
@@ -2502,7 +2507,7 @@ function __subir_archivo_plano(files, callback) {
                 callback(false, filas);
             }
         }).
-                fail(function(err) {
+          fail(function(err) {
             G.fs.unlinkSync(ruta_nueva);
             callback(true);
         }).
@@ -2526,7 +2531,7 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
     var productos_validos = [];
     var productos_invalidos = [];
     var i = filas.length;
-
+    
     filas.forEach(function(row) {
         var codigo_producto = row.codigo || '';
         var cantidad_solicitada = row.cantidad || 0;
@@ -2581,17 +2586,29 @@ function __validar_datos_productos_archivo_plano(contexto, cotizacion, productos
         var codigo_producto = row.codigo_producto;
 
         var filtro = {numero_cotizacion: cotizacion.numero_cotizacion, termino_busqueda: codigo_producto};
-
-        that.m_pedidos_clientes.listar_productos(cotizacion.empresa_id, cotizacion.centro_utilidad_id, cotizacion.bodega_id, cotizacion.cliente.contrato_id, filtro, 1, function(err, lista_productos) {
-
+        
+        that.m_pedidos_clientes.listar_productos(cotizacion.empresa_id, 
+                                                 cotizacion.centro_utilidad_id, 
+                                                 cotizacion.bodega_id, 
+                                                 cotizacion.cliente.contrato_id, 
+                                                 filtro, 
+                                                 1,'', function(err, lista_productos) {
+         
             if (err || lista_productos.length === 0) {
                 productos_invalidos.push(row);
             } else {
-                var producto = lista_productos[0];
-                row.iva = producto.iva;
-                row.precio_venta = producto.precio_producto;
-                row.tipo_producto = producto.tipo_producto_id;
-                productos_validos.push(row);
+                              
+                lista_productos.forEach(function(producto) {
+                 
+                 if(producto.codigo_producto === codigo_producto){
+                      row.iva = producto.iva;
+                      row.precio_venta = producto.precio_producto;
+                      row.tipo_producto = producto.tipo_producto_id;
+                      productos_validos.push(row);
+                 }
+                 
+                });
+               
             }
 
             if (--i === 0) {
@@ -2599,8 +2616,8 @@ function __validar_datos_productos_archivo_plano(contexto, cotizacion, productos
             }
         });
     });
-}
-;
+};
+
 
 
 /*

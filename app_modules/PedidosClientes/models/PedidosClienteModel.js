@@ -1019,6 +1019,8 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
 /*
  * Author : Camilo Orozco
  * Descripcion :  SQL listado de productos para la seleccion de medicamentos en una cotizacion o en un pedido de cliente.
+ * Funciones que usan el model:
+ *  (PedidosClienteController.js)-- __validar_datos_productos_archivo_plano
  */
 PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina,filtros, callback) {
 
@@ -1027,28 +1029,36 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var termino_busqueda = filtro.termino_busqueda;
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
-
+    var parametros = [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id];
     
     
-    if (tipo_producto !== undefined && tipo_producto !== '')
+    if (tipo_producto !== undefined && tipo_producto !== ''){
         sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
-
-    if (laboratorio_id !== undefined && laboratorio_id !== '')
+    }
+    if (laboratorio_id !== undefined && laboratorio_id !== ''){
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
-
-    if(filtros.tipo_busqueda === 0)
-        filtroProducto = "b.descripcion ilike $5";
+    }
+    if(filtros.tipo_busqueda === 0){
+        filtroProducto = "AND (b.descripcion ilike $5)";
+        parametros.push('%' + termino_busqueda + '%');
+    } 
     
+    if(filtros.tipo_busqueda === 1){
+        filtroProducto = "AND (e.descripcion ilike $5)";
+         parametros.push('%' + termino_busqueda + '%');
+    }
     
-    if(filtros.tipo_busqueda === 1)
-        filtroProducto = "e.descripcion ilike $5";
+    if(filtros.tipo_busqueda === 2){
+        filtroProducto = "AND (a.codigo_producto ilike $5)";
+         parametros.push('%' + termino_busqueda + '%');
     
+    }
     
-    if(filtros.tipo_busqueda === 2)
-        filtroProducto = "a.codigo_producto ilike $5";
+    if(filtros === ''){
+        filtroProducto = "AND (a.codigo_producto ilike $5)";
+         parametros.push('%' + termino_busqueda + '%');
     
-    
-    
+    }
     var sql = " select \
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
@@ -1109,11 +1119,12 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     ) aa group by 1,2\
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + " \
-                and (" + filtroProducto + ")";
+                 " + filtroProducto;
                
-    G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
+    G.db.paginated(sql, parametros, pagina, G.settings.limit, function(err, rows, result) {
 
         callback(err, rows);
+        
     });
 };
 
@@ -1713,11 +1724,12 @@ PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizac
     G.knex('ventas_ordenes_pedidos_tmp').where({
         pedido_cliente_id_tmp: numeroCotizacion
     }).select('estado')
-            .then(function(rows) {
-        callback(true, rows);
+      .then(function(rows) {
+        callback(false, rows);
     })
-            . catch (function(error) {
-        callback(false, error);
+      . catch (function(error) {
+       
+        callback(true, error);
     });
 };
 

@@ -87,10 +87,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.Pedido.set_vendedor(Vendedor.get()).setCliente(Cliente.get());
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
             //Cotizacion
-            if (localStorageService.get("cotizacion")) {
-
+            //if (localStorageService.get("cotizacion")) {
+            if ($state.is("Cotizaciones") === true) {
+                
+                console.log("Empresa ", $scope.Empresa)
                 var cotizacion = localStorageService.get("cotizacion");
-                $scope.Pedido.set_numero_cotizacion(parseInt(cotizacion.numero_cotizacion) || 0);
+                var numeroCotizacion = 0;
+                if(cotizacion){
+                    numeroCotizacion = cotizacion.numero_cotizacion || 0;
+                }
+                
+                $scope.Pedido.set_numero_cotizacion(parseInt(numeroCotizacion));
                 $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (cotizacion.visualizar === '1') ? true : false;
 
@@ -100,11 +107,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 that.consultarEstadoPedidoCotizacion(2, cotizacion.numero_cotizacion);
 
 
-            } else if (localStorageService.get("pedido")) {
+            //} else if (localStorageService.get("pedido")) {
+            } else if ($state.is("PedidoCliente") === true) {
                 //Pedido
                 var pedido = localStorageService.get("pedido");
-
-                $scope.Pedido.setNumeroPedido(parseInt(pedido.numero_pedido) || 0);
+                var numeroPedido = 0;
+                if(pedido){
+                    numeroPedido = pedido.numero_pedido || 0;
+                }
+                
+                $scope.Pedido.setNumeroPedido(parseInt(numeroPedido));
 
                 $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
@@ -146,7 +158,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             // Consultas Cotizaciones
             that.gestionar_consultas_cotizaciones = function() {
-
+             
                 that.buscar_clientes(function(clientes) {
 
                     if ($scope.Pedido.get_numero_cotizacion() > 0)
@@ -400,7 +412,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             // Vendedores
             that.buscar_vendedores = function(callback) {
-
+                
+               
                 var obj = {
                     session: $scope.session,
                     data: {}
@@ -472,7 +485,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.cerrar_busqueda_productos = function() {
 
                 $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});
-                //that.gestionar_consultas_cotizaciones();
+                that.gestionar_consultas_cotizaciones();
                 that.init();
             };
             $scope.habilitar_modificacion_producto = function() {
@@ -702,26 +715,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             <tbody>\
                                                 <tr>\
                                                     <td class="left"><strong>Cnt. Productos</strong></td>\
-                                                    <td class="right">{{ Pedido.get_productos().length  }}</td>    \
+                                                    <td class="right">{{ Pedido.get_productos().length  }}</td> \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>Subtotal</strong></td>\
-                                                    <td class="right">{{ Pedido.get_subtotal() | currency : "$" }}</td>    \
+                                                    <td class="right">{{ Pedido.get_subtotal() | currency : "$" }}</td> \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>I.V.A</strong></td>\
-                                                    <td class="right">{{ Pedido.get_valor_iva() | currency : "$" }}</td>                                        \
+                                                    <td class="right">{{ Pedido.get_valor_iva() | currency : "$" }}</td>  \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>Total</strong></td>\
-                                                    <td class="right">{{ Pedido.get_total() | currency : "$" }}</td>                                        \
+                                                    <td class="right">{{ Pedido.get_total() | currency : "$" }}</td> \
                                                 </tr>\
                                             </tbody>\
                                         </table>\
                                     </div>\
                                  </div>',
                 columnDefs: [
-                    {field: 'getCodigoProducto()', displayName: 'Codigosa', width: "10%"},
+                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> \n\
@@ -1106,23 +1119,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);
             };
             that.init = function() {
-
-
+                
+               that.buscar_vendedores(function(){
+                   
+               });
                 that.cargar_permisos();
                 if ($scope.Pedido.get_numero_pedido() > 0) {
                     that.gestionar_consultas_pedidos();
-                } else {
+                } 
+                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
                     that.gestionar_consultas_cotizaciones();
                 }
-
-
             };
             that.init();
 
-
+            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.$$watchers = null;
+                
+               
                 // Set Datas
                 //$scope.Empresa.set_default();
                 // set localstorage

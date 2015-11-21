@@ -1785,11 +1785,10 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
     that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
-
+    
         if (estado) {
 
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
-                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ) {
 
                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
@@ -2080,8 +2079,8 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
 
         if (estado) {
 
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
-                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0'  ) {
+                  
 
                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
@@ -2247,8 +2246,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
         if (estado) {
 
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
-                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0') {
 
 
                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {

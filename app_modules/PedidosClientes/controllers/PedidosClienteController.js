@@ -1721,6 +1721,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
  */
 PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
+
     var that = this;
 
     var args = req.body.data;
@@ -1985,6 +1986,8 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
  * Descripcion : Modificar detalle pedido
  */
 PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
+
+
 
     var that = this;
 

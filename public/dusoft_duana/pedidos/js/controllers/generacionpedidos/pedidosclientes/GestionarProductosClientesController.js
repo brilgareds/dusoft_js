@@ -390,7 +390,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "125", enableCellEdit: false,
+                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "8%", enableCellEdit: false,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                             <span ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >{{row.entity.get_abreviacion_tipo_producto()}}</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\

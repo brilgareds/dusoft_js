@@ -608,7 +608,7 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
 
             if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
 
-                that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, codigo_producto, 1, function(err, productos) {
+                that.m_ordenes_compra.consultarDetalleOrdenCompraConNovedades(numero_orden, codigo_producto, 1, function(err, productos) {
 
                     if (err || productos.length === 0) {
                         res.send(G.utils.r(req.url, 'Se ha generado un erro consultado la orden de compra code 1', 404, {}));

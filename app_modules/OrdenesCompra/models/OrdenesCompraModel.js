@@ -298,6 +298,7 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
        callback(err);
     });
 };
+
 // Consultar Detalle Ordene de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, termino_busqueda, pagina, callback) {
 
@@ -314,11 +315,12 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
                     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
                     a.estado,\
-                    f.politicas_producto\
+                    f.politicas_producto,\
+                    CASE WHEN COALESCE (f.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado\
                     from compras_ordenes_pedidos_detalle a\
                     inner join compras_ordenes_pedidos e on a.orden_pedido_id  = e.orden_pedido_id \
                     left join (\
-                        select a.codigo_proveedor_id ,  b.codigo_producto , c.politica as politicas_producto\
+                        select a.codigo_proveedor_id ,  b.codigo_producto , c.politica as politicas_producto, b.valor_pactado\
                         from contratacion_produc_proveedor a \
                         inner join contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
                         left join contratacion_produc_proveedor_politicas c on b.contrato_produc_prov_det_id = c.contrato_produc_prov_det_id \
@@ -410,6 +412,7 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
     // 2 => Anulada
     // 3 => Recibida
     // 4 => Verificada
+    // 5 => Bloqueada
 
     var sql_aux = " ";
 
@@ -663,7 +666,7 @@ OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(noved
 // Listado de recepciones de mercancia. pendiente
 OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
 
-    var sql = " select \
+    /*var sql = " select \
                 a.id,\
                 a.empresa_id,\
                 b.tipo_id_tercero as tipo_id_empresa,\
@@ -715,7 +718,7 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
     G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
-    
+    */
     
     
     var columnas = [
@@ -753,20 +756,37 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
         G.knex.raw("to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro")
     ];
     
-    G.knex.column(columnas).
+    var query = G.knex.column(columnas).
     from("recepcion_mercancia as a").
     innerJoin("empresas as b", "a.empresa_id", "b.empresa_id").
     innerJoin("terceros_proveedores as c", "a.codigo_proveedor_id", "c.codigo_proveedor_id").
-   /* innerJoin("terceros as d",function(){
+    innerJoin("terceros as d",function(){
+        this.on("c.tipo_id_tercero", "d.tipo_id_tercero").
+        on("c.tercero_id", "d.tercero_id");
+    }).
+    innerJoin("inv_transportadoras as e", "a.inv_transportador_id", "e.transportadora_id").
+    leftJoin("novedades_recepcion_mercancia as f", "a.novedades_recepcion_id", "f.id").
+    whereBetween('a.fecha_registro', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
+    andWhere(function() {
 
-    })*/
+        this.where("d.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("d.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere(G.knex.raw("a.orden_pedido_id::varchar"),  G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("e.descripcion",  G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("a.numero_guia",  G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere(G.knex.raw("a.numero_factura::varchar"),  G.constants.db().LIKE, "%" + termino_busqueda + "%");
     
-    /*innerJoin("inv_subclases_inventarios as c", function(){
-         this.on("a.subclase_id", "c.subclase_id" ).
-         on("a.clase_id", "c.clase_id").
-         on("a.grupo_id", "c.grupo_id");
-    }).*/
-    inner join empresas b on a.empresa_id = b.empresa_id
+    }).
+    orderBy("a.fecha_registro", "desc").
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    then(function(resultado){
+       callback(false, resultado);
+    }).catch(function(err){
+       console.log("error generado ", err);
+       callback(err);
+    });
+    
     
 };
 

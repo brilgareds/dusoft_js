@@ -56,6 +56,7 @@ define(["angular", "js/controllers",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
+            $scope.opciones = Sesion.getUsuarioActual().getModuloActual().opciones;
 
             $scope.datos_view = {
                 email_to: '',
@@ -212,6 +213,7 @@ define(["angular", "js/controllers",
                                                 <li class="divider"></li>\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
                                                 <li class="divider"></li>\
+                                                <li ng-if="opciones.sw_bloquear_orden"><a href="javascript:void(0);" ng-click="bloquearOrdenCompra(row.entity)">Bloquear OC</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
                                             </ul>\
                                         </div>'

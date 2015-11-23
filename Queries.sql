@@ -1509,3 +1509,7 @@ IS 'Descripcion de la entrada de la novedad, fecha de disponibilidad, numero etc
 
 ALTER TABLE "public"."novedades_ordenes_compras"
   DROP CONSTRAINT "novedades_ordenes_compras_UNIQUE" RESTRICT;
+
+
+COMMENT ON COLUMN "public"."compras_ordenes_pedidos"."estado"
+IS 'Estado Orden de Compra 0 => Recibida (Ingresada en Bodega), 1 => Activa, 2 => Anulada , 3 => Recibido en bodega, 4 => Verificado en bodega, 5 => Bloqueada';

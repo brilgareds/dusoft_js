@@ -526,7 +526,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
 
 // Eliminar una orden de compra 
-OrdenesCompra.prototype.anularOrdenCompra = function(req, res) {
+OrdenesCompra.prototype.anularOrdenCompra = function(req, res) {  
 
     var that = this;
 

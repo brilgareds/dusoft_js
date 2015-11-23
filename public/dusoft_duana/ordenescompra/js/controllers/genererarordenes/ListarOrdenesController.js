@@ -120,18 +120,19 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.anular_orden_compra = function() {
+            $scope.cambiarEstadoOrden = function(estado) {
 
                 var obj = {
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            numero_orden: $scope.orden_compra_seleccionada.get_numero_orden()
+                            numero_orden: $scope.orden_compra_seleccionada.get_numero_orden(),
+                            estado:estado
                         }
                     }
                 };
 
-                Request.realizarRequest(API.ORDENES_COMPRA.ANULAR_ORDEN_COMPRA, "POST", obj, function(data) {
+                Request.realizarRequest(API.ORDENES_COMPRA.CAMBIAR_ESTADO, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
 
@@ -213,8 +214,9 @@ define(["angular", "js/controllers",
                                                 <li class="divider"></li>\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
                                                 <li class="divider"></li>\
-                                                <li ng-if="opciones.sw_bloquear_orden"><a href="javascript:void(0);" ng-click="bloquearOrdenCompra(row.entity)">Bloquear OC</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
+                                                <li ng-if="opciones.sw_bloquear_orden"><a href="javascript:void(0);" \
+                                                    ng-click="onCambiarEstadoOrden(row.entity, 5)">Bloquear OC</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -479,7 +481,7 @@ define(["angular", "js/controllers",
                 });
             };
 
-            $scope.anular_orden_compra_seleccionada = function(orden_compra) {
+            $scope.onCambiarEstadoOrden = function(orden_compra, estado) {
 
                 var template = "";
                 var controller = "";
@@ -488,13 +490,12 @@ define(["angular", "js/controllers",
 
 
                 if (orden_compra.estado === '1' && !orden_compra.get_ingreso_temporal()) {
-                    // Anular
                     template = ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
                                     <h4 class="modal-title">Mensaje del Sistema</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h4>Desea Anular la OC #' + orden_compra.get_numero_orden() + '?? </h4> \
+                                    <h4>Desea Modificar el estado de la OC #' + orden_compra.get_numero_orden() + '?? </h4> \
                                 </div>\
                                 <div class="modal-footer">\
                                     <button class="btn btn-warning" ng-click="close()">No</button>\
@@ -503,7 +504,7 @@ define(["angular", "js/controllers",
                     controller = function($scope, $modalInstance) {
 
                         $scope.anular = function() {
-                            $scope.anular_orden_compra();
+                            $scope.cambiarEstadoOrden(estado);
                             $modalInstance.close();
                             $scope.orden_compra_seleccionada = null;
                         };
@@ -520,7 +521,7 @@ define(["angular", "js/controllers",
                                         <h4 class="modal-title">Mensaje del Sistema</h4>\
                                     </div>\
                                     <div class="modal-body">\
-                                        <h4> La orden de compra [OC #' + orden_compra.get_numero_orden() + '] no puede ser anulada !!.</h4>\
+                                        <h4> La orden de compra [OC #' + orden_compra.get_numero_orden() + '] no puede ser modificada !!.</h4>\
                                     </div>\
                                     <div class="modal-footer">\
                                         <button class="btn btn-primary" ng-click="close()">Aceptar</button>\

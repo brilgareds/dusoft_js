@@ -19,7 +19,7 @@ define(["angular"], function(angular) {
                 'MODIFICAR_UNIDAD_NEGOCIO': BASE_URL + '/OrdenesCompra/modificarUnidadNegocio',
                 'MODIFICAR_OBSERVACION': BASE_URL + '/OrdenesCompra/modificarObservacion',
                 'ELIMINAR_PRODUCTO_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/eliminarProductoOrdenCompra',
-                'ANULAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/anularOrdenCompra',
+                'CAMBIAR_ESTADO': BASE_URL + '/OrdenesCompra/cambiarEstado',
                 'FINALIZAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/finalizarOrdenCompra',
                 'SUBIR_ARCHIVO_PLANO': BASE_URL + '/OrdenesCompra/subirPlano',
                 'GESTIONAR_NOVEDADES': BASE_URL + '/OrdenesCompra/gestionarNovedades',

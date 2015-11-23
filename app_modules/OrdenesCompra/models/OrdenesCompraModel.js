@@ -460,7 +460,7 @@ OrdenesCompraModel.prototype.modificar_observacion = function(numero_orden, obse
     });
 };
 
-// Anular Orden de Compra
+// Anular Orden de Compra //obsoleto
 OrdenesCompraModel.prototype.anular_orden_compra = function(numero_orden, callback) {
 
 

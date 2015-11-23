@@ -138,8 +138,9 @@ define(["angular", "js/controllers",
 
                     if (data.status === 200) {
 
-                        $scope.orden_compra_seleccionada.set_estado(estado);
-                        $scope.orden_compra_seleccionada.set_descripcion_estado((estado === '2') ?'Anulado':'Bloqueada');
+                       /* $scope.orden_compra_seleccionada.set_estado(estado);
+                        $scope.orden_compra_seleccionada.set_descripcion_estado((estado === '2') ?'Anulado':'Bloqueada');*/
+                        $scope.buscar_ordenes_compras();
 
                         $scope.orden_compra_seleccionada = null;
                     }
@@ -207,16 +208,16 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
-                                                <li class="divider"></li>\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
-                                                <li class="divider"></li>\
-                                                <li ng-if="opciones.sw_bloquear_orden"><a href="javascript:void(0);" \
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
+                                                <li ng-if="opciones.sw_bloquear_orden && row.entity.estado != 5"><a href="javascript:void(0);" \
                                                     ng-click="onCambiarEstadoOrden(row.entity, 5)">Bloquear OC</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
+                                                <li ng-if="opciones.sw_bloquear_orden && row.entity.estado == 5"><a href="javascript:void(0);" \
+                                                    ng-click="onCambiarEstadoOrden(row.entity, 1)">Desbloquear OC</a></li>\
+                                                <li ng-if="!row.entity.estado == 5"><a href="javascript:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -489,7 +490,7 @@ define(["angular", "js/controllers",
                 $scope.orden_compra_seleccionada = orden_compra;
 
 
-                if (orden_compra.estado === '1' && !orden_compra.get_ingreso_temporal()) {
+                if (orden_compra.estado === '1' && !orden_compra.get_ingreso_temporal() || estado === 1) {
                     template = ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
                                     <h4 class="modal-title">Mensaje del Sistema</h4>\

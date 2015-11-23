@@ -323,6 +323,7 @@ define(["angular", "js/controllers",
 
                 that.buscar_cotizaciones(estado);
                 $scope.notificacionClientesAutorizar = 0;
+                
             };
             
             
@@ -454,7 +455,8 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
             that.cambiarEstadoCotizacionAutorizacion = function(cotizacion) {
-
+                
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -468,7 +470,7 @@ define(["angular", "js/controllers",
 
                     if (data.status === 200) {
                         that.buscar_cotizaciones('');
-
+                        
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error");
                     }
@@ -683,7 +685,7 @@ define(["angular", "js/controllers",
              *               actualizando el nuevo estado de la cotizacion
              */          
             socket.on("onListarEstadoCotizacion", function(datos) {
-
+                
                 if (datos.status === 200) {
                     var estado = ['Inactivo', 'Activo', 'Anulado', 'Aprobado cartera', 'No autorizado por cartera', 'Tiene un pedido', 'Se solicita autorizacion']
                     $scope.Empresa.get_cotizaciones().forEach(function(data) {

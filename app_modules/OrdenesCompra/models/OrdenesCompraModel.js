@@ -552,7 +552,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
                 inner join terceros_proveedores c on a.codigo_proveedor_id = c.codigo_proveedor_id\
                 inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id\
                 inner join system_usuarios e on a.usuario_id = e.usuario_id\
-                where a.empresa_id = $1 and b.codigo_producto = $2 and b.numero_unidades <> COALESCE(b.numero_unidades_recibidas,0)\
+                where a.empresa_id = :1 and b.codigo_producto = :2 and b.numero_unidades <> COALESCE(b.numero_unidades_recibidas,0)\
                 and a.estado = '1' ; ";
 
     

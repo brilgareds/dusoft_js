@@ -39,8 +39,8 @@ module.exports = function(app, di_container) {
     });
 
     // Eliminar Orden de Compras
-    app.post('/api/OrdenesCompra/anularOrdenCompra', function(req, res) {
-        c_ordenes_compra.anularOrdenCompra(req, res);
+    app.post('/api/OrdenesCompra/cambiarEstado', function(req, res) {
+        c_ordenes_compra.cambiarEstado(req, res);
     });
 
     // Eliminar Producto de una Orden de Compra

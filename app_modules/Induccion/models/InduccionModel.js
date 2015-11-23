@@ -8,6 +8,8 @@ var InduccionModel = function () {
 * @param {type} callback
 * @returns {datos de consulta}
 */
+
+// json
 InduccionModel.prototype.getListarEmpresas = function (empresaNombre,callback) {
 
     var column = [

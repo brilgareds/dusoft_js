@@ -13,7 +13,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.precio_regulado = 0;
                 this.precio_venta = 0;
                 this.cantidad_disponible = 0;
-                this.cantidad_solicitada = 0;
+                this.cantidad_solicitada = '';
                 this.estado = estado || '0';
                 this.tipo_producto = tipo_producto || 0;
                 this.descripcion_tipo_producto = "";

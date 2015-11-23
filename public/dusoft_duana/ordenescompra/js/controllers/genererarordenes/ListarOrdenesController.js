@@ -66,7 +66,7 @@ define(["angular", "js/controllers",
                 orden_compra_seleccionada: OrdenCompra.get()
             };
 
-            var estados = ["btn btn-primary btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-info btn-xs"];
+            var estados = ["btn btn-primary btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-info btn-xs", "btn btn-warning btn-xs"];
             
             $scope.filtros = [
                 {nombre : "Orden", numeroOrden:true},                
@@ -138,8 +138,8 @@ define(["angular", "js/controllers",
 
                     if (data.status === 200) {
 
-                        $scope.orden_compra_seleccionada.set_estado('2');
-                        $scope.orden_compra_seleccionada.set_descripcion_estado('Anulado');
+                        $scope.orden_compra_seleccionada.set_estado(estado);
+                        $scope.orden_compra_seleccionada.set_descripcion_estado((estado === '2') ?'Anulado':'Bloqueada');
 
                         $scope.orden_compra_seleccionada = null;
                     }

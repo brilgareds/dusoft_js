@@ -5,11 +5,25 @@ var EmpresasModel = function() {
 
 EmpresasModel.prototype.listar_bodegas_empresa = function(empresa_id, centro_utilidad_id, callback) {
 
+    var sql = "SELECT  bodega as bodega_id, descripcion FROM bodegas WHERE empresa_id = :1 AND centro_utilidad = :2 ; ";
+    
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
+    });
+};
 
-    var sql = "SELECT  bodega as bodega_id, descripcion FROM bodegas WHERE empresa_id = $1 AND centro_utilidad = $2 ; ";
+EmpresasModel.prototype.listarBodegasPorTermino = function(termino, callback) {
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id], function(err, rows, result) {
-        callback(err, rows);
+    var sql = "SELECT  bodega as bodega_id, empresa_id, centro_utilidad, descripcion, ubicacion FROM bodegas WHERE descripcion ILIKE :1 ; ";
+    
+    G.knex.raw(sql, {1:"%"+termino+"%"}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

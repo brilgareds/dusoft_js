@@ -1533,3 +1533,11 @@ ALTER TABLE "public"."ordenes_compra_destino"
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
+
+
+ALTER TABLE "public"."ordenes_compra_destino"
+  ADD CONSTRAINT "ordenes_compra_destino_fk1" FOREIGN KEY ("empresa_id", "centro_utilidad", "bodega")
+    REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;

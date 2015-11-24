@@ -1,7 +1,8 @@
 
 define(["angular", "js/controllers", 'includes/slide/slideContent',
     "controllers/genererarordenes/GestionarProductosController",
-    "controllers/genererarordenes/CalcularValoresProductoController"
+    "controllers/genererarordenes/CalcularValoresProductoController",
+    "models/BodegaOrdenCompra",
 ], function(angular, controllers) {
 
     controllers.controller('GestionarOrdenesController', [
@@ -15,7 +16,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "ProductoOrdenCompra",
         "UsuarioOrdenCompra",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Usuario, Sesion) {
+        "BodegaOrdenCompra",
+        function($scope, $rootScope, Request, 
+                 $modal, API, socket, $timeout, 
+                 AlertService, localStorageService, $state, 
+                 $filter, OrdenCompra, Empresa, 
+                 Proveedor, UnidadNegocio, Producto, 
+                 Usuario, Sesion, BodegaOrdenCompra) {
 
             var that = this;
 
@@ -32,6 +39,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.vista_previa = (localStorageService.get("vista_previa") === '1') ? true : false;
 
             $scope.codigo_proveedor_id = '';
+            $scope.bodegaSeleccionada;
             $scope.unidad_negocio_id = '';
             $scope.observacion = '';
             $scope.observacion_contrato = '';
@@ -105,6 +113,40 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                     });
                 }
+            };
+            
+            that.buscarBodegas = function(terminoBusqueda){
+                
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        bodegas: {
+                            termino: terminoBusqueda
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.BODEGAS.BUSCAR_BODEGAS, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.renderBodegas(data.obj);
+                    }
+                });
+            };
+            
+            that.renderBodegas = function(data){
+                 $scope.Empresa.vaciarBodegas();
+                 var _bodegas = data.bodegas || null;
+                 
+                 
+                 for(var i in _bodegas){
+                     var _bodega = _bodegas[i];
+                     var bodega = BodegaOrdenCompra.get(_bodega.descripcion, _bodega.bodega_id);
+                     bodega.setEmpresaId(_bodega.empresa_id).setCentroUtilidad(_bodega.centro_utiliad).
+                     setUbicacion(_bodega.ubicacion);
+                     
+                     $scope.Empresa.agregarBodega(bodega);
+                 }                 
             };
 
             $scope.buscar_orden_compra = function(callback) {
@@ -208,6 +250,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.cantidad_productos_orden_compra = $scope.orden_compra.get_productos().length;
                     }
                 });
+            };
+            
+            
+            $scope.onBuscarBodegas = function(terminoBusqueda){
+                if(terminoBusqueda.length < 3){
+                    return;
+                }
+                
+                that.buscarBodegas(terminoBusqueda);
+                
             };
 
             $scope.listar_proveedores = function(termino_busqueda) {

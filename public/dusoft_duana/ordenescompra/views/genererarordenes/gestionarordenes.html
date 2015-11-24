@@ -65,6 +65,23 @@
                         </div>
                         <div class="col-md-6">
                             <fieldset>
+                                <legend>Bodega Destino</legend> 
+                                <div class="row">
+                                    <div class="col-md-7"> 
+                                        <!-- ng-disabled="numero_orden > 0" //-->
+                                        <ui-select ng-disabled="vista_previa"  ng-model="bodegaSeleccionada" theme="select2" class="form-control selectgeneral pull-left" >
+                                            <ui-select-match  placeholder="Seleccionar Bodega">{{ $select.selected.getNombre() }}</ui-select-match>
+                                            <ui-select-choices refresh="onBuscarBodegas($select.search)" refresh-delay="0" 
+                                             repeat="bodega in Empresa.getBodegas() | filter:$select.search">
+                                                {{ bodega.getNombre() }}
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <!-- div class="col-md-6">
+                            <fieldset>
                                 <legend>Estado</legend> 
                                 <div class="row">
                                     <div class="col-md-7">  
@@ -72,7 +89,7 @@
                                     </div>
                                 </div>
                             </fieldset>
-                        </div>
+                        </div -->
                     </div>   
                     <br>
                     <br>

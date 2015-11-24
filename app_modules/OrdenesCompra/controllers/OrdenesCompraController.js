@@ -307,8 +307,9 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     var empresa_id = args.ordenes_compras.empresa_id;
     var observacion = args.ordenes_compras.observacion;
     var usuario_id = req.session.user.usuario_id;
+    var bodegaDestino = req.session.bodegaDestino;
 
-    that.m_ordenes_compra.insertar_orden_compra(unidad_negocio, proveedor, empresa_id, observacion, usuario_id, function(err, rows, result) {
+   /* that.m_ordenes_compra.insertar_orden_compra(unidad_negocio, proveedor, empresa_id, observacion, usuario_id, function(err, rows, result) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
@@ -316,13 +317,50 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
         } else {
 
             var numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+            
+            //Se guarda la ubicacion de la bodega destino de la orden
+            if(bodegaDestino){
+                bodegaDestino.ordenCompraId =  numero_orden;
+                that.m_ordenes_compra.guardarDestinoOrden(bodegaDestino, function(err, resultado){
+                    if(err){
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
+                    }
+                });
+            } else {
+                res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
+                
+            }
 
-            res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
             return;
         }
-    });
+    });*/
+    
+    
+    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra,empresa_id, unidad_negocio, proveedor, empresa_id, observacion, usuario_id).
+    then(function(rows){
+        var numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+        //Se guarda la ubicacion de la bodega destino de la orden
+        if(bodegaDestino){
+           bodegaDestino.ordenCompraId =  numero_orden;
+           return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
+        } 
+                
+    }).
+    then(function(resulado){
+        res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
+    }).
+    fail(function(err){
+       
+        res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
+    }).
+    done();
+    
+    
+    
 };
-
 
 // Modificar la unidad de negocio de una orden de compra 
 OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {

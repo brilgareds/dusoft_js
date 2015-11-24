@@ -405,6 +405,32 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
      
 };
 
+OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback) {
+
+    var sql = " SELECT id FROM ordenes_compras_destino WHERE orden_compra_id = :1 ";
+     
+    G.knex.raw(sql, {1:parametros.ordenCompraId}).
+    then(function(resultado){
+       
+       if(resultado.length > 0){
+           sql = "UPDATE ordenes_compras_destino set empresa_id = :2, centro_utilidad = :3, bodega = :4 WHERE orden_compra_id = :1 ";
+           return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
+       } else {
+           sql = "INSERT INTO ordenes_compras_destino (orden_compra_id, empresa_id, centro_utilidad, bodega)\
+                  VALUES( :1, :2, :3, :4 )";
+           return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
+       }
+       
+    })
+    .then(function(resultado){
+        callback(false, resultado);
+    })
+    .catch(function(err){
+       callback(err);
+    });
+     
+};
+
 // Modificar Orden de Compra
 OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_orden, estado, callback) {
 

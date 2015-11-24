@@ -397,7 +397,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             that.insertar_cabercera_orden_compra = function(callback) {
-
+                var bodegaDestino = null;
+                
+                if($scope.bodegaSeleccionada !== null){
+                    bodegaDestino = {
+                        bodega : $scope.bodegaSeleccionada.getCodigo(),
+                        empresaId : $scope.bodegaSeleccionada.getEmpresaId(),
+                        centroUtilidad : $scope.bodegaSeleccionada.getCentroUtilidad()
+                    };
+                }
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -406,7 +415,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             codigo_proveedor: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
                             //empresa_id: '03',
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                            observacion: $scope.orden_compra.get_observacion()
+                            observacion: $scope.orden_compra.get_observacion(),
+                            bodegaDestino : bodegaDestino
                         }
                     }
                 };

@@ -259,8 +259,15 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%", enableCellEdit: false},
                     {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra..', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: true,
+                    /*{field: 'costo_ultima_compra', displayName: '$$ última compra..', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: true,
                        editableCellTemplate: '<input ng-readonly="row.entity.tiene_valor_pactado == 1" placeholder="Costo ultima compra" ng-input="COL_FIELD" ng-model="COL_FIELD"  />',
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span class="label label-primary" ng-show="row.entity.regulado == 1" >Reg</span>\
+                                            <span class="label label-danger" ng-show="row.entity.tiene_valor_pactado == 0">S.C</span>\
+                                            <span class="label label-success" ng-show="row.entity.tiene_valor_pactado == 1">C.C</span>\
+                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency:"$ "}}</span>\
+                                        </div>'},*/
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra..', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: true,
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                             <span class="label label-primary" ng-show="row.entity.regulado == 1" >Reg</span>\
                                             <span class="label label-danger" ng-show="row.entity.tiene_valor_pactado == 0">S.C</span>\

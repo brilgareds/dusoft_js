@@ -1,6 +1,6 @@
 define(["angular","js/services"], function(angular, services){
 
-    var Alert = services.service('AlertService',function() {
+    var Alert = services.service('AlertService',["$modal", function($modal) {
       var that = this;
       this.el;
       this.colaEjecucion = [];
@@ -43,6 +43,43 @@ define(["angular","js/services"], function(angular, services){
 
         }
       };
+      
+      this.mostrarVentanaAlerta = function(titulo, mensaje){
+            var opts = {
+            backdrop: true,
+            backdropClick: true,
+            dialogFade: false,
+          //  size: 'sm',
+            keyboard: true,
+            template: ' <div class="modal-header">\
+                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                            <h4 class="modal-title">{{titulo}}</h4>\
+                        </div>\
+                        <div class="modal-body">\
+                            <h4>{{mensaje}}</h4>\
+                        </div>\
+                        <div class="modal-footer">\
+                            <button class="btn btn-primary" ng-click="close()">Cerrar</button>\
+                        </div>',
+            controller: function($scope, $modalInstance, titulo, mensaje) {
+                $scope.mensaje = mensaje;
+                $scope.titulo  = titulo;
+                $scope.close = function() {
+                    $modalInstance.close();
+                };
+
+            },
+            resolve: {
+                titulo: function() {
+                    return titulo;
+                },
+                mensaje: function(){
+                    return mensaje;
+                }
+            }
+        };
+        var modalInstance = $modal.open(opts);
+      };
 
       this.destruirIntervalo =function(){
         clearTimeout(this.timer);
@@ -60,7 +97,7 @@ define(["angular","js/services"], function(angular, services){
           that.el = $("#systemAlerlt");
       });
 
-    });
+    }]);
 
 
 

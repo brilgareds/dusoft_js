@@ -217,7 +217,7 @@ define(["angular", "js/controllers",
                                                     ng-click="onCambiarEstadoOrden(row.entity, 5)">Bloquear OC</a></li>\
                                                 <li ng-if="opciones.sw_bloquear_orden && row.entity.estado == 5"><a href="javascript:void(0);" \
                                                     ng-click="onCambiarEstadoOrden(row.entity, 1)">Desbloquear OC</a></li>\
-                                                <li ng-if="!row.entity.estado == 5"><a href="javascript:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
                                             </ul>\
                                         </div>'
                     }

@@ -76,7 +76,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
             };
             
-            console.log("Empresa.get_unidades_negocios() ", $scope.Empresa.get_ordenes_compras());
             
             that.set_orden_compra = function() {
 
@@ -153,7 +152,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                  }                 
             };
             
-            that.guardarBodegaDestino = function(borrar){
+            that.guardarBodegaDestino = function(borrar, callback){
                 var bodegaSeleccionada = $scope.orden_compra.getBodegaSeleccionada();
                 var bodegaDestino = {
                     bodega : bodegaSeleccionada.getCodigo(),
@@ -176,9 +175,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if (data.status === 200) {
                          AlertService.mostrarMensaje("warning", "Orden Modificada correctamente");
-                         
-                         if(borrar){
-                             $scope.orden_compra.setBodegaSeleccionada(null);
+                         if(callback){
+                            callback();
                          }
                     }
                 });
@@ -243,6 +241,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 if ($scope.numero_orden > 0) {
                     that.guardarBodegaDestino(false);
+                }
+            };
+            
+            $scope.onRemoverDestino = function(){
+                if ($scope.numero_orden > 0 && $scope.orden_compra.getBodegaSeleccionada()) {
+                    that.guardarBodegaDestino(true, function(){
+                        $scope.orden_compra.setBodegaSeleccionada(null);
+                    });
                 }
             };
             

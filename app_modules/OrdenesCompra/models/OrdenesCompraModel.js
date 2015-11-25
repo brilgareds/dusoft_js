@@ -268,7 +268,12 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 To_char(a.fecha_orden, 'dd-mm-yyyy') as fecha_registro,\
                 coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido,\
                 coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
-                CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal \
+                CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal, \
+                k.bodega as bodega_destino,\
+                k.empresa_id as empresa_destino,\
+                k.centro_utilidad as centro_utilidad_destino,\
+                l.descripcion as descripcion_bodega_destino,\
+                l.ubicacion as ubicacion_bodega_destino\
                 FROM compras_ordenes_pedidos a \
                 INNER JOIN empresas j ON j.empresa_id=a.empresa_id \
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id \
@@ -291,12 +296,15 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 left join (\
                     select bb.codigo_proveedor_id, bb.observaciones as observacion_contrato from contratacion_produc_proveedor bb\
                 ) as i on a.codigo_proveedor_id = i.codigo_proveedor_id\
+                left join compras_ordenes_destino k on k.orden_compra_id = a.orden_pedido_id\
+                left join bodegas l on l.bodega = k.bodega and l.empresa_id = k.empresa_id and l.centro_utilidad = k.centro_utilidad\
                 WHERE a.orden_pedido_id = :1 ";
     
     G.knex.raw(sql, {1:numero_orden}).
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+       console.log("error consultado orden ", err);
        callback(err);
     });
 };
@@ -398,7 +406,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
      
     G.knex.raw(sql, {1:unidad_negocio, 2:codigo_proveedor, 3:empresa_id, 4:observacion, 5:usuario_id}).
     then(function(resultado){
-       callback(false, resultado.rows, resultado);
+       callback(false, resultado.rows);
     }).catch(function(err){
        callback(err);
     });
@@ -407,29 +415,44 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
 
 OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback) {
 
-    var sql = " SELECT id FROM ordenes_compras_destino WHERE orden_compra_id = :1 ";
+    var sql = " SELECT id FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
      
     G.knex.raw(sql, {1:parametros.ordenCompraId}).
     then(function(resultado){
        
-       if(resultado.length > 0){
-           sql = "UPDATE ordenes_compras_destino set empresa_id = :2, centro_utilidad = :3, bodega = :4 WHERE orden_compra_id = :1 ";
+       if(resultado.rows.length > 0){
+           sql = "UPDATE compras_ordenes_destino set empresa_id = :2, centro_utilidad = :3, bodega = :4 WHERE orden_compra_id = :1 ";
            return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
        } else {
-           sql = "INSERT INTO ordenes_compras_destino (orden_compra_id, empresa_id, centro_utilidad, bodega)\
+           sql = "INSERT INTO compras_ordenes_destino (orden_compra_id, empresa_id, centro_utilidad, bodega)\
                   VALUES( :1, :2, :3, :4 )";
            return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
        }
        
     })
     .then(function(resultado){
+        console.log("se ha guardado correctamente la ubicacion ", resultado);
         callback(false, resultado);
     })
     .catch(function(err){
+       console.log("error guardando destino ", err);
        callback(err);
     });
      
 };
+
+OrdenesCompraModel.prototype.borrarBodegaOrden = function(orden, callback) {
+    var sql = " DELETE  FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
+    
+    G.knex.raw(sql, {1:orden}).
+    then(function(resultado){
+        callback(false, resultado);
+    }).
+    catch(function(err){
+       callback(err);
+    });
+};
+
 
 // Modificar Orden de Compra
 OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_orden, estado, callback) {

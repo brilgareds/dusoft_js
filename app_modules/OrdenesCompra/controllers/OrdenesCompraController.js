@@ -274,6 +274,40 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
 };
 
 
+OrdenesCompra.prototype.guardarBodega = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    var bodegaDestino = args.ordenes_compras.bodegaDestino || undefined;
+    var borrarBodega = args.ordenes_compras.borrarBodega;
+    
+    if (!bodegaDestino) {
+        res.send(G.utils.r(req.url, 'La bodega destino no esta definida', 404, {}));
+        return;
+    }
+    
+    if(bodegaDestino && !borrarBodega){
+         G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino).
+         then(function(resultado){
+              res.send(G.utils.r(req.url, 'Se ha modificado la bodega correctamente', 200, {}));
+         }).
+         catch(function(err){
+              res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {})); 
+         });
+    } else if(borrarBodega) {
+        
+        G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, bodegaDestino.ordenCompraId).
+        then(function(resultado){
+            res.send(G.utils.r(req.url, 'Se ha eliminado la bodega destino correctamente', 200, {}));
+        }).
+        catch(function(err){
+            res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {})); 
+        });
+    }
+    
+    
+};
+
 // Insertar una orden de compra 
 OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
 
@@ -306,55 +340,29 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     var proveedor = args.ordenes_compras.codigo_proveedor;
     var empresa_id = args.ordenes_compras.empresa_id;
     var observacion = args.ordenes_compras.observacion;
+    var bodegaDestino = args.ordenes_compras.bodegaDestino;
     var usuario_id = req.session.user.usuario_id;
-    var bodegaDestino = req.session.bodegaDestino;
+    var numero_orden;
 
-   /* that.m_ordenes_compra.insertar_orden_compra(unidad_negocio, proveedor, empresa_id, observacion, usuario_id, function(err, rows, result) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-            return;
-        } else {
-
-            var numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
-            
-            //Se guarda la ubicacion de la bodega destino de la orden
-            if(bodegaDestino){
-                bodegaDestino.ordenCompraId =  numero_orden;
-                that.m_ordenes_compra.guardarDestinoOrden(bodegaDestino, function(err, resultado){
-                    if(err){
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
-                    }
-                });
-            } else {
-                res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
-                
-            }
-
-            return;
-        }
-    });*/
-    
-    
-    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra,empresa_id, unidad_negocio, proveedor, empresa_id, observacion, usuario_id).
+    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id).
     then(function(rows){
-        var numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+        var def = G.Q.defer();
+        numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
         //Se guarda la ubicacion de la bodega destino de la orden
         if(bodegaDestino){
            bodegaDestino.ordenCompraId =  numero_orden;
            return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
-        } 
+        } else {
+            def.resolve();
+        }
                 
     }).
     then(function(resulado){
         res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
     }).
     fail(function(err){
-       
-        res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Se ha generado un error', 500, {lista_productos: {}}));
     }).
     done();
     

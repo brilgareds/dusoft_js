@@ -33,7 +33,7 @@ define(["angular", "js/models","includes/classes/Bodega"], function(angular, mod
         };
 
         BodegaOrdenCompra.prototype.getEmpresaId = function() {
-            this.empresaId;
+            return this.empresaId;
         };
 
         BodegaOrdenCompra.prototype.setCentroUtilidad = function(centroUtilidad) {

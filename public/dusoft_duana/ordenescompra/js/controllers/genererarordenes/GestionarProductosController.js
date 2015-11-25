@@ -146,12 +146,13 @@ define(["angular", "js/controllers",
 
             that.insertar_cabercera_orden_compra = function(callback) {
                 var bodegaDestino = null;
-                console.log("bodega seleccionada ", $scope.bodegaSeleccionada);
-                if($scope.bodegaSeleccionada){
+                var bodegaSeleccionada =  $scope.orden_compra.getBodegaSeleccionada();
+                
+                if(bodegaSeleccionada){
                     bodegaDestino = {
-                        bodega : $scope.bodegaSeleccionada.getCodigo(),
-                        empresaId : $scope.bodegaSeleccionada.getEmpresaId(),
-                        centroUtilidad : $scope.bodegaSeleccionada.getCentroUtilidad()
+                        bodega : bodegaSeleccionada.getCodigo(),
+                        empresaId : bodegaSeleccionada.getEmpresaId(),
+                        centroUtilidad : bodegaSeleccionada.getCentroUtilidad()
                     };
                 }
                 

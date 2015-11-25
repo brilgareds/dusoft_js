@@ -39,7 +39,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.vista_previa = (localStorageService.get("vista_previa") === '1') ? true : false;
 
             $scope.codigo_proveedor_id = '';
-            $scope.bodegaSeleccionada;
             $scope.unidad_negocio_id = '';
             $scope.observacion = '';
             $scope.observacion_contrato = '';
@@ -67,6 +66,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.pagina_actual = 1;
             $scope.progresoArchivo = 0;
             
+            $scope.orden_compra = OrdenCompra.get();
+            
             that.opciones = Sesion.getUsuarioActual().getModuloActual().opciones;
             
             $scope.opcionesModulo = {
@@ -79,7 +80,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             that.set_orden_compra = function() {
 
-                $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
+                //$scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
+                $scope.orden_compra.set_numero_orden($scope.numero_orden).setEstado(1).
+                setObservacion($scope.observacion).setFechaRegistro(new Date());
+        
                 $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
                 $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id.get_codigo_proveedor()));
                 $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
@@ -150,11 +154,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             that.guardarBodegaDestino = function(borrar){
-                
+                var bodegaSeleccionada = $scope.orden_compra.getBodegaSeleccionada();
                 var bodegaDestino = {
-                    bodega : $scope.bodegaSeleccionada.getCodigo(),
-                    empresaId : $scope.bodegaSeleccionada.getEmpresaId(),
-                    centroUtilidad : $scope.bodegaSeleccionada.getCentroUtilidad(),
+                    bodega : bodegaSeleccionada.getCodigo(),
+                    empresaId : bodegaSeleccionada.getEmpresaId(),
+                    centroUtilidad : bodegaSeleccionada.getCentroUtilidad(),
                     ordenCompraId : $scope.numero_orden
                 };
                 
@@ -174,7 +178,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                          AlertService.mostrarMensaje("warning", "Orden Modificada correctamente");
                          
                          if(borrar){
-                             $scope.bodegaSeleccionada = null;
+                             $scope.orden_compra.setBodegaSeleccionada(null);
                          }
                     }
                 });
@@ -219,9 +223,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         // Bodega destino
                         
                         if(datos.bodega_destino){
-                            $scope.bodegaSeleccionada = BodegaOrdenCompra.get(datos.descripcion_bodega_destino, datos.bodega_destino);
-                            $scope.bodegaSeleccionada.setEmpresaId(datos.empresa_destino).setCentroUtilidad(datos.centro_utilidad_destino).
+                            var bodegaSeleccionada = BodegaOrdenCompra.get(datos.descripcion_bodega_destino, datos.bodega_destino);
+                            bodegaSeleccionada.setEmpresaId(datos.empresa_destino).setCentroUtilidad(datos.centro_utilidad_destino).
                             setUbicacion(datos.ubicacion_bodega_destino);
+                            
+                            $scope.orden_compra.setBodegaSeleccionada(bodegaSeleccionada);
                         }
 
                         callback(true);
@@ -233,7 +239,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.onSeleccionBodega = function(bodegaSeleccionada){
                 console.log("on seleccion bodeega ", bodegaSeleccionada);
-                $scope.bodegaSeleccionada = bodegaSeleccionada;
+                $scope.orden_compra.setBodegaSeleccionada(bodegaSeleccionada);
                 
                 if ($scope.numero_orden > 0) {
                     that.guardarBodegaDestino(false);
@@ -446,12 +452,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.insertar_cabercera_orden_compra = function(callback) {
                 var bodegaDestino = null;
-                
-                if($scope.bodegaSeleccionada){
+                    
+                var bodegaSeleccionada = $scope.orden_compra.getBodegaSeleccionada();
+                        
+                if(bodegaSeleccionada){
                     bodegaDestino = {
-                        bodega : $scope.bodegaSeleccionada.getCodigo(),
-                        empresaId : $scope.bodegaSeleccionada.getEmpresaId(),
-                        centroUtilidad : $scope.bodegaSeleccionada.getCentroUtilidad()
+                        bodega : bodegaSeleccionada.getCodigo(),
+                        empresaId : bodegaSeleccionada.getEmpresaId(),
+                        centroUtilidad : bodegaSeleccionada.getCentroUtilidad()
                     };
                 }
                 

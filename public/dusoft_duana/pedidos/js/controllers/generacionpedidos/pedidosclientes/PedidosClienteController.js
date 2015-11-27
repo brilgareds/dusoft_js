@@ -41,7 +41,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 visualizar: false,
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
-                progresoArchivo: 0
+                progresoArchivo: 0,
+                btnSolicitarAutorizacionCartera : true
 
             };
             that.consultarEstadoPedidoCotizacion = function(tipo, numero) {
@@ -353,12 +354,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.render_productos_pedidos = function(productos) {
-
+                
+                
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
-
+                    console.log("productos ", data)
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.porcentaje_iva);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                    producto.set_cantidad_inicial(data.cantidad_solicitada);
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.valor_unitario * data.cantidad_solicitada);
                     producto.set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.valor_unitario_con_iva * data.cantidad_solicitada);
                     $scope.Pedido.set_productos(producto);
@@ -502,7 +505,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     return $scope.datos_view.permisos_cotizaciones.btn_modificar_cotizaciones;
             };
             $scope.habilitar_eliminacion_producto = function() {
-
+                
                 var disabled = false;
                 // Validaciones Cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
@@ -521,6 +524,40 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     disabled = true;
                 return disabled;
             };
+            
+             
+             $scope.validarCantidadInicialCantidadNueva = function(cantidadInicial,cantidadFinal) {
+                 
+                 var disabled = false;
+                
+                 if ($scope.Pedido.get_numero_pedido() > 0) {
+                     console.log("cantidadInicial ", cantidadInicial);
+                     console.log("cantidadFinal ", cantidadFinal);
+                     if(cantidadFinal > cantidadInicial){
+                         disabled = true;
+                     }  
+                    
+                 }
+                   $scope.datos_view.btnSolicitarAutorizacionCartera = disabled;
+                  
+               
+             };
+             
+             
+             $scope.disabledCheckModificarProducto = function(cantidadInicial,cantidadFinal) {
+                 
+                 var disabled = false;
+             
+                 if ($scope.Pedido.get_numero_pedido() > 0) {
+                     if(cantidadFinal > cantidadInicial){
+                         disabled = true;
+                     }  
+                    
+                 }
+                 return disabled;
+                  
+             };
+             
             $scope.confirmar_eliminar_producto = function(producto) {
 
                 $scope.datos_view.producto_seleccionado = producto;
@@ -741,6 +778,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 " \n\
                                         ng-model="row.entity.cantidad_solicitada" \n\
                                         validacion-numero-entero \n\
+                                        ng-keyup="validarCantidadInicialCantidadNueva(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"\
                                         class="form-control grid-inline-input" \n\
                                         name="" id="" /> </div>'},
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
@@ -749,14 +787,52 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-toolbar">\
-                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || disabledCheckModificarProducto(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"  ><span class="glyphicon glyphicon-ok"></span></button>\
                                         <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
             };
             // Upload Archivo Plano
+            $scope.registrarProductoModificado = function(){
+                
+               
+                 // Pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
 
+                   var url = API.PEDIDOS.CLIENTES.MODIFICAR_DETALLE_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                producto: $scope.Pedido.get_productos()
+                            }
+                        }
+                    };
+
+
+                }
+
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+                    $scope.datos_view.producto_seleccionado = Producto.get();
+                    if (data.status === 200) {
+                        if ($scope.Pedido.get_numero_cotizacion() > 0)
+                            that.buscar_detalle_cotizacion();
+                        if ($scope.Pedido.get_numero_pedido() > 0)
+                            that.gestionar_consultas_pedidos();
+                    }
+
+
+                });
+               // console.log("Pedido.get_productos() ", $scope.Pedido.get_productos());
+                
+            };
+            
             $scope.opciones_archivo = new Flow();
             $scope.opciones_archivo.target = API.PEDIDOS.CLIENTES.SUBIR_ARCHIVO_PLANO;
             $scope.opciones_archivo.testChunks = false;

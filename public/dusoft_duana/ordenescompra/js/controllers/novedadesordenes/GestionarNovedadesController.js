@@ -320,7 +320,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 };
 
                 Request.realizarRequest(API.ORDENES_COMPRA.ELIMINAR_NOVEDAD, "POST", obj, function(data) {
-
+                       $scope.buscar_detalle_orden_compra("");
 
                 });
                 

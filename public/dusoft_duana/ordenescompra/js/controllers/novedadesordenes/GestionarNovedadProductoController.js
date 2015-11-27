@@ -107,20 +107,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             that.subir_archivo_novedad = function() {
-
+                
                 $scope.flow.opts.query.data = JSON.stringify({
                     ordenes_compras: {
                         novedad_id: $scope.producto.get_novedad().get_id()
                     }
                 });
-
+                console.log("subiendo archivo plano ", $scope.flow.files.length);
                 $scope.flow.upload();
             };
 
             $scope.respuesta_subida_archivo = function(file, message) {
 
                 var data = (message !== undefined) ? JSON.parse(message) : {};
-
+                $scope.flow.cancel();
 
                 if (data.status === 200) {
                     $scope.buscar_detalle_orden_compra();

@@ -1721,6 +1721,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
  */
 PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
+
     var that = this;
 
     var args = req.body.data;
@@ -1784,11 +1785,16 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
     that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
-
+    
         if (estado) {
-
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
-                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
+            
+            /**
+             * +Descripcion: Se permitira ejecutar la accion de insertarDetallePedido
+             *               siempre y cuando el pedido tenga el 
+             *               estado (Estado del Pedido ) 1
+             *               estado_pedido (Estado de solicitud ) 0
+             */
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ) {
 
                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
@@ -1986,6 +1992,8 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
  */
 PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
 
+
+
     var that = this;
 
     var args = req.body.data;
@@ -2076,9 +2084,14 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
         if (estado) {
-
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
-                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
+           /**
+             * +Descripcion: Se permitira ejecutar la accion de modificarDetallePedido
+             *               siempre y cuando el pedido tenga el 
+             *               estado (Estado del Pedido ) 1
+             *               estado_pedido (Estado de solicitud ) 0
+             */
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0'  ) {
+                  
 
                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
@@ -2239,13 +2252,17 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
 
-
+           /**
+             * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
+             *               siempre y cuando el pedido tenga el 
+             *               estado (Estado del Pedido ) 1
+             *               estado_pedido (Estado de solicitud ) 0
+             */
     that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
         if (estado) {
 
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ||
-                    rows[0].estado === '4' && rows[0].estado_pedido === '0') {
+            if (rows[0].estado === '1' && rows[0].estado_pedido === '0') {
 
 
                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {

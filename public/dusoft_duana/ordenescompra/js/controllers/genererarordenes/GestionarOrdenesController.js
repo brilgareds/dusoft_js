@@ -193,6 +193,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
                             producto.set_politicas(data.politicas_producto);
+                            producto.setTieneValorPactado(data.tiene_valor_pactado);
 
                             $scope.orden_compra.set_productos(producto);
 
@@ -306,7 +307,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.ORDENES_COMPRA.MODIFICAR_UNIDAD_NEGOCIO, "POST", obj, function(data) {
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200) {
 
@@ -333,7 +334,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.ORDENES_COMPRA.FINALIZAR_ORDEN_COMPRA, "POST", obj, function(data) {
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200) {
                         if (finalizar_orden_compra)
@@ -361,8 +362,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.ORDENES_COMPRA.CREAR_ORDEN_COMPRA, "POST", obj, function(data) {
 
-
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200 && data.obj.numero_orden > 0) {
                         $scope.orden_compra.set_numero_orden(data.obj.numero_orden);
@@ -454,7 +454,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     Request.realizarRequest(API.ORDENES_COMPRA.MODIFICAR_OBSERVACION, "POST", obj, function(data) {
 
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                         if (data.status === 200) {
                             $scope.orden_compra.set_observacion($scope.observacion);
@@ -513,7 +513,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'politicas', displayName: 'Políticas', width: "20%"},
                     {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad", enableCellEdit:that.opciones.sw_modificar_orden},
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden},
+                   // {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden, editableCellTemplate: '<input ng-readonly="row.entity.tiene_valor_pactado == 1" placeholder="Costo ultima compra" ng-input="COL_FIELD" ng-model="COL_FIELD" />'},
+                   {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
@@ -527,6 +528,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             $scope.modificarDetalle = function(producto){
+               console.log("producto ", producto);
+               
                
                 var obj = {
                     session: $scope.session,
@@ -547,7 +550,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
                     if (data.status === 200) {
-                        AlertService.mostrarMensaje("success", "Modificacion realizada");
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Modificación realizada");
                         $scope.buscar_detalle_orden_compra("",1);
                     } else {
                         AlertService.mostrarMensaje("warning", "Se ha generado un error");

@@ -1,11 +1,5 @@
 <div>
     <div class="row">
-        <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
-            <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_crear_cotizaciones }}" ng-click="gestionar_cotizacion_cliente()">
-                <span class="glyphicon glyphicon-plus"></span> Crear Cotización
-            </button>
-        </div>
-
         <div class="col-md-2">
             <p class="input-group">
 
@@ -42,9 +36,9 @@
     </div>
 
 
-
-    <div class="defaultGrid" ng-grid="lista_pedidos_clientes" > </div>
-
+<div class="table-responsive" style="clear:both;">
+      <div class="defaultGrid grid-responsive"  ng-grid="lista_pedidos_clientes" > </div>
+</div>
     </br>
 
     <div class="row text-center">

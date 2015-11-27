@@ -56,6 +56,7 @@ define(["angular", "js/controllers",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
+            $scope.opciones = Sesion.getUsuarioActual().getModuloActual().opciones;
 
             $scope.datos_view = {
                 email_to: '',
@@ -65,7 +66,7 @@ define(["angular", "js/controllers",
                 orden_compra_seleccionada: OrdenCompra.get()
             };
 
-            var estados = ["btn btn-primary btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-info btn-xs"];
+            var estados = ["btn btn-primary btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-info btn-xs", "btn btn-warning btn-xs"];
             
             $scope.filtros = [
                 {nombre : "Orden", numeroOrden:true},                
@@ -119,25 +120,27 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.anular_orden_compra = function() {
+            $scope.cambiarEstadoOrden = function(estado) {
 
                 var obj = {
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            numero_orden: $scope.orden_compra_seleccionada.get_numero_orden()
+                            numero_orden: $scope.orden_compra_seleccionada.get_numero_orden(),
+                            estado:estado
                         }
                     }
                 };
 
-                Request.realizarRequest(API.ORDENES_COMPRA.ANULAR_ORDEN_COMPRA, "POST", obj, function(data) {
+                Request.realizarRequest(API.ORDENES_COMPRA.CAMBIAR_ESTADO, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200) {
 
-                        $scope.orden_compra_seleccionada.set_estado('2');
-                        $scope.orden_compra_seleccionada.set_descripcion_estado('Anulado');
+                       /* $scope.orden_compra_seleccionada.set_estado(estado);
+                        $scope.orden_compra_seleccionada.set_descripcion_estado((estado === '2') ?'Anulado':'Bloqueada');*/
+                        $scope.buscar_ordenes_compras();
 
                         $scope.orden_compra_seleccionada = null;
                     }
@@ -205,14 +208,16 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
-                                                <li class="divider"></li>\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
-                                                <li class="divider"></li>\
-                                                <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
+                                                <li ng-if="opciones.sw_bloquear_orden && row.entity.estado != 5"><a href="javascript:void(0);" \
+                                                    ng-click="onCambiarEstadoOrden(row.entity, 5)">Bloquear OC</a></li>\
+                                                <li ng-if="opciones.sw_bloquear_orden && row.entity.estado == 5"><a href="javascript:void(0);" \
+                                                    ng-click="onCambiarEstadoOrden(row.entity, 1)">Desbloquear OC</a></li>\
+                                                <li ng-if="row.entity.estado != 5"><a href="javascript:void(0);" ng-click="onCambiarEstadoOrden(row.entity, 2)">Anular OC</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -376,7 +381,7 @@ define(["angular", "js/controllers",
                         if (data.status === 200) {
                             var nombre_reporte = data.obj.ordenes_compras.nombre_reporte;
 
-                            $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra" + $scope.orden_compra_seleccionada.get_numero_orden(), "blank");
+                            $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra" + $scope.orden_compra_seleccionada.get_numero_orden(), "_blank");
                         } else {
 
                         }
@@ -477,7 +482,7 @@ define(["angular", "js/controllers",
                 });
             };
 
-            $scope.anular_orden_compra_seleccionada = function(orden_compra) {
+            $scope.onCambiarEstadoOrden = function(orden_compra, estado) {
 
                 var template = "";
                 var controller = "";
@@ -485,14 +490,13 @@ define(["angular", "js/controllers",
                 $scope.orden_compra_seleccionada = orden_compra;
 
 
-                if (orden_compra.estado === '1' && !orden_compra.get_ingreso_temporal()) {
-                    // Anular
+                if (orden_compra.estado === '1' && !orden_compra.get_ingreso_temporal() || estado === 1) {
                     template = ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
                                     <h4 class="modal-title">Mensaje del Sistema</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h4>Desea Anular la OC #' + orden_compra.get_numero_orden() + '?? </h4> \
+                                    <h4>Desea Modificar el estado de la OC #' + orden_compra.get_numero_orden() + '?? </h4> \
                                 </div>\
                                 <div class="modal-footer">\
                                     <button class="btn btn-warning" ng-click="close()">No</button>\
@@ -501,7 +505,7 @@ define(["angular", "js/controllers",
                     controller = function($scope, $modalInstance) {
 
                         $scope.anular = function() {
-                            $scope.anular_orden_compra();
+                            $scope.cambiarEstadoOrden(estado);
                             $modalInstance.close();
                             $scope.orden_compra_seleccionada = null;
                         };
@@ -518,7 +522,7 @@ define(["angular", "js/controllers",
                                         <h4 class="modal-title">Mensaje del Sistema</h4>\
                                     </div>\
                                     <div class="modal-body">\
-                                        <h4> La orden de compra [OC #' + orden_compra.get_numero_orden() + '] no puede ser anulada !!.</h4>\
+                                        <h4> La orden de compra [OC #' + orden_compra.get_numero_orden() + '] no puede ser modificada !!.</h4>\
                                     </div>\
                                     <div class="modal-footer">\
                                         <button class="btn btn-primary" ng-click="close()">Aceptar</button>\

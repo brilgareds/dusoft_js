@@ -21,7 +21,13 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 return new ProductoOrdenCompra(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion);
             };
             
+            ProductoOrdenCompra.prototype.setTieneValorPactado = function(tieneValorPactado){
+                this.tiene_valor_pactado = tieneValorPactado;
+            };
             
+            ProductoOrdenCompra.prototype.getTieneValorPactado = function(tieneValorPactado){
+                return this.tiene_valor_pactado;
+            };
 
             // IVA
             ProductoOrdenCompra.prototype.get_iva = function() {
@@ -49,7 +55,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             // Cantidad Presentacion
             ProductoOrdenCompra.prototype.get_cantidad_presentacion = function() {
 
-                return this.cantidad_presentacion;
+                return this.cantidad_presentacion; 
             };
 
             // Costo

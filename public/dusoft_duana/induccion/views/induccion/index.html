@@ -1,10 +1,114 @@
 <div >
+    <div class="row">
+        <div class="col-md-12">  
+            <div class="col-md-2">
+                <p class="pull-left">
+                <ui-select ng-model="codigo_empresa_id" ng-change="seleccionar_Empresas(codigo_empresa_id)" style='width:250px;' theme="select2" class="form-control selectgeneral pull-left" >
+                    <ui-select-match   placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
+                    <ui-select-choices  refresh="onSeleccionarEmpresa($select.search)" refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
+                        {{ empresa.getNombre()}}
+                    </ui-select-choices>
+                </ui-select>  
+                </p>
+            </div>
 
+            <div class="col-md-2">
+                <p class="pull-left">
+                <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado" ng-change="onSeleccionarCentroUtilidad()" style='width:250px;' theme="select2" class="form-control selectgeneral pull-left" >
+                    <ui-select-match  placeholder="Seleccionar Centro Utilidad" >{{ $select.selected.getNombre()}}</ui-select-match>
+                    <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
+                        {{ centroUtilidad.getNombre()}}
+                    </ui-select-choices>
+                </ui-select>  
+                </p>
+            </div>
 
-    <div ng-repeat="model in empresas">
-        {{model.razon_social}} {{model.empresa_id}}
+            <div class="col-md-2">
+                <p class="pull-left">
+                <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado.bodegaSeleccionado" ng-change="onSeleccionarTodas()"  style='width:250px;' theme="select2" class="form-control selectgeneral pull-left"   >
+                    <ui-select-match  placeholder="Seleccionar Bodega" >{{ $select.selected.getNombre()}}</ui-select-match>
+                    <ui-select-choices  refresh-delay="0" repeat="bodega in root.empresaSeleccionada.centroUtilidadSeleccionado.getBodegas() | filter:$select.search">
+                        {{ bodega.getNombre()}}
+                    </ui-select-choices>
+                </ui-select>  
+                </p>
+            </div>
+
+            <div class="col-md-3">  </div>
+            <div class="col-md-3 pull-right">
+                <p class="input-group" >
+                    <input type="text" ng-keypress="onSeleccionarProducto($event)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" class="form-control"  />
+                    <span class="input-group-btn" >
+                        <button class="btn btn-default" type="submit" ><i class="glyphicon glyphicon-search"></i></button>
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div> 
+    <div class="row">
+        <div class="table-responsive" >
+            <div class="defaultGrid grid-responsive" ng-grid="lista_productos_movimientos">
+            </div>
+        </div> 
+        <div class="row text-center">
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+                <span class="glyphicon glyphicon-chevron-left" ></span>
+            </button>
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="items < 25" ng-click="paginaSiguiente()">
+                <span class="glyphicon glyphicon-chevron-right" ></span>
+            </button>
+        </div>
     </div>
-   modulo de induccion
+    
+    <table>
+        <tr>
+            <td>
+                TIPO DE INFORME: 
+                <select ng-model="pdf" name="mySelect" id="mySelect" >
+                    <option value="">CSV</option>
+                    <option value="1">PDF</option>                    
+                    <option value="2">TXT</option>                    
+                </select>
+            </td>
+            <td>
+                <div class="panel-body paddingRightZero">
+                    <button type="button" ng-click="onImprimirRotulo();"  class="btn btn-default" >
+                        <span class="glyphicon glyphicon-print"></span> Imprimir
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+   
+    
+    <nvd3-pie-chart
+        id="exampleId"
+        data="exampleData"
+        x="xFunction()"
+        y="yFunction()"
+        width="500"
+        height="500"
+        showLabels="true"
+        pieLabelsOutside="false"
+        tooltips="true"
+        tooltipcontent="toolTipContentFunction()"
+        showValues="true"
+        labelType="percent">
+        <svg style="height:700px; width: 500px; float:right;"></svg>
+    </nvd3-pie-chart>
+
+
+    <nvd3-pie-chart
+        id="exampleId"
+        data="exampleData"
+        width="550"
+        height="500"        
+        x="xFunction()"
+        y="yFunction()"
+        tooltipcontent="toolTipContentFunction()"
+        showLegend="true">
+        <svg height="250"></svg>
+    </nvd3-pie-chart>
+    <visualizar-reporte></visualizar-reporte>
 </div>
-
-

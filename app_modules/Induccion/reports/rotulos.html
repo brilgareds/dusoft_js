@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <style>
+
+            td{
+                font-size:8px;
+            }
+            
+            .title{
+                font-weight:bold;
+                font-family:"Times New Roman", Georgia, Serif;;
+                font-size:10px;
+            }
+            
+            .docInfo{
+                float:right;
+                font-size:9px;
+            }
+            
+            .footer{
+                margin-top:120px;
+                width:100%;
+            }
+            
+            .cantidad{
+                text-align:center;
+            }
+            
+            .fecha_pedido{
+                margin-left:20px;
+            }
+        </style>
+        
+        <link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css">
+        
+    </head>
+    <body>
+       
+       <!--<img src="{{:serverUrl}}images/logo.png" style="padding-bottom:20px; text-align:center"  width="100px" />--> 
+       
+ 
+        </br>
+        
+       <table class="table table-bordered" width='100%'>
+            <thead>
+                <tr>
+                    <th width='50' class='title'>Codigo</th>
+                    <th width='35%' class='title'>Descripci&oacute;n</th>
+                    <th width='35%' class='title'>Existencia</th>
+                    <th width='35%' class='title'>Medicamento Vencido</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{for detalle}}
+                    <tr>
+                        <td>{{:codigo_producto}}</td>
+                        <td>{{:descripcion}}</td>
+                        <td>{{:existencia}}</td>
+                        <td> {{if sw_control_fecha_vencimiento == 1}} VENCIDO {{else}} NO VENCE  {{/if}}</td>
+                    </tr>
+                {{/for}}
+            </tbody>
+        </table>
+        
+        
+        <table class='footer'>
+            <tr align='center'>
+                <td>
+                    _______________________________
+                </td>
+                <td>
+                    _______________________________
+                </td>
+                <td>
+                    _______________________________
+                </td>
+            </tr>
+            <tr align='center'>
+                <td>
+                   Separo
+                </td>
+                <td>
+                   Audito
+                </td>
+                <td>
+                    Verifico
+                </td>
+            </tr>
+        </table>
+           <div style= 'text-align:center' > {#pageNum}/{#numPages} </div> 
+    </body>
+</html>

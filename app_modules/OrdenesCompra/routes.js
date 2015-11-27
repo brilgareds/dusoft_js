@@ -39,8 +39,8 @@ module.exports = function(app, di_container) {
     });
 
     // Eliminar Orden de Compras
-    app.post('/api/OrdenesCompra/anularOrdenCompra', function(req, res) {
-        c_ordenes_compra.anularOrdenCompra(req, res);
+    app.post('/api/OrdenesCompra/cambiarEstado', function(req, res) {
+        c_ordenes_compra.cambiarEstado(req, res);
     });
 
     // Eliminar Producto de una Orden de Compra
@@ -86,6 +86,10 @@ module.exports = function(app, di_container) {
     // Subir Archivos Novedades Orden de Compra
     app.post('/api/OrdenesCompra/subirArchivoNovedades', function(req, res) {
         c_ordenes_compra.subirArchivoNovedades(req, res);
+    });
+    
+    app.post('/api/OrdenesCompra/eliminarNovedad', function(req, res) {
+        c_ordenes_compra.eliminarNovedad(req, res);
     });
 
     // Generar Reporte Orden Compra
@@ -145,4 +149,9 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/modificarAutorizacionCompras', function(req, res) {
         c_ordenes_compra.modificarAutorizacionCompras(req, res);
     });
+    
+    app.post('/api/OrdenesCompra/guardarBodega', function(req, res) {
+        c_ordenes_compra.guardarBodega(req, res);
+    });
+   
 };

@@ -274,6 +274,40 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
 };
 
 
+OrdenesCompra.prototype.guardarBodega = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    var bodegaDestino = args.ordenes_compras.bodegaDestino || undefined;
+    var borrarBodega = args.ordenes_compras.borrarBodega;
+    
+    if (!bodegaDestino) {
+        res.send(G.utils.r(req.url, 'La bodega destino no esta definida', 404, {}));
+        return;
+    }
+    
+    if(bodegaDestino && !borrarBodega){
+         G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino).
+         then(function(resultado){
+              res.send(G.utils.r(req.url, 'Se ha modificado la bodega correctamente', 200, {}));
+         }).
+         catch(function(err){
+              res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {})); 
+         });
+    } else if(borrarBodega) {
+        
+        G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, bodegaDestino.ordenCompraId).
+        then(function(resultado){
+            res.send(G.utils.r(req.url, 'Se ha eliminado la bodega destino correctamente', 200, {}));
+        }).
+        catch(function(err){
+            res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {})); 
+        });
+    }
+    
+    
+};
+
 // Insertar una orden de compra 
 OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
 
@@ -306,23 +340,35 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     var proveedor = args.ordenes_compras.codigo_proveedor;
     var empresa_id = args.ordenes_compras.empresa_id;
     var observacion = args.ordenes_compras.observacion;
+    var bodegaDestino = args.ordenes_compras.bodegaDestino;
     var usuario_id = req.session.user.usuario_id;
+    var numero_orden;
 
-    that.m_ordenes_compra.insertar_orden_compra(unidad_negocio, proveedor, empresa_id, observacion, usuario_id, function(err, rows, result) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-            return;
+    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id).
+    then(function(rows){
+        var def = G.Q.defer();
+        numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+        //Se guarda la ubicacion de la bodega destino de la orden
+        if(bodegaDestino){
+           bodegaDestino.ordenCompraId =  numero_orden;
+           return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
         } else {
-
-            var numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
-
-            res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
-            return;
+            def.resolve();
         }
-    });
+                
+    }).
+    then(function(resulado){
+        res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
+    }).
+    fail(function(err){
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Se ha generado un error', 500, {lista_productos: {}}));
+    }).
+    done();
+    
+    
+    
 };
-
 
 // Modificar la unidad de negocio de una orden de compra 
 OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
@@ -375,7 +421,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
                 });
 
             } else {
-                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orden de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
                 return;
             }
         }
@@ -433,7 +479,7 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
                     }
                 });
             } else {
-                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
                 return;
             }
         }
@@ -517,7 +563,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
                 }
 
             } else {
-                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
                 return;
             }
         }
@@ -525,24 +571,24 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 };
 
 
-// Eliminar una orden de compra 
-OrdenesCompra.prototype.anularOrdenCompra = function(req, res) {
+OrdenesCompra.prototype.cambiarEstado = function(req, res) {  
 
     var that = this;
 
     var args = req.body.data;
 
-    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
-        res.send(G.utils.r(req.url, 'numero_orden  no esta definidas', 404, {}));
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.estado === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden o estado  no estan definidas', 404, {}));
         return;
     }
 
-    if (args.ordenes_compras.numero_orden === '') {
-        res.send(G.utils.r(req.url, 'numero_orden esta vacias', 404, {}));
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.estado === '') {
+        res.send(G.utils.r(req.url, 'numero_orden o estado esta vacias', 404, {}));
         return;
     }
 
     var numero_orden = args.ordenes_compras.numero_orden;
+    var estado = args.ordenes_compras.estado;
 
 
     //validar que la OC no tenga NINGUN ingreso temporal.
@@ -555,20 +601,20 @@ OrdenesCompra.prototype.anularOrdenCompra = function(req, res) {
 
             orden_compra = orden_compra[0];
 
-            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+            if ((orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') || (estado === 1 && orden_compra.estado === '5')) {
 
-                that.m_ordenes_compra.anular_orden_compra(numero_orden, function(err, rows, result) {
+                that.m_ordenes_compra.actualizar_estado_orden_compra(numero_orden, estado, function(err, rows, result) {
 
                     if (err) {
                         res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
                         return;
                     } else {
-                        res.send(G.utils.r(req.url, 'Orden de Compra anulada correctamente', 200, {ordenes_compras: []}));
+                        res.send(G.utils.r(req.url, 'Orden de Compra modificada correctamente', 200, {ordenes_compras: []}));
                         return;
                     }
                 });
             } else {
-                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orden de compra esta siendo o ya fue ingresada.', 403, {orden_compra: []}));
+                res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
                 return;
             }
         }
@@ -608,7 +654,7 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
 
             if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
 
-                that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, codigo_producto, 1, function(err, productos) {
+                that.m_ordenes_compra.consultarDetalleOrdenCompraConNovedades(numero_orden, codigo_producto, 1, function(err, productos) {
 
                     if (err || productos.length === 0) {
                         res.send(G.utils.r(req.url, 'Se ha generado un erro consultado la orden de compra code 1', 404, {}));
@@ -635,7 +681,7 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
                     }
                 });
             } else {
-                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orden de compra esta siendo o ya fue ingresada.', 403, {orden_compra: []}));
+                res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
                 return;
             }
         }
@@ -693,7 +739,7 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
                 });
 
             } else {
-                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                res.send(G.utils.r(req.url, 'La orden de compra no puede ser modificada en el estado actual.', 403, {orden_compra: []}));
                 return;
             }
         }
@@ -701,6 +747,31 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
     });
 };
 
+
+OrdenesCompra.prototype.eliminarNovedad = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (args.ordenes_compras === undefined || args.ordenes_compras.novedadId === undefined) {
+        res.send(G.utils.r(req.url, 'novedad id no esta definida', 404, {}));
+        return;
+    }
+    
+    var novedadId = args.ordenes_compras.novedadId;
+    
+   
+    G.Q.ninvoke(that.m_ordenes_compra,'eliminarRegistroNovedad', {novedadId : novedadId}).
+    then(function(resultado){
+        res.send(G.utils.r(req.url, 'Novedad eliminado correctamente', 200, {}));
+    }).
+    fail(function(err){
+        //console.log("error generado >>>>>>>>>>>>>>>>>>>>>>>>>>> ", err);
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {}));
+    }).
+    done();
+    
+};
 
 // Ingresar Novedades Orden Compra
 OrdenesCompra.prototype.gestionarNovedades = function(req, res) {

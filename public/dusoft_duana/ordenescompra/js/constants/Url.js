@@ -19,7 +19,7 @@ define(["angular"], function(angular) {
                 'MODIFICAR_UNIDAD_NEGOCIO': BASE_URL + '/OrdenesCompra/modificarUnidadNegocio',
                 'MODIFICAR_OBSERVACION': BASE_URL + '/OrdenesCompra/modificarObservacion',
                 'ELIMINAR_PRODUCTO_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/eliminarProductoOrdenCompra',
-                'ANULAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/anularOrdenCompra',
+                'CAMBIAR_ESTADO': BASE_URL + '/OrdenesCompra/cambiarEstado',
                 'FINALIZAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/finalizarOrdenCompra',
                 'SUBIR_ARCHIVO_PLANO': BASE_URL + '/OrdenesCompra/subirPlano',
                 'GESTIONAR_NOVEDADES': BASE_URL + '/OrdenesCompra/gestionarNovedades',
@@ -33,7 +33,10 @@ define(["angular"], function(angular) {
                 'INGRESAR_PRODUCTOS_MERCANCIA': BASE_URL + '/OrdenesCompra/modificarProductosRecepcionMercancia',              
                 'FINALIZAR_RECEPCION': BASE_URL + '/OrdenesCompra/finalizarRecepcionMercancia',
                 'LISTAR_AUTORIZACIONES_COMPRAS': BASE_URL + '/OrdenesCompra/listarAutorizacionCompras',
-                'MODIFICAR_AUTORIZACION_COMPRAS': BASE_URL + '/OrdenesCompra/modificarAutorizacionCompras'
+                'MODIFICAR_AUTORIZACION_COMPRAS': BASE_URL + '/OrdenesCompra/modificarAutorizacionCompras',
+                'GUARDAR_BODEGA' : BASE_URL + '/OrdenesCompra/guardarBodega',
+                'ELIMINAR_NOVEDAD' : BASE_URL + '/OrdenesCompra/eliminarNovedad'
+
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
@@ -52,6 +55,9 @@ define(["angular"], function(angular) {
             },
             'NOVEDADES_MERCANCIA': {
                 'LISTAR_NOVEDADES_MERCANCIA': BASE_URL + '/NovedadesRecepcion/listarNovedades'
+            },
+            'BODEGAS' : {
+                'BUSCAR_BODEGAS' : BASE_URL + '/Bodegas/listarBodegasPorTermino'
             }
             
         }

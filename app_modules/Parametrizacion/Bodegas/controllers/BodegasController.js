@@ -37,6 +37,35 @@ Bodegas.prototype.listar_bodegas_empresa = function(req, res) {
     });
 };
 
+Bodegas.prototype.listarBodegasPorTermino = function(req, res) {
+
+    var that = this;
+
+
+    var args = req.body.data;
+
+    if (args.bodegas === undefined || args.bodegas.termino === undefined) {
+        res.send(G.utils.r(req.url, 'el termino de busqueda no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.bodegas.termino === '') {
+        res.send(G.utils.r(req.url, 'el termino de busqueda esta vacio', 404, {}));
+        return;
+    }
+
+    var termino = args.bodegas.termino;
+
+    that.m_bodegas.listarBodegasPorTermino(termino, function(err, lista_bodegas) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listado bodegas', 500, {bodegas: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de Bodegas', 200, {bodegas: lista_bodegas}));
+        }
+    });
+};
+
 Bodegas.$inject = ["m_bodegas"];
 
 module.exports = Bodegas;

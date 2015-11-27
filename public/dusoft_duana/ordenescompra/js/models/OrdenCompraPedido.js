@@ -15,16 +15,8 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 this.productos = [];
                 this.productoSeleccionado = '';
                 this.localizacion = '';
+                this.bodegaSeleccionada;
             }
-            
-            // Numero de Orden
-            OrdenCompraPedido.prototype.set_numero_orden = function(numero_orden) {       
-                this.numero_orden_compra = numero_orden ;    
-            };
-            
-            OrdenCompraPedido.prototype.get_numero_orden = function() {
-                return this.numero_orden_compra;
-            };
             
 
             // Empresa
@@ -179,6 +171,14 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             
             OrdenCompraPedido.prototype.get_fecha_verificacion = function() {
                 this.fecha_verificacion;
+            };
+            
+            OrdenCompraPedido.prototype.setBodegaSeleccionada = function(bodegaSeleccionada) {       
+                this.bodegaSeleccionada = bodegaSeleccionada ;    
+            };
+            
+            OrdenCompraPedido.prototype.getBodegaSeleccionada = function() {
+                return this.bodegaSeleccionada;
             };
 
             // Instancia

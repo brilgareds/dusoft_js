@@ -1,7 +1,8 @@
 
 define(["angular", "js/controllers", 'includes/slide/slideContent',
     "controllers/genererarordenes/GestionarProductosController",
-    "controllers/genererarordenes/CalcularValoresProductoController"
+    "controllers/genererarordenes/CalcularValoresProductoController",
+    "models/BodegaOrdenCompra",
 ], function(angular, controllers) {
 
     controllers.controller('GestionarOrdenesController', [
@@ -15,7 +16,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "ProductoOrdenCompra",
         "UsuarioOrdenCompra",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Usuario, Sesion) {
+        "BodegaOrdenCompra",
+        function($scope, $rootScope, Request, 
+                 $modal, API, socket, $timeout, 
+                 AlertService, localStorageService, $state, 
+                 $filter, OrdenCompra, Empresa, 
+                 Proveedor, UnidadNegocio, Producto, 
+                 Usuario, Sesion, BodegaOrdenCompra) {
 
             var that = this;
 
@@ -59,6 +66,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.pagina_actual = 1;
             $scope.progresoArchivo = 0;
             
+            $scope.orden_compra = OrdenCompra.get();
+            
             that.opciones = Sesion.getUsuarioActual().getModuloActual().opciones;
             
             $scope.opcionesModulo = {
@@ -67,11 +76,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
             };
             
-            console.log("Empresa.get_unidades_negocios() ", $scope.Empresa.get_ordenes_compras());
             
             that.set_orden_compra = function() {
 
-                $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
+                //$scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
+                $scope.orden_compra.set_numero_orden($scope.numero_orden).setEstado(1).
+                setObservacion($scope.observacion).setFechaRegistro(new Date());
+        
                 $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
                 $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id.get_codigo_proveedor()));
                 $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
@@ -105,6 +116,70 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                     });
                 }
+            };
+            
+            that.buscarBodegas = function(terminoBusqueda){
+                
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        bodegas: {
+                            termino: terminoBusqueda
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.BODEGAS.BUSCAR_BODEGAS, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.renderBodegas(data.obj);
+                    }
+                });
+            };
+            
+            that.renderBodegas = function(data){
+                 $scope.Empresa.vaciarBodegas();
+                 var _bodegas = data.bodegas || null;
+                 
+                 
+                 for(var i in _bodegas){
+                     var _bodega = _bodegas[i];
+                     var bodega = BodegaOrdenCompra.get(_bodega.descripcion, _bodega.bodega_id);
+                     bodega.setEmpresaId(_bodega.empresa_id).setCentroUtilidad(_bodega.centro_utilidad).
+                     setUbicacion(_bodega.ubicacion);
+                     
+                     $scope.Empresa.agregarBodega(bodega);
+                 }                 
+            };
+            
+            that.guardarBodegaDestino = function(borrar, callback){
+                var bodegaSeleccionada = $scope.orden_compra.getBodegaSeleccionada();
+                var bodegaDestino = {
+                    bodega : bodegaSeleccionada.getCodigo(),
+                    empresaId : bodegaSeleccionada.getEmpresaId(),
+                    centroUtilidad : bodegaSeleccionada.getCentroUtilidad(),
+                    ordenCompraId : $scope.numero_orden
+                };
+                
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            bodegaDestino: bodegaDestino,
+                            borrarBodega : borrar
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.ORDENES_COMPRA.GUARDAR_BODEGA, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                         AlertService.mostrarMensaje("warning", "Orden Modificada correctamente");
+                         if(callback){
+                            callback();
+                         }
+                    }
+                });
             };
 
             $scope.buscar_orden_compra = function(callback) {
@@ -142,6 +217,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.valor_subtotal = datos.subtotal;
                         $scope.valor_iva = datos.valor_iva;
                         $scope.valor_total = datos.total;
+                        
+                        // Bodega destino
+                        
+                        if(datos.bodega_destino){
+                            var bodegaSeleccionada = BodegaOrdenCompra.get(datos.descripcion_bodega_destino, datos.bodega_destino);
+                            bodegaSeleccionada.setEmpresaId(datos.empresa_destino).setCentroUtilidad(datos.centro_utilidad_destino).
+                            setUbicacion(datos.ubicacion_bodega_destino);
+                            
+                            $scope.orden_compra.setBodegaSeleccionada(bodegaSeleccionada);
+                        }
 
                         callback(true);
                     } else {
@@ -149,7 +234,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 });
             };
-
+            
+            $scope.onSeleccionBodega = function(bodegaSeleccionada){
+                console.log("on seleccion bodeega ", bodegaSeleccionada);
+                $scope.orden_compra.setBodegaSeleccionada(bodegaSeleccionada);
+                
+                if ($scope.numero_orden > 0) {
+                    that.guardarBodegaDestino(false);
+                }
+            };
+            
+            $scope.onRemoverDestino = function(){
+                if ($scope.numero_orden > 0 && $scope.orden_compra.getBodegaSeleccionada()) {
+                    that.guardarBodegaDestino(true, function(){
+                        $scope.orden_compra.setBodegaSeleccionada(null);
+                    });
+                }
+            };
+            
             $scope.buscar_detalle_orden_compra = function(termino, paginando) {
 
                 var termino = termino || "";
@@ -193,6 +295,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
                             producto.set_politicas(data.politicas_producto);
+                            producto.setTieneValorPactado(data.tiene_valor_pactado);
 
                             $scope.orden_compra.set_productos(producto);
 
@@ -207,6 +310,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.cantidad_productos_orden_compra = $scope.orden_compra.get_productos().length;
                     }
                 });
+            };
+            
+            
+            $scope.onBuscarBodegas = function(terminoBusqueda){
+                if(terminoBusqueda.length < 3){
+                    return;
+                }
+                
+                that.buscarBodegas(terminoBusqueda);
+                
             };
 
             $scope.listar_proveedores = function(termino_busqueda) {
@@ -306,7 +419,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.ORDENES_COMPRA.MODIFICAR_UNIDAD_NEGOCIO, "POST", obj, function(data) {
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200) {
 
@@ -333,7 +446,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.ORDENES_COMPRA.FINALIZAR_ORDEN_COMPRA, "POST", obj, function(data) {
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200) {
                         if (finalizar_orden_compra)
@@ -344,7 +457,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             that.insertar_cabercera_orden_compra = function(callback) {
-
+                var bodegaDestino = null;
+                    
+                var bodegaSeleccionada = $scope.orden_compra.getBodegaSeleccionada();
+                        
+                if(bodegaSeleccionada){
+                    bodegaDestino = {
+                        bodega : bodegaSeleccionada.getCodigo(),
+                        empresaId : bodegaSeleccionada.getEmpresaId(),
+                        centroUtilidad : bodegaSeleccionada.getCentroUtilidad()
+                    };
+                }
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -353,7 +477,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             codigo_proveedor: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
                             //empresa_id: '03',
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                            observacion: $scope.orden_compra.get_observacion()
+                            observacion: $scope.orden_compra.get_observacion(),
+                            bodegaDestino : bodegaDestino
                         }
                     }
                 };
@@ -361,8 +486,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.ORDENES_COMPRA.CREAR_ORDEN_COMPRA, "POST", obj, function(data) {
 
-
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200 && data.obj.numero_orden > 0) {
                         $scope.orden_compra.set_numero_orden(data.obj.numero_orden);
@@ -407,7 +531,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.buscar_productos = function() {
-
                 if ($scope.numero_orden === 0) {
 
                     that.set_orden_compra();
@@ -454,7 +577,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     Request.realizarRequest(API.ORDENES_COMPRA.MODIFICAR_OBSERVACION, "POST", obj, function(data) {
 
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                         if (data.status === 200) {
                             $scope.orden_compra.set_observacion($scope.observacion);
@@ -513,7 +636,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'politicas', displayName: 'Políticas', width: "20%"},
                     {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad", enableCellEdit:that.opciones.sw_modificar_orden},
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden},
+                   // {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden, editableCellTemplate: '<input ng-readonly="row.entity.tiene_valor_pactado == 1" placeholder="Costo ultima compra" ng-input="COL_FIELD" ng-model="COL_FIELD" />'},
+                   {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
@@ -527,6 +651,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             $scope.modificarDetalle = function(producto){
+               console.log("producto ", producto);
+               
                
                 var obj = {
                     session: $scope.session,
@@ -547,7 +673,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
                     if (data.status === 200) {
-                        AlertService.mostrarMensaje("success", "Modificacion realizada");
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Modificación realizada");
                         $scope.buscar_detalle_orden_compra("",1);
                     } else {
                         AlertService.mostrarMensaje("warning", "Se ha generado un error");

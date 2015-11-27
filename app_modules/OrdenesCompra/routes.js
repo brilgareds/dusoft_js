@@ -87,6 +87,10 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/subirArchivoNovedades', function(req, res) {
         c_ordenes_compra.subirArchivoNovedades(req, res);
     });
+    
+    app.post('/api/OrdenesCompra/eliminarNovedad', function(req, res) {
+        c_ordenes_compra.eliminarNovedad(req, res);
+    });
 
     // Generar Reporte Orden Compra
     app.post('/api/OrdenesCompra/reporteOrdenCompra', function(req, res) {

@@ -748,6 +748,31 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
 };
 
 
+OrdenesCompra.prototype.eliminarNovedad = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (args.ordenes_compras === undefined || args.ordenes_compras.novedadId === undefined) {
+        res.send(G.utils.r(req.url, 'novedad id no esta definida', 404, {}));
+        return;
+    }
+    
+    var novedadId = args.ordenes_compras.novedadId;
+    
+   
+    G.Q.ninvoke(that.m_ordenes_compra,'eliminarRegistroNovedad', {novedadId : novedadId}).
+    then(function(resultado){
+        res.send(G.utils.r(req.url, 'Novedad eliminado correctamente', 200, {}));
+    }).
+    fail(function(err){
+        //console.log("error generado >>>>>>>>>>>>>>>>>>>>>>>>>>> ", err);
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {}));
+    }).
+    done();
+    
+};
+
 // Ingresar Novedades Orden Compra
 OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
 

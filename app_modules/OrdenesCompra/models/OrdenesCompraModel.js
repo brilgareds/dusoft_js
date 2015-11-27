@@ -1,5 +1,5 @@
 var OrdenesCompraModel = function() {
-
+    this.foo = "foo";
 };
 
 // Listar las Ordenes de Compra 
@@ -654,6 +654,72 @@ OrdenesCompraModel.prototype.consultarNovedadPorObservacion = function(novedadId
     });
 };
 
+/*
+ * @param {Object} parametros {novedadId : Int}
+ * @param {type} callback
+ * Metodo que gestiona la eliminacion de la novedad de un producto
+ * */
+
+OrdenesCompraModel.prototype.eliminarRegistroNovedad = function(parametros, callback){
+    var that = this;
+    
+    G.Q.ninvoke(that, 'consultar_archivo_novedad_producto', parametros.novedadId).
+    then(function(archivos){
+        return G.Q.ninvoke(that, 'eliminarArchivosNovedad', archivos);
+    }).
+    then(function(err){
+        return console.log("archivos borrados completamente code 2 ", arguments);
+    }).
+    fail(function(err){
+        console.log(">>>>>>>>>>>>>> error controlado ", err);
+        callback(err);
+    });
+   
+};
+
+/*
+ * @param {Object} parametros
+ * @param {type} callback
+ * @returns {undefined}
+ */
+
+OrdenesCompraModel.prototype.eliminarNovedad = function(parametros, callback){
+    var sql = "DELETE FROM novedades_ordenes_compras WHERE id = :1";
+    
+    G.knex.raw(sql, {1:parametros.novedadId}).
+    then(function(resultado){
+       G.fs.unlinkSync(G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + archivo.nombre_archivo);
+       archivos.splice(0,1);
+       that.eliminarArchivosNovedad(archivos, callback);
+    }).catch(function(err){
+       console.log("error borrando novedad ", err);
+       callback(err);
+    });
+};
+
+OrdenesCompraModel.prototype.eliminarArchivosNovedad = function(archivos, callback){
+
+    var archivo =  archivos[0];
+    var that = this;
+    if(!archivo){
+        callback(false);
+        return;
+    }
+    
+    var sql = "DELETE FROM archivos_novedades_ordenes_compras WHERE id = :1";
+    console.log("eliminando archivo con id ", archivo.id, " con nombre ",archivo.nombre_archivo);
+    G.knex.raw(sql, {1:archivo.id}).
+    then(function(resultado){
+       G.fs.unlinkSync(G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + archivo.nombre_archivo);
+       archivos.splice(0,1);
+       that.eliminarArchivosNovedad(archivos, callback);
+    }).catch(function(err){
+       console.log("error borrando novedad ", err);
+       callback(err);
+    });
+    
+};
+
 
 // Registrar Novedad Producto Orden de Compra
 OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
@@ -703,11 +769,12 @@ OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(noveda
 OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(novedad_id, callback) {
 
     var sql = "  SELECT * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = :1 ; ";
-    
     G.knex.raw(sql, {1:novedad_id}).
     then(function(resultado){
-       callback(false, resultado.rows, resultado);
+       //console.log("archivos encontrados ", resultado);
+       callback(false, resultado.rows);
     }).catch(function(err){
+       //console.log("error eliminando novedad ", err);
        callback(err);
     });
     

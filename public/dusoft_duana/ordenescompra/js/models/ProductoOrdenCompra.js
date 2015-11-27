@@ -13,6 +13,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.cantidad_presentacion = cantidad_presentacion || "";
                 this.cantidad_recibida = 0;
                 this.novedad = null;
+                this.lote = [];
+                this.nombreUsuarioIngreso = '';
             }
 
             ProductoOrdenCompra.prototype = Object.create(Producto.getClass().prototype);
@@ -114,6 +116,78 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoOrdenCompra.prototype.get_novedad_recepcion = function() {
                 return this.novedad_recepcion;
+            };
+
+           //Porcentaje Gravamen
+            ProductoOrdenCompra.prototype.setPorcentajeGravamen = function(porcentajeGravamen) {
+                this.porcentajeGravamen = porcentajeGravamen;
+            };
+
+            ProductoOrdenCompra.prototype.getPorcentajeGravamen = function() {
+                return this.porcentajeGravamen;
+            };
+            
+           //justificacion ingreso
+            ProductoOrdenCompra.prototype.setJustificacionIngreso = function(justificacionIngreso) {
+                this.justificacionIngreso = justificacionIngreso;
+            };
+
+            ProductoOrdenCompra.prototype.getJustificacionIngreso = function() {
+                return this.justificacionIngreso;
+            };
+            
+            //Total Costo
+            ProductoOrdenCompra.prototype.setTotalCosto = function(totalCosto) {
+                this.totalCosto = totalCosto;
+            };
+
+            ProductoOrdenCompra.prototype.getTotalCosto = function() {
+                return this.totalCosto;
+            };
+            
+            //Valor Unitario Factura
+            ProductoOrdenCompra.prototype.setValorUnitarioFactura = function(valorUnitarioFactura) {
+                this.valorUnitarioFactura = valorUnitarioFactura;
+            };
+
+            ProductoOrdenCompra.prototype.getValorUnitarioFactura = function() {
+                return this.valorUnitarioFactura;
+            };
+            
+            //Valor Unitario Compra
+            ProductoOrdenCompra.prototype.setValorUnitarioCompra = function(valorUnitarioCompra) {
+                this.valorUnitarioCompra = valorUnitarioCompra;
+            };
+
+            ProductoOrdenCompra.prototype.getValorUnitarioCompra = function() {
+                return this.valorUnitarioCompra;
+            };
+            
+            //usuario Ingreso
+            ProductoOrdenCompra.prototype.setUsuarioIngreso = function(usuarioIngreso) {
+                this.usuarioIngreso = usuarioIngreso;
+            };
+
+            ProductoOrdenCompra.prototype.getUsuarioIngreso = function() {
+                return this.usuarioIngreso;
+            };
+            
+            //usuario Ingreso
+            ProductoOrdenCompra.prototype.setNombreUsuarioIngreso = function(nombreUsuarioIngreso) {
+                this.nombreUsuarioIngreso = nombreUsuarioIngreso;
+            };
+
+            ProductoOrdenCompra.prototype.getNombreUsuarioIngreso = function() {
+                return this.nombreUsuarioIngreso;
+            };
+            
+            //lote
+            ProductoOrdenCompra.prototype.setLote = function(lote) {
+                this.lote = lote;
+            };
+
+            ProductoOrdenCompra.prototype.getlote = function() {
+                return this.lote;
             };
 
             return this;

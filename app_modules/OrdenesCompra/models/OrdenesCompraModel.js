@@ -855,6 +855,141 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
     });
 };
 
+/*
+* funcion que realiza consulta a las ordenes de compras por autorizar
+* @param {type} callback
+* @returns {datos de consulta}
+*/
+OrdenesCompraModel.prototype.getListarAutorizacionCompras = function (empresa, terminoBusqueda, filtro, pagina, callback) {
+    estado='0';
+    var column = [
+                    "copfoc.codigo_producto",
+                    "copfoc.doc_tmp_id",
+                    "copfoc.empresa_id",
+                    "copfoc.centro_utilidad",
+                    "copfoc.bodega",
+                    "copfoc.orden_pedido_id",
+                    "copfoc.usuario_id",
+                    "copfoc.justificacion_ingreso",
+                    "copfoc.fecha_ingreso",
+                    "copfoc.cantidad",
+                    "copfoc.lote",
+                    "copfoc.fecha_vencimiento",
+                    "copfoc.porcentaje_gravamen",
+                    "copfoc.total_costo",
+                    "copfoc.local_prod",
+                    "copfoc.sw_autorizado",
+                    "copfoc.item_id",
+                    "copfoc.valor_unitario_compra",
+                    "copfoc.valor_unitario_factura",
+                    G.knex.raw("fc_descripcion_producto(copfoc.codigo_producto) as producto"),
+                    "usu.nombre as usuario_ingreso",
+                    "copfoc.observacion_autorizacion",
+                    "copfoc.usuario_id_autorizador",
+                    "copfoc.usuario_id_autorizador_2",
+                    "usu_1.nombre as nombre_autorizador",
+                    "usu_2.nombre  as nombre_autorizador2"
+                 ];
+         
+    var query = G.knex.column(column)
+            .select()
+            .from('inventarios_productos as prod')            
+            .innerJoin('compras_ordenes_pedidos_productosfoc as copfoc', 'prod.codigo_producto', 'copfoc.codigo_producto')
+            .innerJoin('system_usuarios as usu', 'copfoc.usuario_id', 'usu.usuario_id')
+            .leftJoin('system_usuarios as usu_1', 'copfoc.usuario_id_autorizador', 'usu_1.usuario_id')
+            .leftJoin('system_usuarios as usu_2', 'copfoc.usuario_id_autorizador_2', 'usu_2.usuario_id')
+            .where({"copfoc.empresa_id": empresa,
+                    "copfoc.sw_autorizado": estado})           
+            .andWhere(function() {
+                if (filtro==='1' && terminoBusqueda!==''){
+                    this.where(G.knex.raw("prod.descripcion :: varchar"), G.constants.db().LIKE, "%" + terminoBusqueda + "%")
+
+                } else if (filtro==='0' && terminoBusqueda!==''){
+                   this.where(G.knex.raw("copfoc.orden_pedido_id :: varchar"), G.constants.db().LIKE, "%" + terminoBusqueda + "%")
+                }
+            })
+            .limit(G.settings.limit)
+            .offset((pagina - 1) * G.settings.limit)
+
+            .then(function (rows) {
+         
+                callback(false, rows);
+            })
+            .catch(function (error) {
+                callback(error);
+            }).done();///$filtro = "and copfoc.orden_pedido_id = ".$OrdenCompra." ";
+                  console.log(query);     
+};
+/*
+* funcion que realiza el Update a compras_ordenes_pedidos_productosfoc
+* @param {type} callback
+* @returns {datos de consulta}
+*/
+OrdenesCompraModel.prototype.modificarAutorizacionOrdenCompras = function (datos,callback) {
+//  if(datos.swNoAutoriza===''){
+      datos.swNoAutoriza="0";
+//  }
+      var sql = " update compras_ordenes_pedidos_productosfoc set \
+                usuario_id_autorizador = $1,\
+                sw_autorizado = $2,\
+                observacion_autorizacion = $3,\
+                usuario_id_autorizador_2 = $4,\
+                sw_no_autoriza = $5\
+                where empresa_id = $6 and\
+                centro_utilidad=$7 and\
+                bodega=$8 and\n\
+                orden_pedido_id=$9 and\
+                codigo_producto=$10 and\
+                lote=$11 \
+                ; ";
+    var parametros = [
+                 datos.usuarioAutorizador,
+                 datos.swAutorizado,
+                 datos.observacion,
+                 datos.usuarioAutorizador2,
+                 datos.swNoAutoriza,
+                 datos.empresa,
+                 datos.centroUtilidad,
+                 datos.bodega,
+                 datos.orden,
+                 datos.codProucto,
+                 datos.lote
+             ];
+             console.log("AAAAAAAA: ",parametros);
+
+    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+    
+    
+//            var query = G.knex('compras_ordenes_pedidos_productosfoc')
+//                
+//                .update({
+//                  "usuario_id_autorizador": autorizador1,
+//                  "sw_autorizado": swAutorizado ,
+//                  "observacion_autorizacion": observacion,
+//                  "usuario_id_autorizador_2" : autorizador2 ,
+//                  "sw_no_autoriza" : swNoAutoriza 
+//                })
+//                .where({"empresa_id" : empresa,
+//                        "centro_utilidad" : centroUtilidad,
+//                        "bodega" : bodega,
+//                        "orden_pedido_id" : numeroOrdenCompra,
+//                        "codigo_producto" : codigoProducto,
+//                        "lote" : codigoLote});
+//                console.log(query.toSQL());
+//                .then(function (rows) {
+//            console.log(query.toSQL());
+//                callback(false, rows);
+//            })
+//            .catch(function (error) {
+//        console.log("Error: "+query.toSQL());
+//                callback(error);
+//            }).done();
+               
+};
+
+
 // Insertar productos Recepcion mercancia
 OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
 

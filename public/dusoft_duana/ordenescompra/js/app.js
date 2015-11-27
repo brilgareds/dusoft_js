@@ -29,6 +29,7 @@ define([
     "controllers/recepcionmercancia/ListarRecepcionesController",
     "controllers/recepcionmercancia/GestionarRecepcionesController",
     "controllers/recepcionmercancia/VerificarRecepcionesController",
+    "controllers/autorizaciones/ListarAutorizacionesController",
     "includes/helpersdirectives/visualizarReporte",
     "webNotification"
 ], function(angular) {
@@ -95,7 +96,12 @@ define([
                     text: "Verificación de Mercancía",
                     templateUrl: "views/recepcionmercancia/verificarrecepciones.html",
                     parent_name: "ListarRecepciones"
-                });
+                }).state('ListarAutorizaciones', {
+                    url: "/ListarAutorizaciones",
+                    text: "Listar Autorizaciones",
+                    templateUrl: "views/autorizaciones/listarautorizaciones.html",
+                    parent_name: "ListarAutorizaciones"
+                });//ListarRecepciones
 
                 if ($location.path() === "")
                     $state.go(vista_predeterminada);

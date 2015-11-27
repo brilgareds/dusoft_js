@@ -1332,6 +1332,49 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
     });
 };
 
+// Listar Autorizaciones Compras
+OrdenesCompra.prototype.listarAutorizacionCompras = function(req, res) {
+
+    var that = this;
+    var args = req.body.data.listar_autorizaciones;
+    
+    if (args.empresa === undefined) {
+        res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
+        return;
+    }
+
+    that.m_ordenes_compra.getListarAutorizacionCompras(args.empresa, args.terminoBusqueda,args.filtro, args.pagina_actual, function(err, result) {
+
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error al Consultar las Autorizaciones de Compras', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Consulta Autorizaciones de Compras - correctamente', 200, {ordenes_compras: result}));
+            return;
+        }
+    });
+};
+
+// modificar Autorizaciones Compras
+OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
+
+    var that = this;
+    var args = req.body.data.autorizacion;
+    console.log(args);
+    that.m_ordenes_compra.modificarAutorizacionOrdenCompras(args,function(err, result) {
+
+         if (err || result.rowCount === 0) { 
+            var msj = (err.msj !== undefined) ? err.msj : '';
+            res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra' + msj, 500, {ordenes_compras: []}));
+            return;
+        } else {
+            console.log(">> ",result);
+            res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: {}}));
+            return;
+        }
+    });
+};
+
 
 function __subir_archivo_plano(files, callback) {
     var ruta_tmp = files.file.path;

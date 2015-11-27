@@ -1787,7 +1787,13 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
     
         if (estado) {
-
+            
+            /**
+             * +Descripcion: Se permitira ejecutar la accion de insertarDetallePedido
+             *               siempre y cuando el pedido tenga el 
+             *               estado (Estado del Pedido ) 1
+             *               estado_pedido (Estado de solicitud ) 0
+             */
             if (rows[0].estado === '1' && rows[0].estado_pedido === '0' ) {
 
                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
@@ -2078,7 +2084,12 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
         if (estado) {
-
+           /**
+             * +Descripcion: Se permitira ejecutar la accion de modificarDetallePedido
+             *               siempre y cuando el pedido tenga el 
+             *               estado (Estado del Pedido ) 1
+             *               estado_pedido (Estado de solicitud ) 0
+             */
             if (rows[0].estado === '1' && rows[0].estado_pedido === '0'  ) {
                   
 
@@ -2241,7 +2252,12 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
 
-
+           /**
+             * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
+             *               siempre y cuando el pedido tenga el 
+             *               estado (Estado del Pedido ) 1
+             *               estado_pedido (Estado de solicitud ) 0
+             */
     that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
         if (estado) {

@@ -31,7 +31,9 @@ define(["angular"], function(angular) {
                 'CONSULTAR_PRODUCTOS_RECEPCION_MERCANCIA': BASE_URL + '/OrdenesCompra/listarProductosRecepcionMercancia',                
                 'INGRESAR_RECEPCION_MERCANCIA': BASE_URL + '/OrdenesCompra/insertarRecepcionMercancia',                
                 'INGRESAR_PRODUCTOS_MERCANCIA': BASE_URL + '/OrdenesCompra/modificarProductosRecepcionMercancia',              
-                'FINALIZAR_RECEPCION': BASE_URL + '/OrdenesCompra/finalizarRecepcionMercancia'                
+                'FINALIZAR_RECEPCION': BASE_URL + '/OrdenesCompra/finalizarRecepcionMercancia',
+                'GUARDAR_BODEGA' : BASE_URL + '/OrdenesCompra/guardarBodega',
+                'ELIMINAR_NOVEDAD' : BASE_URL + '/OrdenesCompra/eliminarNovedad'
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
@@ -50,6 +52,9 @@ define(["angular"], function(angular) {
             },
             'NOVEDADES_MERCANCIA': {
                 'LISTAR_NOVEDADES_MERCANCIA': BASE_URL + '/NovedadesRecepcion/listarNovedades'
+            },
+            'BODEGAS' : {
+                'BUSCAR_BODEGAS' : BASE_URL + '/Bodegas/listarBodegasPorTermino'
             }
             
         }

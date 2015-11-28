@@ -1,5 +1,5 @@
 var OrdenesCompraModel = function() {
-
+    this.foo = "foo";
 };
 
 // Listar las Ordenes de Compra 
@@ -268,7 +268,12 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 To_char(a.fecha_orden, 'dd-mm-yyyy') as fecha_registro,\
                 coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido,\
                 coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
-                CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal \
+                CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal, \
+                k.bodega as bodega_destino,\
+                k.empresa_id as empresa_destino,\
+                k.centro_utilidad as centro_utilidad_destino,\
+                l.descripcion as descripcion_bodega_destino,\
+                l.ubicacion as ubicacion_bodega_destino\
                 FROM compras_ordenes_pedidos a \
                 INNER JOIN empresas j ON j.empresa_id=a.empresa_id \
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id \
@@ -291,12 +296,15 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 left join (\
                     select bb.codigo_proveedor_id, bb.observaciones as observacion_contrato from contratacion_produc_proveedor bb\
                 ) as i on a.codigo_proveedor_id = i.codigo_proveedor_id\
+                left join compras_ordenes_destino k on k.orden_compra_id = a.orden_pedido_id\
+                left join bodegas l on l.bodega = k.bodega and l.empresa_id = k.empresa_id and l.centro_utilidad = k.centro_utilidad\
                 WHERE a.orden_pedido_id = :1 ";
     
     G.knex.raw(sql, {1:numero_orden}).
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+       console.log("error consultado orden ", err);
        callback(err);
     });
 };
@@ -398,12 +406,53 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
      
     G.knex.raw(sql, {1:unidad_negocio, 2:codigo_proveedor, 3:empresa_id, 4:observacion, 5:usuario_id}).
     then(function(resultado){
-       callback(false, resultado.rows, resultado);
+       callback(false, resultado.rows);
     }).catch(function(err){
        callback(err);
     });
      
 };
+
+OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback) {
+
+    var sql = " SELECT id FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
+     
+    G.knex.raw(sql, {1:parametros.ordenCompraId}).
+    then(function(resultado){
+       
+       if(resultado.rows.length > 0){
+           sql = "UPDATE compras_ordenes_destino set empresa_id = :2, centro_utilidad = :3, bodega = :4 WHERE orden_compra_id = :1 ";
+           return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
+       } else {
+           sql = "INSERT INTO compras_ordenes_destino (orden_compra_id, empresa_id, centro_utilidad, bodega)\
+                  VALUES( :1, :2, :3, :4 )";
+           return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
+       }
+       
+    })
+    .then(function(resultado){
+        console.log("se ha guardado correctamente la ubicacion ", resultado);
+        callback(false, resultado);
+    })
+    .catch(function(err){
+       console.log("error guardando destino ", err);
+       callback(err);
+    });
+     
+};
+
+OrdenesCompraModel.prototype.borrarBodegaOrden = function(orden, callback) {
+    var sql = " DELETE  FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
+    
+    G.knex.raw(sql, {1:orden}).
+    then(function(resultado){
+        callback(false, resultado);
+    }).
+    catch(function(err){
+       callback(err);
+    });
+};
+
 
 // Modificar Orden de Compra
 OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_orden, estado, callback) {
@@ -605,6 +654,72 @@ OrdenesCompraModel.prototype.consultarNovedadPorObservacion = function(novedadId
     });
 };
 
+/*
+ * @param {Object} parametros {novedadId : Int}
+ * @param {type} callback
+ * Metodo que gestiona la eliminacion de la novedad de un producto
+ * */
+
+OrdenesCompraModel.prototype.eliminarRegistroNovedad = function(parametros, callback){
+    var that = this;
+    
+    G.Q.ninvoke(that, 'consultar_archivo_novedad_producto', parametros.novedadId).
+    then(function(archivos){
+        return G.Q.ninvoke(that, 'eliminarArchivosNovedad', archivos);
+    }).
+    then(function(err){
+        return console.log("archivos borrados completamente code 2 ", arguments);
+    }).
+    fail(function(err){
+        console.log(">>>>>>>>>>>>>> error controlado ", err);
+        callback(err);
+    });
+   
+};
+
+/*
+ * @param {Object} parametros
+ * @param {type} callback
+ * @returns {undefined}
+ */
+
+OrdenesCompraModel.prototype.eliminarNovedad = function(parametros, callback){
+    var sql = "DELETE FROM novedades_ordenes_compras WHERE id = :1";
+    
+    G.knex.raw(sql, {1:parametros.novedadId}).
+    then(function(resultado){
+       G.fs.unlinkSync(G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + archivo.nombre_archivo);
+       archivos.splice(0,1);
+       that.eliminarArchivosNovedad(archivos, callback);
+    }).catch(function(err){
+       console.log("error borrando novedad ", err);
+       callback(err);
+    });
+};
+
+OrdenesCompraModel.prototype.eliminarArchivosNovedad = function(archivos, callback){
+
+    var archivo =  archivos[0];
+    var that = this;
+    if(!archivo){
+        callback(false);
+        return;
+    }
+    
+    var sql = "DELETE FROM archivos_novedades_ordenes_compras WHERE id = :1";
+    console.log("eliminando archivo con id ", archivo.id, " con nombre ",archivo.nombre_archivo);
+    G.knex.raw(sql, {1:archivo.id}).
+    then(function(resultado){
+       G.fs.unlinkSync(G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + archivo.nombre_archivo);
+       archivos.splice(0,1);
+       that.eliminarArchivosNovedad(archivos, callback);
+    }).catch(function(err){
+       console.log("error borrando novedad ", err);
+       callback(err);
+    });
+    
+};
+
 
 // Registrar Novedad Producto Orden de Compra
 OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, callback) {
@@ -654,11 +769,12 @@ OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(noveda
 OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(novedad_id, callback) {
 
     var sql = "  SELECT * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = :1 ; ";
-    
     G.knex.raw(sql, {1:novedad_id}).
     then(function(resultado){
-       callback(false, resultado.rows, resultado);
+       //console.log("archivos encontrados ", resultado);
+       callback(false, resultado.rows);
     }).catch(function(err){
+       //console.log("error eliminando novedad ", err);
        callback(err);
     });
     

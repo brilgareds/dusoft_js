@@ -296,18 +296,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'novedad.getDescripcionEntrada()', displayName:"F/Disponible", width:'150'},
                     {field: 'novedad.get_descripcion()', displayName: 'Observacion', width: "200"},
                     {field: 'novedad.get_cantidad_archivos()', displayName: 'Archivos', width: "80"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width:"150",
+                    {displayName: "Opciones..", cellClass: "txt-center dropdown-button", width:"150",
                         cellTemplate:'<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="novedades_producto_orden_compra(row, true);" >Agregar Novedad</a></li>\
                                                 <li ng-if="row.entity.get_novedad().get_id() != \'\' " ><a href="javascript:void(0);" ng-click="novedades_producto_orden_compra(row)" >Modificar</a></li>\
-                                                <li ng-if="row.entity.get_novedad().get_id().length > 0"><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Eliminar</a></li>\
+                                                <li ng-if="row.entity.get_novedad().get_id() != \'\'"><a href="javascript:void(0);" ng-click="eliminarNovedad(row.entity,0)" >Eliminar</a></li>\
                                             </ul>\
                                         </div>' }
                 ]
             };
             
+            $scope.eliminarNovedad = function(producto){
+                
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            novedadId: producto.get_novedad().get_id()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.ORDENES_COMPRA.ELIMINAR_NOVEDAD, "POST", obj, function(data) {
+
+
+                });
+                
+            };
            
             $scope.novedades_producto_orden_compra = function(row, nuevaNovedad) {
                 

@@ -1515,7 +1515,7 @@ COMMENT ON COLUMN "public"."compras_ordenes_pedidos"."estado"
 IS 'Estado Orden de Compra 0 => Recibida (Ingresada en Bodega), 1 => Activa, 2 => Anulada , 3 => Recibido en bodega, 4 => Verificado en bodega, 5 => Bloqueada';
 
 -- tabla para guardar la direccion de las bodegas destino de la orden
-CREATE TABLE "public"."ordenes_compra_destino" (
+CREATE TABLE "public"."compras_ordenes_destino" (
   "id" SERIAL, 
   "orden_compra_id" INTEGER, 
   "empresa_id" CHAR(2), 
@@ -1523,13 +1523,21 @@ CREATE TABLE "public"."ordenes_compra_destino" (
   "bodega" CHAR(2)
 ) WITH OIDS;
 
-ALTER TABLE "public"."ordenes_compra_destino"
+ALTER TABLE "public"."compras_ordenes_destino"
   ALTER COLUMN "id" SET STATISTICS 0;
 
 
-ALTER TABLE "public"."ordenes_compra_destino"
+ALTER TABLE "public"."compras_ordenes_destino"
   ADD CONSTRAINT "ordenes_compra_destino_fk" FOREIGN KEY ("orden_compra_id")
     REFERENCES "public"."compras_ordenes_pedidos"("orden_pedido_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+ALTER TABLE "public"."compras_ordenes_destino"
+  ADD CONSTRAINT "ordenes_compra_destino_fk1" FOREIGN KEY ("empresa_id", "centro_utilidad", "bodega")
+    REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE;

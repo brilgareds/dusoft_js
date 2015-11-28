@@ -1891,8 +1891,11 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
 
 /*
- * Autor : Cristian Ardila
- * Descripcion : validarEstadoTotalValorPedido
+ * @author : Cristian M. Ardila T.
+ * +Descripcion : Funcion encargada de consultar el estado de un pedido
+ *                y el valor total de ese pedido, cuanto suma el valor de todos
+ *                sus productos
+ * @fecha:  28/11/2015
  */
 PedidosCliente.prototype.validarEstadoTotalValorPedido = function(req, res) {
 
@@ -1915,7 +1918,9 @@ PedidosCliente.prototype.validarEstadoTotalValorPedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
 
-
+    /**
+     * +Descripcion: Metodo encargado de consultar el estado actual de un pedido
+     */
     that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
 
         if (estado) {
@@ -1964,8 +1969,10 @@ PedidosCliente.prototype.validarEstadoTotalValorPedido = function(req, res) {
 
 
 /*
- * Autor : Cristian Ardila
- * Descripcion : Insertar detalle pedido
+ * @author : Cristian Ardila
+ * @fecha 28/11/2015
+ * +Descripcion : Metodo encargado de modificar en multiples productos de un pedido
+ *               las cantidades
  */
 PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, res) {
     
@@ -1980,7 +1987,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
     }
     
     
-    // Estado 
+    // Pedido 
     if (args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
         res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacía', 404, {}));
         return;
@@ -1998,16 +2005,24 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
     }
     
     var pedido = args.pedidos_clientes.pedido;
+    //Se adiciona al objeto producto un a variable mas, El usuario de la session
     pedido.usuario_id = req.session.user.usuario_id;
     var producto = args.pedidos_clientes.producto;
     var estado_pedido = args.pedidos_clientes.estado;
-
+    
+    /**
+     * +Descripcion: Este ciclo repetitivo recorrera el objeto producto, el cual
+     *               contiene todos los productos del pedido, y de esta forma
+     *               se iran modificando secuencialmente y se ira cambiando el 
+     *               estado del pedido
+     */
     for (var i = 0; i < producto.length; i++) {
 
        
         /**
-         * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
-         *               por lo cual se crea la funcion insertarDetallePedido
+         * +Descripcion: la funcion se encargara de modificar el detalle del pedido
+         *               en este caso, lo mas relevante sera la cantidad de un
+         *               producto
          */
         that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto[i], function(err, rows, result) {
         
@@ -2019,7 +2034,10 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
                 pedido.aprobado_cartera = '0';
                 pedido.observacion_cartera = '';
 
-
+                /**
+                 * +Descripcion: Esta funcion sera la encargada de actualizar el
+                 *               estado del pedido
+                 */
                 that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
@@ -2035,6 +2053,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
         });
     }
 };
+
 /**
  * @author: Cristian Ardila
  * +Descripcion: Funcion encargada de invocar el modelo que consultara el estado
@@ -2494,17 +2513,17 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     var pedido = args.pedidos_clientes.pedido;
 
     if (pedido.numero_pedido === undefined || pedido.numero_pedido === '') {
-        res.send(G.utils.r(req.url, 'numero_pedido no esta definido o esta vacio', 404, {}));
+        res.send(G.utils.r(req.url, 'El numero de pedido no esta definido o esta vacio', 404, {}));
         return;
     }
 
     if (pedido.aprobado_cartera === undefined || pedido.aprobado_cartera === '') {
-        res.send(G.utils.r(req.url, 'aprobado_cartera no esta definido o esta vacio', 404, {}));
+        res.send(G.utils.r(req.url, 'La aporbacion cartera no esta definido o esta vacio', 404, {}));
         return;
     }
 
     if (pedido.observacion_cartera === undefined || pedido.observacion_cartera === '') {
-        res.send(G.utils.r(req.url, 'observacion_cartera no esta definido o esta vacio', 404, {}));
+        res.send(G.utils.r(req.url, 'El campo de observacion de cartera no esta definido o esta vacio', 404, {}));
         return;
     }
 

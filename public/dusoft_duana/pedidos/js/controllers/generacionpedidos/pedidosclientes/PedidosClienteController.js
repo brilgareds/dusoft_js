@@ -798,6 +798,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * +Descripcion: Metodo encargado de insertar la cantidad en el detalle
              *               de un producto de un pedido
              * @author Cristian Ardila
+             * @fecha  28/11/2015
              * @returns {undefined}
              */
             that.insertarCantidadDetalleProducto = function(estado_pedido) {
@@ -814,20 +815,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
-                console.log(obj)
+                
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
+                    
                     if (data.status === 200) {
-
-                        console.log("data.status ", data);
-                       /* if (data.obj.pedidos_clientes[0] === 1) {
-
-                            console.log("El estado del pedido esta en " + data.obj.pedidos_clientes[0]);
-
-                        }*/
-
+                        
+                         AlertService.mostrarMensaje("warning", data.msj);                      
                     }
-
                 });
 
             };
@@ -853,14 +847,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log("data ", data)
+                  
                     if (data.status === 200) {
-
-                        console.log("data.status ", data.status);
-                       
                             that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0])
-                        
-
+                    }else{
+                         AlertService.mostrarMensaje("warning", data.msj);
                     }
 
                 });

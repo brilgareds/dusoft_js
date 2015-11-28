@@ -165,5 +165,24 @@ module.exports = function(app, di_container) {
     });
     
     
-
+    /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para validar el estado y el total de valor de pedido
+     */
+    app.post('/api/PedidosClientes/validarEstadoTotalValorPedido', function(req, res) {
+        c_pedidos_clientes.validarEstadoTotalValorPedido(req, res);
+    });
+    
+   /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para insertar la cantidad en un producto
+     */
+    app.post('/api/PedidosClientes/insertarCantidadProductoDetallePedido', function(req, res) {
+        c_pedidos_clientes.insertarCantidadProductoDetallePedido(req, res);
+    });
+    
+    
+    
+    
+    
 };

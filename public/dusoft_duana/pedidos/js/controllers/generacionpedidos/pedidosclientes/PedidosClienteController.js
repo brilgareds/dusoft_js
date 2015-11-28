@@ -42,7 +42,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 progresoArchivo: 0,
-                btnSolicitarAutorizacionCartera : true
+                btnSolicitarAutorizacionCartera: true
 
             };
             that.consultarEstadoPedidoCotizacion = function(tipo, numero) {
@@ -90,14 +90,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             //Cotizacion
             //if (localStorageService.get("cotizacion")) {
             if ($state.is("Cotizaciones") === true) {
-                
+
                 console.log("Empresa ", $scope.Empresa)
                 var cotizacion = localStorageService.get("cotizacion");
                 var numeroCotizacion = 0;
-                if(cotizacion){
+                if (cotizacion) {
                     numeroCotizacion = cotizacion.numero_cotizacion || 0;
                 }
-                
+
                 $scope.Pedido.set_numero_cotizacion(parseInt(numeroCotizacion));
                 $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (cotizacion.visualizar === '1') ? true : false;
@@ -108,15 +108,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 that.consultarEstadoPedidoCotizacion(2, cotizacion.numero_cotizacion);
 
 
-            //} else if (localStorageService.get("pedido")) {
+                //} else if (localStorageService.get("pedido")) {
             } else if ($state.is("PedidoCliente") === true) {
                 //Pedido
                 var pedido = localStorageService.get("pedido");
                 var numeroPedido = 0;
-                if(pedido){
+                if (pedido) {
                     numeroPedido = pedido.numero_pedido || 0;
                 }
-                
+
                 $scope.Pedido.setNumeroPedido(parseInt(numeroPedido));
 
                 $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
@@ -159,7 +159,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             // Consultas Cotizaciones
             that.gestionar_consultas_cotizaciones = function() {
-             
+
                 that.buscar_clientes(function(clientes) {
 
                     if ($scope.Pedido.get_numero_cotizacion() > 0)
@@ -238,23 +238,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @param {evento del teclado} ev
              */
             $scope.buscador_detalle_cotizacion = function(ev) {
-             
-                    if (ev.which === 13) {
-                        if($scope.Pedido.get_numero_cotizacion() >0 || 
-                           $scope.Pedido.get_numero_pedido() ===0 || 
-                           $scope.Pedido.get_numero_pedido() === undefined){
 
-                            that.buscar_detalle_cotizacion();             
-                           }
-                           
-                        if($scope.Pedido.get_numero_pedido() >0 || 
-                           $scope.Pedido.get_numero_pedido() !== undefined || 
-                           $scope.Pedido.get_numero_cotizacion() <=0){
+                if (ev.which === 13) {
+                    if ($scope.Pedido.get_numero_cotizacion() > 0 ||
+                            $scope.Pedido.get_numero_pedido() === 0 ||
+                            $scope.Pedido.get_numero_pedido() === undefined) {
 
-                            that.buscar_detalle_pedido();
-                        }
+                        that.buscar_detalle_cotizacion();
                     }
-              
+
+                    if ($scope.Pedido.get_numero_pedido() > 0 ||
+                            $scope.Pedido.get_numero_pedido() !== undefined ||
+                            $scope.Pedido.get_numero_cotizacion() <= 0) {
+
+                        that.buscar_detalle_pedido();
+                    }
+                }
+
             };
 
             /*
@@ -325,7 +325,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var cliente = Cliente.get(data.nombre_cliente, data.direccion_cliente, data.tipo_id_cliente, data.identificacion_cliente, data.telefono_cliente);
                 cliente.set_contrato(data.contrato_cliente_id);
-               
+
                 var vendedor = Vendedor.get(data.nombre_vendedor, data.tipo_id_vendedor, data.idetificacion_vendedor/*, data.telefono_vendedor*/);
                 $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
                 $scope.Pedido.set_observacion(data.observacion);
@@ -335,7 +335,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.buscar_detalle_pedido = function() {
-                
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -346,7 +346,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_PEDIDO, "POST", obj, function(data) {
-                   
+
                     if (data.status === 200) {
                         that.render_productos_pedidos(data.obj.pedidos_clientes.lista_productos);
                     }
@@ -354,8 +354,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.render_productos_pedidos = function(productos) {
-                
-                
+
+
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
                     console.log("productos ", data)
@@ -415,8 +415,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             // Vendedores
             that.buscar_vendedores = function(callback) {
-                
-               
+
+
                 var obj = {
                     session: $scope.session,
                     data: {}
@@ -505,7 +505,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     return $scope.datos_view.permisos_cotizaciones.btn_modificar_cotizaciones;
             };
             $scope.habilitar_eliminacion_producto = function() {
-                
+
                 var disabled = false;
                 // Validaciones Cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
@@ -524,40 +524,40 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     disabled = true;
                 return disabled;
             };
-            
-             
-             $scope.validarCantidadInicialCantidadNueva = function(cantidadInicial,cantidadFinal) {
-                 
-                 var disabled = false;
-                
-                 if ($scope.Pedido.get_numero_pedido() > 0) {
-                     console.log("cantidadInicial ", cantidadInicial);
-                     console.log("cantidadFinal ", cantidadFinal);
-                     if(cantidadFinal > cantidadInicial){
-                         disabled = true;
-                     }  
-                    
-                 }
-                   $scope.datos_view.btnSolicitarAutorizacionCartera = disabled;
-                  
-               
-             };
-             
-             
-             $scope.disabledCheckModificarProducto = function(cantidadInicial,cantidadFinal) {
-                 
-                 var disabled = false;
-             
-                 if ($scope.Pedido.get_numero_pedido() > 0) {
-                     if(cantidadFinal > cantidadInicial){
-                         disabled = true;
-                     }  
-                    
-                 }
-                 return disabled;
-                  
-             };
-             
+
+
+            $scope.validarCantidadInicialCantidadNueva = function(cantidadInicial, cantidadFinal) {
+
+                var disabled = false;
+
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+                    console.log("cantidadInicial ", cantidadInicial);
+                    console.log("cantidadFinal ", cantidadFinal);
+                    if (cantidadFinal > cantidadInicial) {
+                        disabled = true;
+                    }
+
+                }
+                $scope.datos_view.btnSolicitarAutorizacionCartera = disabled;
+
+
+            };
+
+
+            $scope.disabledCheckModificarProducto = function(cantidadInicial, cantidadFinal) {
+
+                var disabled = false;
+
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+                    if (cantidadFinal > cantidadInicial) {
+                        disabled = true;
+                    }
+
+                }
+                return disabled;
+
+            };
+
             $scope.confirmar_eliminar_producto = function(producto) {
 
                 $scope.datos_view.producto_seleccionado = producto;
@@ -735,7 +735,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
-             $scope.filtroGrid = { filterText: '', useExternalFilter: false };
+            $scope.filtroGrid = {filterText: '', useExternalFilter: false};
             // Lista Productos Seleccionados
             $scope.lista_productos = {
                 data: 'Pedido.get_productos()',
@@ -744,8 +744,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 enableCellSelection: true,
                 enableHighlighting: true,
                 showFooter: true,
-                 showFilter:true,
-                filterOptions:$scope.filtroGrid,
+                showFilter: true,
+                filterOptions: $scope.filtroGrid,
                 footerTemplate: '<div class="row col-md-12">\
                                     <div class="col-md-3 pull-right">\
                                         <table class="table table-clear">\
@@ -793,14 +793,52 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 ]
             };
-            // Upload Archivo Plano
-            $scope.registrarProductoModificado = function(){
+            
+             /**
+             * +Descripcion: Metodo encargado de insertar la cantidad en el detalle
+             *               de un producto de un pedido
+             * @author Cristian Ardila
+             * @returns {undefined}
+             */
+            that.insertarCantidadDetalleProducto = function(estado_pedido) {
                 
-               
-                 // Pedido
+              
+                var url = API.PEDIDOS.CLIENTES.INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO;
+                obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            pedido: $scope.Pedido,
+                            producto: $scope.Pedido.get_productos(),
+                            estado: estado_pedido
+                        }
+                    }
+                };
+                console.log(obj)
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+
+                        console.log("data.status ", data);
+                       /* if (data.obj.pedidos_clientes[0] === 1) {
+
+                            console.log("El estado del pedido esta en " + data.obj.pedidos_clientes[0]);
+
+                        }*/
+
+                    }
+
+                });
+
+            };
+            // Upload Archivo Plano
+            $scope.registrarProductoModificado = function() {
+
+
+                // Pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
 
-                   var url = API.PEDIDOS.CLIENTES.MODIFICAR_DETALLE_PEDIDO;
+                    var url = API.PEDIDOS.CLIENTES.VALIDAR_ESTADO_TOTAL_PEDIDO;
                     obj = {
                         session: $scope.session,
                         data: {
@@ -810,29 +848,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
                     };
-
-
                 }
+                ;
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
-
-                    AlertService.mostrarMensaje("warning", data.msj);
-                    $scope.datos_view.producto_seleccionado = Producto.get();
+                    console.log("data ", data)
                     if (data.status === 200) {
-                        if ($scope.Pedido.get_numero_cotizacion() > 0)
-                            that.buscar_detalle_cotizacion();
-                        if ($scope.Pedido.get_numero_pedido() > 0)
-                            that.gestionar_consultas_pedidos();
+
+                        console.log("data.status ", data.status);
+                       
+                            that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0])
+                        
+
                     }
 
-
                 });
-               // console.log("Pedido.get_productos() ", $scope.Pedido.get_productos());
-                
             };
+
+           
             
+
             $scope.opciones_archivo = new Flow();
             $scope.opciones_archivo.target = API.PEDIDOS.CLIENTES.SUBIR_ARCHIVO_PLANO;
             $scope.opciones_archivo.testChunks = false;
@@ -1195,26 +1231,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);
             };
             that.init = function() {
-                
-               that.buscar_vendedores(function(){
-                   
-               });
+
+                that.buscar_vendedores(function() {
+
+                });
                 that.cargar_permisos();
                 if ($scope.Pedido.get_numero_pedido() > 0) {
                     that.gestionar_consultas_pedidos();
-                } 
-                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                }
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
                     that.gestionar_consultas_cotizaciones();
                 }
             };
             that.init();
 
-            
+
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.$$watchers = null;
-                
-               
+
+
                 // Set Datas
                 //$scope.Empresa.set_default();
                 // set localstorage

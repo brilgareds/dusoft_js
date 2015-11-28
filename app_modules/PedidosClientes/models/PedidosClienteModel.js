@@ -1653,11 +1653,11 @@ PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(nume
  * @Funciones que hacen uso del model : 
  *  --PedidosCliente.prototype.consultarEstadoPedido
  */
-PedidosClienteModel.prototype.consultarProductoDetallePedido = function(numero_pedido,codigo_producto, callback) {
+PedidosClienteModel.prototype.consultarProductoDetallePedido = function(pedido,producto, callback) {
 
     G.knex('ventas_ordenes_pedidos_d').where({
-        pedido_cliente_id: numero_pedido,
-        codigo_producto: codigo_producto
+        pedido_cliente_id: pedido.numero_pedido,
+        codigo_producto: producto.codigo_producto
     }).select('pedido_cliente_id')
          .then(function(rows) {
        
@@ -1862,7 +1862,16 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  * Descripcion :  SQL Modificar Detalle Pedido
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
-
+    
+     console.log("****************PedidosCliente.prototype.modificar_detalle_pedido****************************");
+    
+    console.log("numero_pedido ", pedido.numero_pedido);
+         console.log("codigo_producto ", producto.codigo_producto);
+         console.log("iva ", producto.iva);
+         console.log("cantidad_solicitada ", producto.cantidad_solicitada);
+         console.log("precio_venta ", producto.precio_venta);
+         console.log("usuario_id ", pedido.usuario_id);
+         
     var sql = " UPDATE ventas_ordenes_pedidos_d SET porc_iva = $3, numero_unidades = $4, valor_unitario = $5, usuario_id = $6 , fecha_registro = NOW() \
                 WHERE  pedido_cliente_id = $1 AND codigo_producto = $2 ;";
 

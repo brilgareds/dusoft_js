@@ -245,6 +245,7 @@ define(["angular", "js/controllers",
 
             $scope.buscador_productos = function(ev, termino_busqueda) {
                 if (ev.which === 13) {
+                    $scope.pagina_actual = 1;
                     that.buscar_productos(termino_busqueda);
                 }
             };

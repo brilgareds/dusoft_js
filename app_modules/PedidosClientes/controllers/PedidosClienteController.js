@@ -2044,7 +2044,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                         return;
                     } else {
-                        // that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
+                         //that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                         return;
                     }
@@ -2060,7 +2060,7 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
     var that = this;
     var args = req.body.data;
 
-    // Pedido
+    // Pedidos
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
         res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacía', 404, {}));
         return;
@@ -2087,14 +2087,22 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
     var pedido = args.pedidos_clientes.pedido;
     //Se adiciona al objeto producto un a variable mas, El usuario de la session
     pedido.usuario_id = req.session.user.usuario_id;
-    var producto = args.pedidos_clientes.producto;
     var estado_pedido = args.pedidos_clientes.estado;
+    
+  
+  that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
 
-
-    that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-
-    res.send(G.utils.r(req.url, 'Se envia notificacion para autorizar un pedido', 200, {pedidos_clientes: []}));
-    return;
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                        return;
+                    } else {
+                         that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
+                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+                        return;
+                    }
+                });
+                
+   
 
 };
 /**

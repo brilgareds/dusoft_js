@@ -2,6 +2,8 @@
 
 
     <div ng-controller="PedidosClienteController">
+        
+        
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
@@ -195,7 +197,7 @@
                                     </button>
                                     
                                      <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() >0" ng-disabled="!datos_view.btnSolicitarAutorizacionCartera">
-                                        <span class="glyphicon glyphicon-cog" ></span> Solicitar autorizacion cartera {{datos_view.btnSolicitarAutorizacionCartera}}
+                                        <span class="glyphicon glyphicon-cog" ></span> Solicitar autorizacion cartera 
                                     </button>
                                    <!-- <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 " >//-->
                                   <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_estado_cotizacion() ==1 || Pedido.get_estado_cotizacion() ==2 || Pedido.get_estado_cotizacion() ==4 || Pedido.get_estado_cotizacion() ==6" >

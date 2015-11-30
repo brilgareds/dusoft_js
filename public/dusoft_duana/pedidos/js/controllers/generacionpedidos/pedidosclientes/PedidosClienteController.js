@@ -46,6 +46,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 btnSolicitarAutorizacionCartera: true
 
             };
+            $scope.notificacionPedidoAutorizar = 0;
             that.consultarEstadoPedidoCotizacion = function(tipo, numero) {
 
                 var url = '';
@@ -92,7 +93,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             //if (localStorageService.get("cotizacion")) {
             if ($state.is("Cotizaciones") === true) {
 
-                console.log("Empresa ", $scope.Empresa)
+              
                 var cotizacion = localStorageService.get("cotizacion");
                 var numeroCotizacion = 0;
                 if (cotizacion) {
@@ -359,7 +360,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
-                    console.log("productos ", data)
+                  
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.porcentaje_iva);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     producto.set_cantidad_inicial(data.cantidad_solicitada);
@@ -532,8 +533,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var disabled = false;
 
                 if ($scope.Pedido.get_numero_pedido() > 0) {
-                    console.log("cantidadInicial ", cantidadInicial);
-                    console.log("cantidadFinal ", cantidadFinal);
+                   
                     if (cantidadFinal > cantidadInicial) {
                         disabled = true;
                     }
@@ -723,7 +723,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     $scope.datos_view.producto_seleccionado = Producto.get();
                     if (data.status === 200) {
                         if ($scope.Pedido.get_numero_cotizacion() > 0)
@@ -806,7 +806,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
                 var url = API.PEDIDOS.CLIENTES.INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO;
-                obj = {
+                var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
@@ -816,7 +816,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
+                
+                //socket.emit("onEnviarNotificacionPedidosClientes", obj);
+                  Request.realizarRequest(API.PEDIDOS.CLIENTES.ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES, "POST", obj, function(data) {
 
+                                });
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -848,16 +852,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                 
+                  
                     if (data.status === 200) {
-                        that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
+                         AlertService.mostrarVentanaAlerta("Registrando cambios","Desea modificar la cantidad de los productos",
+                          function(confirmar){
+                              
+                              if(confirmar){
+                               that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
+                             
+                              }
+                          });
 
-                        Request.realizarRequest(API.PEDIDOS.CLIENTES.ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES, "POST", obj, function(data) {
-                           
-                        });
 
                     } else {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                      
                     }
 
                 });
@@ -1242,67 +1251,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            /**
-             * @author Cristian Ardila
-             * +Descripcion: Funcion encargada de mostrar las notificaciones
-             *               (alerts) cada vez que se actualice el estado de
-             *               un pedido ó cotizacion
-             * @param {type} title
-             * @param {type} body
-             * @returns {void}
-             */
-            that.notificarSolicitud = function(title, body) {
-
-                webNotification.showNotification(title, {
-                    body: body,
-                    icon: '/images/logo.png',
-                    onClick: function onNotificationClicked() {
-                        console.log('Notification clicked.');
-                    },
-                    autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
-                }, function onShow(error, hide) {
-                    if (error) {
-                        window.alert('Error interno: ' + error.message);
-                    } else {
-
-                        setTimeout(function hideNotification() {
-                            console.log('Hiding notification....');
-                            hide(); //manually close the notification (you can skip this if you use the autoClose option)
-                        }, 90000);
-                    }
-                });
-            }
-
-            /**
-             * @author Cristian Ardila
-             * +Descripcion: Socket que se activa cada vez que se genere un cambio
-             *               en un pedido, de tal forma que cambiara en tiempo real
-             *               el estado del pedido en el gridView de pedidos
-             */
-            socket.on("onListarEstadoPedido", function(datos) {
-               
-                if (datos.status === 200) {
-
-                   
-                    var estado = ['Inactivo', 'No asignado', 'Anulado',
-                        'Entregado', 'Debe autorizar cartera']
-                    $scope.Empresa.get_pedidos().forEach(function(data) {
-                        if (datos.obj.numero_pedido === data.get_numero_pedido()) {
-                            data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);
-                        }
-                    });
-
-                    if (datos.obj.pedidos_clientes[0].estado === '4') {
-
-                        $scope.notificacionPedidoAutorizar++;
-                        if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
-                            that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido);
-                        }
-                    }
-                }
-            });
-
-
+         
             that.init();
 
 
@@ -1311,14 +1260,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.$$watchers = null;
 
 
-                // Set Datas
-                //$scope.Empresa.set_default();
                 // set localstorage
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);
                 localStorageService.get("estadoPedido", null);
 
-                socket.removeAllListeners();
+                //socket.removeAllListeners();
                 // datos view
                 //$scope.datos_view = null;
             });

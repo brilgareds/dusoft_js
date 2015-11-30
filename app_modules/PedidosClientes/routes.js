@@ -3,7 +3,9 @@ module.exports = function(app, di_container) {
     var c_pedidos_clientes = di_container.get("c_pedidos_clientes");
     var e_pedidos_clientes = di_container.get("e_pedidos_clientes");
 
+    var io = di_container.get("socket");
 
+    
 
     // ================= POST =======================
 
@@ -189,6 +191,33 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/enviarNotificacionPedidosClientes', function(req, res) {
         c_pedidos_clientes.enviarNotificacionPedidosClientes(req, res);
     });
+    
+    
+     // Events 
+ 
+  /* io.sockets.on('connection', function(socket) {
+        
+        e_pedidos_clientes.onConnected(socket.id);
+        
+        socket.on('onEnviarNotificacionPedidosClientes', function(datos) {
+           
+            
+           
+            var args = datos.data;
+           
+            var numeroPedido  = args.pedidos_clientes.pedido.numero_pedido;
+          
+            var estado = args.pedidos_clientes.estado;
+          
+            e_pedidos_clientes.onNotificarEstadoPedido(
+                numeroPedido,
+                estado
+            );
+                 e_pedidos_clientes.onActualizarSesion(datos);
+      
+    });
+    });*/
+    
     
     
 };

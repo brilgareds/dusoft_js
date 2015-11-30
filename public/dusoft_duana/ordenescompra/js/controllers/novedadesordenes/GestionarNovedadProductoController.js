@@ -113,7 +113,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         novedad_id: $scope.producto.get_novedad().get_id()
                     }
                 });
-                console.log("subiendo archivo plano ", $scope.flow.files.length);
+
                 $scope.flow.upload();
             };
 

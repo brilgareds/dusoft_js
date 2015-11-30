@@ -44,12 +44,12 @@ define(["angular","js/services"], function(angular, services){
         }
       };
       
-      this.mostrarVentanaAlerta = function(titulo, mensaje){
+      this.mostrarVentanaAlerta = function(titulo, mensaje, callback){
+          
             var opts = {
             backdrop: true,
             backdropClick: true,
             dialogFade: false,
-          //  size: 'sm',
             keyboard: true,
             template: ' <div class="modal-header">\
                             <button type="button" class="close" ng-click="close()">&times;</button>\
@@ -59,14 +59,25 @@ define(["angular","js/services"], function(angular, services){
                             <h4>{{mensaje}}</h4>\
                         </div>\
                         <div class="modal-footer">\
-                            <button class="btn btn-primary" ng-click="close()">Cerrar</button>\
+                            <button class="btn btn-primary" ng-click="close()" ng-if="!callback">Cerrar</button>\
+                            <button class="btn btn-warning" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
+                            <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-if="callback">Cancelar</button>\
                         </div>',
-            controller: function($scope, $modalInstance, titulo, mensaje) {
+            controller: function($scope, $modalInstance, titulo, mensaje, callback) {
                 $scope.mensaje = mensaje;
                 $scope.titulo  = titulo;
+                $scope.callback = callback;
                 $scope.close = function() {
+                    if(callback){
+                        callback(false);
+                    }
                     $modalInstance.close();
                 };
+                
+                $scope.onBtnModal = function(aceptar){
+                    callback(aceptar);
+                    $modalInstance.close();
+                }
 
             },
             resolve: {
@@ -75,6 +86,9 @@ define(["angular","js/services"], function(angular, services){
                 },
                 mensaje: function(){
                     return mensaje;
+                },
+                callback : function(){
+                    return callback;
                 }
             }
         };

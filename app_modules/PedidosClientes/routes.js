@@ -182,7 +182,13 @@ module.exports = function(app, di_container) {
     });
     
     
-    
+       /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para insertar la cantidad en un producto
+     */
+    app.post('/api/PedidosClientes/enviarNotificacionPedidosClientes', function(req, res) {
+        c_pedidos_clientes.enviarNotificacionPedidosClientes(req, res);
+    });
     
     
 };

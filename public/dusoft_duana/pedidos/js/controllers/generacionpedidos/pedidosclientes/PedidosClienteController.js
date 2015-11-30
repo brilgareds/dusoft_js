@@ -20,8 +20,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "VendedorPedidoCliente",
         "ProductoPedidoCliente",
         "Usuario",
+        "webNotification",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Pedido, Cliente, Vendedor, Producto, Sesion) {
+                Empresa, Pedido, Cliente, Vendedor, Producto, Sesion, webNotification) {
 
             var that = this;
             // Definicion Variables de Sesion
@@ -793,8 +794,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 ]
             };
-            
-             /**
+
+            /**
              * +Descripcion: Metodo encargado de insertar la cantidad en el detalle
              *               de un producto de un pedido
              * @author Cristian Ardila
@@ -802,8 +803,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @returns {undefined}
              */
             that.insertarCantidadDetalleProducto = function(estado_pedido) {
-                
-              
+
+
                 var url = API.PEDIDOS.CLIENTES.INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO;
                 obj = {
                     session: $scope.session,
@@ -815,17 +816,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
-                
+
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    
+
                     if (data.status === 200) {
-                        
-                         AlertService.mostrarMensaje("warning", data.msj);                      
+
+                        AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
 
             };
-            // Upload Archivo Plano
+
             $scope.registrarProductoModificado = function() {
 
 
@@ -847,18 +848,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                  
+                 
                     if (data.status === 200) {
-                            that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0])
-                    }else{
-                         AlertService.mostrarMensaje("warning", data.msj);
+                        that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
+
+                        Request.realizarRequest(API.PEDIDOS.CLIENTES.ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES, "POST", obj, function(data) {
+                           
+                        });
+
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
                     }
 
                 });
             };
 
-           
-            
+
+
 
             $scope.opciones_archivo = new Flow();
             $scope.opciones_archivo.target = API.PEDIDOS.CLIENTES.SUBIR_ARCHIVO_PLANO;
@@ -1234,6 +1240,69 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.gestionar_consultas_cotizaciones();
                 }
             };
+
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion: Funcion encargada de mostrar las notificaciones
+             *               (alerts) cada vez que se actualice el estado de
+             *               un pedido ó cotizacion
+             * @param {type} title
+             * @param {type} body
+             * @returns {void}
+             */
+            that.notificarSolicitud = function(title, body) {
+
+                webNotification.showNotification(title, {
+                    body: body,
+                    icon: '/images/logo.png',
+                    onClick: function onNotificationClicked() {
+                        console.log('Notification clicked.');
+                    },
+                    autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+                }, function onShow(error, hide) {
+                    if (error) {
+                        window.alert('Error interno: ' + error.message);
+                    } else {
+
+                        setTimeout(function hideNotification() {
+                            console.log('Hiding notification....');
+                            hide(); //manually close the notification (you can skip this if you use the autoClose option)
+                        }, 90000);
+                    }
+                });
+            }
+
+            /**
+             * @author Cristian Ardila
+             * +Descripcion: Socket que se activa cada vez que se genere un cambio
+             *               en un pedido, de tal forma que cambiara en tiempo real
+             *               el estado del pedido en el gridView de pedidos
+             */
+            socket.on("onListarEstadoPedido", function(datos) {
+               
+                if (datos.status === 200) {
+
+                   
+                    var estado = ['Inactivo', 'No asignado', 'Anulado',
+                        'Entregado', 'Debe autorizar cartera']
+                    $scope.Empresa.get_pedidos().forEach(function(data) {
+                        if (datos.obj.numero_pedido === data.get_numero_pedido()) {
+                            data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);
+                        }
+                    });
+
+                    if (datos.obj.pedidos_clientes[0].estado === '4') {
+
+                        $scope.notificacionPedidoAutorizar++;
+                        if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
+                            that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido);
+                        }
+                    }
+                }
+            });
+
+
             that.init();
 
 
@@ -1248,6 +1317,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);
                 localStorageService.get("estadoPedido", null);
+
+                socket.removeAllListeners();
                 // datos view
                 //$scope.datos_view = null;
             });

@@ -1975,8 +1975,8 @@ PedidosCliente.prototype.validarEstadoTotalValorPedido = function(req, res) {
  *               las cantidades
  */
 PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, res) {
-    
- 
+
+
     var that = this;
     var args = req.body.data;
 
@@ -1985,8 +1985,8 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
         res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacía', 404, {}));
         return;
     }
-    
-    
+
+
     // Pedido 
     if (args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
         res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacía', 404, {}));
@@ -2003,13 +2003,13 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
         res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacía', 404, {}));
         return;
     }
-    
+
     var pedido = args.pedidos_clientes.pedido;
     //Se adiciona al objeto producto un a variable mas, El usuario de la session
     pedido.usuario_id = req.session.user.usuario_id;
     var producto = args.pedidos_clientes.producto;
     var estado_pedido = args.pedidos_clientes.estado;
-    
+
     /**
      * +Descripcion: Este ciclo repetitivo recorrera el objeto producto, el cual
      *               contiene todos los productos del pedido, y de esta forma
@@ -2018,14 +2018,14 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
      */
     for (var i = 0; i < producto.length; i++) {
 
-       
+
         /**
          * +Descripcion: la funcion se encargara de modificar el detalle del pedido
          *               en este caso, lo mas relevante sera la cantidad de un
          *               producto
          */
         that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto[i], function(err, rows, result) {
-        
+
             if (err || result.rowCount === 0) {
                 res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
                 return;
@@ -2044,7 +2044,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
                         return;
                     } else {
-                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
+                        // that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                         return;
                     }
@@ -2054,6 +2054,49 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
     }
 };
 
+
+PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    // Pedido
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
+        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacía', 404, {}));
+        return;
+    }
+
+
+    // Pedido 
+    if (args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
+        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacía', 404, {}));
+        return;
+    }
+    // Producto 
+    if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
+        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacía', 404, {}));
+        return;
+    }
+
+    // Estado 
+    if (args.pedidos_clientes.estado === undefined || args.pedidos_clientes.estado === '') {
+        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacía', 404, {}));
+        return;
+    }
+
+    var pedido = args.pedidos_clientes.pedido;
+    //Se adiciona al objeto producto un a variable mas, El usuario de la session
+    pedido.usuario_id = req.session.user.usuario_id;
+    var producto = args.pedidos_clientes.producto;
+    var estado_pedido = args.pedidos_clientes.estado;
+
+
+    that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
+
+    res.send(G.utils.r(req.url, 'Se envia notificacion para autorizar un pedido', 200, {pedidos_clientes: []}));
+    return;
+
+};
 /**
  * @author: Cristian Ardila
  * +Descripcion: Funcion encargada de invocar el modelo que consultara el estado

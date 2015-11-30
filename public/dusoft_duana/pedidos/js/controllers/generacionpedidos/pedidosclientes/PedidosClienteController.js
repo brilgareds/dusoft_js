@@ -20,8 +20,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "VendedorPedidoCliente",
         "ProductoPedidoCliente",
         "Usuario",
+        "webNotification",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Pedido, Cliente, Vendedor, Producto, Sesion) {
+                Empresa, Pedido, Cliente, Vendedor, Producto, Sesion, webNotification) {
 
             var that = this;
             // Definicion Variables de Sesion
@@ -45,6 +46,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 btnSolicitarAutorizacionCartera: true
 
             };
+            $scope.notificacionPedidoAutorizar = 0;
             that.consultarEstadoPedidoCotizacion = function(tipo, numero) {
 
                 var url = '';
@@ -91,7 +93,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             //if (localStorageService.get("cotizacion")) {
             if ($state.is("Cotizaciones") === true) {
 
-                console.log("Empresa ", $scope.Empresa)
+              
                 var cotizacion = localStorageService.get("cotizacion");
                 var numeroCotizacion = 0;
                 if (cotizacion) {
@@ -358,7 +360,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
-                    console.log("productos ", data)
+                  
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.porcentaje_iva);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     producto.set_cantidad_inicial(data.cantidad_solicitada);
@@ -531,8 +533,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var disabled = false;
 
                 if ($scope.Pedido.get_numero_pedido() > 0) {
-                    console.log("cantidadInicial ", cantidadInicial);
-                    console.log("cantidadFinal ", cantidadFinal);
+                   
                     if (cantidadFinal > cantidadInicial) {
                         disabled = true;
                     }
@@ -722,7 +723,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     $scope.datos_view.producto_seleccionado = Producto.get();
                     if (data.status === 200) {
                         if ($scope.Pedido.get_numero_cotizacion() > 0)
@@ -793,8 +794,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 ]
             };
-            
-             /**
+
+            /**
              * +Descripcion: Metodo encargado de insertar la cantidad en el detalle
              *               de un producto de un pedido
              * @author Cristian Ardila
@@ -802,10 +803,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @returns {undefined}
              */
             that.insertarCantidadDetalleProducto = function(estado_pedido) {
-                
-              
+
+
                 var url = API.PEDIDOS.CLIENTES.INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO;
-                obj = {
+                var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
@@ -816,16 +817,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 };
                 
+                //socket.emit("onEnviarNotificacionPedidosClientes", obj);
+                  Request.realizarRequest(API.PEDIDOS.CLIENTES.ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES, "POST", obj, function(data) {
+
+                                });
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    
+
                     if (data.status === 200) {
-                        
-                         AlertService.mostrarMensaje("warning", data.msj);                      
+
+                        AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
 
             };
-            // Upload Archivo Plano
+
             $scope.registrarProductoModificado = function() {
 
 
@@ -849,16 +854,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(url, "POST", obj, function(data) {
                   
                     if (data.status === 200) {
-                            that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0])
-                    }else{
-                         AlertService.mostrarMensaje("warning", data.msj);
+                         AlertService.mostrarVentanaAlerta("Registrando cambios","Desea modificar la cantidad de los productos",
+                          function(confirmar){
+                              
+                              if(confirmar){
+                               that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
+                             
+                              }
+                          });
+
+
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                      
                     }
 
                 });
             };
 
-           
-            
+
+
 
             $scope.opciones_archivo = new Flow();
             $scope.opciones_archivo.target = API.PEDIDOS.CLIENTES.SUBIR_ARCHIVO_PLANO;
@@ -1234,6 +1249,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.gestionar_consultas_cotizaciones();
                 }
             };
+
+
+         
             that.init();
 
 
@@ -1242,12 +1260,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.$$watchers = null;
 
 
-                // Set Datas
-                //$scope.Empresa.set_default();
                 // set localstorage
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);
                 localStorageService.get("estadoPedido", null);
+
+                //socket.removeAllListeners();
                 // datos view
                 //$scope.datos_view = null;
             });

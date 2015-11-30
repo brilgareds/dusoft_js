@@ -73,8 +73,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 var empresa = Empresa.get("", empresa_id);
                 usuario.setEmpresa(empresa);
 
-
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  usuario ", usuario ,obj);
                 Usuario.setUsuarioActual(usuario);
 
                 $scope.Usuario = usuario;

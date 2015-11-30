@@ -97,19 +97,31 @@ PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCot
 
 };
 
+// Notificacion al Clientes que esta conectado al socket
+PedidosClientesEvents.prototype.onConnected = function(socket_id) {    
+    console.log('== SocletConectado == ' + socket_id);
+    this.io.sockets.socket(socket_id).emit('onConnected', {socket_id: socket_id});
+};
+PedidosClientesEvents.prototype.onActualizarSesion = function(datos) { 
+    console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
+    G.auth.update(datos);
+};
 PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(numero_pedido,estadoPedido) {
     
-   
+      
+  
     var that = this;
     this.m_pedidos_clientes.consultarEstadoPedidoEstado(numero_pedido, function(estado, rows) {
-       
+   
      if (estado) {
+        
         var response = G.utils.r('onListarEstadoPedido', 'Estado del pedido', 200, 
                     {
                         pedidos_clientes: rows,
                         numero_pedido: numero_pedido,
                         estado: estadoPedido
                     });
+          
         that.io.sockets.emit('onListarEstadoPedido', response);
         
          }

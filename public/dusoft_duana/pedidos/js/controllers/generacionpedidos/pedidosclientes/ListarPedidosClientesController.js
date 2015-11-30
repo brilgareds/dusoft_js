@@ -630,7 +630,8 @@ define(["angular", "js/controllers",
                 $scope.datos_view.pagina_actual_pedidos++;
                 that.buscar_pedidos('','');
             };
-
+            
+            
 
             that.init = function() {
 
@@ -716,6 +717,7 @@ define(["angular", "js/controllers",
              */
             socket.on("onListarEstadoPedido", function(datos) {
                
+               console.log("*********onListarEstadoPedido***************")
                 if (datos.status === 200) {
 
                     var estado = ['Inactivo', 'No asignado', 'Anulado',

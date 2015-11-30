@@ -4,7 +4,7 @@ define(["angular","js/services"], function(angular, services){
       return {
         on: function (eventName, callback) {
           socket.on(eventName, function () {  
-            console.log("socket escuchando evento ", eventName);
+           
             var args = arguments;
             
             if(!$rootScope.$$phase) {

@@ -1543,6 +1543,7 @@ PedidosClienteModel.prototype.consultaCotizacionEnPedido = function(cotizacion, 
  *  --PedidosCliente.prototype.modificarDetallePedido
  *  --PedidosCliente.prototype.insertarDetallePedido
  *  --PedidosCliente.prototype.eliminarProductoPedido
+ *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
  */
 PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_pedido, callback)
 {
@@ -1653,11 +1654,11 @@ PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(nume
  * @Funciones que hacen uso del model : 
  *  --PedidosCliente.prototype.consultarEstadoPedido
  */
-PedidosClienteModel.prototype.consultarProductoDetallePedido = function(numero_pedido,codigo_producto, callback) {
+PedidosClienteModel.prototype.consultarProductoDetallePedido = function(pedido,producto, callback) {
 
     G.knex('ventas_ordenes_pedidos_d').where({
-        pedido_cliente_id: numero_pedido,
-        codigo_producto: codigo_producto
+        pedido_cliente_id: pedido.numero_pedido,
+        codigo_producto: producto.codigo_producto
     }).select('pedido_cliente_id')
          .then(function(rows) {
        
@@ -1860,9 +1861,15 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
 /*
  * Author : Camilo Orozco
  * Descripcion :  SQL Modificar Detalle Pedido
+ * @Funciones que hacen uso del modelo:
+ *  Controller: PedidosClienteController
+ *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
+ *  --PedidosCliente.prototype.modificarDetallePedido
  */
+
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
 
+         
     var sql = " UPDATE ventas_ordenes_pedidos_d SET porc_iva = $3, numero_unidades = $4, valor_unitario = $5, usuario_id = $6 , fecha_registro = NOW() \
                 WHERE  pedido_cliente_id = $1 AND codigo_producto = $2 ;";
 

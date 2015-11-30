@@ -220,26 +220,52 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 };
 
                 Request.realizarRequest(
-                        API.KARDEX.OBTENER_MOVIMIENTO,
-                        "POST",
-                        obj,
-                        function(data) {
-                            
-                            
-                            if (data.status === 200) {
-                              
-                                if (data.obj.movimientos_producto.length > 0) {
+                    API.KARDEX.OBTENER_MOVIMIENTO,
+                    "POST",
+                    obj,
+                    function(data) {
 
-                                    $scope.$emit('mostrardetallekardex', row.entity, data.obj);
-                                  
-                                } else {
-                                    AlertService.mostrarMensaje("warning", "El producto no tiene movimientos");
-                                }
+                        if (data.status === 200) {
 
-                            }
+
+                            $scope.$emit('mostrardetallekardex', row.entity, data.obj);
+
+                           if(data.obj.movimientos_producto.length === 0)
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El producto no tiene movimientos");
+
                         }
+                    }
                 );
 
+            };
+            
+           /*
+            * @Author: Eduar
+            * +Descripcion: Handler del boton seleccionar empresa
+            */
+            $scope.onSeleccionarEmpresa = function(){
+                $scope.opts = {
+                    backdrop: 'static',
+                    keyboard: true,
+                    size: 'lg',
+                    templateUrl:'views/movimientos/seleccionEmpresa.html',
+                    scope: $scope,
+                        controller: function($scope, $modalInstance) {
+                            $scope.onCerrar = function(acepto) {
+                                $modalInstance.close();
+                            };
+                        }
+                    };
+
+                  var modalInstance = $modal.open($scope.opts);
+                  
+                  modalInstance.result.then(function() {
+                     $scope.paginaactual = 1;
+                     $scope.buscarProductos($scope.termino_busqueda);
+
+                  }, function() {
+                      
+                  });
             };
 
             that.traerEmpresas = function(callback) {

@@ -1435,12 +1435,32 @@ OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
     that.m_ordenes_compra.modificarAutorizacionOrdenCompras(args,function(err, result) {
 
          if (err || result.rowCount === 0) { 
-            var msj = (err.msj !== undefined) ? err.msj : '';
+            var msj = (err.msj !== undefined) ? err.msj : '';            
             res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra' + msj, 500, {ordenes_compras: []}));
             return;
         } else {
-            console.log(">> ",result);
             res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: {}}));
+            return;
+        }
+    });
+};
+
+// funcion que realiza control al Insert a inv_bodegas_movimiento_tmp_d
+OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
+
+    var that = this;
+    var args = req.body.data.autorizacion;
+    console.log("ingresarBodegaMovimientoTmpOrden: ",args);
+    that.m_ordenes_compra.ingresarBodegaMovimientoTmp(args,function(err, result) {
+
+         if (err || result.rowCount === 0) { 
+            var msj = (err.msj !== undefined) ? err.msj : '';       
+             console.log("ingresarBodegaMovimientoTmpOrden: ",err);
+            res.send(G.utils.r(req.url, 'Error Insertar a la tabla bodega movimiento TMP' + msj, 500, {ordenes_compras: []}));
+            return;
+        } else {
+             console.log("ingresarBodegaMovimientoTmpOrden: ",result);
+            res.send(G.utils.r(req.url, 'Insercion bodega movimiento TMP Correctamente', 200, {ordenes_compras: {}}));
             return;
         }
     });

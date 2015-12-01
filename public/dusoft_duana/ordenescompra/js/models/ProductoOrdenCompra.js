@@ -15,6 +15,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.novedad = null;
                 this.lote = [];
                 this.nombreUsuarioIngreso = '';
+                this.docTmpId = '';
             }
 
             ProductoOrdenCompra.prototype = Object.create(Producto.getClass().prototype);
@@ -185,6 +186,33 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoOrdenCompra.prototype.getNombreUsuarioIngreso = function() {
                 return this.nombreUsuarioIngreso;
+            };
+            
+            //doc_tmp_if
+            ProductoOrdenCompra.prototype.setDocTmpId = function(docTmpId) {
+                this.docTmpId = docTmpId;
+            };
+
+            ProductoOrdenCompra.prototype.getDocTmpId = function() {
+                return this.docTmpId;
+            };
+            
+            //item_id
+            ProductoOrdenCompra.prototype.setItemId = function(itemId) {
+                this.itemId = itemId;
+            };
+
+            ProductoOrdenCompra.prototype.getItemId = function() {
+                return this.itemId;
+            };
+            
+            //item_id
+            ProductoOrdenCompra.prototype.setLocalProd= function(localProd) {
+                this.localProd = localProd;
+            };
+
+            ProductoOrdenCompra.prototype.getILocalProd = function() {
+                return this.localProd;
             };
             
             //lote

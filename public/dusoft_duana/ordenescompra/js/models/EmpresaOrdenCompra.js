@@ -179,6 +179,9 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                return this.autorizacionCompras;  
              };
             
+            EmpresaOrdenCompra.vaciarOrdenCompra= function(){
+                this.autorizacionCompras = [];
+            };
 
             return EmpresaOrdenCompra;
         }]);

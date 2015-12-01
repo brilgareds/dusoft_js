@@ -24,46 +24,45 @@ define(["angular", "js/controllers",
         function($scope, $rootScope, Request,
                 $modal, API, socket, $timeout,
                 AlertService, localStorageService, $state, $filter,
-                OrdenCompra, Proveedor, Producto, Usuario, Empresa,Lote,Autorizacion,empresaOrdenCompra) {
+                OrdenCompra, Proveedor, Producto, Usuario, Empresa, Lote, Autorizacion, empresaOrdenCompra) {
 
             $scope.Empresa = Empresa;
             $scope.empresaOrdenCompra = empresaOrdenCompra;
-            
-            $scope.empresas = [];                      
+
+            $scope.empresas = [];
             var that = this;
             $scope.rootAutorizacion = {};
+
             $scope.datos_view = {
-              termino_busqueda: ""
+                termino_busqueda: ""
             };
+
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-            
-                    /*
-                     * Inicializacion de variables
-                     * @param {type} empresa
-                     * @param {type} callback
-                     * @returns {void}
-                     */
-                    that.init = function(empresa, callback) {
-                        $scope.root = {};                                    
-                        callback();
-                        $timeout(function() {
-                        }, 3000);
-                    };
-              $scope.seleccion = Usuario.getUsuarioActual().getEmpresa(); 
-            
+            /*
+             * Inicializacion de variables
+             * @param {type} empresa
+             * @param {type} callback
+             * @returns {void}
+             */
+            that.init = function() {
+                that.buscarAutorizacionesCompras(function() {
+                });
+            };
+            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
+
 
             /*
              * @Author: AMGT
              * +Descripcion: selecciona la empresa del usuario actual.
-             */            
+             */
             $scope.listarEmpresas = function() {
                 $scope.empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
             };
-             $scope.listarEmpresas();
+            $scope.listarEmpresas();
 
 
             /*
@@ -86,7 +85,6 @@ define(["angular", "js/controllers",
                 socket.removeAllListeners();
             });
 
-
             /*
              * @Author: AMGT
              * +Descripcion: handler del combo de empresas
@@ -95,7 +93,7 @@ define(["angular", "js/controllers",
                 $scope.rootPedidosFarmacias.paginaactual = 1;
                 self.buscarPedidos();
             };
-            
+
             /*
              * @Author: AMGT
              * +Descripcion: tabla donde se encuentran las ordenes para autorizar
@@ -108,7 +106,7 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'ordenSeleccionada.get_numero_orden()', displayName: '# Orden', width: "5%"},
-                    {field: 'ordenSeleccionada.getFechaIngreso()', displayName: 'F. Ingreso', cellFilter: "date:\'yyyy-MM-dd\'", width: "4%"},
+                    {field: 'ordenSeleccionada.getFechaIngreso()', displayName: 'F. Ingreso', cellFilter: "date:\'yyyy-MM-dd\'", width: "5%"},
                     {field: 'ordenSeleccionada.productoSeleccionado.getCodigoProducto()', displayName: "Codigo Producto", width: "7%"},
                     {field: 'ordenSeleccionada.productoSeleccionado.getDescripcion()', displayName: "Producto", width: "15%"},
                     {field: 'ordenSeleccionada.productoSeleccionado.lote.getCodigo()', displayName: "Lote", width: "6%"},
@@ -117,10 +115,9 @@ define(["angular", "js/controllers",
                     {field: 'ordenSeleccionada.productoSeleccionado.getValorUnitarioCompra()', displayName: "Valor Compra", width: "7%"},
                     {field: 'ordenSeleccionada.productoSeleccionado.getValorUnitarioFactura()', displayName: "Valor Factura", width: "7%"},
                     {field: 'ordenSeleccionada.productoSeleccionado.getTotalCosto()', displayName: "Total", width: "7%"},
-                    {field: 'ordenSeleccionada.getLocalizacion()', displayName: "Localización", width: "8%"},
+                    {field: 'ordenSeleccionada.getLocalizacion()', displayName: "Localización", width: "5%"},
                     {field: 'ordenSeleccionada.productoSeleccionado.getNombreUsuarioIngreso()', displayName: "Usuario Solicitante", width: "7%"},
-                    {field: 'ordenSeleccionada.productoSeleccionado.getJustificacionIngreso()', displayName: "Justificación", width: "10%"},
-                    
+                    {field: 'ordenSeleccionada.productoSeleccionado.getJustificacionIngreso()', displayName: "Justificación", width: "14%"},
                     {displayName: "Autorización", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
@@ -133,69 +130,76 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
-            
-            
-             /*
+
+
+            /*
              * @Author: AMGT
              * +Descripcion: abre la ventana de autorizaciones ordenes compras
              */
-            $scope.onAbrirVentanaAutorizacionOrdenesCompras = function(modeloAutorizacion,banderaAutorizacion) {
+            $scope.onAbrirVentanaAutorizacionOrdenesCompras = function(modeloAutorizacion, banderaAutorizacion) {
 
-            $scope.opts = {
-                size: 'lg',
-                backdrop: 'static',
-                dialogClass: "autorizarordenesmodal",
-                templateUrl: 'views/autorizaciones/autorizarordenes.html',
-                controller: "AutorizarOrdenesComprasController",
-                resolve: {
-                    modeloAutorizacion: function() {
-                        return modeloAutorizacion;
-                    },
-                    banderaAutorizacion: function() {
-                        return banderaAutorizacion;
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "autorizarordenesmodal",
+                    templateUrl: 'views/autorizaciones/autorizarordenes.html',
+                    controller: "AutorizarOrdenesComprasController",
+                    resolve: {
+                        modeloAutorizacion: function() {
+                            return modeloAutorizacion;
+                        },
+                        banderaAutorizacion: function() {
+                            return banderaAutorizacion;
+                        }
                     }
-                }
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+                modalInstance.result.then(function() {
+                    that.buscarAutorizacionesCompras(function() {
+                    });
+                }, function() {
+                });
             };
 
-            var modalInstance = $modal.open($scope.opts);
-
-        };
-            
-            
-            
-            
-            $scope.listarAutorizaciones=function(){
-                that.buscarAutorizacionesCompras(function(){
-                  });               
+            /*
+             * @Author: AMGT
+             * +Descripcion: lista las autorizaciones cuando se realiza una accion en la vista
+             */
+            $scope.listarAutorizaciones = function() {
+                that.buscarAutorizacionesCompras(function() {
+                });
             };
-            
-            $scope.listarAutorizacionesEvent=function($event){
+
+            /*
+             * @Author: AMGT
+             * +Descripcion: lista las autorizaciones cuando se escucha un evento de la vista
+             */
+            $scope.listarAutorizacionesEvent = function($event) {
                 if ($event.which === 13) {
-                 that.buscarAutorizacionesCompras(function(){
-                        });
+                    that.buscarAutorizacionesCompras(function() {
+                    });
                 }
             };
-            
-            
-             /*
+
+            /*
              * @Author: AMGT
              * @param {object} obj
              * @param {function} callback
-             * +Descripcion: Metodo encargado de consultar los las autorizaciones de ventas
+             * +Descripcion: Metodo encargado de consultar los las autorizaciones de ordenes de compra
              */
             that.consultarAutorizacionesCompras = function(obj, callback) {
 
                 var url = API.ORDENES_COMPRA.LISTAR_AUTORIZACIONES_COMPRAS;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                     $scope.ultimabusqueda = $scope.terminoBusqueda;
-                     $scope.ultimofiltro = $scope.filtro.selec;
-                     $scope.ultimaempresa = $scope.seleccion.getCodigo();
-                     callback(data);
+                    $scope.ultimabusqueda = $scope.terminoBusqueda;
+                    $scope.ultimofiltro = $scope.filtro.selec;
+                    $scope.ultimaempresa = $scope.seleccion.getCodigo();
+                    callback(data);
 
                 });
             };
-            
             
             $scope.paginas = 0;
             $scope.items = 0;
@@ -205,8 +209,11 @@ define(["angular", "js/controllers",
             $scope.ultimaempresa = "";
             $scope.paginaactual = 1;
             
+            /*
+             * @Author: AMGT
+             * +Descripcion: funcion que realiza la consulta al servidor
+             */
             that.buscarAutorizacionesCompras = function( ) {
-               
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda !== $scope.terminoBusqueda || $scope.ultimofiltro !== $scope.filtro.selec || $scope.ultimaempresa !== $scope.seleccion.getCodigo()) {
                     $scope.paginaactual = 1;
@@ -223,6 +230,7 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
+                $scope.empresaOrdenCompra.vaciarOrdenCompra();
                 that.consultarAutorizacionesCompras(obj, function(data) {
                     if (data.status === 200) {
                         $scope.ultima_busqueda = {
@@ -233,47 +241,52 @@ define(["angular", "js/controllers",
                     }
 
                 });
-            };            
- 
-           /*
+            };
+
+            /*
              * @Author: AMGT
              * @param {object} obj
              * @param {function} callback
              * +Descripcion: Asigna los valores de la consulta a los objetos definifos
              */
-           that.renderAutorizacionCompras = function(autorizacion, paginando) {
+            that.renderAutorizacionCompras = function(autorizacion, paginando) {
                 for (var i in autorizacion) {
-                    
-                    var lote = Lote.get(autorizacion[i].lote,autorizacion[i].fecha_vencimiento);                        
-                    var producto=Producto.get(autorizacion[i].codigo_producto,autorizacion[i].producto, null,null,null,null,null,null);
-                        producto.set_cantidad_recibida(autorizacion[i].cantidad);         
-                        producto.setPorcentajeGravamen(autorizacion[i].porcentaje_gravamen);         
-                        producto.setTotalCosto(autorizacion[i].total_costo);         
-                        producto.setValorUnitarioFactura(autorizacion[i].valor_unitario_factura);         
-                        producto.setValorUnitarioCompra(autorizacion[i].valor_unitario_compra);         
-                        producto.setLote(lote);
-                        producto.setUsuarioIngreso(autorizacion[i].usuario_id);
-                        producto.setNombreUsuarioIngreso(autorizacion[i].usuario_ingreso);
-                        producto.setJustificacionIngreso(autorizacion[i].justificacion_ingreso);
-                    var orden=OrdenCompra.get(autorizacion[i].orden_pedido_id,null,null,null,null);
-                        orden.setProductoSeleccionado(producto);
-                        orden.setFechaIngreso(autorizacion[i].fecha_ingreso);
-                        orden.setLocalizacion(autorizacion[i].local_prod);
-                    var autorizaciones=Autorizacion.get(orden,autorizacion[i].empresa_id,autorizacion[i].centro_utilidad,autorizacion[i].bodega);
-                        autorizaciones.setUsuarioIdAutorizador(autorizacion[i].usuario_id_autorizador);
-                        autorizaciones.setNombreAutorizador(autorizacion[i].nombre_autorizador);
-                        autorizaciones.setJustificacion(autorizacion[i].observacion_autorizacion);//
-                        autorizaciones.setSwAutorizado(autorizacion[i].sw_autorizado);//
-                        autorizaciones.setUsuarioIdAutorizador2(autorizacion[i].usuario_id_autorizador_2);
-                        autorizaciones.setNombreAutorizador2(autorizacion[i].nombre_autorizador2);
-                        autorizaciones.setJustificacion2(autorizacion[i].observacion_autorizacion);
-                        autorizaciones.setSwAutorizado2(autorizacion[i].sw_autorizado);
+
+                    var lote = Lote.get(autorizacion[i].lote, autorizacion[i].fecha_vencimiento);
+                    var producto = Producto.get(autorizacion[i].codigo_producto, autorizacion[i].producto, null, null, null, null, null, null);
+                    producto.set_cantidad_recibida(autorizacion[i].cantidad);
+                    producto.setPorcentajeGravamen(autorizacion[i].porcentaje_gravamen);
+                    producto.setTotalCosto(autorizacion[i].total_costo);
+                    producto.setValorUnitarioFactura(autorizacion[i].valor_unitario_factura);
+                    producto.setValorUnitarioCompra(autorizacion[i].valor_unitario_compra);
+                    producto.setLote(lote);
+                    producto.setUsuarioIngreso(autorizacion[i].usuario_id);
+                    producto.setNombreUsuarioIngreso(autorizacion[i].usuario_ingreso);
+                    producto.setJustificacionIngreso(autorizacion[i].justificacion_ingreso);
+                    producto.setDocTmpId(autorizacion[i].doc_tmp_id);
+                    producto.setItemId(autorizacion[i].item_id);
+                    producto.setLocalProd(autorizacion[i].local_prod);
+                    var orden = OrdenCompra.get(autorizacion[i].orden_pedido_id, null, null, null, null);
+                    orden.setProductoSeleccionado(producto);
+                    orden.setFechaIngreso(autorizacion[i].fecha_ingreso);
+                    orden.setLocalizacion(autorizacion[i].local_prod);
+                    var autorizaciones = Autorizacion.get(orden, autorizacion[i].empresa_id, autorizacion[i].centro_utilidad, autorizacion[i].bodega);
+                    autorizaciones.setUsuarioIdAutorizador(autorizacion[i].usuario_id_autorizador);
+                    autorizaciones.setNombreAutorizador(autorizacion[i].nombre_autorizador);
+                    autorizaciones.setJustificacion(autorizacion[i].observacion_autorizacion);//
+                    autorizaciones.setSwAutorizado(autorizacion[i].sw_autorizado);//
+                    autorizaciones.setSwNoAutorizado(autorizacion[i].sw_no_autoriza);//
+                    autorizaciones.setUsuarioIdAutorizador2(autorizacion[i].usuario_id_autorizador_2);
+                    autorizaciones.setNombreAutorizador2(autorizacion[i].nombre_autorizador2);
+                    autorizaciones.setJustificacion2(autorizacion[i].observacion_autorizacion);
+                    autorizaciones.setSwAutorizado2(autorizacion[i].sw_autorizado);
                     $scope.empresaOrdenCompra.agregarAutorizaciones(autorizaciones);
-               }        
-               console.log("Empresa>>>>>>>: ",$scope.empresaOrdenCompra.listarAutorizaciones());
+                }
             };
-            
-   }]);
+
+            that.init();
+
+        }]);
 });
 
 

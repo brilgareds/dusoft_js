@@ -34,6 +34,7 @@ define(["angular"], function(angular) {
                 'FINALIZAR_RECEPCION': BASE_URL + '/OrdenesCompra/finalizarRecepcionMercancia',
                 'LISTAR_AUTORIZACIONES_COMPRAS': BASE_URL + '/OrdenesCompra/listarAutorizacionCompras',
                 'MODIFICAR_AUTORIZACION_COMPRAS': BASE_URL + '/OrdenesCompra/modificarAutorizacionCompras',
+                'INSERTAR_BODEGA_MOVIMIENTO_TMP': BASE_URL + '/OrdenesCompra/ingresarBodegaMovimientoTmpOrden',
                 'GUARDAR_BODEGA' : BASE_URL + '/OrdenesCompra/guardarBodega',
                 'ELIMINAR_NOVEDAD' : BASE_URL + '/OrdenesCompra/eliminarNovedad'
 

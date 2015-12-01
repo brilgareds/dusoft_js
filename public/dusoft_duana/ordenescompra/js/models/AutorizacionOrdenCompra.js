@@ -17,6 +17,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.usuarioIdAutorizador = '';
                 this.usuarioIdAutorizador2 = '';
                 this.swAutorizado ='';
+                this.swNoAutorizado ='';
                 this.swAutorizado2 = '';
                 this.swAutorizado = '';
                 this.justificacion = '';
@@ -102,6 +103,14 @@ define(["angular", "js/models"], function(angular, models) {
             AutorizacionOrdenCompra.prototype.setSwAutorizado = function(swAutorizado) {
                 this.swAutorizado=swAutorizado;
             };
+            // swAutorizado
+            AutorizacionOrdenCompra.prototype.getSwNoAutorizado= function() {
+                return this.swNoAutorizado;
+            };          
+           
+            AutorizacionOrdenCompra.prototype.setSwNoAutorizado = function(swNoAutorizado) {
+                this.swNoAutorizado=swNoAutorizado;
+            };
             // swAutorizado2
             AutorizacionOrdenCompra.prototype.getSwAutorizado2= function() {
                 return this.swAutorizado2;
@@ -126,6 +135,10 @@ define(["angular", "js/models"], function(angular, models) {
             AutorizacionOrdenCompra.prototype.setBodega = function(bodega) {
                 this.bodega=bodega;
             };
+            //borra el contenido del objeto
+             AutorizacionOrdenCompra.prototype.vaciarCentroUtilidad = function () {
+                this.centrosUtilidad = [];
+            }
 
             return this;
         }]);

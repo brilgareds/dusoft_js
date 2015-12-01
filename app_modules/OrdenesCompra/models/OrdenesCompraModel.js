@@ -273,13 +273,15 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 k.empresa_id as empresa_destino,\
                 k.centro_utilidad as centro_utilidad_destino,\
                 l.descripcion as descripcion_bodega_destino,\
-                l.ubicacion as ubicacion_bodega_destino\
+                l.ubicacion as ubicacion_bodega_destino,\
+                m.id as unidad_negocio_nit\
                 FROM compras_ordenes_pedidos a \
                 INNER JOIN empresas j ON j.empresa_id=a.empresa_id \
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id \
                 inner join terceros e on b.tipo_id_tercero = e.tipo_id_tercero and b.tercero_id = e.tercero_id \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\
                 left join unidades_negocio d on a.codigo_unidad_negocio = d.codigo_unidad_negocio\
+                left join empresas as m on d.empresa_id = m.empresa_id\
                 left join (\
                     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\

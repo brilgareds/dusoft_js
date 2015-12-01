@@ -27,7 +27,6 @@ G.utils = require('./lib/Utils');
 G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');
 G.fs = require('fs-extra');
-G.xlsx = require('node-xlsx');
 G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
@@ -38,7 +37,6 @@ G.XlsParser =  require("./lib/XlsParser");
  * @fecha: 29/10/2015
  * 
  * */
-G.xls = require("xls-to-json");
 
 
 

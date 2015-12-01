@@ -2,6 +2,8 @@
 
 
     <div ng-controller="PedidosClienteController">
+        
+        
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
@@ -92,17 +94,7 @@
                                     </div>
                                 </fieldset>
                             </div>   
-                       <!--     <div class="col-md-2">                            
-                               <fieldset>
-                                    <legend>Prioridad</legend>                                 
-                                    <ui-select ng-model="Prioridad.id" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionarAprobacion(Prioridad)">
-                                        <ui-select-match  placeholder="Seleccionar prioridad de cotizacion">{{ $select.selected.nombre }}</ui-select-match>
-                                        <ui-select-choices repeat="Prioridad in prioridad | filter:$select.search">
-                                            {{ Prioridad.nombre }}
-                                        </ui-select-choices>
-                                    </ui-select>
-                                </fieldset>
-                            </div> //--> 
+                      
                         </div>     
                         <br>                    
                         <br>                      
@@ -202,6 +194,10 @@
                                     </button>
                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
+                                    </button>
+                                    
+                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() >0" ng-disabled="!datos_view.btnSolicitarAutorizacionCartera">
+                                        <span class="glyphicon glyphicon-cog" ></span> Solicitar autorizacion cartera 
                                     </button>
                                    <!-- <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 " >//-->
                                   <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_estado_cotizacion() ==1 || Pedido.get_estado_cotizacion() ==2 || Pedido.get_estado_cotizacion() ==4 || Pedido.get_estado_cotizacion() ==6" >

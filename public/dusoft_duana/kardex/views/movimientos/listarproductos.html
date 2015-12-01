@@ -1,38 +1,13 @@
 <div>
-
-    <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-    <div class="col-md-12 col-lg-2">
-        <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2="" ng-model='filtro.empresa_seleccion' style='width:200px;'  class="form-control selectgeneral"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
-                <option></option>
-                <option ng-repeat="empresa in  listaEmpresas"  value="{{empresa.codigo}}"   >
-                    {{empresa.nombre}}</option>
-            </select>
-        </p>
-    </div>
-
-    <div class="col-md-12 col-lg-2">
-        <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2 ng-model='filtro.centro_seleccion' style='width:200px;'  class="form-control selectgeneral"   placeholder="Seleccionar Centro Utilidad" ng-change='onCentroSeleccionado()' >
-                <option></option>
-                <option ng-repeat="centro in  listaCentroUtilidad"  value="{{centro.codigo}}" >
-                    {{centro.nombre}}</option>
-            </select>
-        </p>
-    </div>
-
-    <div class="col-md-12 col-lg-2">
-        <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2 ng-model='filtro.bodega_seleccion' style='width:200px;'  class="form-control selectgeneral"   placeholder="Seleccionar Bodega" >
-                <option></option>
-                <option ng-repeat="bodega in  listaBodegas"  value="{{bodega.codigo}}" >
-                    {{bodega.nombre}}</option>
-            </select>
-        </p>
-    </div>
-
     <div class="row">
-        <div class="col-lg-2">
+        <div class="pull-left" style="margin-left:15px;">
+             <div class="input-group">
+                <button class="btn btn-default" ng-click="onSeleccionarEmpresa()">Seleccionar Empresa</button>
+             </div>
+        </div>
+        
+
+        <div class="col-lg-2 col-sm-12">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
@@ -58,38 +33,31 @@
 
 
 
-        <div class="col-lg-2 pull-right">
-            
+        <div class="col-lg-3 pull-right">
+
             <div class="input-group">
                 <div class="input-group-btn">
-                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtroProducto.nombre}} <span class="caret"></span></button>
-                  <ul class="dropdown-menu">
-                    <li ng-repeat="filtro in filtros">
-                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
-                    </li>
-                  </ul>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtroProducto.nombre}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="filtro in filtros">
+                            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                        </li>
+                    </ul>
                 </div><!-- /btn-group -->
                 <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </span>
-              </div><!-- /input-group -->
-            
-            
-            <!-- p class="input-group">
+            </div><!-- /input-group -->
 
-                <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
-                <span class="input-group-btn">
 
-                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                </span>
-            </p -->
+
         </div>
 
     </div>
 
-    <div class="table-responsive" >
+    <div class="table-responsive" style="margin-top:3px;" >
         <div class="defaultGrid grid-responsive" ng-grid="gridOptions">
         </div>
     </div>

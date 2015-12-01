@@ -667,8 +667,11 @@ OrdenesCompraModel.prototype.eliminarRegistroNovedad = function(parametros, call
     then(function(archivos){
         return G.Q.ninvoke(that, 'eliminarArchivosNovedad', archivos);
     }).
-    then(function(err){
-        return console.log("archivos borrados completamente code 2 ", arguments);
+    then(function(){
+        return G.Q.ninvoke(that, 'eliminarNovedad', parametros);
+    }).
+    then(function(){
+        callback(false);
     }).
     fail(function(err){
         console.log(">>>>>>>>>>>>>> error controlado ", err);
@@ -678,9 +681,9 @@ OrdenesCompraModel.prototype.eliminarRegistroNovedad = function(parametros, call
 };
 
 /*
- * @param {Object} parametros
+ * @param {Object} parametros {novedadId : Int}
  * @param {type} callback
- * @returns {undefined}
+ * Metodo que elimina la novedad de un producto
  */
 
 OrdenesCompraModel.prototype.eliminarNovedad = function(parametros, callback){
@@ -688,15 +691,19 @@ OrdenesCompraModel.prototype.eliminarNovedad = function(parametros, callback){
     
     G.knex.raw(sql, {1:parametros.novedadId}).
     then(function(resultado){
-       G.fs.unlinkSync(G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + archivo.nombre_archivo);
-       archivos.splice(0,1);
-       that.eliminarArchivosNovedad(archivos, callback);
+       callback(false);
     }).catch(function(err){
        console.log("error borrando novedad ", err);
        callback(err);
     });
 };
 
+
+/*
+ * @param {Object} parametros
+ * @param {type} callback
+ * Metodo que elimina el registro de los archivos de la base de datos y el servidor de la novedad
+ */
 OrdenesCompraModel.prototype.eliminarArchivosNovedad = function(archivos, callback){
 
     var archivo =  archivos[0];

@@ -302,26 +302,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="novedades_producto_orden_compra(row, true);" >Agregar Novedad</a></li>\
                                                 <li ng-if="row.entity.get_novedad().get_id() != \'\' " ><a href="javascript:void(0);" ng-click="novedades_producto_orden_compra(row)" >Modificar</a></li>\
-                                                <li ng-if="row.entity.get_novedad().get_id() != \'\'"><a href="javascript:void(0);" ng-click="eliminarNovedad(row.entity,0)" >Eliminar</a></li>\
+                                                <li ng-if="row.entity.get_novedad().get_id() != \'\'"><a href="javascript:void(0);" ng-click="onEliminarNovedad(row.entity,0)" >Eliminar</a></li>\
                                             </ul>\
                                         </div>' }
                 ]
             };
             
-            $scope.eliminarNovedad = function(producto){
+            $scope.onEliminarNovedad = function(producto){
                 
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        ordenes_compras: {
-                            novedadId: producto.get_novedad().get_id()
-                        }
+                AlertService.mostrarVentanaAlerta("Eliminar", "Desea eliminar la novedad?", function(aceptar){
+                    console.log("aceptar ", aceptar);
+                    if(aceptar){
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                ordenes_compras: {
+                                    novedadId: producto.get_novedad().get_id()
+                                }
+                            }
+                        };
+
+                        Request.realizarRequest(API.ORDENES_COMPRA.ELIMINAR_NOVEDAD, "POST", obj, function(data) {
+                               $scope.buscar_detalle_orden_compra("");
+
+                        });
                     }
-                };
-
-                Request.realizarRequest(API.ORDENES_COMPRA.ELIMINAR_NOVEDAD, "POST", obj, function(data) {
-
-
                 });
                 
             };

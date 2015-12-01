@@ -70,7 +70,7 @@ define(["angular", "js/controllers",
                     "btn btn-danger btn-xs",
                     "btn btn-primary btn-xs",
                     "btn btn-danger btn-xs",
-                    "btn btn-success btn-xs",
+                    "btn btn-info btn-xs",
                     "btn btn-warning btn-xs",
                     "btn btn-success btn-xs",
                     "btn btn-warning btn-xs"
@@ -630,7 +630,8 @@ define(["angular", "js/controllers",
                 $scope.datos_view.pagina_actual_pedidos++;
                 that.buscar_pedidos('','');
             };
-
+            
+            
 
             that.init = function() {
 
@@ -716,6 +717,7 @@ define(["angular", "js/controllers",
              */
             socket.on("onListarEstadoPedido", function(datos) {
                
+            
                 if (datos.status === 200) {
 
                     var estado = ['Inactivo', 'No asignado', 'Anulado',

@@ -13,7 +13,9 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaOrdenCompra.transportadoras = [];
             EmpresaOrdenCompra.recepciones_mercancia = [];
             EmpresaOrdenCompra.novedades_mercancia = [];
+            EmpresaOrdenCompra.autorizacionCompras=[];
             EmpresaOrdenCompra.bodegasDestino = [];
+
 
 
             // Ordenes de Compra
@@ -167,6 +169,18 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaOrdenCompra.limpiar_recepciones_mercancia = function() {
                 this.recepciones_mercancia = [];
+            };
+            
+             EmpresaOrdenCompra.agregarAutorizaciones = function(autorizacionCompras){
+              this.autorizacionCompras.push(autorizacionCompras);  
+             };
+             
+             EmpresaOrdenCompra.listarAutorizaciones = function(){
+               return this.autorizacionCompras;  
+             };
+            
+            EmpresaOrdenCompra.vaciarOrdenCompra= function(){
+                this.autorizacionCompras = [];
             };
 
             return EmpresaOrdenCompra;

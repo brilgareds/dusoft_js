@@ -11,8 +11,10 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 OrdenCompra.getClass().call(this, numero_orden, estado, observacion, fecha_registro);
                 
                 this.observacion_contrato = observacion_contrato || '';
-                this.fecha_ingreso = '';
+                this.fechaIngreso = '';
                 this.productos = [];
+                this.productoSeleccionado = '';
+                this.localizacion = '';
                 this.bodegaSeleccionada;
             }
             
@@ -121,6 +123,33 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
 
                 return (producto.length > 0) ? producto[0] : {};
             };
+            
+            // Producto Seleccionado
+            OrdenCompraPedido.prototype.setProductoSeleccionado = function(productoSeleccionado) {
+                this.productoSeleccionado=productoSeleccionado;
+            };
+            
+            OrdenCompraPedido.prototype.getProductoSeleccionado = function() {
+                return this.productoSeleccionado;
+            }; 
+            
+            // fecha Ingreso
+            OrdenCompraPedido.prototype.setFechaIngreso = function(fechaIngreso) {
+                this.fechaIngreso=fechaIngreso;
+            };
+            
+            OrdenCompraPedido.prototype.getFechaIngreso = function() {
+                return this.fechaIngreso;
+            };    
+            
+            // localizacion
+            OrdenCompraPedido.prototype.setLocalizacion = function(localizacion) {
+                this.localizacion=localizacion;
+            };
+            
+            OrdenCompraPedido.prototype.getLocalizacion = function() {
+                return this.localizacion;
+            };                     
 
             OrdenCompraPedido.prototype.get_productos = function() {
                 return this.productos;

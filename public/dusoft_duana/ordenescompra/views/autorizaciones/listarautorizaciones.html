@@ -1,0 +1,47 @@
+<div ng-controller="ListarAutorizacionesController">
+
+<div class="row">  
+
+    <div class="col-md-2">
+        <p class="input-group">
+         <ui-select  ng-model="$parent.seleccion" theme="select2" class="form-control selectgeneral pull-left" ng-change="listarAutorizaciones()">
+                   <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.nombre}}</ui-select-match>
+                   <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
+                       {{empresa.nombre}}
+                   </ui-select-choices>
+               </ui-select>
+        </p>
+    </div>  
+    
+    <div class="col-md-2 pull-right"> 
+        <div class="input-group">
+            <div class="input-group-btn"> <!--ng-click="listarAutorizaciones();"-->
+                <button type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="filtro in filtros">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                    </li>
+                </ul>
+            </div>
+            <input type="text" class="form-control" ng-keypress="listarAutorizacionesEvent($event);" ng-model="terminoBusqueda" placeholder="Buscar" name="" id="" />
+            <div class="input-group-btn" >
+                <button class="btn btn-default" type="submit" ng-click="listarAutorizaciones();"><i class="glyphicon glyphicon-search"></i></button>
+            </div>
+        </div>
+    </div>                     
+</div>
+    
+<div class="defaultGrid" ng-grid="lista_autorizacion_compras" autoscroll="false" > </div>
+
+<!--    </br>
+ 
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+    <visualizar-reporte></visualizar-reporte>-->
+</div>

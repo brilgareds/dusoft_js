@@ -140,6 +140,20 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.finalizarRecepcionMercancia(req, res);
     });
     
+    // Listar Autorizaciones Compras
+    app.post('/api/OrdenesCompra/listarAutorizacionCompras', function(req, res) {
+        c_ordenes_compra.listarAutorizacionCompras(req, res);
+    });
+    
+    // modificar Autorizaciones Compras
+    app.post('/api/OrdenesCompra/modificarAutorizacionCompras', function(req, res) {
+        c_ordenes_compra.modificarAutorizacionCompras(req, res);
+    });
+    // Insertar tmp movimiento bodega
+    app.post('/api/OrdenesCompra/ingresarBodegaMovimientoTmpOrden', function(req, res) {
+        c_ordenes_compra.ingresarBodegaMovimientoTmpOrden(req, res);
+    });
+    
     app.post('/api/OrdenesCompra/guardarBodega', function(req, res) {
         c_ordenes_compra.guardarBodega(req, res);
     });

@@ -1134,6 +1134,166 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
     });
 };
 
+/*
+* funcion que realiza consulta a las ordenes de compras por autorizar
+* @param {type} callback
+* @returns {datos de consulta}
+*/
+OrdenesCompraModel.prototype.getListarAutorizacionCompras = function (empresa, terminoBusqueda, filtro, pagina, callback) {
+    estado='0';
+    var column = [
+                    "copfoc.codigo_producto",
+                    "copfoc.doc_tmp_id",
+                    "copfoc.empresa_id",
+                    "copfoc.centro_utilidad",
+                    "copfoc.bodega",
+                    "copfoc.orden_pedido_id",
+                    "copfoc.usuario_id",
+                    "copfoc.justificacion_ingreso",
+                    "copfoc.fecha_ingreso",
+                    "copfoc.cantidad",
+                    "copfoc.lote",
+                    "copfoc.fecha_vencimiento",
+                    "copfoc.porcentaje_gravamen",
+                    "copfoc.total_costo",
+                    "copfoc.local_prod",
+                    "copfoc.sw_autorizado",
+                    "copfoc.item_id",
+                    "copfoc.sw_no_autoriza",
+                    "copfoc.valor_unitario_compra",
+                    "copfoc.valor_unitario_factura",
+                    G.knex.raw("fc_descripcion_producto(copfoc.codigo_producto) as producto"),
+                    "usu.nombre as usuario_ingreso",
+                    "copfoc.observacion_autorizacion",
+                    "copfoc.usuario_id_autorizador",
+                    "copfoc.usuario_id_autorizador_2",
+                    "usu_1.nombre as nombre_autorizador",
+                    "usu_2.nombre  as nombre_autorizador2"
+                 ];
+         
+    var query = G.knex.column(column)
+            .select()
+            .from('inventarios_productos as prod')            
+            .innerJoin('compras_ordenes_pedidos_productosfoc as copfoc', 'prod.codigo_producto', 'copfoc.codigo_producto')
+            .innerJoin('system_usuarios as usu', 'copfoc.usuario_id', 'usu.usuario_id')
+            .leftJoin('system_usuarios as usu_1', 'copfoc.usuario_id_autorizador', 'usu_1.usuario_id')
+            .leftJoin('system_usuarios as usu_2', 'copfoc.usuario_id_autorizador_2', 'usu_2.usuario_id')
+            .where({"copfoc.empresa_id": empresa,
+                    "copfoc.sw_autorizado": estado})           
+            .andWhere(function() {
+                if (filtro==='1' && terminoBusqueda!==''){
+                    this.where(G.knex.raw("prod.descripcion :: varchar"), G.constants.db().LIKE, "%" + terminoBusqueda + "%")
+
+                } else if (filtro==='0' && terminoBusqueda!==''){
+                   this.where(G.knex.raw("copfoc.orden_pedido_id :: varchar"), G.constants.db().LIKE, "%" + terminoBusqueda + "%")
+                }
+            })
+            .limit(G.settings.limit)
+            .offset((pagina - 1) * G.settings.limit)
+
+            .then(function (rows) {
+         
+                callback(false, rows);
+            })
+            .catch(function (error) {
+                callback(error);
+            }).done();
+          //console.log(query);     
+};
+/*
+* funcion que realiza el Update a compras_ordenes_pedidos_productosfoc
+* @param {type} callback
+* @returns {datos de consulta}
+*/
+OrdenesCompraModel.prototype.modificarAutorizacionOrdenCompras = function(datos, callback) {
+
+    var sql = " update compras_ordenes_pedidos_productosfoc set \
+                usuario_id_autorizador = :1,\
+                sw_autorizado = :2,\
+                observacion_autorizacion = :3,\
+                usuario_id_autorizador_2 = :4,\
+                sw_no_autoriza = :5\
+                where empresa_id = :6 and\
+                centro_utilidad = :7 and\
+                bodega = :8 and\n\
+                orden_pedido_id = :9 and\
+                codigo_producto = :10 and\
+                lote = :11 \
+                ; ";
+    var parametros = {
+        1: datos.usuarioAutorizador,
+        2: datos.swAutorizado,
+        3: datos.observacion,
+        4: datos.usuarioAutorizador2,
+        5: datos.swNoAutoriza,
+        6: datos.empresa,
+        7: datos.centroUtilidad,
+        8: datos.bodega,
+        9: datos.orden,
+        10: datos.codProucto,
+        11: datos.lote
+    };
+
+
+    G.knex.raw(sql, parametros).
+            then(function(resultado) {
+        callback(false, resultado.rows, resultado);
+    }). catch (function(err) {
+        callback(err);
+    });
+};
+/*
+* funcion que realiza el Insert a inv_bodegas_movimiento_tmp_d
+* @param {type} callback
+* @returns {datos de consulta}
+*/
+OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callback) {
+
+    var sql = " insert into \n\
+                inv_bodegas_movimiento_tmp_d ( \
+                        usuario_id,\
+                        doc_tmp_id,\
+                        empresa_id,\
+                        centro_utilidad,\
+                        bodega,\
+                        codigo_producto,\
+                        cantidad,\
+                        porcentaje_gravamen,\
+                        total_costo,\
+                        fecha_vencimiento,\
+                        lote,\
+                        local_prod,\
+                        item_id_compras\
+                        )\
+                values( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13) ";
+    
+            var parametros = {
+                1: datos.usuarioId,
+                2: datos.docTmpId, 
+                3: datos.empresa,
+                4: datos.centroUtilidad,
+                5: datos.bodega, 
+                6: datos.codProucto,
+                7: datos.cantidad,
+                8: datos.porcentajeGravamen,
+                9: datos.totalCosto,
+                10: datos.fechaVencimiento,
+                11: datos.lote,
+                12: datos.localProd,
+                13: datos.orden
+            };
+
+    G.knex.raw(sql, parametros).
+            then(function(resultado) {
+         console.log("resultado",resultado);
+        callback(false, resultado.rows, resultado);
+    }). catch (function(err) {
+        console.log("error",err);
+        callback(err);
+    });
+};
+
+
 // Insertar productos Recepcion mercancia
 OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
 

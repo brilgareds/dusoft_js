@@ -425,15 +425,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         </div>'},
                 //    {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
                 {field: 'precio_venta', width: "8%", displayName: "$ Venta", cellFilter: "number",
-                     cellTemplate: '<div class="ngCellText" > <input ng-if="!row.entity.sw_pactado" type="text" \
+                     cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" \
                      ng-model="row.entity.precio_venta" \
                      validacion-numero-decimal\
                      ng-disabled = "row.entity.sw_pactado"\n\
                      class="form-control grid-inline-input" name="" id="" /> \n\
-                     <span ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >\n\
+                     <div ng-if="row.entity.sw_pactado" class="ngCellText" >\n\
+                        <span  ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >\n\
                                                     CC\n\
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
-                        </div>'
+                        </div></div>'
                     },
                    
                     

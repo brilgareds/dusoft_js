@@ -101,7 +101,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
@@ -118,7 +118,30 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             // Insertar Productos a la Cotizacion
             that.insertar_detalle_cotizacion = function(callback) {
-
+                
+                var productoSeleccionado = $scope.datos_form.producto_seleccionado;
+                var precioVenta = Number(productoSeleccionado.get_precio_venta());
+                var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
+                
+                /**
+                 * +Descripcion: Se validara si el producto seleccionado es regulado
+                 *               
+                 */
+                if(productoSeleccionado.es_regulado()){
+                    
+                    /**
+                     * +Descripcion: Se valida si el precio de venta es mayor al
+                     *               precio regulado, por lo cual se emitira un
+                     *               mensaje al usuario y se cancelara la operacion
+                     */
+                    if(precioVenta > precioRegulado){
+                        
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
+                        
+                        return;
+                    }
+                }
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -128,12 +151,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
-
+              
+            
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200) {
                         callback(true);
@@ -161,7 +185,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200) {
                         callback(true);
@@ -275,6 +299,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
+                    
                     
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
 

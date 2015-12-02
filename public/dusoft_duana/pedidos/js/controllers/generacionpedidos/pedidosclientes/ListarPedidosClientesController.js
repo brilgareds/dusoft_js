@@ -290,7 +290,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_COTIZACIONES, "POST", obj, function(data) {
 
                     if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         return;
                     }
 
@@ -304,7 +304,7 @@ define(["angular", "js/controllers",
                             if ($scope.datos_view.pagina_actual_cotizaciones > 0) {
                                 $scope.datos_view.pagina_actual_cotizaciones--;
                             }
-                            AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se encontraron mas registros");
                             return;
                         }
 

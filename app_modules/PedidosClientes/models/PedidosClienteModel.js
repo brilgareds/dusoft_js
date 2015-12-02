@@ -1039,24 +1039,24 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
     }
     if(filtros.tipo_busqueda === 0){
-        filtroProducto = "AND (b.descripcion ilike $5)";
-        parametros.push('%' + termino_busqueda + '%');
+        filtroProducto = "AND (fc_descripcion_producto(b.codigo_producto) ilike $5)";
+        parametros.push(termino_busqueda + '%');
     } 
     
     if(filtros.tipo_busqueda === 1){
         filtroProducto = "AND (e.descripcion ilike $5)";
-         parametros.push('%' + termino_busqueda + '%');
+         parametros.push(termino_busqueda + '%');
     }
     
     if(filtros.tipo_busqueda === 2){
         filtroProducto = "AND (a.codigo_producto ilike $5)";
-         parametros.push('%' + termino_busqueda + '%');
+         parametros.push(termino_busqueda + '%');
     
     }
     
     if(filtros === ''){
         filtroProducto = "AND (a.codigo_producto ilike $5)";
-         parametros.push('%' + termino_busqueda + '%');
+         parametros.push(termino_busqueda + '%');
     
     }
     var sql = " select \

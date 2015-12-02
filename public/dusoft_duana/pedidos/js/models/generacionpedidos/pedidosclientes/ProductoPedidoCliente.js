@@ -21,39 +21,13 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.valor_iva = 0;
                 this.valor_total_con_iva = 0;
                 this.cantidad_inicial = 0;
-                this.colorInputPrecioPactador = "";
-                this.colorTextoPrecioPactador = "";
+               
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
 
             this.get = function(codigo, nombre, existencia, iva, tipo_producto, estado) {
                 return new ProductoPedidoCliente(codigo, nombre, existencia, iva, tipo_producto, estado);
-            };
-            
-            
-             // setear el color Input precio pactado
-            ProductoPedidoCliente.prototype.setColorInputPrecioPactador = function(colorInputPrecioPactador) {
-                this.colorInputPrecioPactador = colorInputPrecioPactador;
-                return this;
-            };
-            
-            // obtener el color Input precio pactado
-            ProductoPedidoCliente.prototype.getColorInputPrecioPactador = function() {
-                return this.colorInputPrecioPactador ;
-               
-            };
-            
-              // setear el color texto precio pactado
-            ProductoPedidoCliente.prototype.setColorTextoPrecioPactador = function(colorTextoPrecioPactador) {
-                this.colorTextoPrecioPactador = colorTextoPrecioPactador;
-                return this;
-            };
-            
-            // obtener el color Input precio pactado
-            ProductoPedidoCliente.prototype.getColorTextoPrecioPactador = function() {
-                return this.colorTextoPrecioPactador ;
-               
             };
             
             // Codigo CUM

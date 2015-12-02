@@ -101,7 +101,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
@@ -118,7 +118,30 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             // Insertar Productos a la Cotizacion
             that.insertar_detalle_cotizacion = function(callback) {
-
+                
+                var productoSeleccionado = $scope.datos_form.producto_seleccionado;
+                var precioVenta = Number(productoSeleccionado.get_precio_venta());
+                var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
+                
+                /**
+                 * +Descripcion: Se validara si el producto seleccionado es regulado
+                 *               
+                 */
+                if(productoSeleccionado.es_regulado()){
+                    
+                    /**
+                     * +Descripcion: Se valida si el precio de venta es mayor al
+                     *               precio regulado, por lo cual se emitira un
+                     *               mensaje al usuario y se cancelara la operacion
+                     */
+                    if(precioVenta > precioRegulado){
+                        
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
+                        
+                        return;
+                    }
+                }
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -128,12 +151,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
-
+              
+            
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200) {
                         callback(true);
@@ -161,7 +185,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
-                    AlertService.mostrarMensaje("warning", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                     if (data.status === 200) {
                         callback(true);
@@ -261,7 +285,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             empresa_id: $scope.Pedido.get_empresa_id(),
                             centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
                             bodega_id: $scope.Pedido.get_bodega_id(),
-                            contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(),
+                            contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(),//894
                             pagina_actual: $scope.datos_form.pagina_actual,
                             termino_busqueda: $scope.datos_form.termino_busqueda,
                             tipo_producto: $scope.datos_form.tipo_producto,
@@ -275,7 +299,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
-
+                    
+                    
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
 
                     if (data.status === 200) {
@@ -294,9 +319,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 });
             };
-
+            
+            
             that.render_productos = function(productos) {
-
+                
+                  
                 $scope.Empresa.limpiar_productos();
 
                 productos.forEach(function(data) {
@@ -306,15 +333,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto.set_codigo_cum(data.codigo_cum).set_codigo_invima(data.codigo_invima).set_fecha_vencimiento_invima(data.vencimiento_codigo_invima);
                     producto.set_regulado(data.sw_regulado).set_precio_regulado(data.precio_regulado);
                     producto.set_pactado(data.tiene_precio_pactado).set_precio_venta(data.precio_producto);
-
-                    if (data.tiene_precio_pactado) {
-                        producto.setColorInputPrecioPactador('rgba(86, 157, 131, 0.9)');
-                        producto.setColorTextoPrecioPactador('white');
-                    } else {
-                        producto.setColorInputPrecioPactador('white');
-                        producto.setColorTextoPrecioPactador('black');
-                    }
-
+                    
+                  
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
 
@@ -382,7 +402,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
             };
 
-
+          
             $scope.lista_productos = {
                 data: 'Empresa.get_productos()',
                 enableColumnResize: true,
@@ -403,14 +423,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
                                         </div>'},
-                    /*{field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
-                     cellTemplate: '<div class="col-xs-12"> <input type="text" \
+                //    {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
+                {field: 'precio_venta', width: "8%", displayName: "$ Venta", cellFilter: "number",
+                     cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" \
                      ng-model="row.entity.precio_venta" \
                      validacion-numero-decimal\
                      ng-disabled = "row.entity.sw_pactado"\n\
-                     ng-style="{background: row.entity.colorInputPrecioPactador,color:row.entity.colorTextoPrecioPactador}"\n\
-                     class="form-control grid-inline-input" name="" id="" /> </div>'},*/
-                    {field: 'precio_venta', width: "7%", displayName: "$ Venta", cellFilter: "number", enableCellEdit: true, },
+                     class="form-control grid-inline-input" name="" id="" /> \n\
+                     <div ng-if="row.entity.sw_pactado" class="ngCellText" >\n\
+                        <span  ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >\n\
+                                                    CC\n\
+                                                </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
+                        </div></div>'
+                    },
+                   
+                    
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
                     {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",

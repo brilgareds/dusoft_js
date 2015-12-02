@@ -1421,22 +1421,20 @@ OrdenesCompra.prototype.listarAutorizacionCompras = function(req, res) {
         return;
     }
 
-    if (args.paginaActual == '') {
+    if (args.paginaActual === '') {
         args.paginaActual = 0;
     }
+    
+    that.m_ordenes_compra.listarAutorizacionCompras(args, function(err, result) {
 
-    var autorizacion = {"empresa": args.empresa, "terminoBusqueda": args.terminoBusqueda, "filtro": args.filtro, "paginaActual": args.paginaActual}
-
-    that.m_ordenes_compra.listarAutorizacionCompras(autorizacion, function(err, result) {
-
-        G.Q.ninvoke(that.m_ordenes_compra, 'listarAutorizacionCompras', autorizacion).
-                then(function(result) {
+        G.Q.ninvoke(that.m_ordenes_compra, 'listarAutorizacionCompras', args).
+        then(function(result) {
             res.send(G.utils.r(req.url, 'Consulta Autorizaciones de Compras - correctamente', 200, {ordenes_compras: result}));
         }).
-                fail(function(err) {
+        fail(function(err) {
             res.send(G.utils.r(req.url, 'Error al Consultar las Autorizaciones de Compras', 500, {ordenes_compras: []}));
         }).
-                done();
+        done();
     });
 };
 
@@ -1495,7 +1493,7 @@ OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
 * Método que inserta en la tabla inv_bodegas_movimiento_tmp_d
 * @param mapa de llave valor insertar en la tabla inv_bodegas_movimiento_tmp_d
 * @return mensaje el sistema
-* @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra
+* @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra.
 */
 OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
 

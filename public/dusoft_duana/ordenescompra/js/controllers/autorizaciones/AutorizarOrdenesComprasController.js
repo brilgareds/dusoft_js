@@ -210,7 +210,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.cerrarModal = function() {
                 $modalInstance.close();
             };
-
+            
+             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.$$watchers = null;
+                $scope.Empresa.limpiar_proveedores();
+                socket.removeAllListeners();
+            });
         }]);
-
 });

@@ -13,9 +13,12 @@ DepartamentosModel.prototype.listar_departamentos = function(param, callback) {
                 a.departamento as nombre_departamento,\
                 from tipo_dptos a\
                 inner join tipo_pais b on a.tipo_pais_id = b.tipo_pais_id ";
-
-    G.db.query(sql, [], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex.raw(sql).
+    then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -30,11 +33,15 @@ DepartamentosModel.prototype.listar_departamentos_pais = function(pais_id, callb
                 a.departamento as nombre_departamento\
                 from tipo_dptos a\
                 inner join tipo_pais b on a.tipo_pais_id = b.tipo_pais_id \
-                where b.tipo_pais_id = $1 ";
-
-    G.db.query(sql, [pais_id], function(err, rows, result) {
-        callback(err, rows);
+                where b.tipo_pais_id = :1 ";
+    
+    G.knex.raw(sql, {1:pais_id}).
+    then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 DepartamentosModel.prototype.seleccionar_departamento = function(departamento_id, pais_id, callback) {
@@ -47,11 +54,15 @@ DepartamentosModel.prototype.seleccionar_departamento = function(departamento_id
                 a.departamento as nombre_departamento\
                 from tipo_dptos a\
                 inner join tipo_pais b on a.tipo_pais_id = b.tipo_pais_id \
-                where a.tipo_dpto_id = $1  and b.tipo_pais_id = $2 ; ";
-
-    G.db.query(sql, [departamento_id, pais_id], function(err, rows, result) {
-        callback(err, rows);
+                where a.tipo_dpto_id = :1  and b.tipo_pais_id = :2 ; ";
+    
+    G.knex.raw(sql, {1:departamento_id, 2:pais_id}).
+    then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 module.exports = DepartamentosModel;

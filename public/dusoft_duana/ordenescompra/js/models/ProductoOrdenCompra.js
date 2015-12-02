@@ -211,7 +211,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.localProd = localProd;
             };
 
-            ProductoOrdenCompra.prototype.getILocalProd = function() {
+            ProductoOrdenCompra.prototype.getLocalProd = function() {
                 return this.localProd;
             };
             

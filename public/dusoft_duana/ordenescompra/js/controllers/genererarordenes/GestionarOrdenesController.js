@@ -638,15 +638,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
                    // {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden, editableCellTemplate: '<input ng-readonly="row.entity.tiene_valor_pactado == 1" placeholder="Costo ultima compra" ng-input="COL_FIELD" ng-model="COL_FIELD" />'},
                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden},
-                   /* {width: "7%", displayName: "Opcion", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
-                                            <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="modificarDetalle(row.entity);" \
-                                                        ng-validate-events="{{opcionesModulo.btnModificarCantidad}}" >Modificar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="eliminar_producto_orden_compra(row)" >Eliminar</a></li>\
-                                            </ul>\
-                                        </div>'}*/
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center dropdown-button",
                         cellTemplate:'<div class="btn-toolbar">\
                                         <button class="btn btn-default btn-xs" ng-validate-events="{{opcionesModulo.btnModificarCantidad}}"\

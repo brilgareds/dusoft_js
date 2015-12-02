@@ -16,10 +16,13 @@ CiudadesModel.prototype.listar_ciudades = function(termino_busqueda, callback) {
                 from tipo_mpios a \
                 inner join tipo_dptos b on a.tipo_pais_id = b.tipo_pais_id and a.tipo_dpto_id = b.tipo_dpto_id\
                 inner join tipo_pais c on b.tipo_pais_id = c.tipo_pais_id \
-                where a.municipio ilike $1 ; ";
+                where a.municipio "+G.constants.db().LIKE+" :1 ; ";
 
-    G.db.query(sql, ["%"+termino_busqueda+"%"], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:"%" + termino_busqueda + "%"}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -37,10 +40,13 @@ CiudadesModel.prototype.listar_ciudades_departamento = function(termino_busqueda
                 from tipo_mpios a \
                 inner join tipo_dptos b on a.tipo_pais_id = b.tipo_pais_id and a.tipo_dpto_id = b.tipo_dpto_id\
                 inner join tipo_pais c on b.tipo_pais_id = c.tipo_pais_id \
-                where b.tipo_dpto_id = $1 ";
-
-    G.db.query(sql, [departamento_id], function(err, rows, result) {
-        callback(err, rows);
+                where b.tipo_dpto_id = :1 ";
+    
+    G.knex.raw(sql, {1:departamento_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -57,10 +63,13 @@ CiudadesModel.prototype.listar_ciudades_pais = function(termino_busqueda, pais_i
                 from tipo_mpios a \
                 inner join tipo_dptos b on a.tipo_pais_id = b.tipo_pais_id and a.tipo_dpto_id = b.tipo_dpto_id\
                 inner join tipo_pais c on b.tipo_pais_id = c.tipo_pais_id \
-                where c.tipo_pais_id = $1 ";
-
-    G.db.query(sql, [pais_id], function(err, rows, result) {
-        callback(err, rows);
+                where c.tipo_pais_id = :1 ";
+    
+    G.knex.raw(sql, {1:pais_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -77,10 +86,13 @@ CiudadesModel.prototype.seleccionar_ciudad = function(ciudad_id, departamento_id
                 from tipo_mpios a \
                 inner join tipo_dptos b on a.tipo_pais_id = b.tipo_pais_id and a.tipo_dpto_id = b.tipo_dpto_id\
                 inner join tipo_pais c on b.tipo_pais_id = c.tipo_pais_id \
-                where a.tipo_mpio_id = $1 and b.tipo_dpto_id = $2  and c.tipo_pais_id = $3 ; ";
-
-    G.db.query(sql, [ciudad_id, departamento_id, pais_id], function(err, rows, result) {
-        callback(err, rows);
+                where a.tipo_mpio_id = :1 and b.tipo_dpto_id = :2  and c.tipo_pais_id = :3 ; ";
+    
+    G.knex.raw(sql, {1:ciudad_id, 2:departamento_id, 3:pais_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

@@ -273,13 +273,15 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 k.empresa_id as empresa_destino,\
                 k.centro_utilidad as centro_utilidad_destino,\
                 l.descripcion as descripcion_bodega_destino,\
-                l.ubicacion as ubicacion_bodega_destino\
+                l.ubicacion as ubicacion_bodega_destino,\
+                m.id as unidad_negocio_nit\
                 FROM compras_ordenes_pedidos a \
                 INNER JOIN empresas j ON j.empresa_id=a.empresa_id \
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id \
                 inner join terceros e on b.tipo_id_tercero = e.tipo_id_tercero and b.tercero_id = e.tercero_id \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\
                 left join unidades_negocio d on a.codigo_unidad_negocio = d.codigo_unidad_negocio\
+                left join empresas as m on d.empresa_id = m.empresa_id\
                 left join (\
                     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
@@ -335,7 +337,8 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                         inner join contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
                         left join contratacion_produc_proveedor_politicas c on b.contrato_produc_prov_det_id = c.contrato_produc_prov_det_id \
                     ) as f on e.codigo_proveedor_id = f.codigo_proveedor_id and a.codigo_producto = f.codigo_producto\
-                ) AS a where a.numero_orden = :1 and a.estado = '1' and ( a.codigo_producto ilike :2 or  a.descripcion_producto ilike :2 ) ";
+                ) AS a where a.numero_orden = :1 and a.estado = '1' and ( a.codigo_producto "+G.constants.db().LIKE+" :2 or\
+                  a.descripcion_producto "+G.constants.db().LIKE+" :2 ) ";
 
 
     G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).
@@ -386,7 +389,8 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
                     left join(\
                 	select count(a.item_id) as total_novedades, a.item_id from novedades_ordenes_compras a group by 2\
                     ) as g on g.item_id = a.item_id\
-                ) AS a where a.numero_orden = :1 and a.estado = '1' and ( a.codigo_producto ilike :2 or  a.descripcion_producto ilike :2 )\
+                ) AS a where a.numero_orden = :1 and a.estado = '1' and ( a.codigo_producto "+G.constants.db().LIKE+" :2 or\
+                  a.descripcion_producto "+G.constants.db().LIKE+" :2 )\
                 order by 19 desc ";
     
     G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).

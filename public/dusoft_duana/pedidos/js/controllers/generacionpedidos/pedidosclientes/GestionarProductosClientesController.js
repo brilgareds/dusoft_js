@@ -123,6 +123,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
                 
+                
                 /**
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               

@@ -121,7 +121,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         callback(false, rows);
     }).
     catch(function(err){
-       console.log("err >>>>>>>>>>>>>>>>>>>>>>> ", err);
+     
        callback(err);
     });
 
@@ -374,6 +374,24 @@ ProductosModel.prototype.consultar_precio_producto_contrato = function(codigo_pr
     });
 };
 
+ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callback) {
+    
+    var sql = "SELECT a.codigo_producto, a.precio_regulado, b.sw_regulado\
+               FROM inventarios a \
+               INNER JOIN inventarios_productos b \
+               ON a.codigo_producto = b.codigo_producto \
+               WHERE a.empresa_id = :1  AND b.codigo_producto = :2 ";
+
+   
+    G.knex.raw(sql, {1: obj.empresaId, 2: obj.codigoProducto}).
+    then(function(resultado){
+        callback(false, resultado.rows);
+    }).
+    catch(function(err) {
+        callback(err);
+    });
+
+};
 
 
 module.exports = ProductosModel;

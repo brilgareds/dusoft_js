@@ -662,7 +662,7 @@ define(["angular", "js/controllers",
                     body: body,
                     icon: '/images/logo.png',
                     onClick: function onNotificationClicked() {
-                        console.log('Notification clicked.');
+                       
                     },
                     autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
                 }, function onShow(error, hide) {
@@ -671,7 +671,7 @@ define(["angular", "js/controllers",
                     } else {
 
                         setTimeout(function hideNotification() {
-                            console.log('Hiding notification....');
+                           
                             hide(); //manually close the notification (you can skip this if you use the autoClose option)
                         }, 90000);
                     }

@@ -489,8 +489,9 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
 };
 
 /*
- * Autor : Camilo Orozco
- * Descripcion : Insertar detalle cotizacion
+ * @autor : Cristian Manuel Ardila Troches 
+ * @fecha 02/12/2015
+ * +Descripcion : Metodo encargado de insertar los productos en una cotizacion
  */
 PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
@@ -538,74 +539,61 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     }
 
     cotizacion.usuario_id = req.session.user.usuario_id;
+    
+    var objPrecioRegulado = {empresaId:cotizacion.empresa_id, codigoProducto:producto.codigo_producto}
+    
+    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', objPrecioRegulado).
+    then(function(resultado){  
 
+       var precioVenta = Number(producto.precio_venta);
+       var precioRegulado = Number(resultado[0].precio_regulado);
+       var valido = true;
+             
+       if(resultado[0].sw_regulado ==='1'){
+           if(precioVenta > precioRegulado){
+                 valido = false;
+           }
+       }
+       if(valido){
+            return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);  
+       }else{
+          throw 'El precio de venta esta por encima del regulado';
+       }
+    }).
+    then(function(rows){
 
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
-        /**
-         * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
-         *               satisfactoriamente
-         */
-
-        if (!err) {
-            /**
-             * +Descripcion: Se valida si el estado de la cotizacion es 
-             *               1 activo 
-             *               4 activo (desaprobado por cartera)
-             */
-
-            if (rows[0].estado === '1' || rows[0].estado === '4') {
-
-                /**
-                 * +Descripcion: Se valida si la cotizacion ya cuenta con ese producto en el detalle
-                 */
-                that.m_pedidos_clientes.consultarProductoDetalleCotizacion(cotizacion.numero_cotizacion, producto.codigo_producto, function(estado, rows) {
-
-                    /**
-                     * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
-                     */
-
-                    if (estado) {
-
-                        /**
-                         * +Descripcion: Se valida si el producto es diferente al del detalle
-                         *               y si es asi se procede a modficar el detalle
-                         */
-
-                        if (rows.length === 0) {
-
-                            that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
-
-                                if (err || result.rowCount === 0) {
-                                    res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                                    return;
-                                } else {
-                                    res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
-                                    return;
-                                }
-                            });
-
-                        } else {
-                            res.send(G.utils.r(req.url, 'El producto ya aparece registrado en la cotizacion', 500, {pedidos_clientes: []}));
-                            return;
-                        }
-
-
-                    } else {
-                        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
-                        return;
-                    }
-                });
-
-            } else {
-                res.send(G.utils.r(req.url, 'La cotizacion debe encontrarse activa o desaprobada por cartera', 500, {pedidos_clientes: []}));
-                return;
-            }
-
-        } else {
-            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
-            return;
+        if (rows[0].estado === '1' || rows[0].estado === '4') {           
+            return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarProductoDetalleCotizacion', cotizacion.numero_cotizacion, producto.codigo_producto);
+        }else {  
+           throw 'La cotizacion debe encontrarse activa o desaprobada por cartera';
         }
-    });
+        
+    }).
+    then(function(rows){
+
+         if (rows.length === 0) {            
+              return  G.Q.ninvoke(that.m_pedidos_clientes,'insertar_detalle_cotizacion', cotizacion, producto);
+         }else{   
+           throw 'El producto ya aparece registrado en la cotizacion';
+         }
+         
+    }).
+    then(function(resultado){
+
+        if (resultado.rowCount === 0) {
+            throw 'Error Interno';               
+        }else {
+          res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));  
+        }
+        
+    }).
+    fail(function(err){  
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).
+    done();
+  
+     
+    
 };
 
 
@@ -1350,7 +1338,7 @@ function __insertarDetalleCotizacion(that, index, usuario, cotizacion, _producto
         return;
     }
 
-    that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
+    that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows) {
         if (err) {
             _productos_invalidos.push(producto);
         }

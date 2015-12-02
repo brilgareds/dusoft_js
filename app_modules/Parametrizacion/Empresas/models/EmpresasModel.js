@@ -7,28 +7,37 @@ var EmpresasModel = function(centros_utilidad, bodegas) {
 //TEMPORALMENT SE AGREGA FD HARDCODED
 EmpresasModel.prototype.listar_empresas = function(callback) {
 
-    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE (sw_tipo_empresa= '0' or empresa_id = 'FD') AND sw_activa='1' ";
-
-    G.db.query(sql, function(err, empresas, result) {
-        callback(err, empresas, result);
+    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE (sw_tipo_empresa= :1 or empresa_id = :2 ) AND sw_activa= :3 ";
+    
+    G.knex.raw(sql, {1:'0', 2:'FD', 3:'1'}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
 EmpresasModel.prototype.listarEmpresasFarmacias = function(callback) {
 
-    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE sw_activa='1' ORDER BY razon_social ";
-
-    G.db.query(sql, function(err, empresas, result) {
-        callback(err, empresas, result);
+    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE sw_activa= :1 ORDER BY razon_social ";
+    
+    G.knex.raw(sql, {1:'1'}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
 EmpresasModel.prototype.obtenerEmpresaPorCodigo = function(empresa_id, callback) {
 
-    var sql = "SELECT  empresa_id, razon_social  FROM empresas WHERE empresa_id ILIKE $1";
-
-    G.db.query(sql, [empresa_id + "%"], function(err, empresas, result) {
-        callback(err, empresas, result);
+    var sql = "SELECT  empresa_id, razon_social  FROM empresas WHERE empresa_id "+G.constants.db().LIKE+" :1";
+        
+    G.knex.raw(sql, {1:empresa_id + "%"}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -38,11 +47,15 @@ EmpresasModel.prototype.listar_empresas_modulos = function(modulos_id, callback)
     var sql = "SELECT  a.empresa_id, a.razon_social, COALESCE(b.estado, '0') as estado, b.id as modulos_empresas_id, b.modulo_id\
                FROM empresas a\
                LEFT JOIN  modulos_empresas b on b.empresa_id = a.empresa_id and b.modulo_id  in(" + modulos_id + ")\
-               WHERE a.sw_tipo_empresa= '0' AND a.sw_activa='1'";
+               WHERE a.sw_tipo_empresa= :1 AND a.sw_activa= :2 ";
 
-    G.db.query(sql, [], function(err, empresas, result) {
-        callback(err, empresas, result);
+    G.knex.raw(sql, {1:'0', 2:'1'}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 
@@ -84,15 +97,18 @@ EmpresasModel.prototype.guardarEmpresa = function(empresa, callback) {
 
 EmpresasModel.prototype.modificarEmpresa = function(empresa, callback) {
 
-    var sql = "UPDATE empresas  SET  empresa_id = $1, razon_social = $2  WHERE empresa_id = $1 RETURNING empresa_id";
+    var sql = "UPDATE empresas  SET  empresa_id = :1, razon_social = :2  WHERE empresa_id = :1 RETURNING empresa_id";
 
-    var params = [
-        empresa.empresa_id, empresa.nombre
-    ];
-
-    G.db.query(sql, params, function(err, rows, result) {
-        var empresa_id = (rows) ? rows[0] : undefined;
-        callback(err, empresa_id, result);
+    var params = {
+        1:empresa.empresa_id, 2:empresa.nombre
+    };
+    
+    G.knex.raw(sql, params).
+    then(function(resultado){
+        var empresa_id = (resultado.rows.length > 0) ? resultado.rows[0] : undefined;
+        callback(false, empresa_id, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -100,20 +116,23 @@ EmpresasModel.prototype.modificarEmpresa = function(empresa, callback) {
 EmpresasModel.prototype.insertarEmpresa = function(empresa, callback) {
 
     var sql = "INSERT INTO empresas (empresa_id, razon_social, tipo_pais_id, tipo_dpto_id, tipo_mpio_id, esp_tipo_aportante_id, esp_sector_aportante_id,\
-               ciiu_r3_division, ciiu_r3_grupo, ciiu_r3_clase) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING empresa_id";
+               ciiu_r3_division, ciiu_r3_grupo, ciiu_r3_clase) VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10 ) RETURNING empresa_id";
 
 
-    var params = [
-        empresa.empresa_id, empresa.nombre, empresa.tipo_pais_id, empresa.tipo_dpto_id, empresa.tipo_mpio_id, empresa.esp_tipo_aportante_id,
-        empresa.esp_sector_aportante_id, empresa.ciiu_r3_division, empresa.ciiu_r3_grupo, empresa.ciiu_r3_clase
-    ];
+    var params = {
+        1:empresa.empresa_id, 2:empresa.nombre, 3:empresa.tipo_pais_id, 4:empresa.tipo_dpto_id, 5:empresa.tipo_mpio_id, 6:empresa.esp_tipo_aportante_id,
+        7:empresa.esp_sector_aportante_id, 8:empresa.ciiu_r3_division, 9:empresa.ciiu_r3_grupo, 10:empresa.ciiu_r3_clase
+    };
 
-
-
-    G.db.query(sql, params, function(err, rows, result) {
-        var empresa_id = (rows) ? rows[0] : undefined;
-        callback(err, empresa_id);
+    
+    G.knex.raw(sql, params).
+    then(function(resultado){
+        var empresa_id = (resultado.rows.length > 0) ? resultado.rows[0] : undefined;
+        callback(false, empresa_id, resultado);
+    }).catch(function(err){
+       callback(err);
     });
+    
 };
 
 

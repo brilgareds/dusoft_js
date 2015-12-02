@@ -7,38 +7,38 @@
         </div>
         <div class="panel-body">
             <div class="row" >
-                <div class ="col-md-12" ng-if="!rootAutorizacionOrdenComprabandera" ><div class="lbl_editar_producto">Yo, {{nombreUsuario}} No autorizo el ingreso del producto:</div>&nbsp;</div>                    
-                <div class ="col-md-12" ng-if="rootAutorizacionOrdenComprabandera" ><div class="lbl_editar_producto">Yo, {{nombreUsuario}} autorizo el ingreso del producto:</div>&nbsp;</div>                    
-                <div class="col-md-3"><div class="lbl_editar_producto">Codigo</div>{{rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.codigo_producto}}</div>
-                <div class="col-md-9"><div class="lbl_editar_producto">Nombre</div>{{rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.descripcion}}</div>
+                <div class ="col-md-12" ng-if="!root.rootAutorizacionOrdenComprabandera" ><div class="lbl_editar_producto">Yo, {{root.nombreUsuario}} No autorizo el ingreso del producto:</div>&nbsp;</div>                    
+                <div class ="col-md-12" ng-if="root.rootAutorizacionOrdenComprabandera" ><div class="lbl_editar_producto">Yo, {{root.nombreUsuario}} autorizo el ingreso del producto:</div>&nbsp;</div>                    
+                <div class="col-md-3"><div class="lbl_editar_producto">Codigo</div>{{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.codigo_producto}}</div>
+                <div class="col-md-9"><div class="lbl_editar_producto">Nombre</div>{{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.descripcion}}</div>
             </div>
 
             <div class="row">
-                <div class="col-md-3"><div class="lbl_editar_producto">Lote</div>{{rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.codigo_lote}}</div>
-                <div class ="col-md-3"><div class="lbl_editar_producto">Fecha de Vencimiento</div>{{rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.fecha_vencimiento| date:'yyyy-MM-dd'}}</div>
+                <div class="col-md-3"><div class="lbl_editar_producto">Lote</div>{{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.codigo_lote}}</div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Fecha de Vencimiento</div>{{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.fecha_vencimiento| date:'yyyy-MM-dd'}}</div>
 
             </div>
 
             <div class="row">
-                <div class ="col-md-3"><div class="lbl_editar_producto">Valor Compra</div> {{rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.valorUnitarioCompra}}</div>
-                <div class ="col-md-3"><div class="lbl_editar_producto">Valor Factura</div><div>{{rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.valorUnitarioFactura}}</div></div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Valor Compra</div> {{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.valorUnitarioCompra}}</div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Valor Factura</div><div>{{root.rootAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.valorUnitarioFactura}}</div></div>
             </div>
-            <fieldset disabled ng-if="rootAutorizacionOrdenCompra.nombreAutorizador!=NULL">
+            <fieldset disabled ng-if="root.rootAutorizacionOrdenCompra.nombreAutorizador!=NULL">
                 <legend></legend>
                 <div class="row">
-                    <div class ="col-md-12"><div class="lbl_editar_producto">Primera Autorizacón Por</div> {{rootAutorizacionOrdenCompra.nombreAutorizador}}</div>
-                    <div class ="col-md-12"><div class="lbl_editar_producto">Observación</div><div>{{rootAutorizacionOrdenCompra.justificacion}}</div></div>
+                    <div class ="col-md-12"><div class="lbl_editar_producto">Primera Autorizacón Por</div> {{root.rootAutorizacionOrdenCompra.nombreAutorizador}}</div>
+                    <div class ="col-md-12"><div class="lbl_editar_producto">Observación</div><div>{{root.rootAutorizacionOrdenCompra.justificacion}}</div></div>
                 </div>
             </fieldset>
             <div class="row">
-                <div class ="col-md-12"><div class="lbl_editar_producto">Observación</div><textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='observacion' ng-blur="modificar_observacion();" ng-disabled="vista_previa" name="" placeholder="Ingresar Observación"></textarea></div>
+                <div class ="col-md-12"><div class="lbl_editar_producto">Observación</div><textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='root.observacion' ng-blur="modificar_observacion();" ng-disabled="vista_previa" name="" placeholder="Ingresar Observación"></textarea></div>
             </div>
 
         </div>
     </div>
 
-    <button class="btn btn-primary ng-binding pull-right" ng-if="!rootAutorizacionOrdenComprabandera" ng-click="autorizarOrdenCompra(rootAutorizacionOrdenCompra,rootAutorizacionOrdenComprabandera)">No Autorizar</button>
-    <button class="btn btn-primary ng-binding pull-right" ng-if="rootAutorizacionOrdenComprabandera" ng-click="autorizarOrdenCompra(rootAutorizacionOrdenCompra,rootAutorizacionOrdenComprabandera)">Autorizar</button>
+    <button class="btn btn-primary ng-binding pull-right" ng-if="!root.rootAutorizacionOrdenComprabandera" ng-click="autorizarOrdenCompra(root.rootAutorizacionOrdenCompra,root.rootAutorizacionOrdenComprabandera)">No Autorizar</button>
+    <button class="btn btn-primary ng-binding pull-right" ng-if="root.rootAutorizacionOrdenComprabandera" ng-click="autorizarOrdenCompra(root.rootAutorizacionOrdenCompra,root.rootAutorizacionOrdenComprabandera)">Autorizar</button>
     <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrarModal()">Cancelar</button>
 
 </div>

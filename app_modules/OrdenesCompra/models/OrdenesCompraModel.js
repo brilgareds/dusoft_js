@@ -1139,66 +1139,64 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
 * @param {type} callback
 * @returns {datos de consulta}
 */
-OrdenesCompraModel.prototype.getListarAutorizacionCompras = function (empresa, terminoBusqueda, filtro, pagina, callback) {
-    estado='0';
+OrdenesCompraModel.prototype.listarAutorizacionCompras = function(autorizacion, callback) {
+    estado = '0';
     var column = [
-                    "copfoc.codigo_producto",
-                    "copfoc.doc_tmp_id",
-                    "copfoc.empresa_id",
-                    "copfoc.centro_utilidad",
-                    "copfoc.bodega",
-                    "copfoc.orden_pedido_id",
-                    "copfoc.usuario_id",
-                    "copfoc.justificacion_ingreso",
-                    "copfoc.fecha_ingreso",
-                    "copfoc.cantidad",
-                    "copfoc.lote",
-                    "copfoc.fecha_vencimiento",
-                    "copfoc.porcentaje_gravamen",
-                    "copfoc.total_costo",
-                    "copfoc.local_prod",
-                    "copfoc.sw_autorizado",
-                    "copfoc.item_id",
-                    "copfoc.sw_no_autoriza",
-                    "copfoc.valor_unitario_compra",
-                    "copfoc.valor_unitario_factura",
-                    G.knex.raw("fc_descripcion_producto(copfoc.codigo_producto) as producto"),
-                    "usu.nombre as usuario_ingreso",
-                    "copfoc.observacion_autorizacion",
-                    "copfoc.usuario_id_autorizador",
-                    "copfoc.usuario_id_autorizador_2",
-                    "usu_1.nombre as nombre_autorizador",
-                    "usu_2.nombre  as nombre_autorizador2"
-                 ];
-         
+        "b.codigo_producto",
+        "b.doc_tmp_id",
+        "b.empresa_id",
+        "b.centro_utilidad",
+        "b.bodega",
+        "b.orden_pedido_id",
+        "b.usuario_id",
+        "b.justificacion_ingreso",
+        "b.fecha_ingreso",
+        "b.cantidad",
+        "b.lote",
+        "b.fecha_vencimiento",
+        "b.porcentaje_gravamen",
+        "b.total_costo",
+        "b.local_prod",
+        "b.sw_autorizado",
+        "b.item_id",
+        "b.sw_no_autoriza",
+        "b.valor_unitario_compra",
+        "b.valor_unitario_factura",
+        G.knex.raw("fc_descripcion_producto(b.codigo_producto) as producto"),
+        "c.nombre as usuario_ingreso",
+        "b.observacion_autorizacion",
+        "b.usuario_id_autorizador",
+        "b.usuario_id_autorizador_2",
+        "d.nombre as nombre_autorizador",
+        "e.nombre  as nombre_autorizador2"
+    ];
+
     var query = G.knex.column(column)
             .select()
-            .from('inventarios_productos as prod')            
-            .innerJoin('compras_ordenes_pedidos_productosfoc as copfoc', 'prod.codigo_producto', 'copfoc.codigo_producto')
-            .innerJoin('system_usuarios as usu', 'copfoc.usuario_id', 'usu.usuario_id')
-            .leftJoin('system_usuarios as usu_1', 'copfoc.usuario_id_autorizador', 'usu_1.usuario_id')
-            .leftJoin('system_usuarios as usu_2', 'copfoc.usuario_id_autorizador_2', 'usu_2.usuario_id')
-            .where({"copfoc.empresa_id": empresa,
-                    "copfoc.sw_autorizado": estado})           
+            .from('inventarios_productos as a')
+            .innerJoin('compras_ordenes_pedidos_productosfoc as b', 'a.codigo_producto', 'b.codigo_producto')
+            .innerJoin('system_usuarios as c', 'b.usuario_id', 'c.usuario_id')
+            .leftJoin('system_usuarios as d', 'b.usuario_id_autorizador', 'd.usuario_id')
+            .leftJoin('system_usuarios as e', 'b.usuario_id_autorizador_2', 'e.usuario_id')
+            .where({"b.empresa_id": autorizacion.empresa,
+        "b.sw_autorizado": estado})
             .andWhere(function() {
-                if (filtro==='1' && terminoBusqueda!==''){
-                    this.where(G.knex.raw("prod.descripcion :: varchar"), G.constants.db().LIKE, "%" + terminoBusqueda + "%")
+        if (autorizacion.filtro === '1' && autorizacion.terminoBusqueda !== '') {
+            this.where(G.knex.raw("a.descripcion :: varchar"), G.constants.db().LIKE, "%" + autorizacion.terminoBusqueda + "%")
 
-                } else if (filtro==='0' && terminoBusqueda!==''){
-                   this.where(G.knex.raw("copfoc.orden_pedido_id :: varchar"), G.constants.db().LIKE, "%" + terminoBusqueda + "%")
-                }
-            })
+        } else if (autorizacion.filtro === '0' && autorizacion.terminoBusqueda !== '') {
+            this.where(G.knex.raw("b.orden_pedido_id :: varchar"), G.constants.db().LIKE, "%" + autorizacion.terminoBusqueda + "%")
+        }
+    })
             .limit(G.settings.limit)
-            .offset((pagina - 1) * G.settings.limit)
+            .offset((autorizacion.paginaActual - 1) * G.settings.limit)
 
-            .then(function (rows) {
-         
-                callback(false, rows);
-            })
-            .catch(function (error) {
-                callback(error);
-            }).done();
-          //console.log(query);     
+            .then(function(rows) {
+        callback(false, rows);
+    })
+            . catch (function(error) {
+        callback(error);
+    }).done();
 };
 /*
 * funcion que realiza el Update a compras_ordenes_pedidos_productosfoc
@@ -1206,20 +1204,7 @@ OrdenesCompraModel.prototype.getListarAutorizacionCompras = function (empresa, t
 * @returns {datos de consulta}
 */
 OrdenesCompraModel.prototype.modificarAutorizacionOrdenCompras = function(datos, callback) {
-
-    var sql = " update compras_ordenes_pedidos_productosfoc set \
-                usuario_id_autorizador = :1,\
-                sw_autorizado = :2,\
-                observacion_autorizacion = :3,\
-                usuario_id_autorizador_2 = :4,\
-                sw_no_autoriza = :5\
-                where empresa_id = :6 and\
-                centro_utilidad = :7 and\
-                bodega = :8 and\n\
-                orden_pedido_id = :9 and\
-                codigo_producto = :10 and\
-                lote = :11 \
-                ; ";
+   
     var parametros = {
         1: datos.usuarioAutorizador,
         2: datos.swAutorizado,
@@ -1233,8 +1218,21 @@ OrdenesCompraModel.prototype.modificarAutorizacionOrdenCompras = function(datos,
         10: datos.codProucto,
         11: datos.lote
     };
-
-
+    
+     var sql = " update compras_ordenes_pedidos_productosfoc set \
+                usuario_id_autorizador = :1,\
+                sw_autorizado = :2,\
+                observacion_autorizacion = :3,\
+                usuario_id_autorizador_2 = :4,\
+                sw_no_autoriza = :5\
+                where empresa_id = :6 and\
+                centro_utilidad = :7 and\
+                bodega = :8 and\n\
+                orden_pedido_id = :9 and\
+                codigo_producto = :10 and\
+                lote = :11 \
+                ; ";
+    
     G.knex.raw(sql, parametros).
             then(function(resultado) {
         callback(false, resultado.rows, resultado);
@@ -1242,6 +1240,7 @@ OrdenesCompraModel.prototype.modificarAutorizacionOrdenCompras = function(datos,
         callback(err);
     });
 };
+
 /*
 * funcion que realiza el Insert a inv_bodegas_movimiento_tmp_d
 * @param {type} callback
@@ -1266,29 +1265,29 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
                         item_id_compras\
                         )\
                 values( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13) ";
-    
-            var parametros = {
-                1: datos.usuarioId,
-                2: datos.docTmpId, 
-                3: datos.empresa,
-                4: datos.centroUtilidad,
-                5: datos.bodega, 
-                6: datos.codProucto,
-                7: datos.cantidad,
-                8: datos.porcentajeGravamen,
-                9: datos.totalCosto,
-                10: datos.fechaVencimiento,
-                11: datos.lote,
-                12: datos.localProd,
-                13: datos.orden
-            };
+
+    var parametros = {
+        1: datos.usuarioId,
+        2: datos.docTmpId,
+        3: datos.empresa,
+        4: datos.centroUtilidad,
+        5: datos.bodega,
+        6: datos.codProucto,
+        7: datos.cantidad,
+        8: datos.porcentajeGravamen,
+        9: datos.totalCosto,
+        10: datos.fechaVencimiento,
+        11: datos.lote,
+        12: datos.localProd,
+        13: datos.orden
+    };
 
     G.knex.raw(sql, parametros).
             then(function(resultado) {
-         console.log("resultado",resultado);
+        console.log("resultado", resultado);
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
-        console.log("error",err);
+        console.log("error", err);
         callback(err);
     });
 };

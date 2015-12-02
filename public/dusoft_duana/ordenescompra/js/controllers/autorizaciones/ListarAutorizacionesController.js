@@ -11,10 +11,8 @@ define(["angular", "js/controllers",
 ], function(angular, controllers) {
     controllers.controller('ListarAutorizacionesController', [
         '$scope', '$rootScope', 'Request',
-        '$modal', 'API', "socket", "$timeout",
-        "AlertService", "localStorageService", "$state", "$filter",
+        '$modal', 'API', "socket",
         "OrdenCompraPedido",
-        "ProveedorOrdenCompra",
         "ProductoOrdenCompra",
         "Usuario",
         "Empresa",
@@ -22,17 +20,24 @@ define(["angular", "js/controllers",
         "AutorizacionOrdenCompra",
         "EmpresaOrdenCompra",
         function($scope, $rootScope, Request,
-                $modal, API, socket, $timeout,
-                AlertService, localStorageService, $state, $filter,
-                OrdenCompra, Proveedor, Producto, Usuario, Empresa, Lote, Autorizacion, empresaOrdenCompra) {
+                $modal, API, socket,
+                OrdenCompra, Producto, Usuario, Empresa, Lote, Autorizacion, empresaOrdenCompra) {
 
-            $scope.Empresa = Empresa;
-            $scope.empresaOrdenCompra = empresaOrdenCompra;
-
-            $scope.empresas = [];
             var that = this;
-            $scope.rootAutorizacion = {};
-
+            $scope.root = {};
+            $scope.root.Empresa = Empresa;
+            $scope.root.empresaOrdenCompra = empresaOrdenCompra;
+            $scope.empresas = [];           
+            $scope.root.rootAutorizacion = {};
+            $scope.root.paginas = 0;
+            $scope.root.items = 0;
+            $scope.root.terminoBusqueda = "";
+            $scope.root.ultimaBusqueda = "";
+            $scope.root.ultimofiltro = "";
+            $scope.root.ultimaempresa = "";
+            $scope.root.paginaactual = 1;
+            
+             
             $scope.datos_view = {
                 termino_busqueda: ""
             };
@@ -72,14 +77,21 @@ define(["angular", "js/controllers",
             $scope.filtros = [
                 {nombre: "Orden", selec: '0'},
                 {nombre: "Producto", selec: '1'}
-            ];
-
+            ];          
+            
+            /*
+             * @Author: AMGT
+             * +Descripcion: metodo que selecciona el filtro
+             */
             $scope.filtro = $scope.filtros[0];
-
             $scope.onSeleccionFiltro = function(filtro) {
                 $scope.filtro = filtro;
             };
-
+            
+            /*
+             * @Author: AMGT
+             * +Descripcion: remueve los listeners
+             */
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 socket.removeAllListeners();
@@ -96,10 +108,10 @@ define(["angular", "js/controllers",
 
             /*
              * @Author: AMGT
-             * +Descripcion: tabla donde se encuentran las ordenes para autorizar
+             * +Descripcion: grilla donde se encuentran las ordenes para autorizar
              */
             $scope.lista_autorizacion_compras = {
-                data: 'empresaOrdenCompra.listarAutorizaciones()',
+                data: 'root.empresaOrdenCompra.listarAutorizaciones()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
@@ -193,51 +205,43 @@ define(["angular", "js/controllers",
                 var url = API.ORDENES_COMPRA.LISTAR_AUTORIZACIONES_COMPRAS;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    $scope.ultimabusqueda = $scope.terminoBusqueda;
-                    $scope.ultimofiltro = $scope.filtro.selec;
-                    $scope.ultimaempresa = $scope.seleccion.getCodigo();
+                    $scope.root.ultimabusqueda = $scope.root.terminoBusqueda;
+                    $scope.root.ultimofiltro = $scope.filtro.selec;
+                    $scope.root.ultimaempresa = $scope.seleccion.getCodigo();
                     callback(data);
 
                 });
             };
-            
-            $scope.paginas = 0;
-            $scope.items = 0;
-            $scope.terminoBusqueda = "";
-            $scope.ultimaBusqueda = "";
-            $scope.ultimofiltro = "";
-            $scope.ultimaempresa = "";
-            $scope.paginaactual = 1;
-            
+
+
             /*
              * @Author: AMGT
              * +Descripcion: funcion que realiza la consulta al servidor
              */
             that.buscarAutorizacionesCompras = function( ) {
                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda !== $scope.terminoBusqueda || $scope.ultimofiltro !== $scope.filtro.selec || $scope.ultimaempresa !== $scope.seleccion.getCodigo()) {
-                    $scope.paginaactual = 1;
+                if ($scope.root.ultima_busqueda !== $scope.root.terminoBusqueda || $scope.root.ultimofiltro !== $scope.filtro.selec || $scope.root.ultimaempresa !== $scope.seleccion.getCodigo()) {
+                    $scope.root.paginaactual = 1;
                 }
-
                 var obj = {
                     session: $scope.session,
                     data: {
                         listar_autorizaciones: {
                             empresa: $scope.seleccion.getCodigo(),
-                            terminoBusqueda: $scope.terminoBusqueda,
+                            terminoBusqueda: $scope.root.terminoBusqueda,
                             filtro: $scope.filtro.selec,
-                            paginaActual: $scope.paginaactual
+                            paginaActual: $scope.root.paginaactual
                         }
                     }
                 };
-                $scope.empresaOrdenCompra.vaciarOrdenCompra();
+                $scope.root.empresaOrdenCompra.vaciarOrdenCompra();
                 that.consultarAutorizacionesCompras(obj, function(data) {
                     if (data.status === 200) {
                         $scope.ultima_busqueda = {
                             termino_busqueda: $scope.termino_busqueda,
                             seleccion: $scope.seleccion
                         };
-                        that.renderAutorizacionCompras(data.obj.ordenes_compras, $scope.paginas);
+                        that.renderAutorizacionCompras(data.obj.ordenes_compras, $scope.root.paginas);
                     }
 
                 });
@@ -280,13 +284,9 @@ define(["angular", "js/controllers",
                     autorizaciones.setNombreAutorizador2(autorizacion[i].nombre_autorizador2);
                     autorizaciones.setJustificacion2(autorizacion[i].observacion_autorizacion);
                     autorizaciones.setSwAutorizado2(autorizacion[i].sw_autorizado);
-                    $scope.empresaOrdenCompra.agregarAutorizaciones(autorizaciones);
+                    $scope.root.empresaOrdenCompra.agregarAutorizaciones(autorizaciones);
                 }
             };
-
             that.init();
-
         }]);
 });
-
-

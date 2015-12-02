@@ -144,11 +144,12 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/listarAutorizacionCompras', function(req, res) {
         c_ordenes_compra.listarAutorizacionCompras(req, res);
     });
-    
+
     // modificar Autorizaciones Compras
     app.post('/api/OrdenesCompra/modificarAutorizacionCompras', function(req, res) {
         c_ordenes_compra.modificarAutorizacionCompras(req, res);
     });
+
     // Insertar tmp movimiento bodega
     app.post('/api/OrdenesCompra/ingresarBodegaMovimientoTmpOrden', function(req, res) {
         c_ordenes_compra.ingresarBodegaMovimientoTmpOrden(req, res);

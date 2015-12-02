@@ -1403,69 +1403,174 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
     });
 };
 
-// Listar Autorizaciones Compras
+ 
+
+    /**
+     * Método que lista todas las ordenes por autorizar
+     * @param mapa de llave valor empresa, terminoBusqueda,filtro,paginaActual
+     * @return mapa de las ordenes sin autorizar
+     * @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra
+     */
 OrdenesCompra.prototype.listarAutorizacionCompras = function(req, res) {
 
     var that = this;
     var args = req.body.data.listar_autorizaciones;
-    
+
     if (args.empresa === undefined) {
         res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
         return;
     }
 
-    that.m_ordenes_compra.getListarAutorizacionCompras(args.empresa, args.terminoBusqueda,args.filtro, args.pagina_actual, function(err, result) {
+    if (args.paginaActual == '') {
+        args.paginaActual = 0;
+    }
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error al Consultar las Autorizaciones de Compras', 500, {ordenes_compras: []}));
-            return;
-        } else {
+    var autorizacion = {"empresa": args.empresa, "terminoBusqueda": args.terminoBusqueda, "filtro": args.filtro, "paginaActual": args.paginaActual}
+
+    that.m_ordenes_compra.listarAutorizacionCompras(autorizacion, function(err, result) {
+
+        G.Q.ninvoke(that.m_ordenes_compra, 'listarAutorizacionCompras', autorizacion).
+                then(function(result) {
             res.send(G.utils.r(req.url, 'Consulta Autorizaciones de Compras - correctamente', 200, {ordenes_compras: result}));
-            return;
-        }
+        }).
+                fail(function(err) {
+            res.send(G.utils.r(req.url, 'Error al Consultar las Autorizaciones de Compras', 500, {ordenes_compras: []}));
+        }).
+                done();
     });
 };
 
-// modificar Autorizaciones Compras
+/*
+* Método que modifica la orden por autorizar tabla compras_ordenes_pedidos_productosfoc
+* @param mapa de llave valor modifica tabla compras_ordenes_pedidos_productosfoc
+* @return mensaje el sistema
+* @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra
+*/
 OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
 
     var that = this;
     var args = req.body.data.autorizacion;
-    console.log(args);
-    that.m_ordenes_compra.modificarAutorizacionOrdenCompras(args,function(err, result) {
 
-         if (err || result.rowCount === 0) { 
-            var msj = (err.msj !== undefined) ? err.msj : '';            
-            res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra' + msj, 500, {ordenes_compras: []}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: {}}));
-            return;
-        }
+     if (args.empresa === undefined) {
+        res.send(G.utils.r(req.url, 'empresa  no esta definidas', 404, {}));
+        return;
+    }
+     if (args.centroUtilidad === undefined) {
+        res.send(G.utils.r(req.url, 'centroUtilidad  no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.bodega === undefined) {
+        res.send(G.utils.r(req.url, 'bodega no esta definido', 404, {}));
+        return;
+    }
+    if (args.orden === undefined) {
+        res.send(G.utils.r(req.url, 'orden no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.codProucto === undefined) {
+        res.send(G.utils.r(req.url, 'codProucto no esta definido', 404, {}));
+        return;
+    }
+    if (args.lote === undefined) {
+        res.send(G.utils.r(req.url, 'lote no esta definido', 404, {}));
+        return;
+    }
+    
+    that.m_ordenes_compra.modificarAutorizacionOrdenCompras(args, function(err, result) {
+
+        G.Q.ninvoke(that.m_ordenes_compra, 'modificarAutorizacionOrdenCompras', args).
+                then(function(result) {
+            res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: result}));
+        }).
+                fail(function(err) {
+            res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra', 500, {ordenes_compras: []}));
+        }).
+                done();
     });
 };
 
-// funcion que realiza control al Insert a inv_bodegas_movimiento_tmp_d
+/*
+* Método que inserta en la tabla inv_bodegas_movimiento_tmp_d
+* @param mapa de llave valor insertar en la tabla inv_bodegas_movimiento_tmp_d
+* @return mensaje el sistema
+* @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra
+*/
 OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
 
     var that = this;
     var args = req.body.data.autorizacion;
-    console.log("ingresarBodegaMovimientoTmpOrden: ",args);
-    that.m_ordenes_compra.ingresarBodegaMovimientoTmp(args,function(err, result) {
 
-         if (err || result.rowCount === 0) { 
-            var msj = (err.msj !== undefined) ? err.msj : '';       
-             console.log("ingresarBodegaMovimientoTmpOrden: ",err);
-            res.send(G.utils.r(req.url, 'Error Insertar a la tabla bodega movimiento TMP' + msj, 500, {ordenes_compras: []}));
-            return;
-        } else {
-             console.log("ingresarBodegaMovimientoTmpOrden: ",result);
-            res.send(G.utils.r(req.url, 'Insercion bodega movimiento TMP Correctamente', 200, {ordenes_compras: {}}));
-            return;
-        }
+    if (args.empresa === undefined) {
+        res.send(G.utils.r(req.url, 'empresa  no esta definidas', 404, {}));
+        return;
+    }
+    if (args.centroUtilidad === undefined) {
+        res.send(G.utils.r(req.url, 'centroUtilidad  no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.bodega === undefined) {
+        res.send(G.utils.r(req.url, 'bodega no esta definido', 404, {}));
+        return;
+    }
+    if (args.orden === undefined) {
+        res.send(G.utils.r(req.url, 'orden no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.codProucto === undefined) {
+        res.send(G.utils.r(req.url, 'codProucto no esta definido', 404, {}));
+        return;
+    }
+    if (args.lote === undefined) {
+        res.send(G.utils.r(req.url, 'lote no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.usuarioId === undefined) {
+        res.send(G.utils.r(req.url, 'usuarioId  no esta definidas', 404, {}));
+        return;
+    }
+    if (args.cantidad === undefined) {
+        res.send(G.utils.r(req.url, 'cantidad  no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.porcentajeGravamen === undefined) {
+        res.send(G.utils.r(req.url, 'porcentajeGravamen no esta definido', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'totalCosto no esta definido', 404, {}));
+        return;
+    }
+    if (args.fechaVencimiento === undefined) {
+        res.send(G.utils.r(req.url, 'fechaVencimiento no esta definido', 404, {}));
+        return;
+    }
+    if (args.localProd === undefined) {
+        res.send(G.utils.r(req.url, 'localProd no esta definido', 404, {}));
+        return;
+    }
+    if (args.orden === undefined) {
+        res.send(G.utils.r(req.url, 'orden no esta definido', 404, {}));
+        return;
+    }
+
+    that.m_ordenes_compra.ingresarBodegaMovimientoTmp(args, function(err, result) {
+
+        G.Q.ninvoke(that.m_ordenes_compra, 'ingresarBodegaMovimientoTmp', args).
+                then(function(result) {
+            res.send(G.utils.r(req.url, 'Insercion bodega movimiento TMP Correctamente', 200, {ordenes_compras: result}));
+        }).
+                fail(function(err) {
+            res.send(G.utils.r(req.url, 'Error Insertar a la tabla bodega movimiento TMP', 500, {ordenes_compras: []}));
+        }).
+                done();
     });
 };
-
 
 function __subir_archivo_plano(files, callback) {
     var ruta_tmp = files.file.path;

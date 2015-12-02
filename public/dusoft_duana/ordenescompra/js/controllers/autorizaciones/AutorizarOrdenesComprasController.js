@@ -1,20 +1,20 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
     var fo = controllers.controller('AutorizarOrdenesComprasController', [
-        '$scope', '$rootScope', 'Request',
+        '$scope', 'Request',
         '$modalInstance',
-        'API', "socket", "AlertService",
-        "Usuario", "$modal", "modeloAutorizacion", "banderaAutorizacion",
-        function($scope, $rootScope, Request,
+        'API', "AlertService",
+        "Usuario", "modeloAutorizacion", "banderaAutorizacion",
+        function($scope, Request,
                 $modalInstance,
-                API, socket, AlertService,
-                Usuario, $modal,
+                API, AlertService,
+                Usuario,
                 modeloAutorizacion, banderaAutorizacion) {
-
-            $scope.rootAutorizacionOrdenCompra = modeloAutorizacion;
-            $scope.rootAutorizacionOrdenComprabandera = banderaAutorizacion;
-            $scope.nombreUsuario = Usuario.getUsuarioActual().nombre;
-            $scope.observacion = "";
+            $scope.root = {};
+            $scope.root.rootAutorizacionOrdenCompra = modeloAutorizacion;
+            $scope.root.rootAutorizacionOrdenComprabandera = banderaAutorizacion;
+            $scope.root.nombreUsuario = Usuario.getUsuarioActual().nombre;
+            $scope.root.observacion = "";
 
             var that = this;
 
@@ -23,49 +23,54 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-
+            /*
+             * Método que valida quien autorizado la orden de compra
+             * @param modeloAutorizacionOrdenCompra donde se encuntra el modelo del modulo
+             * @param banderaautorizacionOrdenCompra si es 0 es el primer autorizador 1 es el segundo autorizador
+             * @return modifica la autorizacion
+             */
             $scope.autorizarOrdenCompra = function(modeloAutorizacionOrdenCompra, banderaautorizacionOrdenCompra) {
-                var observacion = "";                
+                var observacion = "";
                 var autorizador1 = "";
                 var autorizador2 = "";
                 var swAutorizado = "";
                 var swNoAutoriza = "";
-      
-                if ($scope.observacion.trim().length >= 7) {
+
+                if ($scope.root.observacion.trim().length >= 7) {
                     $scope.cerrarModal();
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe Digitar una Observación con Minimo 7 Caracteres");
                     return false;
                 }
-                if (modeloAutorizacionOrdenCompra.usuarioIdAutorizador === null)
+                if (modeloAutorizacionOrdenCompra.getUsuarioIdAutorizador() === null)
                 {
                     autorizador1 = Usuario.getUsuarioActual().id;
                     autorizador2 = null;
-                    if (banderaautorizacionOrdenCompra == "0")
+                    if (banderaautorizacionOrdenCompra === 0)
                     {
                         swNoAutoriza = '0';
-                        observacion = "EL Autorizador 1 No Aprueba: " + $scope.observacion;
+                        observacion = "EL Autorizador 1 No Aprueba: " + $scope.root.observacion;
                     } else {
-                        observacion = "EL Autorizador 1 Aprueba: " + $scope.observacion;
+                        observacion = "EL Autorizador 1 Aprueba: " + $scope.root.observacion;
                     }
                     swAutorizado = '0';
 
                 } else {
-                    autorizador1 = modeloAutorizacionOrdenCompra.usuarioIdAutorizador;
+                    autorizador1 = modeloAutorizacionOrdenCompra.getUsuarioIdAutorizador();
                     autorizador2 = Usuario.getUsuarioActual().id;
                     swAutorizado = '1';
-                    if (banderaautorizacionOrdenCompra == "0")
+                    if (banderaautorizacionOrdenCompra === 0)
                     {
                         swNoAutoriza = '1';
-                        if(modeloAutorizacionOrdenCompra.swNoAutorizado == '0'){
-                         swNoAutoriza = '2';   
+                        if (modeloAutorizacionOrdenCompra.getSwNoAutorizado() === '0') {
+                            swNoAutoriza = '2';
                         }
-                        observacion = modeloAutorizacionOrdenCompra.justificacion + "\n EL Autorizador 2 No Aprueba: " + $scope.observacion;
+                        observacion = modeloAutorizacionOrdenCompra.getJustificacion() + "\n EL Autorizador 2 No Aprueba: " + $scope.root.observacion;
                     } else {
-                        observacion = modeloAutorizacionOrdenCompra.justificacion + "\n EL Autorizador 2 Aprueba: " + $scope.observacion;
+                        observacion = modeloAutorizacionOrdenCompra.getJustificacion() + "\n EL Autorizador 2 Aprueba: " + $scope.root.observacion;
                     }
-                                    
-                    that.ingresarBodegaMovimientoTmpOrden(modeloAutorizacionOrdenCompra,autorizador2);
+
+                    that.ingresarBodegaMovimientoTmpOrden(modeloAutorizacionOrdenCompra, autorizador2);
                 }
                 that.modificarAutorizacionesComprasOrdenes(modeloAutorizacionOrdenCompra, autorizador1, swAutorizado, observacion, autorizador2, swNoAutoriza);
             };
@@ -85,29 +90,35 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     callback(data);
                 });
             };
-            
-           that.ingresarBodegaMovimientoTmpOrden = function(modeloAutorizacionOrdenCompra,autorizador2)
+
+            /*
+             * Método para el envio al servidor de los datos que insertan en la tabla inv_bodegas_movimiento_tmp_d
+             * @param modeloAutorizacionOrdenCompra donde se encuntra el modelo del modulo
+             * @param autorizador2 
+             * @return inserta en inv_bodegas_movimiento_tmp_d
+             */
+            that.ingresarBodegaMovimientoTmpOrden = function(modeloAutorizacionOrdenCompra, autorizador2)
             {
-                var usuarioId=autorizador2;
-                var docTmpId = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.docTmpId;
-                var empresa = modeloAutorizacionOrdenCompra.empresa;
-                var centroUtilidad = modeloAutorizacionOrdenCompra.centroUtilidad;
-                var bodega = modeloAutorizacionOrdenCompra.bodega;                
-                var codigoProducto = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.codigo_producto;
-                var cantidad=modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.cantidad_recibida;
-                var porcentajeGravamen=modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.porcentajeGravamen;
-                var totalCosto=modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.totalCosto;
-                var fechaVencimiento=modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.fecha_vencimiento;
-                var codigoLote = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.codigo_lote;
-                var localProd = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.localProd;
-                var numeroOrdenCompra = modeloAutorizacionOrdenCompra.ordenSeleccionada.numero_orden_compra;
-                                
+                var usuarioId = autorizador2;
+                var docTmpId = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getDocTmpId();
+                var empresa = modeloAutorizacionOrdenCompra.getEmpresa();
+                var centroUtilidad = modeloAutorizacionOrdenCompra.getCentroUtilidad();
+                var bodega = modeloAutorizacionOrdenCompra.getBodega();
+                var codigoProducto = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getCodigoProducto();
+                var cantidad = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.get_cantidad_recibida();
+                var porcentajeGravamen = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getPorcentajeGravamen();
+                var totalCosto = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getTotalCosto();
+                var fechaVencimiento = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.getFechaVencimiento();
+                var codigoLote = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.getCodigo();
+                var localProd = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getLocalProd();
+                var numeroOrdenCompra = modeloAutorizacionOrdenCompra.ordenSeleccionada.get_numero_orden();
+
                 var obj = {
                     session: $scope.session,
                     data: {
                         autorizacion: {
                             usuarioId: usuarioId,
-                            docTmpId: docTmpId,       
+                            docTmpId: docTmpId,
                             empresa: empresa,
                             bodega: bodega,
                             centroUtilidad: centroUtilidad,
@@ -124,13 +135,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
 
                 that.insertarBodegaMovimientoTmp(obj, function(data) {
-                    if (data.status === 200) {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                    if (data.status !== 200) {
+                        AlertService.mostrarVentanaAlerta("Ha Ocurrido un Error", data.msj);
                     }
                 });
             };
-            
-            
+
+
             /*
              * @Author: AMGT
              * @param {object} obj
@@ -147,16 +158,25 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
 
-
+            /*
+             * Método para el envio al servidor de los datos que modifican los datos de autorizacion de ordenes de compras
+             * @param modeloAutorizacionOrdenCompra donde se encuntra el modelo del modulo
+             * @param autorizador1 autorizador de la orden de compras
+             * @param swAutorizado 0- primer autorizador 1- segundo autorizador   
+             * @param observacion de la autorizacion
+             * @param autorizador2 autorizador de la orden de compras
+             * @param swNoAutorizado del autorizador1 0- no autoriza primer autorizador 1- no autoriza segundo autorizador 2- no autoriza los autorizadores 
+             * @return inserta en inv_bodegas_movimiento_tmp_d
+             */
             that.modificarAutorizacionesComprasOrdenes = function(modeloAutorizacionOrdenCompra, autorizador1, swAutorizado, observacion, autorizador2, swNoAutoriza)
             {
-                var empresa = modeloAutorizacionOrdenCompra.empresa;
-                var bodega = modeloAutorizacionOrdenCompra.bodega;
-                var centroUtilidad = modeloAutorizacionOrdenCompra.centroUtilidad;
-                var codigoProducto = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.codigo_producto;
-                var numeroOrdenCompra = modeloAutorizacionOrdenCompra.ordenSeleccionada.numero_orden_compra;
-                var codigoLote = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.codigo_lote;
-                
+                var empresa = modeloAutorizacionOrdenCompra.getEmpresa();
+                var bodega = modeloAutorizacionOrdenCompra.getBodega();
+                var centroUtilidad = modeloAutorizacionOrdenCompra.getCentroUtilidad();
+                var codigoProducto = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.getCodigoProducto();
+                var numeroOrdenCompra = modeloAutorizacionOrdenCompra.ordenSeleccionada.get_numero_orden();
+                var codigoLote = modeloAutorizacionOrdenCompra.ordenSeleccionada.productoSeleccionado.lote.getCodigo();
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -178,7 +198,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 that.modificarAutorizacionCompras(obj, function(data) {
                     if (data.status === 200) {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", data.msj);
+
                     }
                 });
             };
@@ -193,4 +214,3 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         }]);
 
 });
-

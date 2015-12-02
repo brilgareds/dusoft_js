@@ -7,7 +7,7 @@ define(["angular", "js/controllers",
     "models/AutorizacionOrdenCompra",
     "models/LoteOrdenCompra",
     "models/EmpresaOrdenCompra",
-    "controllers/autorizaciones/AutorizarOrdenesComprasController",
+    "controllers/autorizaciones/AutorizarOrdenesComprasController"
 ], function(angular, controllers) {
     controllers.controller('ListarAutorizacionesController', [
         '$scope', '$rootScope', 'Request',
@@ -23,20 +23,7 @@ define(["angular", "js/controllers",
                 $modal, API, socket,
                 OrdenCompra, Producto, Usuario, Empresa, Lote, Autorizacion, empresaOrdenCompra) {
 
-            var that = this;
-            $scope.root = {};
-            $scope.root.Empresa = Empresa;
-            $scope.root.empresaOrdenCompra = empresaOrdenCompra;
-            $scope.empresas = [];           
-            $scope.root.rootAutorizacion = {};
-            $scope.root.paginas = 0;
-            $scope.root.items = 0;
-            $scope.root.terminoBusqueda = "";
-            $scope.root.ultimaBusqueda = "";
-            $scope.root.ultimofiltro = "";
-            $scope.root.ultimaempresa = "";
-            $scope.root.paginaactual = 1;
-            
+            var that = this;  
              
             $scope.datos_view = {
                 termino_busqueda: ""
@@ -54,8 +41,20 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.init = function() {
+                $scope.root = {};
+                $scope.root.Empresa = Empresa;
+                $scope.root.empresaOrdenCompra = empresaOrdenCompra;
+                $scope.root.paginaactual = 1;
+                $scope.root.rootAutorizacion = {};
+                $scope.empresas = []; 
+                $scope.root.paginas = 0;
+                $scope.root.items = 0;
+                $scope.root.terminoBusqueda = "";
+                $scope.root.ultimaBusqueda = "";
+                $scope.root.ultimofiltro = "";
+                $scope.root.ultimaempresa = "";                
                 that.buscarAutorizacionesCompras(function() {
-                });
+                });  
             };
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
 
@@ -288,5 +287,11 @@ define(["angular", "js/controllers",
                 }
             };
             that.init();
+            
+             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.$$watchers = null;
+                $scope.root = {};
+            });
+            
         }]);
 });

@@ -1130,7 +1130,8 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
                 where a.recepcion_mercancia_id = :1 ;";
 
-    G.knex.raw(sql, {1:recepcion_mercancia_id}).
+    G.knex.raw(sql, {1:recepcion_mercancia_id})
+            .
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
@@ -1144,7 +1145,7 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
 * @returns {datos de consulta}
 */
 OrdenesCompraModel.prototype.listarAutorizacionCompras = function(autorizacion, callback) {
-    estado = '0';
+    var estado = '0';
     var column = [
         "b.codigo_producto",
         "b.doc_tmp_id",
@@ -1176,31 +1177,29 @@ OrdenesCompraModel.prototype.listarAutorizacionCompras = function(autorizacion, 
     ];
 
     var query = G.knex.column(column)
-            .select()
-            .from('inventarios_productos as a')
-            .innerJoin('compras_ordenes_pedidos_productosfoc as b', 'a.codigo_producto', 'b.codigo_producto')
-            .innerJoin('system_usuarios as c', 'b.usuario_id', 'c.usuario_id')
-            .leftJoin('system_usuarios as d', 'b.usuario_id_autorizador', 'd.usuario_id')
-            .leftJoin('system_usuarios as e', 'b.usuario_id_autorizador_2', 'e.usuario_id')
-            .where({"b.empresa_id": autorizacion.empresa,
-        "b.sw_autorizado": estado})
-            .andWhere(function() {
+    .select()
+    .from('inventarios_productos as a')
+    .innerJoin('compras_ordenes_pedidos_productosfoc as b', 'a.codigo_producto', 'b.codigo_producto')
+    .innerJoin('system_usuarios as c', 'b.usuario_id', 'c.usuario_id')
+    .leftJoin('system_usuarios as d', 'b.usuario_id_autorizador', 'd.usuario_id')
+    .leftJoin('system_usuarios as e', 'b.usuario_id_autorizador_2', 'e.usuario_id')
+    .where({"b.empresa_id": autorizacion.empresa,
+             "b.sw_autorizado": estado})
+    .andWhere(function() {
         if (autorizacion.filtro === '1' && autorizacion.terminoBusqueda !== '') {
-            this.where(G.knex.raw("a.descripcion :: varchar"), G.constants.db().LIKE, "%" + autorizacion.terminoBusqueda + "%")
-
+            this.where(G.knex.raw("a.descripcion :: varchar"), G.constants.db().LIKE, "%" + autorizacion.terminoBusqueda + "%");
         } else if (autorizacion.filtro === '0' && autorizacion.terminoBusqueda !== '') {
-            this.where(G.knex.raw("b.orden_pedido_id :: varchar"), G.constants.db().LIKE, "%" + autorizacion.terminoBusqueda + "%")
+            this.where(G.knex.raw("b.orden_pedido_id :: varchar"), G.constants.db().LIKE, "%" + autorizacion.terminoBusqueda + "%");
         }
-    })
-            .limit(G.settings.limit)
-            .offset((autorizacion.paginaActual - 1) * G.settings.limit)
-
-            .then(function(rows) {
+     })
+    .limit(G.settings.limit)
+    .offset((autorizacion.paginaActual - 1) * G.settings.limit)
+    .then(function(rows) {
         callback(false, rows);
-    })
-            . catch (function(error) {
+     })
+     . catch (function(error) {
         callback(error);
-    }).done();
+     }).done();
 };
 /*
 * funcion que realiza el Update a compras_ordenes_pedidos_productosfoc
@@ -1237,10 +1236,11 @@ OrdenesCompraModel.prototype.modificarAutorizacionOrdenCompras = function(datos,
                 lote = :11 \
                 ; ";
     
-    G.knex.raw(sql, parametros).
-            then(function(resultado) {
+    G.knex.raw(sql, parametros)
+     .then(function(resultado) {
         callback(false, resultado.rows, resultado);
-    }). catch (function(err) {
+      })
+     .catch(function(err) {
         callback(err);
     });
 };
@@ -1286,11 +1286,12 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
         13: datos.orden
     };
 
-    G.knex.raw(sql, parametros).
-            then(function(resultado) {
+    G.knex.raw(sql, parametros)
+      .then(function(resultado) {
         console.log("resultado", resultado);
         callback(false, resultado.rows, resultado);
-    }). catch (function(err) {
+      })
+      .catch (function(err) {
         console.log("error", err);
         callback(err);
     });

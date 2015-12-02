@@ -10,9 +10,12 @@ PaisesModel.prototype.listar_paises = function(callback) {
                 tipo_pais_id as pais_id,\
                 pais as nombre_pais\
                 from tipo_pais ";
-
-    G.db.query(sql, [], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex.raw(sql).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -23,10 +26,13 @@ PaisesModel.prototype.seleccionar_pais = function(pais_id, callback) {
                 tipo_pais_id as pais_id,\
                 pais as nombre_pais\
                 from tipo_pais\
-                where tipo_pais_id = $1 ; ";
+                where tipo_pais_id = :1 ; ";
 
-    G.db.query(sql, [pais_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:pais_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

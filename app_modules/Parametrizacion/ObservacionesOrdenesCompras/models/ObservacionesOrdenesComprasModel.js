@@ -7,9 +7,12 @@ ObservacionesOrdenesComprasModel.prototype.listar_observaciones = function(termi
 
 
     var sql = " select * from observaciones_ordenes_compras ; ";
-
-    G.db.query(sql, [], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex.raw(sql).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

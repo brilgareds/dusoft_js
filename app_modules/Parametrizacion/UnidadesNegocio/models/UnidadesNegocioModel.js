@@ -7,9 +7,12 @@ UnidadesNegocioModel.prototype.listar_unidades_negocio = function(termino_busque
 
 
     var sql = "SELECT codigo_unidad_negocio, descripcion, imagen FROM unidades_negocio where estado = '1'; ";
-
-    G.db.query(sql, [], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex.raw(sql).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

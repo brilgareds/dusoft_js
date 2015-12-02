@@ -561,7 +561,11 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
        }
     }).
     then(function(rows){
-
+      /**
+        * +Descripcion: Se valida si el estado de la cotizacion es 
+        *               1 activo 
+        *               4 activo (desaprobado por cartera)
+        */
         if (rows[0].estado === '1' || rows[0].estado === '4') {           
             return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarProductoDetalleCotizacion', cotizacion.numero_cotizacion, producto.codigo_producto);
         }else {  
@@ -570,7 +574,10 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         
     }).
     then(function(rows){
-
+        /**
+          * +Descripcion: Se valida si el producto es diferente al del detalle
+          *               y si es asi se procede a modficar el detalle
+          */
          if (rows.length === 0) {            
               return  G.Q.ninvoke(that.m_pedidos_clientes,'insertar_detalle_cotizacion', cotizacion, producto);
          }else{   

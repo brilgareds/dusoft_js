@@ -848,9 +848,10 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes_
                 GROUP BY b.codigo_producto";
 
     G.knex.raw(sql, {1: codigo_producto, 2: fecha_registro_pedido}).
-            then(function(resultado) {
+    then(function(resultado){
         callback(false, resultado.rows);
-    }). catch (function(err) {
+    }).
+    catch(function(err) {
         callback(err);
     });
 
@@ -1172,34 +1173,25 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 
 
 /*
- * Author : Camilo Orozco
+ * @author : Cristian Ardila
+ * @fecha:  02/12/2015
  * Descripcion :  SQL Insertar Detalle Cotizacion
  */
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
 
-    var sql = " INSERT INTO ventas_ordenes_pedidos_d_tmp(\
-                pedido_cliente_id_tmp, \
-                codigo_producto, \
-                porc_iva, \
-                numero_unidades, \
-                valor_unitario, \
-                usuario_id , \
-                fecha_registro ) \
-                VALUES($1, $2, $3, $4, $5, $6, NOW() );";
 
-    var params = [
-        cotizacion.numero_cotizacion,
-        producto.codigo_producto,
-        producto.iva,
-        producto.cantidad_solicitada,
-        producto.precio_venta,
-        cotizacion.usuario_id
-    ];
+ var sql = "  INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario,usuario_id,fecha_registro) \
+                 VALUES ( :1, :2, :3, :4, :5, :6, NOW() ) ; ";
 
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
+    G.knex.raw(sql, {1:cotizacion.numero_cotizacion, 2:producto.codigo_producto, 3:producto.iva, 4:producto.cantidad_solicitada, 5:producto.precio_venta, 6:cotizacion.usuario_id}).
+    then(function(resultado){
+       callback(false, resultado);
+    }).catch(function(err){
+     
+       callback(err);
     });
-
+    
+   
 };
 
 
@@ -1586,9 +1578,6 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
             'ventas_ordenes_pedidos_d_tmp.pedido_cliente_id_tmp',
             'ventas_ordenes_pedidos.pedido_cliente_id_tmp')
             .where('ventas_ordenes_pedidos.pedido_cliente_id', numero_pedido)
-            /*   G.knex('ventas_ordenes_pedidos').where({
-             pedido_cliente_id: numero_pedido
-             }).select('valor_total_cotizacion')*/
             .then(function(rows) {
         callback(rows, true);
        
@@ -1634,14 +1623,12 @@ PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(nume
     G.knex('ventas_ordenes_pedidos_d_tmp').where({
         pedido_cliente_id_tmp: numero_pedido,
         codigo_producto: codigo_producto
-    }).select('pedido_cliente_id_tmp')
-         .then(function(rows) {
-       
-        callback(true, rows); 
-     
-    })
-        . catch (function(error) {
-        callback(false, error);
+    }).select('pedido_cliente_id_tmp').
+    then(function(rows) {       
+        callback(false, rows);    
+    }).
+    catch (function(error) {
+        callback(error);
     });
 };
 

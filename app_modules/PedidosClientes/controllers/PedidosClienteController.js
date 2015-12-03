@@ -576,15 +576,9 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
        }else{
           throw 'El precio de venta esta por encima del regulado';
        }
-<<<<<<< HEAD
-    }).
-    then(function(rows){
-      /**
-=======
     }).then(function(rows){
     
         /**
->>>>>>> VentasPorDebajoDelCosto
         * +Descripcion: Se valida si el estado de la cotizacion es 
         *               1 activo 
         *               4 activo (desaprobado por cartera)
@@ -595,15 +589,9 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
            throw 'La cotizacion debe encontrarse activa o desaprobada por cartera';
         }
         
-<<<<<<< HEAD
-    }).
-    then(function(rows){
-        /**
-=======
     }).then(function(rows){ 
           
          /**
->>>>>>> VentasPorDebajoDelCosto
           * +Descripcion: Se valida si el producto es diferente al del detalle
           *               y si es asi se procede a modficar el detalle
           */
@@ -629,6 +617,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     
 
 };
+
 
 
 /*

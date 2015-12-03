@@ -171,7 +171,30 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             // Insertar Productos al pedido
             that.insertar_detalle_pedido = function(callback) {
-
+                
+                var productoSeleccionado = $scope.datos_form.producto_seleccionado;
+                var precioVenta = Number(productoSeleccionado.get_precio_venta());
+                var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
+               
+                /**
+                 * +Descripcion: Se validara si el producto seleccionado es regulado
+                 *               
+                 */
+                if(productoSeleccionado.es_regulado()){
+                    
+                    /**
+                     * +Descripcion: Se valida si el precio de venta es mayor al
+                     *               precio regulado, por lo cual se emitira un
+                     *               mensaje al usuario y se cancelara la operacion
+                     */
+                    if(precioVenta > precioRegulado){
+                        
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
+                        
+                        return;
+                    }
+                }
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -273,8 +296,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             that.buscar_productos_clientes = function() {
 
-
-
+          
                 if ($scope.datos_form.ultima_busqueda !== $scope.datos_form.termino_busqueda) {
                     $scope.datos_form.pagina_actual = 1;
                 }

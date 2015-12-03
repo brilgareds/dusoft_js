@@ -1671,13 +1671,10 @@ PedidosClienteModel.prototype.consultarEstadoPedidoEstado = function(numero_pedi
 
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id: numero_pedido,
-    }).select('estado', 'estado_pedido')
-     .then(function(rows) {
-       // callback(true, rows);
+    }).select('estado', 'estado_pedido').then(function(rows) {      
         callback(false, rows);
-    })
-      .catch (function(error) {
-        //callback(false, error);
+    }).catch (function(error) {
+      
         callback(error);
     });
 };
@@ -1739,14 +1736,12 @@ PedidosClienteModel.prototype.actualizarCabeceraCotizacion = function(cotizacion
 {
 
     G.knex('ventas_ordenes_pedidos_tmp')
-            .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
-            .update({
+    .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
+    .update({
         observaciones: cotizacion.observacion
-    })
-            .then(function(rows) {
+    }).then(function(rows) {    
         callback(true, rows);
-    })
-            . catch (function(error) {
+    }).catch (function(error) {
         callback(false, error);
     });
 

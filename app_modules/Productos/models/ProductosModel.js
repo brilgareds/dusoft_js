@@ -374,20 +374,33 @@ ProductosModel.prototype.consultar_precio_producto_contrato = function(codigo_pr
     });
 };
 
+
 ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callback) {
     
-    var sql = "SELECT a.codigo_producto, a.precio_regulado, b.sw_regulado\
-               FROM inventarios a \
-               INNER JOIN inventarios_productos b \
-               ON a.codigo_producto = b.codigo_producto \
-               WHERE a.empresa_id = :1  AND b.codigo_producto = :2 ";
 
+   var sql ="SELECT c.contrato_cliente_id,\
+            c.empresa_id,\
+            d.codigo_producto,\
+            d.precio_pactado,\
+            a.precio_regulado,\
+            b.sw_regulado\
+            FROM vnts_contratos_clientes c\
+            INNER JOIN vnts_contratos_clientes_productos d\
+            ON c.contrato_cliente_id = d.contrato_cliente_id\
+            INNER JOIN inventarios_productos b \
+            ON b.codigo_producto = d.codigo_producto\
+            INNER JOIN inventarios a\
+            ON a.codigo_producto = d.codigo_producto AND a.empresa_id =  c.empresa_id\
+            WHERE\
+            c.empresa_id = :1\
+            AND d.codigo_producto = :2\
+            AND c.contrato_cliente_id = :3";
+
+    G.knex.raw(sql, {1: obj.empresaId, 2: obj.codigoProducto, 3: obj.contratoId}). then(function(resultado){
    
-    G.knex.raw(sql, {1: obj.empresaId, 2: obj.codigoProducto}).
-    then(function(resultado){
         callback(false, resultado.rows);
-    }).
-    catch(function(err) {
+    }).catch(function(err) {
+    
         callback(err);
     });
 

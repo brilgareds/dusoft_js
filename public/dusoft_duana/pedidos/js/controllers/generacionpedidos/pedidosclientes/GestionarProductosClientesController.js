@@ -296,9 +296,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             that.buscar_productos_clientes = function() {
 
-              console.log("buscar_productos_clientes *********************")
-            console.log("buscar_productos_clientes *********************")
-            console.log("buscar_productos_clientes *********************")
 
                 if ($scope.datos_form.ultima_busqueda !== $scope.datos_form.termino_busqueda) {
                     $scope.datos_form.pagina_actual = 1;

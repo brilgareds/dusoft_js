@@ -1811,8 +1811,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     var precioPactado;
     var valido;
     
-    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', objPrecioRegulado).
-    then(function(resultado){  
+    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', objPrecioRegulado).then(function(resultado){  
+    
       valido = true;
       if(resultado.length > 0){
        precioVenta = Number(producto.precio_venta);
@@ -1838,29 +1838,9 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
        }else{
           throw 'El precio de venta esta por encima del regulado';
        }
-    }).
+    }).then(function(resultado){  
+ 
     
-  /*  G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', objPrecioRegulado).
-    then(function(resultado){  
-
-       var precioVenta = Number(producto.precio_venta);
-       var precioRegulado = Number(resultado[0].precio_regulado);
-       var valido = true;
-             
-       if(resultado[0].sw_regulado ==='1'){
-           if(precioVenta > precioRegulado){
-                 valido = false;
-           }
-       }
-       if(valido){
-            return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoPedidoEstado', numeroPedido)
-       }else{
-          throw 'El precio de venta esta por encima del regulado';
-       }
-    }).*/
-    
-    
-    then(function(resultado){  
 
         /**
          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
@@ -1926,6 +1906,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     
     
 };
+
 
 
 

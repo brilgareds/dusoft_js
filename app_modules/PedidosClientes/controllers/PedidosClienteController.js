@@ -577,7 +577,6 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
           throw 'El precio de venta esta por encima del regulado';
        }
     }).then(function(rows){
-    
         /**
         * +Descripcion: Se valida si el estado de la cotizacion es 
         *               1 activo 
@@ -615,7 +614,6 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
     
-
 };
 
 
@@ -1804,15 +1802,16 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
      */
     
     
-    var objPrecioRegulado = {empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, contratoId: pedido.cliente.contrato_id}
+    var parametros = {empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, contratoId: pedido.cliente.contrato_id}
     
     var precioVenta;
     var precioRegulado;
     var precioPactado;
     var valido;
     
-    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', objPrecioRegulado).then(function(resultado){  
-    
+
+    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).
+    then(function(resultado){  
       valido = true;
       if(resultado.length > 0){
        precioVenta = Number(producto.precio_venta);
@@ -1839,8 +1838,6 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
           throw 'El precio de venta esta por encima del regulado';
        }
     }).then(function(resultado){  
- 
-    
 
         /**
          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente

@@ -111,13 +111,13 @@ PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(numero_pedido
       
   
     var that = this;
-    this.m_pedidos_clientes.consultarEstadoPedidoEstado(numero_pedido, function(estado, rows) {
+    this.m_pedidos_clientes.consultarEstadoPedidoEstado(numero_pedido, function(err, resultado) {
    
-     if (estado) {
+     if (!err) {
         
         var response = G.utils.r('onListarEstadoPedido', 'Estado del pedido', 200, 
                     {
-                        pedidos_clientes: rows,
+                        pedidos_clientes: resultado,
                         numero_pedido: numero_pedido,
                         estado: estadoPedido
                     });

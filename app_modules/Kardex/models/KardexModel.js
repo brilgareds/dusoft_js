@@ -42,11 +42,14 @@ KardexModel.prototype.buscar_productos = function(termino_busqueda, pagina, call
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
                 where a.empresa_id='03' and a.centro_utilidad = '1 ' and a.bodega = '03'\
-                and ( b.codigo_producto ILIKE $1 or b.descripcion ILIKE $1 ) \
-                ORDER BY 5 DESC limit $2 offset $3 ";
-
-    G.db.query(sql, ["%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
-        callback(err, rows);
+                and ( b.codigo_producto "+G.constants.db().LIKE+" :1 or b.descripcion "+G.constants.db().LIKE+" :1 ) \
+                ORDER BY 5 DESC limit :2 offset :3 ";
+    
+    G.knex.raw(sql, {1:"%" + termino_busqueda + "%", 2:G.settings.limit, 3:offset}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 
 };
@@ -57,10 +60,13 @@ KardexModel.prototype.obtener_existencia_inicial = function(empresa_id, centro_u
     var d = new Date(fecha_cierre);
     var lapso = d.addMonths(-1).toFormat('YYYYMM');
 
-    var sql = "SELECT existencia_final as existencia_inicial FROM inv_bodegas_movimiento_cierres_por_lapso WHERE lapso =$5 AND empresa_id = $1 AND centro_utilidad =$2 AND bodega =$3 AND codigo_producto =$4 ;";
-
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, lapso], function(err, rows, result) {
-        callback(err, rows);
+    var sql = "SELECT existencia_final as existencia_inicial FROM inv_bodegas_movimiento_cierres_por_lapso WHERE lapso = :5 AND empresa_id = :1 AND centro_utilidad = :2 AND bodega = :3 AND codigo_producto = :4 ;";
+    
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:codigo_producto, 5:lapso}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 

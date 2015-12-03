@@ -17,7 +17,9 @@ AutenticacionEvents.prototype.onConnected = function(socket_id) {
 // Actualizar La sesion del usuario con el socket asignado
 AutenticacionEvents.prototype.onActualizarSesion = function(datos) { 
     console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
-    G.auth.update(datos);
+    G.auth.update(datos, function(){
+        
+    });
 };
 
 // Notificacion en Real Time Que algunas sesiones inactivas se cerraron automaicamente

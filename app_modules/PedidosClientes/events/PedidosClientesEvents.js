@@ -104,7 +104,9 @@ PedidosClientesEvents.prototype.onConnected = function(socket_id) {
 };
 PedidosClientesEvents.prototype.onActualizarSesion = function(datos) { 
     console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
-    G.auth.update(datos);
+    G.auth.update(datos, function(){
+        
+    });
 };
 PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(numero_pedido,estadoPedido) {
     

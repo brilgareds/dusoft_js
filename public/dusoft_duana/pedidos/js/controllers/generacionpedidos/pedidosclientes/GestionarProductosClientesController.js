@@ -122,8 +122,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
-                
-                
+                var costoCompra = Number(productoSeleccionado.getPrecioVentaAnterior());
+              
                 /**
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
@@ -138,6 +138,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if(precioVenta > precioRegulado){
                         
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
+                        
+                        return;
+                    }
+                }
+                
+                
+                 /**
+                 * +Descripcion: Se validara si el producto seleccionado es regulado
+                 *               
+                 */
+                if(!productoSeleccionado.es_regulado()){
+                    
+                    /**
+                     * +Descripcion: Se valida si el precio de venta es mayor al
+                     *               costo de compra, por lo cual se emitira un
+                     *               mensaje al usuario y se cancelara la operacion
+                     */
+                    if(precioVenta < costoCompra){
+                        
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo de compra");
                         
                         return;
                     }
@@ -175,7 +195,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
-               
+                var costoCompra = Number(productoSeleccionado.getPrecioVentaAnterior());
+           
                 /**
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
@@ -190,6 +211,25 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if(precioVenta > precioRegulado){
                         
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
+                        
+                        return;
+                    }
+                }
+                
+               /**
+                 * +Descripcion: Se validara si el producto seleccionado es regulado
+                 *               
+                 */
+                if(!productoSeleccionado.es_regulado()){
+                    
+                    /**
+                     * +Descripcion: Se valida si el precio de venta es mayor al
+                     *               costo de compra, por lo cual se emitira un
+                     *               mensaje al usuario y se cancelara la operacion
+                     */
+                    if(precioVenta < costoCompra){
+                        
+                       AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo de compra");
                         
                         return;
                     }
@@ -357,10 +397,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto.set_regulado(data.sw_regulado).set_precio_regulado(data.precio_regulado);
                     producto.set_pactado(data.tiene_precio_pactado).set_precio_venta(data.precio_producto);
                     
-                  
+                    producto.setPrecioVentaAnterior(data.costo_ultima_compra);
+                  //setPrecioVentaAnterior 1101E0740001
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
-
+                    
+                    
                 });
 
 

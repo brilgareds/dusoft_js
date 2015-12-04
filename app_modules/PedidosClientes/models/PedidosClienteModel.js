@@ -1077,7 +1077,8 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 split_part(coalesce(fc_precio_producto_contrato_cliente($4,a.codigo_producto,$1),'0'), '@', 1) as precio_producto,\
                 b.sw_regulado,\
                 c.precio_regulado,\
-                b.estado\
+                b.estado,\n\
+                c.costo_ultima_compra\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\

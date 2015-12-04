@@ -516,7 +516,7 @@ define(["angular", "js/controllers",
                             if ($scope.datos_view.pagina_actual_pedidos > 0) {
                                 $scope.datos_view.pagina_actual_pedidos--;
                             }
-                            AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se encontraron mas registros");
                             return;
                         }
 

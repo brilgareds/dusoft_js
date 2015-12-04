@@ -546,31 +546,39 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     var precioRegulado;
     var precioPactado;
     var valido;
-    
+    var costoCompra;
     G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).then(function(resultado){ 
     
     valido = true;
 
-      if(resultado.length > 0){
+  
         precioVenta = Number(producto.precio_venta);
         precioRegulado = Number(resultado[0].precio_regulado);
         precioPactado = Number(resultado[0].precio_pactado);
-
-
+        costoCompra  = Number(resultado[0].costo_ultima_compra);
+        
+        /**
+         * +Descripcion: Valida si el producto es regulado
+         */
         if(resultado[0].sw_regulado ==='1'){
+            /**
+             * +Descripcion: Si precio de venta es mayor al precio regulado
+             *              ó el precio pactado es mayor al regulado
+             *              cancele la accion
+             */
             if(precioVenta > precioRegulado || precioPactado > precioRegulado){
                   valido = false;
             }
         }
 
-        if(valido ){
-             return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);  
-        }else{
-           throw 'El precio de venta esta por encima del regulado';
+      if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
+        if(precioVenta < costoCompra){
+              valido = false;
         }
+      }
+        
 
-       }
-      
+
        if(valido ){
             return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);  
        }else{
@@ -1808,36 +1816,49 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     var precioRegulado;
     var precioPactado;
     var valido;
+    var costoCompra;
+    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).then(function(resultado){ 
     
+    valido = true;
 
-    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).
-    then(function(resultado){  
-      valido = true;
-      if(resultado.length > 0){
-       precioVenta = Number(producto.precio_venta);
-       precioRegulado = Number(resultado[0].precio_regulado);
-       precioPactado = Number(resultado[0].precio_pactado);
-       
+  
+        precioVenta = Number(producto.precio_venta);
+        precioRegulado = Number(resultado[0].precio_regulado);
+        precioPactado = Number(resultado[0].precio_pactado);
+        costoCompra  = Number(resultado[0].costo_ultima_compra);
+        
+        /**
+         * +Descripcion: Valida si el producto es regulado
+         */
+        if(resultado[0].sw_regulado ==='1'){
+            /**
+             * +Descripcion: Si precio de venta es mayor al precio regulado
+             *              ó el precio pactado es mayor al regulado
+             *              cancele la accion
+             */
+            if(precioVenta > precioRegulado || precioPactado > precioRegulado){
+                  valido = false;
+            }
+        }
       
-       if(resultado[0].sw_regulado ==='1'){
-           if(precioVenta > precioRegulado || precioPactado > precioRegulado){
-                 valido = false;
-           }
-       }
-       
-       if(valido ){
-            return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoPedidoEstado', numeroPedido);  
-       }else{
-          throw 'El precio de venta esta por encima del regulado';
-       }      
+      /**
+       * +Descripcion: Valida si el producto no es regulado y su precio pctado
+       *               esta en 0
+       */
+      if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
+        if(precioVenta < costoCompra){
+              valido = false;
+        }
       }
-      
+        
+
+
        if(valido ){
             return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoPedidoEstado', numeroPedido);  
        }else{
           throw 'El precio de venta esta por encima del regulado';
        }
-    }).then(function(resultado){  
+    }).then(function(resultado){
 
         /**
          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente

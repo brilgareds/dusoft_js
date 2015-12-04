@@ -379,22 +379,19 @@ ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callbac
     
 
    var sql ="SELECT c.contrato_cliente_id,\
-            c.empresa_id,\
-            d.codigo_producto,\
-            d.precio_pactado,\
-            a.precio_regulado,\
-            b.sw_regulado\
-            FROM vnts_contratos_clientes c\
-            INNER JOIN vnts_contratos_clientes_productos d\
-            ON c.contrato_cliente_id = d.contrato_cliente_id\
-            INNER JOIN inventarios_productos b \
-            ON b.codigo_producto = d.codigo_producto\
-            INNER JOIN inventarios a\
-            ON a.codigo_producto = d.codigo_producto AND a.empresa_id =  c.empresa_id\
-            WHERE\
-            c.empresa_id = :1\
-            AND d.codigo_producto = :2\
-            AND c.contrato_cliente_id = :3";
+                    a.codigo_producto,\
+                    a.precio_regulado,\
+                    b.sw_regulado, \
+                    c.empresa_id, \
+                    COALESCE (d.precio_pactado,0) as precio_pactado, \
+                    a.costo_ultima_compra\
+            FROM inventarios a  INNER JOIN inventarios_productos b  \
+            ON a.codigo_producto = b.codigo_producto \
+            LEFT JOIN vnts_contratos_clientes c \
+            ON c.empresa_id = a.empresa_id AND c.contrato_cliente_id = :3 \
+            LEFT JOIN vnts_contratos_clientes_productos d \
+            ON d.contrato_cliente_id = c.contrato_cliente_id AND d.codigo_producto = a.codigo_producto \
+            WHERE a.empresa_id = :1 AND  b.codigo_producto = :2";
 
     G.knex.raw(sql, {1: obj.empresaId, 2: obj.codigoProducto, 3: obj.contratoId}). then(function(resultado){
    

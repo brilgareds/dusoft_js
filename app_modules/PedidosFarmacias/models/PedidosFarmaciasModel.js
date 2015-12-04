@@ -1230,7 +1230,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     
     console.log(">>>>---Datos Recibidos---<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     var sql_aux = "";
-    var array_parametros = [empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino, "%" + filtro.termino_busqueda + "%"];
+    var parametros = {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:empresa_destino, 
+                            5:centro_destino, 6:bodega_destino, 7:"%" + filtro.termino_busqueda + "%"};
     var sql_filtro = "";
 
     // Se realiza este cambio para permitir buscar productos de un determiando tipo.
@@ -1239,17 +1240,16 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     }
     
     if(filtro.tipo_busqueda === 0){
-        sql_filtro =  " and fc_descripcion_producto(a.codigo_producto) ILIKE  $7 ";
+        sql_filtro =  " and fc_descripcion_producto(a.codigo_producto) ILIKE  :7 ";
     } else if(filtro.tipo_busqueda === 1){
-        sql_filtro =  " and e.descripcion ILIKE $7 "; 
+        sql_filtro =  " and e.descripcion ILIKE :7 "; 
     } else {
-        sql_filtro =  " and a.codigo_producto ILIKE $7 ";
+        sql_filtro =  " and a.codigo_producto ILIKE :7 ";
     }
     
     console.log("sql aux ", sql_aux, pagina);
     
-    var sql = " select\
-                b.codigo_producto,\
+    var sql = " b.codigo_producto,\
                 a.empresa_id,\
                 a.centro_utilidad,\
                 a.bodega,\
@@ -1326,14 +1326,17 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                     a.codigo_producto,\
                     a.existencia::integer as existencias_farmacia\
                     from existencias_bodegas a\
-                    where a.empresa_id= $4 and a.centro_utilidad = $5 and a.bodega = $6\
+                    where a.empresa_id= :4 and a.centro_utilidad = :5 and a.bodega = :6 \
                     ORDER BY 1 ASC \
                 ) j on j.codigo_producto = c.codigo_producto\
-                where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + sql_filtro+ "\
-               ORDER BY 1 ASC ";
-    
-    G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
+                where a.empresa_id= :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + sql_filtro;
+
+    var query = G.knex.select(G.knex.raw(sql, parametros)).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).orderBy("b.codigo_producto", "ASC").then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
     });
     
 };

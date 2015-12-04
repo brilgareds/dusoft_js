@@ -143,8 +143,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
                 WHERE a.codigo_proveedor_id = :1 and a.estado = '1' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
     
-    G.knex.raw(sql, {1:codigo_proveedor_id}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:codigo_proveedor_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -222,11 +221,9 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
 
     }).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).
-    then(function(rows){
+    offset((pagina - 1) * G.settings.limit).then(function(rows){
         callback(false, rows);
-    }).
-    catch(function(err){
+    }).catch(function(err){
       
        callback(err);
     });
@@ -302,8 +299,7 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 left join bodegas l on l.bodega = k.bodega and l.empresa_id = k.empresa_id and l.centro_utilidad = k.centro_utilidad\
                 WHERE a.orden_pedido_id = :1 ";
     
-    G.knex.raw(sql, {1:numero_orden}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        console.log("error consultado orden ", err);
@@ -341,8 +337,7 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                   a.descripcion_producto "+G.constants.db().LIKE+" :2 ) ";
 
 
-    G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -393,8 +388,7 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
                   a.descripcion_producto "+G.constants.db().LIKE+" :2 )\
                 order by 19 desc ";
     
-    G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -408,8 +402,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
     var sql = " INSERT INTO compras_ordenes_pedidos ( orden_pedido_id, codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
                  VALUES((select max(orden_pedido_id) +1 from compras_ordenes_pedidos), :1, :2, :3, :4, :5, '1', NOW() ) RETURNING orden_pedido_id; ";
      
-    G.knex.raw(sql, {1:unidad_negocio, 2:codigo_proveedor, 3:empresa_id, 4:observacion, 5:usuario_id}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:unidad_negocio, 2:codigo_proveedor, 3:empresa_id, 4:observacion, 5:usuario_id}).then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(err){
        callback(err);
@@ -421,8 +414,7 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
 
     var sql = " SELECT id FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
      
-    G.knex.raw(sql, {1:parametros.ordenCompraId}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:parametros.ordenCompraId}).then(function(resultado){
        
        if(resultado.rows.length > 0){
            sql = "UPDATE compras_ordenes_destino set empresa_id = :2, centro_utilidad = :3, bodega = :4 WHERE orden_compra_id = :1 ";
@@ -433,12 +425,10 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
            return G.knex.raw(sql, {1:parametros.ordenCompraId, 2:parametros.empresaId, 3:parametros.centroUtilidad, 4:parametros.bodega});
        }
        
-    })
-    .then(function(resultado){
+    }).then(function(resultado){
         console.log("se ha guardado correctamente la ubicacion ", resultado);
         callback(false, resultado);
-    })
-    .catch(function(err){
+    }).catch(function(err){
        console.log("error guardando destino ", err);
        callback(err);
     });
@@ -448,11 +438,9 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
 OrdenesCompraModel.prototype.borrarBodegaOrden = function(orden, callback) {
     var sql = " DELETE  FROM compras_ordenes_destino WHERE orden_compra_id = :1 ";
     
-    G.knex.raw(sql, {1:orden}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:orden}).then(function(resultado){
         callback(false, resultado);
-    }).
-    catch(function(err){
+    }).catch(function(err){
        callback(err);
     });
 };
@@ -478,8 +466,7 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
 
     var sql = " UPDATE compras_ordenes_pedidos SET estado = :2 " + sql_aux + " WHERE orden_pedido_id = :1  ";
     
-    G.knex.raw(sql, {1:numero_orden, 2:estado}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:estado}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -492,8 +479,7 @@ OrdenesCompraModel.prototype.modificar_unidad_negocio = function(numero_orden, u
 
     var sql = "  update compras_ordenes_pedidos set codigo_unidad_negocio = :2 where orden_pedido_id = :1 and estado='1' ";
     
-    G.knex.raw(sql, {1:numero_orden, 2:unidad_negocio}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:unidad_negocio}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -507,8 +493,7 @@ OrdenesCompraModel.prototype.modificar_observacion = function(numero_orden, obse
 
     var sql = "  update compras_ordenes_pedidos set observacion = :2 where orden_pedido_id = :1 and estado='1' ";
     
-    G.knex.raw(sql, {1:numero_orden, 2:observacion}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:observacion}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -521,8 +506,7 @@ OrdenesCompraModel.prototype.anular_orden_compra = function(numero_orden, callba
 
     var sql = " UPDATE compras_ordenes_pedidos SET estado = '2' WHERE orden_pedido_id = :1  ";
     
-    G.knex.raw(sql, {1:numero_orden}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -536,8 +520,7 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
     var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado)\
                 VALUES ( :1, :2, :3, :4, :5, 1 );";
     
-    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -550,8 +533,7 @@ OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_or
 
     var sql = " UPDATE  compras_ordenes_pedidos_detalle SET numero_unidades = :3, valor = :4 where orden_pedido_id = :1 and codigo_producto = :2";
     
-    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -565,8 +547,7 @@ OrdenesCompraModel.prototype.eliminar_detalle_orden_compra = function(numero_ord
 
     var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id = :1 ";
     
-    G.knex.raw(sql, {1:numero_orden}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -580,8 +561,7 @@ OrdenesCompraModel.prototype.eliminar_producto_orden_compra = function(numero_or
 
     var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id= :1 AND codigo_producto= :2 ";
     
-    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -611,8 +591,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
                 and a.estado = '1' ; ";
 
     
-    G.knex.raw(sql, {1:empresa_id, 2:codigo_producto}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:empresa_id, 2:codigo_producto}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -625,8 +604,7 @@ OrdenesCompraModel.prototype.finalizar_orden_compra = function(numero_orden, ord
 
     var sql = "  update compras_ordenes_pedidos set sw_orden_compra_finalizada = :2 where orden_pedido_id = :1 and estado='1' ";
     
-    G.knex.raw(sql, {1:numero_orden, 2:orden_compra_finalizada}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:numero_orden, 2:orden_compra_finalizada}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -638,8 +616,7 @@ OrdenesCompraModel.prototype.consultar_novedad_producto = function(novedad_id, c
 
     var sql = "  SELECT  * FROM novedades_ordenes_compras a WHERE a.id = :1 ; ";
     
-    G.knex.raw(sql, {1:novedad_id}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:novedad_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -650,8 +627,7 @@ OrdenesCompraModel.prototype.consultarNovedadPorObservacion = function(novedadId
 
     var sql = "  SELECT  * FROM novedades_ordenes_compras a WHERE a.id = :1 and observacion_orden_compra_id = :2; ";
     
-    G.knex.raw(sql, {1:novedadId, 2:observacionId}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:novedadId, 2:observacionId}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -667,17 +643,13 @@ OrdenesCompraModel.prototype.consultarNovedadPorObservacion = function(novedadId
 OrdenesCompraModel.prototype.eliminarRegistroNovedad = function(parametros, callback){
     var that = this;
     
-    G.Q.ninvoke(that, 'consultar_archivo_novedad_producto', parametros.novedadId).
-    then(function(archivos){
+    G.Q.ninvoke(that, 'consultar_archivo_novedad_producto', parametros.novedadId).then(function(archivos){
         return G.Q.ninvoke(that, 'eliminarArchivosNovedad', archivos);
-    }).
-    then(function(){
+    }).then(function(){
         return G.Q.ninvoke(that, 'eliminarNovedad', parametros);
-    }).
-    then(function(){
+    }).then(function(){
         callback(false);
-    }).
-    fail(function(err){
+    }).fail(function(err){
         console.log(">>>>>>>>>>>>>> error controlado ", err);
         callback(err);
     });
@@ -693,8 +665,7 @@ OrdenesCompraModel.prototype.eliminarRegistroNovedad = function(parametros, call
 OrdenesCompraModel.prototype.eliminarNovedad = function(parametros, callback){
     var sql = "DELETE FROM novedades_ordenes_compras WHERE id = :1";
     
-    G.knex.raw(sql, {1:parametros.novedadId}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:parametros.novedadId}).then(function(resultado){
        callback(false);
     }).catch(function(err){
        console.log("error borrando novedad ", err);
@@ -719,8 +690,7 @@ OrdenesCompraModel.prototype.eliminarArchivosNovedad = function(archivos, callba
     
     var sql = "DELETE FROM archivos_novedades_ordenes_compras WHERE id = :1";
     console.log("eliminando archivo con id ", archivo.id, " con nombre ",archivo.nombre_archivo);
-    G.knex.raw(sql, {1:archivo.id}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:archivo.id}).then(function(resultado){
        G.fs.unlinkSync(G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + archivo.nombre_archivo);
        archivos.splice(0,1);
        that.eliminarArchivosNovedad(archivos, callback);
@@ -738,8 +708,7 @@ OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, obser
     var sql = "  INSERT INTO novedades_ordenes_compras (item_id, observacion_orden_compra_id, descripcion, usuario_id, descripcion_entrada) \
                  VALUES ( :1, :2, :3, :4, :5 ) RETURNING id as novedad_id ; ";
 
-    G.knex.raw(sql, {1:item_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:item_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        console.log("error generando novedad ", err);
@@ -752,8 +721,7 @@ OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, o
 
     var sql = " UPDATE novedades_ordenes_compras SET  observacion_orden_compra_id = :2 , descripcion = :3 , usuario_id = :4 , descripcion_entrada = :5  WHERE id = :1 ; ";
     
-    G.knex.raw(sql, {1:novedad_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:novedad_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -768,8 +736,7 @@ OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(noveda
     var sql = " INSERT INTO archivos_novedades_ordenes_compras (novedad_orden_compra_id, nombre_archivo, descripcion_archivo, usuario_id, fecha_registro) \
                 VALUES ( :1, :2, :3, :4, now() ) ; ";
     
-    G.knex.raw(sql, {1:novedad_id, 2:nombre_archivo, 3:descripcion_archivo, 4:usuario_id}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:novedad_id, 2:nombre_archivo, 3:descripcion_archivo, 4:usuario_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -780,8 +747,7 @@ OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(noveda
 OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(novedad_id, callback) {
 
     var sql = "  SELECT * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = :1 ; ";
-    G.knex.raw(sql, {1:novedad_id}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:novedad_id}).then(function(resultado){
        //console.log("archivos encontrados ", resultado);
        callback(false, resultado.rows);
     }).catch(function(err){
@@ -965,8 +931,7 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
                 where a.id = :1 ;";
     
-    G.knex.raw(sql, {1:recepcion_mercancia_id}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:recepcion_mercancia_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -1038,8 +1003,7 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
     };
     
     
-    G.knex.raw(sql, parametros).
-    then(function(resultado){
+    G.knex.raw(sql, parametros).then(function(resultado){
        
         var estado = '3'; // Recibida
 
@@ -1095,8 +1059,7 @@ OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_
         13:recepcion_mercancia.contiene_dispositivos
     };
     
-    G.knex.raw(sql, parametros).
-    then(function(resultado){
+    G.knex.raw(sql, parametros).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -1130,9 +1093,7 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
                 where a.recepcion_mercancia_id = :1 ;";
 
-    G.knex.raw(sql, {1:recepcion_mercancia_id})
-            .
-    then(function(resultado){
+    G.knex.raw(sql, {1:recepcion_mercancia_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -1193,11 +1154,9 @@ OrdenesCompraModel.prototype.listarAutorizacionCompras = function(autorizacion, 
         }
      })
     .limit(G.settings.limit)
-    .offset((autorizacion.paginaActual - 1) * G.settings.limit)
-    .then(function(rows) {
+    .offset((autorizacion.paginaActual - 1) * G.settings.limit).then(function(rows) {
         callback(false, rows);
-     })
-     . catch (function(error) {
+     }).catch (function(error) {
         callback(error);
      }).done();
 };
@@ -1236,11 +1195,9 @@ OrdenesCompraModel.prototype.modificarAutorizacionOrdenCompras = function(datos,
                 lote = :11 \
                 ; ";
     
-    G.knex.raw(sql, parametros)
-     .then(function(resultado) {
+    G.knex.raw(sql, parametros).then(function(resultado) {
         callback(false, resultado.rows, resultado);
-      })
-     .catch(function(err) {
+    }).catch(function(err) {
         callback(err);
     });
 };
@@ -1286,12 +1243,10 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
         13: datos.orden
     };
 
-    G.knex.raw(sql, parametros)
-      .then(function(resultado) {
+    G.knex.raw(sql, parametros).then(function(resultado) {
         console.log("resultado", resultado);
         callback(false, resultado.rows, resultado);
-      })
-      .catch (function(err) {
+    }).catch (function(err) {
         console.log("error", err);
         callback(err);
     });
@@ -1313,8 +1268,7 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
         5:producto_mercancia.usuario_id
     };
 
-    G.knex.raw(sql, parametros).
-    then(function(resultado){
+    G.knex.raw(sql, parametros).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -1347,8 +1301,7 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
         4:producto_mercancia.cantidad_recibida
     };
     
-    G.knex.raw(sql, parametros).
-    then(function(resultado){
+    G.knex.raw(sql, parametros).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -1361,8 +1314,7 @@ OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion,
     var that = this;
     var sql = " update recepcion_mercancia set estado = '2' where  id = :1 ; ";
     
-    G.knex.raw(sql, {1:recepcion.numero_recepcion}).
-    then(function(resultado){
+    G.knex.raw(sql, {1:recepcion.numero_recepcion}).then(function(resultado){
        
         var estado = '4'; // Verificada
 
@@ -1439,8 +1391,7 @@ function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
     }
 
     return {continuar: continuar, msj: msj};
-}
-;
+};
 
 function __validar_campos_ingreso_producto(recepcion, producto) {
 
@@ -1473,7 +1424,6 @@ function __validar_campos_ingreso_producto(recepcion, producto) {
     }
 
     return {continuar: continuar, msj: msj};
-}
-;
+};
 
 module.exports = OrdenesCompraModel;

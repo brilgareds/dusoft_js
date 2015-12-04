@@ -1229,11 +1229,11 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     }
     
     if(filtro.tipo_busqueda === 0){
-        sql_filtro =  " and fc_descripcion_producto(a.codigo_producto) ILIKE  :7 ";
+        sql_filtro =  " and fc_descripcion_producto(a.codigo_producto) "+G.constants.db().LIKE+"  :7 ";
     } else if(filtro.tipo_busqueda === 1){
-        sql_filtro =  " and e.descripcion ILIKE :7 "; 
+        sql_filtro =  " and e.descripcion "+G.constants.db().LIKE+" :7 "; 
     } else {
-        sql_filtro =  " and a.codigo_producto ILIKE :7 ";
+        sql_filtro =  " and a.codigo_producto "+G.constants.db().LIKE+" :7 ";
     }
     
     console.log("sql aux ", sql_aux, pagina);

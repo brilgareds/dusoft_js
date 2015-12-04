@@ -41,9 +41,11 @@ ModuloModel.prototype.listar_modulos = function(termino, callback) {
 ModuloModel.prototype.obtenerCantidadModulos = function(callback) {
 
     var sql = "SELECT COUNT(*) AS total FROM modulos";
-
-    G.db.query(sql, [], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex.raw(sql).then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -91,16 +93,19 @@ ModuloModel.prototype.insertarModulo = function(modulo, callback) {
     }
 
     var sql = "INSERT INTO modulos (id, parent, nombre, url, parent_name, icon, state, observacion, usuario_id,\
-               fecha_creacion, estado, carpeta_raiz) VALUES (" + modulo_id + ", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id";
+               fecha_creacion, estado, carpeta_raiz) VALUES (" + modulo_id + ", :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11 ) RETURNING id";
 
 
-    var params = [
-        modulo.parent, modulo.nombre, modulo.url, modulo.parent_name, modulo.icon,
-        modulo.state, modulo.observacion, modulo.usuario_id, 'now()', Number(modulo.estado), modulo.carpetaRaiz
-    ];
-
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows);
+    var params = {
+        1:modulo.parent, 2:modulo.nombre, 3:modulo.url, 4:modulo.parent_name, 5:modulo.icon,
+        6:modulo.state, 7:modulo.observacion, 8:modulo.usuario_id, 9:'now()', 10:Number(modulo.estado), 11:modulo.carpetaRaiz
+    };
+    
+    G.knex.raw(sql, params).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -151,15 +156,18 @@ ModuloModel.prototype.activarModulosFamilirares = function(estado, usuario, modu
 
     modulos.forEach(function(modulo) {
 
-        var sql = "UPDATE modulos SET  usuario_id_modifica = $1,\
-                   estado = $2, fecha_modificacion = $3 WHERE id = $4";
+        var sql = "UPDATE modulos SET  usuario_id_modifica = :1,\
+                   estado = :2, fecha_modificacion = :3 WHERE id = :4";
 
-        var params = [usuario, Number(estado), 'now()', modulo];
+        var params = {1:usuario, 2:Number(estado), 3:'now()', 4:modulo};
 
-        G.db.query(sql, params, function(err, rows, result) {
-            if (--i === 0) {
-                callback(err, rows);
-            }
+        G.knex.raw(sql, params).then(function(resultado){
+           if (--i === 0) {
+                callback(false, resultado.rows);
+           }
+           
+        }).catch(function(err){
+           callback(err);
         });
 
     });
@@ -167,11 +175,15 @@ ModuloModel.prototype.activarModulosFamilirares = function(estado, usuario, modu
 };
 
 ModuloModel.prototype.obtenerModuloPorNombreOUrl = function(nombre, url, callback) {
-    var sql = "SELECT  nombre, state, id FROM modulos WHERE nombre ILIKE $1 OR state ILIKE $2";
+    var sql = "SELECT  nombre, state, id FROM modulos WHERE nombre "+G.constants.db().LIKE+" :1 OR state "+G.constants.db().LIKE+" :2";
+    
+    G.knex.raw(sql, {1:nombre + "%", 2:url + "%"}).then(function(resultado){
+        callback(false, resultado.rows);
 
-    G.db.query(sql, [nombre + "%", url + "%"], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 //opciones
@@ -205,42 +217,51 @@ ModuloModel.prototype.guardarOpcion = function(opcion, callback) {
 ModuloModel.prototype.insertarOpcion = function(opcion, callback) {
 
     var sql = "INSERT INTO modulos_opciones (nombre, alias, modulo_id, observacion, usuario_id,\
-               fecha_creacion, estado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
+               fecha_creacion, estado) VALUES ( :1, :2, :3, :4, :5, :6, :7 ) RETURNING id";
 
 
-    var params = [
-        opcion.nombre, opcion.alias, opcion.modulo_id,
-        opcion.observacion, opcion.usuario_id, 'now()', Number(Boolean(opcion.estado)) || '0'
-    ];
+    var params = {
+        1:opcion.nombre, 2:opcion.alias, 3:opcion.modulo_id,
+        4:opcion.observacion, 5:opcion.usuario_id, 6:'now()', 7:Number(Boolean(opcion.estado)) || '0'
+    };
 
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, params).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 ModuloModel.prototype.modificarOpcion = function(opcion, callback) {
 
 
-    var sql = "UPDATE modulos_opciones SET nombre = $1, alias =$2,\
-               observacion = $3,  usuario_id_modifica = $4,\
-               estado = $5, fecha_modificacion = $6 WHERE id = $7  \
-               ";
+    var sql = "UPDATE modulos_opciones SET nombre = :1, alias = :2,\
+               observacion = :3,  usuario_id_modifica = :4,\
+               estado = :5, fecha_modificacion = :6 WHERE id = :7 ";
 
-    var params = [
-        opcion.nombre, opcion.alias, opcion.observacion,
-        opcion.usuario_id, Number(Boolean(opcion.estado)), 'now()', opcion.id
-    ];
+    var params = {
+        1:opcion.nombre, 2:opcion.alias, 3:opcion.observacion,
+        4:opcion.usuario_id, 5:Number(Boolean(opcion.estado)), 6:'now()', 7:opcion.id
+    };
 
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows);
+
+    G.knex.raw(sql, params).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
-    var sql = "SELECT  nombre, alias, id, modulo_id FROM modulos_opciones WHERE nombre ILIKE $1";
+    var sql = "SELECT  nombre, alias, id, modulo_id FROM modulos_opciones WHERE nombre "+G.constants.db().LIKE+" :1";
+    
+    G.knex.raw(sql, {1:nombre + "%"}).then(function(resultado){
+        callback(false, resultado.rows);
 
-    G.db.query(sql, [nombre + "%"], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -277,52 +298,64 @@ ModuloModel.prototype.guardarVariable = function(variable, callback) {
 ModuloModel.prototype.insertarVariable = function(variable, callback) {
 
     var sql = "INSERT INTO modulos_variables (nombre, valor, observacion, modulo_id, estado,\
-               fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+               fecha_creacion) VALUES ( :1, :2, :3, :4, :5, :6 ) RETURNING id";
 
 
-    var params = [
-        variable.nombre, variable.valor, variable.observacion,
-        variable.modulo_id, Number(Boolean(variable.estado)) || '0', 'now()'
-    ];
+    var params = {
+        1:variable.nombre, 2:variable.valor, 3:variable.observacion,
+        4:variable.modulo_id, 5:Number(Boolean(variable.estado)) || '0', 6:'now()'
+    };
 
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, params).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 ModuloModel.prototype.modificarVariable = function(variable, callback) {
     var self = this;
 
-    var sql = "UPDATE modulos_variables SET nombre = $1, valor =$2,\
-               observacion = $3,  usuario_id_modifica = $4,\
-               estado = $5, fecha_modificacion = $6 WHERE id = $7";
+    var sql = "UPDATE modulos_variables SET nombre = :1, valor = :2,\
+               observacion = :3,  usuario_id_modifica = :4,\
+               estado = :5, fecha_modificacion = :6 WHERE id = :7";
 
-    var params = [
-        variable.nombre, variable.valor, variable.observacion,
-        variable.usuario_id, Number(Boolean(variable.estado)), 'now()', variable.id
-    ];
+    var params = {
+        1:variable.nombre, 2:variable.valor, 3:variable.observacion,
+        4:variable.usuario_id, 5:Number(Boolean(variable.estado)), 6:'now()', 7:variable.id
+    };
 
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
+    G.knex.raw(sql, params).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 
 ModuloModel.prototype.listarVariablesPorModulo = function(modulo_id, callback) {
     var sql = "SELECT * FROM modulos_variables  a\
-               WHERE a.modulo_id =  $1 ORDER BY a.id";
+               WHERE a.modulo_id =  :1 ORDER BY a.id";
 
-    G.db.query(sql, [modulo_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:modulo_id}).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 
 ModuloModel.prototype.obtenerVariablePorNombre = function(nombre, callback) {
-    var sql = "SELECT  nombre, id FROM modulos_variables WHERE nombre ILIKE $1";
+    var sql = "SELECT  nombre, id FROM modulos_variables WHERE nombre "+G.constants.db().LIKE+" :1";
+    
+    G.knex.raw(sql, {1:nombre + "%"}).then(function(resultado){
+        callback(false, resultado.rows);
 
-    G.db.query(sql, [nombre + "%"], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -348,32 +381,42 @@ ModuloModel.prototype.listarUsuarioModuloOpciones = function(modulo_id, rol_id, 
     var sql = "SELECT a.*, b.rol_id, b.rol_opcion_id, b.estado_opcion_rol FROM modulos_opciones as a\
                LEFT JOIN (\
                     SELECT cc.id as rol_opcion_id, bb.modulo_id, cc.modulos_opcion_id, cc.estado as estado_opcion_rol, aa.rol_id FROM login_empresas as aa\
-                    INNER JOIN login_modulos_empresas bb ON aa.id = bb.login_empresas_id AND bb.modulo_id = $1\
+                    INNER JOIN login_modulos_empresas bb ON aa.id = bb.login_empresas_id AND bb.modulo_id = :1 \
                     INNER JOIN login_modulos_opciones cc ON cc.	login_modulos_empresa_id = bb.id\
-                    WHERE aa.empresa_id = $3   AND aa.rol_id = $2 AND aa.login_id = $4\
+                    WHERE aa.empresa_id = :3   AND aa.rol_id = :2 AND aa.login_id = :4 \
                ) as b ON b.modulo_id = a.modulo_id AND b.modulos_opcion_id = a.id\
-               WHERE a.modulo_id =  $1 "+sqlAux+" ORDER BY a.id DESC";
+               WHERE a.modulo_id =  :1 "+sqlAux+" ORDER BY a.id DESC";
+    
+    G.knex.raw(sql, {1:modulo_id, 2:rol_id, 3:empresa_id, 4:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
 
-    G.db.query(sql, [modulo_id, rol_id, empresa_id, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 
 ModuloModel.prototype.eliminarOpcion = function(id, callback) {
-    var sql = "DELETE FROM modulos_opciones WHERE id = $1";
+    var sql = "DELETE FROM modulos_opciones WHERE id = :1";
 
-    G.db.query(sql, [id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:id}).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 
 ModuloModel.prototype.eliminarVariable = function(id, callback) {
-    var sql = "DELETE FROM modulos_variables WHERE id = $1";
+    var sql = "DELETE FROM modulos_variables WHERE id = :1";
 
-    G.db.query(sql, [id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:id}).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -391,10 +434,13 @@ ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_
 ModuloModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
     var sql = "SELECT a.*, b.parent, b.nombre, b.state, b.icon FROM modulos_empresas a\
                INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = '1' and b.estado = '1' \
-               WHERE empresa_id =  $1 ORDER BY id";
+               WHERE empresa_id =  :1 ORDER BY id";
+    
+    G.knex.raw(sql, {1:empresa_id}).then(function(resultado){
+        callback(false, resultado.rows);
 
-    G.db.query(sql, [empresa_id], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -402,10 +448,13 @@ ModuloModel.prototype.listarModulosEmpresaPorRol = function(rol_id, callback) {
     var sql = " SELECT a.*, b.parent, c.estado as estado_rol, b.nombre, b.state, b.icon, c.id as roles_modulos_id FROM modulos_empresas a\
                 INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = '1' and b.estado = '1'\
                 INNER JOIN roles_modulos c ON c.modulos_empresas_id = a.id\
-                WHERE c.rol_id = $1   ORDER BY id";
+                WHERE c.rol_id = :1   ORDER BY id";
+    
+    G.knex.raw(sql, {1:rol_id}).then(function(resultado){
+        callback(false, resultado.rows);
 
-    G.db.query(sql, [rol_id], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -420,10 +469,13 @@ ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_
                 FROM login_empresas a\
 		INNER JOIN login_modulos_empresas b ON b.login_empresas_id = a.id\
                 INNER JOIN modulos c ON b.modulo_id = c.id and c.estado = '1'\
-                WHERE a.rol_id = $1 AND a.empresa_id = $2 AND a.login_id = $3   ORDER BY id";
+                WHERE a.rol_id = :1 AND a.empresa_id = :2 AND a.login_id = :3   ORDER BY id";
 
-    G.db.query(sql, [rol_id, empresa_id, login_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:rol_id, 2:empresa_id, 3:login_id}).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -432,22 +484,29 @@ ModuloModel.prototype.obtenerModulosHijos = function(modulo_id, callback) {
 
     var sql = " SELECT b. * FROM modulos a\
                 INNER join modulos b on a.id= b.parent\
-                WHERE a.id = $1";
+                WHERE a.id = :1";
 
-    G.db.query(sql, [modulo_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:modulo_id}).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 
 ModuloModel.prototype.esModuloPadre = function(modulo_id, callback){
     var sql = "SELECT b.id FROM modulos a\
                 INNER join modulos b on a.id= b.parent\
-                WHERE a.id = $1 limit 1";
+                WHERE a.id = :1 limit 1";
     
-    G.db.query(sql, [modulo_id], function(err, rows, result) {
-        var esPadre = (rows.length > 0)?true:false;
-        callback(err, esPadre);
+    G.knex.raw(sql, {1:modulo_id}).then(function(resultado){
+        var esPadre = (resultado.rows.length > 0)?true:false;
+        callback(false, esPadre);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -456,12 +515,15 @@ ModuloModel.prototype.listarRolesPorModulo = function(modulo_id, empresa_id, cal
                 INNER JOIN (\
                     SELECT bb.rol_id, bb.id as id_rol_modulo, bb.estado as estado_rol_modulo, aa.empresa_id FROM modulos_empresas aa\
                     INNER JOIN roles_modulos bb ON bb.modulos_empresas_id = aa.id\
-                    WHERE  aa.modulo_id = $1 AND aa.empresa_id = $2\
+                    WHERE  aa.modulo_id = :1 AND aa.empresa_id = :2 \
                 ) AS b ON  b.rol_id = a.id\
-                WHERE a.empresa_id = $2 AND a.estado = '1'";
+                WHERE a.empresa_id = :2 AND a.estado = '1'";
 
-    G.db.query(sql, [modulo_id, empresa_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:modulo_id, 2:empresa_id}).then(function(resultado){
+        callback(false, resultado.rows);
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 

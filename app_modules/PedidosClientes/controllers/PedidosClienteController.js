@@ -29,7 +29,8 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  */
 
 PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
-
+    
+    
     var that = this;
 
     var args = req.body.data;
@@ -57,7 +58,12 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     var estadoSolicitud = args.pedidos_clientes.estado_solicitud;
 
     this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido, estadoSolicitud, function(err, lista_pedidos_clientes) {
+        
+       
+        
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
+        
+        
     });
 };
 
@@ -474,7 +480,8 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     cotizacion.usuario_id = req.session.user.usuario_id;
 
     that.m_pedidos_clientes.insertar_cotizacion(cotizacion, function(err, rows, result) {
-
+        
+       
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {}}));
             return;
@@ -724,9 +731,10 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
 
             if (rows[0].estado === '1' || rows[0].estado === '4') {
 
-
+                
                 that.m_pedidos_clientes.modificar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
-
+                    
+                    
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
                         return;
@@ -1017,6 +1025,7 @@ PedidosCliente.prototype.consultarCotizacion = function(req, res) {
  */
 PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
 
+
     var that = this;
 
     var args = req.body.data;
@@ -1131,7 +1140,7 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
                 });
 
                 that.m_pedidos_clientes.eliminar_producto_cotizacion(cotizacion, producto, function(err, rows, result) {
-
+                   
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error Eliminando el producto', 500, {pedidos_clientes: []}));
                         return;
@@ -2590,6 +2599,8 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
  */
 PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
 
+
+
     var that = this;
 
     var args = req.body.data;
@@ -2618,7 +2629,8 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     }
 
     that.m_pedidos_clientes.actualizarPedidoCarteraEstadoNoAsigando(pedido, function(err, rows, result) {
-
+        
+        
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
             return;

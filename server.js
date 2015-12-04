@@ -129,7 +129,6 @@ if (cluster.isMaster) {
     cluster.on('exit', function(worker, code, signal) {
         console.log('worker ' + worker.process.pid + ' died');
         G.knex.destroy();
-        G.db.disconnect();
         //se reemplaza el worker que acaba de caer
         cluster.fork();
     });

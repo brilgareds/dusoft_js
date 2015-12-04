@@ -7,10 +7,12 @@ PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
     var sql = " SELECT	b.empresa_id, b.tipo_id_tercero as tipo_identificacion, b.id as identificacion, b.razon_social AS razon_social \
                 FROM userpermisos_reportes_gral a \
                 inner join empresas b on a.empresa_id = b.empresa_id \
-                where a.usuario_id = $1 ";
+                where a.usuario_id = :1 ";
 
-    G.db.query(sql, [usuario], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:usuario}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -38,9 +40,9 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
                 JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
                 JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
                 JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
-                WHERE a.usuario_id = $1 group by 1,2; ";
+                WHERE a.usuario_id = :1 group by 1,2; ";
  
-        parametros = [usuario];
+        parametros = {1:usuario};
     }
     
     //Depreciado para el modulo de kardex, se traen los centros de utilidad desde el modulo de CentrosUtilidad 24/06/2015
@@ -53,9 +55,9 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
                 JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
                 JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
                 JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
-                WHERE a.usuario_id = $1 and a.empresa_id = $2 group by 1,2 ";
+                WHERE a.usuario_id = :1 and a.empresa_id = :2 group by 1,2 ";
 
-        parametros = [usuario, empresa_id];
+        parametros = {1:usuario, 2:empresa_id};
     }
 
     //Depreciado para el modulo de kardex, se traen las bodegas desde el modulo de Bodegas 24/06/2015
@@ -69,7 +71,7 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
                     JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
                     JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
                     JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
-                    WHERE a.usuario_id = $1 and a.empresa_id = $2 and a.centro_utilidad = $3;  ";
+                    WHERE a.usuario_id = :1 and a.empresa_id = :2 and a.centro_utilidad = :3;  ";
         } else {
             sql = "SELECT\
                     b.bodega as bodega_id,\
@@ -78,15 +80,16 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
                     JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
                     JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
                     JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
-                    WHERE a.usuario_id = $1 and a.empresa_id = $2 and a.centro_utilidad = $3;";
+                    WHERE a.usuario_id = :1 and a.empresa_id = :2 and a.centro_utilidad = :3;";
         }
 
-        parametros = [usuario, empresa_id, centro_utilidad_id];
+        parametros = {1:usuario, 2:empresa_id, 3:centro_utilidad_id};
     }
-
-
-    G.db.query(sql, parametros, function(err, rows, result) {
-        callback(err, rows, result);
+  
+    G.knex.raw(sql, parametros).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -138,48 +141,64 @@ PedidosFarmaciasModel.prototype.guardarDetalleTemporal = function(numeroPedido, 
 
 PedidosFarmaciasModel.prototype.existe_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
-    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros  FROM solicitud_Bodega_principal_aux WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
-
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros  FROM solicitud_Bodega_principal_aux WHERE \
+               farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4";
+    
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 PedidosFarmaciasModel.prototype.obtenerCantidadProductosEnTemporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
-    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros  FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros  FROM solicitud_pro_a_bod_prpal_tmp WHERE \
+               farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4";
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 
 PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
 {
-    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and codigo_producto = $4 and usuario_id = $5";
-
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros FROM solicitud_pro_a_bod_prpal_tmp WHERE \
+               farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and codigo_producto = :4 and usuario_id = :5";
+    
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:codigo_producto, 5:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 PedidosFarmaciasModel.prototype.existe_registro_detalle_pedido = function(numero_pedido, codigo_producto, callback)
 {
-    var sql = "SELECT COUNT(*) as cantidad_registros FROM solicitud_productos_a_bodega_principal_detalle WHERE solicitud_prod_a_bod_ppal_id = $1  and codigo_producto = $2";
-
-    G.db.query(sql, [numero_pedido, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
+    var sql = "SELECT COUNT(*) as cantidad_registros FROM solicitud_productos_a_bodega_principal_detalle WHERE \
+               solicitud_prod_a_bod_ppal_id = :1  and codigo_producto = :2";
+  
+    G.knex.raw(sql, {1:numero_pedido, 2:codigo_producto}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 PedidosFarmaciasModel.prototype.actualizar_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, callback)
 {
    // console.log("modificando pedido temporal ", empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion);
-    var sql = "UPDATE solicitud_Bodega_principal_aux SET observacion = $5 WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
-
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = "UPDATE solicitud_Bodega_principal_aux SET observacion = :5 WHERE \
+               farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4";
+   
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id, 5:observacion}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -191,11 +210,13 @@ PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(emp
     
     //En la base de datos la empresa destino erroneamente se asigno como la empresa origen, por eso se hace el intercambio con lo que envia el app cliente
     var sql = " INSERT INTO solicitud_Bodega_principal_aux ( farmacia_id, centro_utilidad, bodega, empresa_destino, centro_destino, bogega_destino, observacion, usuario_id )\
-                VALUES( $1,$2,$3,$4,$5,$6,$7, $8);";
-
-    G.db.query(sql, [empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, empresa_origen_id, centro_utilidad_origen_id, 
-                    bodega_origen_id, observacion, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
+                VALUES( :1, :2, :3, :4, :5, :6, :7, :8 );";
+    
+    G.knex.raw(sql, {1:empresa_destino_id, 2:centro_utilidad_destino_id, 3:bodega_destino_id, 4:empresa_origen_id, 5:centro_utilidad_origen_id, 
+                     6:bodega_origen_id, 7:observacion, 8:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -204,10 +225,13 @@ PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(emp
 PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  tipo_producto_id, cantidad_pendiente, usuario_id, callback) {
 
     var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, cantidad_pendiente, usuario_id ) \
-                VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9 ) ;";
+                VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) ;";
 
-    G.db.query(sql, [numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  tipo_producto_id, cantidad_pendiente, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
+    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 
+                     6:cantidad_solicitada,  7:tipo_producto_id, 8:cantidad_pendiente, 9:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -217,10 +241,12 @@ PedidosFarmaciasModel.prototype.buscar_usuario_bloqueo = function(codigo_tempora
     var sql = " SELECT b.nombre, b.usuario_id\
                 FROM solicitud_pro_a_bod_prpal_tmp a\
                 INNER JOIN system_usuarios b ON a.usuario_id = b.usuario_id\
-                WHERE a.soli_a_bod_prpal_tmp_id = $1";
-
-    G.db.query(sql, [codigo_temporal], function(err, rows, result) {
-        callback(err, rows, result);
+                WHERE a.soli_a_bod_prpal_tmp_id = :1";
+    
+    G.knex.raw(sql, {1:codigo_temporal}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -243,38 +269,47 @@ PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(em
 PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
     var sql = "SELECT codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion_producto, cantidad_solic::integer as cantidad_solicitada, cantidad_pendiente, tipo_producto as tipo_producto_id\
-                FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4 order by cantidad_pendiente asc";
-
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+                FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4 order by cantidad_pendiente asc";
+ 
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
+
 };
 // ********************
 
 PedidosFarmaciasModel.prototype.eliminar_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
-    var sql = "DELETE FROM solicitud_Bodega_principal_aux WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+    var sql = "DELETE FROM solicitud_Bodega_principal_aux WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4";
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 PedidosFarmaciasModel.prototype.eliminar_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
 {
-    var sql = "DELETE FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and codigo_producto = $4 and usuario_id = $5";
+    var sql = "DELETE FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and codigo_producto = :4 and usuario_id = :5";
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:codigo_producto, 5:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 PedidosFarmaciasModel.prototype.eliminar_detalle_temporal_completo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
-    var sql = "DELETE FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+    var sql = "DELETE FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4";
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -282,12 +317,14 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, ce
     
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, centro_destino,\
                 bodega_destino, sw_despacho, estado, tipo_pedido) \
-                SELECT farmacia_id, centro_utilidad, bodega, $5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, centro_destino, bogega_destino, 0, 0, $6 from solicitud_Bodega_principal_aux \
-                WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4 \
+                SELECT farmacia_id, centro_utilidad, bodega, :5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, centro_destino, bogega_destino, 0, 0, :6 from solicitud_Bodega_principal_aux \
+                WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4 \
                 RETURNING solicitud_prod_a_bod_ppal_id";
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido], function(err, rows, result) {
-        callback(err, rows, result);
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id, 5:observacion || "", 6:tipo_pedido}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -295,11 +332,13 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, ce
 PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback) {
     
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
-                SELECT $1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic from solicitud_pro_a_bod_prpal_tmp \
-                WHERE farmacia_id = $2 and centro_utilidad = $3 and bodega = $4 and usuario_id = $5";
+                SELECT :1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic from solicitud_pro_a_bod_prpal_tmp \
+                WHERE farmacia_id = :2 and centro_utilidad = :3 and bodega = :4 and usuario_id = :5";
 
-    G.db.query(sql, [numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
+    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:usuario_id}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -309,11 +348,14 @@ PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_
 PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solic, tipo_producto_id, usuario_id, cantidad_pendiente, callback){
  
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
-               VALUES($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, 0, $9)";
+               VALUES( :1, :2, :3, :4, :5, :6, :7, :8, CURRENT_TIMESTAMP, 0, :9 )";
 
-    G.db.query(sql, [numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solic, tipo_producto_id, usuario_id, cantidad_pendiente], function(err, rows, result) {
-        callback(err, rows, result);
-    });    
+    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 6:cantidad_solic, 
+                     7:tipo_producto_id, 8:usuario_id, 9:cantidad_pendiente}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
 };
 
 
@@ -950,11 +992,13 @@ PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,
     
     estados = estados.join(",");
     
-    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $2\
-               where solicitud_prod_a_bod_ppal_id  = $1 and estado::integer in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
+    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = :2 \
+               where solicitud_prod_a_bod_ppal_id  = :1 and estado::integer in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
 
-    G.db.query(sql, [numero_pedido, terminado], function(err, rows, result) {
-        callback(err, rows, result);
+    G.knex.raw(sql, {1:numero_pedido, 2:terminado}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 };
 // Pedidos en Donde esta pendiente por entregar el Producto
@@ -990,11 +1034,12 @@ PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function
                       from inv_bodegas_movimiento_despachos_farmacias aa\
                       inner join inv_bodegas_movimiento_justificaciones_pendientes bb on aa.numero = bb.numero and aa.prefijo = bb.prefijo\
                 ) e on e.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id  and e.codigo_producto = b.codigo_producto\
-                where a.empresa_destino = $1 and b.codigo_producto = $2 and b.cantidad_pendiente > 0 ; ";
-
-
-    G.db.query(sql, [empresa, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
+                where a.empresa_destino = :1 and b.codigo_producto = :2 and b.cantidad_pendiente > 0 ; ";
+    
+    G.knex.raw(sql, {1:empresa, 2:codigo_producto}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 
 };
@@ -1008,10 +1053,12 @@ PedidosFarmaciasModel.prototype.obtenerDetalleRotulo = function(numero_pedido, n
             INNER JOIN bodegas c ON b.farmacia_id = c.empresa_id AND b.centro_utilidad = c.centro_utilidad AND b.bodega = c.bodega\
             INNER JOIN centros_utilidad d ON c.empresa_id = d.empresa_id AND c.centro_utilidad = d.centro_utilidad\
             INNER JOIN tipo_dptos e ON e.tipo_dpto_id 	= d.tipo_dpto_id AND e.tipo_pais_id = d.tipo_pais_id\
-            WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.numero_caja = $2 AND a.tipo = $3;";
+            WHERE a.solicitud_prod_a_bod_ppal_id = :1 AND a.numero_caja = :2 AND a.tipo = :3;";
 
-    G.db.query(sql, [numero_pedido, numero_caja, tipo], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:numero_pedido, 2:numero_caja, 3:tipo}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -1026,11 +1073,13 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
     var sql = " select b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente\
                 from solicitud_productos_a_bodega_principal a \
                 inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
-                where a.empresa_destino = $1 and b.codigo_producto = $2 and b.cantidad_pendiente > 0 \
+                where a.empresa_destino = :1 and b.codigo_producto = :2 and b.cantidad_pendiente > 0 \
                 group by 1";
     
-    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:empresa_id, 2:codigo_producto}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -1041,11 +1090,13 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
 
 PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias = function(codigo_producto, callback) {
     
-    var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
+    var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = :1\
                 group by codigo_producto"; 
     
-    G.db.query(sql, [codigo_producto], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:codigo_producto}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -1134,38 +1185,42 @@ PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = fun
 PedidosFarmaciasModel.prototype.consultar_producto_en_farmacia = function(empresa_id, centro_utilidad, bodega, codigo_producto, callback) {
     
     var sql = " select count(*) as cantidad_registros from existencias_bodegas\
-                where empresa_id = $1\
-                and centro_utilidad = $2\
-                and bodega = $3\
-                and codigo_producto = $4";
+                where empresa_id = :1 \
+                and centro_utilidad = :2 \
+                and bodega = :3 \
+                and codigo_producto = :4";
     
-    G.db.query(sql, [empresa_id, centro_utilidad, bodega, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad, 3:bodega, 4:codigo_producto}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
-    
 };
 
 PedidosFarmaciasModel.prototype.actualizar_encabezado_pedido = function(numero_pedido, farmacia_id, centro_utilidad, bodega, observacion, callback) {
         
     var sql = " update solicitud_productos_a_bodega_principal\
-                set farmacia_id = $2, centro_utilidad = $3, bodega = $4, observacion = $5\
-                where solicitud_prod_a_bod_ppal_id = $1";
+                set farmacia_id = :2, centro_utilidad = :3, bodega = :4, observacion = :5 \
+                where solicitud_prod_a_bod_ppal_id = :1";
     
-    G.db.query(sql, [numero_pedido, farmacia_id, centro_utilidad, bodega, observacion], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1:numero_pedido, 2:farmacia_id, 3:centro_utilidad, 4:bodega, 5:observacion}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
-    
 };
 
 
 PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_pedido, farmacia_id, centro_utilidad, bodega, callback) {
     
     var sql = " update solicitud_productos_a_bodega_principal_detalle\
-                set farmacia_id = $2, centro_utilidad = $3, bodega = $4\
-                where solicitud_prod_a_bod_ppal_id = $1";  
-    
-    G.db.query(sql, [numero_pedido, farmacia_id, centro_utilidad, bodega], function(err, rows, result) {
-        callback(err, rows);
+                set farmacia_id = :2, centro_utilidad = :3, bodega = :4 \
+                where solicitud_prod_a_bod_ppal_id = :1";  
+
+    G.knex.raw(sql, {1:numero_pedido, 2:farmacia_id, 3:centro_utilidad, 4:bodega}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
     
 };
@@ -1173,7 +1228,7 @@ PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_p
 PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino,
                                                            pagina, filtro, callback) {
     
-    //console.log(">>>>---Datos Recibidos---<<<<");
+    console.log(">>>>---Datos Recibidos---<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     var sql_aux = "";
     var array_parametros = [empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino, "%" + filtro.termino_busqueda + "%"];
     var sql_filtro = "";

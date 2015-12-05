@@ -4,23 +4,6 @@ var ModuloModel = function() {
 
 
 ModuloModel.prototype.listar_modulos = function(termino, callback) {
-
-    /*var parametros = [];
-    var sql_aux = "";
-
-
-    if (termino.length > 0) {
-        parametros = ["%" + termino + "%"];
-        sql_aux = " WHERE nombre ILIKE $1 ";
-    }
-
-    console.log("buscando termino " + sql_aux, parametros, termino);
-
-    var sql = "SELECT * FROM modulos " + sql_aux + " ORDER BY id ASC ";
-
-    G.db.query(sql, parametros, function(err, rows, result) {
-        callback(err, rows);
-    });*/
     
     var query = G.knex.column("*").
     from("modulos");
@@ -112,19 +95,20 @@ ModuloModel.prototype.insertarModulo = function(modulo, callback) {
 ModuloModel.prototype.modificarModulo = function(modulo, callback) {
 
     var that = this;
-    var sql = "UPDATE modulos SET parent = $1, nombre = $2, url =$3, parent_name = $4,\
-               icon = $5, state = $6, observacion = $7, usuario_id = $8, usuario_id_modifica = $9,\
-               estado = $10, fecha_modificacion = $11, carpeta_raiz = $12 WHERE id = $13 ";
+    var sql = "UPDATE modulos SET parent = :1, nombre = :2, url = :3, parent_name = :4,\
+               icon = :5, state = :6, observacion = :7, usuario_id = :8, usuario_id_modifica = :9,\
+               estado = :10, fecha_modificacion = :11, carpeta_raiz = :12 WHERE id = :13 ";
 
-    var params = [
-        modulo.parent, modulo.nombre, modulo.url, modulo.parent_name, modulo.icon,
-        modulo.state, modulo.observacion, modulo.usuario_id, modulo.usuario_id,
-        Number(modulo.estado), 'now()', modulo.carpetaRaiz, modulo.modulo_id
-    ];
+    var params = {
+        1:modulo.parent, 2:modulo.nombre, 3:modulo.url, 4:modulo.parent_name, 5:modulo.icon,
+        6:modulo.state, 7:modulo.observacion, 8:modulo.usuario_id, 9:modulo.usuario_id,
+        10:Number(modulo.estado), 11:'now()', 12:modulo.carpetaRaiz, 13:modulo.modulo_id
+    };
+    
+    G.knex.raw(sql, params).
+    then(function(resultado){
 
-    G.db.query(sql, params, function(err, rows, result) {
-
-        //se debe determinar los modulos padres e hijos para modificar su estado
+         //se debe determinar los modulos padres e hijos para modificar su estado
         var modulos = modulo.modulosHijo || [];
 
         if (modulo.modulosPadre !== undefined && modulo.estado) {
@@ -138,10 +122,15 @@ ModuloModel.prototype.modificarModulo = function(modulo, callback) {
                 callback(err, rows);
             });
         } else {
-            callback(err, rows);
+            callback(false, resultado.rows);
         }
 
+      
+    }).catch(function(err){
+       callback(err);
     });
+    
+    
 };
 
 //funcion que se encarga de modificar el estado de todos los modulos hijo y modificar el estado de los modulos padre siempre y cuando sea true
@@ -746,8 +735,7 @@ function __validarCreacionVariable(that, variable, callback) {
 
     });
 
-}
-;
+};
 
 //funcion recursiva para actualizar listado de empresas_modulos
 function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback) {
@@ -764,45 +752,38 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, ca
     var modulo_id = empresas_modulos[0].modulo.modulo_id;
     var estado = Number(empresas_modulos[0].empresa.estado);
     console.log("va a actualizar con estado ", estado);
-
-    var sql = "UPDATE modulos_empresas SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()  WHERE modulo_id = $2 and empresa_id = $3 RETURNING id";
-
-    G.db.query(sql, [usuario_id, modulo_id, empresa_id, estado], function(err, rows, result) {
-        if (err) {
-            callback(err, rows);
+    
+    var sql = "UPDATE modulos_empresas SET estado = :4, usuario_id_modifica = :1, fecha_modificacion = now()  WHERE \
+               modulo_id = :2 and empresa_id = :3 RETURNING id";
+    
+    G.knex.raw(sql, {1:usuario_id, 2:modulo_id, 3:empresa_id, 4:estado}).then(function(resultado){
+        if (resultado.rowCount === 0) {
+            sql = "INSERT INTO modulos_empresas (empresa_id, modulo_id, usuario_id, fecha_creacion, estado)\
+                    VALUES( :1, :2, :3, now(), :4 ) RETURNING id";
+            
+             return G.knex.raw(sql, {1:empresa_id, 2:modulo_id, 3:usuario_id, 4:estado});
         } else {
-            //si la actualizacion no devuelve resultado se trata de hacer el insert
-            if (result.rowCount === 0) {
-                sql = "INSERT INTO modulos_empresas (empresa_id, modulo_id, usuario_id, fecha_creacion, estado)\
-                       VALUES($1, $2, $3, now(), $4) RETURNING id";
+            empresas_modulos.splice(0, 1);
 
-                G.db.query(sql, [empresa_id, modulo_id, usuario_id, estado], function(err, rows, result) {
-                    if (err) {
-                        callback(err, rows, ids);
-                    } else {
-                        empresas_modulos.splice(0, 1);
-
-                        //se agrega el id del rol_modulo creado
-                        if (rows.length > 0 && rows[0].id) {
-                            ids.push({modulos_empresas_id: rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
-                        }
-
-                        __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback);
-                    }
-                });
-
-            } else {
-                empresas_modulos.splice(0, 1);
-
-                if (rows.length > 0 && rows[0].id) {
-                    ids.push({modulos_empresas_id: rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
-                }
-                __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback);
+            if (resultado.rows.length > 0 && resultado.rows[0].id) {
+                ids.push({modulos_empresas_id: resultado.rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
             }
+            __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback);
         }
+
+    }).then(function(resultado){
+        empresas_modulos.splice(0, 1);
+
+        //se agrega el id del rol_modulo creado
+        if (resultado.rows.length > 0 && resultado.rows[0].id) {
+            ids.push({modulos_empresas_id: resultado.rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
+        }
+
+        __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback);
+    }).catch(function(err){
+        callback(err);
     });
 
-}
-;
+};
 
 module.exports = ModuloModel;

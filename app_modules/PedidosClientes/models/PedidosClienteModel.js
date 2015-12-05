@@ -287,37 +287,26 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
         "h.razon_social"
     ];
 
-    G.knex.column(columnas).
-            from("ventas_ordenes_pedidos as a").
-            innerJoin("terceros as b", function() {
+    G.knex.column(columnas).from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {
         this.on("a.tipo_id_tercero", "b.tipo_id_tercero").
-                on("a.tercero_id", "b.tercero_id");
-    }).
-            innerJoin("vnts_vendedores as c", function() {
+             on("a.tercero_id", "b.tercero_id");
+    }).innerJoin("vnts_vendedores as c", function() {
         this.on("a.tipo_id_vendedor", "c.tipo_id_vendedor").
-                on("a.vendedor_id", "c.vendedor_id");
-    }).
-            leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as d", "a.pedido_cliente_id", "d.pedido_cliente_id").
-            leftJoin("inv_tipo_producto as e", "a.tipo_producto", "e.tipo_producto_id").
-            leftJoin("vnts_contratos_clientes as f", function() {
+             on("a.vendedor_id", "c.vendedor_id");
+    }).leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as d", "a.pedido_cliente_id", "d.pedido_cliente_id").
+       leftJoin("inv_tipo_producto as e", "a.tipo_producto", "e.tipo_producto_id").
+       leftJoin("vnts_contratos_clientes as f", function() {
         this.on("b.tipo_id_tercero", "f.tipo_id_tercero").
-                on("b.tercero_id", "f.tercero_id").
-                on("a.empresa_id", "f.empresa_id").
-                on(G.knex.raw("f.estado = '1'"));
-    })
-            .innerJoin("system_usuarios as g", "g.usuario_id", "a.usuario_id")
-            .innerJoin("empresas as h", "h.empresa_id", "a.empresa_id")
-
-            .where("a.pedido_cliente_id", numero_pedido).
-            orderByRaw("1 desc")
-            .then(function(rows) {
+             on("b.tercero_id", "f.tercero_id").
+             on("a.empresa_id", "f.empresa_id").
+             on(G.knex.raw("f.estado = '1'"));
+    }).innerJoin("system_usuarios as g", "g.usuario_id", "a.usuario_id")
+      .innerJoin("empresas as h", "h.empresa_id", "a.empresa_id")
+      .where("a.pedido_cliente_id", numero_pedido).orderByRaw("1 desc").then(function(rows) {
         callback(false, rows);
-    }). catch (function(err) {
-
+    }).catch(function(err) {
         callback(err);
     }).done();
-
-
 };
 
 
@@ -513,30 +502,22 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         "g.fecha_registro as fecha_separacion_pedido"
     ];
 
-    var query = G.knex.column(columnas).
-            from("ventas_ordenes_pedidos as a").
-            innerJoin("terceros as b", function() {
-        this.on("a.tipo_id_tercero", "b.tipo_id_tercero").
-                on("a.tercero_id", "b.tercero_id");
-    }).
-            innerJoin("vnts_vendedores as c", function() {
+    var query = G.knex.column(columnas).from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {
+        this.on("a.tipo_id_tercero", "b.tipo_id_tercero"). 
+             on("a.tercero_id", "b.tercero_id");             
+    }).innerJoin("vnts_vendedores as c", function() {
         this.on("a.tipo_id_vendedor", "c.tipo_id_vendedor").
-                on("a.vendedor_id", "c.vendedor_id");
-
-    }).
-            innerJoin("ventas_ordenes_pedidos_estado as d", function() {
+             on("a.vendedor_id", "c.vendedor_id");
+    }).innerJoin("ventas_ordenes_pedidos_estado as d", function() {
         this.on("a.pedido_cliente_id", "d.pedido_cliente_id").
-                on("a.estado_pedido", "d.estado").
-                on(G.knex.raw("(d.sw_terminado is null or d.sw_terminado = ?)", ['0']));
-
-    }).
-            innerJoin("operarios_bodega as e", "d.responsable_id", "e.operario_id").
-            leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as f", "a.pedido_cliente_id", "f.pedido_cliente_id").
-            leftJoin("inv_bodegas_movimiento_tmp as g", function() {
+             on("a.estado_pedido", "d.estado").
+             on(G.knex.raw("(d.sw_terminado is null or d.sw_terminado = ?)", ['0']));
+    }).innerJoin("operarios_bodega as e", "d.responsable_id", "e.operario_id").
+       leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as f", "a.pedido_cliente_id", "f.pedido_cliente_id").
+       leftJoin("inv_bodegas_movimiento_tmp as g", function() {
         this.on("f.usuario_id", "g.usuario_id").
-                on("f.doc_tmp_id", "g.doc_tmp_id");
-    }).
-            where(function() {
+             on("f.doc_tmp_id", "g.doc_tmp_id");
+    }).where(function() {
 
         /*=========================================================================*/
         // Se implementa este filtro, para poder filtrar los pedidos del clientes 
@@ -564,10 +545,9 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
 
     });
 
-    if (filtro.numeroPedido) {
-
-        query.where(G.knex.raw("a.pedido_cliente_id :: varchar"), "=", termino_busqueda);
-    } else {
+        if (filtro.numeroPedido) {
+            query.where(G.knex.raw("a.pedido_cliente_id :: varchar"), "=", termino_busqueda);
+         }else{
 
         query.andWhere(function() {
             this.where(G.knex.raw("a.pedido_cliente_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
@@ -589,13 +569,9 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
 
     }).then(function(rows) {
         callback(false, rows, query.totalRegistros);
-    }).
-            catch (function(err) {
-
+    }).catch(function(err) {
         callback(err);
-    }).
-            done();
-
+    }).done();
 };
 
 
@@ -1469,19 +1445,32 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion
 /*
  * Autor : Camilo Orozco
  * Descripcion : Generar las observaciones ingresadas por el area de cartera
+ * @Funciones que hacen uso del modelo:
+ *  --PedidosCliente.prototype.observacionCarteraCotizacion
+ * Modificacion: Se migra a KNEX.js 
+ * @fecha: 05/12/2015 9:58 pm 
  */
 PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizacion, callback)
 {
-    var sql_aux = " ,estado = '4'"; // Estado Activo
-
+  
+    var sql_aux = '4'; // Estado Activo
+    
     if (cotizacion.aprobado_cartera === 1)
-        sql_aux = " ,estado = '3'"; // Estado Aprobado Cartera
-
-
-    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET observacion_cartera = $2, sw_aprobado_cartera = $3 " + sql_aux + " WHERE pedido_cliente_id_tmp = $1";
-    var params = [cotizacion.numero_cotizacion, cotizacion.observacion_cartera, cotizacion.aprobado_cartera];
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
+        sql_aux = '3'; // Estado Aprobado Cartera
+   
+    G.knex('ventas_ordenes_pedidos_tmp')
+     .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion) 
+     .update({
+        observacion_cartera: cotizacion.observacion_cartera,
+        sw_aprobado_cartera: cotizacion.aprobado_cartera,
+        estado:  sql_aux
+        
+    }).then(function(resultado) {
+      
+        callback(false, resultado.rows,resultado);
+    }).catch (function(error) {
+       
+        callback(error, false);
     });
 };
 
@@ -1508,29 +1497,7 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
     });
 };
 
-/*
- * @Autor : Cristian Ardila
- * +Descripcion : Actualizar estado de la cotizacion cuando se crea el pedido
- * @fecha: 05/11/2015
- * @Funciones que hacen uso del modelo:
- *  Model: PedidosClienteModel
- *  --PedidosClienteModel.prototype.generar_pedido_cliente
- */
-function __CambioEstadoCotizacionCreacionProducto(cotizacion, callback)
-{
 
-    G.knex('ventas_ordenes_pedidos_tmp')
-     .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
-     .update({
-        sw_aprobado_cartera: '1',
-        estado: '5'
-    }).then(function(rows) {
-        callback(rows, true);
-    }).catch (function(error) {
-        callback(error, false);
-    });
-
-};
 
 /*
  * @Autor : Cristian Ardila
@@ -1820,7 +1787,42 @@ PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto,
 
 PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
 {
-    G.db.begin(function() {
+   
+     var pedido;
+     G.knex.transaction(function(transaccion) {  
+        
+         G.Q.nfcall(__insertar_encabezado_pedido_cliente, cotizacion, transaccion)
+        
+        .then(function(resultado){
+
+          pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
+ 
+           return G.Q.nfcall(__generar_detalle_pedido_cliente, cotizacion, pedido, transaccion);
+             
+         }).then(function(){
+             
+           
+            return G.Q.nfcall(__CambioEstadoCotizacionCreacionProducto, cotizacion, transaccion);
+             
+         }).then(function(){
+             
+            transaccion.commit();
+                 
+         }).fail(function(err){
+            
+            transaccion.rollback(err);
+             
+         }).done();
+         
+         }).then(function(){
+             
+            callback(false, pedido);
+            
+         }).catch(function(err){
+           
+            callback(err);
+     }).done(); 
+    /*G.db.begin(function() {
 
         // Ingresar encabezado pedido
         __insertar_encabezado_pedido_cliente(cotizacion, function(err, rows, result) {
@@ -1856,7 +1858,7 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
 
             });
         });
-    });
+    });*/
 };
 
 
@@ -1879,29 +1881,28 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
 /*
  * Author : Camilo Orozco
  * Descripcion :  SQL Modificar Detalle Pedido
+ * Modificacion: Se migra a KNEX.js 
+ * @fecha: 05/12/2015 9:34 pm
  * @Funciones que hacen uso del modelo:
  *  Controller: PedidosClienteController
  *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
  *  --PedidosCliente.prototype.modificarDetallePedido
  */
-
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
-
-         
-    var sql = " UPDATE ventas_ordenes_pedidos_d SET porc_iva = $3, numero_unidades = $4, valor_unitario = $5, usuario_id = $6 , fecha_registro = NOW() \
-                WHERE  pedido_cliente_id = $1 AND codigo_producto = $2 ;";
-
-    var params = [
-        pedido.numero_pedido,
-        producto.codigo_producto,
-        producto.iva,
-        producto.cantidad_solicitada,
-        producto.precio_venta,
-        pedido.usuario_id
-    ];
-
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
+ 
+    G.knex('ventas_ordenes_pedidos_d')
+    .where('pedido_cliente_id', pedido.numero_pedido)
+    .andWhere('codigo_producto', producto.codigo_producto)
+    .update({
+        porc_iva: producto.iva,
+        numero_unidades: producto.cantidad_solicitada,
+        valor_unitario: producto.precio_venta,
+        usuario_id: pedido.usuario_id,
+        fecha_registro: 'NOW()'
+    }).then(function(resultado) {          
+        callback(false, resultado.rows,resultado);
+    }).catch(function(error) {
+        callback(error);
     });
 };
 
@@ -1909,14 +1910,25 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
 /*
  * Author : Camilo Orozco
  * Descripcion :  SQL Eliminar producto del pedido
+ * Modificacion: Se migra a KNEX.js 
+ * @fecha: 05/12/2015 9:18 pm
+ * @Funciones que hacen uso del modelo:
+ *  Controller: PedidosClienteController
+ *  --PedidosCliente.prototype.eliminarProductoPedido
  */
 PedidosClienteModel.prototype.eliminar_producto_pedido = function(pedido, producto, callback)
 {
-    var sql = "DELETE FROM ventas_ordenes_pedidos_d WHERE pedido_cliente_id = $1 and codigo_producto = $2 ; ";
-
-    G.db.query(sql, [pedido.numero_pedido, producto.codigo_producto], function(err, rows, result) {
-        callback(err, rows, result);
-    });
+  
+    G.knex('ventas_ordenes_pedidos_d')
+     .where('pedido_cliente_id', pedido.numero_pedido)
+     .andWhere('codigo_producto',producto.codigo_producto)
+     .del().then(function(resultado){
+      
+        callback(false, resultado.rows, resultado);
+       }).catch (function(error) {  
+          
+           callback(error);
+       });
 };
 
 
@@ -1932,8 +1944,12 @@ PedidosClienteModel.prototype.eliminar_producto_pedido = function(pedido, produc
  * Modificacion: Se migra a KNEX.js 
  * @fecha: 04/12/2015 2:43 pm 
  */
-function __insertar_encabezado_pedido_cliente(cotizacion, callback) {
-
+function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback) {
+   
+   console.log("******************PedidosClienteModel.prototype.generar_pedido_cliente***************");
+    console.log("******************PedidosClienteModel.prototype.generar_pedido_cliente***************");
+    console.log("******************PedidosClienteModel.prototype.generar_pedido_cliente***************");
+    
     var sql = " INSERT INTO ventas_ordenes_pedidos(\
                     empresa_id,\
                     centro_destino,\
@@ -1976,14 +1992,30 @@ function __insertar_encabezado_pedido_cliente(cotizacion, callback) {
                 ) returning pedido_cliente_id as numero_pedido ";
 
   
-    G.knex.raw(sql, {1:cotizacion.numero_cotizacion, 2:cotizacion.usuario_id, 3:cotizacion.total}).then(function(resultado){
+    /*G.knex.raw(sql, {1:cotizacion.numero_cotizacion, 2:cotizacion.usuario_id, 3:cotizacion.total}).then(function(resultado){
     
        callback(false, resultado);
 
     }).catch(function(err){
   
        callback(err);
+    });*/
+     var query = G.knex.raw(sql, {1:cotizacion.numero_cotizacion, 2:cotizacion.usuario_id, 3:cotizacion.total});
+    
+    if(transaccion) query.transacting(transaccion);
+    
+      query.then(function(resultado){
+        
+        //console.log("resultado ", resultado);
+       /// console.log("resultado.rows ", resultado.rows);
+        //console.log("resultado.rows ", resultado.rows.length);
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+        //console.log("ERROR INSERTANDO ENCABEZADO ");
+        //console.log("err ", err)
     });
+    
     
 };
 
@@ -1993,10 +2025,12 @@ function __insertar_encabezado_pedido_cliente(cotizacion, callback) {
  * Modificacion: Se migra a KNEX.js 
  * @fecha: 04/12/2015 2:43 pm
  */
-function __generar_detalle_pedido_cliente(cotizacion, pedido, callback) {
-    
+function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callback) {
    
-    
+   console.log("*************__generar_detalle_pedido_cliente********************");
+   console.log("*************__generar_detalle_pedido_cliente********************");
+   console.log("*************__generar_detalle_pedido_cliente********************");
+   
     var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
                     pedido_cliente_id, \
                     codigo_producto, \
@@ -2018,17 +2052,67 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, callback) {
                     WHERE pedido_cliente_id_tmp = :2\
                 ) ;";
     
-     G.knex.raw(sql, {1:pedido.numero_pedido, 2:cotizacion.numero_cotizacion, 3:cotizacion.usuario_id}).then(function(resultado){
+ /*    G.knex.raw(sql, {1:pedido.numero_pedido, 2:cotizacion.numero_cotizacion, 3:cotizacion.usuario_id}).then(function(resultado){
         
        callback(false, resultado.rows, resultado);
        
     }).catch(function(err){
   
        callback(err);
+    });*/
+   var query =  G.knex.raw(sql, {1:pedido.numero_pedido, 2:cotizacion.numero_cotizacion, 3:cotizacion.usuario_id});
+    
+    if(transaccion) query.transacting(transaccion);
+    
+    query.then(function(resultado){
+        console.log("resultado ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err ", err);
+        callback(err);
     });
     
 };
 
+/*
+ * @Autor : Cristian Ardila
+ * +Descripcion : Actualizar estado de la cotizacion cuando se crea el pedido
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del modelo:
+ *  Model: PedidosClienteModel
+ *  --PedidosClienteModel.prototype.generar_pedido_cliente
+ */
+function __CambioEstadoCotizacionCreacionProducto(cotizacion, transaccion, callback)
+{
+   console.log("*************__CambioEstadoCotizacionCreacionProducto********************");
+   console.log("*************__CambioEstadoCotizacionCreacionProducto********************");
+   console.log("*************__CambioEstadoCotizacionCreacionProducto********************");
+   
+    var sql = " UPDATE ventas_ordenes_pedidos_tmp SET sw_aprobado_cartera = '1', estado = '5' WHERE pedido_cliente_id_tmp = :1";
+    
+    var query =  G.knex.raw(sql, {1:cotizacion.numero_cotizacion});
+    
+    if(transaccion) query.transacting(transaccion);
+    
+    query.then(function(resultado){
+        console.log("resultado ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err ", err);
+        callback(err);
+    });
+   /* G.knex('ventas_ordenes_pedidos_tmp')
+     .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
+     .update({
+        sw_aprobado_cartera: '1',
+        estado: '5'
+    }).then(function(rows) {
+        callback(rows, true);
+    }).catch (function(error) {
+        callback(error, false);
+    });*/
+
+};
 /*
  * Autor : Camilo Orozco
  * Descripcion : SQL para actualizar estados de la cotizacion
@@ -2043,12 +2127,7 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
     // 0 => Inactiva
     // 1 => Activo     
     // 2 => Anulado
-    // 3 => Aprobado Cartera
-
-   // var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
-
-  //  var params = [cotizacion.numero_cotizacion, cotizacion.estado];
-    
+    // 3 => Aprobado Cartera    
     G.knex('ventas_ordenes_pedidos_tmp')
     .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
     .update({
@@ -2061,10 +2140,6 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
         
     });
 
-
-  /*  G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
-    });*/
 }
 ;
 

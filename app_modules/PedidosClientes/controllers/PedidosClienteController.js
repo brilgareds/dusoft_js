@@ -1683,9 +1683,9 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
                         if (rows[0].estado === '3') {
 
                             // Generar pedido
-                            that.m_pedidos_clientes.generar_pedido_cliente(cotizacion, function(err, rows, pedido) {
-
-                                if (!err) {
+                            that.m_pedidos_clientes.generar_pedido_cliente(cotizacion, function(err,pedido) {
+                                
+                                if (err) {
                                     res.send(G.utils.r(req.url, 'Error Interno al generar el pedido', 500, {pedidos_clientes: []}));
                                     return;
                                 } else {

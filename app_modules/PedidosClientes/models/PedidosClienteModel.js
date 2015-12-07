@@ -1778,11 +1778,13 @@ PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto,
 /*
  * Autor : Camilo Orozco
  * Descripcion : Transaccion para la generación del pedido
- * +Modificacion: Se modifica la funcion reemplazando la funcion interna (__actualizar_estado_cotizacion)
+ * +Modificacion 1: Se modifica la funcion reemplazando la funcion interna (__actualizar_estado_cotizacion)
  *                por la siguiente (__CambioEstadoCotizacionCreacionProducto)
  *                esto con el objetivo de añadirle un nuevo estado = 5 el cual consiste en indicar
  *                que la cotizacion ya tiene un pedido asignado
  * @fecha: 04/11/2015
+ * +Modificacion 2: Se migra a KNEX.js 
+ * @fecha: 04/12/2015 2:43 pm 
  */
 
 PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
@@ -1791,74 +1793,35 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
      var pedido;
      G.knex.transaction(function(transaccion) {  
         
-         G.Q.nfcall(__insertar_encabezado_pedido_cliente, cotizacion, transaccion)
-        
-        .then(function(resultado){
+        G.Q.nfcall(__insertar_encabezado_pedido_cliente, cotizacion, transaccion).then(function(resultado){
 
-          pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
- 
-           return G.Q.nfcall(__generar_detalle_pedido_cliente, cotizacion, pedido, transaccion);
-             
-         }).then(function(){
-             
-           
-            return G.Q.nfcall(__CambioEstadoCotizacionCreacionProducto, cotizacion, transaccion);
-             
-         }).then(function(){
-             
-            transaccion.commit();
-                 
-         }).fail(function(err){
-            
-            transaccion.rollback(err);
-             
-         }).done();
-         
-         }).then(function(){
-             
-            callback(false, pedido);
-            
-         }).catch(function(err){
-           
-            callback(err);
-     }).done(); 
-    /*G.db.begin(function() {
+         pedido = {numero_pedido: (resultado.rows.length > 0) ? resultado.rows[0].numero_pedido : 0, estado: 0};
 
-        // Ingresar encabezado pedido
-        __insertar_encabezado_pedido_cliente(cotizacion, function(err, rows, result) {
+         return G.Q.nfcall(__generar_detalle_pedido_cliente, cotizacion, pedido, transaccion);
 
-            if (err) {
-                callback(err);
-                return;
-            }
+        }).then(function(){
 
-            var pedido = {numero_pedido: (rows.rows.length > 0) ? rows.rows[0].numero_pedido : 0, estado: 0};
+           return G.Q.nfcall(__CambioEstadoCotizacionCreacionProducto, cotizacion, transaccion);
 
-            // ingresar detalle del pedido, a partir de la cotizacion
-            __generar_detalle_pedido_cliente(cotizacion, pedido, function(err, rows, result) {
+        }).then(function(){
 
-                if (err) {
-                    callback(err);
-                    return;
-                }
+           transaccion.commit();
 
-                // Inactivar cotizacion
-                //       cotizacion.estado = '0';
+        }).fail(function(err){
 
+           transaccion.rollback(err);
 
-                __CambioEstadoCotizacionCreacionProducto(cotizacion, function(rows, estado) {
+        }).done();
 
+        }).then(function(){
 
-                    // Finalizar Transacción.
-                    G.db.commit(function() {
-                        callback(estado, rows, pedido);
-                    });
+           callback(false, pedido);
 
-                });
+        }).catch(function(err){
 
-            });
-        });
-    });*/
+           callback(err);
+        }).done(); 
+    
 };
 
 
@@ -1946,10 +1909,7 @@ PedidosClienteModel.prototype.eliminar_producto_pedido = function(pedido, produc
  */
 function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback) {
    
-   console.log("******************PedidosClienteModel.prototype.generar_pedido_cliente***************");
-    console.log("******************PedidosClienteModel.prototype.generar_pedido_cliente***************");
-    console.log("******************PedidosClienteModel.prototype.generar_pedido_cliente***************");
-    
+ 
     var sql = " INSERT INTO ventas_ordenes_pedidos(\
                     empresa_id,\
                     centro_destino,\
@@ -1991,29 +1951,15 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
                   where a.pedido_cliente_id_tmp = :1\
                 ) returning pedido_cliente_id as numero_pedido ";
 
-  
-    /*G.knex.raw(sql, {1:cotizacion.numero_cotizacion, 2:cotizacion.usuario_id, 3:cotizacion.total}).then(function(resultado){
-    
-       callback(false, resultado);
-
-    }).catch(function(err){
-  
-       callback(err);
-    });*/
+ 
      var query = G.knex.raw(sql, {1:cotizacion.numero_cotizacion, 2:cotizacion.usuario_id, 3:cotizacion.total});
     
     if(transaccion) query.transacting(transaccion);
     
-      query.then(function(resultado){
-        
-        //console.log("resultado ", resultado);
-       /// console.log("resultado.rows ", resultado.rows);
-        //console.log("resultado.rows ", resultado.rows.length);
+      query.then(function(resultado){       
         callback(false, resultado);
     }).catch(function(err){
-        callback(err);
-        //console.log("ERROR INSERTANDO ENCABEZADO ");
-        //console.log("err ", err)
+        callback(err);   
     });
     
     
@@ -2026,10 +1972,6 @@ function __insertar_encabezado_pedido_cliente(cotizacion, transaccion, callback)
  * @fecha: 04/12/2015 2:43 pm
  */
 function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callback) {
-   
-   console.log("*************__generar_detalle_pedido_cliente********************");
-   console.log("*************__generar_detalle_pedido_cliente********************");
-   console.log("*************__generar_detalle_pedido_cliente********************");
    
     var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
                     pedido_cliente_id, \
@@ -2052,23 +1994,16 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                     WHERE pedido_cliente_id_tmp = :2\
                 ) ;";
     
- /*    G.knex.raw(sql, {1:pedido.numero_pedido, 2:cotizacion.numero_cotizacion, 3:cotizacion.usuario_id}).then(function(resultado){
-        
-       callback(false, resultado.rows, resultado);
-       
-    }).catch(function(err){
-  
-       callback(err);
-    });*/
+ 
    var query =  G.knex.raw(sql, {1:pedido.numero_pedido, 2:cotizacion.numero_cotizacion, 3:cotizacion.usuario_id});
     
     if(transaccion) query.transacting(transaccion);
     
     query.then(function(resultado){
-        console.log("resultado ", resultado);
+   
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err ", err);
+       
         callback(err);
     });
     
@@ -2084,10 +2019,7 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
  */
 function __CambioEstadoCotizacionCreacionProducto(cotizacion, transaccion, callback)
 {
-   console.log("*************__CambioEstadoCotizacionCreacionProducto********************");
-   console.log("*************__CambioEstadoCotizacionCreacionProducto********************");
-   console.log("*************__CambioEstadoCotizacionCreacionProducto********************");
-   
+  
     var sql = " UPDATE ventas_ordenes_pedidos_tmp SET sw_aprobado_cartera = '1', estado = '5' WHERE pedido_cliente_id_tmp = :1";
     
     var query =  G.knex.raw(sql, {1:cotizacion.numero_cotizacion});
@@ -2095,23 +2027,13 @@ function __CambioEstadoCotizacionCreacionProducto(cotizacion, transaccion, callb
     if(transaccion) query.transacting(transaccion);
     
     query.then(function(resultado){
-        console.log("resultado ", resultado);
+       
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err ", err);
+       
         callback(err);
     });
-   /* G.knex('ventas_ordenes_pedidos_tmp')
-     .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
-     .update({
-        sw_aprobado_cartera: '1',
-        estado: '5'
-    }).then(function(rows) {
-        callback(rows, true);
-    }).catch (function(error) {
-        callback(error, false);
-    });*/
-
+ 
 };
 /*
  * Autor : Camilo Orozco
@@ -2120,9 +2042,6 @@ function __CambioEstadoCotizacionCreacionProducto(cotizacion, transaccion, callb
  * @fecha: 04/12/2015 2:43 pm 
  */
 function __actualizar_estado_cotizacion(cotizacion, callback) {
-    
-    
-    
     // Estados Cotizacion
     // 0 => Inactiva
     // 1 => Activo     

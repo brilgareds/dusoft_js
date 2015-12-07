@@ -783,11 +783,16 @@ PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = funct
                 SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
                 FROM ventas_ordenes_pedidos a\
                 inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                where a.empresa_id = $1 and b.codigo_producto = $2 and (b.numero_unidades - b.cantidad_despachada) > 0  \
+                where a.empresa_id = :1 and b.codigo_producto = :2 and (b.numero_unidades - b.cantidad_despachada) > 0  \
                 GROUP BY 1";
 
-    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
+ 
+     G.knex.raw(sql, {1: empresa_id, 2: codigo_producto}).then(function(err, resultado){
+    
+        callback(err, resultado.rows, resultado);
+    }).
+    catch(function(err) {
+        callback(err);
     });
 };
 

@@ -261,6 +261,8 @@ define(["angular", "js/controllers",
 
             $scope.seleccionar_documento_planilla = function(documento) {
                 
+                console.log("Cantidad Cajas Auditadas ", documento.get_cantidad_cajas_auditadas());
+                console.log("Cantidad Neveras Auditadas ", documento.get_cantidad_neveras_auditadas());
                 // Validar que la cantidad de cajas y neveras sean iguales a las cantidades auditadas
                 if (documento.get_cantidad_cajas() == documento.get_cantidad_cajas_auditadas() && documento.get_cantidad_neveras() == documento.get_cantidad_neveras_auditadas()) {
 

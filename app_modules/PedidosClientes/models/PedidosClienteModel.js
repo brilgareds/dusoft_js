@@ -1475,7 +1475,7 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizaci
         callback(false, resultado.rows,resultado);
     }).catch (function(error) {
        
-        callback(error, false);
+        callback(error);
     });
 };
 
@@ -1498,7 +1498,7 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
     }).then(function(resultado) {
         callback(false, resultado.rows,resultado);
     }).catch (function(error) {
-        callback(error, false);
+        callback(error);
     });
 };
 

@@ -323,53 +323,16 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
     var rol_id = rolesModulos[0].rol.id;
     var estado = Number(rolesModulos[0].estado);
     var modulo_id = rolesModulos[0].modulo.modulo_id;
-
-   /* var sql = "UPDATE roles_modulos SET estado = $3, usuario_id_modifica = $1, fecha_modificacion = now()  \
-                WHERE modulos_empresas_id = $2 AND rol_id = $4 RETURNING id";
-
-    G.db.query(sql, [usuario_id, modulos_empresas_id, estado, rol_id], function(err, rows, result) {
-        if (err) {
-            callback(err, rows, ids);
-        } else {
-            //si la actualizacion no devuelve resultado se trata de hacer el insert
-            if (result.rowCount === 0) {
-                sql = "INSERT INTO roles_modulos (modulos_empresas_id, rol_id, usuario_id, fecha_creacion, estado)\
-                       VALUES($1, $2, $3, now(), $4) RETURNING id";
-
-                G.db.query(sql, [modulos_empresas_id, rol_id, usuario_id, estado], function(err, rows, result) {
-                    if (err) {
-                        callback(err, rows, ids);
-                    } else {
-                        rolesModulos.splice(0, 1);
-                        //se agrega el id del rol_modulo creado
-                        if (rows.length > 0 && rows[0].id) {
-                            ids.push({roles_modulos_id: rows[0].id, modulos_empresas_id: modulos_empresas_id, modulo_id: modulo_id});
-                        }
-
-                        __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback);
-                    }
-                });
-
-            } else {
-                rolesModulos.splice(0, 1);
-                if (rows.length > 0 && rows[0].id) {
-                    ids.push({roles_modulos_id: rows[0].id, modulos_empresas_id: modulos_empresas_id, modulo_id: modulo_id});
-                }
-                __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback);
-            }
-        }
-    });
-    */
     
-      var sql = "UPDATE roles_modulos SET estado = :3, usuario_id_modifica = :1, fecha_modificacion = now()  \
-                 WHERE modulos_empresas_id = :2 AND rol_id = :4 RETURNING id";
-    
-      
-      G.knex.raw(sql, {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id}).then(function(resultado){
+    var sql = "UPDATE roles_modulos SET estado = :3, usuario_id_modifica = :1, fecha_modificacion = now()  \
+               WHERE modulos_empresas_id = :2 AND rol_id = :4 RETURNING id";
+
+
+    G.knex.raw(sql, {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id}).then(function(resultado){
         if (resultado.rowCount === 0) {
             sql = "INSERT INTO roles_modulos (modulos_empresas_id, rol_id, usuario_id, fecha_creacion, estado)\
                    VALUES( :1, :2, :3, now(), :4 ) RETURNING id";
-            
+
              return G.knex.raw(sql, {1:modulos_empresas_id, 2:rol_id, 3:usuario_id, 4:estado});
         } else {
             rolesModulos.splice(0, 1);

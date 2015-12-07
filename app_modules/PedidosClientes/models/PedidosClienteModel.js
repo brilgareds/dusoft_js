@@ -1134,7 +1134,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     offset((pagina - 1) * G.settings.limit).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err ", err)
+      
         callback(err);
     });
     
@@ -1509,15 +1509,14 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
  */
 PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callback)
 {
-
     G.knex('ventas_ordenes_pedidos_tmp')
      .where('pedido_cliente_id_tmp', cotizacion.numeroCotizacion)
      .update({
         estado: cotizacion.estado
     }).then(function(rows) {
-        callback(rows, true);
+        callback(false, rows);
     }).catch (function(error) {
-        callback(error, false);
+        callback(error);
     });
 
 };
@@ -1532,11 +1531,10 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
  */
 PedidosClienteModel.prototype.eliminarDetalleCotizacion = function(cotizacion, callback)
 {
-   
     G.knex('ventas_ordenes_pedidos_tmp').where('pedido_cliente_id_tmp', cotizacion).del().then(function(rows){
-        callback(rows, true);
+        callback(false,rows);
        }).catch (function(error) {    
-           callback(error, false);
+           callback(error);
        });
 };
 
@@ -1556,9 +1554,9 @@ PedidosClienteModel.prototype.consultaCotizacionEnPedido = function(cotizacion, 
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id_tmp: cotizacion
     }).select('pedido_cliente_id_tmp').then(function(rows) {
-        callback(true, rows);
-    }).catch (function(error) {     
-        callback(false, error);
+        callback(false, rows);       
+    }).catch (function(error) {    
+        callback(error);
     });
 };
 
@@ -1630,9 +1628,9 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id: numero_pedido
     }).select('estado').then(function(rows) {
-        callback(true, rows);
+        callback(false, rows);
     }).catch(function(error) {           
-        callback(false, error);
+        callback(error);
     });
 };
 
@@ -1643,7 +1641,7 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
  *               la cotizacion
  * @fecha: 05/11/2015
  * @Funciones que hacen uso del model : 
- *  --PedidosCliente.prototype.consultarEstadoPedido
+ *  --PedidosCliente.prototype.insertarDetalleCotizacion
  */
 PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(numero_pedido,codigo_producto, callback) {
 
@@ -1708,9 +1706,9 @@ PedidosClienteModel.prototype.consultarExistenciaPedidoCotizacion = function(num
     G.knex('ventas_ordenes_pedidos').where({
         pedido_cliente_id_tmp: numeroCotizacion
     }).select('pedido_cliente_id_tmp').then(function(rows) {    
-        callback(true, rows);
+        callback(false, rows);
     }).catch(function(error) {  
-        callback(false, error);
+        callback(error);
     });
 };
 /*
@@ -1750,9 +1748,9 @@ PedidosClienteModel.prototype.actualizarCabeceraCotizacion = function(cotizacion
     .update({
         observaciones: cotizacion.observacion
     }).then(function(rows) {    
-        callback(true, rows);
+        callback(false, rows);
     }).catch(function(error) {
-        callback(false, error);
+        callback(error);
     });
 
 };
@@ -1786,10 +1784,8 @@ PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto,
  * +Modificacion 2: Se migra a KNEX.js 
  * @fecha: 04/12/2015 2:43 pm 
  */
-
 PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
 {
-   
      var pedido;
      G.knex.transaction(function(transaccion) {  
         
@@ -1813,14 +1809,14 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
 
         }).done();
 
-        }).then(function(){
+    }).then(function(){
 
-           callback(false, pedido);
+       callback(false, pedido);
 
-        }).catch(function(err){
+    }).catch(function(err){
 
-           callback(err);
-        }).done(); 
+       callback(err);
+    }).done(); 
     
 };
 

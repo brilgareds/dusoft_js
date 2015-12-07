@@ -19,10 +19,10 @@ UsuariosModel.prototype.listar_usuarios_sistema = function(termino_busqueda, est
         sql_aux = " and a.activo = '" + estado + "'";
     }
 
-    var sql = "SELECT * FROM system_usuarios a where (a.usuario "+G.constants.db().LIKE+" :1\
-               or a.nombre "+G.constants.db().LIKE+" :1 or a.descripcion "+G.constants.db().LIKE+" :1) " + sql_aux;
+    var sql = " * FROM system_usuarios a where (a.usuario "+G.constants.db().LIKE+" :1\
+               or a.nombre "+G.constants.db().LIKE+" :1 or a.descripcion "+G.constants.db().LIKE+" :1 ) " + sql_aux;
     
-    var query = G.knex.raw(sql, "%" + termino_busqueda + "%");
+    var query = G.knex.select(G.knex.raw(sql, {1:"%" + termino_busqueda + "%"}));
 
     if (pagina !== 0) {        
         query.limit(G.settings.limit).
@@ -30,9 +30,10 @@ UsuariosModel.prototype.listar_usuarios_sistema = function(termino_busqueda, est
     }
     
     query.then(function(resultado){
-        callback(false, resultado.rows,  resultado);
+        callback(false, resultado.rows || resultado);
 
     }).catch(function(err){
+        console.log("error ", err);
         callback(err);
     });
 
@@ -187,13 +188,11 @@ UsuariosModel.prototype.guardarAvatarUsuario = function(usuario_id, nombreArchiv
     G.knex.raw(sql, params).then(function(resultado){
         if (resultado.rowCount === 0) {
             var sql = "INSERT INTO system_usuarios_configuraciones (usuario_id, ruta_avatar) VALUES( :1, :2 )";
-            return G.db.query(sql, params);
-        } else {
-            callback(false, true);
+            return G.knex.raw(sql, params);
         }
 
     }).then(function(resultado){
-        callback(false, resultado.rows);
+        callback(false, resultado);
     }).catch(function(err){
         callback(err);
     });
@@ -260,66 +259,54 @@ UsuariosModel.prototype.obtenerEmpresasPredeterminadas = function(that, empresa_
 
 
 UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_id, usuario_id, predeterminado, callback) {
-    var that = this;
-
-    G.db.begin(function() {
-        that.guardarRolUsuario(login_id, empresa_id, rol_id, usuario_id, function(err, result) {
-            
-            if(err){
-                callback(err);
-                return;
-            }
-            
-            
-            var rows = result.rows;
-            var login_empresa_id = (rows.length > 0) ? rows[0].id : undefined;
-            //callback(err, id);
-
-            that.sobreEscribirModulosDelRol(login_id, empresa_id, rol_id, usuario_id, login_empresa_id, function(err, rows, ids) {
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-                //se inicializa un nuevo array para devolver los modulos creados
-                var modulos_ids = [];
-                modulos_ids = modulos_ids.concat(ids);
-
-                that.sobreEscribirOpcionesDelRol(usuario_id, rol_id, empresa_id, ids, function(err) {
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
-
-                    G.db.commit(function() {
-                        callback(err, login_empresa_id, modulos_ids);
-                    });
-
-                });
-
-
-            });
-
-        });
-    });
+    var that = this;    
+    var login_empresa_id;
+    var modulos_ids = [];
+    
+     G.knex.transaction(function(transaccion) {  
+         G.Q.ninvoke(that, 'guardarRolUsuario', login_id, empresa_id, rol_id, usuario_id, transaccion).then(function(resultado){
+             var rows = resultado.rows;
+             login_empresa_id = (rows.length > 0) ? rows[0].id : undefined;
+             return G.Q.ninvoke(that,'sobreEscribirModulosDelRol', login_id, empresa_id, rol_id, usuario_id, login_empresa_id, transaccion);
+             
+         }).then(function(ids){
+             //console.log("ids de los modulos ", ids);
+             modulos_ids = modulos_ids.concat(ids);
+            // transaccion.commit();
+            return G.Q.ninvoke(that,'sobreEscribirOpcionesDelRol', usuario_id, rol_id, empresa_id, ids, transaccion);
+         }).then(function(resultado){
+             transaccion.commit();
+         }).fail(function(err){
+             transaccion.rollback(err);
+         }).done();
+     }).then(function(resultado){
+            callback(false, login_empresa_id, modulos_ids);
+     }).catch(function(err){
+            console.log("error generado >>>>>>>>>>>>", err);
+            callback(err);
+     }).done(); 
+    
 };
 
 
 UsuariosModel.prototype.habilitarModulosDeUsuario = function(usuario_id, rolesModulos, login_empresas_id, callback) {
     var that = this;
-
-    G.db.begin(function() {
-        __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, [], function(err, rows, ids) {
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            G.db.commit(function() {
-                callback(err, rows, ids);
-            });
-        });
-    });
+    
+    var _resultado;
+     G.knex.transaction(function(transaccion) {  
+         G.Q.nfcall(__habilitarModulosDeUsuario, that, usuario_id, rolesModulos, login_empresas_id, [], transaccion).then(function(resultado){
+             _resultado = resultado;
+             transaccion.commit();
+             
+         }).fail(function(err){
+             transaccion.rollback(err);
+         }).done();
+     }).then(function(){
+            callback(false, _resultado);
+     }).catch(function(err){
+            console.log("error generado >>>>>>>>>>>>", err);
+            callback(err);
+     }).done(); 
 };
 
 
@@ -346,27 +333,33 @@ UsuariosModel.prototype.guardarCentroUtilidadBodegaUsuario = function(usuario_id
 
 
 //se encarga de asignar el rol del usuario y borrar registros del rol anterior por empresa
-UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_id, usuario_id, callback) {
+UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_id, usuario_id, transaccion, callback) {
     var that = this;
 
     //borra los registros del modulo anterior
-    var usuarioRol = that.borrarRolAsignadoUsuario(rol_id, empresa_id, login_id, function(err) {
+    var usuarioRol = that.borrarRolAsignadoUsuario(rol_id, empresa_id, login_id, transaccion, function(err) {
         if (err) {
             callback(err);
             return;
         }
-
+        
         var sql = "INSERT INTO login_empresas (login_id, empresa_id, usuario_id,\
-           fecha_creacion, rol_id, estado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+           fecha_creacion, rol_id, estado) VALUES ( :1, :2, :3, :4, :5, :6 ) RETURNING id";
 
 
-        var params = [
-            login_id, empresa_id, usuario_id, 'NOW()', rol_id, '1'
-        ];
-
-
-        G.db.transaction(sql, params, function(err, result) {
-            callback(err, result);
+        var params = {
+            1:login_id, 2:empresa_id, 3:usuario_id, 4:'NOW()', 5:rol_id, 6:'1'
+        };
+        
+        var query = G.knex.raw(sql, params);
+        
+        if(transaccion) query.transacting(transaccion);
+        
+        query.then(function(resultado){
+            callback(false, resultado);
+        }).catch(function(err){
+           // console.log("catch error________________________ ", err);
+            callback(err);
         });
 
     });
@@ -443,21 +436,27 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
     });
 };
 
-UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, callback) {
-    var sql = "DELETE FROM login_empresas WHERE  empresa_id = $1 AND login_id = " + usuario_id;
-    var params = [
-        empresa_id
-    ];
-
-    G.db.transaction(sql, params, function(err, rows) {
-        callback(err, rows);
+UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, transaccion, callback) {
+    var sql = "DELETE FROM login_empresas WHERE  empresa_id = :1 AND login_id = " + usuario_id;
+    var params = {
+        1:empresa_id
+    };
+    
+    var query = G.knex.raw(sql, params);
+    if(transaccion) query.transacting(transaccion);
+    
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+       // console.log("catch error________________________ ", err);
+        callback(err);
     });
 };
 
-UsuariosModel.prototype.sobreEscribirOpcionesDelRol = function(usuario_id, rol_id, empresa_id, modulos_ids, callback) {
+UsuariosModel.prototype.sobreEscribirOpcionesDelRol = function(usuario_id, rol_id, empresa_id, modulos_ids, transaccion, callback) {
     var that = this;
     // console.log(">>>>>>>>>>>>>>>>>>> ",ids);
-    __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, function(err) {
+    __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, transaccion, function(err) {
         callback(err);
     });
 
@@ -465,12 +464,11 @@ UsuariosModel.prototype.sobreEscribirOpcionesDelRol = function(usuario_id, rol_i
 
 
 
-UsuariosModel.prototype.sobreEscribirModulosDelRol = function(login_id, empresa_id, rol_id, usuario_id, login_empresa, callback) {
+UsuariosModel.prototype.sobreEscribirModulosDelRol = function(login_id, empresa_id, rol_id, usuario_id, login_empresa, transaccion, callback) {
     var that = this;
 
     //trae los modulos del rol
     that.m_rol.obtenerModulosPorRolYEmpresa(rol_id, empresa_id, function(err, rows) {
-
 
         if (err) {
             callback(err, rows);
@@ -492,9 +490,9 @@ UsuariosModel.prototype.sobreEscribirModulosDelRol = function(login_id, empresa_
 
         }
 
-        __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresa, [], function(err, rows, ids) {
-            // console.log("ids insertados >>>>>>> ", ids)
-            callback(err, rows, ids);
+        __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresa, [], transaccion, function(err, ids) {
+            //console.log("ids insertados >>>>>>> ", ids)
+            callback(err, ids);
         });
 
     });
@@ -503,19 +501,23 @@ UsuariosModel.prototype.sobreEscribirModulosDelRol = function(login_id, empresa_
 
 UsuariosModel.prototype.guardarOpcion = function(usuario_id, opcion, login_modulos_empresa_id, callback) {
     var that = this;
-
-    G.db.begin(function() {
-        __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id, function(err, rows, ids) {
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            G.db.commit(function() {
-                callback(err, rows, ids);
-            });
-        });
-    });
+    
+    var _resultado;
+    G.knex.transaction(function(transaccion) {  
+         G.Q.nfcall(__guardarOpcion, that, usuario_id, opcion, login_modulos_empresa_id, transaccion).then(function(resultado){
+             _resultado = resultado;
+             transaccion.commit();
+             
+         }).fail(function(err){
+             transaccion.rollback(err);
+         }).done();
+     }).then(function(){
+            callback(false, _resultado);
+     }).catch(function(err){
+            console.log("error generado >>>>>>>>>>>>", err);
+            callback(err);
+     }).done(); 
+    
 };
 
 UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback) {
@@ -539,7 +541,7 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
     var query;
     if(todosCentrosExistentes){
         
-        var sql =  "SELECT  a.centro_utilidad AS centro_utilidad_id, a.descripcion, COALESCE(b.seleccionado_usuario, '0') AS seleccionado_usuario, a.empresa_id, c.razon_social AS nombre_empresa\
+        var sql =  " a.centro_utilidad AS centro_utilidad_id, a.descripcion, COALESCE(b.seleccionado_usuario, '0') AS seleccionado_usuario, a.empresa_id, c.razon_social AS nombre_empresa\
                     FROM centros_utilidad a \
                     LEFT JOIN (\
                         SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.empresa_id FROM login_empresas AS aa\
@@ -551,7 +553,7 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
         
         parametros = {1:empresa_id, 2:login_id, 3:"%"+termino+"%"};
         
-        query = G.knex.raw(sql, parametros).limit(G.settings.limit).offset((pagina - 1) * G.settings.limit);
+        query = G.knex.select(G.knex.raw(sql, parametros)).limit(G.settings.limit).offset((pagina - 1) * G.settings.limit);
     } else {
         
         var sql = " SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.empresa_id, cc.razon_social AS nombre_empresa, dd.descripcion FROM login_empresas AS aa\
@@ -565,8 +567,10 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
     }
      
     query.then(function(resultado){
-       callback(false, resultado.rows, resultado);
+       console.log("resultado >>>>>>>>>>>>>> ", resultado);
+       callback(false, resultado.rows || resultado, resultado);
     }).catch(function(err){
+        console.log(">>>>>>>>>>>>>>>>>>>> ",err);
        callback(err);
     });
     
@@ -685,7 +689,7 @@ function __desmarcarPredeterminadoEmpresas(that, empresa_id, usuario_id, callbac
 };
 
 
-function __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, callback) {
+function __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, transaccion, callback) {
     if (modulos_ids.length === 0) {
         callback(false);
         return;
@@ -700,11 +704,12 @@ function __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, mod
 
     //se listan las opciones que tiene el modulo asignado al rol
     that.m_rol.listarRolesModulosOpciones(modulo_id, rol_id, 0, empresa_id, function(err, opciones) {
+        
         var cantidad_opciones = opciones.length;
 
         //valida si el modulo tiene opciones
         if (cantidad_opciones > 0) {
-            __guardarOpciones(that, usuario_id, login_modulos_empresas_id, opciones, function(err) {
+            __guardarOpciones(that, usuario_id, login_modulos_empresas_id, opciones, transaccion, function(err) {
                 if (err) {
                     callback(err);
                     return;
@@ -713,7 +718,7 @@ function __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, mod
                 modulos_ids.splice(0, 1);
 
                 setTimeout(function() {
-                    __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, callback);
+                    __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, transaccion, callback);
                 }, 0);
 
             });
@@ -722,7 +727,7 @@ function __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, mod
         } else {
             modulos_ids.splice(0, 1);
             setTimeout(function() {
-                __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, callback);
+                __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, transaccion, callback);
             }, 0);
         }
 
@@ -730,7 +735,7 @@ function __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, mod
 
 }
 
-function __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones, callback) {
+function __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones, transaccion, callback) {
     //console.log("opcion >>>>>>>>>>>>>>>>>>>>> code 1 ",opciones)
     if (opciones.length === 0) {
         callback(false);
@@ -750,7 +755,7 @@ function __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones,
     //valida que la opcion este seleccionada en el rol
     if (_opcion.estado_opcion_rol === '1') {
 
-        __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id, function(err) {
+        __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id, transaccion, function(err) {
             if (err) {
                 callback(err);
                 return;
@@ -758,13 +763,13 @@ function __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones,
 
             opciones.splice(0, 1);
             setTimeout(function() {
-                __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones, callback);
+                __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones, transaccion, callback);
             }, 0);
         });
     } else {
         opciones.splice(0, 1);
         setTimeout(function() {
-            __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones, callback);
+            __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones, transaccion, callback);
         }, 0);
     }
 
@@ -773,104 +778,89 @@ function __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones,
 
 
 //funcion recursiva para actualizar listado de login_modulos_empresas
-function __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, ids, callback) {
+function __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, ids, transaccion, callback) {
 
     //si el array esta vacio se termina la funcion recursiva
-
     if (rolesModulos.length === 0) {
 
-        callback(false, true, ids);
+        callback(false, ids);
         return;
     }
 
     var estado = Number(rolesModulos[0].estado);
     var modulo_id = rolesModulos[0].modulo.modulo_id;
-
-
-
-    var sql = "UPDATE login_modulos_empresas SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()\
-                WHERE login_empresas_id = $2 AND modulo_id = $3  RETURNING id";
-
-    G.db.transaction(sql, [usuario_id, login_empresas_id, modulo_id, estado], function(err, result) {
-        if (err) {
-            callback(err, result, ids);
-            return;
-        }
-        //si la actualizacion no devuelve resultado se trata de hacer el insert
-        var rows = result.rows;
-        if (result.rowCount === 0) {
+    
+    var sql = "UPDATE login_modulos_empresas SET estado = :4, usuario_id_modifica = :1, fecha_modificacion = now()\
+                WHERE login_empresas_id = :2 AND modulo_id = :3  RETURNING id";
+    
+    var query = G.knex.raw(sql, {1:usuario_id, 2:login_empresas_id, 3:modulo_id, 4:estado});
+    if(transaccion) query.transacting(transaccion);
+    
+    query.then(function(resultado){
+        if (resultado.rowCount === 0) {
             sql = "INSERT INTO login_modulos_empresas (login_empresas_id, modulo_id, usuario_id, fecha_creacion, estado)\
-                   VALUES($1, $2, $3, now(), $4) RETURNING id";
-
-            G.db.transaction(sql, [login_empresas_id, modulo_id, usuario_id, estado], function(err, result) {
-                if (err) {
-                    callback(err, rows, ids);
-                    return;
-                }
-
-                rows = result.rows;
-                rolesModulos.splice(0, 1);
-                //se agrega el id del login_modulos_empresas creado
-                if (rows.length > 0 && rows[0].id) {
-                    ids.push({login_modulos_empresas_id: rows[0].id, login_empresas_id: login_empresas_id, modulo_id: modulo_id});
-                }
-
-                setTimeout(function() {
-                    __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, ids, callback);
-                }, 0);
-
-            });
-
+                   VALUES( :1, :2, :3, now(), :4 ) RETURNING id";
+             
+            var query2 = G.knex.raw(sql, {1:login_empresas_id, 2:modulo_id, 3:usuario_id, 4:estado});
+            if(transaccion) query2.transacting(transaccion);
+            
+            return query2;
         } else {
             rolesModulos.splice(0, 1);
-            if (rows.length > 0 && rows[0].id) {
-                ids.push({login_modulos_empresas_id: rows[0].id, login_empresas_id: login_empresas_id, modulo_id: modulo_id});
+            if (resultado.rows.length > 0 && resultado.rows[0].id) {
+                ids.push({login_modulos_empresas_id: resultado.rows[0].id, login_empresas_id: login_empresas_id, modulo_id: modulo_id});
             }
 
             setTimeout(function() {
-                __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, ids, callback);
+                __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, ids, transaccion, callback);
             }, 0);
         }
+
+    }).then(function(resultado){
+        if(!resultado) return;
+        var rows = resultado.rows;
+        rolesModulos.splice(0, 1);
+        //se agrega el id del login_modulos_empresas creado
+        if (rows.length > 0 && rows[0].id) {
+            ids.push({login_modulos_empresas_id: rows[0].id, login_empresas_id: login_empresas_id, modulo_id: modulo_id});
+        }
+
+        setTimeout(function() {
+            __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, ids, transaccion, callback);
+        }, 0);
+    }).catch(function(err){
+        callback(err);
     });
 
-}
-;
+};
 
-function __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id, callback) {
+function __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id, transaccion, callback) {
+    
+   var sql = "UPDATE login_modulos_opciones SET estado = :4, usuario_id_modifica = :1, fecha_modificacion = now()  \
+              WHERE login_modulos_empresa_id = :2 AND modulos_opcion_id = :3  RETURNING id";
 
-    var sql = "UPDATE login_modulos_opciones SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()  \
-                WHERE login_modulos_empresa_id = $2 AND modulos_opcion_id = $3  RETURNING id";
-
-
-    console.log("login_modulos_empresa_id >>>>>>>>>>> ", login_modulos_empresa_id, " modulos_opcion_id >>>>>> ", opcion.id);
-
-    G.db.transaction(sql, [usuario_id, login_modulos_empresa_id, opcion.id, Number(opcion.seleccionado)], function(err, result) {
-
-        if (err) {
-            callback(err, result);
-            return;
-        }
-        //si la actualizacion no devuelve resultado se trata de hacer el insert
-        var rows = result.rows;
-        if (result.rowCount === 0) {
+    //console.log("parametros ", {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id});
+    G.knex.raw(sql, {1:usuario_id, 2:login_modulos_empresa_id, 3:opcion.id, 4:Number(opcion.seleccionado)}).then(function(resultado){
+        if (resultado.rowCount === 0) {
             sql = "INSERT INTO login_modulos_opciones (login_modulos_empresa_id, modulos_opcion_id, usuario_id, fecha_creacion, estado)\
-                   VALUES($1, $2, $3, now(), $4) RETURNING id";
-
-            G.db.transaction(sql, [login_modulos_empresa_id, opcion.id, usuario_id, Number(opcion.seleccionado)], function(err, result) {
-                if (err) {
-                    callback(err, rows);
-                    return;
-                }
-
-                rows = result.rows;
-
-                callback(err, rows);
-            });
+                   VALUES( :1, :2, :3, now(), :4 ) RETURNING id";
+            
+            
+            var query2 = G.knex.raw(sql, {1:login_modulos_empresa_id, 2:opcion.id, 3:usuario_id, 4:Number(opcion.seleccionado)});
+            if(transaccion) query2.transacting(transaccion);
+            
+            return query2;
 
         } else {
-
-            callback(err, rows);
+            callback(false, resultado.rows);
         }
+
+    }).then(function(resultado){
+        if(!resultado) return;
+        
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
     });
 }
 
@@ -947,44 +937,7 @@ function __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id
     }
 
     var bodega = bodegas[0];
-
-    var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = $1, fecha_modificacion = now(), estado = $5 \
-                WHERE empresa_id = $2 AND centro_utilidad_id = $3 AND  bodega_id = $4 AND login_empresa_id = $6 ";
-    
-
-    G.db.query(sql, [usuario_id, empresa_id, centro_utilidad_id, bodega, estado, login_empresa_id], function(err, rows, result) {
-        if (err) {
-            callback(err, result);
-            return;
-        }
-        if (result.rowCount === 0) {
-            sql = "INSERT INTO login_centros_utilidad_bodega (fecha_modificacion, usuario_id_modifica, login_empresa_id, empresa_id, centro_utilidad_id, bodega_id, estado, fecha_creacion)\
-                   VALUES(now(), $1, $2, $3, $4, $5, $6, now())";
-
-            G.db.query(sql, [usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodega, estado], function(err, rows, result) {
-                if (err) {
-                    callback(err, rows);
-                    return;
-                }
-
-                bodegas.splice(0, 1);
-
-                setTimeout(function() {
-                    __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodegas, estado, callback);
-                }, 0);
-
-            });
-
-        } else {
-            bodegas.splice(0, 1);
-
-            setTimeout(function() {
-                __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodegas, estado, callback);
-            }, 0);
-        }
-    });
-    
-    
+        
     var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = :1, fecha_modificacion = now(), estado = :5 \
             WHERE empresa_id = :2 AND centro_utilidad_id = :3 AND  bodega_id = :4 AND login_empresa_id = :6 ";
     
@@ -1006,6 +959,7 @@ function __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id
         }
 
     }).then(function(resultado){
+        if(!resultado) return;
         bodegas.splice(0, 1);
 
         setTimeout(function() {

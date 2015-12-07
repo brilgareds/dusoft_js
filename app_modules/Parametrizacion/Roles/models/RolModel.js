@@ -12,19 +12,20 @@ RolModel.prototype.listar_roles = function(empresa_id, termino, pagina, callback
         parametros['2'] = "%" + termino + "%";
     }
 
-    var sql = "SELECT * FROM roles where empresa_id = :1 " + sqlaux + " ORDER BY id ASC ";
+    var sql = " * FROM roles where empresa_id = :1 " + sqlaux + " ORDER BY id ASC ";
     
-    var query = G.knex.raw(sql, parametros);
-
+    var query = G.knex.select(G.knex.raw(sql, parametros));
+    
     if (pagina !== 0) {        
         query.limit(G.settings.limit).
         offset((pagina - 1) * G.settings.limit);
     } 
     
     query.then(function(resultado){
-        callback(false, resultado.rows,  resultado);
+        callback(false, resultado);
 
     }).catch(function(err){
+        console.log("error generarndo >>>>>>>>>>>>>> ", err);
         callback(err);
     });
     
@@ -160,7 +161,7 @@ RolModel.prototype.habilitarModulosEnRoles = function(usuario_id, rolesModulos, 
     var that = this;
 
     __habilitarModulosEnRoles(that, usuario_id, rolesModulos, [], function(err, result, ids) {
-        console.log("ids creados 111 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", ids);
+        console.log("ids creados 111 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", ids, result, err);
         callback(err, result, ids);
     });
 
@@ -317,7 +318,6 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
         return;
     }
 
-    console.log("modulo >>>>>>>>>>>>>>>>>>>>>> ", rolesModulos[0]);
     //este es el id de modulos_empresa
     var modulos_empresas_id = rolesModulos[0].modulo.empresasModulos[0].id;
     var rol_id = rolesModulos[0].rol.id;
@@ -327,7 +327,7 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
     var sql = "UPDATE roles_modulos SET estado = :3, usuario_id_modifica = :1, fecha_modificacion = now()  \
                WHERE modulos_empresas_id = :2 AND rol_id = :4 RETURNING id";
 
-
+    //console.log("parametros ", {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id});
     G.knex.raw(sql, {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id}).then(function(resultado){
         if (resultado.rowCount === 0) {
             sql = "INSERT INTO roles_modulos (modulos_empresas_id, rol_id, usuario_id, fecha_creacion, estado)\
@@ -343,6 +343,7 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
         }
 
     }).then(function(resultado){
+        if(!resultado) return;
         rolesModulos.splice(0, 1);
         //se agrega el id del rol_modulo creado
         if (resultado.rows.length > 0 && resultado.rows[0].id) {

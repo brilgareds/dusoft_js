@@ -226,12 +226,16 @@ function consultar_cantidad_total_solicitada_producto(empresa_id, codigo_product
                     from ventas_ordenes_pedidos a\
                     inner join ventas_ordenes_pedidos_d b on a.pedido_cliente_id = b.pedido_cliente_id\
                     GROUP BY  1,2,3\
-                ) as a where a.empresa_id= $1 and a.codigo_producto = $2 and a.fecha_registro < ( $3 )::timestamp \
-                group by 1 ; ";
-
-    G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+                ) as a where a.empresa_id= :1 and a.codigo_producto = :2 and a.fecha_registro < ( :3 )::timestamp \
+                group by 1 ; ";    
+    
+   G.knex.raw(sql, {1:empresa_id, 2:codigo_producto, 3:fecha_registro_pedido}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+    
 }
 ;
 
@@ -249,12 +253,16 @@ function consultar_cantidad_total_productos_despachados(empresa_id, codigo_produ
                     from ventas_ordenes_pedidos a\
                     inner join ventas_ordenes_pedidos_d b on a.pedido_cliente_id = b.pedido_cliente_id\
                     group by 1,2,3\
-                ) as  a where a.empresa_id = $1 and a.codigo_producto=  $2 and a.fecha_registro <= ($3)\
+                ) as  a where a.empresa_id = :1 and a.codigo_producto=  :2 and a.fecha_registro <= ( :3 )\
                 group by 1 order by 1 asc ; ";
 
-    G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+    
+   G.knex.raw(sql, {1:empresa_id, 2:codigo_producto, 3:fecha_registro_pedido}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 }
 ;
 
@@ -277,11 +285,6 @@ function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto
                   where a.empresa_id = :1 and b.codigo_producto = :2 and (b.numero_unidades - b.cantidad_despachada) > 0  \
                   and a.fecha_registro < :3 and a.estado = '1' GROUP BY 1\
                 ) as a";
-
-    /*G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });*/
-    
     
    G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto, 3 :fecha_registro_pedido}).
    then(function(resultado){

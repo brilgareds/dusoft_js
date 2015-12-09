@@ -34,6 +34,7 @@ Roles.prototype.listar_roles = function(req, res) {
     that.m_rol.listar_roles(empresa_id, termino, pagina, function(err, lista_roles) {
 
         if (err) {
+            console.log("error generado ", err);
             res.send(G.utils.r(req.url, 'Error listando Roles', 500, {parametrizacion_perfiles: {}}));
         } else {
             res.send(G.utils.r(req.url, 'Lista de Roles del sistema', 200, {parametrizacion_perfiles: {roles: lista_roles}}));

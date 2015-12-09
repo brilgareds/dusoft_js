@@ -9,11 +9,14 @@ var ProductosModel = function() {
 // 
 ProductosModel.prototype.validar_producto = function(codigo_producto, callback) {
 
-    var sql = " select a. *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = $1 ";
-
-    G.db.query(sql, [codigo_producto], function(err, rows, result) {
-        callback(err, rows);
-    });
+    var sql = " select a. *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = :1 ";
+    
+   G.knex.raw(sql, {1:codigo_producto}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
 };
 
 // Autor:      : Camilo Orozco 
@@ -229,7 +232,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, c
 // Descripcion : Lista productos Clientes
 // Calls       : Productos -> ProductosController -> listarProductosClientes();
 // ??????????????????????????????????????????
-ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, laboratorio, concentracion, pagina, filtro, callback) {
+/*ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, laboratorio, concentracion, pagina, filtro, callback) {
 
     var sql_aux = "";
     var sql_filter = "";
@@ -335,34 +338,34 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
         callback(err, rows);
     });
 
-};
+};*/
 
 /**/
 
 // ??????????????????????????????????????
 //Consultar tipo de productos
-ProductosModel.prototype.listar_tipo_productos = function(callback) {
+/*ProductosModel.prototype.listar_tipo_productos = function(callback) {
 
     var sql = "select tipo_producto_id, descripcion from inv_tipo_producto";
 
     G.db.query(sql, [], function(err, rows, result) {
         callback(err, rows);
     });
-};
+};*/
 
 //??????????????????????????????????????????
-ProductosModel.prototype.obtenerDescripcionProducto = function(codigo, callback) {
+/*ProductosModel.prototype.obtenerDescripcionProducto = function(codigo, callback) {
 
     var sql = "select fc_descripcion_producto($1) as descripcion_producto";
 
     G.db.query(sql, [codigo], function(err, rows, result) {
         callback(err, rows);
     });
-};
+};*/
 
 //???????????????????????????????????????????
 //Consultar precio de producto en contrato con un cliente
-ProductosModel.prototype.consultar_precio_producto_contrato = function(codigo_producto, contrato_id, callback) {
+/*ProductosModel.prototype.consultar_precio_producto_contrato = function(codigo_producto, contrato_id, callback) {
 
     var sql = " select	a.contrato_cliente_id, a.codigo_producto, a.precio_pactado, a.descripcion\n\
                     from vnts_contratos_clientes a\
@@ -372,7 +375,7 @@ ProductosModel.prototype.consultar_precio_producto_contrato = function(codigo_pr
     G.db.query(sql, [codigo_producto, contrato_id], function(err, rows, result) {
         callback(err, rows);
     });
-};
+};*/
 
 
 ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callback) {
@@ -394,10 +397,8 @@ ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callbac
             WHERE a.empresa_id = :1 AND  b.codigo_producto = :2";
 
     G.knex.raw(sql, {1: obj.empresaId, 2: obj.codigoProducto, 3: obj.contratoId}). then(function(resultado){
-   
         callback(false, resultado.rows);
     }).catch(function(err) {
-    
         callback(err);
     });
 

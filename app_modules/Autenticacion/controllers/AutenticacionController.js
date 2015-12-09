@@ -80,9 +80,10 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
 
 
     G.auth.login(nombre_usuario, contrasenia, admin, function(err, usuario) {
-        if (err)
+        if (err){
+            console.log("error interno ", err);
             res.send(G.utils.r(req.url, 'Error Interno', 500, {}));
-        else {
+        } else {
             if (usuario.length === 0) {
                 res.send(G.utils.r(req.url, 'Usuario o Contraseña Invalidos', 404, {}));
             } else {

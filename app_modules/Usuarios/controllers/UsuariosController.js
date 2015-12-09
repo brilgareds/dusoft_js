@@ -466,7 +466,7 @@ Usuarios.prototype.habilitarModulosDeUsuario = function(req, res) {
     }
 
 
-    that.m_usuarios.habilitarModulosDeUsuario(req.session.user.usuario_id, rolesModulos,login_empresas_id, function(err, rows, ids) {
+    that.m_usuarios.habilitarModulosDeUsuario(req.session.user.usuario_id, rolesModulos,login_empresas_id, function(err, ids) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error habilitando las empresas para el usuario', 500, {parametrizacion_usuarios: {ids: ids}}));
             return;

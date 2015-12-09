@@ -1,7 +1,7 @@
 
 var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails) {
 
-  
+
     this.m_ordenes_compra = ordenes_compras;
     this.m_productos = productos;
     this.e_ordenes_compra = eventos_ordenes_compras;
@@ -274,38 +274,34 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
 };
 
 
-OrdenesCompra.prototype.guardarBodega = function(req, res){
+OrdenesCompra.prototype.guardarBodega = function(req, res) {
     var that = this;
     var args = req.body.data;
-    
+
     var bodegaDestino = args.ordenes_compras.bodegaDestino || undefined;
     var borrarBodega = args.ordenes_compras.borrarBodega;
-    
+
     if (!bodegaDestino) {
         res.send(G.utils.r(req.url, 'La bodega destino no esta definida', 404, {}));
         return;
     }
-    
-    if(bodegaDestino && !borrarBodega){
-         G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino).
-         then(function(resultado){
-              res.send(G.utils.r(req.url, 'Se ha modificado la bodega correctamente', 200, {}));
-         }).
-         catch(function(err){
-              res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {})); 
-         });
-    } else if(borrarBodega) {
-        
-        G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, bodegaDestino.ordenCompraId).
-        then(function(resultado){
+
+    if (bodegaDestino && !borrarBodega) {
+        G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino).then(function(resultado) {
+            res.send(G.utils.r(req.url, 'Se ha modificado la bodega correctamente', 200, {}));
+        }).catch (function(err) {
+            res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {}));
+        });
+    } else if (borrarBodega) {
+
+        G.Q.nfcall(that.m_ordenes_compra.borrarBodegaOrden, bodegaDestino.ordenCompraId).then(function(resultado) {
             res.send(G.utils.r(req.url, 'Se ha eliminado la bodega destino correctamente', 200, {}));
-        }).
-        catch(function(err){
-            res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {})); 
+        }).catch (function(err) {
+            res.send(G.utils.r(req.url, 'Error modificando la bodega destino', 500, {}));
         });
     }
-    
-    
+
+
 };
 
 // Insertar una orden de compra 
@@ -344,30 +340,26 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     var numero_orden;
 
-    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id).
-    then(function(rows){
+    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id).then(function(rows) {
         var def = G.Q.defer();
         numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
         //Se guarda la ubicacion de la bodega destino de la orden
-        if(bodegaDestino){
-           bodegaDestino.ordenCompraId =  numero_orden;
-           return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
+        if (bodegaDestino) {
+            bodegaDestino.ordenCompraId = numero_orden;
+            return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, bodegaDestino);
         } else {
             def.resolve();
         }
-                
-    }).
-    then(function(resulado){
+
+    }).then(function(resulado) {
         res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
-    }).
-    fail(function(err){
+    }).fail(function(err) {
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, 'Se ha generado un error', 500, {lista_productos: {}}));
-    }).
-    done();
-    
-    
-    
+    }).done();
+
+
+
 };
 
 // Modificar la unidad de negocio de una orden de compra 
@@ -398,7 +390,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
-      
+
         if (err || orden_compra.length === 0) {
             res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
             return;
@@ -535,9 +527,9 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
             orden_compra = orden_compra[0];
 
             if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
-                
-                if(!modificar){
-                    
+
+                if (!modificar) {
+
                     that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
 
                         if (err || result.rowCount === 0) {
@@ -548,7 +540,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
                             return;
                         }
                     });
-                    
+
                 } else {
                     that.m_ordenes_compra.modificar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, function(err, rows, result) {
 
@@ -571,7 +563,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 };
 
 
-OrdenesCompra.prototype.cambiarEstado = function(req, res) {  
+OrdenesCompra.prototype.cambiarEstado = function(req, res) {
 
     var that = this;
 
@@ -748,29 +740,25 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
 };
 
 
-OrdenesCompra.prototype.eliminarNovedad = function(req, res){
+OrdenesCompra.prototype.eliminarNovedad = function(req, res) {
     var that = this;
     var args = req.body.data;
-    
-    
+
+
     if (args.ordenes_compras === undefined || args.ordenes_compras.novedadId === undefined) {
         res.send(G.utils.r(req.url, 'novedad id no esta definida', 404, {}));
         return;
     }
-    
+
     var novedadId = args.ordenes_compras.novedadId;
-    
-   
-    G.Q.ninvoke(that.m_ordenes_compra,'eliminarRegistroNovedad', {novedadId : novedadId}).
-    then(function(resultado){
+
+
+    G.Q.ninvoke(that.m_ordenes_compra, 'eliminarRegistroNovedad', {novedadId: novedadId}).then(function(resultado) {
         res.send(G.utils.r(req.url, 'Novedad eliminado correctamente', 200, {}));
-    }).
-    fail(function(err){
-        //console.log("error generado >>>>>>>>>>>>>>>>>>>>>>>>>>> ", err);
+    }).fail(function(err) {
         res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {}));
-    }).
-    done();
-    
+    }).done();
+
 };
 
 // Ingresar Novedades Orden Compra
@@ -821,7 +809,7 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
                     }
                 });
             } else {
-                that.m_ordenes_compra.modificar_novedad_producto(novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada,  function(err, rows, result) {
+                that.m_ordenes_compra.modificar_novedad_producto(novedad_id, observacion_id, descripcion_novedad, usuario_id, descripcionEntrada, function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error modificando la novedad', 500, {ordenes_compras: []}));
@@ -930,7 +918,7 @@ OrdenesCompra.prototype.consultarArchivosNovedades = function(req, res) {
 
 // Generar Reporte Orden Compra
 OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
-   
+
     var that = this;
 
     var args = req.body.data;
@@ -966,7 +954,7 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
     var enviar_email = args.ordenes_compras.enviar_email;
 
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
-        
+
         if (err || orden_compra.length === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
             return;
@@ -981,10 +969,10 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
 
                     var orden = orden_compra[0];
 
-                    _generar_reporte_orden_compra({orden_compra: orden, 
-                                                   lista_productos: lista_productos, 
-                                                   usuario_imprime: req.session.user.nombre_usuario, 
-                                                   serverUrl: req.protocol + '://' + req.get('host') + "/"}, function(nombre_reporte) {
+                    _generar_reporte_orden_compra({orden_compra: orden,
+                        lista_productos: lista_productos,
+                        usuario_imprime: req.session.user.nombre_usuario,
+                        serverUrl: req.protocol + '://' + req.get('host') + "/"}, function(nombre_reporte) {
 
                         if (enviar_email) {
 
@@ -1403,14 +1391,14 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
     });
 };
 
- 
 
-    /**
-     * Método que lista todas las ordenes por autorizar
-     * @param mapa de llave valor empresa, terminoBusqueda,filtro,paginaActual
-     * @return mapa de las ordenes sin autorizar
-     * @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra
-     */
+
+/**
+ * Método que lista todas las ordenes por autorizar
+ * @param mapa de llave valor empresa, terminoBusqueda,filtro,paginaActual
+ * @return mapa de las ordenes sin autorizar
+ * @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra
+ */
 OrdenesCompra.prototype.listarAutorizacionCompras = function(req, res) {
 
     var that = this;
@@ -1424,36 +1412,33 @@ OrdenesCompra.prototype.listarAutorizacionCompras = function(req, res) {
     if (args.paginaActual === '') {
         args.paginaActual = 0;
     }
-    
+
     that.m_ordenes_compra.listarAutorizacionCompras(args, function(err, result) {
 
-        G.Q.ninvoke(that.m_ordenes_compra, 'listarAutorizacionCompras', args).
-        then(function(result) {
+        G.Q.ninvoke(that.m_ordenes_compra, 'listarAutorizacionCompras', args).then(function(result) {
             res.send(G.utils.r(req.url, 'Consulta Autorizaciones de Compras - correctamente', 200, {ordenes_compras: result}));
-        }).
-        fail(function(err) {
+        }).fail(function(err) {
             res.send(G.utils.r(req.url, 'Error al Consultar las Autorizaciones de Compras', 500, {ordenes_compras: []}));
-        }).
-        done();
+        }).done();
     });
 };
 
 /*
-* Método que modifica la orden por autorizar tabla compras_ordenes_pedidos_productosfoc
-* @param mapa de llave valor modifica tabla compras_ordenes_pedidos_productosfoc
-* @return mensaje el sistema
-* @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra
-*/
+ * Método que modifica la orden por autorizar tabla compras_ordenes_pedidos_productosfoc
+ * @param mapa de llave valor modifica tabla compras_ordenes_pedidos_productosfoc
+ * @return mensaje el sistema
+ * @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra
+ */
 OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
 
     var that = this;
     var args = req.body.data.autorizacion;
 
-     if (args.empresa === undefined) {
+    if (args.empresa === undefined) {
         res.send(G.utils.r(req.url, 'empresa  no esta definidas', 404, {}));
         return;
     }
-     if (args.centroUtilidad === undefined) {
+    if (args.centroUtilidad === undefined) {
         res.send(G.utils.r(req.url, 'centroUtilidad  no esta definidas', 404, {}));
         return;
     }
@@ -1475,26 +1460,23 @@ OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
         res.send(G.utils.r(req.url, 'lote no esta definido', 404, {}));
         return;
     }
-    
+
     that.m_ordenes_compra.modificarAutorizacionOrdenCompras(args, function(err, result) {
 
-        G.Q.ninvoke(that.m_ordenes_compra, 'modificarAutorizacionOrdenCompras', args).
-                then(function(result) {
+        G.Q.ninvoke(that.m_ordenes_compra, 'modificarAutorizacionOrdenCompras', args).then(function(result) {
             res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: result}));
-        }).
-                fail(function(err) {
+        }).fail(function(err) {
             res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra', 500, {ordenes_compras: []}));
-        }).
-                done();
+        }).done();
     });
 };
 
 /*
-* Método que inserta en la tabla inv_bodegas_movimiento_tmp_d
-* @param mapa de llave valor insertar en la tabla inv_bodegas_movimiento_tmp_d
-* @return mensaje el sistema
-* @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra.
-*/
+ * Método que inserta en la tabla inv_bodegas_movimiento_tmp_d
+ * @param mapa de llave valor insertar en la tabla inv_bodegas_movimiento_tmp_d
+ * @return mensaje el sistema
+ * @utilizado Se utiliza en el cliente de angular, para el modulo autorizaciones encargado de autorizar las ordenes de compra.
+ */
 OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
 
     var that = this;
@@ -1559,14 +1541,11 @@ OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
 
     that.m_ordenes_compra.ingresarBodegaMovimientoTmp(args, function(err, result) {
 
-        G.Q.ninvoke(that.m_ordenes_compra, 'ingresarBodegaMovimientoTmp', args).
-                then(function(result) {
+        G.Q.ninvoke(that.m_ordenes_compra, 'ingresarBodegaMovimientoTmp', args).then(function(result) {
             res.send(G.utils.r(req.url, 'Insercion bodega movimiento TMP Correctamente', 200, {ordenes_compras: result}));
-        }).
-                fail(function(err) {
+        }).fail(function(err) {
             res.send(G.utils.r(req.url, 'Error Insertar a la tabla bodega movimiento TMP', 500, {ordenes_compras: []}));
-        }).
-                done();
+        }).done();
     });
 };
 
@@ -1578,33 +1557,29 @@ function __subir_archivo_plano(files, callback) {
 
     if (G.fs.existsSync(ruta_tmp)) {
         // Copiar Archivo
-        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
-        then(function() {
+        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).then(function() {
             return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
-        }).
-        then(function(){
+        }).then(function() {
             var parser = G.XlsParser;
             var workbook = parser.readFile(ruta_nueva);
             var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'costo']);
             console.log("filas generadas ", filas);
-            if(filas){
+            if (filas) {
                 G.fs.unlinkSync(ruta_nueva);
                 callback(false, filas);
             } else {
                 throw "Error serializando el archivo";
             }
-        }).
-        fail(function(err) {
+        }).fail(function(err) {
             console.log("error generado >>>>>>>>>> ", err);
             G.fs.unlinkSync(ruta_nueva);
             callback(true);
-        }).
-        done();
+        }).done();
 
     } else {
         callback(true);
     }
-    
+
 }
 
 
@@ -1637,7 +1612,8 @@ function __subir_archivo_novedad(data, files, callback) {
     } else {
         callback(true);
     }
-};
+}
+;
 
 // Funcion que valida que los codigos de los productos del archivo plano sean validos.
 function __validar_productos_archivo_plano(contexto, filas, callback) {
@@ -1669,7 +1645,8 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
             }
         });
     });
-};
+}
+;
 
 
 // Funcion que valida que los datos del archivo plano tengan el costo del producto.
@@ -1686,12 +1663,12 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
         return;
     }
 
-    
+
     var index = 1;
     productos.forEach(function(row) {
 
         var codigo_producto = row.codigo_producto;
-       
+
         that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, null, function(err, lista_productos) {
 
             if (err || lista_productos.length === 0) {
@@ -1702,11 +1679,11 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
                 row.iva = producto.iva;
                 productos_validos.push(row);
             }
-            
+
             index++;
-            var porcentaje = (index * 100) /  productos.length;
+            var porcentaje = (index * 100) / productos.length;
             that.e_ordenes_compra.onNotificarProgresoArchivoPlanoOrdenes(usuario_id, porcentaje);
-            
+
             if (--i === 0) {
                 callback(productos_validos, productos_invalidos);
             }
@@ -1718,8 +1695,8 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 
 // Funcion que genera el reporte en formato PDF usando la libreria JSReport
 function _generar_reporte_orden_compra(rows, callback) {
-    
-    
+
+
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
@@ -1745,8 +1722,8 @@ function _generar_reporte_orden_compra(rows, callback) {
             G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
 
                 if (err) {
-                   
-                     res.send(G.utils.r(req.url, 'Se ha generado un error generando el reporte', 200, {nombre_reporte: {}}));
+
+                    res.send(G.utils.r(req.url, 'Se ha generado un error generando el reporte', 200, {nombre_reporte: {}}));
                 } else {
                     callback(nombre_reporte);
                 }
@@ -1780,7 +1757,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     };
 
     smtpTransport.sendMail(settings, function(error, response) {
-        
+
         if (error) {
             callback(false);
             return;
@@ -1790,7 +1767,8 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
             return;
         }
     });
-};
+}
+;
 
 OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails"];
 

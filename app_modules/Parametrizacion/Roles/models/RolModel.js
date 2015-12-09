@@ -6,44 +6,55 @@ var RolModel = function() {
 RolModel.prototype.listar_roles = function(empresa_id, termino, pagina, callback) {
 
     var sqlaux = "";
-    var parametros = [empresa_id];
+    var parametros = {1:empresa_id};
     if (termino.length > 0) {
-        sqlaux = " and nombre ilike $2";
-        parametros.push("%" + termino + "%");
+        sqlaux = " and nombre "+G.constants.db().LIKE+" :2";
+        parametros['2'] = "%" + termino + "%";
     }
 
-    var sql = "SELECT * FROM roles where empresa_id = $1 " + sqlaux + " ORDER BY id ASC ";
+    var sql = " * FROM roles where empresa_id = :1 " + sqlaux + " ORDER BY id ASC ";
+    
+    var query = G.knex.select(G.knex.raw(sql, parametros));
+    
+    if (pagina !== 0) {        
+        query.limit(G.settings.limit).
+        offset((pagina - 1) * G.settings.limit);
+    } 
+    
+    query.then(function(resultado){
+        callback(false, resultado);
 
-    if (pagina !== 0) {
-
-        G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
-            callback(err, rows, total_records);
-        });
-    } else {
-        G.db.query(sql, parametros, function(err, rows, result) {
-            callback(err, rows);
-        });
-    }
+    }).catch(function(err){
+        console.log("error generarndo >>>>>>>>>>>>>> ", err);
+        callback(err);
+    });
+    
 };
 
 
 RolModel.prototype.obtenerRolesPorId = function(ids, callback) {
 
     ids = ids.join(",");
-    var sql = "SELECT * FROM roles WHERE id in($1) ";
+    var sql = "SELECT * FROM roles WHERE id in( :1 ) ";
+    
+    G.knex.raw(sql, {1:ids}).then(function(resultado){
+        callback(false, resultado.rows);
 
-    G.db.query(sql, [ids], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 
 RolModel.prototype.obtenerModulosPorRol = function(rol_id, callback) {
 
-    var sql = "SELECT * FROM roles_modulos WHERE rol_id = $1 AND estado = '1' ";
+    var sql = "SELECT * FROM roles_modulos WHERE rol_id = :1 AND estado = '1' ";
+    
+    G.knex.raw(sql, {1:rol_id}).then(function(resultado){
+        callback(false, resultado.rows);
 
-    G.db.query(sql, [rol_id], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -53,10 +64,13 @@ RolModel.prototype.obtenerModulosPorRolYEmpresa = function(rol_id, empresa_id, c
     var sql = " SELECT a. *, c.modulo_id FROM roles a\
                 INNER JOIN roles_modulos b ON b.rol_id = a.id\
                 INNER JOIN modulos_empresas c ON c.id = b.modulos_empresas_id AND c.empresa_id = a.empresa_id\
-                WHERE a.id = $1 AND b.estado = '1' AND a.empresa_id = $2 ";
+                WHERE a.id = :1 AND b.estado = '1' AND a.empresa_id = :2 ";
+    
+    G.knex.raw(sql, {1:rol_id, 2:empresa_id}).then(function(resultado){
+        callback(false, resultado.rows);
 
-    G.db.query(sql, [rol_id, empresa_id], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -97,40 +111,47 @@ RolModel.prototype.guardarRol = function(rol, callback) {
 RolModel.prototype.insertarRol = function(rol, callback) {
 
     var sql = "INSERT INTO roles (empresa_id, nombre, observacion, usuario_id,\
-               fecha_creacion, estado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+               fecha_creacion, estado) VALUES ( :1, :2, :3, :4, :5, :6 ) RETURNING id";
 
+    var params = {
+        1:rol.empresa_id, 2:rol.nombre, 3:rol.observacion, 4:rol.usuario_id, 5:'now()', 6:Number(rol.estado)
+    };
+    
+    G.knex.raw(sql, params).then(function(resultado){
+        callback(false, resultado.rows);
 
-    var params = [
-        rol.empresa_id, rol.nombre, rol.observacion, rol.usuario_id, 'now()', Number(rol.estado)
-    ];
-
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 RolModel.prototype.modificarRol = function(rol, callback) {
 
 
-    var sql = "UPDATE roles SET  nombre = $1, observacion = $2, usuario_id = $3, usuario_id_modifica = $4,\
-               estado = $5, fecha_modificacion = $6, empresa_id =$7 WHERE id = $8  \
-               ";
+    var sql = "UPDATE roles SET  nombre = :1, observacion = :2, usuario_id = :3, usuario_id_modifica = :4,\
+               estado = :5, fecha_modificacion = :6, empresa_id = :7 WHERE id = :8";
 
-    var params = [
-        rol.nombre, rol.observacion, rol.usuario_id, rol.usuario_id,
-        Number(rol.estado), 'now()', rol.empresa_id, rol.id
-    ];
+    var params = {
+        1:rol.nombre, 2:rol.observacion, 3:rol.usuario_id, 4:rol.usuario_id,
+        5:Number(rol.estado), 6:'now()', 7:rol.empresa_id, 8:rol.id
+    };
+    
+    G.knex.raw(sql, params).then(function(resultado){
+        callback(false, resultado.rows, resultado);
 
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 RolModel.prototype.obtenerRolPorNombre = function(nombre, callback) {
-    var sql = "SELECT  nombre, id, empresa_id FROM roles WHERE nombre ILIKE $1";
+    var sql = "SELECT  nombre, id, empresa_id FROM roles WHERE nombre "+G.constants.db().LIKE+" :1";
+    
+    G.knex.raw(sql, {1:nombre + "%"}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
 
-    G.db.query(sql, [nombre + "%"], function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -140,7 +161,7 @@ RolModel.prototype.habilitarModulosEnRoles = function(usuario_id, rolesModulos, 
     var that = this;
 
     __habilitarModulosEnRoles(that, usuario_id, rolesModulos, [], function(err, result, ids) {
-        console.log("ids creados 111 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", ids);
+        console.log("ids creados 111 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", ids, result, err);
         callback(err, result, ids);
     });
 
@@ -175,16 +196,19 @@ RolModel.prototype.insertarOpcion = function(modulo, usuario_id, callback) {
     console.log("estado >>>>>>>>>>>", typeof estado, " estado ", Number(estado), " rol_modulo_id ", rol_modulo_id, " modulo_opcion_id ", modulo_opcion_id);
 
     var sql = "INSERT INTO roles_modulos_opciones (modulo_opcion_id, rol_modulo_id, usuario_id,\
-               fecha_creacion, estado) VALUES ($1, $2, $3, $4, $5) RETURNING id";
+               fecha_creacion, estado) VALUES ( :1, :2, :3, :4, :5 ) RETURNING id";
 
+    var params = {
+        1:modulo_opcion_id, 2:rol_modulo_id, 3:usuario_id, 4:'now()', 5:Number(estado)
+    };
+    
+    G.knex.raw(sql, params).then(function(resultado){
+        callback(false, resultado.rows, resultado);
 
-    var params = [
-        modulo_opcion_id, rol_modulo_id, usuario_id, 'now()', Number(estado)
-    ];
-
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 RolModel.prototype.modificarOpcion = function(modulo, usuario_id, callback) {
@@ -194,15 +218,18 @@ RolModel.prototype.modificarOpcion = function(modulo, usuario_id, callback) {
 
     console.log("modificar opcion >>>>>>>>>>>", typeof estado, " estado ", Number(estado), " rol_modulo_id ", rol_modulo_id, " modulo_opcion_id ", modulo_opcion_id);
 
-    var sql = "UPDATE roles_modulos_opciones SET   usuario_id_modifica = $1,\
-               estado = $2, fecha_modificacion = $3  WHERE rol_modulo_id = $4 AND modulo_opcion_id = $5";
+    var sql = "UPDATE roles_modulos_opciones SET   usuario_id_modifica = :1,\
+               estado = :2, fecha_modificacion = :3  WHERE rol_modulo_id = :4 AND modulo_opcion_id = :5";
 
-    var params = [
-        usuario_id, Number(estado), 'now()', rol_modulo_id, modulo_opcion_id
-    ];
+    var params = {
+        1:usuario_id, 2:Number(estado), 3:'now()', 4:rol_modulo_id, 5:modulo_opcion_id
+    };
+    
+    G.knex.raw(sql, params).then(function(resultado){
+        callback(false, resultado.rows, resultado);
 
-    G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows, result);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -211,14 +238,17 @@ RolModel.prototype.listarRolesModulosOpciones = function(modulo_id, rol_id, rol_
     var sql = "SELECT a.*, b.rol_id, b.rol_opcion_id, b.estado_opcion_rol FROM modulos_opciones as a\
                LEFT JOIN (\
                     SELECT cc.id as rol_opcion_id, aa.modulo_id, cc.modulo_opcion_id, cc.estado as estado_opcion_rol, bb.rol_id FROM modulos_empresas as aa\
-                    INNER JOIN roles_modulos bb ON aa.id = bb.modulos_empresas_id AND bb.rol_id = $2\
+                    INNER JOIN roles_modulos bb ON aa.id = bb.modulos_empresas_id AND bb.rol_id = :2\
                     INNER JOIN roles_modulos_opciones cc ON cc.rol_modulo_id = bb.id\
-                    WHERE aa.empresa_id = $3 and aa.modulo_id = $1\
+                    WHERE aa.empresa_id = :3 and aa.modulo_id = :1\
                ) as b ON b.modulo_id = a.modulo_id AND b.modulo_opcion_id = a.id\
-               WHERE a.modulo_id =  $1 ORDER BY a.id DESC";
+               WHERE a.modulo_id =  :1 ORDER BY a.id DESC";
+    
+    G.knex.raw(sql, {1:modulo_id, 2:rol_id, 3:empresa_id}).then(function(resultado){
+        callback(false, resultado.rows, resultado);
 
-    G.db.query(sql, [modulo_id, rol_id, empresa_id], function(err, rows, result) {
-        callback(err, rows, result);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -288,49 +318,41 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
         return;
     }
 
-    console.log("modulo >>>>>>>>>>>>>>>>>>>>>> ", rolesModulos[0]);
     //este es el id de modulos_empresa
     var modulos_empresas_id = rolesModulos[0].modulo.empresasModulos[0].id;
     var rol_id = rolesModulos[0].rol.id;
     var estado = Number(rolesModulos[0].estado);
     var modulo_id = rolesModulos[0].modulo.modulo_id;
+    
+    var sql = "UPDATE roles_modulos SET estado = :3, usuario_id_modifica = :1, fecha_modificacion = now()  \
+               WHERE modulos_empresas_id = :2 AND rol_id = :4 RETURNING id";
 
+    //console.log("parametros ", {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id});
+    G.knex.raw(sql, {1:usuario_id, 2:modulos_empresas_id, 3:estado, 4:rol_id}).then(function(resultado){
+        if (resultado.rowCount === 0) {
+            sql = "INSERT INTO roles_modulos (modulos_empresas_id, rol_id, usuario_id, fecha_creacion, estado)\
+                   VALUES( :1, :2, :3, now(), :4 ) RETURNING id";
 
-
-    var sql = "UPDATE roles_modulos SET estado = $3, usuario_id_modifica = $1, fecha_modificacion = now()  \
-                WHERE modulos_empresas_id = $2 AND rol_id = $4 RETURNING id";
-
-    G.db.query(sql, [usuario_id, modulos_empresas_id, estado, rol_id], function(err, rows, result) {
-        if (err) {
-            callback(err, rows, ids);
+             return G.knex.raw(sql, {1:modulos_empresas_id, 2:rol_id, 3:usuario_id, 4:estado});
         } else {
-            //si la actualizacion no devuelve resultado se trata de hacer el insert
-            if (result.rowCount === 0) {
-                sql = "INSERT INTO roles_modulos (modulos_empresas_id, rol_id, usuario_id, fecha_creacion, estado)\
-                       VALUES($1, $2, $3, now(), $4) RETURNING id";
-
-                G.db.query(sql, [modulos_empresas_id, rol_id, usuario_id, estado], function(err, rows, result) {
-                    if (err) {
-                        callback(err, rows, ids);
-                    } else {
-                        rolesModulos.splice(0, 1);
-                        //se agrega el id del rol_modulo creado
-                        if (rows.length > 0 && rows[0].id) {
-                            ids.push({roles_modulos_id: rows[0].id, modulos_empresas_id: modulos_empresas_id, modulo_id: modulo_id});
-                        }
-
-                        __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback);
-                    }
-                });
-
-            } else {
-                rolesModulos.splice(0, 1);
-                if (rows.length > 0 && rows[0].id) {
-                    ids.push({roles_modulos_id: rows[0].id, modulos_empresas_id: modulos_empresas_id, modulo_id: modulo_id});
-                }
-                __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback);
+            rolesModulos.splice(0, 1);
+            if (resultado.rows.length > 0 && resultado.rows[0].id) {
+                ids.push({roles_modulos_id: resultado.rows[0].id, modulos_empresas_id: modulos_empresas_id, modulo_id: modulo_id});
             }
+            __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback);
         }
+
+    }).then(function(resultado){
+        if(!resultado) return;
+        rolesModulos.splice(0, 1);
+        //se agrega el id del rol_modulo creado
+        if (resultado.rows.length > 0 && resultado.rows[0].id) {
+            ids.push({roles_modulos_id: resultado.rows[0].id, modulos_empresas_id: modulos_empresas_id, modulo_id: modulo_id});
+        }
+
+        __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback);
+    }).catch(function(err){
+        callback(err);
     });
 
 };

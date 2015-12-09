@@ -33,8 +33,10 @@ VendedoresModel.prototype.listar_vendedores = function(callback) {
                 from vnts_vendedores as a\
                 WHERE a.estado = '1'";
 
-    G.db.query(sql, [], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql). then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err) {
+        callback(err);
     });
 };
 

@@ -30,34 +30,37 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
                 d.estado as estado_contrato,\
                 CASE when d.fecha_final >= CURRENT_TIMESTAMP THEN true ELSE false END as contrato_vigente\
                 FROM terceros as a\
-                JOIN terceros_clientes b ON a.tipo_id_tercero = b.tipo_id_tercero AND a.tercero_id = b.tercero_id AND b.empresa_id = $1\
+                JOIN terceros_clientes b ON a.tipo_id_tercero = b.tipo_id_tercero AND a.tercero_id = b.tercero_id AND b.empresa_id = :1 \
                 LEFT JOIN inv_tipos_bloqueos c ON a.tipo_bloqueo_id = c.tipo_bloqueo_id\
-                LEFT JOIN vnts_contratos_clientes as d ON a.tipo_id_tercero = d.tipo_id_tercero AND a.tercero_id = d.tercero_id AND d.empresa_id = $1 AND d.estado='1'\
+                LEFT JOIN vnts_contratos_clientes as d ON a.tipo_id_tercero = d.tipo_id_tercero AND a.tercero_id = d.tercero_id AND d.empresa_id = :1 AND d.estado='1'\
                 LEFT JOIN tipo_mpios e ON a.tipo_pais_id = e.tipo_pais_id AND a.tipo_dpto_id = e.tipo_dpto_id AND a.tipo_mpio_id = e.tipo_mpio_id\
                 LEFT JOIN tipo_dptos f ON e.tipo_pais_id = f.tipo_pais_id AND e.tipo_dpto_id = f.tipo_dpto_id\
                 LEFT JOIN tipo_pais g ON f.tipo_pais_id = g.tipo_pais_id\
                 WHERE \
-                (   a.tercero_id ilike $2 OR \
-                    a.nombre_tercero ilike $2\
+                (   a.tercero_id "+G.constants.db().LIKE+" :2 OR \
+                    a.nombre_tercero "+G.constants.db().LIKE+" :2 \
                 )";
-
+    
+    
+    
+    var query = G.knex.raw(sql, {1:empresa_id, 2:"%" + termino_busqueda + "%"});
+    
     if (paginacion) {
         // Paginacion
-        G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-            callback(err, rows);
-        });
-    } else {
-        // Sin Paginación
-        G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows) {
-            callback(err, rows);
-        });
+       query.limit(G.settings.limit).offset((pagina - 1) * G.settings.limit);
     }
+    
+    query.then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+    
 };
 
 ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, callback) {
 
-    var sql = " select\
-                a.tipo_id_tercero,\
+    var sql = " a.tipo_id_tercero,\
                 a.tercero_id,\
                 a.nombre_tercero,\
                 g.tipo_pais_id as pais_id,\
@@ -77,17 +80,21 @@ ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, d
                 left join tipo_mpios e on a.tipo_pais_id = e.tipo_pais_id AND a.tipo_dpto_id = e.tipo_dpto_id AND a.tipo_mpio_id = e.tipo_mpio_id\
                 left join tipo_dptos f on e.tipo_pais_id = f.tipo_pais_id AND e.tipo_dpto_id = f.tipo_dpto_id \
                 left join tipo_pais g on f.tipo_pais_id = g.tipo_pais_id\
-                WHERE b.empresa_id = $1 and a.tipo_pais_id = $2  and a.tipo_dpto_id= $3 and a.tipo_mpio_id= $4 and \
+                WHERE b.empresa_id = :1 and a.tipo_pais_id = :2  and a.tipo_dpto_id= :3 and a.tipo_mpio_id= :4 and \
                 (\
-                    a.tipo_id_tercero :: varchar ILIKE $5 or\
-                    a.tercero_id :: varchar ILIKE  $5 or\
-                    a.nombre_tercero :: varchar ILIKE $5 \
+                    a.tipo_id_tercero :: varchar "+G.constants.db().LIKE+" :5 or\
+                    a.tercero_id :: varchar "+G.constants.db().LIKE+"  :5 or\
+                    a.nombre_tercero :: varchar "+G.constants.db().LIKE+" :5 \
                 )\
                 ORDER BY a.nombre_tercero ";
 
-    G.db.query(sql, [empresa_id, pais_id, departamento_id, ciudad_id, "%" + termino_busqueda + "%"], function(err, rows, result, total_records) {
-        callback(err, rows);
-    });
+    
+   G.knex.select(G.knex.raw(sql, {1:empresa_id, 2:pais_id, 3:departamento_id, 4:ciudad_id, 5:"%" + termino_busqueda + "%"})).
+   then(function(resultado){
+       callback(false, resultado);
+   }).catch(function(err){
+       callback(err);
+   });
 
 };
 
@@ -113,12 +120,15 @@ ClientesModel.prototype.consultar_contrato_cliente = function(tipo_id_cliente, c
                     COALESCE(b.estado, '0') as estado\
                 FROM terceros a\
                     LEFT JOIN vnts_contratos_clientes b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
-                WHERE a.tipo_id_tercero = $1\
-                    AND a.tercero_id = $2 ";
-
-    G.db.query(sql, [tipo_id_cliente, cliente_id], function(err, rows, result) {
-        callback(err, rows, result);
-    });
+                WHERE a.tipo_id_tercero = :1 \
+                    AND a.tercero_id = :2 ";
+    
+   G.knex.raw(sql, {1:tipo_id_cliente, 2:cliente_id}).
+   then(function(resultado){
+       callback(false, resultado.rows, resultado);
+   }).catch(function(err){
+       callback(err);
+   });
 
 };
 

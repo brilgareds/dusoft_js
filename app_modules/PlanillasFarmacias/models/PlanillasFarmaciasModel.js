@@ -68,16 +68,16 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
 };
 
 PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centroUtilidad, bodega, pagina, terminoBusqueda, fechaInicial, fechaFinal, callback) {
-
-    var sql = "SELECT  m.prefijo,m.numero,m.fecha_registro,a.bodegas_doc_id\
+    
+    var sql = " m.prefijo,m.numero,m.fecha_registro,a.bodegas_doc_id\
              FROM  inv_bodegas_movimiento as m,\
              inv_bodegas_documentos as a,\
              documentos as b,\
             tipos_doc_generales as c\
-            WHERE m.empresa_id = $1 \
+            WHERE m.empresa_id = :1 \
             AND m.prefijo = 'EDB'\
-            AND a.centro_utilidad =$2\
-            AND a.bodega =$3\
+            AND a.centro_utilidad = :2\
+            AND a.bodega = :3\
             AND c.inv_tipo_movimiento = 'E'\
             AND a.documento_id = '229' \
             AND a.documento_id = m.documento_id \
@@ -88,8 +88,8 @@ PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centr
             AND b.empresa_id = a.empresa_id\
             AND c.tipo_doc_general_id = b.tipo_doc_general_id\
             AND m.numero NOT IN (SELECT numero from inv_planillas_farmacia_devolucion_detalle)\
-            AND m.numero::varchar ilike $4\
-            AND m.fecha_registro between $5 and $6 \
+            AND m.numero::varchar ilike :4\
+            AND m.fecha_registro between :5 and :6 \
             UNION SELECT   m.prefijo,m.numero,m.fecha_registro,a.bodegas_doc_id\
             FROM inv_bodegas_movimiento as m, \
             inv_bodegas_movimiento_despachos_clientes as dc,\
@@ -97,10 +97,10 @@ PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centr
             inv_bodegas_documentos as a,\
             documentos as b, \
             tipos_doc_generales as c\
-            WHERE m.empresa_id = $1\
+            WHERE m.empresa_id = :1\
             AND m.prefijo = 'EDB'\
-            AND a.centro_utilidad = $2 \
-            AND a.bodega = $3\
+            AND a.centro_utilidad = :2 \
+            AND a.bodega = :3\
             AND c.inv_tipo_movimiento = 'E'\
             AND a.documento_id = '229' \
             AND m.empresa_id = dc.empresa_id\
@@ -115,18 +115,18 @@ PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centr
             AND b.empresa_id = a.empresa_id\
             AND c.tipo_doc_general_id = b.tipo_doc_general_id\
             AND m.numero NOT IN (SELECT numero from inv_planillas_farmacia_devolucion_detalle)\
-            AND m.numero::varchar ilike $4\
-            AND m.fecha_registro between $5 and $6 \
+            AND m.numero::varchar ilike :4\
+            AND m.fecha_registro between :5 and :6 \
             UNION SELECT  m.prefijo,m.numero,m.fecha_registro,a.bodegas_doc_id\
             FROM  inv_bodegas_movimiento as m, \
             inv_bodegas_movimiento_despachos_farmacias as df,\
             public.solicitud_productos_a_bodega_principal as sp,\
             inv_bodegas_documentos as a, documentos as b, \
             tipos_doc_generales as c\
-            WHERE m.empresa_id = $1 \
+            WHERE m.empresa_id = :1 \
             AND m.prefijo = 'EDB'\
-            AND a.centro_utilidad =$2\
-            AND a.bodega = $3\
+            AND a.centro_utilidad = :2\
+            AND a.bodega = :3\
             AND a.documento_id = '229'\
             AND c.inv_tipo_movimiento = 'E'\
             AND m.empresa_id = df.empresa_id\
@@ -140,16 +140,20 @@ PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centr
             AND b.empresa_id = a.empresa_id \
             AND c.tipo_doc_general_id = b.tipo_doc_general_id\
             AND m.numero NOT IN (SELECT numero from inv_planillas_farmacia_devolucion_detalle) \
-            AND m.numero::varchar ilike $4 AND m.fecha_registro between $5 and $6 \
+            AND m.numero::varchar ilike :4 AND m.fecha_registro between :5 and :6 \
             ORDER BY 2 DESC";
 
 
-    G.db.paginated(sql, [empresa, centroUtilidad, bodega, '%' + terminoBusqueda + '%', fechaInicial, fechaFinal], pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
-
+   var parametros = {1: empresa, 2: centroUtilidad, 3:bodega, 4: "%"+terminoBusqueda+"%", 5:fechaInicial, 6: fechaFinal};
+   var query = G.knex.select(G.knex.raw(sql, parametros));
+       query.limit(G.settings.limit).offset((pagina - 1) * G.settings.limit).then(function(resultado){
+        callback(false, resultado);
+      
+    }).catch(function(err){
+        callback(err);
+       
     });
-
-}
+};
 
 
 /**
@@ -181,16 +185,7 @@ PlanillasFarmaciasModel.prototype.ingresarPlanillaFarmacia = function(empresa_id
         usuario_id,
         callback) {
 
-        
-  /*var sql = "INSERT INTO inv_planillas_farmacia_devolucion(empresa_id, centro_utilidad, bodega, id_empresa_destino, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo,estado,usuario_id)\
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)RETURNING id_inv_planilla_farmacia_devolucion;";
-
-
-    G.db.query(sql, [empresa_id, centro_utilidad, bodega, id_empresa_destino, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, '1', usuario_id], function(err, rows, result) {
-        callback(err, rows);
-        console.log("OK");
-        console.log(rows);
-    });*/
+      
     
    G.knex("inv_planillas_farmacia_devolucion").
     returning("id_inv_planilla_farmacia_devolucion").
@@ -244,7 +239,7 @@ PlanillasFarmaciasModel.prototype.ingresarDocumentosPlanillaFarmacia = function(
     var cantidad_neveras = (cantidad_neveras === '') ? 0 : cantidad_neveras;
     var temperatura_neveras = (temperatura_neveras === '') ? 0 : temperatura_neveras;
 
-     G.knex("inv_planillas_farmacia_devolucion_detalle").
+    G.knex("inv_planillas_farmacia_devolucion_detalle").
     returning("id_inv_planilla_farmacia_devolucion_detalle").
     insert({
             id_inv_planilla_farmacia_devolucion: id,
@@ -257,12 +252,9 @@ PlanillasFarmaciasModel.prototype.ingresarDocumentosPlanillaFarmacia = function(
             observacion:observacion,
             usuario_id:usuario_id
             
-        }).
-    then(function(resultado){
-      
-        callback(false, resultado[0]);
-       
-    }).catch(function(err){
+        }).then(function(resultado){
+            callback(false, resultado[0]);
+        }).catch(function(err){
         callback(err);
         
     }).done();
@@ -270,10 +262,19 @@ PlanillasFarmaciasModel.prototype.ingresarDocumentosPlanillaFarmacia = function(
 
 PlanillasFarmaciasModel.prototype.modificar_estado_planilla_despacho = function(planilla_id, estado, callback) {
 
-    var sql = " update inv_planillas_farmacia_devolucion set estado = $2 , fecha_despacho = NOW() where id_inv_planilla_farmacia_devolucion = $1 ; ";
-
-    G.db.query(sql, [planilla_id, estado], function(err, rows, result) {
-        callback(err, rows, result);
+ 
+      G.knex('inv_planillas_farmacia_devolucion')
+            .where('id_inv_planilla_farmacia_devolucion', planilla_id)
+            .update({
+        estado: estado,
+        fecha_despacho: 'NOW()'
+        
+    }).then(function(resultado) {
+       
+         callback(false, resultado.rows,resultado);
+    }).catch (function(error) {
+        
+        callback(error);
     });
 };
 
@@ -311,17 +312,21 @@ PlanillasFarmaciasModel.prototype.verificarPlanillaFarmacia = function(planilla_
                           a.cantidad_cajas, a.cantidad_neveras, 1 \
                           FROM inv_planillas_farmacia_devolucion_detalle a) as a group by 1) as g on a.id_inv_planilla_farmacia_devolucion = g.planilla_id \
                           INNER JOIN empresas h ON a.empresa_id = h.empresa_id  \
-                          WHERE (a.id_inv_planilla_farmacia_devolucion::varchar ilike $1 \
+                          WHERE (a.id_inv_planilla_farmacia_devolucion::varchar ilike :1 \
                           ) order by a.id_inv_planilla_farmacia_devolucion DESC;";
 
-    G.db.query(sql, [planilla_id], function(err, rows, result) {
-        callback(err, rows);
+    
+     G.knex.raw(sql, {1:planilla_id}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err) {    
+        callback(err);
     });
 };
 
 
 PlanillasFarmaciasModel.prototype.consultar_documentos_planilla_farmacia = function(planilla_id, termino_busqueda, callback) {
-
+    
+   
     var sql = "select \
                 a.id_inv_planilla_farmacia_devolucion as id,\
                 a.id_inv_planilla_farmacia_devolucion as numero_guia,\
@@ -366,22 +371,38 @@ PlanillasFarmaciasModel.prototype.consultar_documentos_planilla_farmacia = funct
                                   ) as a group by 1,a.temperatura_neveras,a.prefijo,a.numero \
                             ) as g ON a.id_inv_planilla_farmacia_devolucion = g.planilla_id \
                           INNER JOIN empresas h ON a.empresa_id = h.empresa_id  \
-                          WHERE a.id_inv_planilla_farmacia_devolucion::varchar ilike $1 \
-                          AND(a.id_inv_planilla_farmacia_devolucion::varchar ilike $2);";
+                          WHERE a.id_inv_planilla_farmacia_devolucion::varchar "+G.constants.db().LIKE+" :1 \
+                          AND(a.id_inv_planilla_farmacia_devolucion::varchar "+G.constants.db().LIKE+" :2);";
   
 
-    G.db.query(sql, [planilla_id, '%' + termino_busqueda + '%'], function(err, rows, result) {
-        callback(err, rows);
-    });
+     G.knex.raw(sql, {1:planilla_id, 2: '%' + termino_busqueda + '%'}).then(function(resultado){
+        callback(false, resultado.rows);
+     }).catch(function(err) {    
+        callback(err);
+     });
 };
 
 PlanillasFarmaciasModel.prototype.eliminar_documento_planilla = function(planilla_id, empresa_id, prefijo, numero, callback) {
 
-    var sql = "delete from inv_planillas_farmacia_devolucion_detalle where id_inv_planilla_farmacia_devolucion = $1 and empresa_id = $2 and  prefijo = $3 and  numero =$4"; 
+   /* var sql = "delete from inv_planillas_farmacia_devolucion_detalle where id_inv_planilla_farmacia_devolucion = $1 and empresa_id = $2 and  prefijo = $3 and  numero =$4"; 
     
     G.db.query(sql, [planilla_id, empresa_id, prefijo, numero], function(err, rows, result) {
         callback(err, rows, result);
-    });
+    });*/
+    
+    
+     G.knex('inv_planillas_farmacia_devolucion_detalle')
+      .where('id_inv_planilla_farmacia_devolucion', planilla_id)
+      .andWhere("empresa_id", empresa_id)
+      .andWhere("prefijo", prefijo)
+      .andWhere("numero", numero)
+      .del().then(function(resultado){
+           callback(false, resultado.rows,resultado);
+       }).catch (function(error) {    
+           callback(error);
+       });
+       
+     
 };
 
 module.exports = PlanillasFarmaciasModel;

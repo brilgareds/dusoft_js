@@ -540,28 +540,52 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
     cotizacion.usuario_id = req.session.user.usuario_id;
     
-    var objPrecioRegulado = {empresaId:cotizacion.empresa_id, codigoProducto:producto.codigo_producto}
+    var parametros = {empresaId:cotizacion.empresa_id, codigoProducto:producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
     
-    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', objPrecioRegulado).
-    then(function(resultado){  
+    var precioVenta;
+    var precioRegulado;
+    var precioPactado;
+    var valido;
+    var costoCompra;
+    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).then(function(resultado){ 
+    
+    valido = true;
 
-       var precioVenta = Number(producto.precio_venta);
-       var precioRegulado = Number(resultado[0].precio_regulado);
-       var valido = true;
-             
-       if(resultado[0].sw_regulado ==='1'){
-           if(precioVenta > precioRegulado){
-                 valido = false;
-           }
-       }
-       if(valido){
+  
+        precioVenta = Number(producto.precio_venta);
+        precioRegulado = Number(resultado[0].precio_regulado);
+        precioPactado = Number(resultado[0].precio_pactado);
+        costoCompra  = Number(resultado[0].costo_ultima_compra);
+        
+        /**
+         * +Descripcion: Valida si el producto es regulado
+         */
+        if(resultado[0].sw_regulado ==='1'){
+            /**
+             * +Descripcion: Si precio de venta es mayor al precio regulado
+             *              ó el precio pactado es mayor al regulado
+             *              cancele la accion
+             */
+            if(precioVenta > precioRegulado || precioPactado > precioRegulado){
+                  valido = false;
+            }
+        }
+
+      if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
+        if(precioVenta < costoCompra){
+              valido = false;
+        }
+      }
+        
+
+
+       if(valido ){
             return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);  
        }else{
           throw 'El precio de venta esta por encima del regulado';
        }
-    }).
-    then(function(rows){
-      /**
+    }).then(function(rows){
+        /**
         * +Descripcion: Se valida si el estado de la cotizacion es 
         *               1 activo 
         *               4 activo (desaprobado por cartera)
@@ -572,9 +596,9 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
            throw 'La cotizacion debe encontrarse activa o desaprobada por cartera';
         }
         
-    }).
-    then(function(rows){
-        /**
+    }).then(function(rows){ 
+          
+         /**
           * +Descripcion: Se valida si el producto es diferente al del detalle
           *               y si es asi se procede a modficar el detalle
           */
@@ -584,24 +608,22 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
            throw 'El producto ya aparece registrado en la cotizacion';
          }
          
-    }).
-    then(function(resultado){
-
+    }).then(function(resultado){
+    
+        
         if (resultado.rowCount === 0) {
             throw 'Error Interno';               
         }else {
           res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));  
         }
         
-    }).
-    fail(function(err){  
-        res.send(G.utils.r(req.url, err, 500, {}));
-    }).
-    done();
-  
+    }).fail(function(err){ 
      
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
     
 };
+
 
 
 /*
@@ -1716,7 +1738,6 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
  */
 PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
-
     var that = this;
 
     var args = req.body.data;
@@ -1776,112 +1797,134 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
      */
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
+    var estado_pedido = 0;
+     
+    /**
+     * +Descripcion: Promesa encargada de consultar el precio reguladod de un
+     *               producto, y validar si este precio esta por debajo del valor
+     *               de venta
+     * @fecha: 03/12/2015
+     * @param {string} pedido.empresa_id
+     * @param {string} codigo_producto
+     * @returns {function}
+     */
+    
+    
+    var parametros = {empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, contratoId: pedido.cliente.contrato_id}
+    
+    var precioVenta;
+    var precioRegulado;
+    var precioPactado;
+    var valido;
+    var costoCompra;
+    G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).then(function(resultado){ 
+    
+    valido = true;
 
-
-    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
-
-
-        if (estado) {
-
+  
+        precioVenta = Number(producto.precio_venta);
+        precioRegulado = Number(resultado[0].precio_regulado);
+        precioPactado = Number(resultado[0].precio_pactado);
+        costoCompra  = Number(resultado[0].costo_ultima_compra);
+        
+        /**
+         * +Descripcion: Valida si el producto es regulado
+         */
+        if(resultado[0].sw_regulado ==='1'){
             /**
-             * +Descripcion: Se permitira ejecutar la accion de insertarDetallePedido
-             *               siempre y cuando el pedido tenga el 
-             *               estado (Estado del Pedido ) 1
-             *               estado_pedido (Estado de solicitud ) 0
+             * +Descripcion: Si precio de venta es mayor al precio regulado
+             *              ó el precio pactado es mayor al regulado
+             *              cancele la accion
              */
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0') {
-
-                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
-
-                    if (estado) {
-
-                        var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
-                        var estado_pedido = 0;
-                        if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                            estado_pedido = 4;
-                        } else {
-                            estado_pedido = 1;
-                        }
-                        /**
-                         * +Descripcion: Se valida si el pedido ya cuenta con ese producto en el detalle
-                         */
-                        that.m_pedidos_clientes.consultarProductoDetallePedido(pedido, producto, function(estado, rows) {
-
-                            /**
-                             * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
-                             */
-
-                            if (estado) {
-
-                                /**
-                                 * +Descripcion: Se valida si el producto es diferente al del detalle
-                                 *               y si es asi se procede a modficar el detalle
-                                 */
-
-                                if (rows.length === 0) {
-
-
-                                    /**
-                                     * +Descripcion: la funcion insertar_detalle_pedido no se encuentra en el proyecto
-                                     *               por lo cual se crea la funcion insertarDetallePedido
-                                     */
-                                    that.m_pedidos_clientes.insertarDetallePedido(pedido, producto, function(err, rows, result) {
-
-                                        if (err || result.rowCount === 0) {
-                                            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                                            return;
-                                        } else {
-
-                                            pedido.aprobado_cartera = '0';
-                                            pedido.observacion_cartera = '';
-
-
-                                            that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
-
-                                                if (err || result.rowCount === 0) {
-                                                    res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                                                    return;
-                                                } else {
-                                                    that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-                                                    res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
-                                                    return;
-                                                }
-                                            });
-
-                                        }
-                                    });
-
-                                } else {
-                                    res.send(G.utils.r(req.url, 'El producto ya aparece registrado en el pedido', 500, {pedidos_clientes: []}));
-                                    return;
-                                }
-                            } else {
-                                res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
-                                return;
-                            }
-                        });
-
-                    } else {
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                        return;
-                    }
-                });
-
-            } else {
-                res.send(G.utils.r(req.url, 'El pedido debe estar activo o para autorizar nuevamente por cartera', 500, {pedidos_clientes: []}));
-                return;
+            if(precioVenta > precioRegulado || precioPactado > precioRegulado){
+                  valido = false;
             }
-
-        } else {
-            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
-
-            return;
         }
+      
+      /**
+       * +Descripcion: Valida si el producto no es regulado y su precio pctado
+       *               esta en 0
+       */
+      if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
+        if(precioVenta < costoCompra){
+              valido = false;
+        }
+      }
+        
 
 
-    });
+       if(valido ){
+            return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoPedidoEstado', numeroPedido);  
+       }else{
+          throw 'El precio de venta esta por encima del regulado';
+       }
+    }).then(function(resultado){
 
+        /**
+         * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
+         *               siempre y cuando el pedido tenga el 
+         *               estado (Estado del Pedido ) 1
+         *               estado_pedido (Estado de solicitud ) 0
+         */
+        if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
+
+            return G.Q.ninvoke(that.m_pedidos_clientes,'consultarTotalValorPedidoCliente', numeroPedido);
+
+        }else{
+           throw 'El pedido debe encontrarse activo ó para autorizar nuevamente por cartera';
+        }
+    }).then(function(rows){
+ 
+        var totalValorPedidoActual = rows[0].valor_total_cotizacion;
+        
+           if (totalValorPedidoNuevo > totalValorPedidoActual) {
+               estado_pedido = 4;
+           } else {
+               estado_pedido = 1;
+           }
+        /**
+          * +Descripcion: Se valida si el pedido ya cuenta con ese producto en el detalle
+          */
+         return G.Q.ninvoke(that.m_pedidos_clientes,'consultarProductoDetallePedido', pedido, producto);
+         
+    }).then(function(resultado){     
+      /**
+        * +Descripcion: Se valida si el producto es diferente al del detalle
+        *               y si es asi se procede a modficar el detalle
+        */
+        if (resultado.length === 0) {
+             return G.Q.ninvoke(that.m_pedidos_clientes,'insertarDetallePedido', pedido, producto);
+        }else{
+            throw 'El producto ya aparece registrado en el pedido';
+        }
+        
+    }).then(function(resultado){
+  
+        if(resultado.rowCount === 0) {
+            throw 'Error Interno';
+        } else 
+          
+       pedido.aprobado_cartera = '0';
+       pedido.observacion_cartera = '';  
+     
+       return  G.Q.ninvoke(that.m_pedidos_clientes,'actualizarEstadoPedido', pedido, estado_pedido);
+        
+     }).then(function(resultado){
+      
+        if (resultado.rowCount === 0) {
+            throw 'Error actualizando la observacion de cartera';
+        } else {
+            that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
+            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));            
+        }                                          
+      }).fail(function(err){      
+        res.send(G.utils.r(req.url, err, 500, {}));
+     }).
+     done();
+    
+    
 };
+
 
 
 
@@ -1915,22 +1958,23 @@ PedidosCliente.prototype.validarEstadoTotalValorPedido = function(req, res) {
 
     /**
      * +Descripcion: Metodo encargado de consultar el estado actual de un pedido
-     */
-    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
+     */   
+    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(err, resultado) {
 
-        if (estado) {
+        if (!err) {
 
             /**
-             * +Descripcion: Se permitira ejecutar la accion de insertarDetallePedido
+             * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
              *               siempre y cuando el pedido tenga el 
              *               estado (Estado del Pedido ) 1
              *               estado_pedido (Estado de solicitud ) 0
              */
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0') {
+            if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
 
-                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
 
-                    if (estado) {
+                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, resultado) {
+
+                    if (!err) {
 
                         var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
                         var estado_pedido = 0;
@@ -2033,7 +2077,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
                  * +Descripcion: Esta funcion sera la encargada de actualizar el
                  *               estado del pedido
                  */
-                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
@@ -2085,7 +2129,7 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
     var estado_pedido = args.pedidos_clientes.estado;
     
   
-  that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+  that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
@@ -2291,21 +2335,21 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
 
 
-    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(err, resultado) {
 
-        if (estado) {
+        if (!err) {
             /**
              * +Descripcion: Se permitira ejecutar la accion de modificarDetallePedido
              *               siempre y cuando el pedido tenga el 
              *               estado (Estado del Pedido ) 1
              *               estado_pedido (Estado de solicitud ) 0
              */
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0') {
+            if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
 
 
-                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
+                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, resultado) {
 
-                    if (estado) {
+                    if (!err) {
 
                         var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
                         var estado_pedido = 0;
@@ -2327,7 +2371,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
                                 pedido.observacion_cartera = '';
 
 
-                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
 
                                     if (err || result.rowCount === 0) {
                                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
@@ -2468,16 +2512,16 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
      *               estado (Estado del Pedido ) 1
      *               estado_pedido (Estado de solicitud ) 0
      */
-    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(err, resultado) {
 
-        if (estado) {
+        if (!err) {
 
-            if (rows[0].estado === '1' && rows[0].estado_pedido === '0') {
+            if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
 
 
-                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(resultado, estado) {
+                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, resultado) {
 
-                    if (estado) {
+                    if (!err) {
 
                         var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
                         var estado_pedido = 0;
@@ -2500,7 +2544,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
                                 pedido.observacion_cartera = '';
 
 
-                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, rows, result) {
+                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
 
                                     if (err || result.rowCount === 0) {
                                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));

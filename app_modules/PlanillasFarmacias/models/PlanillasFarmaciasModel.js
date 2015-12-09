@@ -54,14 +54,10 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
                 if (filtro.filtroEstado === true) {
                     this.where(G.knex.raw('a.estado'), G.constants.db().LIKE, "%" + termino_busqueda + "%")
                 }
-            })
-            .limit(G.settings.limit)
-            .offset((pagina - 1) * G.settings.limit)
-            .orderBy('a.id_inv_planilla_farmacia_devolucion', 'desc')
-            .then(function(rows) {
+            }).limit(G.settings.limit).offset((pagina - 1) * G.settings.limit)
+              .orderBy('a.id_inv_planilla_farmacia_devolucion', 'desc').then(function(rows) {
                 callback(false, rows);
-            })
-            .catch (function(error) {
+            }).catch (function(error) {
                 callback(error);
             }).done();
 
@@ -201,14 +197,10 @@ PlanillasFarmaciasModel.prototype.ingresarPlanillaFarmacia = function(empresa_id
             estado: '1',
             usuario_id:usuario_id
             
-        }).
-    then(function(resultado){
-      
-        callback(false, resultado[0]);
-       
+        }).then(function(resultado){
+        callback(false, resultado[0]);      
     }).catch(function(err){
-        callback(err);
-        
+        callback(err);     
     }).done();
 };
 
@@ -384,21 +376,14 @@ PlanillasFarmaciasModel.prototype.consultar_documentos_planilla_farmacia = funct
 
 PlanillasFarmaciasModel.prototype.eliminar_documento_planilla = function(planilla_id, empresa_id, prefijo, numero, callback) {
 
-   /* var sql = "delete from inv_planillas_farmacia_devolucion_detalle where id_inv_planilla_farmacia_devolucion = $1 and empresa_id = $2 and  prefijo = $3 and  numero =$4"; 
     
-    G.db.query(sql, [planilla_id, empresa_id, prefijo, numero], function(err, rows, result) {
-        callback(err, rows, result);
-    });*/
-    
-    
-     G.knex('inv_planillas_farmacia_devolucion_detalle')
-      .where('id_inv_planilla_farmacia_devolucion', planilla_id)
-      .andWhere("empresa_id", empresa_id)
-      .andWhere("prefijo", prefijo)
-      .andWhere("numero", numero)
-      .del().then(function(resultado){
+     G.knex('inv_planillas_farmacia_devolucion_detalle').where('id_inv_planilla_farmacia_devolucion', planilla_id)
+         .andWhere("empresa_id", empresa_id)
+         .andWhere("prefijo", prefijo)
+         .andWhere("numero", numero)
+         .del().then(function(resultado){
            callback(false, resultado.rows,resultado);
-       }).catch (function(error) {    
+         }).catch (function(error) {    
            callback(error);
        });
        

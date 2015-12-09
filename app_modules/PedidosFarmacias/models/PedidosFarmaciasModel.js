@@ -153,6 +153,7 @@ PedidosFarmaciasModel.prototype.existe_registro_encabezado_temporal = function(e
 
 PedidosFarmaciasModel.prototype.obtenerCantidadProductosEnTemporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
+    console.log("buscando cantidad >>>>>>>>>>>>> ", arguments);
     var sql = "SELECT COUNT(farmacia_id) as cantidad_registros  FROM solicitud_pro_a_bod_prpal_tmp WHERE \
                farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4";
 

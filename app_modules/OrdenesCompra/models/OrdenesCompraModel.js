@@ -760,62 +760,7 @@ OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(noved
 
 // Listado de recepciones de mercancia. pendiente
 OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
-
-    /*var sql = " select \
-                a.id,\
-                a.empresa_id,\
-                b.tipo_id_tercero as tipo_id_empresa,\
-                b.id as nit_empresa,\
-                b.razon_social as nombre_empresa,\
-                a.codigo_proveedor_id,\
-                d.tipo_id_tercero as tipo_id_proveedor,\
-                d.tercero_id as tercero_id,\
-                d.nombre_tercero as nombre_proveedor,\
-                d.direccion as direccion_proveedor,\
-                d.telefono as telefono_proveedor,\
-                a.orden_pedido_id as numero_orden,\
-                a.inv_transportador_id,\
-                e.descripcion as nombre_transportadora,\
-                e.estado as estado_transportadora,\
-                a.novedades_recepcion_id,\
-                f.codigo as codigo_novedad,\
-                f.descripcion as descripcion_novedad,\
-                f.estado as estado_novedad,\
-                a.numero_guia,\
-                a.numero_factura,\
-                a.cantidad_cajas,\
-                a.cantidad_neveras,\
-                a.temperatura_neveras,\
-                a.contiene_medicamentos,\
-                a.contiene_dispositivos,\
-                a.estado,\
-                CASE WHEN a.estado = '0' THEN 'Anulada' \
-                     WHEN a.estado = '1' THEN 'Activa' \
-                     WHEN a.estado = '2' THEN 'Finalizada' END as descripcion_estado, \
-                to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
-                to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\
-                from recepcion_mercancia a\
-                inner join empresas b on a.empresa_id = b.empresa_id\
-                inner join terceros_proveedores c on a.codigo_proveedor_id = c.codigo_proveedor_id\
-                inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id=d.tercero_id\
-                inner join inv_transportadoras e on a.inv_transportador_id = e.transportadora_id \
-                left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
-                where a.fecha_registro between $1 and $2 and \
-                (\
-                    d.tercero_id ilike $3 or\
-                    d.nombre_tercero ilike $3 or\
-                    a.orden_pedido_id::varchar ilike $3 or \
-                    e.descripcion ilike $3 or\
-                    a.numero_guia ilike $3 or\
-                    a.numero_factura::varchar ilike $3 \
-                ) order by a.fecha_registro DESC ";
-
-    G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
-    });
-    */
-    
-    
+   
     var columnas = [
         "a.id",
         "a.empresa_id",

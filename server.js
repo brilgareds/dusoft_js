@@ -21,7 +21,6 @@ var accounting = require("accounting");
 G = {};
 G.dirname = __dirname;
 G.settings = require('./lib/Settings').create();
-G.db = require('./lib/Pg').create();
 G.log = require('./lib/Logs');
 G.utils = require('./lib/Utils');
 G.random = require('./lib/Random');

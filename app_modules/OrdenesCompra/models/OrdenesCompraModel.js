@@ -195,8 +195,9 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
     }).   
     leftJoin(subQueryContrato,"a.codigo_producto", "aa.codigo_producto").    
     where({
-           "b.empresa_id" : empresa_id,
-           "a.estado"  : '1'
+           "b.empresa_id" : empresa_id
+           //se comenta por requerimiento 09/12/2015
+          // "a.estado"  : '1'
     }).
     andWhere(function() {
         if (laboratorio_id)

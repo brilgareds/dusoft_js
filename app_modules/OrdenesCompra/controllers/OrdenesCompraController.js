@@ -1637,6 +1637,7 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
             if (existe_producto.length > 0 && cantidad_solicitada > 0) {
                 productos_validos.push(producto);
             } else {
+                producto.error = "El producto no se encunetra o no tiene cantidad valida";
                 productos_invalidos.push(producto);
             }
 
@@ -1672,6 +1673,7 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
         that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, null, function(err, lista_productos) {
 
             if (err || lista_productos.length === 0) {
+                row.error = "El producto esta en la orden, o no esta activo";
                 productos_invalidos.push(row);
             } else {
                 var producto = lista_productos[0];

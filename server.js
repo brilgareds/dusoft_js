@@ -21,7 +21,6 @@ var accounting = require("accounting");
 G = {};
 G.dirname = __dirname;
 G.settings = require('./lib/Settings').create();
-G.db = require('./lib/Pg').create();
 G.log = require('./lib/Logs');
 G.utils = require('./lib/Utils');
 G.random = require('./lib/Random');
@@ -100,13 +99,11 @@ if (program.prod) {
  * =========================================*/
 
 //determina el numero de procesadores del servidor, de modo que se concrete los workers que permite el balanceo de carga
-G.db.setCredentials(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName, function(){
     
-    G.knex = require('./lib/Knex').
-             create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
-             connect().getInstance();
+G.knex = require('./lib/Knex').
+         create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
+         connect().getInstance();
      
-});
  
 
 

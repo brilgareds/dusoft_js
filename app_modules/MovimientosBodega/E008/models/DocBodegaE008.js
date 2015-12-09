@@ -207,11 +207,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
         console.log("errror ", err);
         callback(err);
     });
-    
-
-   /* G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows, total_records);
-    });*/
+   
     
 };
 
@@ -300,12 +296,6 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
         console.log("errror ", err);
         callback(err);
     });
-    
-    /*
-    G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows, total_records);
-    });*/
-    
     
 };
 
@@ -621,11 +611,12 @@ DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = f
 // Eliminar Justificacion de Producto
 DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_producto = function(doc_tmp_id, usuario_id, codigo_producto, callback) {
 
-    var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = $1 AND usuario_id = $2 AND codigo_producto = $3;";
-
-    G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto], function(err, rows, result) {
-
-        callback(err, rows);
+    var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = :1 AND usuario_id = :2 AND codigo_producto = :3;";
+    
+    G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto}).then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
@@ -993,48 +984,9 @@ function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id,
     
 };
 
-// Ingresar Autorizaciones despacho
-function __ingresar_autorizaciones_despachos(documento_temporal_id, usuario_id, callback) {
-
-    console.log('========= ingresar_autorizaciones_despachos =========');
-
-    var sql = " INSERT INTO inv_bodegas_movimiento_autorizaciones_despachos \
-                    (empresa_id, prefijo, numero,centro_utilidad,bodega,codigo_producto, lote,fecha_vencimiento, cantidad,porcentaje_gravamen,total_costo,fecha_registro,usuario_id_autorizador,observacion,fecha_autorizacion)\
-                SELECT  \
-                    '%empresa_id%' AS empresa_id, '%prefijo%' AS prefijo, %numero% AS numero, centro_utilidad, bodega, codigo_producto, lote,fecha_vencimiento,\
-                    cantidad, porcentaje_gravamen, total_costo, fecha_registro, usuario_id_autorizador, observacion, fecha_autorizacion   \
-                FROM inv_bodegas_movimiento_tmp_autorizaciones_despachos WHERE TRUE  AND sw_autorizado = '1' AND doc_tmp_id = $1 AND usuario_id = $2 ; ";
-
-    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
-
-        callback(err, rows, result);
-    });
-}
-;
 
 //Eliminar Documento Temporal Despacho Farmacias
 function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_id, transaccion, callback) {
-
-    /*var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
-
-    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, result) {
-        if (err) {
-            callback(err);
-            return;
-        }
-
-        sql = "DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
-        G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, result) {
-            if (err) {
-                callback(err);
-                return;
-            }
-            sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
-            G.db.transaction(sql, [documento_temporal_id, usuario_id], callback);
-        });
-
-    });*/
-    
     
     var sql = "DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = :1 AND usuario_id = :2;";
     
@@ -1045,15 +997,12 @@ function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_
         sql = "DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
         return G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id}).transacting(transaccion);
         
-    }).
-    then(function(){
+    }).then(function(){
         sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
         return G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id}).transacting(transaccion);
-    }).
-    then(function(){
+    }).then(function(){
         callback(false);
-    }).
-    catch(function(err){
+    }).catch(function(err){
         callback(err);
     });
 
@@ -1071,15 +1020,12 @@ function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_i
         sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = :1 AND usuario_id = :2;";
         return G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id}).transacting(transaccion);
         
-    }).
-    then(function(){
+    }).then(function(){
         sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = :1 AND usuario_id = :2";
         return G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id}).transacting(transaccion);
-    }).
-    then(function(){
+    }).then(function(){
         callback(false);
-    }).
-    catch(function(err){
+    }).catch(function(err){
         callback(err);
     });
     

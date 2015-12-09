@@ -375,10 +375,6 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
 
     var sql = (G.settings.env === 'prod') ? sql_produccion : sql_pruebas;
 
-    /*G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final], function(err, rows, result) {
-        callback(err, rows);
-    });*/
-
     G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: codigo_producto, 5: fecha_inicial, 6: fecha_final}).then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {

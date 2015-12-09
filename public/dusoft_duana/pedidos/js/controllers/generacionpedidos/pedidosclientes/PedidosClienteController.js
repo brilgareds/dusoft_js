@@ -280,7 +280,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
-
+                    
+                    console.log("data ", data)
                     if (data.status === 200) {
                         that.render_productos_cotizacion(data.obj.pedidos_clientes.lista_productos);
                     }
@@ -1067,7 +1068,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
+                   
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     if (data.status === 200) {
 
@@ -1174,7 +1175,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
-
+                 
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     if (data.status === 200) {
                         $scope.volver_cotizacion();

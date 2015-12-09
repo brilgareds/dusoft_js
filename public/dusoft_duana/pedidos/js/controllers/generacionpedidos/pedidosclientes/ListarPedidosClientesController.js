@@ -687,6 +687,8 @@ define(["angular", "js/controllers",
              */          
             socket.on("onListarEstadoCotizacion", function(datos) {
                 
+                console.log("onListarEstadoCotizacion");
+                console.log("datos ", datos)
                 if (datos.status === 200) {
                     var estado = ['Inactivo', 'Activo', 'Anulado', 'Aprobado cartera', 'No autorizado por cartera', 'Tiene un pedido', 'Se solicita autorizacion']
                     $scope.Empresa.get_cotizaciones().forEach(function(data) {
@@ -717,6 +719,7 @@ define(["angular", "js/controllers",
              */
             socket.on("onListarEstadoPedido", function(datos) {
                
+           
             
                 if (datos.status === 200) {
 

@@ -51,19 +51,22 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g on a.id = g.planilla_id\
-                where a.fecha_registro between $1 and $2 \
+                where a.fecha_registro between :1 and :2 \
                 and (\
-                    a.id::varchar ilike $3 or\
-                    b.descripcion ilike $3 or\
-                    b.placa_vehiculo ilike $3 or\
-                    e.pais ilike $3 or\
-                    d.departamento ilike $3 or\
-                    c.municipio ilike $3 or\
-                    a.nombre_conductor ilike $3 \
+                    a.id::varchar "+G.constants.db().LIKE+" :3 or\
+                    b.descripcion "+G.constants.db().LIKE+" :3 or\
+                    b.placa_vehiculo "+G.constants.db().LIKE+" :3 or\
+                    e.pais "+G.constants.db().LIKE+" :3 or\
+                    d.departamento "+G.constants.db().LIKE+" :3 or\
+                    c.municipio "+G.constants.db().LIKE+" :3 or\
+                    a.nombre_conductor "+G.constants.db().LIKE+" :3 \
                 ) order by a.id DESC; ";
 
-    G.db.query(sql, [fecha_inicial, fecha_final, "%"+termino_busqueda+"%"], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1: fecha_inicial, 2: fecha_final, 3: "%"+termino_busqueda+"%"}).then(function(resultado){
+      
+        callback(false, resultado.rows);
+    }).catch(function(err) {
+        callback(err);
     });
 };
 
@@ -71,7 +74,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
 PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = function(empresa_id, farmacia_id, centro_utilidad_id, termino_busqueda, callback){
     
     // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    
+        
     var sql = " select \
                 '0' as tipo,\
                 'FARMACIAS' as descripcion_tipo,\
@@ -95,31 +98,33 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 inner join bodegas c on b.farmacia_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad and b.bodega = c.bodega\
                 inner join centros_utilidad d on c.empresa_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad\
                 inner join empresas e on d.empresa_id = e.empresa_id\
-                where a.empresa_id = $1 \
-                and b.farmacia_id = $2 \
-                and b.centro_utilidad  = $3 \
+                where a.empresa_id = :1 \
+                and b.farmacia_id = :2 \
+                and b.centro_utilidad  = :3 \
                 and b.estado in ('2','8','9','3')\
                 and a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_farmacias b ) and \
                 (\
-                    a.prefijo || ' ' || a.numero :: varchar  ilike $4 or\
-                    a.numero :: varchar ilike  $4 or\
-                    a.solicitud_prod_a_bod_ppal_id :: varchar ilike $4 \
+                    a.prefijo || ' ' || a.numero :: varchar  "+G.constants.db().LIKE+" :4 or\
+                    a.numero :: varchar "+G.constants.db().LIKE+"  :4 or\
+                    a.solicitud_prod_a_bod_ppal_id :: varchar "+G.constants.db().LIKE+" :4 \
                 )\
                 order by a.fecha_registro desc; ";
-    
-    console.log('==========consultar_documentos_despachos_por_farmacia============== !!!!!!!!!!!!!!!!!!!!!!!');
-    console.log(empresa_id, farmacia_id, centro_utilidad_id, termino_busqueda);
-    
-    G.db.query(sql, [empresa_id, farmacia_id, centro_utilidad_id, "%"+termino_busqueda+"%"], function(err, rows, result) {
-        callback(err, rows);
-    });    
+   
+   
+     G.knex.raw(sql, {1: empresa_id, 2: farmacia_id, 3: centro_utilidad_id, 4: "%"+termino_busqueda+"%"}).then(function(resultado){
+        
+        callback(false, resultado.rows, resultado);
+        
+    }).catch(function(err) {
+        
+        callback(err);
+    });
 };
 
 // Consultar los documentos de despacho de un cliente 
 PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = function(empresa_id, tipo_id, tercero_id, termino_busqueda, callback){
     
     // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    
     var sql = " select \
                 '1' as tipo,\
                 'CLIENTES' as descripcion_tipo,\
@@ -132,21 +137,24 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                 a.fecha_registro\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join ventas_ordenes_pedidos b on a.pedido_cliente_id = b.pedido_cliente_id \
-                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 and b.estado_pedido in ('2','8','9','3') \
+                where a.empresa_id= :1 and a.tipo_id_tercero = :2 and a.tercero_id = :3 and b.estado_pedido in ('2','8','9','3') \
                 and a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_clientes b ) and \
                 ( \
-                    a.prefijo || ' ' || a.numero :: varchar ilike $4 or \
-                    a.numero :: varchar ilike $4 or \
-                    a.pedido_cliente_id :: varchar ilike $4 \
+                    a.prefijo || ' ' || a.numero :: varchar "+G.constants.db().LIKE+"  :4 or \
+                    a.numero :: varchar "+G.constants.db().LIKE+"  :4 or \
+                    a.pedido_cliente_id :: varchar "+G.constants.db().LIKE+"  :4 \
                 )\
                 order by a.fecha_registro desc ; ";
     
-    console.log('==========consultar_documentos_despachos_por_cliente==============');
-    console.log(empresa_id, tipo_id, tercero_id, termino_busqueda);
-    
-    G.db.query(sql, [empresa_id, tipo_id, tercero_id, "%"+termino_busqueda+"%"], function(err, rows, result) {
-        callback(err, rows);
-    });    
+ 
+    G.knex.raw(sql, {1: empresa_id, 2: tipo_id, 3: tercero_id, 4: "%"+termino_busqueda+"%"}).then(function(resultado){
+       
+        callback(false, resultado.rows);
+        
+    }).catch(function(err) {
+     
+        callback(err);
+    });
 };
 
 PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planilla_id, callback) {
@@ -196,15 +204,17 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planill
                       from inv_planillas_detalle_empresas a \
                     ) as a group by 1\
                   ) as g on a.id = g.planilla_id\
-                where a.id = $1 ; ";
+                where a.id = :1 ; ";
     
-    G.db.query(sql, [planilla_id], function(err, rows, result) {
-        callback(err, rows);
+  
+     G.knex.raw(sql, {1: planilla_id}).then(function(resultado){
+        callback(false, resultado.rows);     
+    }).catch(function(err) {
+        callback(err);
     });
 };
 
 PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = function(planilla_id, termino_busqueda, callback) {
-
 
     var sql = " select * from (\
                     select \
@@ -267,49 +277,88 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.observacion,\
                     a.usuario_id\
                     from inv_planillas_detalle_empresas a\
-                ) as a where a.planilla_id = $1 and ( a.descripcion_destino ilike $2 );";
+                ) as a where a.planilla_id = :1 and ( a.descripcion_destino "+G.constants.db().LIKE+" :2 );";
     
-    G.db.query(sql, [planilla_id, '%'+termino_busqueda+'%'], function(err, rows, result) {
-        callback(err, rows);
+    G.knex.raw(sql, {1: planilla_id,2:'%'+termino_busqueda+'%'}).then(function(resultado){
+       
+        callback(false, resultado.rows);                
+    }).catch(function(err) {
+        
+        callback(err);
     });
+  
 };
 
-
+/**
+ * +Descripcion: Funcion encargada de ingresar planilla 
+ * @param {type} pais_id
+ * @param {type} departamento_id
+ * @param {type} ciudad_id
+ * @param {type} inv_transportador_id
+ * @param {type} nombre_conductor
+ * @param {type} observacion
+ * @param {type} numero_guia_externo
+ * @param {type} usuario_id
+ * @param {type} callback
+ * @returns {undefined} */
 PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function(pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id, callback) {
 
+  
     var sql = " insert into  inv_planillas_despacho (pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id ) \
-                values ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id;";
+                values ( :1, :2, :3, :4, :5, :6, :7, :8 ) RETURNING id;";
      
-    G.db.query(sql, [pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
+    var parametros = {1:pais_id, 2:departamento_id, 3:ciudad_id, 4:inv_transportador_id, 5:nombre_conductor, 6:observacion, 7:numero_guia_externo, 8:usuario_id};
+         
+    G.knex.raw(sql,parametros).then(function(resultado){
+       callback(false, resultado.rows,resultado);
+    }).catch(function(err){
+       callback(err);
     });
+   
+    
+    
 };
 
 PlanillasDespachosModel.prototype.ingresar_documentos_planilla = function(tabla, planilla_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id, callback) {
 
+  
     var sql = " insert into " + tabla + " (inv_planillas_despacho_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id) \
-                values ($1, $2, $3, $4, $5, $6, $7, $8, $9)"; 
+                values ( :1, :2, :3, :4, :5, :6, :7, :8, :9 )"; 
     
-    G.db.query(sql, [planilla_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
+   var parametros = {1:planilla_id, 2:empresa_id, 3:prefijo, 4:numero, 5:cantidad_cajas, 6:cantidad_neveras, 7:temperatura_neveras, 8:observacion, 9:usuario_id};
+         
+    G.knex.raw(sql,parametros).then(function(resultado){
+       callback(false, resultado.rows,resultado);
+    }).catch(function(err){      
+       callback(err);
     });
 };
 
 PlanillasDespachosModel.prototype.eliminar_documento_planilla = function(tabla, planilla_id, empresa_id, prefijo, numero, callback) {
 
-    var sql = " delete from " + tabla + " where inv_planillas_despacho_id = $1 and empresa_id = $2 and  prefijo = $3 and  numero =$4"; 
-    
-    G.db.query(sql, [planilla_id, empresa_id, prefijo, numero], function(err, rows, result) {
-        callback(err, rows, result);
+    var sql = " delete from " + tabla + " where inv_planillas_despacho_id = :1 and empresa_id = :2 and  prefijo = :3 and  numero = :4"; 
+    var parametros = {1:planilla_id, 2:empresa_id, 3:prefijo, 4:numero};
+         
+    G.knex.raw(sql,parametros).then(function(resultado){
+       callback(false, resultado.rows,resultado);
+    }).catch(function(err){
+       callback(err);
     });
 };
 
 PlanillasDespachosModel.prototype.modificar_estado_planilla_despacho = function(planilla_id, estado, callback) {
-
-    var sql = " update inv_planillas_despacho set estado = $2 , fecha_despacho = NOW() where id = $1 ; "; 
     
-    G.db.query(sql, [planilla_id, estado], function(err, rows, result) {
-        callback(err, rows, result);
+  
+    var sql = " update inv_planillas_despacho set estado = :2, fecha_despacho = NOW() where id = :1; ";   
+   
+    var parametros = {1:planilla_id, 2:estado};
+         
+    G.knex.raw(sql,parametros).then(function(resultado){
+     
+       callback(false, resultado.rows,resultado);
+    }).catch(function(err){
+      
+       callback(err);
     });
 };
 

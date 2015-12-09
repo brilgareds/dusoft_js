@@ -1,8 +1,6 @@
 
 var PedidosClientesEvents = function(socket, pedidos_clientes, terceros) {
 
-    console.log("Eventos Pedidos Cliente  Cargado ");
-
     this.io = socket;
     this.m_pedidos_clientes = pedidos_clientes;
     this.m_terceros = terceros;
@@ -108,15 +106,15 @@ PedidosClientesEvents.prototype.onActualizarSesion = function(datos) {
         
     });
 };
+
 PedidosClientesEvents.prototype.onNotificarEstadoPedido = function(numero_pedido,estadoPedido) {
     
-      
-  
+ 
     var that = this;
     this.m_pedidos_clientes.consultarEstadoPedidoEstado(numero_pedido, function(err, resultado) {
-   
+    
      if (!err) {
-        
+       
         var response = G.utils.r('onListarEstadoPedido', 'Estado del pedido', 200, 
                     {
                         pedidos_clientes: resultado,

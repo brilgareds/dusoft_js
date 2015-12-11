@@ -1350,10 +1350,20 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
 
                     that.m_pedidos_farmacias.obtenerCantidadProductosEnTemporal(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id,
                             req.session.user.usuario_id, function(err, resultado) {
+                                
+                        if(err) {
+                            res.send(G.utils.r(req.url, 'Error validando el archivo plano', 500, {}));
+                            return;
+                        }
                         var cantidad = (resultado.length > 0) ? parseInt(resultado[0].cantidad_registros) : 0;
                         //Si hay un pedido temporal existente se toma el tipo de producto, de lo contrario se toma la primera agrupacion de tipos de productos del archivo
                         var _productosAgrupados = (!tipoProducto) ? productosAgrupados[Object.keys(productosAgrupados)[0]] : productosAgrupados[tipoProducto];
-
+                        
+                        if(!_productosAgrupados){
+                            res.send(G.utils.r(req.url, 'El pedido debe ser del mismo tipo', 500, {}));
+                            return;
+                        }
+                        
                         if ((cantidad + _productosAgrupados.length) > 25) {
                             res.send(G.utils.r(req.url, 'La cantidad de productos no puede ser mayor a 25', 401, {}));
 
@@ -1373,6 +1383,8 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
                                         {pedido_farmacia: {productosValidos: productosValidados, productosInvalidos: productosInvalidos}}
 
                                 ));
+                                    
+                                return;
                             });
                         }
                     });

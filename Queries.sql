@@ -1369,7 +1369,6 @@ IS ' Indica que el pedido se hara solamente de ese tipo de producto inv_tipo_pro
 ALTER TABLE "public"."solicitud_pro_a_bod_prpal_tmp" ADD COLUMN "cantidad_pendiente" INTEGER DEFAULT 0;
 
 
-<<<<<<< HEAD
 ALTER TABLE "public"."ventas_ordenes_pedidos"
   ADD COLUMN "centro_destino" CHAR(2); 
 
@@ -1382,7 +1381,6 @@ ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
 
 ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
   ADD COLUMN "bodega_destino" CHAR(2); 
-=======
 
 /* =================== Tabla para ingresar el encabezado de los documentos de devolucion ============*/
 CREATE TABLE "public"."inv_planillas_farmacia_devolucion" (

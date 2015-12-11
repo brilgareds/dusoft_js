@@ -841,7 +841,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                                     <div class="list-group">\
                                                         <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                            {{ producto.codigo_producto}}\
+                                                            {{ producto.codigo_producto}} - {{producto.error}}\
                                                         </a>\
                                                     </div>\
                                                 </div>\

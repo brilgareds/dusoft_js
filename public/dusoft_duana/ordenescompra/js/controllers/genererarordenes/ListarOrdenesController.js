@@ -8,7 +8,8 @@ define(["angular", "js/controllers",
     "models/NovedadOrdenCompra",
     "models/ObservacionOrdenCompra",
     "models/ArchivoNovedadOrdenCompra",
-    "models/UsuarioOrdenCompra"
+    "models/UsuarioOrdenCompra",
+    "controllers/genererarordenes/VentanaArchivoOrdenesController"
 ], function(angular, controllers) {
 
     controllers.controller('ListarOrdenesController', [
@@ -481,6 +482,19 @@ define(["angular", "js/controllers",
                     }
 
                 });
+            };
+            
+            $scope.onSubirArchivoOrdenes = function(){
+                 var opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        templateUrl: 'views/genererarordenes/ventanaarchivoordenes.html',
+                        scope: $scope,
+                        controller:'VentanaArchivoOrdenesController'
+                    };
+                    var modalInstance = $modal.open(opts);
             };
 
             $scope.onCambiarEstadoOrden = function(orden_compra, estado) {

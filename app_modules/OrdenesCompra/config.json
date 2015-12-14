@@ -18,6 +18,16 @@
                     "module": "Productos",
                     "model": "ProductosModel",
                     "alias": "m_productos"
+                },
+                "unidad_negocio_model": {
+                    "module": "Parametrizacion/UnidadesNegocio",
+                    "model": "UnidadesNegocioModel",
+                    "alias": "m_unidad_negocio"
+                },
+                "m_proveedores": {
+                    "module": "Terceros/Proveedores",
+                    "model": "ProveedoresModel",
+                    "alias": "m_proveedores"
                 }
             }],
         "events": [{

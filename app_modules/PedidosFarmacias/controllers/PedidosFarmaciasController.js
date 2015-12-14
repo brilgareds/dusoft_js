@@ -1334,7 +1334,7 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
     args.pedidos_farmacias.observacion = "Archivo plano";
     var extension = args.pedidos_farmacias.extension;
 
-    __subir_archivo_plano(req.files, function(error, contenido) {
+    G.utils.subirArchivoPlano(req.files, ['codigo', 'cantidad'], function(error, contenido) {
         if (!error) {
 
             __validar_productos_archivo_plano(that, contenido, function(productosValidadosArchivo, productosInvalidosArchivo) {
@@ -2019,55 +2019,9 @@ function __agruparProductosPorTipo(that, productos, callback) {
     });
 
     callback(productosAgrupados);
-}
-;
-
-/*
- * @Author: Eduar
- * +Descripcion: Lee el contenido del archivo plano
- * +Modificacion: Se añade requiere libreria para importar datos de un archivo
- *                xls y se valida la extension enviada por el cliente y de acuerdo
- *                a esto se importa el archivo .xlsx o .xls
- * @fecha: 30/10/2015
- */
-
-function __subir_archivo_plano(files, callback) {
-    
-    var ruta_tmp = files.file.path;
-    var ext = G.path.extname(ruta_tmp);
-    var nombre_archivo = G.random.randomKey(3, 3) + ext;
-    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
-
-    if (G.fs.existsSync(ruta_tmp)) {
-        // Copiar Archivo
-        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
-        then(function() {
-            return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
-        }).
-        then(function(){
-            var parser = G.XlsParser;
-            var workbook = parser.readFile(ruta_nueva);
-            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad']);
-
-            if(!filas){
-                callback(true);
-                return;
-            } else {
-                G.fs.unlinkSync(ruta_nueva);
-                callback(false, filas);
-            }
-        }).
-        fail(function(err) {
-            G.fs.unlinkSync(ruta_nueva);
-            callback(true);
-        }).
-        done();
-
-    } else {
-        callback(true);
-    }
-
 };
+
+
 
 /*
  * @Author: Eduar

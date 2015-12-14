@@ -824,6 +824,25 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
     });
 };
 
+
+OrdenesCompra.prototype.subirArchivoOrdenes = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    var cabecera = ['unidad_negocio', 'codigo_proveedor', 'codigo_producto', 'cantidad', 'costo', 'observacion'];
+    
+    G.Q.nfcall(G.utils.subirArchivoPlano, req.files, cabecera).then(function(resultado){
+       return G.Q.ninvoke(that.m_ordenes_compra, 'gestionarArchivoOrdenes', resultado);
+    }).then(function(resultado){
+        
+    }).fail(function(err){
+        //console.log("se ha generado un error ", err);
+        res.send(G.utils.r(req.url, 'Se ha generado un error interno', 500, {ordenes_compras: []}));
+    });
+    
+};
+
+
 OrdenesCompra.prototype.subirArchivoNovedades = function(req, res) {
 
 
@@ -1033,7 +1052,7 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
     var numero_orden = args.ordenes_compras.numero_orden;
 
-    __subir_archivo_plano(req.files, function(error, contenido) {
+    G.utils.subirArchivoPlano(req.files, ['codigo', 'cantidad', 'costo'], function(error, contenido) {
 
         if (!error) {
 
@@ -1549,38 +1568,6 @@ OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
     });
 };
 
-function __subir_archivo_plano(files, callback) {
-    var ruta_tmp = files.file.path;
-    var ext = G.path.extname(ruta_tmp);
-    var nombre_archivo = G.random.randomKey(3, 3) + ext;
-    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
-
-    if (G.fs.existsSync(ruta_tmp)) {
-        // Copiar Archivo
-        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).then(function() {
-            return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
-        }).then(function() {
-            var parser = G.XlsParser;
-            var workbook = parser.readFile(ruta_nueva);
-            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'costo']);
-            console.log("filas generadas ", filas);
-            if (filas) {
-                G.fs.unlinkSync(ruta_nueva);
-                callback(false, filas);
-            } else {
-                throw "Error serializando el archivo";
-            }
-        }).fail(function(err) {
-            console.log("error generado >>>>>>>>>> ", err);
-            G.fs.unlinkSync(ruta_nueva);
-            callback(true);
-        }).done();
-
-    } else {
-        callback(true);
-    }
-
-}
 
 
 function __subir_archivo_novedad(data, files, callback) {

@@ -16,7 +16,7 @@
 
         <div class="row col-md-12 col-md-offset-0" style="margin-top: 25px">    
 
-            <div flow-init="flow"  flow-file-success="respuestaSubidaArchivo($file, $message);" flow-file-added="" flow-files-submitted="cargarArchivo($flow);" class="ng-scope" flow-prevent-drop="cargarArchivo($flow);"  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+            <div flow-init="root.flow"  flow-file-success="respuestaSubidaArchivo($file, $message);" flow-file-added="" flow-files-submitted="cargarArchivo($flow);" class="ng-scope" flow-prevent-drop="cargarArchivo($flow);"  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
                 <div class="drop txt-center" flow-drop="" flow-drop-enabled="" ng-class="dropClass" >
 
                     <div class="col-md-12">
@@ -48,7 +48,7 @@
 
     <div class="modal-footer">
         <button class="btn btn-warning" ng-click="close()">Cancelar</button>
-        <button class="btn btn-primary" ng-click="aceptar()" ng-disabled="producto_seleccionado.novedad.observacion.id == '' || producto_seleccionado.novedad.descripcion==''" >Aceptar</button>
+        <button class="btn btn-primary" ng-click="onSubirArchivo()"  >Subir</button>
     </div>
 
 </div>

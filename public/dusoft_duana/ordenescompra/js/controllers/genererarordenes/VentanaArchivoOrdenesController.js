@@ -3,37 +3,47 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('VentanaArchivoOrdenesController', [
         '$scope', '$rootScope', 'API',
         '$modalInstance', 'AlertService', 'Request',
+        'Usuario',
         function($scope, $rootScope, API, 
-                 $modalInstance, AlertService, Request) {
+                 $modalInstance, AlertService, Request,
+                 Usuario) {
 
-            var that = this;
-
-            // Inicializacion Upload
-            $scope.flow = new Flow();
-            $scope.flow.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_NOVEDAD;
-            $scope.flow.testChunks = false;
-            $scope.flow.singleFile = true;
+            var self = this;
             
             
-            $scope.flow.query = {
-                session: JSON.stringify($scope.session)
-            };
-
-
-            that.subirArchivoNovedad = function() {
+            self.init = function(){
+                $scope.root = {};
                 
-                $scope.flow.opts.query.data = JSON.stringify({
+                $scope.root.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+                
+                $scope.root.flow = new Flow();
+                $scope.root.flow.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_ORDENES_COMPRA;
+                $scope.root.flow.testChunks = false;
+                $scope.root.flow.singleFile = true;
+
+                $scope.root.flow.query = {
+                    session: JSON.stringify($scope.root.session)
+                };
+            }
+
+
+
+            self.subirArchivoOrdenes = function() {
+                
+                $scope.root.flow.opts.query.data = JSON.stringify({
                     ordenes_compras: {
-                        novedad_id: $scope.producto.get_novedad().get_id()
                     }
                 });
-
-                $scope.flow.upload();
+                console.log("A>>>>>>>>>>>>>>>>>>>>>>>> on subir archivo");
+                $scope.root.flow.upload();
             };
 
             $scope.respuestaSubidaArchivo = function(file, message) {
 
-                var data = (message !== undefined) ? JSON.parse(message) : {};
+                /*var data = (message !== undefined) ? JSON.parse(message) : {};
                 $scope.flow.cancel();
 
                 if (data.status === 200) {
@@ -42,19 +52,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $modalInstance.close();
                 } else {
                     AlertService.mostrarMensaje("warning", data.msj);
-                }
+                }*/
 
 
             };
 
             $scope.cargarArchivo = function($flow) {
 
-                $scope.flow = $flow;
+                $scope.root.flow = $flow;
                 
             };
 
-            $scope.aceptar = function() {
-                that.gestionar_novedades();
+            $scope.onSubirArchivo = function() {
+                self.subirArchivoOrdenes();
             };
 
             $scope.close = function() {
@@ -64,6 +74,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.onDescargarArchivo = function(archivo){
                 $scope.visualizarReporte("/OrdenesCompras/Novedades/" + archivo.descripcion, archivo.descripicion, "blank");
             };
+            
+            
+            self.init();
             
         }]);
 });

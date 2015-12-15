@@ -235,7 +235,8 @@ ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callbac
                     b.sw_regulado, \
                     c.empresa_id, \
                     COALESCE (d.precio_pactado,0) as precio_pactado, \
-                    a.costo_ultima_compra\
+                    a.costo_ultima_compra,\
+                    split_part(coalesce(fc_precio_producto_contrato_cliente( :3, a.codigo_producto, :1 ),'0'), '@', 1) as precio_producto\
             FROM inventarios a  INNER JOIN inventarios_productos b  \
             ON a.codigo_producto = b.codigo_producto \
             LEFT JOIN vnts_contratos_clientes c \

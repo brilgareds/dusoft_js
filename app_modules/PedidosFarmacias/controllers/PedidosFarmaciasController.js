@@ -2098,8 +2098,7 @@ function _generarDocumentoPedido(obj, callback) {
 
 
     });
-}
-;
+};
 
 
 /*

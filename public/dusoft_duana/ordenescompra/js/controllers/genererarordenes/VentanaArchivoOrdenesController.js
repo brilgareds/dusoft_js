@@ -35,6 +35,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
                 $scope.root.flow.opts.query.data = JSON.stringify({
                     ordenes_compras: {
+                        empresa_id : Usuario.getUsuarioActual().getEmpresa().getCodigo()
                     }
                 });
                 console.log("A>>>>>>>>>>>>>>>>>>>>>>>> on subir archivo");

@@ -399,12 +399,16 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
 }
 
 // Ingresar Cabecera Orden de Compra
-OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, callback) {
+OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, transaccion, callback) {
 
     var sql = " INSERT INTO compras_ordenes_pedidos ( orden_pedido_id, codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
                  VALUES((select max(orden_pedido_id) +1 from compras_ordenes_pedidos), :1, :2, :3, :4, :5, '1', NOW() ) RETURNING orden_pedido_id; ";
      
-    G.knex.raw(sql, {1:unidad_negocio, 2:codigo_proveedor, 3:empresa_id, 4:observacion, 5:usuario_id}).then(function(resultado){
+    var query = G.knex.raw(sql, {1:unidad_negocio, 2:codigo_proveedor, 3:empresa_id, 4:observacion, 5:usuario_id}); 
+     
+    if(transaccion) query.transacting(transaccion);
+     
+    query.then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(err){
        callback(err);
@@ -516,13 +520,17 @@ OrdenesCompraModel.prototype.anular_orden_compra = function(numero_orden, callba
 };
 
 // Ingresar Detalle Orden de Compra
-OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, callback) {
+OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, transaccion, callback) {
 
 
     var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado)\
                 VALUES ( :1, :2, :3, :4, :5, 1 );";
     
-    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva}).then(function(resultado){
+    var query = G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva});
+    
+    if(transaccion) query.transacting(transaccion);
+    
+    query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);
@@ -731,35 +739,52 @@ OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, o
     
 };
 
-OrdenesCompraModel.prototype.gestionarArchivoOrdenes = function(datos, callback){
+
+/*
+ * @Author: Eduar
+ * @param {Object} params
+ * @param {function} callback
+ * +Descripcion: Metodo que inicializa el proceso de ordenes masivas.
+ */
+OrdenesCompraModel.prototype.gestionarArchivoOrdenes = function(params, callback){
+    
     var that = this;
     var ordenesAgrupadas = {};
     
     G.knex.transaction(function(transaccion) {  
-         G.Q.ninvoke(that,'agruparOrdenes', datos).then(function(resultado){
-             ordenesAgrupadas = resultado;
-
+         G.Q.ninvoke(that,'agruparOrdenes', params).then(function(resultado){
+             var parametros = {contexto : that, ordenes:resultado, index:0, transaccion:transaccion};
+             return G.Q.nfcall(__gestionarOrdenesAgrupadas, parametros);
+         }).then(function(resultado){
+            console.log("resultado de inserccion ", resultado);
+            
+            return G.Q.nfcall(_generarReporteOrdenes, resultado);
+         }).then(function(){
              
-         })/*.then(function(){
-             transaccion.commit();
-         })*/.fail(function(err){
+            transaccion.commit(); 
+         }).fail(function(err){
              console.log("error generado ", err);
              transaccion.rollback(err);
          }).done();
      }).then(function(resultado){
             callback(false, resultado);
      }).catch(function(err){
-           // console.log("error generado >>>>>>>>>>>>", err);
             callback(err);
      }).done();   
 };
 
-
-OrdenesCompraModel.prototype.agruparOrdenes = function(datos, callback){
+/*
+ * @Author: Eduar
+ * @param {Object} params
+ * @param {function} callback
+ * +Descripcion: Metodo que gestiona el agrupamiento de las ordenes
+ */
+OrdenesCompraModel.prototype.agruparOrdenes = function(params, callback){
     var that = this;
     var ordenes = {};
+    var obj = {contexto:that, datos:params.datos, ordenes:ordenes, empresa_id:params.empresa_id, usuario_id:params.usuario_id};
     
-    G.Q.nfcall(__agruparOrdenes, {contexto:that, datos:datos, ordenes:ordenes}).then(function(ordenesAgrupadas){
+    G.Q.nfcall(__agruparOrdenes, obj).then(function(ordenesAgrupadas){
         callback(false, ordenesAgrupadas);
         
     }).fail(function(err){
@@ -768,6 +793,116 @@ OrdenesCompraModel.prototype.agruparOrdenes = function(datos, callback){
    
 };
 
+
+function _generarReporteOrdenes(obj, callback) {
+
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/ordenes_creadas.html', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: ordenes
+    }, function(err, response) {
+
+        response.body(function(body) {
+            var fecha = new Date();
+            var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    callback(nombreTmp);
+                }
+            });
+
+
+        });
+
+
+    });
+};
+
+/*
+ * @Author: Eduar
+ * @param {Object} params
+ * @param {function} callback
+ * +Descripcion: Funcion recursiva que permite crear el encabezado y el detalle de la orden de compra
+ */
+function __gestionarOrdenesAgrupadas(params, callback){
+    var ordenes = params.ordenes;
+    
+    var llave = Object.keys(ordenes)[params.index];
+    var encabezado = ordenes[llave];
+    var def = G.Q.defer();
+    
+    if(!encabezado){
+        callback(false, ordenes);
+        return;
+    }
+        
+    //Crea el encabezado de la orden
+    G.Q.ninvoke(params.contexto, 'insertar_orden_compra', encabezado.codigo_unidad_negocio, encabezado.codigo_proveedor, 
+                encabezado.empresa_id, encabezado.observacion, encabezado.usuario_id, params.transaccion).then(function(id){
+         
+        encabezado.ordenId = id[0].orden_pedido_id;
+        var detalle = {transaccion:params.transaccion, encabezado:encabezado, contexto:params.contexto};
+        
+        return G.Q.nfcall(__gestionarDetalleOrdenesAgrupadas, detalle)
+        
+    }).then(function(resultado){
+       params.index++;
+      // console.log(" id creado ", encabezado.ordenId);
+         
+       setTimeout(function(){
+            __gestionarOrdenesAgrupadas(params, callback);
+            def.resolve();
+       }, 0);
+    }).fail(function(err){
+       callback(err);
+    });
+
+};
+
+/*
+ * @Author: Eduar
+ * @param {Object} params
+ * @param {function} callback
+ * +Descripcion: Funcion recursiva que permite crear el detalle de la orden de compra
+ */
+function __gestionarDetalleOrdenesAgrupadas(params, callback){
+   var producto = params.encabezado.detalle[0];
+   var def = G.Q.defer();
+   if(!producto){
+       callback(false);
+       return;
+   }
+   
+   G.Q.ninvoke(params.contexto, "listar_productos", params.encabezado.empresa_id, params.encabezado.codigo_proveedor, params.encabezado.ordenId,
+               producto.codigo_producto, null, 1, null).then(function(_producto){
+      
+      if(_producto.length === 0){
+         throw "El producto no pudo ser registrado "+(producto.__rownum__ + 1);
+      } else {
+          producto.iva = _producto[0].iva;
+          //console.log("producto insertado ", producto);
+          return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, producto.codigo_producto, producto.cantidad,
+                             producto.costo, producto.iva, params.transaccion);
+      }
+                   
+   }).then(function(resultado){
+       
+       setTimeout(function(){
+            params.encabezado.detalle.splice(0,1);
+            __gestionarDetalleOrdenesAgrupadas(params,callback);
+            def.resolve();
+       },0);
+       
+   }).fail(function(err){
+       callback(err);
+   });
+}
 
 /*
  * @Author: Eduar
@@ -790,10 +925,18 @@ function  __agruparOrdenes(params, callback ){
         
         //Valida si no existe el grupo de codigo_proveedor y unidad de negocio, para crearlo
         if(!_orden){
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio] = [];
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio] = {};
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].detalle = [];
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].proveedor_id = ordenValidada.proveedor_id;
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].proveedor_tipo_id = ordenValidada.proveedor_tipo_id;
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].codigo_unidad_negocio = ordenValidada.codigo_unidad;
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].empresa_id = params.empresa_id;
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].usuario_id = params.usuario_id;
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].observacion = params.orden.observacion;
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].codigo_proveedor = params.orden.codigo_proveedor;
         }
         
-        params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].push(params.orden);
+        params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].detalle.push(params.orden);
         params.datos.splice(0, 1);
         
         setTimeout(function(){
@@ -838,6 +981,7 @@ function __validarFilaOrden(params, callback){
         if(resultado.length === 0){
             throw "No se encontro la unidad de negocio, fila "+(params.orden.__rownum__ + 1);
         } else {
+            params.orden.codigo_unidad = resultado[0].codigo_unidad_negocio;
             return G.Q.ninvoke(params.contexto.m_proveedores, 'obtenerProveedorPorCodigo', params.orden.codigo_proveedor);
         }
     }).then(function(resultado){

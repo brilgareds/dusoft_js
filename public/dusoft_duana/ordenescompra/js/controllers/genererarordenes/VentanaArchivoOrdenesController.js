@@ -3,10 +3,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('VentanaArchivoOrdenesController', [
         '$scope', '$rootScope', 'API',
         '$modalInstance', 'AlertService', 'Request',
-        'Usuario',
+        'Usuario','String',
         function($scope, $rootScope, API, 
                  $modalInstance, AlertService, Request,
-                 Usuario) {
+                 Usuario, String) {
 
             var self = this;
             
@@ -44,16 +44,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             $scope.respuestaSubidaArchivo = function(file, message) {
 
-                /*var data = (message !== undefined) ? JSON.parse(message) : {};
-                $scope.flow.cancel();
+                var data = (message !== undefined) ? JSON.parse(message) : {};
+                $scope.root.flow.cancel();
 
                 if (data.status === 200) {
-                    $scope.buscar_detalle_orden_compra();
-
+                    console.log("pdf ", data.obj);
+                    $scope.visualizarReporte("/reports/" + data.obj.pdf, data.obj.pdf , "download");
                     $modalInstance.close();
                 } else {
-                    AlertService.mostrarMensaje("warning", data.msj);
-                }*/
+                    AlertService.mostrarVentanaAlerta(String.CONSTANTS.ALERTA_TITULO, data.msj);
+                }
 
 
             };

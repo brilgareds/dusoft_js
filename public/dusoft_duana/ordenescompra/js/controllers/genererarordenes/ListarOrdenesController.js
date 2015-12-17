@@ -486,8 +486,8 @@ define(["angular", "js/controllers",
             
             $scope.onSubirArchivoOrdenes = function(){
                  var opts = {
-                        backdrop: true,
                         backdropClick: true,
+                        backdrop: 'static',
                         dialogFade: false,
                         keyboard: true,
                         templateUrl: 'views/genererarordenes/ventanaarchivoordenes.html',
@@ -495,6 +495,14 @@ define(["angular", "js/controllers",
                         controller:'VentanaArchivoOrdenesController'
                     };
                     var modalInstance = $modal.open(opts);
+                    
+                    
+                modalInstance.result.then(function() {
+                    $scope.buscar_ordenes_compras("");
+
+                }, function() {
+                    
+                });
             };
 
             $scope.onCambiarEstadoOrden = function(orden_compra, estado) {

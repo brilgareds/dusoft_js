@@ -842,10 +842,10 @@ OrdenesCompra.prototype.subirArchivoOrdenes = function(req, res){
        var parametros = {datos:resultado, empresa_id:args.ordenes_compras.empresa_id, usuario_id:req.session.user.usuario_id};
        return G.Q.ninvoke(that.m_ordenes_compra, 'gestionarArchivoOrdenes', parametros);
     }).then(function(resultado){
-        
+        res.send(G.utils.r(req.url, 'Archivo cargado correctamente', 200, {pdf:resultado}));
     }).fail(function(err){
         //console.log("se ha generado un error ", err);
-        res.send(G.utils.r(req.url, 'Se ha generado un error interno', 500, {ordenes_compras: []}));
+        res.send(G.utils.r(req.url, err, 500, {ordenes_compras: []}));
     });
     
 };

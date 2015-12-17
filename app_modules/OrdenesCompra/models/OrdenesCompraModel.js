@@ -755,19 +755,16 @@ OrdenesCompraModel.prototype.gestionarArchivoOrdenes = function(params, callback
          G.Q.ninvoke(that,'agruparOrdenes', params).then(function(resultado){
              var parametros = {contexto : that, ordenes:resultado, index:0, transaccion:transaccion};
              return G.Q.nfcall(__gestionarOrdenesAgrupadas, parametros);
-         }).then(function(resultado){
-            console.log("resultado de inserccion ", resultado);
-            
+         }).then(function(resultado){            
             return G.Q.nfcall(_generarReporteOrdenes, resultado);
-         }).then(function(){
-             
-            transaccion.commit(); 
+         }).then(function(pdf){
+            transaccion.commit(pdf); 
          }).fail(function(err){
              console.log("error generado ", err);
              transaccion.rollback(err);
          }).done();
-     }).then(function(resultado){
-            callback(false, resultado);
+     }).then(function(pdf){
+            callback(false, pdf);
      }).catch(function(err){
             callback(err);
      }).done();   
@@ -792,212 +789,6 @@ OrdenesCompraModel.prototype.agruparOrdenes = function(params, callback){
     });
    
 };
-
-
-function _generarReporteOrdenes(obj, callback) {
-
-
-    G.jsreport.render({
-        template: {
-            content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/ordenes_creadas.html', 'utf8'),
-            recipe: "phantom-pdf",
-            engine: 'jsrender'
-        },
-        data: ordenes
-    }, function(err, response) {
-
-        response.body(function(body) {
-            var fecha = new Date();
-            var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
-            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    callback(nombreTmp);
-                }
-            });
-
-
-        });
-
-
-    });
-};
-
-/*
- * @Author: Eduar
- * @param {Object} params
- * @param {function} callback
- * +Descripcion: Funcion recursiva que permite crear el encabezado y el detalle de la orden de compra
- */
-function __gestionarOrdenesAgrupadas(params, callback){
-    var ordenes = params.ordenes;
-    
-    var llave = Object.keys(ordenes)[params.index];
-    var encabezado = ordenes[llave];
-    var def = G.Q.defer();
-    
-    if(!encabezado){
-        callback(false, ordenes);
-        return;
-    }
-        
-    //Crea el encabezado de la orden
-    G.Q.ninvoke(params.contexto, 'insertar_orden_compra', encabezado.codigo_unidad_negocio, encabezado.codigo_proveedor, 
-                encabezado.empresa_id, encabezado.observacion, encabezado.usuario_id, params.transaccion).then(function(id){
-         
-        encabezado.ordenId = id[0].orden_pedido_id;
-        var detalle = {transaccion:params.transaccion, encabezado:encabezado, contexto:params.contexto};
-        
-        return G.Q.nfcall(__gestionarDetalleOrdenesAgrupadas, detalle)
-        
-    }).then(function(resultado){
-       params.index++;
-      // console.log(" id creado ", encabezado.ordenId);
-         
-       setTimeout(function(){
-            __gestionarOrdenesAgrupadas(params, callback);
-            def.resolve();
-       }, 0);
-    }).fail(function(err){
-       callback(err);
-    });
-
-};
-
-/*
- * @Author: Eduar
- * @param {Object} params
- * @param {function} callback
- * +Descripcion: Funcion recursiva que permite crear el detalle de la orden de compra
- */
-function __gestionarDetalleOrdenesAgrupadas(params, callback){
-   var producto = params.encabezado.detalle[0];
-   var def = G.Q.defer();
-   if(!producto){
-       callback(false);
-       return;
-   }
-   
-   G.Q.ninvoke(params.contexto, "listar_productos", params.encabezado.empresa_id, params.encabezado.codigo_proveedor, params.encabezado.ordenId,
-               producto.codigo_producto, null, 1, null).then(function(_producto){
-      
-      if(_producto.length === 0){
-         throw "El producto no pudo ser registrado "+(producto.__rownum__ + 1);
-      } else {
-          producto.iva = _producto[0].iva;
-          //console.log("producto insertado ", producto);
-          return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, producto.codigo_producto, producto.cantidad,
-                             producto.costo, producto.iva, params.transaccion);
-      }
-                   
-   }).then(function(resultado){
-       
-       setTimeout(function(){
-            params.encabezado.detalle.splice(0,1);
-            __gestionarDetalleOrdenesAgrupadas(params,callback);
-            def.resolve();
-       },0);
-       
-   }).fail(function(err){
-       callback(err);
-   });
-}
-
-/*
- * @Author: Eduar
- * @param {Object} params
- * @param {function} callback
- * +Descripcion: Agrupa las ordenes que estan en el archivo de excel por codigo proveedor y unidad de negocio
- */
-function  __agruparOrdenes(params, callback ){
-    params.orden = params.datos[0];
-    var def = G.Q.defer();
-     
-    if(!params.orden){
-        callback(false, params.ordenes);
-        return;
-    } 
-    
-    G.Q.nfcall(__validarFilaOrden, params).then(function(ordenValidada){
-        var _orden = params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio];
-        params.orden = ordenValidada;
-        
-        //Valida si no existe el grupo de codigo_proveedor y unidad de negocio, para crearlo
-        if(!_orden){
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio] = {};
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].detalle = [];
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].proveedor_id = ordenValidada.proveedor_id;
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].proveedor_tipo_id = ordenValidada.proveedor_tipo_id;
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].codigo_unidad_negocio = ordenValidada.codigo_unidad;
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].empresa_id = params.empresa_id;
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].usuario_id = params.usuario_id;
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].observacion = params.orden.observacion;
-            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].codigo_proveedor = params.orden.codigo_proveedor;
-        }
-        
-        params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].detalle.push(params.orden);
-        params.datos.splice(0, 1);
-        
-        setTimeout(function(){
-            __agruparOrdenes(params, callback);
-            def.resolve();
-        },0);
-
-    }).fail(function(err){
-        callback(err);
-    });
-}
-
-
-/*
- * @Author: Eduar
- * @param {Object} params
- * @param {function} callback
- * +Descripcion: Permite validar el registro en cada fila del archivo sea valido, (unidad de negocio, proveedor, producto etc);
- */ 
-function __validarFilaOrden(params, callback){
-    if(!params.orden.codigo_proveedor || !params.orden.unidad_negocio || !params.orden.codigo_producto ||
-       !params.orden.costo || !params.orden.cantidad || !params.orden.observacion){
-   
-        callback({error:true, msj:"Los campos son requeridos para todas las filas, error en la fila "+ (params.orden.__rownum__ + 1)}) ;
-        return;
-    } 
-    
-    var costo = params.orden.costo;
-    var cantidad = params.orden.cantidad;
-    var reg = /^-?\d+\.?,?\d*$/;
-        
-    if(!reg.test(costo) || !reg.test(cantidad) || parseInt(costo) <= 0 || parseInt(cantidad) <= 0){
-        console.log("error fila ", cantidad, " costo ", costo);
-        callback({error:true, msj:"La cantidad o costo no son validos "+ (params.orden.__rownum__ + 1)}) ;
-        return;
-    }
-    
-    var def = G.Q.defer();
-    
-    G.Q.ninvoke(params.contexto.m_unidad_negocio, 'obtenerUnidadNegocioPorEmpresa', params.orden.unidad_negocio).then(function(resultado){
-        
-        if(resultado.length === 0){
-            throw "No se encontro la unidad de negocio, fila "+(params.orden.__rownum__ + 1);
-        } else {
-            params.orden.codigo_unidad = resultado[0].codigo_unidad_negocio;
-            return G.Q.ninvoke(params.contexto.m_proveedores, 'obtenerProveedorPorCodigo', params.orden.codigo_proveedor);
-        }
-    }).then(function(resultado){
-        if(resultado.length === 0){
-            throw "No se encontro el proveedor, fila "+(params.orden.__rownum__ + 1);
-        } else {
-            params.orden.proveedor_id = resultado[0].tercero_id;
-            params.orden.proveedor_tipo_id = resultado[0].tipo_id_tercero;
-            callback(false, params.orden);
-            def.resolve();
-        }
-    }).fail(function(err){
-        callback(err);
-    });
-}
-
 
 // Modificar Novedad Producto Orden de Compra 
 OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(novedad_id, nombre_archivo, descripcion_archivo, usuario_id, callback) {
@@ -1639,6 +1430,216 @@ function __validar_campos_ingreso_producto(recepcion, producto) {
 
     return {continuar: continuar, msj: msj};
 };
+
+
+
+function _generarReporteOrdenes(obj, callback) {
+        
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/ordenes_creadas.html', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: {ordenes:Object.keys(obj).map(function (key) {return obj[key]})}
+    }, function(err, response) {
+
+        response.body(function(body) {
+            var fecha = new Date();
+            var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
+                if (err) {
+                    callback(err);
+                } else {
+                    callback(false, nombreTmp);
+                }
+            });
+
+
+        });
+
+
+    });
+};
+
+/*
+ * @Author: Eduar
+ * @param {Object} params
+ * @param {function} callback
+ * +Descripcion: Funcion recursiva que permite crear el encabezado y el detalle de la orden de compra
+ */
+function __gestionarOrdenesAgrupadas(params, callback){
+    var ordenes = params.ordenes;
+    
+    var llave = Object.keys(ordenes)[params.index];
+    var encabezado = ordenes[llave];
+    var def = G.Q.defer();
+    
+    if(!encabezado){
+        callback(false, ordenes);
+        return;
+    }
+        
+    //Crea el encabezado de la orden
+    G.Q.ninvoke(params.contexto, 'insertar_orden_compra', encabezado.codigo_unidad_negocio, encabezado.codigo_proveedor, 
+                encabezado.empresa_id, encabezado.observacion, encabezado.usuario_id, params.transaccion).then(function(id){
+         
+        encabezado.ordenId = id[0].orden_pedido_id;
+        var detalle = {transaccion:params.transaccion, encabezado:encabezado, contexto:params.contexto};
+        
+        return G.Q.nfcall(__gestionarDetalleOrdenesAgrupadas, detalle)
+        
+    }).then(function(resultado){
+       params.index++;
+      // console.log(" id creado ", encabezado.ordenId);
+         
+       setTimeout(function(){
+            __gestionarOrdenesAgrupadas(params, callback);
+            def.resolve();
+       }, 0);
+    }).fail(function(err){
+       callback(err);
+    });
+
+};
+
+/*
+ * @Author: Eduar
+ * @param {Object} params
+ * @param {function} callback
+ * +Descripcion: Funcion recursiva que permite crear el detalle de la orden de compra
+ */
+function __gestionarDetalleOrdenesAgrupadas(params, callback){
+   var producto = params.encabezado.detalle[0];
+   var def = G.Q.defer();
+   if(!producto){
+       callback(false);
+       return;
+   }
+   
+   G.Q.ninvoke(params.contexto, "listar_productos", params.encabezado.empresa_id, params.encabezado.codigo_proveedor, params.encabezado.ordenId,
+               producto.codigo_producto, null, 1, null).then(function(_producto){
+      
+      if(_producto.length === 0){
+         throw "El producto no pudo ser registrado "+(producto.__rownum__ + 1);
+      } else {
+          producto.iva = _producto[0].iva;
+          //console.log("producto insertado ", producto);
+          return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, producto.codigo_producto, producto.cantidad,
+                             producto.costo, producto.iva, params.transaccion);
+      }
+                   
+   }).then(function(resultado){
+       
+       setTimeout(function(){
+            params.encabezado.detalle.splice(0,1);
+            __gestionarDetalleOrdenesAgrupadas(params,callback);
+            def.resolve();
+       },0);
+       
+   }).fail(function(err){
+       callback(err);
+   });
+}
+
+/*
+ * @Author: Eduar
+ * @param {Object} params
+ * @param {function} callback
+ * +Descripcion: Agrupa las ordenes que estan en el archivo de excel por codigo proveedor y unidad de negocio
+ */
+function  __agruparOrdenes(params, callback ){
+    params.orden = params.datos[0];
+    var def = G.Q.defer();
+     
+    if(!params.orden){
+        callback(false, params.ordenes);
+        return;
+    } 
+    
+    G.Q.nfcall(__validarFilaOrden, params).then(function(ordenValidada){
+        var _orden = params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio];
+        params.orden = ordenValidada;
+        
+        //Valida si no existe el grupo de codigo_proveedor y unidad de negocio, para crearlo
+        if(!_orden){
+            _orden= {};
+            _orden.detalle = [];
+            _orden.proveedor_id = ordenValidada.proveedor_id;
+            _orden.proveedor_tipo_id = ordenValidada.proveedor_tipo_id;
+            _orden.codigo_unidad_negocio = ordenValidada.codigo_unidad;
+            _orden.empresa_id = params.empresa_id;
+            _orden.usuario_id = params.usuario_id;
+            _orden.observacion = params.orden.observacion;
+            _orden.codigo_proveedor = params.orden.codigo_proveedor;
+            _orden.nombre_proveedor = params.orden.nombre_proveedor;
+            
+            params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio] = _orden;
+        }
+        
+        params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio].detalle.push(params.orden);
+        params.datos.splice(0, 1);
+        
+        setTimeout(function(){
+            __agruparOrdenes(params, callback);
+            def.resolve();
+        },0);
+
+    }).fail(function(err){
+        callback(err);
+    });
+}
+
+
+/*
+ * @Author: Eduar
+ * @param {Object} params
+ * @param {function} callback
+ * +Descripcion: Permite validar el registro en cada fila del archivo sea valido, (unidad de negocio, proveedor, producto etc);
+ */ 
+function __validarFilaOrden(params, callback){
+    if(!params.orden.codigo_proveedor || !params.orden.unidad_negocio || !params.orden.codigo_producto ||
+       !params.orden.costo || !params.orden.cantidad || !params.orden.observacion){
+   
+        callback({error:true, msj:"Los campos son requeridos para todas las filas, error en la fila "+ (params.orden.__rownum__ + 1)}) ;
+        return;
+    } 
+    
+    var costo = params.orden.costo;
+    var cantidad = params.orden.cantidad;
+    var reg = /^-?\d+\.?,?\d*$/;
+        
+    if(!reg.test(costo) || !reg.test(cantidad) || parseInt(costo) <= 0 || parseInt(cantidad) <= 0){
+        console.log("error fila ", cantidad, " costo ", costo);
+        callback({error:true, msj:"La cantidad o costo no son validos "+ (params.orden.__rownum__ + 1)}) ;
+        return;
+    }
+    
+    var def = G.Q.defer();
+    
+    G.Q.ninvoke(params.contexto.m_unidad_negocio, 'obtenerUnidadNegocioPorEmpresa', params.orden.unidad_negocio).then(function(resultado){
+        
+        if(resultado.length === 0){
+            throw "No se encontro la unidad de negocio, fila "+(params.orden.__rownum__ + 1);
+        } else {
+            params.orden.codigo_unidad = resultado[0].codigo_unidad_negocio;
+            return G.Q.ninvoke(params.contexto.m_proveedores, 'obtenerProveedorPorCodigo', params.orden.codigo_proveedor);
+        }
+    }).then(function(resultado){
+        if(resultado.length === 0){
+            throw "No se encontro el proveedor, fila "+(params.orden.__rownum__ + 1);
+        } else {
+            params.orden.proveedor_id = resultado[0].tercero_id;
+            params.orden.proveedor_tipo_id = resultado[0].tipo_id_tercero;
+            params.orden.nombre_proveedor = resultado[0].nombre_proveedor;
+            callback(false, params.orden);
+            def.resolve();
+        }
+    }).fail(function(err){
+        callback(err);
+    });
+}
+
 
 OrdenesCompraModel.$inject = ["m_unidad_negocio", "m_proveedores"];
 

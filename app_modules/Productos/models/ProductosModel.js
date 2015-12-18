@@ -103,7 +103,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
            termino = termino_busqueda.termino;
            
             if(termino_busqueda.tipo_busqueda === 0){
-               this.where(G.knex.raw("fc_descripcion_producto(b.codigo_producto)"), G.constants.db().LIKE,   termino +"%");
+               this.where(G.knex.raw("fc_descripcion_producto(b.codigo_producto)"), G.constants.db().LIKE,   "%"+termino +"%");
             } else if(termino_busqueda.tipo_busqueda === 1){
                 this.where("e.descripcion", G.constants.db().LIKE, "%" + termino + "%");
             } else {
@@ -117,13 +117,9 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
        }
         
     }).        
-    limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).
-    //orderByRaw("7 asc").
-    then(function(rows){
+    limit(G.settings.limit).offset((pagina - 1) * G.settings.limit).then(function(rows){
         callback(false, rows);
-    }).
-    catch(function(err){
+    }).catch(function(err){
      
        callback(err);
     });

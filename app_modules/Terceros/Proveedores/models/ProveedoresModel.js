@@ -30,5 +30,26 @@ ProveedoresModel.prototype.listar_proveedores = function(termino_busqueda, callb
 
 
 
+ProveedoresModel.prototype.obtenerProveedorPorCodigo = function(codigoProveedor, callback){
+    var sql = " select \
+            a.codigo_proveedor_id,\
+            b.tipo_id_tercero,\
+            b.tercero_id,\
+            b.nombre_tercero as nombre_proveedor,\
+            b.direccion,\
+            b.telefono \
+            from terceros_proveedores a \
+            inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
+            where a.codigo_proveedor_id = :1" ;
+    
+    G.knex.raw(sql, {1:codigoProveedor}).
+    then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(err){
+       callback(err);
+    });
+};
+
+
 
 module.exports = ProveedoresModel;

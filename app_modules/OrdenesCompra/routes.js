@@ -158,5 +158,8 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/guardarBodega', function(req, res) {
         c_ordenes_compra.guardarBodega(req, res);
     });
-   
+
+    app.post('/api/OrdenesCompra/subirArchivoOrdenes', function(req, res) {
+        c_ordenes_compra.subirArchivoOrdenes(req, res);
+    });
 };

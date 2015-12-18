@@ -3,10 +3,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('VentanaArchivoOrdenesController', [
         '$scope', '$rootScope', 'API',
         '$modalInstance', 'AlertService', 'Request',
-        'Usuario','String',
+        'Usuario','String','socket',
         function($scope, $rootScope, API, 
                  $modalInstance, AlertService, Request,
-                 Usuario, String) {
+                 Usuario, String, socket) {
 
             var self = this;
             
@@ -23,6 +23,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.root.flow.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_ORDENES_COMPRA;
                 $scope.root.flow.testChunks = false;
                 $scope.root.flow.singleFile = true;
+                $scope.root.progresoArchivo = 0;
 
                 $scope.root.flow.query = {
                     session: JSON.stringify($scope.root.session)
@@ -38,7 +39,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         empresa_id : Usuario.getUsuarioActual().getEmpresa().getCodigo()
                     }
                 });
-                console.log("A>>>>>>>>>>>>>>>>>>>>>>>> on subir archivo");
+                
+                $scope.root.progresoArchivo = 1;
                 $scope.root.flow.upload();
             };
 
@@ -46,15 +48,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 var data = (message !== undefined) ? JSON.parse(message) : {};
                 $scope.root.flow.cancel();
-
+                
                 if (data.status === 200) {
-                    console.log("pdf ", data.obj);
                     $scope.visualizarReporte("/reports/" + data.obj.pdf, data.obj.pdf , "download");
                     $modalInstance.close();
                 } else {
                     AlertService.mostrarVentanaAlerta(String.CONSTANTS.ALERTA_TITULO, data.msj);
                 }
-
+                
+                $scope.root.progresoArchivo = 0;
 
             };
 
@@ -75,6 +77,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.onDescargarArchivo = function(archivo){
                 $scope.visualizarReporte("/OrdenesCompras/Novedades/" + archivo.descripcion, archivo.descripicion, "blank");
             };
+            
+            socket.on("onNotificarProgresoArchivoPlanoOrdenes", function(datos){
+                $scope.root.progresoArchivo = datos.porcentaje;
+            });
+            
+            $modalInstance.result.then(function() {
+                socket.removeAllListeners();
+
+            }, function() {
+
+            });
             
             
             self.init();

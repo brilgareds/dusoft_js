@@ -750,12 +750,14 @@ OrdenesCompraModel.prototype.gestionarArchivoOrdenes = function(params, callback
     
     var that = this;
     var ordenesAgrupadas = {};
+    var def = G.Q.defer();
     
     G.knex.transaction(function(transaccion) {  
          G.Q.ninvoke(that,'agruparOrdenes', params).then(function(resultado){
-             var parametros = {contexto : that, ordenes:resultado, index:0, transaccion:transaccion};
+             var parametros = {contexto : that, ordenes:resultado, index:0, transaccion:transaccion, notificacion:params.notificacion};
              return G.Q.nfcall(__gestionarOrdenesAgrupadas, parametros);
-         }).then(function(resultado){            
+         }).then(function(resultado){         
+            
             return G.Q.nfcall(_generarReporteOrdenes, resultado);
          }).then(function(pdf){
             transaccion.commit(pdf); 
@@ -764,7 +766,8 @@ OrdenesCompraModel.prototype.gestionarArchivoOrdenes = function(params, callback
              transaccion.rollback(err);
          }).done();
      }).then(function(pdf){
-            callback(false, pdf);
+         def.notify();
+         callback(false, pdf);
      }).catch(function(err){
             callback(err);
      }).done();   
@@ -1491,9 +1494,10 @@ function __gestionarOrdenesAgrupadas(params, callback){
         
     }).then(function(resultado){
        params.index++;
-      // console.log(" id creado ", encabezado.ordenId);
          
        setTimeout(function(){
+           def.notify(params.index);
+           params.notificacion(params.index, Object.keys(ordenes).length);
             __gestionarOrdenesAgrupadas(params, callback);
             def.resolve();
        }, 0);

@@ -838,8 +838,16 @@ OrdenesCompra.prototype.subirArchivoOrdenes = function(req, res){
     console.log("subir archivo ordenes ");
     var cabecera = ['unidad_negocio', 'codigo_proveedor', 'codigo_producto', 'cantidad', 'costo', 'observacion'];
     
+    //Notificacion de la subida del archivo plano
+    var notificacionArchivoPlano =  function(index, longitud){
+        //console.log("notificacion de archivo plano ", index,  " longitud ", longitud);
+        var porcentaje = (index * 100) / longitud;
+        that.e_ordenes_compra.onNotificarProgresoArchivoPlanoOrdenes(req.session.user.usuario_id, porcentaje);
+    };
+    
     G.Q.nfcall(G.utils.subirArchivoPlano, req.files, cabecera).then(function(resultado){
-       var parametros = {datos:resultado, empresa_id:args.ordenes_compras.empresa_id, usuario_id:req.session.user.usuario_id};
+       var parametros = {datos:resultado, empresa_id:args.ordenes_compras.empresa_id, 
+                         usuario_id:req.session.user.usuario_id, notificacion:notificacionArchivoPlano};       
        return G.Q.ninvoke(that.m_ordenes_compra, 'gestionarArchivoOrdenes', parametros);
     }).then(function(resultado){
         res.send(G.utils.r(req.url, 'Archivo cargado correctamente', 200, {pdf:resultado}));

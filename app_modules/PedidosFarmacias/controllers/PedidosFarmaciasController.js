@@ -1225,9 +1225,7 @@ PedidosFarmacias.prototype.eliminarRegistroDetalleTemporal = function(req, res) 
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta', 500, {error: err}));
             return;
-        }
-        else
-        {
+        } else {
             res.send(G.utils.r(req.url, 'Eliminación Exitosa!', 200, {}));
             return;
         }

@@ -360,6 +360,23 @@ PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = func
 };
 
 
+PedidosFarmaciasModel.prototype.anularCantidadPendienteProducto = function(params,callback){
+
+    var query = G.knex('solicitud_productos_a_bodega_principal_detalle').
+    where('solicitud_prod_a_bod_ppal_id', '=', params.numeroPedido).
+    andWhere('codigo_producto', "=", params.codigoProducto).
+    update({
+        cantidad_solic: 0,
+        cantidad_pendiente: 0
+    }).then(function(){
+        callback(false);
+    }).catch(function(err){
+        //console.log("error generado ", err);
+        callback({msj:"Ha ocurrido un error al modificar la cantidad pendiente", codigo:500});
+    });
+};
+
+
 PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, callback)
 {    
 

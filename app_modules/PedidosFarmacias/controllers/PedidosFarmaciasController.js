@@ -1127,6 +1127,59 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
     });
 };
 
+
+/*
+ * @Author: Eduar
+ * +Descripcion: Permite modificar la cantidad pendiente del ultimo producto de un pedido, para liberar la cantidad reservada
+ */
+PedidosFarmacias.prototype.anularPendienteProducto = function(req, res){
+    var that = this;
+
+    var args = req.body.data;
+
+    if (!args.pedidos_farmacias || !args.pedidos_farmacias.numero_pedido || !args.pedidos_farmacias.codigo_producto) {
+        res.send(G.utils.r(req.url, 'numero_pedido o codigo de producto no está definido', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.numero_pedido === "" || args.pedidos_farmacias.codigo_producto === "") {
+        res.send(G.utils.r(req.url, 'numero_pedido o codigo de producto está vacio', 404, {}));
+        return;
+    }
+    
+    var numeroPedido = args.pedidos_farmacias.numero_pedido;
+    var codigoProducto = args.pedidos_farmacias.codigo_producto;
+    
+    G.Q.ninvoke(that.m_pedidos_farmacias,'consultar_pedido', numeroPedido).
+    then(function(cabeceraPedido) {
+
+        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null) {
+            return G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_detalle_pedido', numeroPedido);
+        } else {
+            throw {msj:"El estado actual del pedido no permite modificarlo", codigo:403};
+        }
+        
+    }).then(function(productos){
+       if(productos.length > 1){
+           throw {msj:"Solo se puede cambiar la cantidad pendiente al ultimo producto", codigo:403};
+       } else {
+           return G.Q.ninvoke(that.m_pedidos_farmacias, 'anularCantidadPendienteProducto', {numeroPedido: numeroPedido, codigoProducto:codigoProducto});
+       }
+       
+    }).then(function(){
+         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200,  {pedidos_farmacias: []}));
+        
+    }).fail(function(err) {
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, err.msj, err.codigo, {pedidos_farmacias: []}));
+    }).
+    done();
+    
+       
+    
+};
+
+
 PedidosFarmacias.prototype.consultarEncabezadoPedido = function(req, res) {
 
     var that = this;
@@ -1784,10 +1837,6 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
 
     });
 
-
-
-
-
 };
 
 PedidosFarmacias.prototype.actualizarEstadoActualPedido = function(req, res) {
@@ -1962,24 +2011,23 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                                 productoAgrupado.disponible = _producto.disponibilidad_bodega;
                                 //Inserta el producto validado en el detalle del pedido
                                 that.m_pedidos_farmacias.guardarDetalleTemporal(
-                                        numeroPedido, datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id, productoAgrupado.codigo_producto,
-                                        productoAgrupado.cantidad_solicitada, productoAgrupado.tipoProductoId, cantidadPendiente, datos.usuario_id,
-                                        function(err, rows, result) {
+                                        numeroPedido, datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id, productoAgrupado.                                             codigo_producto,productoAgrupado.cantidad_solicitada, productoAgrupado.tipoProductoId, cantidadPendiente, datos.usuario_id,
+                                function(err, rows, result) {
 
-                                            if (err) {
-                                                callback(err);
-                                                return;
-                                            }
+                                    if (err) {
+                                        callback(err);
+                                        return;
+                                    }
 
-                                            productosValidadosArchivo.push(productoAgrupado);
-                                            index++;
+                                    productosValidadosArchivo.push(productoAgrupado);
+                                    index++;
 
-                                            var porcentaje = (index * 100) / productosAgrupados.length;
+                                    var porcentaje = (index * 100) / productosAgrupados.length;
 
-                                            that.e_pedidos_farmacias.onNotificarProgresoArchivoPlanoFarmacias(datos.usuario_id, porcentaje);
-                                            __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+                                    that.e_pedidos_farmacias.onNotificarProgresoArchivoPlanoFarmacias(datos.usuario_id, porcentaje);
+                                    __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
 
-                                        });
+                                });
                             }
 
                         });

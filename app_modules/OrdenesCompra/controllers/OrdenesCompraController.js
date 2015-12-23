@@ -1448,14 +1448,11 @@ OrdenesCompra.prototype.listarAutorizacionCompras = function(req, res) {
         args.paginaActual = 0;
     }
 
-    that.m_ordenes_compra.listarAutorizacionCompras(args, function(err, result) {
-
-        G.Q.ninvoke(that.m_ordenes_compra, 'listarAutorizacionCompras', args).then(function(result) {
-            res.send(G.utils.r(req.url, 'Consulta Autorizaciones de Compras - correctamente', 200, {ordenes_compras: result}));
-        }).fail(function(err) {
-            res.send(G.utils.r(req.url, 'Error al Consultar las Autorizaciones de Compras', 500, {ordenes_compras: []}));
-        }).done();
-    });
+    G.Q.ninvoke(that.m_ordenes_compra, 'listarAutorizacionCompras', args).then(function(result) {
+        res.send(G.utils.r(req.url, 'Consulta Autorizaciones de Compras - correctamente', 200, {ordenes_compras: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al Consultar las Autorizaciones de Compras', 500, {ordenes_compras: []}));
+    }).done();
 };
 
 /*
@@ -1496,14 +1493,11 @@ OrdenesCompra.prototype.modificarAutorizacionCompras = function(req, res) {
         return;
     }
 
-    that.m_ordenes_compra.modificarAutorizacionOrdenCompras(args, function(err, result) {
-
-        G.Q.ninvoke(that.m_ordenes_compra, 'modificarAutorizacionOrdenCompras', args).then(function(result) {
-            res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: result}));
-        }).fail(function(err) {
-            res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra', 500, {ordenes_compras: []}));
-        }).done();
-    });
+    G.Q.ninvoke(that.m_ordenes_compra, 'modificarAutorizacionOrdenCompras', args).then(function(result) {
+        res.send(G.utils.r(req.url, 'Autorizacion Orden de Compra Modificado Correctamente', 200, {ordenes_compras: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error Modificando la Autorizacion de Ordenes de Compra', 500, {ordenes_compras: []}));
+    }).done();
 };
 
 /*
@@ -1574,14 +1568,11 @@ OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
         return;
     }
 
-    that.m_ordenes_compra.ingresarBodegaMovimientoTmp(args, function(err, result) {
-
-        G.Q.ninvoke(that.m_ordenes_compra, 'ingresarBodegaMovimientoTmp', args).then(function(result) {
-            res.send(G.utils.r(req.url, 'Insercion bodega movimiento TMP Correctamente', 200, {ordenes_compras: result}));
-        }).fail(function(err) {
-            res.send(G.utils.r(req.url, 'Error Insertar a la tabla bodega movimiento TMP', 500, {ordenes_compras: []}));
-        }).done();
-    });
+    G.Q.ninvoke(that.m_ordenes_compra, 'ingresarBodegaMovimientoTmp', args).then(function(result) {
+        res.send(G.utils.r(req.url, 'Insercion bodega movimiento TMP Correctamente', 200, {ordenes_compras: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error Insertar a la tabla bodega movimiento TMP', 500, {ordenes_compras: []}));
+    }).done();
 };
 
 

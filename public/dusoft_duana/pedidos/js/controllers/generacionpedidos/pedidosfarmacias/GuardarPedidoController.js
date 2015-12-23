@@ -387,6 +387,37 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * +Descripcion: Realiza la peticion al api para cambiar la cantidad pendiente a 0 de un producto
+             */
+            self.anularPendienteProducto = function(producto){
+                var pedido = $scope.root.pedido;
+                
+                var url = API.PEDIDOS.FARMACIAS.ANULAR_PENDIENTE_PRODUCTO;
+
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: pedido.get_numero_pedido(),
+                            codigo_producto: producto.getCodigoProducto()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status !== 200) {
+                        AlertService.mostrarMensaje("warning", "Ha ocurrido un error actualizando el pedido");
+                        self.consultarDetallePedido(function(consultaDetalle) {
+                         
+                        });
+                    } else {
+                       AlertService.mostrarMensaje("success", data.msj);
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
              * +Descripcion: Handler del boton guarda pedido
              */
             $scope.onGuardarPedido = function(){
@@ -432,6 +463,24 @@ define(["angular", "js/controllers",
 
             });
             
+            /*
+             * @Author: Eduar
+             * @param {$event} e
+             * @param {ProductoPedidoFarmacia} producto
+             * +Descripcion: Evento que se escucha de GuardarPedidoBaseController, para anular la cantidad pendiente de un ultimo producto
+             */
+            $scope.onAnularPendiente = $scope.$on("onAnularPendiente", function(e, producto){
+                
+                var mensaje = "Seguro anular la cantidad pendiente y solicitada?";
+                        
+                self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
+                    if(acepto){
+                        self.anularPendienteProducto(producto);
+                    }
+                });
+                
+            });
+            
             
              /* @Author: Eduar
              * +Descripcion: Handler del boton de finalizar
@@ -474,6 +523,7 @@ define(["angular", "js/controllers",
                 $scope.eventoEditarCantidad();
                 $scope.onEliminarProductoPedido();
                 $scope.eventoInsertarProductoPedido();
+                $scope.onAnularPendiente();
                 $scope.rootPedidoFarmacia = {};
                 $scope.$$watchers = null;
                 localStorageService.remove("pedidoFarmacia");

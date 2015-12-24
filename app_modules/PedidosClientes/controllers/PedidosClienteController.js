@@ -540,7 +540,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
         return;
     }
-    if (producto.precio_venta === undefined || producto.precio_venta === '') {
+    if (producto.precioVentaIva === undefined || producto.precioVentaIva === '') {
         res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
@@ -559,7 +559,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     valido = true;
 
   
-        precioVenta = Number(producto.precio_venta);
+        precioVenta = Number(producto.precioVentaIva);
         precioRegulado = Number(resultado[0].precio_regulado);
         precioPactado = Number(resultado[0].precio_pactado);
         costoCompra  = Number(resultado[0].costo_ultima_compra);
@@ -1791,8 +1791,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
         return;
     }
-    if (producto.precio_venta === undefined || producto.precio_venta === '') {
-        res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
+    if (producto.precioVentaIva === undefined || producto.precioVentaIva === '') {
+        res.send(G.utils.r(req.url, 'precioVentaIva no esta definido o esta vacio', 404, {}));
         return;
     }
 
@@ -1837,7 +1837,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     valido = true;
 
   
-        precioVenta = Number(producto.precio_venta);
+        precioVenta = Number(producto.precioVentaIva);
         precioRegulado = Number(resultado[0].precio_regulado);
         precioPactado = Number(resultado[0].precio_pactado);
         costoCompra  = Number(resultado[0].costo_ultima_compra);

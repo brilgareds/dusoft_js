@@ -123,7 +123,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
                 var costoCompra = Number(productoSeleccionado.getPrecioVentaAnterior());
-              
+                
+                var valorIva = Number(productoSeleccionado.get_iva())
+                var valorTotalIva = (precioVenta*valorIva)/100;
+                var precioVentaIva = precioVenta + valorTotalIva;
+               
+                productoSeleccionado.setPrecioVentaIva(precioVentaIva);
+                
                 /**
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
@@ -135,7 +141,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *               precio regulado, por lo cual se emitira un
                      *               mensaje al usuario y se cancelara la operacion
                      */
-                    if(precioVenta > precioRegulado){
+                    if(precioVentaIva > precioRegulado){
                         
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
                         
@@ -155,7 +161,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *               costo de compra, por lo cual se emitira un
                      *               mensaje al usuario y se cancelara la operacion
                      */
-                    if(precioVenta < costoCompra){
+                    if(precioVentaIva < costoCompra){
                         
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo de compra");
                         
@@ -196,8 +202,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
                 var costoCompra = Number(productoSeleccionado.getPrecioVentaAnterior());
-           
-                /**
+                var valorIva = Number(productoSeleccionado.get_iva())
+                var valorTotalIva = (precioVenta*valorIva)/100;
+                var precioVentaIva = precioVenta + valorTotalIva;
+                
+                productoSeleccionado.set_precio_venta_iva(precioVentaIva);
+               /**
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
                  */
@@ -208,10 +218,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *               precio regulado, por lo cual se emitira un
                      *               mensaje al usuario y se cancelara la operacion
                      */
-                    if(precioVenta > precioRegulado){
-                        
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
-                        
+                    if(precioVentaIva > precioRegulado){                       
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");                       
                         return;
                     }
                 }
@@ -227,7 +235,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *               costo de compra, por lo cual se emitira un
                      *               mensaje al usuario y se cancelara la operacion
                      */
-                    if(precioVenta < costoCompra){
+                    if(precioVentaIva < costoCompra){
                         
                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo de compra");
                         

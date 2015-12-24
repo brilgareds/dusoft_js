@@ -363,7 +363,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
                     
-                    
+                    console.log("data ", data);
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
 
                     if (data.status === 200) {

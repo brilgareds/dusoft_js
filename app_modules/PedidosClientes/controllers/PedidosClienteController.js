@@ -2802,8 +2802,9 @@ function __subir_archivo_plano(files, callback) {
 
 
 /*
- * Autor : Camilo Orozco
+ * Autor : Eduar Garcia
  * Descripcion : Validar que los códigos de los productos del archivo plano sean validos.
+ * 
  */
 function __validar_productos_archivo_plano(contexto, filas, callback) {
 
@@ -2846,8 +2847,8 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
 
 
 /*
- * Autor : Camilo Orozco
- * Descripcion : Validar que los datos de los productos esten correctos y completos
+ * Autor : Eduar garcia
+ * Descripcion : Validar que los datos de los productos esten correctos, completos y que el valor de venta
  */
 function __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos,index, callback) {
      
@@ -2887,7 +2888,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
                
            
                 if(valido){
-                       productos_validos.push(producto);                    
+                   productos_validos.push(producto);                    
                 }else{ 
                    productos_invalidos.push(producto);     
                 }

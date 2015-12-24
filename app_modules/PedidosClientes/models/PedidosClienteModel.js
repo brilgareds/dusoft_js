@@ -1209,7 +1209,7 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
     then(function(resultado){
        callback(false, resultado);
     }).catch(function(err){
-       console.log("error ingresando el producto ", err);
+       
        callback(err);
     });
  

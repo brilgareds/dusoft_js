@@ -15,6 +15,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.precioVentaAnterior = 0;
             this.precioMinimo = 0;
             this.precioMaximo = 0;
+            this.contrato;
         }
 
         Producto.prototype.setCodigoProducto = function(codigo) {
@@ -115,7 +116,20 @@ define(["angular", "js/models"], function(angular, models) {
         Producto.prototype.getPrecioMaximo = function() {
             return this.precioMaximo;
         };
-
+        
+        
+        
+        
+        Producto.prototype.setContrato= function(contrato) {
+            this.contrato = contrato;
+            return this;
+        };
+        
+        Producto.prototype.getContrato = function() {
+            return this.contrato;
+        };
+        
+        
         this.getClass = function() {
             return Producto;
         };

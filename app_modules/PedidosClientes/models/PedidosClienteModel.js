@@ -1071,7 +1071,8 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         parametros["5"]= termino_busqueda + '%';
     
     }
-    
+    //Se agregar un nuevo campo llamado contrato que retornara FALSE si no tiene
+   //contrato con la empresa y TRUE si lo tiene
              var sql = "a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 b.tipo_producto_id,\
@@ -1089,7 +1090,8 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 b.sw_regulado,\
                 c.precio_regulado,\
                 b.estado,\
-                c.costo_ultima_compra\
+                c.costo_ultima_compra,\
+                CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
@@ -1209,7 +1211,7 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
     then(function(resultado){
        callback(false, resultado);
     }).catch(function(err){
-       console.log("error ingresando el producto ", err);
+       
        callback(err);
     });
  

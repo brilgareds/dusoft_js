@@ -371,7 +371,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
                     
-                    console.log("data ", data);
+                   // console.log("data ", data);
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
 
                     if (data.status === 200) {
@@ -407,12 +407,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     producto.setPrecioVentaAnterior(data.costo_ultima_compra);
                   //setPrecioVentaAnterior 1101E0740001
+                    producto.setContrato(data.contrato); 
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
                     
                     
                 });
-
+                 //   console.log("$scope.Empresa ", $scope.Empresa.get_productos())
 
             };
 
@@ -501,11 +502,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" \
                      ng-model="row.entity.precio_venta" \
                      validacion-numero-decimal\
-                     ng-disabled = "row.entity.sw_pactado"\n\
+                     ng-disabled = "row.entity.contrato"\n\
                      class="form-control grid-inline-input" name="" id="" /> \n\
                      <div ng-if="row.entity.sw_pactado" class="ngCellText" >\n\
                         <span  ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >\n\
-                                                    CC\n\
+                                                    PP\n\
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
                         </div></div>'
                     },

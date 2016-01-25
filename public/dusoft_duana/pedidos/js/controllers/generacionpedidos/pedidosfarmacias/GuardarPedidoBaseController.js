@@ -11,7 +11,7 @@ define(["angular", "js/controllers",
     "controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoController",
     "services/generacionpedidos/pedidosfarmacias/PedidosFarmaciasService"], function(angular, controllers) {
 
-    var fo = controllers.controller('GuardarPedidoBaseController', [
+    controllers.controller('GuardarPedidoBaseController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'API', "socket", "AlertService",

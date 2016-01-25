@@ -21,7 +21,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.valor_iva = 0;
                 this.valor_total_con_iva = 0;
                 this.cantidad_inicial = 0;
-               
+                this.precioVentaIva = 0;
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
@@ -29,6 +29,18 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.get = function(codigo, nombre, existencia, iva, tipo_producto, estado) {
                 return new ProductoPedidoCliente(codigo, nombre, existencia, iva, tipo_producto, estado);
             };
+            
+            // precio_venta_iva
+            ProductoPedidoCliente.prototype.setPrecioVentaIva = function(precioVentaIva) {
+                this.precioVentaIva = precioVentaIva;
+                return this;
+            };
+
+            ProductoPedidoCliente.prototype.getPrecioVentaIva = function() {
+                return this.precioVentaIva;
+            };
+            
+            
             
             // Codigo CUM
             ProductoPedidoCliente.prototype.set_codigo_cum = function(codigo_cum) {

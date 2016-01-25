@@ -7,6 +7,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
                 Cliente.getClass().call(this, nombre, direccion, tipo_id, id, telefono);
 
                 this.contrato_id = 0;
+                this.tipoBloqueoId =0;
             }
 
 
@@ -50,6 +51,20 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
 
                 return this.contrato_id;
             };
+            
+            
+            //Estado del tercero
+            // Contrato
+            ClientePedido.prototype.setTipoBloqueoId = function(tipoBloqueoId) {
+                this.tipoBloqueoId = tipoBloqueoId;
+                return this;
+            };
+
+            ClientePedido.prototype.getTipoBloqueoId = function() {
+
+                return this.tipoBloqueoId;
+            };
+            
 
             return this;
 

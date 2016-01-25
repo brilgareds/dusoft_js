@@ -398,7 +398,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 };
                 Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function(data) {
-
+                    console.log("data ", data)
                     if (data.status === 200) {
                         callback(data.obj.listado_clientes);
                     }
@@ -413,8 +413,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     cliente.setDepartamento(data.departamento);
                     cliente.setMunicipio(data.municipio);
                     cliente.set_contrato(data.contrato_cliente_id);
+                    cliente.setTipoBloqueoId(data.tipo_bloqueo_id);
                     $scope.Empresa.set_clientes(cliente);
+                    
                 });
+                
+                console.log("$scope.Empresa ", $scope.Empresa);
             };
             // Vendedores
             that.buscar_vendedores = function(callback) {

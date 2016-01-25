@@ -569,7 +569,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
          */
         if(resultado[0].sw_regulado ==='1'){
             /**
-             * +Descripcion: Si precio de venta es mayor al precio regulado
+             * +Descripcion:Si precio de venta es mayor al precio regulado
              *              ó el precio pactado es mayor al regulado
              *              cancele la accion
              */

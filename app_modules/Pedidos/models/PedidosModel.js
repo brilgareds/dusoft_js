@@ -212,7 +212,7 @@ PedidosModel.prototype.unificarLotesDetalle = function(detalle) {
     return detalle;
 };
 
-// Funion que calcula cuales han sido los ultimo pedidos (Clientes / Farmacias ) en donde se 
+// Funcion que calcula cuales han sido los ultimo pedidos (Clientes / Farmacias ) en donde se 
 // ha solicitado un producto deteminado
 function consultar_cantidad_total_solicitada_producto(empresa_id, codigo_producto, fecha_registro_pedido, callback) {
 

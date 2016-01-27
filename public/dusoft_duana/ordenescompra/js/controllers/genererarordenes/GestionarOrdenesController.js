@@ -672,7 +672,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
                     if (data.status === 200) {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Modificación realizada");
+                        AlertService.mostrarMensaje("success", "Modificación realizada");
                         $scope.buscar_detalle_orden_compra("",1);
                     } else {
                         AlertService.mostrarMensaje("warning", "Se ha generado un error");

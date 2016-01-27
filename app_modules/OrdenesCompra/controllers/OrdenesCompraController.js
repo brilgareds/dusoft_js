@@ -340,7 +340,7 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     var numero_orden;
 
-    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id).then(function(rows) {
+    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id, null).then(function(rows) {
         var def = G.Q.defer();
         numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
         //Se guarda la ubicacion de la bodega destino de la orden
@@ -530,7 +530,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
                 if (!modificar) {
 
-                    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
+                    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, null, function(err, rows, result) {
 
                         if (err || result.rowCount === 0) {
                             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
@@ -824,6 +824,41 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
     });
 };
 
+
+OrdenesCompra.prototype.subirArchivoOrdenes = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (args.ordenes_compras === undefined  || args.ordenes_compras.empresa_id === undefined || args.ordenes_compras.empresa_id === "") {
+        res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
+        return;
+    }
+    
+    console.log("subir archivo ordenes ");
+    var cabecera = ['unidad_negocio', 'codigo_proveedor', 'codigo_producto', 'cantidad', 'costo', 'observacion'];
+    
+    //Notificacion de la subida del archivo plano
+    var notificacionArchivoPlano =  function(index, longitud){
+        //console.log("notificacion de archivo plano ", index,  " longitud ", longitud);
+        var porcentaje = (index * 100) / longitud;
+        that.e_ordenes_compra.onNotificarProgresoArchivoPlanoOrdenes(req.session.user.usuario_id, porcentaje);
+    };
+    
+    G.Q.nfcall(G.utils.subirArchivoPlano, req.files, cabecera).then(function(resultado){
+       var parametros = {datos:resultado, empresa_id:args.ordenes_compras.empresa_id, 
+                         usuario_id:req.session.user.usuario_id, notificacion:notificacionArchivoPlano};       
+       return G.Q.ninvoke(that.m_ordenes_compra, 'gestionarArchivoOrdenes', parametros);
+    }).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Archivo cargado correctamente', 200, {pdf:resultado}));
+    }).fail(function(err){
+        //console.log("se ha generado un error ", err);
+        res.send(G.utils.r(req.url, err, 500, {ordenes_compras: []}));
+    });
+    
+};
+
+
 OrdenesCompra.prototype.subirArchivoNovedades = function(req, res) {
 
 
@@ -1033,7 +1068,7 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
     var numero_orden = args.ordenes_compras.numero_orden;
 
-    __subir_archivo_plano(req.files, function(error, contenido) {
+    G.utils.subirArchivoPlano(req.files, ['codigo', 'cantidad', 'costo'], function(error, contenido) {
 
         if (!error) {
 
@@ -1050,7 +1085,7 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 
                     _productos_validos.forEach(function(producto) {
 
-                        that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, producto.codigo_producto, producto.cantidad_solicitada, producto.costo, producto.iva, function(err, rows, result) {
+                        that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, producto.codigo_producto, producto.cantidad_solicitada, producto.costo, producto.iva, null, function(err, rows, result) {
                             if (err) {
                                 _productos_invalidos.push(producto);
                             }
@@ -1540,38 +1575,6 @@ OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
     }).done();
 };
 
-function __subir_archivo_plano(files, callback) {
-    var ruta_tmp = files.file.path;
-    var ext = G.path.extname(ruta_tmp);
-    var nombre_archivo = G.random.randomKey(3, 3) + ext;
-    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
-
-    if (G.fs.existsSync(ruta_tmp)) {
-        // Copiar Archivo
-        G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).then(function() {
-            return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
-        }).then(function() {
-            var parser = G.XlsParser;
-            var workbook = parser.readFile(ruta_nueva);
-            var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad', 'costo']);
-            console.log("filas generadas ", filas);
-            if (filas) {
-                G.fs.unlinkSync(ruta_nueva);
-                callback(false, filas);
-            } else {
-                throw "Error serializando el archivo";
-            }
-        }).fail(function(err) {
-            console.log("error generado >>>>>>>>>> ", err);
-            G.fs.unlinkSync(ruta_nueva);
-            callback(true);
-        }).done();
-
-    } else {
-        callback(true);
-    }
-
-}
 
 
 function __subir_archivo_novedad(data, files, callback) {

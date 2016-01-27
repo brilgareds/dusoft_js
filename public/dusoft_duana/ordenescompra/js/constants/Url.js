@@ -36,7 +36,8 @@ define(["angular"], function(angular) {
                 'MODIFICAR_AUTORIZACION_COMPRAS': BASE_URL + '/OrdenesCompra/modificarAutorizacionCompras',
                 'INSERTAR_BODEGA_MOVIMIENTO_TMP': BASE_URL + '/OrdenesCompra/ingresarBodegaMovimientoTmpOrden',
                 'GUARDAR_BODEGA' : BASE_URL + '/OrdenesCompra/guardarBodega',
-                'ELIMINAR_NOVEDAD' : BASE_URL + '/OrdenesCompra/eliminarNovedad'
+                'ELIMINAR_NOVEDAD' : BASE_URL + '/OrdenesCompra/eliminarNovedad',
+                'SUBIR_ARCHIVO_ORDENES_COMPRA' : BASE_URL + '/OrdenesCompra/subirArchivoOrdenes'
 
             },
             'PROVEEDORES': {

@@ -16,7 +16,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.flow.singleFile = true;
             $scope.producto = producto;
             
-            //Si la novedad es nueva se setea un objeto novedad vacio
+            //Si la novedad es nueva se setea un objeto novedad vacio 
             if(nuevaNovedad){
                 var novedad = Novedad.get();
                 producto.set_novedad(novedad);

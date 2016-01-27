@@ -413,7 +413,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     
                 });
-                 //   console.log("$scope.Empresa ", $scope.Empresa.get_productos())
+                //    console.log("$scope.Empresa ", $scope.Empresa.get_productos())
 
             };
 

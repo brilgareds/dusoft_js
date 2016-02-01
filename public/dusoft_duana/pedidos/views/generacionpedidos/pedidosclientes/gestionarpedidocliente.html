@@ -21,11 +21,17 @@
                             <div class="col-md-4">
 
                                 <fieldset>
-                                    <legend>Cliente</legend>  
+                                    <legend class="icon-search icon-large icon-white">Cliente</legend>  
                                     <ui-select ng-model="Pedido.cliente" ng-disabled="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_cliente()">
                                         <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.get_descripcion() }}</ui-select-match>
                                         <ui-select-choices refresh="listar_clientes($select.search)" refresh-delay="0" repeat="cliente in Empresa.get_clientes() | filter:$select.search">
-                                            {{ cliente.get_descripcion() }}
+                                            <!--  {{ cliente.get_descripcion() }}//-->
+                                          
+                                          <i ng-if='cliente.getTipoBloqueoId() ==2 ' class="glyphicon glyphicon-time"></i>{{ cliente.get_descripcion() }}
+                                             
+                                        <!--  <span ng-if='cliente.getTipoBloqueoId() ==2 ' class="label label-default">{{ cliente.get_descripcion() }}</span>//-->
+                                            
+                                            
                                         </ui-select-choices>
                                     </ui-select>                                   
                                 </fieldset>

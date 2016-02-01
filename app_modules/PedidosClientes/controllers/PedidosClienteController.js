@@ -540,7 +540,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
         return;
     }
-    if (producto.precio_venta === undefined || producto.precio_venta === '') {
+    if (producto.precioVentaIva === undefined || producto.precioVentaIva === '') {
         res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
@@ -559,7 +559,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     valido = true;
 
   
-        precioVenta = Number(producto.precio_venta);
+        precioVenta = Number(producto.precioVentaIva);
         precioRegulado = Number(resultado[0].precio_regulado);
         precioPactado = Number(resultado[0].precio_pactado);
         costoCompra  = Number(resultado[0].costo_ultima_compra);
@@ -569,7 +569,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
          */
         if(resultado[0].sw_regulado ==='1'){
             /**
-             * +Descripcion: Si precio de venta es mayor al precio regulado
+             * +Descripcion:Si precio de venta es mayor al precio regulado
              *              ó el precio pactado es mayor al regulado
              *              cancele la accion
              */
@@ -1791,8 +1791,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
         return;
     }
-    if (producto.precio_venta === undefined || producto.precio_venta === '') {
-        res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
+    if (producto.precioVentaIva === undefined || producto.precioVentaIva === '') {
+        res.send(G.utils.r(req.url, 'precioVentaIva no esta definido o esta vacio', 404, {}));
         return;
     }
 
@@ -1837,7 +1837,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     valido = true;
 
   
-        precioVenta = Number(producto.precio_venta);
+        precioVenta = Number(producto.precioVentaIva);
         precioRegulado = Number(resultado[0].precio_regulado);
         precioPactado = Number(resultado[0].precio_pactado);
         costoCompra  = Number(resultado[0].costo_ultima_compra);
@@ -2802,8 +2802,9 @@ function __subir_archivo_plano(files, callback) {
 
 
 /*
- * Autor : Camilo Orozco
+ * Autor : Eduar Garcia
  * Descripcion : Validar que los códigos de los productos del archivo plano sean validos.
+ * 
  */
 function __validar_productos_archivo_plano(contexto, filas, callback) {
 
@@ -2846,8 +2847,8 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
 
 
 /*
- * Autor : Camilo Orozco
- * Descripcion : Validar que los datos de los productos esten correctos y completos
+ * Autor : Eduar garcia
+ * Descripcion : Validar que los datos de los productos esten correctos, completos y que el valor de venta
  */
 function __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos,index, callback) {
      
@@ -2887,7 +2888,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
                
            
                 if(valido){
-                       productos_validos.push(producto);                    
+                   productos_validos.push(producto);                    
                 }else{ 
                    productos_invalidos.push(producto);     
                 }

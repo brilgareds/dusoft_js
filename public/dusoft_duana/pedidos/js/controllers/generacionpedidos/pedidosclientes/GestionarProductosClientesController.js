@@ -413,7 +413,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     
                 });
+<<<<<<< HEAD
                  //   console.log("$scope.Empresa ", $scope.Empresa.get_productos())
+=======
+                //    console.log("$scope.Empresa ", $scope.Empresa.get_productos())
+>>>>>>> b3554e711d600545b918a435aeab2836886af8df
 
             };
 
@@ -510,7 +514,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
                         </div></div>'
                     },
-                   
+                   // ng-disabled = "row.entity.contrato"\n\
                     
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},

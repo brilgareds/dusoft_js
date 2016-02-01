@@ -510,7 +510,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
                         </div></div>'
                     },
-                   
+                   // ng-disabled = "row.entity.sw_pactado"\n\
                     
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},

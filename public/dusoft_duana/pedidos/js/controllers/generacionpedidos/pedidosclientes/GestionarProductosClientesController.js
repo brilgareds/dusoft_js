@@ -411,9 +411,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
                     
-                    
+                     
                 });
-                //    console.log("$scope.Empresa ", $scope.Empresa.get_productos())
+                //    
 
             };
 

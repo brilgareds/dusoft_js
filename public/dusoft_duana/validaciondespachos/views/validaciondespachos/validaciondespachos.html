@@ -1,0 +1,106 @@
+<div>
+    <div>
+      
+            
+                <div class="panel panel-default">
+                   
+                    <div class="panel-body">
+
+                        <div class="row" ng-switch on="datos_view.opcion_predeterminada" >                            
+
+                            <div class="col-md-6" ng-switch on="(datos_view.opcion_predeterminada == '0') || (datos_view.opcion_predeterminada == '1')" >
+                                <div class="row" style="margin-bottom: 20px;">
+                                    <div class="col-lg-12">
+                                          
+                                           <div class="checkbox">
+                                                <label>
+                                                  <input type="checkbox" ng-model="checkboxModel.value1"><h4>Seleccionar Otros</h4>   
+                                                </label>
+                                              </div>
+                                    </div>
+                                </div>                            
+                            </div>
+                         
+                            <!-- Contenedor para cuando se selecciona Otras Empresas -->
+                            <div class="col-md-12"  ><!--ng-switch-when="2"//-->
+                                <div class="row">
+                                    <div class="col-md-4">
+
+                                        <fieldset>
+                                            <legend>Documento Bodega</legend>      
+
+                                            <div class="row">
+                                                <div class="col-md-6">  
+                                                    <input type="text" class="form-control"  ng-model="datos_view.documento_seleccionado.prefijo" placeholder="Prefijo" name="" id="" />
+                                                </div>
+                                                <div class="col-md-6">  
+                                                    <input type="text" class="form-control"  ng-model="datos_view.documento_seleccionado.numero" placeholder="Numero" name="" id="" />
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>                                       
+                                </div>
+                            </div>
+
+                            <div class="col-md-12" style="margin-top: 50px;"><!--ng-switch-when="2"//-->
+                                <div class="row">
+                                    <div class="col-md-4">
+
+                                        <fieldset>
+                                            <legend>Cantidad Cajas</legend>      
+
+                                            <div class="row">
+                                                <div class="col-md-7">  
+                                                    <input type="text" class="form-control"  ng-model="datos_view.documento_seleccionado.cantidad_cajas" placeholder="Cantidad Cajas" name="" id="" />
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>                        
+                                    <div class="col-md-4">
+                                        <fieldset>
+                                            <legend>Cantidad Neveras</legend> 
+                                            <div class="row">
+                                                <div class="col-md-7">  
+                                                    <input type="text" class="form-control"  ng-model="datos_view.documento_seleccionado.cantidad_neveras" placeholder="Cantidad Neveras" name="" id="" />
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <fieldset>
+                                            <legend>Temperatura Neveras</legend> 
+                                            <div class="row">
+                                                <div class="col-md-7" >  
+                                                    <input type="text" class="form-control"  ng-model="datos_view.documento_seleccionado.temperatura_neveras" placeholder="Temperatura Neveras" name="" id="" />
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">  
+                                    <div class="col-md-4">
+                                        <fieldset>
+                                            <legend>Observación</legend>                                 
+                                            <div class="row">  
+                                                <div class="col-md-12">                                          
+                                                    <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" ng-model="datos_view.documento_seleccionado.observacion" placeholder="Ingresar Observación"></textarea>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>                                    
+                                </div> 
+                            </div>
+                            <div class="modal-footer col-md-12">                                
+                                                                                      
+                                <button class="btn btn-default" ng-click="aceptar_documentos_bodegas()">
+                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                </button>                                
+                            </div>  
+                        </div>
+                    </div>
+                </div>       
+           
+        
+    </div>
+</div>

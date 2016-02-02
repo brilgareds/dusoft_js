@@ -206,9 +206,9 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PLANILLAS.LISTAR_DOCUMENTOS_FARMACIAS, "POST", obj, function(data) {
-
+                      //  console.log("LISTAR DOCUMENTOS FARMACIAS")
                     if (data.status === 200) {
-
+                        console.log(data.obj.planillas_despachos);
                         that.render_documentos(data.obj.planillas_despachos);
                     }
                 });
@@ -222,9 +222,9 @@ define(["angular", "js/controllers",
 
                     var documento = Documento.get(0, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
 
-                    documento.set_cantidad_cajas_auditadas(data.total_cajas);
-                    documento.set_cantidad_neveras_auditadas(data.total_neveras);
-
+                   // documento.set_cantidad_cajas_auditadas(data.total_cajas);
+                   // documento.set_cantidad_neveras_auditadas(data.total_neveras);
+                    
                     $scope.datos_view.tercero_seleccionado.set_documentos(documento);
                 });
 
@@ -261,17 +261,53 @@ define(["angular", "js/controllers",
 
             $scope.seleccionar_documento_planilla = function(documento) {
                 
-                console.log("Cantidad Cajas Auditadas ", documento.get_cantidad_cajas_auditadas());
-                console.log("Cantidad Neveras Auditadas ", documento.get_cantidad_neveras_auditadas());
+                console.log("HOLA MUNDOSSSS");
+                console.log(documento)
+                
+                
+                  var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                            prefijo: documento.prefijo,
+                            numero: documento.numero
+                    
+                        }
+                    }
+                };
+                
+               // console.log("obj ", obj)
+                Request.realizarRequest(API.PLANILLAS.CANTIDADES_CAJA_NEVERA, "POST", obj, function(data) {
+                    console.log("data ", data)
+                    if (data.status === 200) {
+                        
+                        if (documento.get_cantidad_cajas() === data.obj.planillas_despachos.totalCajas && 
+                            documento.get_cantidad_neveras() === data.obj.planillas_despachos.totalNeveras) {
+
+                            $scope.datos_view.documento_seleccionado = documento;
+
+                            that.gestionar_planilla_despacho();
+                        }else{
+                            AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
+                        }
+                        
+                    }
+                });
+                
+                 
+                
+              //  console.log("Cantidad Cajas Auditadas ", documento.get_cantidad_cajas_auditadas());
+              //  console.log("Cantidad Neveras Auditadas ", documento.get_cantidad_neveras_auditadas());
                 // Validar que la cantidad de cajas y neveras sean iguales a las cantidades auditadas
-                if (documento.get_cantidad_cajas() == documento.get_cantidad_cajas_auditadas() && documento.get_cantidad_neveras() == documento.get_cantidad_neveras_auditadas()) {
+            /*    if (documento.get_cantidad_cajas() == documento.get_cantidad_cajas_auditadas() && documento.get_cantidad_neveras() == documento.get_cantidad_neveras_auditadas()) {
 
                     $scope.datos_view.documento_seleccionado = documento;
 
                     that.gestionar_planilla_despacho();
                 }else{
                     AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
-                }
+                }*/
             };
 
             $scope.seleccionar_documento_otras_empresas = function() {

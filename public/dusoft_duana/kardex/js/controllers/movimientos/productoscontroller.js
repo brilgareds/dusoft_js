@@ -128,6 +128,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.Empresa.vaciarProductos();
                 $scope.paginas = (data.lista_productos.length / 10);
                 $scope.items = data.lista_productos.length;
+                
                 for (var i in data.lista_productos) {
                     var obj = data.lista_productos[i];
                     var producto = ProductoMovimiento.get(
@@ -147,6 +148,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     producto.setCodigoCum(obj.codigo_cum);
                     producto.setPrecioRegulado(obj.precio_regulado);
                     producto.setDescripcionMolecula(obj.descripcion_molecula);
+                    producto.setCodigoInvima(obj.codigo_invima);
                     
                     
                     $scope.Empresa.agregarProducto(
@@ -183,6 +185,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     {field: 'precioRegulado', displayName: 'P.Reg', width:"80",  cellClass :"gridNumber"},
                     {field: 'costo', displayName: 'Costo', width:"80", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
                     {field: 'costo_ultima_compra', width:"80", displayName: 'C.U.C', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
+                    {field: 'codigoInvima', width:"100", displayName: 'Invima', cellClass :"gridNumber"},
                    // {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
                     {field: 'precioContratacion', displayName: 'CP',  width: "80",visible:that.opcionesModulo.columnaCP.visible, cellClass :"gridNumber" },
                     {field: 'porc_iva', displayName: 'Iva', width: "50", cellClass :"gridNumber"},

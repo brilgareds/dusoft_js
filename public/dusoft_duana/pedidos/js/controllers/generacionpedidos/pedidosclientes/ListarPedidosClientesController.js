@@ -542,6 +542,10 @@ define(["angular", "js/controllers",
                     pedido.set_descripcion_estado_actual_pedido(data.descripcion_estado_actual_pedido);
                     pedido.setFechaRegistro(data.fecha_registro);
                     pedido.setEstado(data.estado);
+                    pedido.setTieneDespacho(data.tiene_despacho).
+                    setDespachoEmpresaId(data.despacho_empresa_id).
+                    setDespachoPrefijo(data.despacho_prefijo).
+                    setDespachoNumero(data.despacho_numero);
                     $scope.Empresa.set_pedidos(pedido);
                 });
 
@@ -569,6 +573,9 @@ define(["angular", "js/controllers",
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_email_pedidos }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                                <li ng-if="row.entity.getTieneDespacho()">\
+                                                <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
+                                            </li>\
                                             </ul>\
                                        </div>'
                     }
@@ -631,6 +638,32 @@ define(["angular", "js/controllers",
                 that.buscar_pedidos('','');
             };
             
+            /*
+             * @Author: Eduar
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: handler para imprimir el despacho de un pedido
+             */
+            $scope.imprimirDespacho = function(pedido) {
+
+                var test = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: {
+                            empresa: pedido.getDespachoEmpresaId(),
+                            numero: pedido.getDespachoNumero(),
+                            prefijo: pedido.getDespachoPrefijo()
+                        }
+                    }
+                };
+                Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
+                    if (data.status === 200) {
+                        var nombre = data.obj.movimientos_bodegas.nombre_pdf;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                    }
+
+                });
+
+            };
             
 
             that.init = function() {

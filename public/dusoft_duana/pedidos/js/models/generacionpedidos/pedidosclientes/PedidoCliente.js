@@ -22,8 +22,11 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.estado_cotizacion = '';
                 this.descripcion_estado_cotizacion = '';
                 this.estado ='0';
-            }
-            ;
+                this.tieneDespacho = false;
+                this.despachoEmpresaId = "";
+                this.despachoPrefijo = "";
+                this.despachoNumero = 0;
+            };
 
             PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);
 
@@ -234,6 +237,41 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 return this.descripcion_estado_cotizacion;
             };
             
+            PedidoCliente.prototype.setTieneDespacho = function(tieneDespacho) {
+                this.tieneDespacho = tieneDespacho;
+                return this;
+            };
+
+            PedidoCliente.prototype.getTieneDespacho = function() {
+                return this.tieneDespacho;
+            };
+
+            PedidoCliente.prototype.setDespachoEmpresaId = function(despachoEmpresaId) {
+                this.despachoEmpresaId = despachoEmpresaId;
+                return this;
+            };
+
+            PedidoCliente.prototype.getDespachoEmpresaId = function() {
+                return this.despachoEmpresaId;
+            };
+            /**/
+            PedidoCliente.prototype.setDespachoPrefijo = function(despachoPrefijo) {
+                this.despachoPrefijo = despachoPrefijo;
+                return this;
+            };
+
+            PedidoCliente.prototype.getDespachoPrefijo = function() {
+                return this.despachoPrefijo;
+            };
+            /**/
+            PedidoCliente.prototype.setDespachoNumero = function(despachoNumero) {
+                this.despachoNumero = despachoNumero;
+                return this;
+            };
+
+            PedidoCliente.prototype.getDespachoNumero = function() {
+                return this.despachoNumero;
+            };
 
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {
                 return new PedidoCliente(empresa_id, centro_utilidad_id, bodega_id);

@@ -47,7 +47,7 @@ define(["angular", "js/controllers",
                 documentos_salida: [],
                 documentos_entrada: [],
                 documentos_ajustes: [],
-                documentos_traslado: [],
+                documentos_traslado: []
             };
 
 

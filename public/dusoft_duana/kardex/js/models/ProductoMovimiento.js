@@ -22,6 +22,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.codigoCum;
                 this.precioRegulado = 0;
                 this.descripcionMolecula = "";
+                this.codigoInvima = "";
             }
 
             //herencia
@@ -50,6 +51,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             
             ProductoMovimiento.prototype.setCodigoCum = function(codigoCum) {
                 return this.codigoCum = codigoCum;
+            };
+            
+            ProductoMovimiento.prototype.setCodigoInvima = function(codigoInvima) {
+                return this.codigoInvima = codigoInvima;
+            };
+            
+            ProductoMovimiento.prototype.setCodigoInvima = function(codigoInvima) {
+                return this.codigoInvima = codigoInvima;
             };
             
             ProductoMovimiento.prototype.agregarPendienteCliente = function(pendiente) {

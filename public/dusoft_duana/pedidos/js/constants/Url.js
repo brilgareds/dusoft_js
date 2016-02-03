@@ -88,7 +88,8 @@ define(["angular"], function(angular) {
                     'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',
                     'ACTUALIZAR_PEDIDO': BASE_URL + '/PedidosFarmacias/actualizarPedido',
                     'GENERAR_PDF_PEDIDO': BASE_URL + '/PedidosFarmacias/generarPdfPedido',
-                    'ENVIAR_EMAIL':BASE_URL + '/PedidosFarmacias/enviarEmailPedido'
+                    'ENVIAR_EMAIL':BASE_URL + '/PedidosFarmacias/enviarEmailPedido',
+                    'ANULAR_PENDIENTE_PRODUCTO': BASE_URL +'/PedidosFarmacias/anularPendienteProducto'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',

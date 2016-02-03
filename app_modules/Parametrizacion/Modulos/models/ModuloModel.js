@@ -80,9 +80,11 @@ ModuloModel.prototype.insertarModulo = function(modulo, callback) {
 
 
     var params = {
-        1:modulo.parent, 2:modulo.nombre, 3:modulo.url, 4:modulo.parent_name, 5:modulo.icon,
+        1:modulo.parent, 2:modulo.nombre, 3:modulo.url, 4:modulo.parent_name, 5:modulo.icon || null,
         6:modulo.state, 7:modulo.observacion, 8:modulo.usuario_id, 9:'now()', 10:Number(modulo.estado), 11:modulo.carpetaRaiz
     };
+    
+    console.log(">>>>>>>>>>>>>>>>>>>>>> parametros ", params);
     
     G.knex.raw(sql, params).
     then(function(resultado){
@@ -100,7 +102,7 @@ ModuloModel.prototype.modificarModulo = function(modulo, callback) {
                estado = :10, fecha_modificacion = :11, carpeta_raiz = :12 WHERE id = :13 ";
 
     var params = {
-        1:modulo.parent, 2:modulo.nombre, 3:modulo.url, 4:modulo.parent_name, 5:modulo.icon,
+        1:modulo.parent, 2:modulo.nombre, 3:modulo.url, 4:modulo.parent_name ||  null, 5:modulo.icon,
         6:modulo.state, 7:modulo.observacion, 8:modulo.usuario_id, 9:modulo.usuario_id,
         10:Number(modulo.estado), 11:'now()', 12:modulo.carpetaRaiz, 13:modulo.modulo_id
     };

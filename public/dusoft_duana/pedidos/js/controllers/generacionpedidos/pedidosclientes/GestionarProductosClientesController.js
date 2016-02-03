@@ -413,7 +413,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                      
                 });
-                //    
 
             };
 

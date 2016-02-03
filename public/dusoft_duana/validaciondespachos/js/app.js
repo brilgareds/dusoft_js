@@ -23,10 +23,11 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "chart",
-    "models/EmpresaInduccion",
+    "models/EmpresaAprobacionDespacho",
     "models/CentroUtilidadInduccion",
     "models/BodegaInduccion",
     "models/ProductoInduccion",
+    "models/AprobacionDespacho",
     "controllers/ValidacionDespachosController"    
 ], function(angular) {
 

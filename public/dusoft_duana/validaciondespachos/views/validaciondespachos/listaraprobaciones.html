@@ -13,17 +13,7 @@
                 </p>
             </div>
 
-            <div class="col-md-2">
-                <p class="pull-left">
-                <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado" ng-change="onSeleccionarCentroUtilidad()" style='width:250px;' theme="select2" class="form-control selectgeneral pull-left" >
-                    <ui-select-match  placeholder="Seleccionar Centro Utilidad" >{{ $select.selected.getNombre()}}</ui-select-match>
-                    <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
-                        {{ centroUtilidad.getNombre()}}
-                    </ui-select-choices>
-                </ui-select>  
-                </p>
-            </div>
-
+           
             <div class="col-md-2">
                 <p class="pull-left">
                <input type="text" class="form-control" 

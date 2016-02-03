@@ -2,10 +2,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
     controllers.controller('ValidacionDespachosController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-                'EmpresaInduccion', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion',
+                'EmpresaAprobacionDespacho', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion','AprobacionDespacho',
                 "$timeout",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
-                        EmpresaInduccion, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion,
+                        EmpresaAprobacionDespacho, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
                         $timeout) {
 
                     var that = this;
@@ -25,7 +25,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     that.init = function(empresa, callback) {
                         $scope.root = {};
-                        $scope.root.empresaSeleccionada = EmpresaInduccion.get("TODAS LAS EMPRESAS", -1);
+                        $scope.root.empresaSeleccionada = EmpresaAprobacionDespacho.get("TODAS LAS EMPRESAS", -1);
                         $scope.root.empresaNombre;
                         $scope.session = {
                             usuario_id: Usuario.getUsuarioActual().getId(),
@@ -47,6 +47,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {json empresas}
                      */
                     that.listarEmpresas = function(callback) {
+                        
+                       var despacho = AprobacionDespacho.get("1","EFC","4445896","2015-02-03");
+                        console.log("CARGANDO ", despacho);
                         var obj = {
                             session: $scope.session,
                             data: {
@@ -72,7 +75,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     that.render_empresas = function(empresas) {
                         for (var i in empresas) {
-                            var _empresa = EmpresaInduccion.get(empresas[i].razon_social, empresas[i].empresa_id);
+                            var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
                             $scope.empresas.push(_empresa);
                         }
                     };
@@ -275,6 +278,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     ////////////////
                     $scope.seleccionar_empresa = function(empresa) {
                         $scope.codigo_empresa_id = empresa;
+                      
                     };
                     ////////////////////////////////////        
                     /*
@@ -333,6 +337,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     that.init(empresa, function() {
                        
                         that.listarEmpresas(function(estado) {
+                            
+                         //   console.log("A QUIIIII", AprobacionDespacho.)
                             if (estado) {
                             }
                         });

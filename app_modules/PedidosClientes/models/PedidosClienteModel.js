@@ -161,7 +161,11 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                     when a.estado_pedido = '9' then 'En zona con pdtes'\
                     when a.estado = '4' then 'Debe autorizar cartera' end as descripcion_estado_actual_pedido"),
         "d.estado as estado_separacion",
-        G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro")
+        G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
+        "e.empresa_id as despacho_empresa_id",
+        "e.prefijo as despacho_prefijo", 
+        "e.numero as despacho_numero", 
+        G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")
     ];
 
     var query = G.knex.column(columns). from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {
@@ -174,7 +178,9 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         if (estado !== "") {
             this.where("a.estado_pedido", estado);
         }
-    }).andWhere(function() {
+    }).
+    leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.pedido_cliente_id", "e.pedido_cliente_id").
+    andWhere(function() {
         this.where(G.knex.raw("a.pedido_cliente_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
                 orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
                 orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%").

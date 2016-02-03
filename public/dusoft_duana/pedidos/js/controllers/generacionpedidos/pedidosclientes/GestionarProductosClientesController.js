@@ -411,9 +411,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
                     
-                    
+                     
                 });
-                //    console.log("$scope.Empresa ", $scope.Empresa.get_productos())
 
             };
 
@@ -502,7 +501,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" \
                      ng-model="row.entity.precio_venta" \
                      validacion-numero-decimal\
-                     ng-disabled = "row.entity.sw_pactado"\n\
+                     ng-disabled = "row.entity.contrato"\n\
                      class="form-control grid-inline-input" name="" id="" /> \n\
                      <div ng-if="row.entity.sw_pactado" class="ngCellText" >\n\
                         <span  ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >\n\

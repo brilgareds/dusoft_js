@@ -1930,7 +1930,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             throw 'Error actualizando la observacion de cartera';
         } else {
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));            
+            res.send(G.utils.r(req.url, 'Producto añadido correctamente', 200, {pedidos_clientes: {}}));            
         }                                          
       }).fail(function(err){      
         res.send(G.utils.r(req.url, err, 500, {}));

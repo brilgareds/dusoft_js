@@ -1,59 +1,77 @@
-<div ng-controller ="ValidacionDespachosController">
+
 <div class ="row">
-    
-       <div class="col-md-12">  
-            <div class="col-md-2">
-                <p class="pull-left">
-                <ui-select ng-model="codigo_empresa_id" ng-change="seleccionar_Empresas(codigo_empresa_id)" style='width:250px;' theme="select2" class="form-control selectgeneral pull-left" >
+         
+     <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
+          <p class="input-group">
+     <ui-select ng-model="codigo_empresa_id" ng-change="seleccionar_Empresas(codigo_empresa_id)" style='width:250px;' theme="select2" class="form-control selectgeneral pull-left" >
                     <ui-select-match   placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
                     <ui-select-choices  refresh="onSeleccionarEmpresa($select.search)" refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
                         {{ empresa.getNombre()}}
                     </ui-select-choices>
                 </ui-select>  
-                </p>
-            </div>
-
-           
-            <div class="col-md-2">
-                <p class="pull-left">
+     </div>
+    
+    
+    
+      <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
+           <p class="input-group">
                <input type="text" class="form-control" 
                        ng-keypress="traerPedidosAsignados($event);" 
                        ng-model="rootSeparacionFarmacias.terminoBusqueda" 
                        placeholder="EFC" name="" id="" 
                        />
-                </p>
-                
-                
-            </div>
-
            
-            <div class="col-md-2">
-                <p class="input-group" >
-                    <input type="text" class="form-control" 
+        </div>
+    
+         <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
+              <p class="input-group">
+                <input type="text" class="form-control" 
                        ng-keypress="traerPedidosAsignados($event);" 
                        ng-model="rootSeparacionFarmacias.terminoBusqueda" 
                        placeholder="Numero EFC" name="" id="" 
                        />
-                </p>
             </div>
-        </div>
-        <br>
-       <!-- <div class="col-md-3 pull-right">
+  
+
+        <div class="col-md-2">
             <p class="input-group">
-                <input type="text" class="form-control" 
-                       ng-keypress="traerPedidosAsignados($event);" 
-                       ng-model="rootSeparacionFarmacias.terminoBusqueda" 
-                       placeholder="Buscar" name="" id="" 
-                       />
+
+                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="datos_view.fecha_inicial_aprobaciones" is-open="datos_view.datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
+
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="submit" ng-click="traerPedidosAsignados({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                    <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </p>
-        </div>//-->
+        </div>
+    
+        <div class="col-md-2">
+            <p class="input-group">
+
+                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="datos_view.fecha_final_aprobaciones" is-open="datos_view.datepicker_fecha_final" min="datos_view.fecha_inicial"  readonly  close-text="Cerrar"
+                       clear-text="Borrar"  placeholder="Fecha Final" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+
+        <div class="col-md-2 pull-right">
+            <p class="input-group">
+
+                <input type="text" class="form-control" ng-keypress="buscador_cotizaciones($event);" ng-model="datos_view.termino_busqueda_cotizaciones" placeholder="Buscar" name="" id="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" ng-click="buscador_cotizaciones({which : 13});"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>
+        </div>
+     
+        <br>
+      
     </div>
     
-    <div class="table-responsive" style="clear:both; padding-top: 10px;">
-    <div class="defaultGrid grid-responsive" ng-grid="listaAprobaciones"></div>
+   <div class="table-responsive" style="clear:both;">
+     <div class="defaultGrid grid-responsive" ng-grid="listaAprobaciones"></div>
 </div>
     </br>
     <div class="row text-center">
@@ -64,5 +82,4 @@
             <span class="glyphicon glyphicon-chevron-right" ></span>
         </button>
     </div>
-    
-</div>
+ 

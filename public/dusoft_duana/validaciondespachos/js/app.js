@@ -28,7 +28,8 @@ define([
     "models/BodegaInduccion",
     "models/ProductoInduccion",
     "models/AprobacionDespacho",
-    "controllers/ValidacionDespachosController"    
+    "controllers/ValidacionDespachosController",
+    "controllers/ValidacionDespachoControllerDetalleController"
 ], function(angular) {
 
         /* App Module and its dependencies */
@@ -61,7 +62,7 @@ define([
 
             $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion) {
 
-                var vista_predeterminada = "ListarProductos";
+                var vista_predeterminada = "ValidacionEgresos";
 
                 validaciondespachos.urlRouterProvider.otherwise(vista_predeterminada);
 
@@ -70,6 +71,11 @@ define([
                     text: "ValidacionEgresos",
                     templateUrl: "views/validaciondespachos/index.html",
                     controller: "ValidacionDespachosController"
+                }).state('ValidacionEgresosDetalle', {
+                    url: "/ValidacionEgresosDetalle",
+                    text: "Detalle de despacho aprobado",
+                    templateUrl: "views/validaciondespachos/validaciondespachos.html",
+                    parent_name : "ValidacionEgresos"
                 });
                     
 

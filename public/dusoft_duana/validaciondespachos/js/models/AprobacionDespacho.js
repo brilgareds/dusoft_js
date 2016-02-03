@@ -19,11 +19,41 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.cantidadCajas = 0;
                 this.cantidadNeveras = 0;
                 this.estado =0;
+                this.observacion;
+                this.razon_social;
+                this.usuario;
+                
             };
             
 
             AprobacionDespacho.prototype = Object.create(Documento.getClass().prototype);
-
+            
+            
+            
+            AprobacionDespacho.prototype.setRazonSocial = function (razon_social) {
+               this.razon_social = razon_social;
+            };
+            AprobacionDespacho.prototype.getRazonSocial = function () {
+                return this.razon_social;
+            };
+            
+            AprobacionDespacho.prototype.setUsuario = function (usuario) {
+               this.usuario = usuario;
+            };
+            AprobacionDespacho.prototype.getUsuario = function () {
+                return this.usuario;
+            };
+            
+            
+            
+            AprobacionDespacho.prototype.setObservacion = function (observacion) {
+                 this.observacion = observacion;
+            };
+            
+            AprobacionDespacho.prototype.getObservacion = function () {
+                return this.observacion;
+            };
+            
             AprobacionDespacho.prototype.setCantidadCajas = function (cantidadCajas) {
                 this.cantidadCajas = cantidadCajas;
             };
@@ -44,11 +74,11 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             AprobacionDespacho.prototype.setEstado = function (estado) {
                 this.estado = estado;
             };
-            AprobacionDespacho.prototype.getEstado = function () {
+            AprobacionDespacho.prototype.getEstado = function() {
                 return this.estado;
             };
 
-
+            
            
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {
                 return new AprobacionDespacho(bodegas_doc_id, prefijo, numero, fecha_registro);

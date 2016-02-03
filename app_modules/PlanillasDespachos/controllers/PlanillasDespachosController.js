@@ -859,7 +859,7 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
          
      }).fail(function(err){ 
          
-         console.log("err >>>>>>>>>>>>>>", err)
+         
          res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
        
     }).done();

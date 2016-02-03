@@ -7,12 +7,9 @@ define(["angular"], function (angular) {
     var data = {
         'API': {
             'BASE_URL': BASE_URL,
-            'INDUCCION': {
-                "LISTAR_EMPRESAS": BASE_URL + "/induccion/listarempresas",
-                "LISTAR_CENTROS_UTILIDAD": BASE_URL + "/induccion/listarCentroUtilidad",
-                "LISTAR_BODEGAS": BASE_URL + "/induccion/listarBodega",
-                "LISTAR_PRODUCTOS": BASE_URL + "/induccion/listarProducto",
-                "IMPRIMIR_PRODUCTOS": BASE_URL + "/induccion/imprimirRotulo"
+            'VALIDACIONDESPACHOS': {
+                "LISTAR_EMPRESAS": BASE_URL + "/ValidacionDespachos/listarempresas",
+                "LISTAR_DESPACHOS_APROBADOS": BASE_URL + "/ValidacionDespachos/listarDespachosAprobados"
             }
         }
 

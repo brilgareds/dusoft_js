@@ -1034,8 +1034,6 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  */
 PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina,filtros, callback) {
 
-
-
     var filtroProducto ="";
     var sql_aux = "";
     var termino_busqueda = filtro.termino_busqueda;
@@ -1069,8 +1067,9 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     if(filtros === ''){
         filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
         parametros["5"]= termino_busqueda + '%';
+   
+    }
     
-    }   
     //Se agregar un nuevo campo llamado contrato que retornara FALSE si no tiene
    //contrato con la empresa y TRUE si lo tiene
              var sql = "a.codigo_producto,\

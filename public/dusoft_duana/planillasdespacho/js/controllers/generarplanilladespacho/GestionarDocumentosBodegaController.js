@@ -272,12 +272,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.PLANILLAS.CANTIDADES_CAJA_NEVERA, "POST", obj, function(data) {
                     
                     if (data.status === 200) {
-                        console.log("parseInt(documento.get_cantidad_cajas()) ", parseInt(documento.get_cantidad_cajas()));
-                            console.log("parseInt(documento.get_cantidad_neveras()) ", parseInt(documento.get_cantidad_neveras()));
-                            
-                            
-                            console.log("data.obj.planillas_despachos.totalCajas ", data.obj.planillas_despachos.totalCajas);
-                            console.log("data.obj.planillas_despachos.totalNeveras ", data.obj.planillas_despachos.totalNeveras);
+                      
                         if (parseInt(documento.get_cantidad_cajas()) === data.obj.planillas_despachos.totalCajas && 
                             parseInt(documento.get_cantidad_neveras()) === data.obj.planillas_despachos.totalNeveras) {
                             

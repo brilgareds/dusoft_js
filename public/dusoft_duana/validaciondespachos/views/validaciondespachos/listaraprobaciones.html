@@ -1,0 +1,78 @@
+<div ng-controller ="ValidacionDespachosController">
+<div class ="row">
+    
+       <div class="col-md-12">  
+            <div class="col-md-2">
+                <p class="pull-left">
+                <ui-select ng-model="codigo_empresa_id" ng-change="seleccionar_Empresas(codigo_empresa_id)" style='width:250px;' theme="select2" class="form-control selectgeneral pull-left" >
+                    <ui-select-match   placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
+                    <ui-select-choices  refresh="onSeleccionarEmpresa($select.search)" refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
+                        {{ empresa.getNombre()}}
+                    </ui-select-choices>
+                </ui-select>  
+                </p>
+            </div>
+
+            <div class="col-md-2">
+                <p class="pull-left">
+                <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado" ng-change="onSeleccionarCentroUtilidad()" style='width:250px;' theme="select2" class="form-control selectgeneral pull-left" >
+                    <ui-select-match  placeholder="Seleccionar Centro Utilidad" >{{ $select.selected.getNombre()}}</ui-select-match>
+                    <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
+                        {{ centroUtilidad.getNombre()}}
+                    </ui-select-choices>
+                </ui-select>  
+                </p>
+            </div>
+
+            <div class="col-md-2">
+                <p class="pull-left">
+               <input type="text" class="form-control" 
+                       ng-keypress="traerPedidosAsignados($event);" 
+                       ng-model="rootSeparacionFarmacias.terminoBusqueda" 
+                       placeholder="EFC" name="" id="" 
+                       />
+                </p>
+                
+                
+            </div>
+
+           
+            <div class="col-md-2">
+                <p class="input-group" >
+                    <input type="text" class="form-control" 
+                       ng-keypress="traerPedidosAsignados($event);" 
+                       ng-model="rootSeparacionFarmacias.terminoBusqueda" 
+                       placeholder="Numero EFC" name="" id="" 
+                       />
+                </p>
+            </div>
+        </div>
+        <br>
+       <!-- <div class="col-md-3 pull-right">
+            <p class="input-group">
+                <input type="text" class="form-control" 
+                       ng-keypress="traerPedidosAsignados($event);" 
+                       ng-model="rootSeparacionFarmacias.terminoBusqueda" 
+                       placeholder="Buscar" name="" id="" 
+                       />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" ng-click="traerPedidosAsignados({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>
+        </div>//-->
+    </div>
+    
+    <div class="table-responsive" style="clear:both; padding-top: 10px;">
+    <div class="defaultGrid grid-responsive" ng-grid="listaAprobaciones"></div>
+</div>
+    </br>
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactualFarmacias == 1" ng-click="paginaAnteriorFarmacias()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="items <=25" ng-click="paginaSiguienteFarmacias()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+    
+</div>

@@ -314,7 +314,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.onSeleccionarProducto = function($event) {
                         $scope.paginaactual = 1;
-                        console.log("evento: ", $event);
+                       
                         if ($event.which === 13) {
                             producto = 1;
                             that.listarProducto(function() {
@@ -331,7 +331,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
 
                     that.init(empresa, function() {
-                        console.log("empresa_init::::: ", $scope.seleccionada);
+                       
                         that.listarEmpresas(function(estado) {
                             if (estado) {
                             }
@@ -378,78 +378,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         ]
                     };
 
-                    /////////graficos//////
-                    $scope.exampleData = [{
-                            key: "Enero",
-                            y: 129
-                        }, {
-                            key: "Febrero",
-                            y: 200
-                        }, {
-                            key: "Marzo",
-                            y: 150
-                        }, {
-                            key: "Abril",
-                            y: 80
-                        }, {
-                            key: "Mayo",
-                            y: 200
-                        }, {
-                            key: "Junio",
-                            y: 120
-                        }, {
-                            key: "Julio",
-                            y: 150
-                        },
-                        {
-                            key: "Agosto",
-                            y: 80
-                        },
-                        {
-                            key: "Septiembre",
-                            y: 90
-                        },
-                        {
-                            key: "Octubre",
-                            y: 1200
-                        },
-                        {
-                            key: "Noviembre",
-                            y: 120
-                        },
-                        {
-                            key: "Diciembre",
-                            y: 110
-                        }
-                    ];
+                  
+                     $scope.listaAprobaciones = {
+                       // data: 'rootSeparacionFarmacias.empresa.getPedidos()',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        columnDefs: [
+                            {field: 'prefijo', displayName: 'prefijo', width:300},
+                            {field: 'numero', displayName: 'numero', width:300},
+                            {field: '', displayName: 'Cantidad cajas', width:300},
+                            {field: '', displayName: 'Cantidad neveras', width:300},
+                            {field: '', displayName: 'Observacion', width:100},
+                            {field: '', displayName: 'Estado', width:100},
+                            {field: '', displayName: 'Fecha registro', width:100},
+                            {field: 'detalle', width: "10%",
+                                displayName: "Cantidad",
+                                cellClass: "txt-center",
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detallePedido(row.entity, rootSeparacionFarmacias.filtroPedido)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
 
-
-                    $scope.xFunction = function() {
-                        return function(d) {
-                            return d.key;
-                        };
+                            }
+                        ]
                     };
 
-                    $scope.yFunction = function() {
-                        return function(d) {
-                            return d.y;
-                        };
-                    };
-
-                    $scope.descriptionFunction = function() {
-                        return function(d) {
-                            return d.key;
-                        };
-                    };
-
-                    $scope.toolTipContentFunction = function() {
-                        return function(key, x, y, e, graph) {
-                            return  '<h4>' + key + '</h4>' +
-                                    '<p>' + y + ' en ' + x + '</p>';
-                        };
-                    };
-
-                    ///////////////////////
+                   
 
                 }]);
 });

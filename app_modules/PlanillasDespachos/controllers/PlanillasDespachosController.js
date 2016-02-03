@@ -845,8 +845,7 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
                tipo: 0};
    
      G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj).then(function(resultado){ 
-         
-        // res.send(G.utils.r(req.url, 'Cantidades de cajas y neveras', 200, {planillas_despachos: resultado}));
+       
          obj.totalCajas = (resultado.length > 0 ) ? resultado[0].total_cajas : 0;
          obj.tipo =1;
          return G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj );

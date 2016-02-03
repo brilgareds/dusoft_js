@@ -11,7 +11,7 @@ define(["angular", "js/controllers",
     "controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoController",
     "services/generacionpedidos/pedidosfarmacias/PedidosFarmaciasService"], function(angular, controllers) {
 
-    var fo = controllers.controller('GuardarPedidoBaseController', [
+    controllers.controller('GuardarPedidoBaseController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'API', "socket", "AlertService",
@@ -477,9 +477,12 @@ define(["angular", "js/controllers",
              */
             $scope.onModificarCantidad = function(ev, row) {
                 if (ev.which === 13) {
-                    if (parseInt(row.entity.getCantidadIngresada()) > 0) {
+                    var cantidad = parseInt(row.entity.getCantidadIngresada());
+                    if (cantidad > 0) {
                         //Emite el evento al controlador GuardarPedidoController
                         $scope.$broadcast("onEditarCantidad", row.entity);
+                    } else if(cantidad === 0 && $scope.root.pedido.getProductosSeleccionados().length === 1 ){
+                        $scope.$broadcast("onAnularPendiente", row.entity);
                     }
                 }
             };

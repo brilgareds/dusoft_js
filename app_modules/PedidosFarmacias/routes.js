@@ -84,26 +84,7 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosFarmacias/enviarEmailPedido', function(req, res) {
         c_pedidos_farmacias.enviarEmailPedido(req, res);
     }); 
-    
-    // -- depreciado
-    /*app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {
-        c_pedidos_farmacias.listar_productos(req, res);
-    });*/
-    
-    //
-    
-    
-    
-    // deprecido Retorna 1 si el registro existe y 0 si no existe en el encabezado del pedido. Se filtra pedido por empresa, centro de utilidad, bodega y usuario
-    /*app.post('/api/PedidosFarmacias/existeRegistroEncabezadoTemporal', function(req, res) {
-        c_pedidos_farmacias.existeRegistroEncabezadoTemporal(req, res);
-    });*/
-    
-    // depreciado Retorna 1 si el registro existe y 0 si no existe en el detalle del pedido. Se filtra por empresa, centro de utilidad, bodega, codigo de producto y usuario
-    /*app.post('/api/PedidosFarmacias/existeRegistroDetalleTemporal', function(req, res) {
-        c_pedidos_farmacias.existeRegistroDetalleTemporal(req, res);
-    });    */
-    
+
     // Consulta Encabezado de Pedido Temporal
     app.post('/api/PedidosFarmacias/consultarPedidoFarmaciaTemporal', function(req, res) {
         c_pedidos_farmacias.consultarPedidoFarmaciaTemporal(req, res);
@@ -123,16 +104,6 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosFarmacias/eliminarRegistroDetalleTemporal', function(req, res) {
         c_pedidos_farmacias.eliminarRegistroDetalleTemporal(req, res);
     }); 
-    
-   /* //depreciado Elimina el detalle completo del pedido por empresa, centro de utilidad, bodega y usuario
-    app.post('/api/PedidosFarmacias/eliminarDetalleTemporalCompleto', function(req, res) {
-        c_pedidos_farmacias.eliminarDetalleTemporalCompleto(req, res);
-    }); */
-    
-    /*/depreciado Inserta el encabezado del pedido definitivo
-    app.post('/api/PedidosFarmacias/insertarPedidoFarmacia', function(req, res) {
-        c_pedidos_farmacias.insertarPedidoFarmacia(req, res);
-    });*/
     
     //Inserta el detalle del pedido definitivo
     app.post('/api/PedidosFarmacias/insertarDetallePedidoFarmacia', function(req, res) {
@@ -168,11 +139,6 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.generarPdfPedido(req, res);
     }); 
     
-    //depreciado Generar PDF del pedido
-   /* app.post('/api/PedidosFarmacias/imprimirPedidoFarmacia', function(req, res) {
-        c_pedidos_farmacias.imprimirPedidoFarmacia(req, res);
-    });*/
-    
     //Actualizar Estado Pedido
     app.post('/api/PedidosFarmacias/actualizarEstadoActualPedido', function(req, res) {
         c_pedidos_farmacias.actualizarEstadoActualPedido(req, res);
@@ -182,11 +148,6 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosFarmacias/listarPedidosTemporalesFarmacias', function(req, res) {
         c_pedidos_farmacias.listarPedidosTemporalesFarmacias(req, res);
     });
-    
-    // depreciado Actualizar Encabezado Pedido Temporal
-    /*app.post('/api/PedidosFarmacias/actualizarRegistroEncabezadoTemporal', function(req, res) {
-        c_pedidos_farmacias.actualizarRegistroEncabezadoTemporal(req, res);
-    });*/
     
     //Buscar Usuario Bloqueo
     app.post('/api/PedidosFarmacias/buscarUsuarioBloqueo', function(req, res) {
@@ -213,7 +174,9 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.insertarProductoDetallePedidoFarmacia(req, res);
     });
     
-    
+    app.post('/api/PedidosFarmacias/anularPendienteProducto', function(req, res) {
+        c_pedidos_farmacias.anularPendienteProducto(req, res);
+    });
 
     // ================= GET =======================
 

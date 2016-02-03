@@ -206,7 +206,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var valorTotalIva = (precioVenta*valorIva)/100;
                 var precioVentaIva = precioVenta + valorTotalIva;
                 
-                productoSeleccionado.set_precio_venta_iva(precioVentaIva);
+                productoSeleccionado.setPrecioVentaIva(precioVentaIva);
                /**
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
@@ -442,7 +442,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $scope.solicitar_producto = function(producto) {
-
+                
+               
                 var val = producto.precio_venta;
                 var clean = val.replace(/[^0-9\.]/g, '');
                 var decimalCheck = clean.split('');

@@ -86,7 +86,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var cantidadNeveras = 0;
                 var observacion = "";
                 var fechaRegistro = 0;
-                console.log("documentoAprobado ", documento)
+               
                 if (documento) {
                     prefijo = documento.documentoAprobado.prefijo || 0;
                     numero =  documento.documentoAprobado.numero || 0;
@@ -102,14 +102,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 /*
                  * +Descripcion: Se consulta el estado de la cotizacion
                  */
-            //    that.consultarEstadoPedidoCotizacion(2, cotizacion.numero_cotizacion);
-
-
-                //} else if (localStorageService.get("pedido")) {
+          
             }
 
-           
-           
           
            $scope.regresarListaDespachosAprobados = function() {
              

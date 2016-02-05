@@ -26,23 +26,18 @@ define(["angular", "js/services"], function(angular, services) {
                                     empresa_id: obj.empresa_id,
                                     fechaInicial: obj.fechaInicial,
                                     fechaFinal: obj.fechaFinal,
-                                    paginaActual: obj.paginaactual
+                                    paginaActual: obj.paginaactual,
+                                    registroUnico: obj.registroUnico
                                     
                                 }
                             }
                         };
-                        
-                        Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_DESPACHOS_APROBADOS, "POST", params, function(data) {
-                         
+                        Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_DESPACHOS_APROBADOS, "POST", params, function(data){                        
                                 callback(data);
                               
-                        });
-                        
-                      
-            };
-            
-           
-            return this;
+                        });    
+                };             
+                 return this;
         }]);
 });
 

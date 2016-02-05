@@ -20,26 +20,42 @@ ValidacionDespachos.prototype.listarDespachosAprobados = function(req, res) {
 
     var args = req.body.data;
 
-  if (args.validacionDespachos === undefined) {
+   if(args.validacionDespachos === undefined) {
         res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
         return;
     }
 
-  
+   if(args.validacionDespachos.empresa_id === undefined ) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+   }
+
+   if (args.validacionDespachos.prefijo === undefined ) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+   
+   if (args.validacionDespachos.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+    
     var empresa_id = args.validacionDespachos.empresa_id;
     var prefijo = args.validacionDespachos.prefijo;
     var numero = args.validacionDespachos.numero;
     var fechaInicial = args.validacionDespachos.fechaInicial;
     var fechaFinal= args.validacionDespachos.fechaFinal;
     var paginaActual= args.validacionDespachos.paginaActual;
-   
+    var registroUnico= args.validacionDespachos.registroUnico;
+    
     
     var obj = {fechaInicial: fechaInicial,
                fechaFinal: fechaFinal,
                prefijo: prefijo,
                numero: numero,
                empresa_id: empresa_id,
-               paginaActual: paginaActual
+               paginaActual: paginaActual,
+               registroUnico: registroUnico
           };
      
      G.Q.ninvoke(that.m_ValidacionDespachos,'listarDespachosAprobados', obj).then(function(resultado){ 
@@ -70,7 +86,7 @@ ValidacionDespachos.prototype.listarEmpresas = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa, No esta definida', 404, {}));
         return;
     }
-    that.m_ValidacionDespachos.getListarEmpresas(empresa,function(err, empresas ) {
+    that.m_ValidacionDespachos.listarEmpresas(empresa,function(err, empresas ) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las empresas', 500, {listar_empresas: err}));

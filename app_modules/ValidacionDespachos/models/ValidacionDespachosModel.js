@@ -11,25 +11,29 @@ var ValidacionDespachosModel = function () {
  */
 ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, callback){
    
-  
-    
+    var fecha = "";
+    var subfijo = "AND";
+    if(!obj.registroUnico){
+        fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
+        subfijo = "OR";
+    }
     // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
     var sql = "b.empresa_id, b.razon_social, prefijo, numero, cantidad_cajas, cantidad_neveras, observacion, estado, fecha_registro, c.nombre \
                FROM aprobacion_despacho_planillas a INNER JOIN empresas b ON a.empresa_id = b.empresa_id \
                INNER JOIN system_usuarios c ON a.usuario_id = c.usuario_id\n\
-               WHERE a.fecha_registro between :1 and :2\
-               AND ( \
-                    a.prefijo :: varchar "+G.constants.db().LIKE+"  :3 and \
-                    a.numero  :: varchar "+G.constants.db().LIKE+"  :4  \
+               WHERE "+fecha+"\
+                ( \
+                    a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo and \
+                    a.numero  :: varchar "+G.constants.db().LIKE+"  :numero  \
                    \
-                ) OR   a.empresa_id :: varchar "+G.constants.db().LIKE+"  :5";
+                ) "+subfijo+" a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id";
     // paginaActual 
    
-        var parametros = {1: obj.fechaInicial, 
-                       2: obj.fechaFinal, 
-                       3: "%"+ obj.prefijo +"%", 
-                       4: "%"+ obj.numero  +"%",
-                       5: obj.empresa_id
+        var parametros = {fechaInicial: obj.fechaInicial, 
+                          fechaFinal: obj.fechaFinal, 
+                          prefijo: "%"+ obj.prefijo +"%", 
+                          numero: "%"+ obj.numero  +"%",
+                          empresa_id: obj.empresa_id
                       };
     
    var query = G.knex.select(G.knex.raw(sql, parametros)).
@@ -38,7 +42,7 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
         
         callback(false, resultado);
     }).catch(function(err){
-        
+        console.log("err ",err)
         callback(err);
        
     });
@@ -70,7 +74,7 @@ ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback)
 * @returns {datos de consulta}
 */
 // json
-ValidacionDespachosModel.prototype.getListarEmpresas = function (empresaNombre,callback) {
+ValidacionDespachosModel.prototype.listarEmpresas = function (empresaNombre,callback) {
 
     var column = [
         "empresa_id",

@@ -96,7 +96,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        empresa_id:$scope.empresaSeleccionada,
                        fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
                        fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                       paginaactual:$scope.paginaActual
+                       paginaactual:$scope.paginaActual,
+                       registroUnico: false
                         
                     };
                
@@ -132,16 +133,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        
                     };
                     
-                    
- 
-
-                    //////////////////////////// 
-
-                    that.onGenerarPdfRotulo = $rootScope.$on("onGenerarPdfRotulo", function(e, paginaactual, empresa, centroUtilidad, bodega, producto) {
-                        $scope.onImprimirRotulo(paginaactual, empresa, centroUtilidad, bodega, producto);
-                    });
-
-                  
                      /**
                       * @author Cristian Ardila
                       * @fecha 04/02/2016
@@ -230,7 +221,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.detalleDespachoAprobado = function(documentoAprobado) {
                           
-                          localStorageService.add("validacionEgresosDetalle", {documentoAprobado: documentoAprobado,estado: 1});
+                          localStorageService.add("validacionEgresosDetalle", 
+                            {empresa: documentoAprobado.getEmpresaId(),
+                             prefijo: documentoAprobado.getPrefijo(),
+                             numero:  documentoAprobado.getNumero(),
+                             estado:  1});
                           $state.go('ValidacionEgresosDetalle');
                      };
                     
@@ -301,7 +296,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     };
 
-                     that.init(empresa, function() {                
+                     that.init(empresa, function() {            
+                      
                             that.listarEmpresas(function(estado) {
                                 that.listarDespachosAprobados();
                             });

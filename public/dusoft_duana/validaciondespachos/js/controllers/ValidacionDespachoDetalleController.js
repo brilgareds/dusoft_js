@@ -2,7 +2,7 @@
 define(["angular", "js/controllers", 'includes/slide/slideContent'
 ], function(angular, controllers) {
     //probando branch de pedidos clientes
-    controllers.controller('ValidacionDespachoControllerDetalleController', [
+    controllers.controller('ValidacionDespachoDetalleController', [
         '$scope',
         '$rootScope',
         'Request',
@@ -193,35 +193,44 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              */
             if ($state.is("ValidacionEgresosDetalle") === true) {
                 
-                
                 var documento = localStorageService.get("validacionEgresosDetalle");
-                
               
-                var prefijo = 0;
-                var numero = 0;
-                var cantidadCajas = 0;
-                var cantidadNeveras = 0;
-                var observacion = "";
-                var fechaRegistro = 0;
-                
+               $scope.estadoRegistro = 1;
+               if (documento) {
+                        
                 if(documento.estado === 1){
                     
-                     $scope.estadoRegistro = 1;
-                    if (documento) {
-                        var empresa = EmpresaAprobacionDespacho.get(documento.documentoAprobado.razon_social, documento.documentoAprobado.empresaId);
-                        $scope.datos_view.empresaSeleccionada = empresa;
-                        prefijo = documento.documentoAprobado.prefijo || 0;
-                        numero =  documento.documentoAprobado.numero || 0;
-                        cantidadCajas =  documento.documentoAprobado.cantidadCajas || 0;
-                        cantidadNeveras =  documento.documentoAprobado.cantidadNeveras || 0;
-                        observacion =    documento.documentoAprobado.observacion || 0;
-                        fechaRegistro =  documento.documentoAprobado.fecha_registro || 0;
-                    }
-                   $scope.documentoDespachoAprobado= AprobacionDespacho.get(1,prefijo,numero,fechaRegistro)
-                   $scope.documentoDespachoAprobado.setCantidadCajas(cantidadCajas);
-                   $scope.documentoDespachoAprobado.setCantidadNeveras(cantidadNeveras);
-                   $scope.documentoDespachoAprobado.setObservacion(observacion);
-               
+                    
+                    var obj = {
+                        
+                       session: $scope.session,
+                       prefijo:documento.prefijo || 0,
+                       numero: documento.numero || 0,
+                       empresa_id:documento.empresa,
+                       fechaInicial: "",
+                       fechaFinal:"",
+                       paginaactual:1,
+                       registroUnico: true
+                        
+                    };
+                 
+                    ValidacionDespachosService.listarDespachosAprobados(obj,function(data){
+                       
+                           if (data.status === 200) {
+                                var resultado = data.obj.validacionDespachos[0];
+                                var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
+                                 $scope.datos_view.empresaSeleccionada = empresa;
+                             
+                                 $scope.documentoDespachoAprobado= AprobacionDespacho.get(1,resultado.prefijo,resultado.numero,resultado.fecha_registro)
+                                 $scope.documentoDespachoAprobado.setCantidadCajas(resultado.cantidad_cajas);
+                                 $scope.documentoDespachoAprobado.setCantidadNeveras(resultado.cantidad_neveras);
+                                 $scope.documentoDespachoAprobado.setObservacion(resultado.observacion);
+                           }else{
+                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                           }                    
+                        
+                     });
+                  }
                 }              
                 if(documento.estado === 2){  
                     $scope.estadoRegistro = 2;

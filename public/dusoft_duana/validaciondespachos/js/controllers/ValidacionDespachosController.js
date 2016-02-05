@@ -138,13 +138,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       */
                     $scope.cargarListarDespachosAprobados = function(event){
                        
-                         if (event.which === 13) {
+                        // if (event.which === 13) {
                              that.listarDespachosAprobados()
-                         }
+                      //   }
                       
                      };
                    
-                    ////////////////////////////////////        
+                     
                     /*
                      * funcion ejecuta listarCentroUtilidad
                      * @returns {lista CentroUtilidad}

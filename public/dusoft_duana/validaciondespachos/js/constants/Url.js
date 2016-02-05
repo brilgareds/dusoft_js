@@ -12,7 +12,8 @@ define(["angular"], function (angular) {
                 "LISTAR_DESPACHOS_APROBADOS": BASE_URL + "/ValidacionDespachos/listarDespachosAprobados",
                 'CANTIDADES_CAJA_NEVERA': BASE_URL + '/PlanillasDespachos/consultarCantidadCajaNevera',
                 'REGISTRAR_APROBACION': BASE_URL + '/ValidacionDespachos/registrarAprobacion',
-                'OBTENER_DOCUMENTO': BASE_URL + '/movBodegas/E008/obtenerDocumento'
+                'OBTENER_DOCUMENTO': BASE_URL + '/movBodegas/E008/obtenerDocumento',
+                'CONSULTAR_DOCUMENTOS_USUARIOS': BASE_URL + '/movBodegas/consultarDocumentosUsuario'
             }
         }
 

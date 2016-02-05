@@ -10,7 +10,10 @@
                                     <div class="col-lg-12">                                      
                                            <div class="checkbox">
                                                 <label>
-                                                  <input type="checkbox" ng-model="datos_view.seleccionarOtros" ng-disabled="datos_view.estadoRegistro == 1"><h4>Seleccionar otras salidas</h4>   
+                                                  <input type="checkbox" 
+                                                         ng-model="datos_view.seleccionarOtros" 
+                                                         ng-disabled="datos_view.estadoRegistro == 1"
+                                                         ng-change ="cargarEmpresaSession()"><h4>Seleccionar otras salidas</h4>   
                                                 </label>
                                               </div>
                                     </div>
@@ -27,9 +30,9 @@
                                            <ui-select   ng-model="datos_view.empresaSeleccionada" 
                                                         ng-disabled="datos_view.estadoRegistro == 1"
                                                         theme="select2" 
-                                                        class="form-control selectgeneral pull-left"
+                                                        class="form-control selectgeneral pull-left" 
                                                        
-                                                        style='width:370px;'>
+                                                        >
                                                           <ui-select-match   placeholder="Seleccionar Empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
                                                           <ui-select-choices  refresh="onSeleccionarEmpresa($select.search)" 
                                                                               refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
@@ -55,9 +58,26 @@
                                             <legend>Prefijo</legend>   
                                              <div class="row">
                                                 <div class="col-md-7">  
-                                            <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  class="form-control"  ng-model="documentoDespachoAprobado.prefijo" placeholder="Prefijo" name="" id="" />
+                                            <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  
+                                                   class="form-control"  
+                                                   ng-model="documentoDespachoAprobado.prefijo" 
+                                                   placeholder="Prefijo" 
+                                                   name="" id=""
+                                                   ng-show ="datos_view.seleccionarOtros == true"/>
                                      
                                                 </div></div>
+                                            
+                                          
+                                            <ui-select  ng-model="documentoDespachoAprobado.prefijoList" 
+                                                        theme="select2" 
+                                                        class="form-control selectgeneral pull-left" 
+                                                        ng-change="valorSeleccionado(true)"
+                                                        ng-show ="datos_view.seleccionarOtros == false">
+                                                <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.prefijo}}-{{$select.selected.descripcion}}</ui-select-match>
+                                                <ui-select-choices repeat="documento_usuario in  documentos_usuarios| filter:$select.search">
+                                                    {{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}
+                                                </ui-select-choices>
+                                            </ui-select>
                                       </fieldset>
                                     </div>                          
                                 </div>                              

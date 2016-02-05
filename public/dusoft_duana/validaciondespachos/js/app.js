@@ -31,6 +31,7 @@ define([
     "models/AprobacionDespacho",
     "controllers/ValidacionDespachosController",
     "controllers/ValidacionDespachoControllerDetalleController",
+    "services/ValidacionDespachosService",
 ], function(angular) {
 
         /* App Module and its dependencies */

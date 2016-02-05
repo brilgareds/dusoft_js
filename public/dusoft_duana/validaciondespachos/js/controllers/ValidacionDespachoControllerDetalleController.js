@@ -14,9 +14,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "localStorageService",
         "$state",
         "$filter",
-        "Usuario","AprobacionDespacho","EmpresaAprobacionDespacho",
+        "Usuario","AprobacionDespacho","EmpresaAprobacionDespacho","ValidacionDespachosService",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                 Sesion,AprobacionDespacho,EmpresaAprobacionDespacho) {
+                 Sesion,AprobacionDespacho,EmpresaAprobacionDespacho,ValidacionDespachosService) {
 
             var that = this;
             // Definicion Variables de Sesion
@@ -192,7 +192,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *               el detalle de una aprobacion o se creara una aprobacion
              */
             if ($state.is("ValidacionEgresosDetalle") === true) {
-               
+                
+                
                 var documento = localStorageService.get("validacionEgresosDetalle");
                 
               

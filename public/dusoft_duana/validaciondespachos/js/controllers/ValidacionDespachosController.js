@@ -11,7 +11,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var that = this;
                 $scope.paginaactual = 1;
                 var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                $scope.empresaSeleccionada = '';
+                
                 var fecha_actual = new Date();
 
                 $scope.datos_view = {
@@ -20,7 +20,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                     prefijo: "",
                     numero: "",
-                    items:0
+                    items:0,
+                    empresaSeleccionada: ''
 
                 };
                     /*
@@ -41,39 +42,35 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     that.centroUtilidad = [];
                     callback();
                 };
+                
                 /*
-                 * funcion obtiene las empresas del servidor
+                 * @author Cristian Ardila
+                 * @fecha 05/02/2016
+                 * +Descripcion funcion obtiene las empresas del servidor invocando
+                 *              el servicio listarEmpresas de 
+                 *              (ValidacionDespachosSerivice.js)
                  * @returns {json empresas}
                  */
                 that.listarEmpresas = function(callback) {
 
-                    var obj = {
-                        session: $scope.session,
-                        data: {
-                            listar_empresas: {
-                                pagina: 1,
-                                empresaName: $scope.datos_view.termino_busqueda_empresa
-                            }
-                        }
-                    };
-
-                    Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-                        $scope.empresas = [];
-                        if (data.status === 200) {
+                   ValidacionDespachosService.listarEmpresas($scope.session,$scope.datos_view.termino_busqueda_empresa, function(data){
+                         
+                      $scope.empresas = [];      
+                      if (data.status === 200) {
 
                             that.render_empresas(data.obj.listar_empresas);
                             callback(true);
-                        } else {
+                       }else{
                             callback(false);
-                        }
-                    });
+                       }
+                   });
                 };
 
 
                 that.render_empresas = function(empresas) {
                     for (var i in empresas) {
-                        var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
-                        $scope.empresas.push(_empresa);
+                         var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
+                         $scope.empresas.push(_empresa);
                     }
                 };
 
@@ -93,7 +90,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        session: $scope.session,
                        prefijo:$scope.datos_view.prefijo,
                        numero: $scope.datos_view.numero,
-                       empresa_id:$scope.empresaSeleccionada,
+                       empresa_id:$scope.datos_view.empresaSeleccionada,
                        fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
                        fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
                        paginaactual:$scope.paginaActual,
@@ -146,48 +143,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          }
                       
                      };
-                    ////////////////
-                    $scope.seleccionar_empresa = function(empresa) {
-                        $scope.empresaSeleccionada = empresa;
-                      
-                    };
+                   
                     ////////////////////////////////////        
                     /*
                      * funcion ejecuta listarCentroUtilidad
                      * @returns {lista CentroUtilidad}
                      */
                     $scope.onSeleccionarEmpresa = function(empresa_Nombre) {
-
                         if (empresa_Nombre.length < 3) {
                             return;
                         }
                         $scope.datos_view.termino_busqueda_empresa = empresa_Nombre;
                         that.listarEmpresas(function() {
                         });
-
-                    };
-
-                 
-
-                    /*
-                     * funcion ejecuta listarBodegas
-                     * @returns {lista Bodegas}
-                     */
-                    $scope.onSeleccionarCentroUtilidad = function() {
-                        that.listarBodegas(function() {
-
-                        });
-                    };
-
-                    /*
-                  
-
-                    /*
-                     * funcion asigana variable global bodegaSS a 1
-                     * @returns {lista Producto}
-                     */
-                    $scope.onSeleccionarTodas = function() {
-                       
                     };
 
                    
@@ -302,6 +270,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 that.listarDespachosAprobados();
                             });
                      });
+                     
+                     
+                     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+                     $scope.$$watchers = null;
+                    // set localstorage
+                    
+                     $scope.datos_view=null;
+                     $scope.documentoDespachoAprobado=null;
+                });
 
          }]);
 });

@@ -26,15 +26,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
          
             // Definicion variables del View
+           
             $scope.datos_view = {
                 seleccionarOtros: '',
-                empresaSeleccionada: '',        
+                empresaSeleccionada: '',
                 activar_tab: {tab_productos: true, tab_cargar_archivo: false},
                 visualizar: false,
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 progresoArchivo: 0,
-                btnSolicitarAutorizacionCartera: true
+                btnSolicitarAutorizacionCartera: true,
+                estadoRegistro: 0
 
             };
             
@@ -48,9 +50,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                  AlertService.mostrarVentanaAlerta("Mensaje del sistema","Debe diligenciar los campos del formulario");
               }else{
                
-                var url = '';
-                var obj = {};
-                
                 if($scope.datos_view.seleccionarOtros === true){
                    
                    that.obtenerDocumento(function(estado){
@@ -195,7 +194,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                 var documento = localStorageService.get("validacionEgresosDetalle");
               
-               $scope.estadoRegistro = 1;
+               $scope.datos_view.estadoRegistro = 1;
                if (documento) {
                         
                 if(documento.estado === 1){
@@ -219,6 +218,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                            if (data.status === 200) {
                                 var resultado = data.obj.validacionDespachos[0];
                                 var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
+                               
                                  $scope.datos_view.empresaSeleccionada = empresa;
                              
                                  $scope.documentoDespachoAprobado= AprobacionDespacho.get(1,resultado.prefijo,resultado.numero,resultado.fecha_registro)
@@ -233,11 +233,57 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                   }
                 }              
                 if(documento.estado === 2){  
-                    $scope.estadoRegistro = 2;
+                    $scope.datos_view.estadoRegistro = 2;
+                  
                 }
                
             };
+            
+               /*
+                 * @author Cristian Ardila
+                 * @fecha 05/02/2016
+                 * +Descripcion funcion obtiene las empresas del servidor invocando
+                 *              el servicio listarEmpresas de 
+                 *              (ValidacionDespachosSerivice.js)
+                 * @returns {json empresas}
+                 */
+                that.listarEmpresas = function(callback) {
 
+                   ValidacionDespachosService.listarEmpresas($scope.session,$scope.datos_view.termino_busqueda_empresa, function(data){
+                         
+                      $scope.empresas = [];      
+                      if (data.status === 200) {
+
+                            that.render_empresas(data.obj.listar_empresas);
+                            callback(true);
+                       }else{
+                            callback(false);
+                       }
+                   });
+                };
+
+
+                that.render_empresas = function(empresas) {
+                    for (var i in empresas) {
+                        var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
+                        $scope.empresas.push(_empresa);
+                    }
+                };
+                
+                
+                ////////////////////////////////////        
+                    /*
+                     * funcion ejecuta listarCentroUtilidad
+                     * @returns {lista CentroUtilidad}
+                     */
+                    $scope.onSeleccionarEmpresa = function(empresa_Nombre) {
+                        if (empresa_Nombre.length < 3) {
+                            return;
+                        }
+                        $scope.datos_view.termino_busqueda_empresa = empresa_Nombre;
+                        that.listarEmpresas(function() {
+                        });
+                    };
            /**
             * @author Cristian Ardila
             * @fecha 04/02/2016
@@ -251,6 +297,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             that.init = function() {
             };       
             that.init();
+            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.$$watchers = null;

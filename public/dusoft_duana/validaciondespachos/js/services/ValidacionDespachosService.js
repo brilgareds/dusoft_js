@@ -10,10 +10,10 @@ define(["angular", "js/services"], function(angular, services) {
             var self = this;
             
             /*
-             * @Author: Eduar
-             * @param {Boolean} esTemporal
-             * @param {function} callback
-             * +Descripcion: Trae los pedidos asignados al tercero o los que estan en separacion
+             * @Author: Cristian Ardila
+             * @fecha 05/02/2016
+             * +Descripcion: lista todos los despachos aprobados por parte del 
+             *               personal de seguridad
              */
             self.listarDespachosAprobados = function(obj, callback) {
                 
@@ -33,10 +33,33 @@ define(["angular", "js/services"], function(angular, services) {
                             }
                         };
                         Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_DESPACHOS_APROBADOS, "POST", params, function(data){                        
-                                callback(data);
-                              
+                                callback(data);                              
                         });    
-                };             
+                };   
+                
+                
+            /*
+             * @Author: Cristian Ardila
+             * @fecha 05/02/2016
+             * +Descripcion: consulta todas las empresas de acuerdo al texto
+             *               ingresado
+             */   
+            self.listarEmpresas = function(session,termino_busqueda_empresa,callback) {
+                   var obj = {
+                       session: session,
+                       data: {
+                           listar_empresas: {
+                               pagina: 1,
+                               empresaName: termino_busqueda_empresa
+                           }
+                       }
+                   };
+                   Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                        
+                           callback(data);                 
+                   });
+               };
+
                  return this;
         }]);
 });

@@ -1689,6 +1689,14 @@ ALTER TABLE ONLY aprobacion_despacho_planillas
 
 
 --
+-- Name: fu_documento_aprobacion; Type: CONSTRAINT; Schema: public; Owner: admin; Tablespace: 
+--
+
+ALTER TABLE ONLY aprobacion_despacho_planillas
+    ADD CONSTRAINT fu_documento_aprobacion UNIQUE (empresa_id, prefijo, numero);
+
+
+--
 -- Name: aprobacion_despacho_planillas_fk; Type: FK CONSTRAINT; Schema: public; Owner: admin
 --
 

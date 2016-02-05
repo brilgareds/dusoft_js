@@ -172,7 +172,17 @@ module.exports = function(app, di_container) {
         
     });    
       
-    
+     // Consultar el documento de la tabla inventario movimientos
+    app.post('/api/movBodegas/E008/obtenerDocumento', function(req, res) {
+        
+        console.log("/api/movBodegas/E008/obtenerDocumento");
+        console.log("/api/movBodegas/E008/obtenerDocumento");
+        console.log("/api/movBodegas/E008/obtenerDocumento");
+        console.log("/api/movBodegas/E008/obtenerDocumento");
+        
+        c_e008.obtenerDocumento(req, res);
+    });    
+      
     //========================== FIN Despachos bodegas =========================
     
     

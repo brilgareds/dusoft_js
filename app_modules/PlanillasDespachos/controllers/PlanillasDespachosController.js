@@ -804,6 +804,68 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     });
 };
 
+
+
+PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined || 
+        args.planillas_despachos.empresa_id === undefined || 
+        args.planillas_despachos.prefijo === undefined    ||
+        args.planillas_despachos.numero === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'El id de la empresa esta vacio', 404, {}));
+        return;
+    }
+    
+     if (args.planillas_despachos.prefijo === '') {
+        res.send(G.utils.r(req.url, 'el numero de prefijo esta vacio', 404, {}));
+        return;
+    }
+    
+     if (args.planillas_despachos.numero === '') {
+        res.send(G.utils.r(req.url, 'el numero esta vacio', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.planillas_despachos.empresa_id;
+    var prefijo = args.planillas_despachos.prefijo;
+    var numero = args.planillas_despachos.numero;
+    
+    var obj = {empresa_id: empresa_id,
+               prefijo: prefijo, 
+               numero:numero,
+               tipo: 0};
+   
+     G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj).then(function(resultado){ 
+       
+         obj.totalCajas = (resultado.length > 0 ) ? resultado[0].total_cajas : 0;
+         obj.tipo =1;
+         return G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj );
+         
+     }).then(function(resultado){
+         
+          obj.totalNeveras = (resultado.length > 0 ) ? resultado[0].total_neveras : 0;
+          
+         
+         res.send(G.utils.r(req.url, 'Cantidades de cajas y neveras', 200, {planillas_despachos: obj}));
+         
+     }).fail(function(err){ 
+         
+         
+         res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
+       
+    }).done();
+   
+};
+
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 
 module.exports = PlanillasDespachos;

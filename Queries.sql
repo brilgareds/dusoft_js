@@ -1539,3 +1539,171 @@ ALTER TABLE "public"."compras_ordenes_destino"
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
+
+
+
+
+
+
+
+/* ==================================TABLA CREADA PARA EL MODULO ValidacionDespachos =======================================*/
+--
+-- PostgreSQL database dump
+--
+
+SET client_encoding = 'LATIN1';
+SET standard_conforming_strings = off;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET escape_string_warning = off;
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: aprobacion_despacho_planillas; Type: TABLE; Schema: public; Owner: admin; Tablespace: 
+--
+
+CREATE TABLE aprobacion_despacho_planillas (
+    id_aprobacion_planillas integer NOT NULL,
+    empresa_id character(2),
+    prefijo character varying(4),
+    numero integer,
+    cantidad_cajas integer,
+    cantidad_neveras integer,
+    observacion character varying(400),
+    estado character(1),
+    fecha_registro timestamp without time zone,
+    usuario_id integer NOT NULL
+);
+
+
+ALTER TABLE public.aprobacion_despacho_planillas OWNER TO admin;
+
+--
+-- Name: TABLE aprobacion_despacho_planillas; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON TABLE aprobacion_despacho_planillas IS 'Tabla la cual almacenara la informacion diligenciada por la persona de seguridad al verificar un despacho';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.id_aprobacion_planillas; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.id_aprobacion_planillas IS 'Llave primaria de la tabla';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.prefijo; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.prefijo IS 'Prefijo del documento';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.numero; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.numero IS 'numero del documento';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.cantidad_cajas; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.cantidad_cajas IS 'almacenara la cantidad de cajas verificadas por la persona de seguridad';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.cantidad_neveras; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.cantidad_neveras IS 'almacenara la cantidad de neveras verificadas por la persona de seguridad';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.observacion; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.observacion IS 'descripcion del la verificacion del paquete';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.estado; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.estado IS 'Se almacena estado 0=validacion de cajas y neveras contra auditoria, 1= otras empresas';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.fecha_registro; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.fecha_registro IS 'Fecha de registro';
+
+
+--
+-- Name: COLUMN aprobacion_despacho_planillas.usuario_id; Type: COMMENT; Schema: public; Owner: admin
+--
+
+COMMENT ON COLUMN aprobacion_despacho_planillas.usuario_id IS 'Usario de registro';
+
+
+--
+-- Name: aprobacion_despacho_planillas_id_aprobacion_planillas_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE aprobacion_despacho_planillas_id_aprobacion_planillas_seq
+    INCREMENT BY 1
+    NO MAXVALUE
+    NO MINVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.aprobacion_despacho_planillas_id_aprobacion_planillas_seq OWNER TO admin;
+
+--
+-- Name: aprobacion_despacho_planillas_id_aprobacion_planillas_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE aprobacion_despacho_planillas_id_aprobacion_planillas_seq OWNED BY aprobacion_despacho_planillas.id_aprobacion_planillas;
+
+
+--
+-- Name: id_aprobacion_planillas; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY aprobacion_despacho_planillas ALTER COLUMN id_aprobacion_planillas SET DEFAULT nextval('aprobacion_despacho_planillas_id_aprobacion_planillas_seq'::regclass);
+
+
+--
+-- Name: aprobacion_despacho_planillas_pkey; Type: CONSTRAINT; Schema: public; Owner: admin; Tablespace: 
+--
+
+ALTER TABLE ONLY aprobacion_despacho_planillas
+    ADD CONSTRAINT aprobacion_despacho_planillas_pkey PRIMARY KEY (id_aprobacion_planillas);
+
+
+--
+-- Name: aprobacion_despacho_planillas_fk; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY aprobacion_despacho_planillas
+    ADD CONSTRAINT aprobacion_despacho_planillas_fk FOREIGN KEY (empresa_id, prefijo, numero) REFERENCES inv_bodegas_movimiento(empresa_id, prefijo, numero);
+
+
+--
+-- Name: fk_usuario_aprobacion; Type: FK CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY aprobacion_despacho_planillas
+    ADD CONSTRAINT fk_usuario_aprobacion FOREIGN KEY (usuario_id) REFERENCES system_usuarios(usuario_id);
+
+
+--
+-- PostgreSQL database dump complete
+--

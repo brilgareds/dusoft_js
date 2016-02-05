@@ -21,7 +21,9 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.estado =0;
                 this.observacion;
                 this.razon_social;
+                this.empresaId;
                 this.usuario;
+                
                 
             };
             
@@ -29,10 +31,28 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             AprobacionDespacho.prototype = Object.create(Documento.getClass().prototype);
             
             
+            AprobacionDespacho.prototype.getPrefijo = function () {
+                return this.prefijo;
+            };
+            
+            AprobacionDespacho.prototype.getNumero = function () {
+                return this.numero;
+            };
+            
+            
+            
+            AprobacionDespacho.prototype.setEmpresaId = function (empresaId) {
+               this.empresaId = empresaId;
+            };
+            
+            AprobacionDespacho.prototype.getEmpresaId = function () {
+                return this.empresaId;
+            };
             
             AprobacionDespacho.prototype.setRazonSocial = function (razon_social) {
                this.razon_social = razon_social;
             };
+            
             AprobacionDespacho.prototype.getRazonSocial = function () {
                 return this.razon_social;
             };
@@ -43,9 +63,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             AprobacionDespacho.prototype.getUsuario = function () {
                 return this.usuario;
             };
-            
-            
-            
+        
             AprobacionDespacho.prototype.setObservacion = function (observacion) {
                  this.observacion = observacion;
             };

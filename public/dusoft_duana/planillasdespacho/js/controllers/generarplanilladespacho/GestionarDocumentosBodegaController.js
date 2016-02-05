@@ -276,8 +276,6 @@ define(["angular", "js/controllers",
                         if (parseInt(documento.get_cantidad_cajas()) === data.obj.planillas_despachos.totalCajas && 
                             parseInt(documento.get_cantidad_neveras()) === data.obj.planillas_despachos.totalNeveras) {
                             
-                            
-                            
                             $scope.datos_view.documento_seleccionado = documento;
 
                             that.gestionar_planilla_despacho();

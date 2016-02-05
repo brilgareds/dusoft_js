@@ -4,23 +4,63 @@ var ValidacionDespachosModel = function () {
 
 };
 
-
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado listar los despachos aprobados
+ */
 ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, callback){
-    
    
-    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    var sql = "select b.razon_social, prefijo, numero, cantidad_cajas, cantidad_neveras, observacion, estado, fecha_registro, c.nombre \
-               FROM aprobacion_despacho_planillas a INNER JOIN empresas b ON a.empresa_id = b.empresa_id \
-               INNER JOIN system_usuarios c ON a.usuario_id = c.usuario_id; ";
+  
     
- 
-    G.knex.raw(sql, {}).then(function(resultado){
-       
-        callback(false, resultado.rows);
+    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
+    var sql = "b.empresa_id, b.razon_social, prefijo, numero, cantidad_cajas, cantidad_neveras, observacion, estado, fecha_registro, c.nombre \
+               FROM aprobacion_despacho_planillas a INNER JOIN empresas b ON a.empresa_id = b.empresa_id \
+               INNER JOIN system_usuarios c ON a.usuario_id = c.usuario_id\n\
+               WHERE a.fecha_registro between :1 and :2\
+               AND ( \
+                    a.prefijo :: varchar "+G.constants.db().LIKE+"  :3 and \
+                    a.numero  :: varchar "+G.constants.db().LIKE+"  :4  \
+                   \
+                ) OR   a.empresa_id :: varchar "+G.constants.db().LIKE+"  :5";
+    // paginaActual 
+   
+        var parametros = {1: obj.fechaInicial, 
+                       2: obj.fechaFinal, 
+                       3: "%"+ obj.prefijo +"%", 
+                       4: "%"+ obj.numero  +"%",
+                       5: obj.empresa_id
+                      };
+    
+   var query = G.knex.select(G.knex.raw(sql, parametros)).
+    limit(G.settings.limit).
+    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc").then(function(resultado){
         
-    }).catch(function(err) {
-       
+        callback(false, resultado);
+    }).catch(function(err){
+        
         callback(err);
+       
+    });
+};
+
+//
+/*
+ * @author : Cristian Ardila
+ * @fecha:  05/11/2015
+ * Descripcion :  Funcion encargada de almacenar el detalle del pedido
+ */
+ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback) {
+
+ var sql = "INSERT INTO aprobacion_despacho_planillas (empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras,observacion,estado, fecha_registro, usuario_id) \
+                 VALUES ( :1, :2, :3, :4, :5, :6, :7, NOW(), :8 );";
+
+    G.knex.raw(sql, {1:obj.empresa_id, 2:obj.prefijo, 3:obj.numero, 4:obj.cantidad_cajas, 5:obj.cantidad_neveras, 6:obj.observacion, 7: obj.estado, 8: obj.usuario_id}).
+     then(function(resultado){
+       callback(false, resultado);
+    }).catch(function(err){
+     
+       callback(err);
     });
 };
 
@@ -50,91 +90,8 @@ ValidacionDespachosModel.prototype.getListarEmpresas = function (empresaNombre,c
                 callback(error);
             }).done();
 };
-/*
-* funcion que realiza consulta a la tabla centros_utilidad
-* @param {type} callback
-* @returns {datos de consulta}
-*/
-ValidacionDespachosModel.prototype.getListarCentroUtilidad = function (empresaId, callback) {
 
-    var column = [
-        "centro_utilidad",
-        "descripcion"
-    ];
 
-    G.knex.column(column)
-            .select()
-            .from('centros_utilidad')
-            .where('empresa_id', empresaId)//empresaId
-            .limit(G.settings.limit)
-            .then(function (rows) {
-                callback(false, rows);
-            })
-            .catch(function (error) {
-                callback(error);
-            }).done();
-};
-/*
-* funcion que realiza consulta a la tabla bodegas
-* @param {type} callback
-* @returns {datos de consulta}
-*/
-ValidacionDespachosModel.prototype.getListarBodega = function (empresaId, centroUtilidadId, callback) {
 
-    var column = [
-        "bodega",
-        "descripcion"
-    ];
-
-    G.knex.column(column)
-            .select()
-            .from('bodegas')
-            .where({'empresa_id': empresaId,
-                'centro_utilidad': centroUtilidadId})
-            .limit(G.settings.limit)
-            .then(function (rows) {
-                callback(false, rows);
-            })
-            .catch(function (error) {
-                callback(error);
-            }).done();
-};
-/*
-* funcion que realiza consulta a la tabla existencias_bodegas
-* @param {type} callback
-* @returns {datos de consulta}
-*/
-ValidacionDespachosModel.prototype.getListarProducto = function (empresaId, centroUtilidadId, nombreProducto, bodegaId, pagina, callback) {
-
-    var column = [
-        "ip.codigo_producto",
-        "ip.descripcion",
-        "eb.sw_control_fecha_vencimiento",
-        "eb.existencia",
-    ];
-         
-    var query = G.knex.column(column)
-            .select()
-            .from('existencias_bodegas as eb')
-            .innerJoin('inventarios_productos as ip', 'eb.codigo_producto', 'ip.codigo_producto')
-            .where({"eb.empresa_id": empresaId,
-                "eb.centro_utilidad": centroUtilidadId,
-                "eb.bodega": bodegaId})
-            .where(G.knex.raw("ip.descripcion :: varchar"), G.constants.db().LIKE, "%" + nombreProducto + "%")
-
-            .limit(G.settings.limit)
-            .offset((pagina - 1) * G.settings.limit)
-
-            .then(function (rows) {
-                callback(false, rows);
-            })
-            .catch(function (error) {
-                callback(error);
-            }).done();
-};
-/*
-.limit(G.settings.limit);
- callback(false, query.toSQL());
- */
 
 module.exports = ValidacionDespachosModel;

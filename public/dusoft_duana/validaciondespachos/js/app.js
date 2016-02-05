@@ -16,6 +16,7 @@ define([
     "url",
     "includes/alert/Alert",
     "includes/header/HeaderController",
+    "includes/validation/ValidacionNumeroEntero",
     'storage',
     "httpinterceptor",
     "includes/classes/Usuario",
@@ -29,7 +30,7 @@ define([
     "models/ProductoInduccion",
     "models/AprobacionDespacho",
     "controllers/ValidacionDespachosController",
-    "controllers/ValidacionDespachoControllerDetalleController"
+    "controllers/ValidacionDespachoControllerDetalleController",
 ], function(angular) {
 
         /* App Module and its dependencies */

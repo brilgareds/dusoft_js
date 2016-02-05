@@ -129,7 +129,7 @@ function _load_config(di_container, config, modulo, submodulo) {
 
             if (config.dependency.hasOwnProperty('controllers') && config.dependency.hasOwnProperty('models') && config.dependency.hasOwnProperty('events') && config.dependency.hasOwnProperty('cronJobs')) {
 
-                console.log('=== Cargando Archivos de Configuración del ' + txt_module + ' ' + module + ' ========');
+                //console.log('=== Cargando Archivos de Configuración del ' + txt_module + ' ' + module + ' ========');
 
                 var controllers = config.dependency.controllers;
                 var models = config.dependency.models;

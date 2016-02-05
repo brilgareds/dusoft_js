@@ -1,7 +1,7 @@
-var Admin = function(m_admin) {
+var Admin = function(m_admin, j_temporales) {
     
     this.m_admin = m_admin;
-    console.log("Modulo Admin Cargado ");
+    this.j_temporales = j_temporales;
 
 };
 
@@ -30,6 +30,6 @@ Admin.prototype.inicializarAplicacion = function(req, res){
 };
 
 
-Admin.$inject = ["m_admin"];
+Admin.$inject = ["m_admin", "j_temporales"];
 
 module.exports = Admin;

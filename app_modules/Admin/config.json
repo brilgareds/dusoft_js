@@ -33,9 +33,20 @@
                     "module": "Parametrizacion/Empresas",
                     "model": "EmpresasModel",
                     "alias": "m_empresas"
+                },
+                "cronjob_model": {
+                    "module": "Parametrizacion/Cronjobs",
+                    "model": "CronjobModel",
+                    "alias": "m_cronjob"
                 }
             }],
         "events": [],
-        "cronJobs": []
+        "cronJobs": [{
+            "temporales_cronjob":{
+                "module": "Admin",
+                "cronjob": "TemporalesCronjob",
+                "alias": "j_temporales"
+            }
+        }]
     }
 }

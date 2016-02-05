@@ -31,6 +31,7 @@ G.Q = require('q');
 G.accounting = accounting;
 G.constants =  require("./lib/Constants").create();
 G.XlsParser =  require("./lib/XlsParser");
+G.work = require("cron");
 /**
  * +Descripcion:Se añade dependencia para importar archivo .XLS
  * @fecha: 29/10/2015

@@ -1539,3 +1539,11 @@ ALTER TABLE "public"."compras_ordenes_destino"
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
+
+
+CREATE TABLE "public"."cronjobs" (
+  "id" SERIAL, 
+  "nombre" CHAR(40), 
+  "descripcion" TEXT, 
+  "estado" CHAR(1)
+) WITH OIDS;

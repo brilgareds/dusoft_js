@@ -74,7 +74,9 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
 PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = function(empresa_id, farmacia_id, centro_utilidad_id, termino_busqueda, callback){
     
     // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-        
+        //  (select coalesce(max(aa.numero_caja),'0') as total_cajas  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '0') as total_cajas,\
+      //(select coalesce(max(aa.numero_caja),'0') as total_neveras  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '1') as total_neveras,\
+
     var sql = " select \
                 '0' as tipo,\
                 'FARMACIAS' as descripcion_tipo,\
@@ -90,8 +92,6 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 a.prefijo,\
                 a.numero,\
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
-                (select coalesce(max(aa.numero_caja),'0') as total_cajas  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '0') as total_cajas,\
-                (select coalesce(max(aa.numero_caja),'0') as total_neveras  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '1') as total_neveras,\
                 a.fecha_registro\
                 from inv_bodegas_movimiento_despachos_farmacias a\
                 inner join solicitud_productos_a_bodega_principal b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
@@ -363,5 +363,29 @@ PlanillasDespachosModel.prototype.modificar_estado_planilla_despacho = function(
 };
 
 
+
+// Consultar los documentos de despacho de un cliente 
+PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function(obj, callback){
+    
+    var totalCajas = "total_cajas";
+    if(obj.tipo === 1){
+        totalCajas = "total_neveras"
+    }
+    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
+    var sql = " SELECT coalesce(max(aa.numero_caja),'0') as "+totalCajas+"   \
+                FROM inv_bodegas_movimiento_d aa  where aa.empresa_id = :1 \
+                AND  aa.prefijo = :2 AND aa.numero = :3 and aa.tipo_caja = :4\
+               ; ";
+    
+ 
+    G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero, 4: obj.tipo}).then(function(resultado){
+       
+        callback(false, resultado.rows);
+        
+    }).catch(function(err) {
+     
+        callback(err);
+    });
+};
 
 module.exports = PlanillasDespachosModel;

@@ -82,10 +82,19 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Documento.prototype.get_cantidad_cajas = function() {
+                
+                if( isNaN(parseInt(this.cantidad_cajas)) ){
+                    this.cantidad_cajas = 0;
+                }
                 return this.cantidad_cajas;
             };
 
             Documento.prototype.get_cantidad_neveras = function() {
+              
+                 if( isNaN(parseInt(this.cantidad_neveras)) ){
+              
+                    this.cantidad_neveras = 0;
+                }
                 return this.cantidad_neveras;
             };
 

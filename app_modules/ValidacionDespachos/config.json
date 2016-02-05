@@ -1,0 +1,21 @@
+{
+    "module": "ValidacionDespachos",
+    "dependency": {
+        "controllers": [{
+                "validacion_despachos_controller": {
+                    "module": "ValidacionDespachos",
+                    "controller": "ValidacionDespachosController",
+                    "alias": "c_ValidacionDespachos"
+                }
+            }],
+        "models": [{
+                "induccion_model": {
+                    "module": "ValidacionDespachos",
+                    "model": "ValidacionDespachosModel",
+                    "alias": "m_ValidacionDespachos"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

@@ -42,7 +42,7 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
         
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err ",err)
+        
         callback(err);
        
     });

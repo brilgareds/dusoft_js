@@ -388,4 +388,27 @@ PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function(obj, ca
     });
 };
 
+
+
+
+// Consultar los documentos de despacho de un cliente 
+PlanillasDespachosModel.prototype.consultarCantidadCajas = function(obj, callback){
+    
+  
+    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
+    var sql = "SELECT coalesce(sum(aa.numero_caja),'0') as totalCajas\
+               FROM inv_bodegas_movimiento_d aa\
+               WHERE aa.empresa_id = :1 AND  aa.prefijo IN (:2) AND aa.numero IN (:3) and aa.tipo_caja = 0;";
+    
+ 
+    G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}).then(function(resultado){
+       
+        callback(false, resultado.rows);
+        
+    }).catch(function(err) {
+     
+        callback(err);
+    });
+};
+
 module.exports = PlanillasDespachosModel;

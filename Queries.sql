@@ -1575,7 +1575,7 @@ CREATE TABLE aprobacion_despacho_planillas (
     cantidad_cajas integer,
     cantidad_neveras integer,
     observacion character varying(400),
-    estado character(1),
+    sw_otras_salidas character(1),
     fecha_registro timestamp without time zone,
     usuario_id integer NOT NULL
 );
@@ -1636,7 +1636,7 @@ COMMENT ON COLUMN aprobacion_despacho_planillas.observacion IS 'descripcion del 
 -- Name: COLUMN aprobacion_despacho_planillas.estado; Type: COMMENT; Schema: public; Owner: admin
 --
 
-COMMENT ON COLUMN aprobacion_despacho_planillas.estado IS 'Se almacena estado 0=validacion de cajas y neveras contra auditoria, 1= otras empresas';
+COMMENT ON COLUMN aprobacion_despacho_planillas.sw_otras_salidas IS 'Se almacena estado 0=validacion de cajas y neveras contra auditoria, 1= otras empresas';
 
 
 --

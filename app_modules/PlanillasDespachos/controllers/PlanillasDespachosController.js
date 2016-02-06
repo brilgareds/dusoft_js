@@ -643,10 +643,7 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 
         that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function(err, documento_bodega) {
             
-            console.log('==========');
-            console.log(err, documento_bodega);
-            console.log('==========');
-            
+         
             if (err /*|| documento_bodega.length === 0*/) {
                 resultado.continuar = false;
                 resultado.msj += ' Error Interno code 1. ';
@@ -856,6 +853,61 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
           
          
          res.send(G.utils.r(req.url, 'Cantidades de cajas y neveras', 200, {planillas_despachos: obj}));
+         
+     }).fail(function(err){ 
+         
+         
+         res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
+       
+    }).done();
+   
+};
+
+PlanillasDespachos.prototype.consultarCantidadCajas = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined || 
+        args.planillas_despachos.empresa_id === undefined || 
+        args.planillas_despachos.prefijo === undefined    ||
+        args.planillas_despachos.numero === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'El id de la empresa esta vacio', 404, {}));
+        return;
+    }
+    
+     if (args.planillas_despachos.prefijo === '') {
+        res.send(G.utils.r(req.url, 'el numero de prefijo esta vacio', 404, {}));
+        return;
+    }
+    
+     if (args.planillas_despachos.numero === '') {
+        res.send(G.utils.r(req.url, 'el numero esta vacio', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.planillas_despachos.empresa_id;
+    var prefijo = args.planillas_despachos.prefijo;
+    var numero = args.planillas_despachos.numero;
+    
+    var obj = {empresa_id: empresa_id,
+               prefijo: prefijo, 
+               numero:numero
+               };
+     
+     
+    G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajas', obj)
+            
+     .then(function(resultado){ 
+       
+        
+         return res.send(G.utils.r(req.url, 'cantidad de cajas', 500, {planillas_despachos: resultado}));
          
      }).fail(function(err){ 
          

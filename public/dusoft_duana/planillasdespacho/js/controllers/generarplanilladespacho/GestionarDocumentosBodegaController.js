@@ -1,6 +1,5 @@
 
-define(["angular", "js/controllers",
-], function(angular, controllers) {
+define(["angular", "js/controllers", "controllers/generarplanilladespacho/GestionarLiosController"], function(angular, controllers) {
 
     controllers.controller('GestionarDocumentosBodegaController', [
         '$scope',
@@ -43,6 +42,7 @@ define(["angular", "js/controllers",
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
 
+                that.removerDocumentos();
                 $scope.datos_view = null;
                 $scope.$$watchers = null;
 
@@ -64,6 +64,7 @@ define(["angular", "js/controllers",
             };
 
             $scope.seleccionar_cliente_farmacia = function() {
+                that.removerDocumentos();
 
                 $scope.datos_view.tercero_seleccionado.limpiar_documentos();
            
@@ -157,7 +158,8 @@ define(["angular", "js/controllers",
 
 
             $scope.buscar_documentos_bodega = function(tercero) {
-
+                
+                that.removerDocumentos();
                 $scope.datos_view.tercero_seleccionado = tercero;
                
                 if ($scope.datos_view.opcion_predeterminada === "0") {
@@ -309,6 +311,28 @@ define(["angular", "js/controllers",
             };
 
             $scope.aceptar_documentos_bodegas = function() {
+                var documentos = $scope.datos_view.documentosSeleccionados;
+                
+                if($scope.datos_view.despachoPorLios){
+                    $scope.opts = {
+                        backdrop: 'static',
+                        dialogClass: "editarproductomodal",
+                        templateUrl: 'views/generarplanilladespacho/gestionarLios.html',
+                        controller: "GestionarLiosController",
+                        resolve: {
+                            documentos: function() {
+                                return documentos;
+                            },
+                            tipo: function(){
+                                return $scope.datos_view.opcion_predeterminada
+                            }
+                        }
+                    };
+                    
+                    var modalInstance = $modal.open($scope.opts);
+                    return;
+                }
+                
 
                 if ($scope.datos_view.opcion_predeterminada === "2") {
 
@@ -385,7 +409,21 @@ define(["angular", "js/controllers",
                 ]
             };
             
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton de lios
+             */
+            $scope.onDespachoPorLios = function(){
+                if(!$scope.datos_view.despachoPorLios){
+                    that.removerDocumentos();
+                    $scope.datos_view.documentosSeleccionados = [];
+                }
+            };
             
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del checkbox de la lista
+             */
             $scope.onAgregarDocumentoALio = function(documento){
                 //documento.setSeleccionado(!documento.getSeleccionado());
                 if(documento.getSeleccionado()){
@@ -393,10 +431,25 @@ define(["angular", "js/controllers",
                 } else {
                     that.removerDocumentoSeleccionado(documento);
                 }
-                console.log("$scope.datos_view.documentosSeleccionados", $scope.datos_view.documentosSeleccionados);
-                //var documentos = $scope.datos_view.documentosSeleccionados;
             };
             
+            /*
+             * @Author: Eduar
+             * +Descripcion: Remueve los documentos seleccionados
+             */
+            that.removerDocumentos = function(){
+                var documentos = $scope.datos_view.documentosSeleccionados;
+                $scope.datos_view.despachoPorLios = false;
+                for(var i in documentos){
+                    var _documento = documentos[i];
+                    _documento.setSeleccionado(false);
+                }
+            };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Agrega un documento al array de seleccionados y selecciona el objeto
+             */
             that.agregarDocumentoSeleccionado = function(documento){
                 var documentos = $scope.datos_view.documentosSeleccionados;
                 
@@ -411,6 +464,10 @@ define(["angular", "js/controllers",
                 
             };
             
+            /*
+             * @Author: Eduar
+             * +Descripcion: Remueve un documento especifico
+             */
             that.removerDocumentoSeleccionado = function(documento){
                 var documentos = $scope.datos_view.documentosSeleccionados;
                 
@@ -423,6 +480,11 @@ define(["angular", "js/controllers",
                 
             };
             
+            /*
+             * @Author: Eduar
+             * return Documento
+             * +Descripcion: Retorno de documento especifico
+             */
              that.obtenerDocumentoSeleccionado = function(documento){
                 var documentos = $scope.datos_view.documentosSeleccionados;
                 

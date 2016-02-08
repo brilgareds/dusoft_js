@@ -547,6 +547,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     var _documento = documentos[i];
                     _documento.setSeleccionado(false);
                 }
+                
+                $scope.datos_view.documentosSeleccionados = [];
             };
             
             /*

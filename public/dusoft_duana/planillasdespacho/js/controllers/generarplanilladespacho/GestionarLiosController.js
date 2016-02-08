@@ -28,7 +28,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $modalInstance.opened.then(function() {
-
+                console.log("documentos ", documentos);
 
             });
 

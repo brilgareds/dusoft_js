@@ -36,13 +36,69 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 progresoArchivo: 0,
                 btnSolicitarAutorizacionCartera: true,
-                estadoRegistro: 0
+                estadoRegistro: 0,
+                
+               
 
             };
             
             $scope.documentoDespachoAprobado;
+            
+            $scope.cargarEmpresaSession = function(){
+                
+                if($scope.datos_view.seleccionarOtros){
+                var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
+                var empresa = EmpresaAprobacionDespacho.get(session.nombre, session.codigo);          
+                    $scope.datos_view.empresaSeleccionada = empresa;
+                    
+                }
+            };
+            
+            
+            
+            /**
+             * @author Cristian Ardila
+             * @fecha 05/02/2016
+             * +Descripcion Se obtienen los documentos segun la empresa
+             * 
+             */
+             that.traerListadoDocumentosUsuario = function(callback) {
+	         var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());	
+                
+		 var obj = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: {
+                            centro_utilidad_id: session.centroUtilidad.codigo,
+                            bodega_id: session.centroUtilidad.bodega.codigo,
+                            tipo_documento: 'E008'
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(API.VALIDACIONDESPACHOS.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
+                   
+                    if (data.status === 200) {
+                        callback(data);
+                    }
+
+                });
+
+            };
+			
+            
+            that.traerListadoDocumentosUsuario(function(data) {
+                if (data.obj.movimientos_bodegas !== undefined) {
+                   
+                    $scope.documentos_usuarios = data.obj.movimientos_bodegas;
+                }
+            });
+			 
+			
+            
             $scope.aprobarDespacho = function() {
                 
+            
              if($scope.documentoDespachoAprobado === undefined || 
                 $scope.documentoDespachoAprobado === null      ||
                 $scope.documentoDespachoAprobado === null){
@@ -51,6 +107,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
               }else{
                
                 if($scope.datos_view.seleccionarOtros === true){
+                    
                    
                    that.obtenerDocumento(function(estado){
                        
@@ -78,14 +135,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             * @returns {undefined}
             */
            that.obtenerDocumento = function(callback){    
-               
-              
+            
+               var prefijo ;
+               if($scope.documentoDespachoAprobado.prefijoList === undefined){
+                    
+                    prefijo = $scope.documentoDespachoAprobado.prefijo;
+               }else{
+                   prefijo = $scope.documentoDespachoAprobado.prefijoList.prefijo;
+               }
+                 
                 var obj = {
                     session: $scope.session,
                     data: {
                         documento_temporal: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
-                            prefijo: $scope.documentoDespachoAprobado.prefijo,
+                            prefijo: prefijo,
                             numero: $scope.documentoDespachoAprobado.numero
                     
                         }
@@ -95,7 +159,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.VALIDACIONDESPACHOS.OBTENER_DOCUMENTO, "POST", obj, function(data) {
                        
                       if (data.status === 200) {
-                           // 
+                       
                            callback(true);
                         }else {
                            callback(false);
@@ -114,13 +178,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             *              de un despacho
             */
            that.validarCantidadCajasNeveras = function(){
-            
+             
+               var prefijo;
+               if($scope.documentoDespachoAprobado.prefijoList === undefined){
+                    
+                    prefijo = $scope.documentoDespachoAprobado.prefijo;
+               }else{
+                   prefijo = $scope.documentoDespachoAprobado.prefijoList.prefijo;
+               }
+                 
+               
              var obj = {
                     session: $scope.session,
                     data: {
                         planillas_despachos: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
-                            prefijo: $scope.documentoDespachoAprobado.prefijo,
+                            prefijo: prefijo,
                             numero: $scope.documentoDespachoAprobado.numero
                     
                         }
@@ -155,13 +228,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             * @returns {undefined}
             */
            that.registrarAprobacion = function(estado){
+                
+               var prefijo ;
+               if($scope.documentoDespachoAprobado.prefijoList === undefined){
+                    prefijo = $scope.documentoDespachoAprobado.prefijo;
+               }else{
+                    prefijo = $scope.documentoDespachoAprobado.prefijoList.prefijo;
+               }
+              
                
                 var obj = {
                     session: $scope.session,
                     data: {
                         validacionDespachos: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
-                            prefijo: $scope.documentoDespachoAprobado.prefijo,
+                            prefijo: prefijo,
                             numero: $scope.documentoDespachoAprobado.numero,
                             cantidad_cajas: $scope.documentoDespachoAprobado.cantidadCajas,
                             cantidad_neveras: $scope.documentoDespachoAprobado.cantidadNeveras,
@@ -214,7 +295,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                  
                     ValidacionDespachosService.listarDespachosAprobados(obj,function(data){
-                       
+                        
                            if (data.status === 200) {
                                 var resultado = data.obj.validacionDespachos[0];
                                 var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);

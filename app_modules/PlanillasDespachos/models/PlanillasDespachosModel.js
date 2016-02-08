@@ -388,4 +388,87 @@ PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function(obj, ca
     });
 };
 
+
+
+
+/**
+ *@author Cristian Ardila
+ *@fecha  06/02/2016
+ *+Descripcion Metodo que contiene el SQL encargado de consultar el total de
+ *             numero de cajas de un grupo de documentos  
+ *             
+ **/ 
+PlanillasDespachosModel.prototype.consultarCantidadCajas = function(obj, callback){
+    
+  
+    obj.empresa_id = bj.empresa_id.join(",");
+    obj.prefijo =    bj.prefijo.join(",");
+    obj.numero =     bj.numero.join(",");
+
+   
+    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
+    var sql = "SELECT coalesce(sum(aa.numero_caja),'0') as totalCajas\
+               FROM inv_bodegas_movimiento_d aa\
+               WHERE aa.empresa_id IN ("+obj.empresa_id+") AND  aa.prefijo IN ("+obj.prefijo+") AND aa.numero IN ("+obj.numero+") and aa.tipo_caja = 0;";
+    
+ 
+    G.knex.raw(sql, {}).then(function(resultado){
+       
+        callback(false, resultado.rows);
+        
+    }).catch(function(err) {
+     
+        callback(err);
+    });
+};
+
+
+
+
+/**
+ *@author Cristian Ardila
+ *@fecha  06/02/2016
+ *+Descripcion Metodo que contiene el SQL encargado de atualizar el numero de lio
+ *             en un grupo de EFC
+ *              
+ *             
+ **/
+PlanillasDespachosModel.prototype.actualizarLioDocumento = function(obj, callback) {
+
+        var lenght = obj.documentos;
+        for(var i in obj.documentos) {
+
+                 __actualizarLioDocumento(obj.documentos[i].empresa,
+                                          obj.documentos[i].numero,
+                                          obj.documentos[i].prefijo,
+                                          obj.documentos[i].lio,
+                                          obj.tabla, function(estado, rows){
+                                              
+                        if(--lenght ===0 ){
+                            callback(estado,rows)
+                        }
+             });
+        };
+    };
+
+ 
+ function __actualizarLioDocumento(empresa,numero,prefijo,lio,tipo,callback) {
+
+    var sql = "update "+tipo+" set numero_lios = :4\
+               where  empresa_id::integer = :1\
+                      numero::integer = :2 and\
+                      prefijo::integer = :3\
+                      ";
+                      
+
+    G.knex.raw(sql, {1: empresa, 2: numero, 3: prefijo, 4: lio}).then(function(resultado) {  
+        callback(false, resultado.rows);
+    }).catch (function(err) {
+        callback(err);
+    });
+
+};
+
+
+
 module.exports = PlanillasDespachosModel;

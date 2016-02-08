@@ -61,7 +61,7 @@ module.exports = function(app, di_container) {
    /**
      * @author Cristian Ardila
      * @fecha 02/02/2016
-     * +Descripcion: METODO ENCARGADO DE CONSULTAR LAS CANTIDADES DE CAJAS Y NEVERAS AUDITADAS
+     * +Descripcion: METODO ENCARGADO DE CONSULTAR LAS CANTIDADES DE CAJAS
      */
     app.post('/api/PlanillasDespachos/consultarCantidadCajas', function(req, res) {
         c_planillas_despachos.consultarCantidadCajas(req, res);

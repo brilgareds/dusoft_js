@@ -499,8 +499,7 @@ PlanillasDespachos.prototype.despacharPlanilla = function(req, res) {
     that.m_planillas_despachos.consultar_documentos_planilla_despacho(planilla_id, '', function(err, documentos_planilla) {
 
         if (err || documentos_planilla.length === 0) {
-            console.log('==================>');
-            console.log(err, documentos_planilla);
+          
             res.send(G.utils.r(req.url, 'Error Interno code 1', 500, {planillas_despachos: []}));
             return;
         } else {
@@ -863,6 +862,12 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
    
 };
 
+/**
+ *@author Cristian Ardila
+ *@fecha  06/02/2016
+ *+Descripcion Controlador encargado de consultar el total de cajas de un conjunto
+ *             de documentos 
+ **/
 PlanillasDespachos.prototype.consultarCantidadCajas = function(req, res) {
 
     var that = this;
@@ -917,6 +922,70 @@ PlanillasDespachos.prototype.consultarCantidadCajas = function(req, res) {
     }).done();
    
 };
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/11/2015
+ * +Descripcion: Controlador encargado de actualizar el estado de la cotizacion
+ *               para solicitar aprobacion por cartera
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
+PlanillasDespachos.prototype.actualizarLioDocumento = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    var cotizacion = args.m_planillas_despachos;
+    
+    
+    
+    var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
+    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+
+    tabla = tabla[tipo];
+    
+    if (tabla === undefined) {
+        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
+        return;
+    }
+    
+   
+     var obj = {documentos:[
+			{
+                        empresa:01,
+                        numero:1020,
+                        prefijo:'EFC',
+                        lio:1
+                        },
+                        {
+                        empresa:01,
+                        numero:1020,
+                        prefijo:'EFC',
+                        lio:1
+                        }
+                    ],
+                    tipo:1
+                   };       
+            
+    that.m_pedidos_clientes.actualizarLioDocumento(args.planillas_despachos.documentos, function(estado, rows) {
+
+        if (!estado) {
+            res.send(G.utils.r(req.url, 'Se actualizo el campo de lios satisfactoriamente', 200, {pedidos_clientes: []}));
+           
+            return;
+        }
+        else {
+            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
+            return;
+        }
+
+    });
+};
+
+
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 

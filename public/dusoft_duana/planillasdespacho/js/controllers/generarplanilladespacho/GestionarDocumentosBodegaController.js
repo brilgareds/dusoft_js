@@ -313,7 +313,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
             $scope.aceptar_documentos_bodegas = function() {
                 var documentos = $scope.datos_view.documentosSeleccionados;
                 
-                if($scope.datos_view.despachoPorLios){
+                if($scope.datos_view.despachoPorLios && documentos.length > 0){
                     $scope.opts = {
                         backdrop: 'static',
                         dialogClass: "editarproductomodal",
@@ -330,6 +330,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     };
                     
                     var modalInstance = $modal.open($scope.opts);
+                    return;
+                } else if($scope.datos_view.despachoPorLios && documentos.length  === 0){
+                    
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "Debe seleccionar por lo menos un documento para despachos en lios");
                     return;
                 }
                 

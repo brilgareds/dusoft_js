@@ -35,6 +35,7 @@ define(["angular", "js/controllers",
                 };
 
                 $scope.datos_clientes_farmacias = [];
+                $scope.datos_view.documentosSeleccionados = [];
 
                 $scope.seleccionar_cliente_farmacia();
 
@@ -220,7 +221,13 @@ define(["angular", "js/controllers",
                 documentos.forEach(function(data) {
 
                     var documento = Documento.get(0, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
-
+                    
+                    if($scope.datos_view.despachoPorLios){
+                        var _documento = that.obtenerDocumentoSeleccionado(documento);
+                        if(_documento){
+                            documento.setSeleccionado(true);
+                        }
+                    }
                     $scope.datos_view.tercero_seleccionado.set_documentos(documento);
                 });
 
@@ -229,6 +236,10 @@ define(["angular", "js/controllers",
             $scope.validar_ingreso_documento = function(documento) {
 
                 var disabled = false;
+                
+                if($scope.datos_view.despachoPorLios){
+                    return true;
+                }
 
                 // Validar que el prefijo y el numero del documento esten presentes
                 if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
@@ -361,6 +372,7 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
+                    {field:'lios', displayName:"", width:"40", cellClass: "txt-center dropdown-button", cellTemplate:"<div><input-check   ng-model='row.entity.seleccionado' ng-change='onAgregarDocumentoALio(row.entity)' ng-disabled='!datos_view.despachoPorLios'   /></div>"},
                     {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "30%"},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
@@ -371,6 +383,57 @@ define(["angular", "js/controllers",
                                         </div>'
                     }
                 ]
+            };
+            
+            
+            $scope.onAgregarDocumentoALio = function(documento){
+                //documento.setSeleccionado(!documento.getSeleccionado());
+                if(documento.getSeleccionado()){
+                    that.agregarDocumentoSeleccionado(documento);
+                } else {
+                    that.removerDocumentoSeleccionado(documento);
+                }
+                console.log("$scope.datos_view.documentosSeleccionados", $scope.datos_view.documentosSeleccionados);
+                //var documentos = $scope.datos_view.documentosSeleccionados;
+            };
+            
+            that.agregarDocumentoSeleccionado = function(documento){
+                var documentos = $scope.datos_view.documentosSeleccionados;
+                
+                for(var i in documentos){
+                    var _documento = documentos[i];
+                    if(_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()){
+                        return false;
+                    }
+                }
+                
+                $scope.datos_view.documentosSeleccionados.push(documento);
+                
+            };
+            
+            that.removerDocumentoSeleccionado = function(documento){
+                var documentos = $scope.datos_view.documentosSeleccionados;
+                
+                for(var i in documentos){
+                    var _documento = documentos[i];
+                    if(_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()){
+                        documentos.splice(i, 1);
+                    }
+                }
+                
+            };
+            
+             that.obtenerDocumentoSeleccionado = function(documento){
+                var documentos = $scope.datos_view.documentosSeleccionados;
+                
+                for(var i in documentos){
+                    var _documento = documentos[i];
+                    if(_documento.get_prefijo() === documento.get_prefijo() && _documento.get_numero() === documento.get_numero()){
+                        return _documento;
+                    }
+                }
+                
+                return null;
             };
 
             that.generar_planilla_despacho = function(callback) {

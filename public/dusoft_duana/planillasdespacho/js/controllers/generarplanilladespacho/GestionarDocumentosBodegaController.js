@@ -17,7 +17,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
         "FarmaciaPlanillaDespacho",
         "Documento",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, ClientePlanilla, FarmaciaPlanilla, Documento, Sesion) {
+        "OtrasSalidasPlanillaDespacho",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, ClientePlanilla, FarmaciaPlanilla, Documento, Sesion, OtrasSalidasPlanillaDespacho) {
 
             var that = this;
 
@@ -77,6 +78,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                 if ($scope.datos_view.opcion_predeterminada === "1") {
                     that.buscar_clientes();
+                }
+                
+                if($scope.datos_view.opcion_predeterminada === "2"){
+                    that.listarDocumentosOtrasSalidas();
                 }
 
             };
@@ -155,7 +160,36 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                 $scope.datos_clientes_farmacias = $scope.Empresa.get_farmacias();
             };
+            
+            
+            that.listarDocumentosOtrasSalidas = function(){
+                var obj = {
+                    session: $scope.session,
+                    data: {
 
+                    }
+                };
+
+                Request.realizarRequest(API.PLANILLAS.LISTAR_DOCUMENTOS_OTRAS_SALIDAS, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.renderOtrasSalidas(data.obj.documentos);
+                    }
+                });
+            };
+            
+            that.renderOtrasSalidas = function(otrasSalidas){
+                
+                $scope.Empresa.limpiar_farmacias();
+
+                otrasSalidas.forEach(function(data) {
+
+                    var salida = OtrasSalidasPlanillaDespacho.get(data.prefijo);
+                    $scope.Empresa.set_farmacias(salida);
+                });
+                
+                $scope.datos_clientes_farmacias = $scope.Empresa.get_farmacias();
+            };
 
             $scope.buscar_documentos_bodega = function(tercero) {
                 
@@ -167,6 +201,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 }
 
                 if ($scope.datos_view.opcion_predeterminada === "1") {
+                    that.documentos_bodega_clientes();
+                }
+                
+                if ($scope.datos_view.opcion_predeterminada === "2") {
                     that.documentos_bodega_clientes();
                 }
             };
@@ -395,7 +433,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 ]
             };
             
-            $scope.listaDocumentosOtrasEmpresas = {
+           /* $scope.listaDocumentosOtrasEmpresas = {
                 data: 'datos_clientes_farmacias',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -408,7 +446,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                                         </div>'
                     }
                 ]
-            };
+            };*/
             
 
             $scope.lista_remisiones_bodega = {

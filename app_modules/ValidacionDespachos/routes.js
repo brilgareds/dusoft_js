@@ -16,4 +16,9 @@ module.exports = function(app, di_container) {
        c_ValidacionDespachos.registrarAprobacion(req, res); 
     });
     
+    app.post('/api/ValidacionDespachos/listarDocumentosOtrasSalidas', function(req, res){
+       c_ValidacionDespachos.listarDocumentosOtrasSalidas(req, res); 
+    });
+    
+    
 };

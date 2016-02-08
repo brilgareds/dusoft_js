@@ -193,6 +193,39 @@ ValidacionDespachos.prototype.listarDocumentosOtrasSalidas = function(req,res){
     }).done();
 };
 
+ValidacionDespachos.prototype.listarNumeroPrefijoOtrasSalidas = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    if (args.validacionDespachos === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
+        return;
+    }
+    
+    if (args.validacionDespachos.prefijo === undefined || args.validacionDespachos.prefijo === '') {
+        res.send(G.utils.r(req.url, 'El Prefijo no esta definido o esta vacio', 404, {}));
+        return;
+    }
+    
+    /*if (args.validacionDespachos.empresa_id === undefined || args.validacionDespachos.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido o esta vacio', 404, {}));
+        return;
+    }*/
+    
+    var prefijo = args.validacionDespachos.prefijo;
+
+    
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'listarNumeroPrefijoOtrasSalidas', {prefijo:prefijo}).then(function(resultado) {
+
+        return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {planillas_despachos: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error en el registro', 500, {planillas_despachos: {}}));
+
+    }).done();
+};
+
 ValidacionDespachos.$inject = ["m_ValidacionDespachos"];
 
 module.exports = ValidacionDespachos;

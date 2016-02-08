@@ -20,5 +20,9 @@ module.exports = function(app, di_container) {
        c_ValidacionDespachos.listarDocumentosOtrasSalidas(req, res); 
     });
     
+    app.post('/api/ValidacionDespachos/listarNumeroPrefijoOtrasSalidas', function(req, res){
+       c_ValidacionDespachos.listarNumeroPrefijoOtrasSalidas(req, res); 
+    });
+    
     
 };

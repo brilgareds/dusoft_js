@@ -21,7 +21,8 @@ define(["angular"], function(angular) {
                 
                 'CANTIDADES_CAJA_NEVERA': BASE_URL + '/PlanillasDespachos/consultarCantidadCajaNevera',
                 'GESTIONAR_LIOS': BASE_URL + '/PlanillasDespachos/gestionarLios',
-                'LISTAR_DOCUMENTOS_OTRAS_SALIDAS' : BASE_URL + '/ValidacionDespachos/listarDocumentosOtrasSalidas'
+                'LISTAR_DOCUMENTOS_OTRAS_SALIDAS' : BASE_URL + '/ValidacionDespachos/listarDocumentosOtrasSalidas',
+                'LISTAR_NUMERO_PREFIJO_OTRAS_SALIDAS' : BASE_URL + '/ValidacionDespachos/listarNumeroPrefijoOtrasSalidas'
             },
             'CIUDADES': {
                 'LISTAR_CIUDADES': BASE_URL + '/Ciudades/listar'

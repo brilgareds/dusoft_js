@@ -99,20 +99,29 @@ ValidacionDespachosModel.prototype.listarEmpresas = function (empresaNombre,call
 
 
 ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj ,callback) {
+    
+    var sql = "SELECT DISTINCT ON  (prefijo) numero, prefijo, observacion FROM aprobacion_despacho_planillas "
 
-    var column = [
-        "a.prefijo",
-        "a.numero"
-    ];
-
-    var query = G.knex.column(column)
-    .select()
-    .from('aprobacion_despacho_planillas as a')
-    .where("sw_otras_salidas", "1")
-    .then(function (rows) {
-        callback(false, rows);
+    G.knex.raw(sql)
+    .then(function (resultado) {
+        callback(false, resultado.rows);
     })
     .catch(function (error) {
+        console.log("error ", error);
+        callback(error);
+    }).done();
+};
+
+ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (obj ,callback) {
+    
+    var sql = "SELECT numero, prefijo, observacion FROM aprobacion_despacho_planillas WHERE prefijo = :1"
+
+    G.knex.raw(sql, {1:obj.prefijo})
+    .then(function (resultado) {
+        callback(false, resultado.rows);
+    })
+    .catch(function (error) {
+        console.log("error ", error);
         callback(error);
     }).done();
 };

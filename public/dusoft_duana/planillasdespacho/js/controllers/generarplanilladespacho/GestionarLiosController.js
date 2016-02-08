@@ -3,10 +3,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     var fo = controllers.controller('GestionarLiosController', [
         '$scope', '$rootScope', 'Request',
         '$modalInstance', 'API', "socket", "AlertService",
-        "Usuario", "documentos", "tipo",
+        "Usuario", "documentos", "tipo", "numeroGuia",
         function($scope, $rootScope, Request,
                 $modalInstance, API, socket, AlertService,
-                Usuario, documentos, tipo) {
+                Usuario, documentos, tipo, numeroGuia) {
 
 
             var self = this;
@@ -33,8 +33,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             });
 
             $modalInstance.result.then(function() {
+                $scope.root.documentos = [];
                 $scope.root = null;
-
             }, function() {
             });
             
@@ -72,7 +72,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             documentos: documentos,
                             totalCaja: $scope.root.cantidadCajas,
                             cantidadLios: $scope.root.cantidadLios,
-                            tipo:tipo
+                            tipo:tipo,
+                            numeroGuia:numeroGuia
                         }
                     }
                 };

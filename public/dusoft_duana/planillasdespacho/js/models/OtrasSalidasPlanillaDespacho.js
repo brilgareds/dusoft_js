@@ -1,10 +1,12 @@
 define(["angular", "js/models"], function(angular, models) {
 
-    models.factory('OtrasSalidasPlanillaDespacho', [function() {
+    models.factory('OtrasSalidasPlanillaDespacho', ["ClientePlanillaDespacho",function(ClientePlanillaDespacho) {
 
         function OtrasSalidasPlanillaDespacho(nombre){
             this.nombre = nombre;
         }
+        
+        OtrasSalidasPlanillaDespacho.prototype = Object.create(ClientePlanillaDespacho.getClass().prototype);
         
         OtrasSalidasPlanillaDespacho.prototype.setNombre = function(nombre){
             this.nombre = nombre;

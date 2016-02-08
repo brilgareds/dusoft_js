@@ -912,7 +912,7 @@ PlanillasDespachos.prototype.consultarCantidadCajas = function(req, res) {
      .then(function(resultado){ 
        
         
-         return res.send(G.utils.r(req.url, 'cantidad de cajas', 500, {planillas_despachos: resultado}));
+         return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
          
      }).fail(function(err){ 
          
@@ -938,11 +938,21 @@ PlanillasDespachos.prototype.actualizarLioDocumento = function(req, res) {
 
     var that = this;
     var args = req.body.data;
-    var cotizacion = args.m_planillas_despachos;
     
     
+    if (args.planillas_despachos === undefined ) {
+        res.send(G.utils.r(req.url, ' no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.planillas_despachos.documentos === undefined ) {
+        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
+        return;
+    }
+
     
     var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
+    
     var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
 
     tabla = tabla[tipo];
@@ -953,7 +963,7 @@ PlanillasDespachos.prototype.actualizarLioDocumento = function(req, res) {
     }
     
    
-     var obj = {documentos:[
+   /*  var obj = {documentos:[
 			{
                         empresa:01,
                         numero:1020,
@@ -968,21 +978,24 @@ PlanillasDespachos.prototype.actualizarLioDocumento = function(req, res) {
                         }
                     ],
                     tipo:1
-                   };       
+                   };     */  
+     
+       
+   G.Q.ninvoke(that.m_planillas_despachos,'actualizarLioDocumento', args.planillas_despachos.documentos)
             
-    that.m_pedidos_clientes.actualizarLioDocumento(args.planillas_despachos.documentos, function(estado, rows) {
-
-        if (!estado) {
-            res.send(G.utils.r(req.url, 'Se actualizo el campo de lios satisfactoriamente', 200, {pedidos_clientes: []}));
-           
-            return;
-        }
-        else {
-            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
-            return;
-        }
-
-    });
+     .then(function(resultado){ 
+       
+        
+         return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
+         
+     }).fail(function(err){ 
+         
+         
+         res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
+       
+    }).done();
+   
+   
 };
 
 

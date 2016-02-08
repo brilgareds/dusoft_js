@@ -51,6 +51,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var empresa = EmpresaAprobacionDespacho.get(session.nombre, session.codigo);          
                     $scope.datos_view.empresaSeleccionada = empresa;
                     
+                }else{
+                    
+                    $scope.datos_view.empresaSeleccionada = "";
                 }
             };
             

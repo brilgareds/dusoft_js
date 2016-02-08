@@ -390,6 +390,22 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     }
                 ]
             };
+            
+            $scope.listaDocumentosOtrasEmpresas = {
+                data: 'datos_clientes_farmacias',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                
+                columnDefs: [
+                    {field: 'getNombre()', displayName: 'Prefijo', width: "85%"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs" ng-click="buscar_documentos_bodega(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                        </div>'
+                    }
+                ]
+            };
+            
 
             $scope.lista_remisiones_bodega = {
                 data: 'datos_view.tercero_seleccionado.get_documentos()',

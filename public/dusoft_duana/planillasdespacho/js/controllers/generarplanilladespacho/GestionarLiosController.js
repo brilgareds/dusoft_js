@@ -18,6 +18,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     cantidadLios:0
                 };
                 
+                $scope.root.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+                
                 $scope.root.documentos = documentos;
                 
             };
@@ -28,7 +33,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             });
 
             $modalInstance.result.then(function() {
-
+                $scope.root = null;
 
             }, function() {
             });
@@ -59,28 +64,23 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             $scope.onIngresarLios = function(){
                 
-                  var obj = {
-                    session: $scope.session,
+                
+                var obj = {
+                    session: $scope.root.session,
                     data: {
                         planillas_despachos: {
                             documentos: documentos,
                             totalCaja: $scope.root.cantidadCajas,
-                            cantidadLios: $scope.root.cantidadCajas,
+                            cantidadLios: $scope.root.cantidadLios,
                             tipo:tipo
                         }
                     }
                 };
 
-                Request.realizarRequest(API.PLANILLAS.GENERAR_PLANILLA, "POST", obj, function(data) {
 
-                    AlertService.mostrarMensaje("warning", data.msj);
-
-                    if (data.status === 200) {
-                        $scope.planilla.set_numero_guia(data.obj.numero_guia);
-                        callback(true);
-                    } else {
-                        callback(false);
-                    }
+                Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function(data) {
+                    console.log("data ", data);
+                   
                 });
             };
             

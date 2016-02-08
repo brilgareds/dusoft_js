@@ -20,6 +20,7 @@ define(["angular"], function(angular) {
                 'REPORTE_PLANILLA_DESPACHO': BASE_URL + '/PlanillasDespachos/reportePlanillaDespacho',
                 
                 'CANTIDADES_CAJA_NEVERA': BASE_URL + '/PlanillasDespachos/consultarCantidadCajaNevera',
+                'GESTIONAR_LIOS': BASE_URL + '/PlanillasFarmacias/gestionarLios'     
             },
             'CIUDADES': {
                 'LISTAR_CIUDADES': BASE_URL + '/Ciudades/listar'
@@ -47,8 +48,8 @@ define(["angular"], function(angular) {
                 'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasFarmacias/despacharPlanilla',
                 'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasFarmacias/consultarPlanillaFarmacia',
                 'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasFarmacias/consultarDocumentosPlanillaFarmacia',
-                'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasFarmacias/eliminarDocumentoPlanillaFarmacia',                                
-                'GESTIONAR_LIOS': BASE_URL + '/PlanillasFarmacias/gestionarLios',                         
+                'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasFarmacias/eliminarDocumentoPlanillaFarmacia'                               
+                                 
               
             },
             'FARMACIAS': {

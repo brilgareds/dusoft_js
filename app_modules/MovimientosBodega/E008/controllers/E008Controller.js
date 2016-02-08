@@ -2573,7 +2573,23 @@ E008Controller.prototype.obtenerDocumento = function(req, res) {
           res.send(G.utils.r(req.url, 'Variable (documento_temporal) no esta definida', 404, {}));
           return;
     }
-
+    
+    if (args.documento_temporal.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (args.documento_temporal.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el prefijo', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (args.documento_temporal.numero === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    
     var empresa_id = args.documento_temporal.empresa_id;
     var prefijo = args.documento_temporal.prefijo;
     var numero = args.documento_temporal.numero;

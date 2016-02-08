@@ -454,11 +454,11 @@ PlanillasDespachosModel.prototype.actualizarLioDocumento = function(obj, callbac
  
  function __actualizarLioDocumento(empresa,numero,prefijo,lio,tipo,callback) {
 
-    var sql = "update "+tipo+" set numero_lios = :4\
+   /* var sql = "update "+tipo+" set numero_lios = :4\
                where  empresa_id::integer = :1\
                       numero::integer = :2 and\
                       prefijo::integer = :3\
-                      ";
+                      ";*/
                       
 
     G.knex.raw(sql, {1: empresa, 2: numero, 3: prefijo, 4: lio}).then(function(resultado) {  

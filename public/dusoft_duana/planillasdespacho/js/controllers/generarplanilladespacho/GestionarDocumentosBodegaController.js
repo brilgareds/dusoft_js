@@ -205,7 +205,7 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PLANILLAS.LISTAR_DOCUMENTOS_FARMACIAS, "POST", obj, function(data) {
-                      //  console.log("LISTAR DOCUMENTOS FARMACIAS")
+                    
                     if (data.status === 200) {
                         console.log(data.obj.planillas_despachos);
                         that.render_documentos(data.obj.planillas_despachos);

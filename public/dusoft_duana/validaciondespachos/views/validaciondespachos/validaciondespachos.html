@@ -22,26 +22,42 @@
                           <div class="col-md-12" style="margin-top: 50px;"><!--ng-switch-when="2"//-->
                                 <div class="row">
                                         
-                                 <div class="col-md-4">
+                                       <div class="col-md-4">
                                      <fieldset>
                                             <legend>Empresa</legend>   
-                                             <p class="input-group">
-                                                
-                                           <ui-select   ng-model="datos_view.empresaSeleccionada" 
+                                            
+                                            
+                                            <div class="row">
+                                                <div class="col-md-7">  
+                                                    <ui-select   ng-model="datos_view.empresaSeleccionada" 
                                                         ng-disabled="datos_view.estadoRegistro == 1"
                                                         theme="select2" 
-                                                        class="form-control selectgeneral pull-left" 
+                                                        class="form-control selectgeneral pull-left" >
                                                        
-                                                        >
+                                                        
                                                           <ui-select-match   placeholder="Seleccionar Empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
                                                           <ui-select-choices  refresh="onSeleccionarEmpresa($select.search)" 
                                                                               refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
                                                               {{ empresa.getNombre()}}                                         
                                                           </ui-select-choices>
-                                                </ui-select>    
-                                     </fieldset>
-                                    </div>                                                               
-                                  
+                                                </ui-select> 
+                                           
+                                                     </div></div>
+                                      </fieldset>
+                                    </div>    
+                                                                             
+                                       
+                                  <div class="col-md-4">
+                                         <fieldset>
+                                            <legend>Numero</legend>
+                                              <div class="row">
+                                                <div class="col-md-7">
+                                                    
+                                            <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  class="form-control"  ng-model="documentoDespachoAprobado.numero" placeholder="Numero" name="" id="" validacion-numero-entero />
+                                         
+                                                </div></div>
+                                            </fieldset>
+                                    </div>   
                                     <div class="col-md-4">
                                      <fieldset>
                                             <legend>Prefijo</legend>   
@@ -52,37 +68,25 @@
                                                    ng-model="documentoDespachoAprobado.prefijo" 
                                                    placeholder="Prefijo" 
                                                    name="" id=""
-                                                   ng-show ="datos_view.seleccionarOtros == true"/>
+                                                   ng-show ="datos_view.seleccionarOtros"/>
                                      
-                                                </div></div>
+                                                
                                             
                                           
                                             <ui-select  ng-model="documentoDespachoAprobado.prefijoList" 
                                                         theme="select2" 
                                                         class="form-control selectgeneral pull-left" 
                                                         ng-change="valorSeleccionado(true)"
-                                                        ng-show ="datos_view.seleccionarOtros == false">
+                                                        ng-show ="!datos_view.seleccionarOtros">
                                                 <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.prefijo}}-{{$select.selected.descripcion}}</ui-select-match>
                                                 <ui-select-choices repeat="documento_usuario in  documentos_usuarios| filter:$select.search">
                                                     {{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}
                                                 </ui-select-choices>
                                             </ui-select>
+                                            
+                                            </div></div>
                                       </fieldset>
-                                    </div>  
-                                    
-                                    
-                                     <div class="col-md-4">
-                                         <fieldset>
-                                            <legend>Numero</legend>
-                                              <div class="row">
-                                                <div class="col-md-7">
-                                                    
-                                            <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  class="form-control"  ng-model="documentoDespachoAprobado.numero" placeholder="Numero" name="" id="" validacion-numero-entero />
-                                         
-                                                </div></div>
-                                            </fieldset>
                                     </div>       
-
                                     
                                     
                                 </div>                              

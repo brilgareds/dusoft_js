@@ -889,13 +889,13 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
         return;
     }
     
-    if (args.planillas_despachos.totalCaja === undefined ) {
-        res.send(G.utils.r(req.url, 'la cantidad de cajas no esta definido', 404, {}));
+    if (args.planillas_despachos.totalCaja === undefined || args.planillas_despachos.totalCaja === '' || args.planillas_despachos.totalCaja === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de cajas debe estar definido y no puede estar en cero', 404, {}));
         return;
     }
     
-     if (args.planillas_despachos.cantidadLios === undefined ) {
-        res.send(G.utils.r(req.url, 'la cantidad de lios no esta definido', 404, {}));
+     if (args.planillas_despachos.cantidadLios === undefined || args.planillas_despachos.cantidadLios === '' || args.planillas_despachos.cantidadLios === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de lios debe estar definido y no puede estar en cero', 404, {}));
         return;
     }
     args.planillas_despachos.usuario_id = req.session.user.usuario_id;

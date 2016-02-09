@@ -95,7 +95,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             cantidadLios: $scope.root.cantidadLios,
                             tipo:tipo,
                             numeroGuia:numeroGuia,
-                            observacion:$scope.observacion
+                            observacion:$scope.root.observacion
                         }
                     }
                 };

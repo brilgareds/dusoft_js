@@ -398,26 +398,33 @@ PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function(obj, ca
  *             numero de cajas de un grupo de documentos  
  *             
  **/ 
-PlanillasDespachosModel.prototype.consultarCantidadCajas = function(obj, callback){
+PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
     
-  
-    obj.empresa_id = bj.empresa_id.join(",");
-    obj.prefijo =    bj.prefijo.join(",");
-    obj.numero =     bj.numero.join(",");
+    var lenght = obj.documentos;
+    var vEmpresaId = [];
+    var vNumero = [];
+    var vPrefijo = [];
+ 
+    for(var i in lenght) {
 
-   
+            vEmpresaId.push("'"+obj.documentos[i].empresa_id+"'")
+            vNumero.push("'"+obj.documentos[i].numero+"'")
+            vPrefijo.push("'"+obj.documentos[i].prefijo+"'")
+
+    };
+        
     // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
     var sql = "SELECT coalesce(sum(aa.numero_caja),'0') as totalCajas\
                FROM inv_bodegas_movimiento_d aa\
-               WHERE aa.empresa_id IN ("+obj.empresa_id+") AND  aa.prefijo IN ("+obj.prefijo+") AND aa.numero IN ("+obj.numero+") and aa.tipo_caja = 0;";
+               WHERE aa.empresa_id::varchar IN ("+vEmpresaId.toString()+") AND  aa.prefijo::varchar IN ("+vPrefijo.toString()+") AND aa.numero::varchar IN ("+vNumero.toString()+") and aa.tipo_caja = '0';";
     
  
     G.knex.raw(sql, {}).then(function(resultado){
-       
+        
         callback(false, resultado.rows);
         
     }).catch(function(err) {
-     
+       
         callback(err);
     });
 };
@@ -433,42 +440,89 @@ PlanillasDespachosModel.prototype.consultarCantidadCajas = function(obj, callbac
  *              
  *             
  **/
-PlanillasDespachosModel.prototype.actualizarLioDocumento = function(obj, callback) {
-
-        var lenght = obj.documentos;
-        for(var i in obj.documentos) {
-
-                 __actualizarLioDocumento(obj.documentos[i].empresa,
-                                          obj.documentos[i].numero,
-                                          obj.documentos[i].prefijo,
-                                          obj.documentos[i].lio,
-                                          obj.tabla, function(estado, rows){
-                                              
-                        if(--lenght ===0 ){
-                            callback(estado,rows)
-                        }
-             });
-        };
-    };
-
+PlanillasDespachosModel.prototype.insertarLioDocumento = function(obj, callback) {
  
- function __actualizarLioDocumento(empresa,numero,prefijo,lio,tipo,callback) {
+    G.knex.transaction(function(transaccion) {  
+          obj.transaccion = transaccion;
+          G.Q.nfcall(__insertarLioDocumento, obj).then(function(){
 
-    var sql = "update "+tipo+" set numero_lios = :4\
-               where  empresa_id::integer = :1\
-                      numero::integer = :2 and\
-                      prefijo::integer = :3\
-                      ";
-                      
+             transaccion.commit();
 
-    G.knex.raw(sql, {1: empresa, 2: numero, 3: prefijo, 4: lio}).then(function(resultado) {  
-        callback(false, resultado.rows);
-    }).catch (function(err) {
-        callback(err);
-    });
+          }).fail(function(err){
 
+             transaccion.rollback(err);
+
+          }).done();
+
+      }).then(function(resultado){
+
+         callback(false,resultado);
+
+      }).catch(function(err){
+
+         callback(err);
+      }).done(); 
+    
+    
 };
 
+
+function __insertarLioDocumento(obj, callback){
+
+     var documento =  obj.documentos[0];
+    
+     if(!documento){
+        callback(false);
+        return;
+     }
+    
+     var observacion = "'N/N'";
+     var sql = "INSERT INTO "+obj.tabla+" (\n\
+                inv_planillas_despacho_id, \n\
+                empresa_id, \
+                prefijo,\
+                numero, \
+                cantidad_cajas,\
+                cantidad_neveras,\
+                temperatura_neveras,\
+                observacion, \
+                usuario_id,\
+                fecha_registro,\
+                numero_lios)\
+                (select 2 as inv_planillas_despacho_id,\
+                empresa_id,\
+                prefijo,\
+                numero,\
+                coalesce(sum(numero_caja),'0') as totalCajas,\
+                0 as cantidad_neveras,\
+                0 as temperatura_neveras,\
+                "+observacion+" as observacion,\
+                "+parseInt(obj.usuario_id)+ " as usuario_id,\
+                now() as fecha_registro,\
+                "+obj.cantidadLios+" as numero_lios \
+                 FROM inv_bodegas_movimiento_d\
+                 WHERE empresa_id = :1\
+                 AND prefijo= :2\
+                 AND numero = :3\
+                 GROUP BY 1,2,3,4,6,7,8,9,10,1)";
+    
+    
+    var query = G.knex.raw(sql, {1: documento.empresa_id, 2: documento.prefijo, 3: documento.numero});
+    
+    if(obj.transaccion) query.transacting(obj.transaccion);
+      
+    query.then(function(resultado){       
+        
+        obj.documentos.splice(0,1);
+        __insertarLioDocumento(obj, callback);
+        
+    }).catch(function(err){
+       
+        callback(err);   
+    });
+    
+}
+    
 
 
 module.exports = PlanillasDespachosModel;

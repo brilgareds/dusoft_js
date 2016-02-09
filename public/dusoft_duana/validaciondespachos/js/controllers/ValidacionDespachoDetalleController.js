@@ -101,7 +101,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
             $scope.aprobarDespacho = function() {
                 
-            
+            console.log("$scope.documentoDespachoAprobado ", $scope.documentoDespachoAprobado)
              if($scope.documentoDespachoAprobado === undefined || 
                 $scope.documentoDespachoAprobado === null      ||
                 $scope.documentoDespachoAprobado === null){
@@ -110,14 +110,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
               }else{
                
                 if($scope.datos_view.seleccionarOtros === true){
-                    
-                   
-                   that.obtenerDocumento(function(estado){
-                       
-                       if(estado){
+
                        that.registrarAprobacion(1);
-                       }
-                   });
+                     
                 }else{   
                     
                     that.obtenerDocumento(function(estado){
@@ -140,13 +135,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            that.obtenerDocumento = function(callback){    
             
                var prefijo ;
+              
                if($scope.documentoDespachoAprobado.prefijoList === undefined){
                     
                     prefijo = $scope.documentoDespachoAprobado.prefijo;
                }else{
-                   prefijo = $scope.documentoDespachoAprobado.prefijoList.prefijo;
+                    prefijo = $scope.documentoDespachoAprobado.prefijoList.prefijo;
                }
-                 
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -233,6 +229,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            that.registrarAprobacion = function(estado){
                 
                var prefijo ;
+              
                if($scope.documentoDespachoAprobado.prefijoList === undefined){
                     prefijo = $scope.documentoDespachoAprobado.prefijo;
                }else{

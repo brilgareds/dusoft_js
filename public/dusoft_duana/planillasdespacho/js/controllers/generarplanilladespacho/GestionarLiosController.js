@@ -105,6 +105,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     if(data.status === 200){
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
+                        $scope.cerrar();
                     } else {
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
                     }

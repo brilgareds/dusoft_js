@@ -114,7 +114,7 @@ ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj 
 
 ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (obj ,callback) {
     
-    var sql = "SELECT numero, prefijo, observacion FROM aprobacion_despacho_planillas WHERE prefijo = :1"
+    var sql = "SELECT numero, prefijo, observacion, empresa_id FROM aprobacion_despacho_planillas WHERE prefijo = :1"
 
     G.knex.raw(sql, {1:obj.prefijo})
     .then(function (resultado) {

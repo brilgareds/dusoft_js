@@ -993,24 +993,6 @@ PlanillasDespachos.prototype.actualizarLioDocumento = function(req, res) {
     }
     
    
-   /*  var obj = {documentos:[
-			{
-                        empresa:01,
-                        numero:1020,
-                        prefijo:'EFC',
-                        lio:1
-                        },
-                        {
-                        empresa:01,
-                        numero:1020,
-                        prefijo:'EFC',
-                        lio:1
-                        }
-                    ],
-                    tipo:1
-                   };     */  
-     
-       
    G.Q.ninvoke(that.m_planillas_despachos,'actualizarLioDocumento', args.planillas_despachos.documentos)
             
      .then(function(resultado){ 

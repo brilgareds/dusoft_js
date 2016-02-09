@@ -484,9 +484,10 @@ function __insertarLioDocumento(obj, callback){
         callback(false);
         return;
      }
-   
-   if(obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes"){
      var observacion = obj.observacion.lenght ===0? documento.prefijo + " - " + documento.numero:"'"+obj.observacion+"'";
+     
+   if(obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes"){
+    
       sql = "INSERT INTO "+obj.tabla+" (\n\
                 inv_planillas_despacho_id, \n\
                 empresa_id, \
@@ -516,8 +517,42 @@ function __insertarLioDocumento(obj, callback){
                  AND numero = :3\
                  GROUP BY 1,2,3,4,6,7,8,9,10,1)";
     
+   }else{
+       
+        sql = "INSERT INTO inv_planillas_detalle_empresas(\
+                inv_planillas_despacho_id, \
+                empresa_id, \
+                prefijo,\
+                numero, \
+                cantidad_cajas,\
+                cantidad_neveras,\
+                temperatura_neveras,\
+                observacion, \
+                usuario_id,\
+                fecha_registro,\
+                numero_lios\
+                )\
+                (select "+obj.numeroGuia+" as inv_planillas_despacho_id,\
+                empresa_id,\
+                prefijo,\
+                numero,\
+                coalesce(max(cantidad_cajas),'0') as totalCajas,\
+                0 as cantidad_neveras,\
+                0 as temperatura_neveras,\
+                "+observacion+" as observacion,\
+                "+parseInt(obj.usuario_id)+ " as usuario_id,\
+                now() as fecha_registro,\
+                "+obj.cantidadLios+" as numero_lios \
+                 FROM aprobacion_despacho_planillas\
+                 WHERE empresa_id = :1\
+                 AND prefijo= :2\
+                 AND numero = :3\
+                 AND sw_otras_salidas = '1'\
+                 GROUP BY 1,2,3,4,6,7,8,9,10,1)";
    }
-   console.log("sql ", sql)
+   
+   
+    console.log("sql ", sql)
     var query = G.knex.raw(sql, {1: documento.empresa_id, 2: documento.prefijo, 3: documento.numero});
     
     if(obj.transaccion) query.transacting(obj.transaccion);

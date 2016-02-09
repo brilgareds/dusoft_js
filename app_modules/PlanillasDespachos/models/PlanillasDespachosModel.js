@@ -400,6 +400,7 @@ PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function(obj, ca
  **/ 
 PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
     
+    
     var lenght = obj.documentos;
     var vEmpresaId = [];
     var vNumero = [];
@@ -414,17 +415,21 @@ PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
     };
         
     // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    var sql = "SELECT coalesce(sum(aa.numero_caja),'0') as totalCajas\
+  /*  var sql = "SELECT coalesce(sum(aa.numero_caja),'0') as totalCajas\
                FROM inv_bodegas_movimiento_d aa\
                WHERE aa.empresa_id::varchar IN ("+vEmpresaId.toString()+") AND  aa.prefijo::varchar IN ("+vPrefijo.toString()+") AND aa.numero::varchar IN ("+vNumero.toString()+") and aa.tipo_caja = '0';";
-    
- 
+    */
+   var sql = "SELECT coalesce(sum(aa.cantidad_cajas),'0') as totalCajas\
+               FROM aprobacion_despacho_planillas aa\
+               WHERE aa.empresa_id::varchar IN ("+vEmpresaId.toString()+") AND  aa.prefijo::varchar IN ("+vPrefijo.toString()+") AND aa.numero::varchar IN ("+vNumero.toString()+") ;";
+
     G.knex.raw(sql, {}).then(function(resultado){
         
+        console.log("resultado ", resultado);
         callback(false, resultado.rows);
         
     }).catch(function(err) {
-       
+       console.log("err ", err);
         callback(err);
     });
 };
@@ -441,7 +446,8 @@ PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
  *             
  **/
 PlanillasDespachosModel.prototype.insertarLioDocumento = function(obj, callback) {
- 
+    
+    
     G.knex.transaction(function(transaccion) {  
           obj.transaccion = transaccion;
           G.Q.nfcall(__insertarLioDocumento, obj).then(function(){
@@ -468,16 +474,17 @@ PlanillasDespachosModel.prototype.insertarLioDocumento = function(obj, callback)
 
 
 function __insertarLioDocumento(obj, callback){
-
+     
      var documento =  obj.documentos[0];
-    
+     var sql = "";
      if(!documento){
         callback(false);
         return;
      }
-    
+     //console.log("obj.tabla ", obj.tabla)
+     //  if(obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes"){
      var observacion = "'N/N'";
-     var sql = "INSERT INTO "+obj.tabla+" (\n\
+      sql = "INSERT INTO "+obj.tabla+" (\n\
                 inv_planillas_despacho_id, \n\
                 empresa_id, \
                 prefijo,\
@@ -493,7 +500,7 @@ function __insertarLioDocumento(obj, callback){
                 empresa_id,\
                 prefijo,\
                 numero,\
-                coalesce(sum(numero_caja),'0') as totalCajas,\
+                coalesce(max(numero_caja),'0') as totalCajas,\
                 0 as cantidad_neveras,\
                 0 as temperatura_neveras,\
                 "+observacion+" as observacion,\

@@ -803,7 +803,9 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 
 
 PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
-
+    
+   
+    
     var that = this;
 
     var args = req.body.data;
@@ -869,7 +871,9 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
  *             de documentos 
  **/
 PlanillasDespachos.prototype.gestionarLios = function(req, res) {
-
+ 
+  
+    
     var that = this;
 
     var args = req.body.data;
@@ -911,12 +915,17 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
         return;
     }
     var status = {};
-   
+  
     G.Q.ninvoke(that.m_planillas_despachos,'gestionarLios', args.planillas_despachos)
            
      .then(function(resultado){ 
+ 
+     
+     
         var def = G.Q.defer();  
+     
         if(parseInt(resultado[0].totalcajas) === totalCajas){
+             
              status.codigo = 200;
              status.mensaje = 'Se insertan satisfactoriamente los lios';
              args.planillas_despachos.tabla = tabla;
@@ -924,20 +933,19 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
              return G.Q.ninvoke(that.m_planillas_despachos,'insertarLioDocumento', args.planillas_despachos );   
              
          }else{
-             status.codigo = 500;
+            
+             status.codigo = 403;
              status.mensaje = 'Error consultado las cantidades';
              def.resolve();
         }
       //  return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
          
      }).then(function(resultado){
-         console.log("SALIR ")
-         console.log("resultado ", resultado)
+         
          res.send(G.utils.r(req.url, status.mensaje, status.codigo, {planillas_despachos: resultado}));
          
      }).fail(function(err){ 
-         
-        
+       
          res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
        
     }).done();

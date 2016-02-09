@@ -868,56 +868,77 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
  *+Descripcion Controlador encargado de consultar el total de cajas de un conjunto
  *             de documentos 
  **/
-PlanillasDespachos.prototype.consultarCantidadCajas = function(req, res) {
+PlanillasDespachos.prototype.gestionarLios = function(req, res) {
 
     var that = this;
 
     var args = req.body.data;
 
-    if (args.planillas_despachos === undefined || 
-        args.planillas_despachos.empresa_id === undefined || 
-        args.planillas_despachos.prefijo === undefined    ||
-        args.planillas_despachos.numero === undefined) {
-        res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
+    if (args.planillas_despachos === undefined ) {
+        res.send(G.utils.r(req.url, 'planillas_despachos no esta definido', 404, {}));
         return;
     }
+    
+    if (args.planillas_despachos.documentos === undefined ) {
+        res.send(G.utils.r(req.url, 'La variable documentos no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.planillas_despachos.tipo === undefined ) {
+        res.send(G.utils.r(req.url, 'el tipo no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.planillas_despachos.totalCaja === undefined ) {
+        res.send(G.utils.r(req.url, 'la cantidad de cajas no esta definido', 404, {}));
+        return;
+    }
+    
+     if (args.planillas_despachos.cantidadLios === undefined ) {
+        res.send(G.utils.r(req.url, 'la cantidad de lios no esta definido', 404, {}));
+        return;
+    }
+    args.planillas_despachos.usuario_id = req.session.user.usuario_id;
+    var totalCajas = parseInt(args.planillas_despachos.totalCaja);
+    var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
+    
+    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
 
-    if (args.planillas_despachos.empresa_id === '') {
-        res.send(G.utils.r(req.url, 'El id de la empresa esta vacio', 404, {}));
+    tabla = tabla[tipo];
+    
+    if (tabla === undefined) {
+        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
         return;
     }
-    
-     if (args.planillas_despachos.prefijo === '') {
-        res.send(G.utils.r(req.url, 'el numero de prefijo esta vacio', 404, {}));
-        return;
-    }
-    
-     if (args.planillas_despachos.numero === '') {
-        res.send(G.utils.r(req.url, 'el numero esta vacio', 404, {}));
-        return;
-    }
-
-    var empresa_id = args.planillas_despachos.empresa_id;
-    var prefijo = args.planillas_despachos.prefijo;
-    var numero = args.planillas_despachos.numero;
-    
-    var obj = {empresa_id: empresa_id,
-               prefijo: prefijo, 
-               numero:numero
-               };
-     
-     
-    G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajas', obj)
-            
+    var status = {};
+   
+    G.Q.ninvoke(that.m_planillas_despachos,'gestionarLios', args.planillas_despachos)
+           
      .then(function(resultado){ 
-       
-        
-         return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
+        var def = G.Q.defer();  
+        if(parseInt(resultado[0].totalcajas) === totalCajas){
+             status.codigo = 200;
+             status.mensaje = 'Se insertan satisfactoriamente los lios';
+             args.planillas_despachos.tabla = tabla;
+             
+             return G.Q.ninvoke(that.m_planillas_despachos,'insertarLioDocumento', args.planillas_despachos );   
+             
+         }else{
+             status.codigo = 500;
+             status.mensaje = 'Error consultado las cantidades';
+             def.resolve();
+        }
+      //  return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
+         
+     }).then(function(resultado){
+         console.log("SALIR ")
+         console.log("resultado ", resultado)
+         res.send(G.utils.r(req.url, status.mensaje, status.codigo, {planillas_despachos: resultado}));
          
      }).fail(function(err){ 
          
-         
-         res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
+        
+         res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
        
     }).done();
    

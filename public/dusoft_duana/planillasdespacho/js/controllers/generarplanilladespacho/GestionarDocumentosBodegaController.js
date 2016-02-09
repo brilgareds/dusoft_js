@@ -166,7 +166,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 var obj = {
                     session: $scope.session,
                     data: {
-
+                        validacionDespachos: {
+                            
+                            termino_busqueda: $scope.datos_view.termino_busqueda
+                        }
                     }
                 };
 

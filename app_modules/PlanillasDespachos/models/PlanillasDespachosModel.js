@@ -446,8 +446,11 @@ PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
  *             
  **/
 PlanillasDespachosModel.prototype.insertarLioDocumento = function(obj, callback) {
+    console.log("***insertarLioDocumento*********");
+    console.log("***insertarLioDocumento*********");
+    console.log("***insertarLioDocumento*********");
     
-    
+    console.log("documento  ========----> " + obj);
     G.knex.transaction(function(transaccion) {  
           obj.transaccion = transaccion;
           G.Q.nfcall(__insertarLioDocumento, obj).then(function(){
@@ -482,7 +485,7 @@ function __insertarLioDocumento(obj, callback){
         return;
      }
     
-     console.log("documento.observacion  ----> " + obj);
+     
    if(obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes"){
      var observacion = obj.observacion ===0? "N/N":obj.observacion;
       sql = "INSERT INTO "+obj.tabla+" (\n\

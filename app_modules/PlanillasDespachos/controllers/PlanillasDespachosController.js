@@ -877,7 +877,9 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-
+    
+    console.log("*******args.planillas_despachos********");
+    console.log(args.planillas_despachos);
     if (args.planillas_despachos === undefined ) {
         res.send(G.utils.r(req.url, 'planillas_despachos no esta definido', 404, {}));
         return;

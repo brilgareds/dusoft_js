@@ -417,6 +417,11 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 };
 
                 var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log(">>>>>>>>>>>>>>>>>>>>>> cerrando ventana");
+                }, function() {
+                });
             };
 
             //Verifica si la existe la planilla, y crea un solo documento

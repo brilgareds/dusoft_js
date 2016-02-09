@@ -37,7 +37,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 if(isNaN(cantidadCajas) || isNaN(cantidadLios) || cantidadLios === 0 || cantidadCajas === 0 ){
                     //console.log("cantidad cajas ", isNaN(cantidadCajas), " cantidadLios ", cantidadLios);
                     return false;
-                } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) && (cantidadCajas > cantidadLios)) {
+                } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) && (cantidadLios  > cantidadCajas)) {
                     return false;
                 }
                 

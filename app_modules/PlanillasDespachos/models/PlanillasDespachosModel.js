@@ -400,11 +400,6 @@ PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function(obj, ca
  **/ 
 PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
     
-    console.log("***********PlanillasDespachosModel.prototype.gestionarLios *****************");
-    console.log("***********PlanillasDespachosModel.prototype.gestionarLios *****************");
-    console.log("***********PlanillasDespachosModel.prototype.gestionarLios *****************");
-    console.log(obj);
-    
     var lenght = obj.documentos;
     var vEmpresaId = [];
     var vNumero = [];
@@ -418,22 +413,17 @@ PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
 
     };
         
-    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-  /*  var sql = "SELECT coalesce(sum(aa.numero_caja),'0') as totalCajas\
-               FROM inv_bodegas_movimiento_d aa\
-               WHERE aa.empresa_id::varchar IN ("+vEmpresaId.toString()+") AND  aa.prefijo::varchar IN ("+vPrefijo.toString()+") AND aa.numero::varchar IN ("+vNumero.toString()+") and aa.tipo_caja = '0';";
-    */
+  
    var sql = "SELECT coalesce(sum(aa.cantidad_cajas),'0') as totalCajas\
                FROM aprobacion_despacho_planillas aa\
                WHERE aa.empresa_id::varchar IN ("+vEmpresaId.toString()+") AND  aa.prefijo::varchar IN ("+vPrefijo.toString()+") AND aa.numero::varchar IN ("+vNumero.toString()+") ;";
-    console.log("sql ", sql)
+    
     G.knex.raw(sql, {}).then(function(resultado){
         
-        console.log("resultado ", resultado);
         callback(false, resultado.rows);
         
     }).catch(function(err) {
-       console.log("err ", err);
+       
         callback(err);
     });
 };
@@ -551,8 +541,6 @@ function __insertarLioDocumento(obj, callback){
                  GROUP BY 1,2,3,4,6,7,8,9,10,1)";
    }
    
-   
-    console.log("sql ", sql)
     var query = G.knex.raw(sql, {1: documento.empresa_id, 2: documento.prefijo, 3: documento.numero});
     
     if(obj.transaccion) query.transacting(obj.transaccion);
@@ -563,7 +551,7 @@ function __insertarLioDocumento(obj, callback){
         __insertarLioDocumento(obj, callback);
         
     }).catch(function(err){
-        console.log("err ", err);
+       
         callback(err);   
     });
     

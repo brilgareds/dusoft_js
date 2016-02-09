@@ -37,7 +37,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 progresoArchivo: 0,
                 btnSolicitarAutorizacionCartera: true,
                 estadoRegistro: 0,
-                
+                prefijoList: ''
                
 
             };
@@ -100,8 +100,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 			
             
             $scope.aprobarDespacho = function() {
-                
-            console.log("$scope.documentoDespachoAprobado ", $scope.documentoDespachoAprobado)
+               
              if($scope.documentoDespachoAprobado === undefined || 
                 $scope.documentoDespachoAprobado === null      ||
                 $scope.documentoDespachoAprobado === null){
@@ -136,13 +135,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
                var prefijo ;
               
-               if($scope.documentoDespachoAprobado.prefijoList === undefined){
+               if(!$scope.datos_view.seleccionarOtros){
                     
-                    prefijo = $scope.documentoDespachoAprobado.prefijo;
+                    prefijo = $scope.datos_view.prefijoList.prefijo;
                }else{
-                    prefijo = $scope.documentoDespachoAprobado.prefijoList.prefijo;
+                    prefijo = $scope.documentoDespachoAprobado.prefijo;
                }
-               
+                console.log("prefijo ", prefijo); 
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -178,14 +177,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             */
            that.validarCantidadCajasNeveras = function(){
              
-               var prefijo;
-               if($scope.documentoDespachoAprobado.prefijoList === undefined){
+              var prefijo ;
+              
+               if(!$scope.datos_view.seleccionarOtros){
                     
-                    prefijo = $scope.documentoDespachoAprobado.prefijo;
+                    prefijo = $scope.datos_view.prefijoList.prefijo;
                }else{
-                   prefijo = $scope.documentoDespachoAprobado.prefijoList.prefijo;
+                    prefijo = $scope.documentoDespachoAprobado.prefijo;
                }
-                 
+               
                
              var obj = {
                     session: $scope.session,
@@ -230,12 +230,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                var prefijo ;
               
-               if($scope.documentoDespachoAprobado.prefijoList === undefined){
-                    prefijo = $scope.documentoDespachoAprobado.prefijo;
+               if(!$scope.datos_view.seleccionarOtros){
+                    
+                    prefijo = $scope.datos_view.prefijoList.prefijo;
                }else{
-                    prefijo = $scope.documentoDespachoAprobado.prefijoList.prefijo;
+                    prefijo = $scope.documentoDespachoAprobado.prefijo;
                }
-              
                
                 var obj = {
                     session: $scope.session,
@@ -272,15 +272,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *               el detalle de una aprobacion o se creara una aprobacion
              */
             if ($state.is("ValidacionEgresosDetalle") === true) {
-                
-                var documento = localStorageService.get("validacionEgresosDetalle");
-              
+               
+               var documento = localStorageService.get("validacionEgresosDetalle");
+             
                $scope.datos_view.estadoRegistro = 1;
                if (documento) {
-                        
+              
                 if(documento.estado === 1){
                     
-                    
+                  $scope.datos_view.seleccionarOtros = true;
                     var obj = {
                         
                        session: $scope.session,
@@ -295,9 +295,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
                  
                     ValidacionDespachosService.listarDespachosAprobados(obj,function(data){
-                        
+                          
                            if (data.status === 200) {
                                 var resultado = data.obj.validacionDespachos[0];
+                               
                                 var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
                                
                                  $scope.datos_view.empresaSeleccionada = empresa;
@@ -314,8 +315,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                   }
                 }              
                 if(documento.estado === 2){  
+                   // $scope.datos_view.seleccionarOtros = false;
                     $scope.datos_view.estadoRegistro = 2;
-                  
+                    
                 }
                
             };

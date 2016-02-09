@@ -1,0 +1,72 @@
+
+<div class="modal-view" id="editarproductomodal">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h5 class="panel-title">Documentos seleccionados</h5>
+        </div>
+        <div class="panel-body">
+            <div class="documentosGrid" ng-grid="listaDocumentos"></div>
+        </div>
+
+    </div>
+
+
+    <div ng-switch on="rootEditarProducto.mostrarJustificacion">
+        <div class="panel panel-info" ng-switch-when="true">
+            <div class="panel-heading">
+                <h3 class="panel-title">Justificacion Auditor</h3>
+            </div>
+            <div class="panel-body">
+                <div class="span6" style="width:250px;">
+                    
+                    <ui-select  ng-model="rootEditarProducto.justificacionAuditor" theme="select2" class="form-control selectgeneral pull-left" ng-change="justificacionSeleccionada()">
+                        <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.descripcion}}</ui-select-match>
+                        <ui-select-choices repeat="justificacion in  justificaciones| filter:$select.search">
+                            {{justificacion.descripcion}}
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-info panelCaja">
+        <div class="panel-heading">
+            <h3 class="panel-title">Información Caja / Lios</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+
+
+                <div class="col-lg-6">
+                    
+                    <div class="input-group input-group">
+                        <label class="lbl_editar_producto lbl_caja" for="numerocaja">Total cajas </label>
+                        <input type="text" role="group" ng-model="root.cantidadCajas" class="form-control"   validacion-numero />
+
+                    </div>
+                     
+                </div>
+                
+                <div class="col-lg-6">
+                    
+                    <div class="input-group input-group">
+                        <label class="lbl_editar_producto lbl_caja" for="numerocaja">Lios </label>
+                        <input type="text" role="group" ng-model="root.cantidadLios" class="form-control"   validacion-numero />
+
+                    </div>
+                     
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="contenedorBotones">
+        <button class="btn btn-primary ng-binding pull-right" ng-click="onIngresarLios()">Aceptar</button>
+        <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrar()">Cancelar</button>
+    </div>
+
+
+</div>

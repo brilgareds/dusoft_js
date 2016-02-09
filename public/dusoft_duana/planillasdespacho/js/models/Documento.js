@@ -75,7 +75,8 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Documento.prototype.get_descripcion = function() {
-                return this.get_prefijo_numero() + ' ( No. Pedido ' + this.get_numero_pedido() + ' )';
+                var pedido = (this.get_numero_pedido()) ? ' ( No. Pedido ' + this.get_numero_pedido() + ' )' : "";
+                return this.get_prefijo_numero() + pedido;
             };
 
             Documento.prototype.get_numero_pedido = function() {

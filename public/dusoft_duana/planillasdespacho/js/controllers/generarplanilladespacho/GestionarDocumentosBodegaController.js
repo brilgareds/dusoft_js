@@ -506,28 +506,29 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     {field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" style="margin-right:5px;" ><span class="glyphicon glyphicon-ok"></span></button>\
                                             <button class="btn btn-default btn-xs" ng-click="onMostrarVentanaDescripcion(row.entity)" ng-show="datos_view.opcion_predeterminada == 2" ng-disabled="datos_view.despachoPorLios" ><span class="glyphicon glyphicon-pencil"></span></button>\
                                         </div>'
                     }
                 ]
             };
             
-            $scope.onMostrarVentanaDescripcion = function(){
+            $scope.onMostrarVentanaDescripcion = function(documento){
                  $scope.opts = {
                     backdrop: 'static',
                     dialogClass: "editarproductomodal",
                     templateUrl: 'views/generarplanilladespacho/descripcionOtrasSalidas.html',
-                    controller: "GestionarLiosController",
+                    scope:$scope,
+                    controller: function(documento, $modalInstance){
+                        $scope.documento = documento;
+                        
+                        $scope.cerrar = function(){
+                            $modalInstance.close();
+                        };
+                    },
                     resolve: {
-                        documentos: function() {
-                            return documentos;
-                        },
-                        tipo: function(){
-                            return $scope.datos_view.opcion_predeterminada;
-                        },
-                        numeroGuia: function(){
-                            return $scope.planilla.get_numero_guia();
+                        documento: function(){
+                            return documento;
                         }
                     }
                 };

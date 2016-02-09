@@ -15,7 +15,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             self.init = function(){
                 $scope.root = {
                     cantidadCajas:0,
-                    cantidadLios:0
+                    cantidadLios:0,
+                    observacion:""
                 };
                 
                 $scope.root.session = {
@@ -24,6 +25,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
                 
                 $scope.root.documentos = documentos;
+                
+            };
+            
+            self.validarLios = function(){
+                var cantidadCajas = parseInt($scope.root.cantidadCajas);
+                var cantidadLios = parseInt($scope.root.cantidadLios);
+                
+                if(isNaN(cantidadCajas) || isNaN(cantidadLios) || cantidadLios === 0 || cantidadLios === 0 ){
+                    return false;
+                }
                 
             };
 
@@ -64,6 +75,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             $scope.onIngresarLios = function(){
                 
+                if(!self.validarLios()){
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "La cantidad de cajas o lios no son correctos");
+                    
+                    return;
+                }
                 
                 var obj = {
                     session: $scope.root.session,
@@ -73,17 +89,24 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             totalCaja: $scope.root.cantidadCajas,
                             cantidadLios: $scope.root.cantidadLios,
                             tipo:tipo,
-                            numeroGuia:numeroGuia
+                            numeroGuia:numeroGuia,
+                            observacion:$scope.observacion
                         }
                     }
                 };
 
 
                 Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function(data) {
-                    console.log("data ", data);
+                    
+                    if(data.status === 200){
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
+                    }
                    
                 });
             };
+           
             
             self.init();
           

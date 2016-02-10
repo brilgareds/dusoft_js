@@ -65,13 +65,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              */
              that.traerListadoDocumentosUsuario = function(callback) {
 	         var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());	
-                
+               
 		 var obj = {
                     session: $scope.session,
                     data: {
                         movimientos_bodegas: {
-                            centro_utilidad_id: session.centroUtilidad.codigo,
-                            bodega_id: session.centroUtilidad.bodega.codigo,
+                            centro_utilidad_id: session.centrosUtilidad[0].codigo,
+                            bodega_id: session.centrosUtilidad[0].bodegas[0].codigo,
                             tipo_documento: 'E008'
                         }
                     }
@@ -349,7 +349,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                           
                            if (data.status === 200) {
                                 var resultado = data.obj.validacionDespachos[0];                             
-                                var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);                             
+                                var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
+                             
                                  $scope.datos_view.empresaSeleccionada = empresa;
                              
                                  $scope.documentoDespachoAprobado= AprobacionDespacho.get(1,resultado.prefijo,resultado.numero,resultado.fecha_registro)

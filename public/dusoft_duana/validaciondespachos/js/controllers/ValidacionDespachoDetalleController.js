@@ -141,7 +141,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                }else{
                     prefijo = $scope.documentoDespachoAprobado.prefijo;
                }
-                console.log("prefijo ", prefijo); 
+               
                 var obj = {
                     session: $scope.session,
                     data: {

@@ -111,7 +111,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  */
                 
                 that.listarDespachosAprobados = function(){
-                    
+                   
                     var obj = {
                         
                        session: $scope.session,
@@ -120,15 +120,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        empresa_id:$scope.datos_view.empresaSeleccionada,
                        fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
                        fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                       paginaactual:$scope.paginaActual,
+                       paginaactual:$scope.paginaactual,
                        registroUnico: false
                         
                     };
                    
                     ValidacionDespachosService.listarDespachosAprobados(obj,function(data){
                            if (data.status === 200) {
-
+                               
                                 $scope.datos_view.items = data.obj.validacionDespachos.length;
+                                
                                 that.renderListarDespachosAprobados(data);
                                 
                            }else{

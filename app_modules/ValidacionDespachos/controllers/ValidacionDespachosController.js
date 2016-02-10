@@ -51,7 +51,7 @@ ValidacionDespachos.prototype.listarDespachosAprobados = function(req, res) {
 
     var obj = {fechaInicial: fechaInicial,
         fechaFinal: fechaFinal,
-        prefijo: prefijo,
+        prefijo: prefijo.toUpperCase(),
         numero: numero,
         empresa_id: empresa_id,
         paginaActual: paginaActual,
@@ -164,7 +164,7 @@ ValidacionDespachos.prototype.registrarAprobacion = function(req, res) {
 
     var obj = {
         empresa_id: empresa_id,
-        prefijo: prefijo,
+        prefijo: prefijo.toUpperCase(),
         numero: numero,
         cantidad_cajas: cantidad_cajas,
         cantidad_neveras: cantidad_neveras,
@@ -222,7 +222,7 @@ ValidacionDespachos.prototype.listarNumeroPrefijoOtrasSalidas = function(req, re
     }
     
    
-    var prefijo = args.validacionDespachos.prefijo;
+    var prefijo = args.validacionDespachos.prefijo.toUpperCase();
 
     
     G.Q.ninvoke(that.m_ValidacionDespachos, 'listarNumeroPrefijoOtrasSalidas', {prefijo:prefijo}).then(function(resultado) {
@@ -271,13 +271,12 @@ ValidacionDespachos.prototype.validarExistenciaDocumento = function(req, res){
         return;
     }
    
- 
-
     var obj = {
                 empresa_id:args.validacionDespachos.empresa_id,
-                prefijo:args.validacionDespachos.prefijo, 
+                prefijo:args.validacionDespachos.prefijo.toUpperCase(), 
                 numero:args.validacionDespachos.numero
               };
+    
     var status = {};   
     
     G.Q.ninvoke(that.m_ValidacionDespachos, 'validarExistenciaDocumento', obj).then(function(resultado) {
@@ -297,7 +296,7 @@ ValidacionDespachos.prototype.validarExistenciaDocumento = function(req, res){
         }
         res.send(G.utils.r(req.url, status.mensaje, status.codigo, {validacionDespachos: resultado}));
 
-    }).fail(function(err) {
+     }).fail(function(err) {
         
         res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err:err}}));
 

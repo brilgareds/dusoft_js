@@ -56,7 +56,7 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
  * Descripcion :  Funcion encargada de almacenar el detalle del pedido
  */
 ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback) {
-
+ 
  var sql = "INSERT INTO aprobacion_despacho_planillas (empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras,observacion,sw_otras_salidas, fecha_registro, usuario_id) \
                  VALUES ( :1, :2, :3, :4, :5, :6, :7, NOW(), :8 );";
 
@@ -114,7 +114,7 @@ ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj 
         callback(false, resultado.rows);
     })
     .catch(function (error) {
-        console.log("error ", error);
+       
         callback(error);
     }).done();
 };
@@ -142,7 +142,7 @@ ValidacionDespachosModel.prototype.validarExistenciaDocumento = function (obj ,c
     
     G.knex.raw(sql, {1:obj.prefijo, 2:obj.numero, 3:obj.empresa_id})
     .then(function (resultado) {
-        console.log("resultado ", resultado)
+       
         callback(false, resultado.rows);
     })
     .catch(function (error) {

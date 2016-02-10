@@ -56,10 +56,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     
                     $scope.datos_view.empresaSeleccionada = "";
                 }
-            };
-            
-            
-            
+            };    
             /**
              * @author Cristian Ardila
              * @fecha 05/02/2016
@@ -99,9 +96,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             });
 			 
 			
-            
+            /**
+             * @author Cristian Ardila
+             * @fecha 10/02/2016
+             * +Descripcion Funcion que se acciona al presionar el boton guardar
+             *              de la vista Detalle de despacho aprobado
+             */
             $scope.aprobarDespacho = function() {
-               
+             
              if($scope.documentoDespachoAprobado === undefined || 
                 $scope.documentoDespachoAprobado === null      ||
                 $scope.documentoDespachoAprobado === null){
@@ -161,6 +163,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            };
            
            /**
+            * +Descripcion Metodo en el cual se valida si se enviara el prefijo
+            *              desde el input o el dropdown cuando se aprobara un
+            *              documento
+            * @returns {unresolved}
+            */
+           that.validarPrefijoEmpresasOtras = function(){
+               
+              var prefijo;
+              
+               if(!$scope.datos_view.seleccionarOtros){  
+                    prefijo = $scope.datos_view.prefijoList.prefijo;
+               }else{
+                    prefijo = $scope.documentoDespachoAprobado.prefijo;
+               }              
+               return prefijo;
+           };
+           
+           /**
             * @author Cristian Ardila
             * @fecha 10/02/2016
             * +Descripcion Metodo el cual consumira el servicio encargado de
@@ -170,14 +190,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             */
            that.validarExistenciaDocumentoAprobado = function(callback){
                
-               var prefijo ;
-              
-               if(!$scope.datos_view.seleccionarOtros){
-                    
-                    prefijo = $scope.datos_view.prefijoList.prefijo;
-               }else{
-                    prefijo = $scope.documentoDespachoAprobado.prefijo;
-               }
+               var prefijo  = that.validarPrefijoEmpresasOtras();
                
                  var obj = {
                     session: $scope.session,
@@ -185,19 +198,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         validacionDespachos: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
                             prefijo: prefijo,
-                            numero: $scope.documentoDespachoAprobado.numero
-                    
+                            numero: $scope.documentoDespachoAprobado.numero                    
                         }
                     }
                 };
                 
-                Request.realizarRequest(API.VALIDACIONDESPACHOS.CONSULTAR_DOCUMENTO_APROBADO, "POST", obj, function(data) {
-                     
+                Request.realizarRequest(API.VALIDACIONDESPACHOS.CONSULTAR_DOCUMENTO_APROBADO, "POST", obj, function(data) {                   
                            callback(data);
-                       
-                    
                });
-           }
+           };
            /**
             * @author Cristian Ardila
             * @fecha 04/02/2016
@@ -207,14 +216,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             */
            that.obtenerDocumento = function(callback){    
             
-               var prefijo ;
-              
-               if(!$scope.datos_view.seleccionarOtros){
-                    
-                    prefijo = $scope.datos_view.prefijoList.prefijo;
-               }else{
-                    prefijo = $scope.documentoDespachoAprobado.prefijo;
-               }
+               var prefijo = that.validarPrefijoEmpresasOtras();
                
                 var obj = {
                     session: $scope.session,
@@ -223,21 +225,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
                             prefijo: prefijo,
                             numero: $scope.documentoDespachoAprobado.numero
-                    
                         }
                     }
                 };
                
                 Request.realizarRequest(API.VALIDACIONDESPACHOS.OBTENER_DOCUMENTO, "POST", obj, function(data) {
                        
-                      if (data.status === 200) {
-                       
+                      if (data.status === 200) {                       
                            callback(true);
                         }else {
                            callback(false);
                            AlertService.mostrarVentanaAlerta("Mensaje del sistema",data.msj);
-                    }  
-                    
+                    }                    
                });
            };
            
@@ -251,15 +250,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             */
            that.validarCantidadCajasNeveras = function(){
              
-              var prefijo ;
-              
-               if(!$scope.datos_view.seleccionarOtros){
-                    
-                    prefijo = $scope.datos_view.prefijoList.prefijo;
-               }else{
-                    prefijo = $scope.documentoDespachoAprobado.prefijo;
-               }
-               
+             var prefijo = that.validarPrefijoEmpresasOtras();
                
              var obj = {
                     session: $scope.session,
@@ -267,8 +258,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         planillas_despachos: {
                             empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
                             prefijo: prefijo,
-                            numero: $scope.documentoDespachoAprobado.numero
-                    
+                            numero: $scope.documentoDespachoAprobado.numero                   
                         }
                     }
                 };
@@ -278,8 +268,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                       if (data.status === 200) {
                       
                         if (parseInt($scope.documentoDespachoAprobado.cantidadCajas) === data.obj.planillas_despachos.totalCajas && 
-                            parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === data.obj.planillas_despachos.totalNeveras) {
-                           
+                            parseInt($scope.documentoDespachoAprobado.cantidadNeveras) === data.obj.planillas_despachos.totalNeveras) {                          
                             that.registrarAprobacion(0);
                         }else{
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
@@ -289,8 +278,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                      if (data.status === 500) {
                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                      }
-               });
-               
+               });              
            };
            
            /**
@@ -302,14 +290,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             */
            that.registrarAprobacion = function(estado){
                 
-               var prefijo ;
-              
-               if(!$scope.datos_view.seleccionarOtros){
-                    
-                    prefijo = $scope.datos_view.prefijoList.prefijo;
-               }else{
-                    prefijo = $scope.documentoDespachoAprobado.prefijo;
-               }
+               var prefijo = that.validarPrefijoEmpresasOtras();
                
                 var obj = {
                     session: $scope.session,
@@ -321,8 +302,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             cantidad_cajas: $scope.documentoDespachoAprobado.cantidadCajas,
                             cantidad_neveras: $scope.documentoDespachoAprobado.cantidadNeveras,
                             observacion: $scope.documentoDespachoAprobado.observacion,
-                            estado: estado
-                    
+                            estado: estado                  
                         }
                     }
                 };
@@ -337,8 +317,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }  else {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
-               });
-               
+               });              
            };
              
             /**
@@ -355,8 +334,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(documento.estado === 1){
                     
                   $scope.datos_view.seleccionarOtros = true;
-                    var obj = {
-                        
+                    var obj = {                        
                        session: $scope.session,
                        prefijo:documento.prefijo || 0,
                        numero: documento.numero || 0,
@@ -364,17 +342,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                        fechaInicial: "",
                        fechaFinal:"",
                        paginaactual:1,
-                       registroUnico: true
-                        
+                       registroUnico: true                      
                     };
                  
                     ValidacionDespachosService.listarDespachosAprobados(obj,function(data){
                           
                            if (data.status === 200) {
-                                var resultado = data.obj.validacionDespachos[0];
-                               
-                                var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
-                               
+                                var resultado = data.obj.validacionDespachos[0];                             
+                                var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);                             
                                  $scope.datos_view.empresaSeleccionada = empresa;
                              
                                  $scope.documentoDespachoAprobado= AprobacionDespacho.get(1,resultado.prefijo,resultado.numero,resultado.fecha_registro)
@@ -390,10 +365,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }              
                 if(documento.estado === 2){  
                    // $scope.datos_view.seleccionarOtros = false;
-                    $scope.datos_view.estadoRegistro = 2;
-                    
-                }
-               
+                    $scope.datos_view.estadoRegistro = 2;                   
+                } 
             };
             
                /*
@@ -426,21 +399,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.empresas.push(_empresa);
                     }
                 };
-                
-                
-                ////////////////////////////////////        
-                    /*
-                     * funcion ejecuta listarCentroUtilidad
-                     * @returns {lista CentroUtilidad}
-                     */
-                    $scope.onSeleccionarEmpresa = function(empresa_Nombre) {
-                        if (empresa_Nombre.length < 3) {
-                            return;
-                        }
-                        $scope.datos_view.termino_busqueda_empresa = empresa_Nombre;
-                        that.listarEmpresas(function() {
-                        });
-                    };
+                      
+                /*
+                 * funcion ejecuta listarCentroUtilidad
+                 * @returns {lista CentroUtilidad}
+                 */
+                $scope.onSeleccionarEmpresa = function(empresa_Nombre) {
+                    if (empresa_Nombre.length < 3) {
+                        return;
+                    }
+                    $scope.datos_view.termino_busqueda_empresa = empresa_Nombre;
+                    that.listarEmpresas(function() {
+                    });
+                };
            /**
             * @author Cristian Ardila
             * @fecha 04/02/2016

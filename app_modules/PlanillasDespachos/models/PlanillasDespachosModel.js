@@ -98,6 +98,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 inner join bodegas c on b.farmacia_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad and b.bodega = c.bodega\
                 inner join centros_utilidad d on c.empresa_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad\
                 inner join empresas e on d.empresa_id = e.empresa_id\
+                inner join aprobacion_despacho_planillas f on f.prefijo = a.prefijo and f.numero = a.numero and f.empresa_id = a.empresa_id\
                 where a.empresa_id = :1 \
                 and b.farmacia_id = :2 \
                 and b.centro_utilidad  = :3 \
@@ -116,7 +117,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
         callback(false, resultado.rows, resultado);
         
     }).catch(function(err) {
-        
+        console.log("error >>>>>>>>>> ", err);
         callback(err);
     });
 };
@@ -132,11 +133,10 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                 a.prefijo,\
                 a.numero,\
                 a.pedido_cliente_id as numero_pedido,\
-                (select coalesce(max(aa.numero_caja),0) as total_cajas from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '0') as total_cajas,\
-                (select coalesce(max(aa.numero_caja),0) as total_neveras  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '1') as total_neveras,\
                 a.fecha_registro\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join ventas_ordenes_pedidos b on a.pedido_cliente_id = b.pedido_cliente_id \
+                inner join aprobacion_despacho_planillas c on c.prefijo = a.prefijo and c.numero = a.numero and c.empresa_id = a.empresa_id\
                 where a.empresa_id= :1 and a.tipo_id_tercero = :2 and a.tercero_id = :3 and b.estado_pedido in ('2','8','9','3') \
                 and a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_clientes b ) and \
                 ( \
@@ -364,26 +364,35 @@ PlanillasDespachosModel.prototype.modificar_estado_planilla_despacho = function(
 
 
 
-// Consultar los documentos de despacho de un cliente 
+// Consultar las cajas y neveras de un documento (se usa en aprobacion de despachos y planillas)
 PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function(obj, callback){
+    var params = {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero};
+    var sql = "";
     
-    var totalCajas = "total_cajas";
-    if(obj.tipo === 1){
-        totalCajas = "total_neveras"
+    if(obj.esPlanillas){
+        sql = " SELECT aa.cantidad_cajas as total_cajas, aa.cantidad_neveras as total_neveras\
+                    FROM aprobacion_despacho_planillas aa  where aa.empresa_id = :1 \
+                    AND  aa.prefijo = :2 AND aa.numero = :3; ";
+    } else {
+        
+        sql = " SELECT\
+                    (\
+                            SELECT coalesce(max(b.numero_caja),'0') as total_cajas\
+                            FROM inv_bodegas_movimiento_d b  where b.empresa_id = :1\
+                            AND  b.prefijo = :2 AND b.numero = :3  and b.tipo_caja = '0'\
+                    ) as total_cajas,\
+                    (\
+                            SELECT coalesce(max(b.numero_caja),'0') as total_neveras\
+                            FROM inv_bodegas_movimiento_d b  where b.empresa_id = :1\
+                            AND  b.prefijo = :2 AND b.numero = :3  and b.tipo_caja = '1'\
+                    ) as total_neveras; ";
     }
-    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    var sql = " SELECT coalesce(max(aa.numero_caja),'0') as "+totalCajas+"   \
-                FROM inv_bodegas_movimiento_d aa  where aa.empresa_id = :1 \
-                AND  aa.prefijo = :2 AND aa.numero = :3 and aa.tipo_caja = :4\
-               ; ";
     
  
-    G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero, 4: obj.tipo}).then(function(resultado){
-       
+    G.knex.raw(sql,params).then(function(resultado){
         callback(false, resultado.rows);
         
     }).catch(function(err) {
-     
         callback(err);
     });
 };
@@ -413,12 +422,11 @@ PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
 
     };
         
-    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    var sql = "SELECT coalesce(sum(aa.numero_caja),'0') as totalCajas\
-               FROM inv_bodegas_movimiento_d aa\
-               WHERE aa.empresa_id::varchar IN ("+vEmpresaId.toString()+") AND  aa.prefijo::varchar IN ("+vPrefijo.toString()+") AND aa.numero::varchar IN ("+vNumero.toString()+") and aa.tipo_caja = '0';";
+  
+   var sql = "SELECT coalesce(sum(aa.cantidad_cajas),'0') as totalCajas\
+               FROM aprobacion_despacho_planillas aa\
+               WHERE aa.empresa_id::varchar IN ("+vEmpresaId.toString()+") AND  aa.prefijo::varchar IN ("+vPrefijo.toString()+") AND aa.numero::varchar IN ("+vNumero.toString()+") ;";
     
- 
     G.knex.raw(sql, {}).then(function(resultado){
         
         callback(false, resultado.rows);
@@ -441,7 +449,7 @@ PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
  *             
  **/
 PlanillasDespachosModel.prototype.insertarLioDocumento = function(obj, callback) {
- 
+   
     G.knex.transaction(function(transaccion) {  
           obj.transaccion = transaccion;
           G.Q.nfcall(__insertarLioDocumento, obj).then(function(){
@@ -468,16 +476,18 @@ PlanillasDespachosModel.prototype.insertarLioDocumento = function(obj, callback)
 
 
 function __insertarLioDocumento(obj, callback){
-
+     
      var documento =  obj.documentos[0];
-    
+     var sql = "";
      if(!documento){
         callback(false);
         return;
      }
+     var observacion = obj.observacion.lenght ===0? documento.prefijo + " - " + documento.numero:"'"+obj.observacion+"'";
+     
+   if(obj.tabla === "inv_planillas_detalle_farmacias" || obj.tabla === "inv_planillas_detalle_clientes"){
     
-     var observacion = "'N/N'";
-     var sql = "INSERT INTO "+obj.tabla+" (\n\
+      sql = "INSERT INTO "+obj.tabla+" (\n\
                 inv_planillas_despacho_id, \n\
                 empresa_id, \
                 prefijo,\
@@ -489,11 +499,11 @@ function __insertarLioDocumento(obj, callback){
                 usuario_id,\
                 fecha_registro,\
                 numero_lios)\
-                (select 2 as inv_planillas_despacho_id,\
+                (select "+obj.numeroGuia+" as inv_planillas_despacho_id,\
                 empresa_id,\
                 prefijo,\
                 numero,\
-                coalesce(sum(numero_caja),'0') as totalCajas,\
+                coalesce(max(numero_caja),'0') as totalCajas,\
                 0 as cantidad_neveras,\
                 0 as temperatura_neveras,\
                 "+observacion+" as observacion,\
@@ -506,7 +516,40 @@ function __insertarLioDocumento(obj, callback){
                  AND numero = :3\
                  GROUP BY 1,2,3,4,6,7,8,9,10,1)";
     
-    
+   }else{
+       
+        sql = "INSERT INTO inv_planillas_detalle_empresas(\
+                inv_planillas_despacho_id, \
+                empresa_id, \
+                prefijo,\
+                numero, \
+                cantidad_cajas,\
+                cantidad_neveras,\
+                temperatura_neveras,\
+                observacion, \
+                usuario_id,\
+                fecha_registro,\
+                numero_lios\
+                )\
+                (select "+obj.numeroGuia+" as inv_planillas_despacho_id,\
+                empresa_id,\
+                prefijo,\
+                numero,\
+                coalesce(max(cantidad_cajas),'0') as totalCajas,\
+                0 as cantidad_neveras,\
+                0 as temperatura_neveras,\
+                "+observacion+" as observacion,\
+                "+parseInt(obj.usuario_id)+ " as usuario_id,\
+                now() as fecha_registro,\
+                "+obj.cantidadLios+" as numero_lios \
+                 FROM aprobacion_despacho_planillas\
+                 WHERE empresa_id = :1\
+                 AND prefijo= :2\
+                 AND numero = :3\
+                 AND sw_otras_salidas = '1'\
+                 GROUP BY 1,2,3,4,6,7,8,9,10,1)";
+   }
+   
     var query = G.knex.raw(sql, {1: documento.empresa_id, 2: documento.prefijo, 3: documento.numero});
     
     if(obj.transaccion) query.transacting(obj.transaccion);

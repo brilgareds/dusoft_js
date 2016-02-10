@@ -803,7 +803,9 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 
 
 PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
-
+    
+   
+    
     var that = this;
 
     var args = req.body.data;
@@ -834,33 +836,32 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
     var empresa_id = args.planillas_despachos.empresa_id;
     var prefijo = args.planillas_despachos.prefijo;
     var numero = args.planillas_despachos.numero;
+    var esPlanillas = args.planillas_despachos.esPlanillas || false;
     
-    var obj = {empresa_id: empresa_id,
-               prefijo: prefijo, 
-               numero:numero,
-               tipo: 0};
+    var obj = {
+        empresa_id: empresa_id,
+        prefijo: prefijo, 
+        numero:numero,
+        tipo: 0,
+        esPlanillas:esPlanillas
+   };
    
-     G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj).then(function(resultado){ 
+    G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj).then(function(resultado){ 
        
          obj.totalCajas = (resultado.length > 0 ) ? resultado[0].total_cajas : 0;
-         obj.tipo =1;
-         return G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj );
-         
-     }).then(function(resultado){
-         
-          obj.totalNeveras = (resultado.length > 0 ) ? resultado[0].total_neveras : 0;
-          
+         obj.totalNeveras = (resultado.length > 0 ) ? resultado[0].total_neveras : 0;
          
          res.send(G.utils.r(req.url, 'Cantidades de cajas y neveras', 200, {planillas_despachos: obj}));
-         
-     }).fail(function(err){ 
-         
-         
+     }).
+     fail(function(err){ 
          res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
-       
     }).done();
    
+     
+   
 };
+
+
 
 /**
  *@author Cristian Ardila
@@ -869,11 +870,14 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
  *             de documentos 
  **/
 PlanillasDespachos.prototype.gestionarLios = function(req, res) {
-
+ 
+  
+    
     var that = this;
 
     var args = req.body.data;
-
+    
+   
     if (args.planillas_despachos === undefined ) {
         res.send(G.utils.r(req.url, 'planillas_despachos no esta definido', 404, {}));
         return;
@@ -889,13 +893,13 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
         return;
     }
     
-    if (args.planillas_despachos.totalCaja === undefined ) {
-        res.send(G.utils.r(req.url, 'la cantidad de cajas no esta definido', 404, {}));
+    if (args.planillas_despachos.totalCaja === undefined || args.planillas_despachos.totalCaja === '' || args.planillas_despachos.totalCaja === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de cajas debe estar definido y no puede estar en cero', 404, {}));
         return;
     }
     
-     if (args.planillas_despachos.cantidadLios === undefined ) {
-        res.send(G.utils.r(req.url, 'la cantidad de lios no esta definido', 404, {}));
+     if (args.planillas_despachos.cantidadLios === undefined || args.planillas_despachos.cantidadLios === '' || args.planillas_despachos.cantidadLios === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de lios debe estar definido y no puede estar en cero', 404, {}));
         return;
     }
     args.planillas_despachos.usuario_id = req.session.user.usuario_id;
@@ -911,12 +915,17 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
         return;
     }
     var status = {};
-   
+  
     G.Q.ninvoke(that.m_planillas_despachos,'gestionarLios', args.planillas_despachos)
            
      .then(function(resultado){ 
+ 
+     
+     
         var def = G.Q.defer();  
+     
         if(parseInt(resultado[0].totalcajas) === totalCajas){
+             
              status.codigo = 200;
              status.mensaje = 'Se insertan satisfactoriamente los lios';
              args.planillas_despachos.tabla = tabla;
@@ -924,20 +933,19 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
              return G.Q.ninvoke(that.m_planillas_despachos,'insertarLioDocumento', args.planillas_despachos );   
              
          }else{
-             status.codigo = 500;
-             status.mensaje = 'Error consultado las cantidades';
+            
+             status.codigo = 403;
+             status.mensaje = 'El número de cajas es diferente al auditado';
              def.resolve();
         }
       //  return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
          
      }).then(function(resultado){
-         console.log("SALIR ")
-         console.log("resultado ", resultado)
+         
          res.send(G.utils.r(req.url, status.mensaje, status.codigo, {planillas_despachos: resultado}));
          
      }).fail(function(err){ 
-         
-        
+       
          res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
        
     }).done();
@@ -984,24 +992,6 @@ PlanillasDespachos.prototype.actualizarLioDocumento = function(req, res) {
     }
     
    
-   /*  var obj = {documentos:[
-			{
-                        empresa:01,
-                        numero:1020,
-                        prefijo:'EFC',
-                        lio:1
-                        },
-                        {
-                        empresa:01,
-                        numero:1020,
-                        prefijo:'EFC',
-                        lio:1
-                        }
-                    ],
-                    tipo:1
-                   };     */  
-     
-       
    G.Q.ninvoke(that.m_planillas_despachos,'actualizarLioDocumento', args.planillas_despachos.documentos)
             
      .then(function(resultado){ 

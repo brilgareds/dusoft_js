@@ -3,10 +3,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     var fo = controllers.controller('GestionarLiosController', [
         '$scope', '$rootScope', 'Request',
         '$modalInstance', 'API', "socket", "AlertService",
-        "Usuario", "documentos", "tipo",
+        "Usuario", "documentos", "tipo", "numeroGuia",
         function($scope, $rootScope, Request,
                 $modalInstance, API, socket, AlertService,
-                Usuario, documentos, tipo) {
+                Usuario, documentos, tipo, numeroGuia) {
 
 
             var self = this;
@@ -15,7 +15,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             self.init = function(){
                 $scope.root = {
                     cantidadCajas:0,
-                    cantidadLios:0
+                    cantidadLios:0,
+                    observacion:""
                 };
                 
                 $scope.root.session = {
@@ -26,15 +27,35 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.root.documentos = documentos;
                 
             };
+            
+            self.validarLios = function(){
+                var cantidadCajas = parseInt($scope.root.cantidadCajas);
+                var cantidadLios = parseInt($scope.root.cantidadLios);
+                
+                //console.log("cantidad cajas ", cantidadCajas, " cantidadLios ", cantidadLios);
+                
+                if(isNaN(cantidadCajas) || isNaN(cantidadLios) || cantidadLios === 0 || cantidadCajas === 0 ){
+                    //console.log("cantidad cajas ", isNaN(cantidadCajas), " cantidadLios ", cantidadLios);
+                    return false;
+                } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) && (cantidadLios  > cantidadCajas)) {
+                    return false;
+                }
+                
+
+                return true;
+                
+            };
 
             $modalInstance.opened.then(function() {
-
+                console.log("documentos ", documentos);
 
             });
 
             $modalInstance.result.then(function() {
+                $scope.root.documentos = [];
                 $scope.root = null;
-
+                $rootScope.$emit("onLiosRegistrados");
+                console.log("on lio creado");
             }, function() {
             });
             
@@ -64,6 +85,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             $scope.onIngresarLios = function(){
                 
+                if(!self.validarLios()){
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "La cantidad de cajas o lios no son correctos");
+                    
+                    return;
+                }
                 
                 var obj = {
                     session: $scope.root.session,
@@ -72,17 +98,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             documentos: documentos,
                             totalCaja: $scope.root.cantidadCajas,
                             cantidadLios: $scope.root.cantidadLios,
-                            tipo:tipo
+                            tipo:tipo,
+                            numeroGuia:numeroGuia,
+                            observacion:$scope.root.observacion
                         }
                     }
                 };
 
 
                 Request.realizarRequest(API.PLANILLAS.GESTIONAR_LIOS, "POST", obj, function(data) {
-                    console.log("data ", data);
+                    
+                    if(data.status === 200){
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
+                        $scope.cerrar();
+                    } else if(data.status === 403) {
+                        
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
+                    }
                    
                 });
             };
+           
             
             self.init();
           

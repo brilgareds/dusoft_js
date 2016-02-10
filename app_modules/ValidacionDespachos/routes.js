@@ -16,4 +16,19 @@ module.exports = function(app, di_container) {
        c_ValidacionDespachos.registrarAprobacion(req, res); 
     });
     
+    app.post('/api/ValidacionDespachos/listarDocumentosOtrasSalidas', function(req, res){
+       c_ValidacionDespachos.listarDocumentosOtrasSalidas(req, res); 
+    });
+    
+    app.post('/api/ValidacionDespachos/listarNumeroPrefijoOtrasSalidas', function(req, res){
+       c_ValidacionDespachos.listarNumeroPrefijoOtrasSalidas(req, res); 
+    });
+    
+    /**
+     * +Descripcion Servicio encargado de validar la existencia de un documento
+     *              si ya se encuentra aprobado o no
+     */
+    app.post('/api/ValidacionDespachos/validarExistenciaDocumento', function(req, res){
+       c_ValidacionDespachos.validarExistenciaDocumento(req, res); 
+    });
 };

@@ -10,6 +10,10 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             this.get = function(nombre, direccion, tipo_id, id, telefono) {
                 return new ClientePlanillaDespacho(nombre, direccion, tipo_id, id, telefono);
             };
+            
+            this.getClass = function(){
+                return ClientePlanillaDespacho;
+            };
 
             ClientePlanillaDespacho.prototype = Object.create(Cliente.getClass().prototype);
 

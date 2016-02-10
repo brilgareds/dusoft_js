@@ -46,18 +46,8 @@
                                       </fieldset>
                                     </div>    
                                                                              
-                                       
-                                  <div class="col-md-4">
-                                         <fieldset>
-                                            <legend>Numero</legend>
-                                              <div class="row">
-                                                <div class="col-md-7">
-                                                    
-                                            <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  class="form-control"  ng-model="documentoDespachoAprobado.numero" placeholder="Numero" name="" id="" validacion-numero-entero />
-                                         
-                                                </div></div>
-                                            </fieldset>
-                                    </div>   
+                                      
+                             
                                     <div class="col-md-4">
                                      <fieldset>
                                             <legend>Prefijo</legend>   
@@ -73,7 +63,7 @@
                                                 
                                             
                                           
-                                            <ui-select  ng-model="documentoDespachoAprobado.prefijoList" 
+                                            <ui-select  ng-model="datos_view.prefijoList"
                                                         theme="select2" 
                                                         class="form-control selectgeneral pull-left" 
                                                         ng-change="valorSeleccionado(true)"
@@ -84,10 +74,35 @@
                                                 </ui-select-choices>
                                             </ui-select>
                                             
+                                            
+                                            
+                                          
+                                            
                                             </div></div>
                                       </fieldset>
                                     </div>       
                                     
+                                    
+                                     <div class="col-md-4">
+                                         <fieldset>
+                                            <legend>Numero</legend>
+                                              <div class="row">
+                                                <div class="col-md-7">
+                                                    
+                                            <input type="text" 
+                                                   ng-disabled="datos_view.estadoRegistro == 1"  
+                                                   class="form-control"  
+                                                   ng-model="documentoDespachoAprobado.numero" 
+                                                   placeholder="Numero" 
+                                                   name="" 
+                                                   id="" 
+                                                   validacion-numero-entero 
+                                                   ng-blur="validarExistenciaDocumento()"/>
+                                         
+                                                </div></div>
+                                            </fieldset>
+                                    </div> 
+                             
                                     
                                 </div>                              
                             </div>                             
@@ -135,7 +150,7 @@
                                     <span class="glyphicon glyphicon-ok" ></span> Regresar
                                 </button>  
                                 
-                                <button class="btn btn-default" ng-disabled="datos_view.estadoRegistro == 1" ng-click="aprobarDespacho()">
+                                <button class="btn btn-default" ng-disabled="datos_view.estadoRegistro == 1 || datos_view.existenciaDocumento == true" ng-click="aprobarDespacho()">
                                     <span class="glyphicon glyphicon-ok" ></span> Guardar 
                                 </button>  
                             </div>  

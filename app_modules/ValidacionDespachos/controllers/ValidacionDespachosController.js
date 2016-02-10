@@ -182,6 +182,13 @@ ValidacionDespachos.prototype.registrarAprobacion = function(req, res) {
 
 ValidacionDespachos.prototype.listarDocumentosOtrasSalidas = function(req,res){
     var that = this;
+    var args = req.body.data;
+    
+    var obj = {
+        termino_busqueda:args.validacionDespachos.termino_busqueda || ""
+    };
+   
+    
     G.Q.ninvoke(that.m_ValidacionDespachos, 'listarDocumentosOtrasSalidas', obj).then(function(resultado) {
 
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {documentos: resultado}));

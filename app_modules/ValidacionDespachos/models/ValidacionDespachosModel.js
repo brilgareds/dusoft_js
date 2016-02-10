@@ -101,9 +101,16 @@ ValidacionDespachosModel.prototype.listarEmpresas = function (empresaNombre,call
 
 ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj ,callback) {
     
-    var sql = "SELECT DISTINCT ON  (prefijo) numero, prefijo, observacion FROM aprobacion_despacho_planillas "
-
-    G.knex.raw(sql)
+    //Para el caso de otras salidas se valida que las cantidades pasadas por despacho sean menores a las aprobadas por seguridad
+    var sql = "SELECT DISTINCT ON  (a.prefijo) a.numero, a.prefijo, a.observacion FROM\
+                aprobacion_despacho_planillas AS a WHERE (\
+                  SELECT count(b.numero) as total FROM inv_planillas_detalle_empresas as b WHERE b.prefijo = a.prefijo\
+                ) < (\
+                  SELECT count(c.numero) as total FROM aprobacion_despacho_planillas as c WHERE c.prefijo = a.prefijo\
+                ) AND (a.prefijo "+G.constants.db().LIKE+" :1 OR  a.numero::VARCHAR "+G.constants.db().LIKE+" :1)";
+    
+    
+    G.knex.raw(sql, {1: "%"+ obj.termino_busqueda + "%"})
     .then(function (resultado) {
         callback(false, resultado.rows);
     })
@@ -115,7 +122,8 @@ ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj 
 
 ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (obj ,callback) {
     
-    var sql = "SELECT numero, prefijo, observacion, empresa_id FROM aprobacion_despacho_planillas WHERE prefijo = :1"
+    var sql = "SELECT numero, prefijo, observacion, empresa_id FROM aprobacion_despacho_planillas WHERE prefijo = :1\
+               AND numero NOT IN( SELECT numero FROM inv_planillas_detalle_empresas WHERE prefijo = :1)"
 
     G.knex.raw(sql, {1:obj.prefijo})
     .then(function (resultado) {

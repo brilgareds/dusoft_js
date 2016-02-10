@@ -166,7 +166,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 var obj = {
                     session: $scope.session,
                     data: {
-
+                        validacionDespachos: {
+                            
+                            termino_busqueda: $scope.datos_view.termino_busqueda
+                        }
                     }
                 };
 
@@ -417,6 +420,11 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                 };
 
                 var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log(">>>>>>>>>>>>>>>>>>>>>> cerrando ventana");
+                }, function() {
+                });
             };
 
             //Verifica si la existe la planilla, y crea un solo documento

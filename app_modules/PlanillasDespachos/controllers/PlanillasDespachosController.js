@@ -836,33 +836,32 @@ PlanillasDespachos.prototype.consultarCantidadCajaNevera = function(req, res) {
     var empresa_id = args.planillas_despachos.empresa_id;
     var prefijo = args.planillas_despachos.prefijo;
     var numero = args.planillas_despachos.numero;
+    var esPlanillas = args.planillas_despachos.esPlanillas || false;
     
-    var obj = {empresa_id: empresa_id,
-               prefijo: prefijo, 
-               numero:numero,
-               tipo: 0};
+    var obj = {
+        empresa_id: empresa_id,
+        prefijo: prefijo, 
+        numero:numero,
+        tipo: 0,
+        esPlanillas:esPlanillas
+   };
    
-     G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj).then(function(resultado){ 
+    G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj).then(function(resultado){ 
        
          obj.totalCajas = (resultado.length > 0 ) ? resultado[0].total_cajas : 0;
-         obj.tipo =1;
-         return G.Q.ninvoke(that.m_planillas_despachos,'consultarCantidadCajaNevera', obj );
-         
-     }).then(function(resultado){
-         
-          obj.totalNeveras = (resultado.length > 0 ) ? resultado[0].total_neveras : 0;
-          
+         obj.totalNeveras = (resultado.length > 0 ) ? resultado[0].total_neveras : 0;
          
          res.send(G.utils.r(req.url, 'Cantidades de cajas y neveras', 200, {planillas_despachos: obj}));
-         
-     }).fail(function(err){ 
-         
-         
+     }).
+     fail(function(err){ 
          res.send(G.utils.r(req.url, 'Error consultado las cantidades', 500, {planillas_despachos: {}}));
-       
     }).done();
    
+     
+   
 };
+
+
 
 /**
  *@author Cristian Ardila
@@ -936,7 +935,7 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
          }else{
             
              status.codigo = 403;
-             status.mensaje = 'Error consultado las cantidades';
+             status.mensaje = 'El número de cajas es diferente al auditado';
              def.resolve();
         }
       //  return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));

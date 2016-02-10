@@ -54,6 +54,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $modalInstance.result.then(function() {
                 $scope.root.documentos = [];
                 $scope.root = null;
+                $rootScope.$emit("onLiosRegistrados");
+                console.log("on lio creado");
             }, function() {
             });
             
@@ -109,6 +111,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if(data.status === 200){
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", "Se ha guardado el registro correctamente");
                         $scope.cerrar();
+                    } else if(data.status === 403) {
+                        
+                        AlertService.mostrarVentanaAlerta("Alerta del sistema", data.msj);
                     } else {
                         AlertService.mostrarVentanaAlerta("Alerta del sistema", "Ha ocurrido un error...");
                     }

@@ -364,26 +364,35 @@ PlanillasDespachosModel.prototype.modificar_estado_planilla_despacho = function(
 
 
 
-// Consultar los documentos de despacho de un cliente (se usa en aprobacion de despachos)
+// Consultar las cajas y neveras de un documento (se usa en aprobacion de despachos y planillas)
 PlanillasDespachosModel.prototype.consultarCantidadCajaNevera = function(obj, callback){
+    var params = {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero};
+    var sql = "";
     
-    var totalCajas = "total_cajas";
-    if(obj.tipo === 1){
-        totalCajas = "total_neveras"
+    if(obj.esPlanillas){
+        sql = " SELECT aa.cantidad_cajas as total_cajas, aa.cantidad_neveras as total_neveras\
+                    FROM aprobacion_despacho_planillas aa  where aa.empresa_id = :1 \
+                    AND  aa.prefijo = :2 AND aa.numero = :3; ";
+    } else {
+        
+        sql = " SELECT\
+                    (\
+                            SELECT coalesce(max(b.numero_caja),'0') as total_cajas\
+                            FROM inv_bodegas_movimiento_d b  where b.empresa_id = :1\
+                            AND  b.prefijo = :2 AND b.numero = :3  and b.tipo_caja = '0'\
+                    ) as total_cajas,\
+                    (\
+                            SELECT coalesce(max(b.numero_caja),'0') as total_neveras\
+                            FROM inv_bodegas_movimiento_d b  where b.empresa_id = :1\
+                            AND  b.prefijo = :2 AND b.numero = :3  and b.tipo_caja = '1'\
+                    ) as total_neveras; ";
     }
-    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    var sql = " SELECT coalesce(max(aa.numero_caja),'0') as "+totalCajas+"   \
-                FROM inv_bodegas_movimiento_d aa  where aa.empresa_id = :1 \
-                AND  aa.prefijo = :2 AND aa.numero = :3 and aa.tipo_caja = :4\
-               ; ";
     
  
-    G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero, 4: obj.tipo}).then(function(resultado){
-       
+    G.knex.raw(sql,params).then(function(resultado){
         callback(false, resultado.rows);
         
     }).catch(function(err) {
-     
         callback(err);
     });
 };

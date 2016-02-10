@@ -42,7 +42,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
             });
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
-
+                that.onLiosRegistrados();
                 that.removerDocumentos();
                 $scope.datos_view = null;
                 $scope.$$watchers = null;
@@ -197,7 +197,10 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
             $scope.buscar_documentos_bodega = function(tercero) {
                 
                 that.removerDocumentos();
-                $scope.datos_view.tercero_seleccionado = tercero;
+                
+                if(tercero){
+                    $scope.datos_view.tercero_seleccionado = tercero;
+                }
                
                 if ($scope.datos_view.opcion_predeterminada === "0") {
                     that.documentos_bodega_farmacias();
@@ -211,6 +214,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     that.documentosOtrasSalidas();
                 }
             };
+
             
             that.documentosOtrasSalidas = function(){
                 var obj = {
@@ -335,7 +339,8 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                         planillas_despachos: {
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             prefijo: documento.prefijo,
-                            numero: documento.numero
+                            numero: documento.numero,
+                            esPlanillas: true
                     
                         }
                     }
@@ -421,11 +426,17 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
                 var modalInstance = $modal.open($scope.opts);
                 
-                modalInstance.result.then(function() {
+                /*modalInstance.result.then(function() {
                     console.log(">>>>>>>>>>>>>>>>>>>>>> cerrando ventana");
+                    $scope.buscar_documentos_bodega();
                 }, function() {
-                });
+                });*/
             };
+            
+            that.onLiosRegistrados = $rootScope.$on("onLiosRegistrados",function(){
+                $scope.buscar_documentos_bodega();
+            });
+
 
             //Verifica si la existe la planilla, y crea un solo documento
             that.gestionar_planilla_despacho = function(callback) {
@@ -710,6 +721,7 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                console.log("state change start");
             });
         }]);
 });

@@ -37,7 +37,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 progresoArchivo: 0,
                 btnSolicitarAutorizacionCartera: true,
                 estadoRegistro: 0,
-                prefijoList: ''
+                prefijoList: '',
+                existenciaDocumento:true
                
 
             };
@@ -114,16 +115,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                      
                 }else{   
                     
-                    that.obtenerDocumento(function(estado){
+                    that.validarCantidadCajasNeveras();
+                  /*  that.obtenerDocumento(function(estado){
                        
                        if(estado){
                         that.validarCantidadCajasNeveras();
                        }
-                   });
+                   });*/
                 }
               }
             };
            
+           /**
+            * @author Cristian Ardila
+            * @fecha  10/02/2016
+            * +Descripcion Funcion que se ejecutar cuando el campo numero
+            *              pierde el foco, lo que permitira consultar la existencia
+            *              del documento
+            */
+           $scope.validarExistenciaDocumento = function(){
+            that.obtenerDocumento(function(estado){    
+                 $scope.datos_view.existenciaDocumento = true;
+                   if(estado){
+                      $scope.datos_view.existenciaDocumento = false;
+                   } 
+               });        
+           };
            /**
             * @author Cristian Ardila
             * @fecha 04/02/2016

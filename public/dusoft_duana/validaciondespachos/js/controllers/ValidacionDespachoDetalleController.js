@@ -110,18 +110,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
               }else{
                
                 if($scope.datos_view.seleccionarOtros === true){
-
-                       that.registrarAprobacion(1);
+                    
+                    that.registrarAprobacion(1);
                      
                 }else{   
                     
                     that.validarCantidadCajasNeveras();
-                  /*  that.obtenerDocumento(function(estado){
-                       
-                       if(estado){
-                        that.validarCantidadCajasNeveras();
-                       }
-                   });*/
+                 
                 }
               }
             };
@@ -131,16 +126,78 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             * @fecha  10/02/2016
             * +Descripcion Funcion que se ejecutar cuando el campo numero
             *              pierde el foco, lo que permitira consultar la existencia
-            *              del documento
+            *              del documento 
             */
            $scope.validarExistenciaDocumento = function(){
-            that.obtenerDocumento(function(estado){    
-                 $scope.datos_view.existenciaDocumento = true;
-                   if(estado){
-                      $scope.datos_view.existenciaDocumento = false;
-                   } 
-               });        
+               
+               if($scope.datos_view.seleccionarOtros){
+
+                    that.validarExistenciaDocumentoAprobado(function(data){
+
+                        if(data.status === 200){
+                            $scope.datos_view.existenciaDocumento = true;
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema",data.msj);
+                        }else{
+                            $scope.datos_view.existenciaDocumento = false;
+                        }
+
+                    });
+                }else{
+                  that.validarExistenciaDocumentoAprobado(function(data){
+
+                      if(data.status === 403){
+                            that.obtenerDocumento(function(estado){    
+                                 $scope.datos_view.existenciaDocumento = true;
+                                   if(estado){
+                                      $scope.datos_view.existenciaDocumento = false;
+                                   } 
+                               });   
+                      }
+                      if(data.status === 200){  
+                             AlertService.mostrarVentanaAlerta("Mensaje del sistema",data.msj);
+                      }
+                   }); 
+                }     
            };
+           
+           /**
+            * @author Cristian Ardila
+            * @fecha 10/02/2016
+            * +Descripcion Metodo el cual consumira el servicio encargado de
+            *              validar si un documento ya se encuentra aprobado
+            * @param {type} callback
+            * @returns {undefined}
+            */
+           that.validarExistenciaDocumentoAprobado = function(callback){
+               
+               var prefijo ;
+              
+               if(!$scope.datos_view.seleccionarOtros){
+                    
+                    prefijo = $scope.datos_view.prefijoList.prefijo;
+               }else{
+                    prefijo = $scope.documentoDespachoAprobado.prefijo;
+               }
+               
+                 var obj = {
+                    session: $scope.session,
+                    data: {
+                        validacionDespachos: {
+                            empresa_id: $scope.datos_view.empresaSeleccionada.codigo,
+                            prefijo: prefijo,
+                            numero: $scope.documentoDespachoAprobado.numero
+                    
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(API.VALIDACIONDESPACHOS.CONSULTAR_DOCUMENTO_APROBADO, "POST", obj, function(data) {
+                     
+                           callback(data);
+                       
+                    
+               });
+           }
            /**
             * @author Cristian Ardila
             * @fecha 04/02/2016

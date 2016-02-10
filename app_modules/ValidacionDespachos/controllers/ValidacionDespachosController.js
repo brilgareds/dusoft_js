@@ -134,8 +134,8 @@ ValidacionDespachos.prototype.registrarAprobacion = function(req, res) {
         res.send(G.utils.r(req.url, 'La cantidad de cajas no esta definido o esta vacio', 404, {}));
         return;
     }
-    if (args.validacionDespachos.cantidad_cajas === '0') {
-        res.send(G.utils.r(req.url, 'La cantidad de cajas no debe estar en cero', 404, {}));
+    if (args.validacionDespachos.cantidad_cajas === '0' && args.validacionDespachos.cantidad_neveras === '0') {
+        res.send(G.utils.r(req.url, 'La cantidad de cajas y neveras no deben estar en cero', 404, {}));
         return;
     }
     
@@ -143,10 +143,7 @@ ValidacionDespachos.prototype.registrarAprobacion = function(req, res) {
         res.send(G.utils.r(req.url, 'La cantidad de neveras no esta definido o esta vacio', 404, {}));
         return;
     }
-    if (args.validacionDespachos.cantidad_neveras === '0') {
-        res.send(G.utils.r(req.url, 'La cantidad de cantidad_neveras no debe estar en cero', 404, {}));
-        return;
-    }
+    
     
     if (args.validacionDespachos.observacion === undefined || args.validacionDespachos.observacion === '') {
         res.send(G.utils.r(req.url, 'La observacion no esta definido o esta vacio', 404, {}));
@@ -224,16 +221,12 @@ ValidacionDespachos.prototype.listarNumeroPrefijoOtrasSalidas = function(req, re
         return;
     }
     
-    /*if (args.validacionDespachos.empresa_id === undefined || args.validacionDespachos.empresa_id === '') {
-        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido o esta vacio', 404, {}));
-        return;
-    }*/
-    
+   
     var prefijo = args.validacionDespachos.prefijo;
 
     
     G.Q.ninvoke(that.m_ValidacionDespachos, 'listarNumeroPrefijoOtrasSalidas', {prefijo:prefijo}).then(function(resultado) {
-
+        
         return res.send(G.utils.r(req.url, 'Aprobacion con registro exitoso', 200, {planillas_despachos: resultado}));
 
     }).fail(function(err) {
@@ -242,6 +235,75 @@ ValidacionDespachos.prototype.listarNumeroPrefijoOtrasSalidas = function(req, re
 
     }).done();
 };
+
+
+
+/**
+ * @author Cristian Ardila 
+ * @fecha  10/02/2016
+ * +Descripcion Controlador que se encarga de ejecutar el modelo para validar la existencia
+ *              de un documento
+ * @returns {unresolved} */
+ValidacionDespachos.prototype.validarExistenciaDocumento = function(req, res){
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.validacionDespachos === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
+        return;
+    }
+
+
+    if (args.validacionDespachos.empresa_id === undefined || args.validacionDespachos.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definida o esta vacia', 404, {}));
+        return;
+    }
+
+    if (args.validacionDespachos.prefijo === undefined || args.validacionDespachos.prefijo === '') {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (args.validacionDespachos.numero === undefined || args.validacionDespachos.numero === '') {
+        res.send(G.utils.r(req.url, 'El numero no esta definido o esta vacio', 404, {}));
+        return;
+    }
+   
+ 
+
+    var obj = {
+                empresa_id:args.validacionDespachos.empresa_id,
+                prefijo:args.validacionDespachos.prefijo, 
+                numero:args.validacionDespachos.numero
+              };
+    var status = {};   
+    
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'validarExistenciaDocumento', obj).then(function(resultado) {
+       
+          var def = G.Q.defer();  
+     
+        if(resultado.length > 0){
+             
+             status.codigo = 200;
+             status.mensaje = 'El documento ya se encuentra aprobado por el personal de seguridad';
+           
+         }else{
+            
+             status.codigo = 403;
+             status.mensaje = 'El documento NO se encuentra aprobado por el personal de seguridad';
+             def.resolve();
+        }
+        res.send(G.utils.r(req.url, status.mensaje, status.codigo, {validacionDespachos: resultado}));
+
+    }).fail(function(err) {
+        
+        res.send(G.utils.r(req.url, 'Error en la consulta', 404, {validacionDespachos: {err:err}}));
+
+    }).done();
+};
+
 
 ValidacionDespachos.$inject = ["m_ValidacionDespachos"];
 

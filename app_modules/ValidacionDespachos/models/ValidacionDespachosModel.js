@@ -66,7 +66,6 @@ ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback)
        callback(false, resultado);
     }).catch(function(err){
         
-        console.log("err ", err);
        callback(err);
     });
 };
@@ -130,11 +129,26 @@ ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (o
         callback(false, resultado.rows);
     })
     .catch(function (error) {
-        console.log("error ", error);
+      
         callback(error);
     }).done();
 };
 
 
+ValidacionDespachosModel.prototype.validarExistenciaDocumento = function (obj ,callback) {
+    
+    var sql = "SELECT numero, prefijo, empresa_id FROM aprobacion_despacho_planillas WHERE prefijo = :1\
+               AND numero = :2 AND empresa_id = :3"
+    
+    G.knex.raw(sql, {1:obj.prefijo, 2:obj.numero, 3:obj.empresa_id})
+    .then(function (resultado) {
+        console.log("resultado ", resultado)
+        callback(false, resultado.rows);
+    })
+    .catch(function (error) {
+      
+        callback(error);
+    }).done();
+};
 
 module.exports = ValidacionDespachosModel;

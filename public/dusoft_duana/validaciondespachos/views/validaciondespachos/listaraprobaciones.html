@@ -77,7 +77,7 @@
                     <input ng-show="visibleBuscador" 
                            type="text" 
                            class="form-control" 
-                           ng-keypress="buscador_planillas_despacho($event, termino_busqueda);"  
+                           ng-keypress="buscarDespachosAprobados($event);"  
                            ng-model="datos_view.termino_busqueda" 
                            placeholder="Buscar" name="" id="" />
                     <div class="input-group-btn" ng-show="visibleBotonBuscador" >

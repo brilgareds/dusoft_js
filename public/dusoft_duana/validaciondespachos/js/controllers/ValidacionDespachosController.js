@@ -174,13 +174,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                            $scope.datos_view.prefijo = "";
                            $scope.datos_view.numero = $scope.datos_view.termino_busqueda;
                         }
-                       
-                        // if (event.which === 13) {
                              that.listarDespachosAprobados()
-                      //   }
                       
                      };
                    
+                     
+                     $scope.buscarDespachosAprobados = function(event){
+                         
+                         if (event.which === 13) {
+                              if($scope.filtro.nombre === "Prefijo"){
+                                 $scope.datos_view.numero = ""; 
+                                 $scope.datos_view.prefijo = $scope.datos_view.termino_busqueda;
+                               }
+                        
+                              if($scope.filtro.nombre === "Numero"){
+                                 $scope.datos_view.prefijo = "";
+                                 $scope.datos_view.numero = $scope.datos_view.termino_busqueda;
+                               }
+                             that.listarDespachosAprobados()
+                         }
+                     };
                      
                     /*
                      * funcion ejecuta listarCentroUtilidad

@@ -134,10 +134,20 @@ ValidacionDespachos.prototype.registrarAprobacion = function(req, res) {
         res.send(G.utils.r(req.url, 'La cantidad de cajas no esta definido o esta vacio', 404, {}));
         return;
     }
+    if (args.validacionDespachos.cantidad_cajas === '0') {
+        res.send(G.utils.r(req.url, 'La cantidad de cajas no debe estar en cero', 404, {}));
+        return;
+    }
+    
     if (args.validacionDespachos.cantidad_neveras === undefined || args.validacionDespachos.cantidad_neveras === '') {
         res.send(G.utils.r(req.url, 'La cantidad de neveras no esta definido o esta vacio', 404, {}));
         return;
     }
+    if (args.validacionDespachos.cantidad_neveras === '0') {
+        res.send(G.utils.r(req.url, 'La cantidad de cantidad_neveras no debe estar en cero', 404, {}));
+        return;
+    }
+    
     if (args.validacionDespachos.observacion === undefined || args.validacionDespachos.observacion === '') {
         res.send(G.utils.r(req.url, 'La observacion no esta definido o esta vacio', 404, {}));
         return;

@@ -89,7 +89,15 @@
                                               <div class="row">
                                                 <div class="col-md-7">
                                                     
-                                            <input type="text" ng-disabled="datos_view.estadoRegistro == 1"  class="form-control"  ng-model="documentoDespachoAprobado.numero" placeholder="Numero" name="" id="" validacion-numero-entero />
+                                            <input type="text" 
+                                                   ng-disabled="datos_view.estadoRegistro == 1"  
+                                                   class="form-control"  
+                                                   ng-model="documentoDespachoAprobado.numero" 
+                                                   placeholder="Numero" 
+                                                   name="" 
+                                                   id="" 
+                                                   validacion-numero-entero 
+                                                   ng-blur="validarExistenciaDocumento()"/>
                                          
                                                 </div></div>
                                             </fieldset>
@@ -142,7 +150,7 @@
                                     <span class="glyphicon glyphicon-ok" ></span> Regresar
                                 </button>  
                                 
-                                <button class="btn btn-default" ng-disabled="datos_view.estadoRegistro == 1" ng-click="aprobarDespacho()">
+                                <button class="btn btn-default" ng-disabled="datos_view.estadoRegistro == 1 || datos_view.existenciaDocumento == true" ng-click="aprobarDespacho()">
                                     <span class="glyphicon glyphicon-ok" ></span> Guardar 
                                 </button>  
                             </div>  

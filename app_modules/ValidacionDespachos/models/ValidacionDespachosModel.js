@@ -56,7 +56,7 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
  * Descripcion :  Funcion encargada de almacenar el detalle del pedido
  */
 ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback) {
-
+ 
  var sql = "INSERT INTO aprobacion_despacho_planillas (empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras,observacion,sw_otras_salidas, fecha_registro, usuario_id) \
                  VALUES ( :1, :2, :3, :4, :5, :6, :7, NOW(), :8 );";
 
@@ -66,7 +66,6 @@ ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback)
        callback(false, resultado);
     }).catch(function(err){
         
-        console.log("err ", err);
        callback(err);
     });
 };
@@ -115,7 +114,7 @@ ValidacionDespachosModel.prototype.listarDocumentosOtrasSalidas = function (obj 
         callback(false, resultado.rows);
     })
     .catch(function (error) {
-        console.log("error ", error);
+       
         callback(error);
     }).done();
 };
@@ -130,11 +129,26 @@ ValidacionDespachosModel.prototype.listarNumeroPrefijoOtrasSalidas = function (o
         callback(false, resultado.rows);
     })
     .catch(function (error) {
-        console.log("error ", error);
+      
         callback(error);
     }).done();
 };
 
 
+ValidacionDespachosModel.prototype.validarExistenciaDocumento = function (obj ,callback) {
+    
+    var sql = "SELECT numero, prefijo, empresa_id FROM aprobacion_despacho_planillas WHERE prefijo = :1\
+               AND numero = :2 AND empresa_id = :3"
+    
+    G.knex.raw(sql, {1:obj.prefijo, 2:obj.numero, 3:obj.empresa_id})
+    .then(function (resultado) {
+       
+        callback(false, resultado.rows);
+    })
+    .catch(function (error) {
+      
+        callback(error);
+    }).done();
+};
 
 module.exports = ValidacionDespachosModel;

@@ -64,14 +64,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * 
              */
              that.traerListadoDocumentosUsuario = function(callback) {
-	         var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());	
-               
+	        // var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());	
+              
 		 var obj = {
                     session: $scope.session,
                     data: {
                         movimientos_bodegas: {
-                            centro_utilidad_id: session.centrosUtilidad[0].codigo,
-                            bodega_id: session.centrosUtilidad[0].bodegas[0].codigo,
+                            centro_utilidad_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                             bodega_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                             tipo_documento: 'E008'
                         }
                     }

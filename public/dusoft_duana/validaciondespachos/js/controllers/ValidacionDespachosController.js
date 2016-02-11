@@ -22,9 +22,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     numero: "",
                     items:0,
                     empresaSeleccionada: '',
-                    termino_busqueda:''
+                    termino_busqueda:'',
+                    estadoSesion: true
 
-                };
+                }; 
                     /*
                      * Inicializacion de variables
                      * @param {type} empresa
@@ -316,10 +317,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
 
                      that.init(empresa, function() {            
-                      
-                            that.listarEmpresas(function(estado) {
-                                that.listarDespachosAprobados();
-                            });
+                         
+                         if(!Usuario.getUsuarioActual().getEmpresa()){
+                             AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+                         }else {
+                          
+                            if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado()||
+                                Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+
+                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+
+                            }else{
+                               
+                                if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) { 
+                                    
+                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                }else{
+                                 $scope.datos_view.estadoSesion = false;
+                                 that.listarEmpresas(function(estado) {
+                                    that.listarDespachosAprobados();
+                                });                                  
+                                }   
+                            }
+                         }                        
                      });
                      
                      

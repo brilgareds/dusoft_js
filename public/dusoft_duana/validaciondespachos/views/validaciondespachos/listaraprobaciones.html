@@ -4,7 +4,10 @@
     
     <div class="col-md-2" style="padding-left:15px; padding-right: 15px;">
 
-                <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_crear_cotizaciones }}" ng-click="formularioAprobarDespacho()">
+                <button type="button" ng-disabled="datos_view.estadoSesion"
+                        class="btn btn-default btn-medium ng-scope" 
+                        ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_crear_cotizaciones }}" 
+                        ng-click="formularioAprobarDespacho()">
                     <span class="glyphicon glyphicon-plus"></span> Aprobar despacho
                 </button>
     </div>

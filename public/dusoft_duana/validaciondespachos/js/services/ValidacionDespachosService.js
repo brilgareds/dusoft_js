@@ -32,7 +32,9 @@ define(["angular", "js/services"], function(angular, services) {
                                 }
                             }
                         };
-                        Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_DESPACHOS_APROBADOS, "POST", params, function(data){                        
+                       
+                        Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_DESPACHOS_APROBADOS, "POST", params, function(data){ 
+                            
                                 callback(data);                              
                         });    
                 };   

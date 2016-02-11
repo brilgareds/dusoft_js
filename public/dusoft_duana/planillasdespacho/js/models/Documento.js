@@ -17,6 +17,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.observacion = observacion || '';                
                 this.tipo = tipo;   
                 this.fecha_registro;
+                this.seleccionado = false;
             }
 
             this.get = function(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, tipo) {
@@ -74,7 +75,8 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Documento.prototype.get_descripcion = function() {
-                return this.get_prefijo_numero() + ' ( No. Pedido ' + this.get_numero_pedido() + ' )';
+                var pedido = (this.get_numero_pedido()) ? ' ( No. Pedido ' + this.get_numero_pedido() + ' )' : "";
+                return this.get_prefijo_numero() + pedido;
             };
 
             Documento.prototype.get_numero_pedido = function() {
@@ -124,6 +126,14 @@ define(["angular", "js/models"], function(angular, models) {
             
             Documento.prototype.get_fecha_registro = function() {
                 return this.fecha_registro;
+            };
+            
+            Documento.prototype.getSeleccionado = function() {
+                return this.seleccionado;
+            };
+            
+            Documento.prototype.setSeleccionado = function(seleccionado) {
+                this.seleccionado = seleccionado ;
             };
             
             return this;

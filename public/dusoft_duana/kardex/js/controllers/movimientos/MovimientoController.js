@@ -62,7 +62,7 @@ function(angular, controllers) {
                     {field: 'tipo_movimiento', displayName: 'T M', width: "50"},
                     {field: 'fecha', displayName: 'Fecha', cellTemplate: "<div> {{formatearFecha(row.entity.fecha)}} </div>", width: "9%"},
                     {field: 'numero', displayName: 'Numero', cellTemplate: "<div>{{row.entity.prefijo}} - {{row.entity.numero}} </div>", width: "10%"},
-                    {field: 'factura', displayName: 'Factura', width: "9%"},
+                   // {field: 'factura', displayName: 'Factura', width: "9%"},
                     {field: 'detalle.detalle', height: "200px", displayName: 'Terceros', cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.detalle.getDetalle())\"></div>"},
                     {field: 'cantidad_entradas', displayName: 'Entradas', width: "6%"},
                     {field: 'cantidad_salidas', displayName: 'Salidas', width: "6%"},

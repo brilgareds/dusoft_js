@@ -1046,6 +1046,19 @@ function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_do
     
 };
 
+DocuemntoBodegaE008.prototype.obtenerDocumento = function(obj, callback) {
+   
+    var sql = "SELECT numero FROM inv_bodegas_movimiento WHERE empresa_id = :1 AND prefijo = :2 AND numero = :3; ";
+
+
+     G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}). then(function(resultado){       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+       console.log("err ", err);
+        callback(err);
+    });
+};
+
 DocuemntoBodegaE008.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
 
 module.exports = DocuemntoBodegaE008;

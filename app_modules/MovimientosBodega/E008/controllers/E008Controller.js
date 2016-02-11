@@ -2564,6 +2564,61 @@ function __generarPdfDespacho(datos, callback) {
 }
 
 
+E008Controller.prototype.obtenerDocumento = function(req, res) {
+    
+    var that = this;
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined) {
+          res.send(G.utils.r(req.url, 'Variable (documento_temporal) no esta definida', 404, {}));
+          return;
+    }
+    
+    if (args.documento_temporal.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (args.documento_temporal.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el prefijo', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (args.documento_temporal.numero === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    
+    var empresa_id = args.documento_temporal.empresa_id;
+    var prefijo = args.documento_temporal.prefijo;
+    var numero = args.documento_temporal.numero;
+ 
+    var obj = {empresa_id: empresa_id,
+               prefijo: prefijo,
+               numero: numero,
+               
+          };
+     
+     G.Q.ninvoke(that.m_e008,'obtenerDocumento', obj).then(function(resultado){ 
+         
+         if(resultado.length>0){
+             
+            return res.send(G.utils.r(req.url, 'Documento existente', 200, {documento_temporal: resultado}));
+         
+         }else{
+             
+            return res.send(G.utils.r(req.url, 'No se encuentra el documento ', 404, {documento_temporal: {}}));   
+          
+         }
+         
+     }).fail(function(err){ 
+         
+             res.send(G.utils.r(req.url, 'Error en la consulta ', 500, {documento_temporal: {}}));
+       
+    }).done();
+   
+};
 
 
 E008Controller.$inject = ["m_movimientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos"];

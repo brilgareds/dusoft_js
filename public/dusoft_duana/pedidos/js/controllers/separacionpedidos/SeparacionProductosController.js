@@ -32,7 +32,7 @@ define(["angular", "js/controllers",
                         $scope.filtros = [
                             {nombre: "Seleccionar", id: 0},
                             {nombre: "Justificar", id: 1},
-                            //No borrar {nombre: "Listar productos", id: 2},
+                            {nombre: "Listar productos", id: 2},
                             {nombre: "Refrescar", id: 3}
                         ];
 

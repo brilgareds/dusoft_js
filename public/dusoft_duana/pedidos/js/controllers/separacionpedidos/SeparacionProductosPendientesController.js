@@ -57,6 +57,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 enableRowSelection: true,
                 keepLastSelected:false,
                 multiSelect:false,
+                showFilter: true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo', width:100},
                     {field: 'descripcion', displayName: 'Descripcion'}

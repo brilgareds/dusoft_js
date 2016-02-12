@@ -71,7 +71,7 @@ define(["angular", "js/controllers",
                             var _producto = pedido[i];
                             
                            
-                            
+                            console.log(" _producto.getCodigoBarras()" , _producto.getCodigoBarras(), " $scope.rootSeparacion.filtro.termino ", $scope.rootSeparacion.filtro.termino)
                             if (!codigoBarras && _producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
                                   
                                 index = i;
@@ -82,7 +82,7 @@ define(["angular", "js/controllers",
                                 break;
                             }
                         }
-                      
+                        console.log("filtro codigo de barrasx")
                         $scope.$emit("onMostarProductoEnPosicion", index);
                     };
 

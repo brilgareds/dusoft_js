@@ -1633,7 +1633,7 @@ COMMENT ON COLUMN aprobacion_despacho_planillas.observacion IS 'descripcion del 
 
 
 --
--- Name: COLUMN aprobacion_despacho_planillas.estado; Type: COMMENT; Schema: public; Owner: admin
+-- Name: COLUMN aprobacion_despacho_planillas.sw_otras_salidas; Type: COMMENT; Schema: public; Owner: admin
 --
 
 COMMENT ON COLUMN aprobacion_despacho_planillas.sw_otras_salidas IS 'Se almacena estado 0=validacion de cajas y neveras contra auditoria, 1= otras empresas';
@@ -1694,14 +1694,6 @@ ALTER TABLE ONLY aprobacion_despacho_planillas
 
 ALTER TABLE ONLY aprobacion_despacho_planillas
     ADD CONSTRAINT fu_documento_aprobacion UNIQUE (empresa_id, prefijo, numero);
-
-
---
--- Name: aprobacion_despacho_planillas_fk; Type: FK CONSTRAINT; Schema: public; Owner: admin
---
-
-ALTER TABLE ONLY aprobacion_despacho_planillas
-    ADD CONSTRAINT aprobacion_despacho_planillas_fk FOREIGN KEY (empresa_id, prefijo, numero) REFERENCES inv_bodegas_movimiento(empresa_id, prefijo, numero);
 
 
 --

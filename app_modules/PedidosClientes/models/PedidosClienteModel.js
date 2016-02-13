@@ -1177,10 +1177,10 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
                 VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9, '1', :10, NOW()) \
                 RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";
 
-  
+   //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, {1:cotizacion.empresa_id, 
-                     2:cotizacion.centro_utilidad_id,
-                     3:cotizacion.bodega_id,
+                     2:cotizacion.centro_utilidad_id || '03',
+                     3:cotizacion.bodega_id || '03',
                      4:cotizacion.cliente.tipo_id_tercero,
                      5:cotizacion.cliente.id,
                      6:cotizacion.vendedor.tipo_id_tercero,

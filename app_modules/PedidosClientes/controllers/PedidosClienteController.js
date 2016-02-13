@@ -431,7 +431,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     var cotizacion = args.pedidos_clientes.cotizacion;
 
     // Empresa, Centro Utilidad,  Bodega
-    if (cotizacion.empresa_id === undefined || cotizacion.centro_utilidad_id === undefined || cotizacion.bodega_id === undefined) {
+    if (!cotizacion.empresa_id || !cotizacion.centro_utilidad_id || !cotizacion.bodega_id ) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
         return;
     }

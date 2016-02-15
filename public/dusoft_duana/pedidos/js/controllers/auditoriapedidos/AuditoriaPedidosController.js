@@ -57,7 +57,7 @@ define(["angular", "js/controllers",
             };
 
 
-            var obj = {
+           /* var obj = {
                 session: $scope.session,
                 data: {
                     documento_temporal: {
@@ -67,7 +67,7 @@ define(["angular", "js/controllers",
                         numero_pedido: 8000
                     }
                 }
-            };
+            };*/
 
 
             var that = this;

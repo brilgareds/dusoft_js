@@ -497,18 +497,30 @@ define(["angular", "js/controllers",
                             {field: 'fecha_vencimiento', displayName: 'F. vencimiento'},
                             {field: 'existencia_actual', displayName: 'Existencia'},
                             {field: 'disponible', width: "10%", displayName: "Disponible"},
-                            {field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
+                            {field: 'opciones', displayName: "", cellClass: "txt-center", width: 80,
                                 cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.separado"  ng-click="onSeleccion(row.entity)">\n\
                                              <span class="glyphicon glyphicon-search"></span>\
-                                         </button>\n\
+                                         </button>\
+                                         <button class="btn btn-default btn-xs"  ng-click="duplicarLote(row.entity, row)">\n\
+                                             <span class="glyphicon glyphicon-plus"></span>\n\
+                                         </button>\
                                      </div>'
                             }
 
                         ]
+                        
+                    };
+                    
+                     $scope.duplicarLote = function(lote, row) {
+
+                        var _lote = angular.copy(lote);
+                        _lote.setItemId(0);
+                        _lote.setNumeroCaja(0);
+                        _lote.setSeparado(false);
+                        $scope.rootSeparacion.empresa.getPedidoSeleccionado().getProductoSeleccionado().getLotesSeleccionados().splice(row.rowIndex + 1, 0, _lote);
 
                     };
-
 
                     $scope.onSeleccion = function(lote) {
                         self.ventanaCantidad(lote);

@@ -21,7 +21,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 };
                 
                 $scope.rootVentanaCantidad.tiposCaja = [
-                    {nombre:"Tipo", id:-1},
                     {nombre: "Caja", id: 0},
                     {nombre: "Nevera", id: 1}
                 ];
@@ -217,33 +216,75 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
              * @author Eduar Garcia
              * permite Handler del boton de guardar cantidad
              */
-            $scope.onGuardarCantidad = function(){
-                var validacion = self.validarLote();
-                
-                if(!validacion.valido){
-                    console.log("no valido ", validacion);
-                    SeparacionService.mostrarAlerta("Error", validacion.mensaje);
-                    return;
-                }
+            self.onGuardarCantidad = function(callback){
                                 
                 if(pedido.getTemporalId() === 0){
                     self.agregarEncabezado(function(continuar, msj){
                        if(continuar){
                            
                             self.agregarItemADocumento(function(continuar, msj){
-                                AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                                //AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                                callback(continuar, msj);
                             });
                             
                        } else {
-                           AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                           //AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                           callback(false, msj);
                        }
                     });
                 } else {
                     self.agregarItemADocumento(function(continuar, msj){
-                        AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                        //AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                        callback(continuar,msj);
                     });
                 }
 
+            };
+            
+            /*
+             * @author Eduar Garcia
+             * permite Handler del boton de guardar 
+             */
+            $scope.gestionarCantidadCaja = function(){
+                var validacion = self.validarLote();
+                
+                if(!validacion.valido){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", validacion.mensaje);
+                    return;
+                }
+                
+                
+                if($scope.rootVentanaCantidad.tipoCaja.id === -1){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar la caja");
+                    return;
+                }
+                
+                if(isNaN(parseInt($scope.rootVentanaCantidad.numero_caja)) || parseInt($scope.rootVentanaCantidad.numero_caja) === 0){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El número de caja no es valido");
+                    return;
+                }
+
+                self.validarCaja(function(continuar, msj){
+                    
+                    if(continuar){
+                        self.onGuardarCantidad(function(continuar, msj){
+                            if(continuar){
+                                self.asignarCaja(function(continuar, msj){
+
+                                    AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+
+                                     if(continuar){
+                                         $scope.cerrar();
+                                     }
+                                 });
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", msj);
+                            }
+                        });
+                    } else {
+                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", msj);
+                    }
+                });
             };
             
             
@@ -255,37 +296,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 $scope.rootVentanaCantidad.tipoCaja = tipoCaja;
             };
             
-             /*
-             * @author Eduar Garcia
-             * permite Handler del boton para seleccionar la caja
-             */
-            $scope.onSeleccionarCaja = function(){
-                if($scope.rootVentanaCantidad.tipoCaja.id === -1){
-                    SeparacionService.mostrarAlerta("Error", "Debe seleccionar la caja");
-                    return;
-                }
-                
-                if(parseInt($scope.rootVentanaCantidad.numero_caja) === 0){
-                    SeparacionService.mostrarAlerta("Error", "El número de caja no es valido");
-                    return;
-                }
-                
-                self.validarCaja(function(continuar, msj){
-                    if(continuar){
-                        self.asignarCaja(function(continuar, msj){
-                             
-                           AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
-                            
-                            if(continuar){
-                                $scope.cerrar();
-                            }
-                        });
-                    } else {
-                        SeparacionService.mostrarAlerta("Error", msj);
-                    }
-                });
-                
-            };
             
             $scope.cerrar = function(){
                 $modalInstance.close();

@@ -692,6 +692,22 @@ DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numer
     
 };
 
+DocuemntoBodegaE008.prototype.validarTemporal = function(doc_tmp_id, usuario_id, callback){
+
+
+    var sql = " SELECT * FROM inv_bodegas_movimiento_tmp a\
+                WHERE a.doc_tmp_id = :1 and a.usuario_id = :2;";
+    
+    G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+       callback(err);
+    });
+
+
+};
+
 DocuemntoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento_id, numero_pedido, callback) {
     var sql = " UPDATE inv_rotulo_caja SET sw_despachado='1' WHERE documento_id = :1 and solicitud_prod_a_bod_ppal_id = :2; ";
     

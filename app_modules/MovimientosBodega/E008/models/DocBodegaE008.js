@@ -1059,6 +1059,87 @@ DocuemntoBodegaE008.prototype.obtenerDocumento = function(obj, callback) {
     });
 };
 
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado listar los despachos auditados
+ */
+DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback){
+   
+     var fecha = "";
+    
+        if(!obj.registroUnico){
+            fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
+           
+        }
+     
+     var sql = "a.prefijo, a.numero, b.razon_social, a.empresa_id, a.fecha_registro, a.empresa_destino\
+                FROM inv_bodegas_movimiento a \
+                INNER JOIN  empresas b ON b.empresa_id = a.empresa_id\
+                WHERE "+fecha+"\
+                ( \
+                    a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo and\
+                    a.numero  :: varchar "+G.constants.db().LIKE+"  :numero\
+                   \
+                ) AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id";
+   
+    var parametros = {
+        fechaInicial: obj.fechaInicial, 
+        fechaFinal: obj.fechaFinal, 
+        prefijo: "%"+ obj.prefijo +"%", 
+        numero: "%"+ obj.numero  +"%",
+        empresa_id: obj.empresa_id
+    };
+    
+    var query = G.knex.select(G.knex.raw(sql, parametros)).
+    limit(G.settings.limit).
+    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc").then(function(resultado){
+        
+        callback(false, resultado);
+    }).catch(function(err){
+     
+        callback(err);
+       
+    });
+};
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado mostrar el detalle de un documento
+ */
+DocuemntoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback){
+   
+     var sql = "select fc_descripcion_producto(a.codigo_producto), a.numero_caja, a.cantidad_recibida\
+        FROM inv_bodegas_movimiento_d a\
+        WHERE a.tipo_caja = 0 AND a.prefijo: prefijo AND a.numero: numero AND a.empresa_id: empresa";
+   
+    var parametros = {
+        prefijo: "%"+ obj.prefijo +"%", 
+        numero: "%"+ obj.numero  +"%",
+        empresa: obj.empresa_id
+    };
+    
+    var query = G.knex.select(G.knex.raw(sql, parametros)).
+    limit(G.settings.limit).
+    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc").then(function(resultado){
+        
+        callback(false, resultado);
+    }).catch(function(err){
+     
+        callback(err);
+       
+    });
+};
+
+
+
+
+
 DocuemntoBodegaE008.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
 
 module.exports = DocuemntoBodegaE008;

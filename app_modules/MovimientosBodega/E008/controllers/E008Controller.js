@@ -2621,6 +2621,129 @@ E008Controller.prototype.obtenerDocumento = function(req, res) {
 };
 
 
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para listar los despachos
+ *              Auditados
+ */
+E008Controller.prototype.listarDespachosAuditados = function(req, res) {
+  
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (DespachosAuditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+    var fechaInicial = args.despachos_auditados.fechaInicial;
+    var fechaFinal = args.despachos_auditados.fechaFinal;
+    var paginaActual = args.despachos_auditados.paginaactual;
+    var registroUnico = args.despachos_auditados.registroUnico;
+
+
+    var obj = {
+        fechaInicial: fechaInicial,
+        fechaFinal: fechaFinal,
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+        paginaActual: paginaActual,
+        registroUnico: registroUnico
+    };
+    
+    G.Q.ninvoke(that.m_e008, 'listarDespachosAuditados', obj).then(function(resultado) {
+
+        return res.send(G.utils.r(req.url, 'Lista de despachos audtados', 200, {despachos_auditados: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado los de despachos', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
+ *              un documento
+ */
+E008Controller.prototype.detalleDocumentoAuditado = function(req, res) {
+  
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (DespachosAuditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+
+
+
+    var obj = {
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+    };
+    
+    G.Q.ninvoke(that.m_e008, 'detalleDocumentoAuditado', obj).then(function(resultado) {
+
+        return res.send(G.utils.r(req.url, 'Detalle de documento auditados', 200, {despachos_auditados: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado el detalle', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
 E008Controller.$inject = ["m_movimientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos"];
 
 module.exports = E008Controller;

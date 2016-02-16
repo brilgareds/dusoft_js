@@ -152,6 +152,25 @@ module.exports = function(app, di_container) {
         c_e008.imprimirDocumentoDespacho(req, res);
     });
     
+     /**
+     * @author Cristian Ardila
+     * @fecha  16/02/2016
+     * +Descripcion Servicio para consultar los despachos auditados
+     */
+    app.post('/api/movBodegas/E008/listarDespachosAuditados', function(req, res) {
+        c_e008.listarDespachosAuditados(req, res);
+    });
+    
+    /**
+     * @author Cristian Ardila
+     * @fecha  16/02/2016
+     * +Descripcion Servicio para consultar los despachos auditados
+     */
+    app.post('/api/movBodegas/E008/detalleDocumentoAuditado', function(req, res) {
+        c_e008.detalleDocumentoAuditado(req, res);
+    });
+    
+    
     // ======== FIN Auditoria de Documento de Despacho ====================
     
     

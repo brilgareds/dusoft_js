@@ -215,7 +215,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             /*
              * @author Eduar Garcia
              * permite Handler del boton de guardar cantidad
-             */
+             */   
             self.onGuardarCantidad = function(callback){
                                 
                 if(pedido.getTemporalId() === 0){
@@ -263,11 +263,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El número de caja no es valido");
                     return;
                 }
-
-                self.validarCaja(function(continuar, msj){
+                     
+                self.onGuardarCantidad(function(continuar, msj){ 
                     
                     if(continuar){
-                        self.onGuardarCantidad(function(continuar, msj){
+                        self.validarCaja(function(continuar, msj){
                             if(continuar){
                                 self.asignarCaja(function(continuar, msj){
 

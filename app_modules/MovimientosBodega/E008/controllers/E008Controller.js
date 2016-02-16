@@ -2062,12 +2062,12 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
      */
     
     that.m_e008.validarTemporal(documento_temporal_id, usuario_id, function(err, temporal){
-        if(err /*|| temporal.length === 0*/){
+        if(err || temporal.length === 0){
             var msj = "Error consultado el temporal del usuario";
             
-            /*if(temporal.length === 0){
+            if(temporal.length === 0){
                 msj = "No se encontro el temporal del usuario";
-            }*/
+            }
             
             res.send(G.utils.r(req.url, msj, 500, {movimientos_bodegas: {}}));
             return;

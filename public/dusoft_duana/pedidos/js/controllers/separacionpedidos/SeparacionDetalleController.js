@@ -126,7 +126,7 @@ define(["angular", "js/controllers",
             $scope.onGenerarDocumento = function() {
 
                 if (!self.validarProductos()) {
-                    SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
+                    AlertService.mostrarVentanaAlerta("Error", "Hay productos pendientes sin una previa justificacion");
                     return;
                 }
 
@@ -139,7 +139,7 @@ define(["angular", "js/controllers",
                                 $state.go("SeparacionPedidos");
                                 AlertService.mostrarMensaje("success", "Separacion finalizada");
                             } else {
-                                SeparacionService.mostrarAlerta("Error", "Se genero un error");
+                                AlertService.mostrarVentanaAlerta("Error", "Se genero un error");
                             }
                         });
                     }
@@ -272,7 +272,7 @@ define(["angular", "js/controllers",
                         pedido.getProductos().splice(index, 1);
                         AlertService.mostrarMensaje("success", "Lote eliminado correctamente");
                     } else {
-                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                     }
                 });
             };
@@ -307,7 +307,7 @@ define(["angular", "js/controllers",
                         $scope.$emit("onFinalizar");
                         AlertService.mostrarMensaje("success", "Documento eliminado");
                     } else {
-                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                     }
                 });
             };
@@ -422,7 +422,7 @@ define(["angular", "js/controllers",
 
                 self.renderDocumentoTemporalClienteFarmacia(obj, pedido.getTipo(), function(continuar) {
                     if (!continuar) {
-                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                     }
 
                     var productos = angular.copy($scope.rootDetalle.pedido.getProductos());
@@ -448,7 +448,7 @@ define(["angular", "js/controllers",
                                 }
                             });
                         } else {
-                            SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                            AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                         }
                     })
                 });
@@ -573,7 +573,7 @@ define(["angular", "js/controllers",
 
 
                 if (!self.validarProductos()) {
-                    SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
+                    AlertService.mostrarVentanaAlerta("Error", "Hay productos pendientes sin una previa justificacion");
                     return;
                 }
 

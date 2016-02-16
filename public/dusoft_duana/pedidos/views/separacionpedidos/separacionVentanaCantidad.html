@@ -37,20 +37,43 @@
         </div> 
         <div class="panel-body">
             <div class="row">
-                <div class="col-lg-8">
+                <div class="col-md-5 col-sm-5">
                     <label class="lbl_editar_producto lbl_caja" for="numerocaja">Cantidad: </label>
                     <div class="input-group input-group-sm">
 
                         <input type="text" role="group" ng-model="rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().cantidad_ingresada" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero />
                        
-                        <div class="input-group-btn" >
+                        <!-- div class="input-group-btn" >
                               <button class="btn btn-default" ng-click="onGuardarCantidad()" ng-disabled="rootVentanaCantidad.pedido.getProductoSeleccionado().getItemId() != 0" style="margin-right:20px;">Guardar</button>                           
-                        </div>
+                        </div -->
                        
                     </div>
                     
                 </div>
+                
+                <div class="col-md-6 col-sm-6">
+                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Número: </label>
+                    <div class="input-group input-group-sm">
 
+                        <input type="text" role="group" ng-model="rootVentanaCantidad.numero_caja" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero  />
+                        <div class="input-group-btn" role="group">
+                            <button type="button"  class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> 
+                                {{rootVentanaCantidad.tipoCaja.nombre}} 
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li ng-repeat="tipo in rootVentanaCantidad.tiposCaja">
+                                    <a href="javascript:void(0)" ng-click="onSeleccionTipoCaja(tipo)">{{tipo.nombre}}</a>
+                                </li>
+                            </ul>    
+                        </div>                                              
+                        <!-- div class="input-group-btn" >
+                            <button type="button" ng-click="onSeleccionarCaja()" ng-disabled="rootVentanaCantidad.tipoCaja.id == -1" class="btn btn-default" >
+                                Seleccionar
+                            </button>                                                      
+                        </div -->
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -58,7 +81,7 @@
 
 
 
-    <div class="panel panel-info panelCaja">
+    <!-- div class="panel panel-info panelCaja">
         <div class="panel-heading">
             <h3 class="panel-title">Información Caja / Nevera</h3>
         </div> 
@@ -69,10 +92,9 @@
                     <label class="lbl_editar_producto lbl_caja" for="numerocaja">Número: </label>
                     <div class="input-group input-group-sm">
 
-                        <input type="text" role="group" ng-model="rootVentanaCantidad.numero_caja" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero />
+                        <input type="text" role="group" ng-model="rootVentanaCantidad.numero_caja" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero  />
                         <div class="input-group-btn" role="group">
-                            <button ng-disabled="rootVentanaCantidad.pedido.getProductoSeleccionado().getItemId() === 0" 
-                                    type="button"  class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> 
+                            <button type="button"  class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> 
                                 {{rootVentanaCantidad.tipoCaja.nombre}} 
                                 <span class="caret"></span>
                             </button>
@@ -82,19 +104,28 @@
                                 </li>
                             </ul>    
                         </div>                                              
-                        <div class="input-group-btn" >
+                        <!-- div class="input-group-btn" >
                             <button type="button" ng-click="onSeleccionarCaja()" ng-disabled="rootVentanaCantidad.tipoCaja.id == -1" class="btn btn-default" >
                                 Seleccionar
                             </button>                                                      
-                        </div>
+                        </div -->
                     </div>
                 </div>
 
 
             </div>
         </div>
-    </div>
-    <button class="btn btn-warning ng-binding pull-right" ng-click="cerrar()">Cerrar</button>
+    </div -->
     
+    <div class="modal-footer ">                                
+        <button class="btn btn-warning" ng-click="cerrar()">
+            Cerrar
+        </button>   
 
+        <button class="btn btn-primary" ng-click="gestionarCantidadCaja()">
+             Guardar
+        </button> 
+ 
+    </div> 
+   
 </div>

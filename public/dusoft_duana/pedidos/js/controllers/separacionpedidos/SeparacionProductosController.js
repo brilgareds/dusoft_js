@@ -356,7 +356,7 @@ define(["angular", "js/controllers",
 
                         //Se separaron todos los lotes
                         if (!producto && pedido.getTemporalId() !== 0) {
-                            SeparacionService.mostrarAlerta("Separación", "No hay mas productos por separar, favor revisar el detalle del temporal");
+                            AlertService.mostrarVentanaAlerta("Separación", "No hay mas productos por separar, favor revisar el detalle del temporal");
                             return;
                         }
 
@@ -577,7 +577,7 @@ define(["angular", "js/controllers",
                         }
 
                         if (!mostrar) {
-                            SeparacionService.mostrarAlerta("Error", "No se han separado productos");
+                            AlertService.mostrarVentanaAlerta("Error", "No se han separado productos");
                             return;
                         }
 

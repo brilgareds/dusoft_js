@@ -664,11 +664,11 @@ DocuemntoBodegaE008.prototype.consultarNumeroMayorRotulo = function(documento_id
 
 // Consultar el rotulo de una caja 
 DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, numero_pedido, callback) {
-    var sql = " select * from inv_rotulo_caja a where /* a.documento_id = :1 and */ numero_caja = :2 and solicitud_prod_a_bod_ppal_id = :3 and (sw_despachado = '0' or sw_despachado is null); ";
+    var sql = " select * from inv_rotulo_caja a where  a.documento_id = :1 and  numero_caja = :2 and solicitud_prod_a_bod_ppal_id = :3 and (sw_despachado = '0' or sw_despachado is null); ";
 
         
-   G.knex.raw(sql, {/*1:documento_id, */2:numero_caja, 3:numero_pedido}).
-   then(function(resultado){
+   G.knex.raw(sql, {1:documento_id, 2:numero_caja, 3:numero_pedido}).
+   then(function(resultado){  
        callback(false, resultado.rows, resultado);
    }).catch(function(err){
        callback(err);

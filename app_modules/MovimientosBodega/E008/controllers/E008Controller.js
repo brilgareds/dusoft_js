@@ -2000,13 +2000,38 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
     });
 
+};
 
+E008Controller.prototype.consultarNumeroMayorRotulo = function(req, res){
+   var that = this;
 
+    var args = req.body.data;
+    
+    console.log(">>>>>>>>>>>>>>>> ",args.documento_temporal);
+    
+    if (!args.documento_temporal || !args.documento_temporal.numero_pedido || args.documento_temporal.tipo === undefined) {
+        res.send(G.utils.r(req.url, 'Los datos obligatorios no esta definidos', 404, {}));
+        return;
+    }
+    
+    var documento_temporal_id = args.documento_temporal.documento_temporal || 0;
+    var numero_pedido = args.documento_temporal.numero_pedido;
+    var tipo = args.documento_temporal.tipo;
+    var numeroSiguiente = 1;
+    
+    that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+            return;
+        }
+        console.log("numero actual de la caja ", rotuloMayor)
+        numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
 
-
-
+        res.send(G.utils.r(req.url, "Numero de caja siguiente", 200, {movimientos_bodegas: {numero: numeroSiguiente}}));
+    });
 
 };
+
 
 /**
  * +Descripcion: Metodo encargado de validar Validar que la caja este abierta

@@ -2060,63 +2060,78 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
      * @param {String} numero_pedido Es el numero de pedido
      * @param {integer} tipo si es caja o nevera
      */
-    that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
-        if (err) {
-            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+    
+    that.m_e008.validarTemporal(documento_temporal_id, usuario_id, function(err, temporal){
+        if(err /*|| temporal.length === 0*/){
+            var msj = "Error consultado el temporal del usuario";
+            
+            /*if(temporal.length === 0){
+                msj = "No se encontro el temporal del usuario";
+            }*/
+            
+            res.send(G.utils.r(req.url, msj, 500, {movimientos_bodegas: {}}));
             return;
         }
         
-        var numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
-        
-        if(numeroSiguiente < numero_caja){
-            res.send(G.utils.r(req.url, 'El número debe ser consecutivo, el número siguiente debe ser '+numeroSiguiente, 403, {movimientos_bodegas: {caja_valida: false}}));
-            return;
-        }
-        
-        /**
-         * +Descripcion: Se consultar la existencia del rotulo de la caja en la
-         * tabla inv_rotulo_caja
-         * @param {String} documento_temporal_id Es el id documento
-         * @param {String} numero_pedido Es el numero de pedido
-         * @param {integer} tipo si es caja o nevera
-         */
-        that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
+        that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                 return;
-            } else {
-                var rotulo_caja;
+            }
 
-                //obtener la caja por el tipo 0 = caja, 1= nevera
-                for(var i in rotulos_cajas){
-                    var _rotulo = rotulos_cajas[i];
+            var numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
 
-                   // console.log("buscando en caja ", _rotulo.numero_caja, " tipo ", _rotulo.tipo, " con tipo ", tipo );
-                    if(parseInt(_rotulo.tipo) === tipo){
-                        rotulo_caja = _rotulo;
-                        break;
-                    }
-                }
+            if(numeroSiguiente < numero_caja){
+                res.send(G.utils.r(req.url, 'El número debe ser consecutivo, el número siguiente debe ser '+numeroSiguiente, 403, {movimientos_bodegas: {caja_valida: false}}));
+                return;
+            }
 
-                if (rotulo_caja) {
-
-                    res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
+            /**
+             * +Descripcion: Se consultar la existencia del rotulo de la caja en la
+             * tabla inv_rotulo_caja
+             * @param {String} documento_temporal_id Es el id documento
+             * @param {String} numero_pedido Es el numero de pedido
+             * @param {integer} tipo si es caja o nevera
+             */
+            that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                     return;
                 } else {
-                    // Crear
-                    that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id,tipo, function(err, rotulo_caja) {
-                        if (err) {
-                            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                            return;
-                        } else {
-                            res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
-                            return;
+                    var rotulo_caja;
+
+                    //obtener la caja por el tipo 0 = caja, 1= nevera
+                    for(var i in rotulos_cajas){
+                        var _rotulo = rotulos_cajas[i];
+
+                       // console.log("buscando en caja ", _rotulo.numero_caja, " tipo ", _rotulo.tipo, " con tipo ", tipo );
+                        if(parseInt(_rotulo.tipo) === tipo){
+                            rotulo_caja = _rotulo;
+                            break;
                         }
-                    });
+                    }
+
+                    if (rotulo_caja) {
+
+                        res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
+                        return;
+                    } else {
+                        // Crear
+                        that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id,tipo, function(err, rotulo_caja) {
+                            if (err) {
+                                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                                return;
+                            } else {
+                                res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
+                                return;
+                            }
+                        });
+                    }
                 }
-            }
+            });
         });
     });
+    
     
 };
 

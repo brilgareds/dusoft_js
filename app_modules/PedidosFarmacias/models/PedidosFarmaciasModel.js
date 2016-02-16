@@ -699,7 +699,8 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 b.tipo_estado_auditoria,\
                 b.cantidad_ingresada,\
                 COALESCE(b.auditado, '0') as auditado,\
-                a.tipo_producto as tipo_producto_id\
+                a.tipo_producto as tipo_producto_id,\
+                c.codigo_barras\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
@@ -728,6 +729,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
    then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
+       console.log("eroro >", err); 
        callback(err);
    });
 

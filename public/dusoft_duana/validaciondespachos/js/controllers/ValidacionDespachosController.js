@@ -43,7 +43,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.documentosAprobados = [];
                     that.centroUtilidad = [];
                     
-                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-2  pull-right";
+                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
 
                     $scope.filtros = [
                     {nombre: "Prefijo", filtroPrefijo: true},

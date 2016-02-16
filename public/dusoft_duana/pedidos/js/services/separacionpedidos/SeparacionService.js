@@ -220,45 +220,6 @@ define(["angular", "js/services"], function(angular, services) {
                 return listaPedidos;
                                 
             };
-            
-            /*
-             * @Author: Eduar
-             * @param {String} titulo
-             * @param {Array<Object>} mensaje
-             * @param {function} callback
-             * +Descripcion: Muestra alerta que se reutiliza en la aplicacion de separacion
-             */
-            self.mostrarAlerta = function(titulo, mensaje,callback){ 
-                
-               var opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="cerrar()">&times;</button>\
-                                        <h4 class="modal-title">'+titulo+'</h4>\
-                                    </div>\
-                                    <div class="modal-body">\
-                                        <p style="font-size:15px;">'+mensaje+'</p>\
-                                    </div>\
-                                    <div class="modal-footer">\
-                                        <button class="btn btn-primary"  ng-click="cerrar()">Cerrar</button>\
-                                    </div>',
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.cerrar = function() {                           
-                            $modalInstance.close();
-                             if(callback){
-                                callback();
-                             }
-                        };
-
-                    }
-                };
-                var modalInstance = $modal.open(opts);
-            };
-           
 
             return this;
         }]);

@@ -243,6 +243,36 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             
             /*
              * @author Eduar Garcia
+             * permite Permite obtener el siguiente numero de caja
+             */
+            self.consultarNumeroMayorRotulo = function(){
+                var url = API.DOCUMENTOS_TEMPORALES.NUMERO_MAYOR_ROTULO;
+                
+                var obj = {
+                    session: $scope.rootVentanaCantidad.session,
+                    data: {
+                        documento_temporal: {
+                            documento_temporal:pedido.getTemporalId(),
+                            numero_pedido: $scope.rootVentanaCantidad.pedido.get_numero_pedido(),
+                            tipo: $scope.rootVentanaCantidad.tipoCaja.id
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        $scope.rootVentanaCantidad.numero_caja = data.obj.movimientos_bodegas.numero;
+                        $scope.rootVentanaCantidad.numeroCajaSiguiente = data.obj.movimientos_bodegas.numero;
+                    } else {
+                        $modalInstance.close();
+                        
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se pudo consultar la caja");
+                    }
+                });
+            };
+            
+            /*
+             * @author Eduar Garcia
              * permite Handler del boton de guardar 
              */
             $scope.gestionarCantidadCaja = function(){
@@ -309,32 +339,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             };
             
             
-            self.consultarNumeroMayorRotulo = function(){
-                var url = API.DOCUMENTOS_TEMPORALES.NUMERO_MAYOR_ROTULO;
-                
-                var obj = {
-                    session: $scope.rootVentanaCantidad.session,
-                    data: {
-                        documento_temporal: {
-                            documento_temporal:pedido.getTemporalId(),
-                            numero_pedido: $scope.rootVentanaCantidad.pedido.get_numero_pedido(),
-                            tipo: $scope.rootVentanaCantidad.tipoCaja.id
-                        }
-                    }
-                };
-                
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        $scope.rootVentanaCantidad.numero_caja = data.obj.movimientos_bodegas.numero;
-                        $scope.rootVentanaCantidad.numeroCajaSiguiente = data.obj.movimientos_bodegas.numero;
-                    } else {
-                        $modalInstance.close();
-                        
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se pudo consultar la caja");
-                    }
-                });
-            };
-            
             
             self.init(function(){
                 
@@ -342,7 +346,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             
             
             $modalInstance.opened.then(function() {
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
                 self.consultarNumeroMayorRotulo();
 
             });

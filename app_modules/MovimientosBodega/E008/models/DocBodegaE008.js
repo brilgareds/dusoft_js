@@ -651,7 +651,7 @@ DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
 
 // Consultar el rotulo mayor para validar el consecutivo de la caja o nevera 
 DocuemntoBodegaE008.prototype.consultarNumeroMayorRotulo = function(documento_id, numero_pedido, tipo, callback) {
-    console.log("arguments ",arguments);
+   console.log("arguments  consultarNumeroMayorRotulo() ",arguments);
     var sql = " select coalesce(max(a.numero_caja), 0) as numero_caja from inv_rotulo_caja a \
                 where  a.documento_id = :1  and   solicitud_prod_a_bod_ppal_id = :2 and (sw_despachado = '0' or sw_despachado is null) and a.tipo = :3; ";
     
@@ -665,6 +665,7 @@ DocuemntoBodegaE008.prototype.consultarNumeroMayorRotulo = function(documento_id
 
 // Consultar el rotulo de una caja 
 DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, numero_pedido, callback) {
+    console.log("arguments  consultar_rotulo_caja() ",arguments);
     var sql = " select * from inv_rotulo_caja a where  a.documento_id = :1 and  numero_caja = :2 and solicitud_prod_a_bod_ppal_id = :3 and (sw_despachado = '0' or sw_despachado is null); ";
 
         
@@ -679,7 +680,7 @@ DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, num
 
 // Inserta el rotulo de una caja
 DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numero_pedido, cliente, direccion, cantidad, ruta, contenido, numero_caja, usuario_id, tipo, callback) {
-
+    console.log("arguments  generar_rotulo_caja() ",arguments);
     var sql = " INSERT INTO inv_rotulo_caja (documento_id, solicitud_prod_a_bod_ppal_id, cliente, direccion, cantidad, ruta, contenido, usuario_registro, fecha_registro, numero_caja, tipo) \
                 VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, NOW(), :9, :10 ) ;";
     
@@ -711,7 +712,7 @@ DocuemntoBodegaE008.prototype.validarTemporal = function(doc_tmp_id, usuario_id,
 
 DocuemntoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento_id, numero_pedido, callback) {
     var sql = " UPDATE inv_rotulo_caja SET sw_despachado='1' WHERE documento_id = :1 and solicitud_prod_a_bod_ppal_id = :2; ";
-    
+    console.log("arguments  marcar_cajas_como_despachadas() ",arguments);
     G.knex.raw(sql, {1:documento_id, 2:numero_pedido}).
     then(function(resultado){
        callback(false, resultado.rows, resultado);
@@ -723,7 +724,7 @@ DocuemntoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento
 
 // Cierra la caja
 DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, tipo, callback) {
-
+    console.log("arguments  cerrar_caja() ",arguments);
     var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='1' WHERE documento_id = :1 and numero_caja = :2 and tipo = :3; ";
       
     G.knex.raw(sql, {1:documento_id, 2:numero_caja, 3:tipo}).

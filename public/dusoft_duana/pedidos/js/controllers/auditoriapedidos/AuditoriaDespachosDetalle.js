@@ -14,171 +14,196 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "localStorageService",
         "$state",
         "$filter",
-        "Usuario","EmpresaDespacho","DocumentoAuditado","AuditoriaDespachoService",
+        "Usuario","EmpresaDespacho","DocumentoAuditado","AuditoriaDespachoService","ProductoPedido",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                 Sesion,EmpresaDespacho,DocumentoAuditado,AuditoriaDespachoService) {
+                 Sesion,EmpresaDespacho,DocumentoAuditado,AuditoriaDespachoService,ProductoPedido) {
 
-            var that = this;
-            // Definicion Variables de Sesion
-            $scope.session = {
-                usuario_id: Sesion.getUsuarioActual().getId(),
-                auth_token: Sesion.getUsuarioActual().getToken()
-            };
-         
+        var that = this;
+        // Definicion Variables de Sesion
+        $scope.session = {
+            usuario_id: Sesion.getUsuarioActual().getId(),
+            auth_token: Sesion.getUsuarioActual().getToken()
+        };
+
             // Definicion variables del View
            
-            $scope.datos_view = {
-                seleccionarOtros: '',
-                empresaSeleccionada: '',
-                activar_tab: {tab_productos: true, tab_cargar_archivo: false},
-                visualizar: false,
-                // Opciones del Modulo 
-                opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
-                progresoArchivo: 0,
-                btnSolicitarAutorizacionCartera: true,
-                estadoRegistro: 0,
-                prefijoList: '',
-                existenciaDocumento:true
-               
+        $scope.datos_view = {
+            seleccionarOtros: '',
+            empresaSeleccionada: '',
+            activar_tab: {tab_productos: true, tab_cargar_archivo: false},
+            visualizar: false,
+            // Opciones del Modulo 
+            opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
+            progresoArchivo: 0,
+            btnSolicitarAutorizacionCartera: true,
+            estadoRegistro: 0,
+            prefijoList: '',
+            existenciaDocumento:true
 
-            };
+
+        };
             
-            $scope.documentoDespachoAprobado;
+        $scope.documentoDespachoAprobado;
             
-            $scope.cargarEmpresaSession = function(){
-                
-                if($scope.datos_view.seleccionarOtros){
-                var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
-                var empresa = EmpresaDespacho.get(session.nombre, session.codigo);          
-                    $scope.datos_view.empresaSeleccionada = empresa;
-                    
-                }else{
-                    
-                    $scope.datos_view.empresaSeleccionada = "";
-                }
-            };    
+        $scope.cargarEmpresaSession = function(){
+
+            if($scope.datos_view.seleccionarOtros){
+            var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
+            var empresa = EmpresaDespacho.get(session.nombre, session.codigo);          
+                $scope.datos_view.empresaSeleccionada = empresa;
+
+            }else{
+
+                $scope.datos_view.empresaSeleccionada = "";
+            }
+        };    
 
           
          
-           /**
-                 * @author Cristian Ardila
-                 * @fecha 04/02/2016
-                 * +Descripcion Metodo encargado de invocar el servicio que
-                 *              listara todos los despachos aprobados por parte
-                 *              de la persona de seguridad
-                 */
+        /**
+          * @author Cristian Ardila
+          * @fecha 04/02/2016
+          * +Descripcion Metodo encargado de invocar el servicio que
+          *              listara todos los despachos aprobados por parte
+          *              de la persona de seguridad
+          */
+          that.listarDespachosAprobados = function(prefijo,numero,empresa){
+
+             var obj = {
+
+                session:$scope.session,
+                prefijo:prefijo,
+                numero: numero,//$scope.datos_view.numero,
+                empresa_id:empresa,
+                fechaInicial: '',
+                fechaFinal:'',
+                paginaactual:1,
+                registroUnico: false
+
+             };
+
+             AuditoriaDespachoService.listarDespachosAuditados(obj,function(data){
+
+                    if (data.status === 200) {
+
+
+                         that.renderListarDespachosAuditados(data);
+
+                    }else{
+                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+              });
+            };
+                   
                 
-                that.listarDespachosAprobados = function(prefijo,numero,empresa){
-                   
-                    var obj = {
-                        
-                       session:$scope.session,
-                       prefijo:prefijo,
-                       numero: numero,//$scope.datos_view.numero,
-                       empresa_id:empresa,
-                       fechaInicial: '',
-                       fechaFinal:'',
-                       paginaactual:1,
-                       registroUnico: false
-                        
-                    };
-                   
-                    AuditoriaDespachoService.listarDespachosAuditados(obj,function(data){
-                        
-                           if (data.status === 200) {
-                               
-                               
-                                that.renderListarDespachosAuditados(data);
-                                
-                           }else{
-                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                           }
-                     });
-                  };
-                   
-                
-                   
-                  that.renderListarDespachosAuditados = function(data){
-                      
-                       $scope.documentoAuditado = [];
-                          for (var i in data.obj.despachos_auditados) {
-                            var _documento = data.obj.despachos_auditados[i];
-                            console.log("_documento ", _documento)
-                            var documento = DocumentoAuditado.get(1, _documento.prefijo, _documento.numero, _documento.fecha_registro);
-                           
-                            documento.setRazonSocial(_documento.razon_social);
-                            documento.setEmpresaId(_documento.empresa_id);
-                            
-                           $scope.documentoAuditado.push(documento);
-                        }
-                            that.obtenerProductos($scope.documentoAuditado[0]);
-                    };
+                  
+           that.renderListarDespachosAuditados = function(data){
+                    console.log("data ", data   )
+                   $scope.documentoAuditado = [];
+                    for (var i in data.obj.despachos_auditados) {
+                      var _documento = data.obj.despachos_auditados[i];
+                      var documento = DocumentoAuditado.get(1, _documento.prefijo, _documento.numero, _documento.fecha_registro);
+                      documento.setRazonSocial(_documento.razon_social);
+                      documento.setEmpresaId(_documento.empresa_id); 
+                      documento.setEmpresaDestino(_documento.empresa_destino);
+                      documento.setRazonSocialEmpresaDestino(_documento.desc_empresa_destino);
+                      $scope.documentoAuditado.push(documento);
+                  }
+                      that.obtenerProductos($scope.documentoAuditado[0]);
+              };
                     
-                    
-                that.obtenerProductos = function(documento){
-                      
+              
+            that.obtenerProductos = function(documento){
+             
                   var obj = {
                      session: $scope.session,
                         data: {
                             despachos_auditados: {
                                 session:  $scope.session,
                                 prefijo:documento.getPrefijo(),
-                                numero: documento.getNumero(),//$scope.datos_view.numero,
-                                empresa_id:documento.getEmpresaId()
+                                numero:  documento.getNumero(),
+                                empresa_id:  documento.getEmpresaId()
                                 
                             }
                             
                         }
                     };
-                    console.log("obj ", obj)
-                  Request.realizarRequest(API.DESPACHOS_AUDITADOS.DESPACHOS_AUDITADOS, "POST", obj, function(data){ 
-                             /* var items =[];
-                      
-                                documento.agregarProductos(items)
-                                console.log("documentoAuditado ", documento.obtenerProductos())
-                                
-                                console.log("data ", data)*/
-                        }); 
-                      
-                      
-                  }  
+                    
+                  Request.realizarRequest(API.DESPACHOS_AUDITADOS.DETALLE_DOCUMENTO_AUDITADO, "POST", obj, function(data){ 
+                             $scope.productos = []; 
+                              if (data.status === 200) {
+                                  that.renderObtenerProductos(data.obj.despachos_auditados);
+                              }else{
+                                  AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                              }
+                       }); 
+                  };
                   
-             
+            /**
+             * @author Cristian Ardila
+             * @fecha  17/02/0016
+             * +Descripcion: Funcion encargada de guardar en cada documento
+             *               un arreglo de los productos del detalle
+             */ 
+            that.renderObtenerProductos = function(productos){
+
+                  for (var i in productos) {
+                    
+                       var _producto = ProductoPedido.get( productos[i].codigo_producto, productos[i].descripcion, 0, 0, 0,  productos[i].cantidad_recibida, "", 0, 0, 0, 0, 0, 0, 0);
+                           _producto.setNumeroCaja(productos[i].numero_caja);
+                          
+                      $scope.productos.push(_producto);
+                  }
+                     $scope.documentoAuditado[0].agregarProductos($scope.productos);                    
+            };
             /**
              * +Descripcion: Se activa el cambo de interfaz, cuando se selecciona
-             *               el detalle de una aprobacion o se creara una aprobacion
+             *               el detalle de una documento
              */
             if ($state.is("AuditoriaDespachos") === true) {
                
                var documento = localStorageService.get("auditoriaDespachos");
              
                if (documento) {
-              //DocumentoAuditado
-               console.log("documento ", documento);
+              
                that.listarDespachosAprobados(documento.prefijo,documento.numero,documento.empresa);
-                   /* ValidacionDespachosService.listarDespachosAprobados(obj,function(data){
-                          
-                           if (data.status === 200) {
-                                var resultado = data.obj.validacionDespachos[0];                             
-                                var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
-                             
-                                 $scope.datos_view.empresaSeleccionada = empresa;
-                             
-                                 $scope.documentoDespachoAprobado= AprobacionDespacho.get(1,resultado.prefijo,resultado.numero,resultado.fecha_registro)
-                                 $scope.documentoDespachoAprobado.setCantidadCajas(resultado.cantidad_cajas);
-                                 $scope.documentoDespachoAprobado.setCantidadNeveras(resultado.cantidad_neveras);
-                                 $scope.documentoDespachoAprobado.setObservacion(resultado.observacion);
-                           }else{
-                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                           }                    
-                        
-                     });*/
                   
                 }              
                
             };
             
-              
+           /**
+             * +Descripcion Se visualiza la tabla con todas las aprobaciones
+             *              por parte del personal de seguridad
+            */
+            $scope.listaProductosDocumentosAuditados={
+                data: 'documentoAuditado[0].obtenerProductos()[0]',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                columnDefs: [
+                   {field: 'getCodigoProducto()', displayName: 'Codigo', width:"20%"},
+                   {field: 'getDescripcionProducto()', displayName: 'Descripcion', width:"30%"},
+                   {field: 'getNumeroCaja()', displayName: 'Numero caja', width:"25%"},
+                   {field: 'getCantidadSeparada()', displayName: 'Cant. Separada', width:"25%"},    
+                   
+                   
+                 ]
+             }; 
+           
+           /*
+            * @author Cristian Ardila
+            * @fecha 04/02/2016
+            * +Descripcion Funcion encargada de cambiar de GUI cuando 
+            *              se presiona el boton de detalle de la tabla
+            *              de datos
+            */
+           $scope.volverPaginaPrincipal = function() {
+               
+                 $state.go('AuditarPedidos');
+
+            };
            /**
             * @author Cristian Ardila
             * @fecha 04/02/2016

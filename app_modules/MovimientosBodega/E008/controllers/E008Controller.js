@@ -2695,7 +2695,12 @@ E008Controller.prototype.listarDespachosAuditados = function(req, res) {
  *              un documento
  */
 E008Controller.prototype.detalleDocumentoAuditado = function(req, res) {
-  
+    
+    console.log("**********E008Controller.prototype.detalleDocumentoAuditado****************");
+    console.log("**********E008Controller.prototype.detalleDocumentoAuditado****************");
+    console.log("**********E008Controller.prototype.detalleDocumentoAuditado****************");
+    console.log("**********E008Controller.prototype.detalleDocumentoAuditado****************");
+    
     var that = this;
 
     var args = req.body.data;

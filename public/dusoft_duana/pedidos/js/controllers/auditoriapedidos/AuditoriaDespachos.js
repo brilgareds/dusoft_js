@@ -267,7 +267,7 @@ define(["angular", "js/controllers",
                            that.listarDespachosAuditados();
                        };
            
-                    //definicion y delegados del Tabla de pedidos clientes
+                    
                     /**
                       * +Descripcion Se visualiza la tabla con todas las aprobaciones
                       *              por parte del personal de seguridad

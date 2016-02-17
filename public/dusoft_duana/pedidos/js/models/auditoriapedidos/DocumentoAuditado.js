@@ -24,7 +24,8 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.usuario;
                 this.razon_social;
                 this.productos = [];
-                
+                this.empresaDestino;
+                this.razonSocialEmpresaDestino;
             };
             
 
@@ -39,7 +40,9 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 return this.numero;
             };
             
-            
+            DocumentoAuditado.prototype.getFechaRegistro = function () {
+                return this.fecha_registro;
+            };
             
             DocumentoAuditado.prototype.setEmpresaId = function (empresaId) {
                this.empresaId = empresaId;
@@ -48,6 +51,29 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             DocumentoAuditado.prototype.getEmpresaId = function () {
                 return this.empresaId;
             };
+            
+            
+            
+            
+            
+            DocumentoAuditado.prototype.setEmpresaDestino = function (empresaDestino) {
+               this.empresaDestino = empresaDestino;
+            };
+            
+            DocumentoAuditado.prototype.getEmpresaDestino = function () {
+                return this.empresaDestino;
+            };
+            
+            DocumentoAuditado.prototype.setRazonSocialEmpresaDestino = function (razonSocialEmpresaDestino) {
+               this.razonSocialEmpresaDestino = razonSocialEmpresaDestino;
+            };
+            
+            DocumentoAuditado.prototype.getRazonSocialEmpresaDestino = function () {
+                return this.razonSocialEmpresaDestino;
+            };
+            
+            
+            
             
             DocumentoAuditado.prototype.setRazonSocial = function (razon_social) {
                this.razon_social = razon_social;

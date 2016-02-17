@@ -1075,7 +1075,7 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
            
         }
      
-     var sql = "a.prefijo, a.numero, b.razon_social, a.empresa_id, a.fecha_registro, a.empresa_destino\
+     var sql = "a.prefijo, a.numero, b.razon_social, a.empresa_id, a.fecha_registro, a.empresa_destino, (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino\
                 FROM inv_bodegas_movimiento a \
                 INNER JOIN  empresas b ON b.empresa_id = a.empresa_id\
                 WHERE "+fecha+"\
@@ -1113,27 +1113,30 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
  * +Descripcion Metodo encargado mostrar el detalle de un documento
  */
 DocuemntoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback){
-   
-     var sql = "select fc_descripcion_producto(a.codigo_producto), a.numero_caja, a.cantidad_recibida\
+     
+     var sql = "SELECT a.codigo_producto,fc_descripcion_producto(a.codigo_producto) as descripcion, a.numero_caja, a.cantidad_recibida\
         FROM inv_bodegas_movimiento_d a\
-        WHERE a.tipo_caja = 0 AND a.prefijo: prefijo AND a.numero: numero AND a.empresa_id: empresa";
+        WHERE a.tipo_caja = '0'\
+        AND a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo\
+        AND a.numero  :: varchar "+G.constants.db().LIKE+"  :numero\
+        AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa;";
    
     var parametros = {
         prefijo: "%"+ obj.prefijo +"%", 
         numero: "%"+ obj.numero  +"%",
-        empresa: obj.empresa_id
+        empresa: obj.empresa_id 
     };
-    
-    var query = G.knex.select(G.knex.raw(sql, parametros)).
-    limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc").then(function(resultado){
-        
-        callback(false, resultado);
-    }).catch(function(err){
+       
+     G.knex.raw(sql, parametros). then(function(resultado){       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
      
         callback(err);
-       
     });
+    
+     
+   
+  
 };
 
 

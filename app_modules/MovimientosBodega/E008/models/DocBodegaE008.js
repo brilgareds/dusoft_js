@@ -653,9 +653,9 @@ DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
 DocuemntoBodegaE008.prototype.consultarNumeroMayorRotulo = function(documento_id, numero_pedido, tipo, callback) {
    console.log("arguments  consultarNumeroMayorRotulo() ",arguments);
     var sql = " select coalesce(max(a.numero_caja), 0) as numero_caja from inv_rotulo_caja a \
-                where  a.documento_id = :1  and   solicitud_prod_a_bod_ppal_id = :2 and (sw_despachado = '0' or sw_despachado is null) and a.tipo = :3; ";
+                where /* a.documento_id = :1  and  */ solicitud_prod_a_bod_ppal_id = :2 and (sw_despachado = '0' or sw_despachado is null) and a.tipo = :3; ";
     
-   G.knex.raw(sql, {1:documento_id, 2:numero_pedido, 3:tipo}).
+   G.knex.raw(sql, {/*1:documento_id,*/ 2:numero_pedido, 3:tipo}).
    then(function(resultado){
        callback(false, resultado.rows, resultado);
    }).catch(function(err){

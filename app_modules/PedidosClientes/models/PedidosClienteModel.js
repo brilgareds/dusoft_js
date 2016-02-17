@@ -1199,7 +1199,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
                    16:cotizacion.bodega_id
                   
                    };
-          
+        
     var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
                 empresa_id,\
                 tipo_id_tercero,\

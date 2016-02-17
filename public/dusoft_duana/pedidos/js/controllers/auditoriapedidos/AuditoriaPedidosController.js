@@ -462,7 +462,7 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         documento_temporal: {
-                            documento_temporal_id: caja.documento_id,
+                            documento_temporal_id: caja.documento_temporal_id,
                             numero_caja: caja.numero_caja,
                             tipo: caja.tipo
                         }

@@ -14,9 +14,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "localStorageService",
         "$state",
         "$filter",
-        "Usuario","EmpresaDespacho","DocumentoAuditado","AuditoriaDespachoService","ProductoPedido",
+        "Usuario","EmpresaDespacho","DocumentoAuditado","AuditoriaDespachoService","ProductoPedido","PedidoAuditoria",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                 Sesion,EmpresaDespacho,DocumentoAuditado,AuditoriaDespachoService,ProductoPedido) {
+                 Sesion,EmpresaDespacho,DocumentoAuditado,AuditoriaDespachoService,ProductoPedido,PedidoAuditoria) {
 
         var that = this;
         // Definicion Variables de Sesion
@@ -51,22 +51,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             }
         };    
 
-          
-         
         /**
           * @author Cristian Ardila
           * @fecha 04/02/2016
           * +Descripcion Metodo encargado de invocar el servicio que
-          *              listara todos los despachos aprobados por parte
-          *              de la persona de seguridad
+          *              listar todos los despachos auditados
           */
-          that.listarDespachosAprobados = function(prefijo,numero,empresa){
+          that.listarDespachosAuditados = function(prefijo,numero,empresa){
 
              var obj = {
-
                 session:$scope.session,
                 prefijo:prefijo,
-                numero: numero,//$scope.datos_view.numero,
+                numero: numero,
                 empresa_id:empresa,
                 fechaInicial: '',
                 fechaFinal:'',
@@ -85,9 +81,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
                    
                 
-                  
+           /**
+            * +Descripcion: Metodo que mapea los documentos y posteriormente
+            *               los almacena en un arreglo
+            */       
            that.renderListarDespachosAuditados = function(data){
-                 console.log("$scope.documentoAuditado[0] ", data)
+              
                    $scope.documentoAuditado = [];
                     for (var i in data.obj.despachos_auditados) {
                       var _documento = data.obj.despachos_auditados[i];
@@ -107,13 +106,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
               };                    
               
               
-              
+              /**
+               * @author Cristian Ardila
+               * @fecha  18/02/2016
+               * +Descripcion Metodo encargado de obtener los pedidos de un 
+               *              documento
+               * @param {type} documento
+               * @returns {undefined}
+               */
              that.obtenerPedidos = function(documento){
-                /* console.log("documento ", documento)
-                var url = API.DESPACHOS_AUDITADOS.DETALLE_DOCUMENTO_AUDITADO;
+              
+                var url = API.DESPACHOS_AUDITADOS.DETALLE_PEDIDO_CLIENTE_DOCUMENTO;
                 if(documento.getTipoPedido() === 1){
-                    url = API.DESPACHOS_AUDITADOS.DETALLE_DOCUMENTO_AUDITADO;
-                }*/
+                    url = API.DESPACHOS_AUDITADOS.DETALLE_PEDIDO_FARMACIA_DOCUMENTO;
+                }
                  var obj = {
                      session: $scope.session,
                         data: {
@@ -126,43 +132,67 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                             
                         }
-                    };
+                    };                    
                     
-                    console.log("obj ", obj)
-                /*  Request.realizarRequest(, "POST", obj, function(data){ 
-                             $scope.productos = []; 
+                  Request.realizarRequest(url, "POST", obj, function(data){ 
+                     
+                             $scope.pedidos = []; 
                               if (data.status === 200) {
-                                  that.renderObtenerProductos(data.obj.despachos_auditados);
+                                  that.renderObtenerPedidos(data.obj.despachos_auditados);
                               }else{
                                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                               }
                        }); 
-                  };*/
+                  };
                  
-             };
+                 
+                  /**
+             * @author Cristian Ardila
+             * @fecha  17/02/0016
+             * +Descripcion: Funcion encargada de guardar en cada documento
+             *               un arreglo de los productos del detalle
+             */ 
+            that.renderObtenerPedidos = function(productos){     
+                
+                  for (var i in productos) {                     
+                       var _producto = PedidoAuditoria.get();
+                           _producto.setPrefijo(productos[i].prefijo);
+                           _producto.setNumero(productos[i].numero);
+                           _producto.setFarmaciaId(productos[i].empresa_id);
+                           _producto.setTemporalId(productos[i].pedido);                      
+                      $scope.pedidos.push(_producto);
+                  }            
+                 $scope.documentoAuditado[0].agregarPedidos($scope.pedidos);   
+                 
+               that.obtenerProductos($scope.documentoAuditado[0].obtenerPedidos()[0]);
+            };
+                 
+                 
+                 
+                 
+           
             /**
              * @author Cristian Ardila
              * @fecha  18/02/2016
              * +Descripcion Metodo encargado de invocar el servicio que listara
              *              los productos asociados a un pedido
              */
-            that.obtenerProductos = function(documento){
+            that.obtenerProductos = function(pedido){
              
                   var obj = {
                      session: $scope.session,
                         data: {
                             despachos_auditados: {
-                                session:  $scope.session,
-                                prefijo:documento.getPrefijo(),
-                                numero:  documento.getNumero(),
-                                empresa_id:  documento.getEmpresaId()
-                                
-                            }
-                            
+                                session: $scope.session,
+                                prefijo: pedido[0].getPrefijo(),
+                                numero: pedido[0].getNumero(), 
+                                empresa_id:pedido[0].getFarmaciaId()                              
+                            }                           
                         }
                     };
-                    
-                  Request.realizarRequest(API.DESPACHOS_AUDITADOS.DETALLE_DOCUMENTO_AUDITADO, "POST", obj, function(data){ 
+                  
+                  Request.realizarRequest(API.DESPACHOS_AUDITADOS.DETALLE_DOCUMENTO_AUDITADO, "POST", obj, function(data){
+                             
                              $scope.productos = []; 
                               if (data.status === 200) {
                                   that.renderObtenerProductos(data.obj.despachos_auditados);
@@ -179,31 +209,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *               un arreglo de los productos del detalle
              */ 
             that.renderObtenerProductos = function(productos){
-                  console.log("productos ", productos);
-                  for (var i in productos) {
-                    
+                
+                  for (var i in productos) {                   
                        var _producto = ProductoPedido.get( productos[i].codigo_producto, productos[i].descripcion, 0, 0, 0,  productos[i].cantidad_recibida, "", 0, 0, 0, 0, 0, 0, 0);
                            _producto.setNumeroCaja(productos[i].numero_caja);
                            _producto.setTipo(productos[i].tipo);
-                         
+                           _producto.setTipoCajaId(productos[i].tipo_caja);                        
                       $scope.productos.push(_producto);
                   }
-                     $scope.documentoAuditado[0].agregarProductos($scope.productos);                    
+                     $scope.documentoAuditado[0].obtenerPedidos()[0][0].agregarProductos($scope.productos);                        
             };
             /**
              * +Descripcion: Se activa el cambo de interfaz, cuando se selecciona
              *               el detalle de una documento
              */
-            if ($state.is("AuditoriaDespachos") === true) {
-               
-               var documento = localStorageService.get("auditoriaDespachos");
-             
-               if (documento) {
-              
-               that.listarDespachosAprobados(documento.prefijo,documento.numero,documento.empresa);
-                  
-                }              
-               
+            if ($state.is("AuditoriaDespachos") === true) {             
+               var documento = localStorageService.get("auditoriaDespachos");            
+               if (documento) {            
+               that.listarDespachosAuditados(documento.prefijo,documento.numero,documento.empresa);                
+                }                           
             };
             
             /**
@@ -213,12 +237,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              la tabla de los productos de un documento
              * 
              */
-            $scope.onImprimirRotulo = function(tipo, entity) {
-                
-                console.log("entity ", entity)
-              /*  var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
+            $scope.onImprimirRotulo = function(entity) {
+              
+                var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
 
-                if (tipo === 2) {
+                if ($scope.documentoAuditado[0].getTipoPedido() === 1) {
                     url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
                 }
 
@@ -226,29 +249,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     session: $scope.session,
                     data: {
                         documento_temporal: {
-                            numero_pedido: numero_pedido,
-                            numero_caja: numero_caja,
-                            tipo: tipoCaja
+                            numero_pedido: $scope.documentoAuditado[0].getPedido(),
+                            numero_caja: entity.getNumeroCaja(),
+                            tipo: entity.getTipoCajaId()
                         }
                     }
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
+                 
                     if (data.status === 200) {
                         var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
 
-                        $scope.visualizarReporte("/reports/" + nombre_reporte, "Rotulo_" + numero_caja, "download");
+                        $scope.visualizarReporte("/reports/" + nombre_reporte, "Rotulo_" + entity.getNumeroCaja(), "download");
                     } else {
 
                     }
-                });*/
+                });
             };
            /**
              * +Descripcion Se visualiza la tabla con todas las aprobaciones
              *              por parte del personal de seguridad
             */
             $scope.listaProductosDocumentosAuditados={
-                data: 'documentoAuditado[0].obtenerProductos()[0]',
+                data: 'documentoAuditado[0].obtenerPedidos()[0][0].obtenerProductos()[0]',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
@@ -261,7 +285,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    {field: 'getTipo()', displayName: 'Caj/Nev', width:"10%"},
                    {field: 'movimiento', displayName: "Opciones", width: "10%", cellClass: "txt-center",
                         cellTemplate: '<div >\
-                            <button class="btn btn-default btn-xs" ng-click="onImprimirRotulo(1,row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
+                            <button class="btn btn-default btn-xs" ng-click="onImprimirRotulo(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
                         </div>'
                     }
                    

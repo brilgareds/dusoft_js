@@ -28,6 +28,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.razonSocialEmpresaDestino;
                 this.pedido;
                 this.tipo_pedido;
+                this.pedidos =[];
             };
             
 
@@ -50,9 +51,6 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             DocumentoAuditado.prototype.getTipoPedido = function () {
                 return this.tipo_pedido;
             };
-            
-            
-            
             
             
             DocumentoAuditado.prototype.getPrefijo = function () {
@@ -135,6 +133,17 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             DocumentoAuditado.prototype.getEstado = function() {
                 return this.estado;
             };
+            
+            
+            DocumentoAuditado.prototype.agregarPedidos = function (centro) {
+                this.pedidos.push(centro);
+            };
+
+            DocumentoAuditado.prototype.obtenerPedidos = function () {
+                return this.pedidos;
+            };
+            
+            
             
             DocumentoAuditado.prototype.agregarProductos = function (centro) {
                 this.productos.push(centro);

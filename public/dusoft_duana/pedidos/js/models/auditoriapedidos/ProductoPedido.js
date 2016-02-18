@@ -52,6 +52,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.codigo = codigo;
             this.descripcion = nombre;
             this.tipo;
+            this.tipoCajaId;
             this.pedido;
             
         }
@@ -73,6 +74,16 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         ProductoPedido.prototype.getTipo = function () {
             return this.tipo;
         };
+        
+        ProductoPedido.prototype.setTipoCajaId = function (tipoCajaId) {
+             this.tipoCajaId = tipoCajaId;
+        };
+
+        ProductoPedido.prototype.getTipoCajaId = function () {
+            return this.tipoCajaId;
+        };
+        
+        
         
         ProductoPedido.prototype.setLote = function(lote) {
             this.lote = lote;

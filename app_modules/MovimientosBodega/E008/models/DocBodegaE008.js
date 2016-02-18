@@ -1150,13 +1150,54 @@ DocuemntoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback)
     }).catch(function(err) { 
      
         callback(err);
-    });
-    
-     
-   
-  
+    });        
 };
 
+
+/**
+ * @author Cristian Ardila 
+ * @fecha  18/002/2016
+ * +Descripcion Modelo que consulta el pedido amarrado a un documento
+ * @param {type} callback
+ * @returns {undefined} */
+DocuemntoBodegaE008.prototype.detallePedidoClienteDocumento = function(obj, callback) {
+   
+    var sql = "SELECT a.empresa_id, a.prefijo, a.numero, a.empresa_id, a.pedido_cliente_id as pedido\
+               FROM inv_bodegas_movimiento_despachos_clientes a\
+               WHERE empresa_id = :1 AND prefijo = :2 AND numero = :3;";
+
+
+     G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}). then(function(resultado){     
+         
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+        console.log("err ", err)
+        callback(err);
+    });
+};
+
+
+/**
+ * @author Cristian Ardila 
+ * @fecha  18/002/2016
+ * +Descripcion Modelo que consulta el pedido amarrado a un documento
+ * @param {type} callback
+ * @returns {undefined} */
+DocuemntoBodegaE008.prototype.detallePedidoFarmaciaDocumento = function(obj, callback) {
+   
+    var sql = "SELECT a.empresa_id, a.prefijo, a.numero, a.empresa_id, a.solicitud_prod_a_bod_ppal_id as pedido\
+               FROM inv_bodegas_movimiento_despachos_farmacias a\
+               WHERE empresa_id = :1 AND prefijo = :2 AND numero = :3;";
+
+
+     G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}). then(function(resultado){       
+       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+        console.log("err ", err)
+        callback(err);
+    });
+};
 
 
 

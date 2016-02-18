@@ -170,6 +170,25 @@ module.exports = function(app, di_container) {
         c_e008.detalleDocumentoAuditado(req, res);
     });
     
+    /**
+     * @author Cristian Ardila
+     * @fecha  16/02/2016
+     * +Descripcion Servicio para consultar los pedidos de un documento
+     */
+    app.post('/api/movBodegas/E008/detallePedidoClienteDocumento', function(req, res) {
+        c_e008.detallePedidoClienteDocumento(req, res);
+    });
+    
+   /**
+     * @author Cristian Ardila
+     * @fecha  16/02/2016
+     * +Descripcion Servicio para consultar los pedidos de farmacia de un documento
+     */
+    app.post('/api/movBodegas/E008/detallePedidoFarmaciaDocumento', function(req, res) {
+        c_e008.detallePedidoFarmaciaDocumento(req, res);
+    });
+    
+    
     
     // ======== FIN Auditoria de Documento de Despacho ====================
     

@@ -11,8 +11,9 @@ define(["angular"], function(angular) {
             'DESPACHOS_AUDITADOS': {
                 "LISTAR_EMPRESAS": BASE_URL + "/ValidacionDespachos/listarempresas",
                 'LISTAR_DESPACHOS_AUDITADOS': BASE_URL + '/movBodegas/E008/listarDespachosAuditados',
-                'DETALLE_DOCUMENTO_AUDITADO': BASE_URL + '/movBodegas/E008/detalleDocumentoAuditado'
-               
+                'DETALLE_DOCUMENTO_AUDITADO': BASE_URL + '/movBodegas/E008/detalleDocumentoAuditado',
+                'DETALLE_PEDIDO_CLIENTE_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoClienteDocumento',
+                'DETALLE_PEDIDO_FARMACIA_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoFarmaciaDocumento'
                 
             },
             'DOCUMENTOS_TEMPORALES': {

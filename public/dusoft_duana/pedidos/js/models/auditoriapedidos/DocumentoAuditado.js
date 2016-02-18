@@ -51,11 +51,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             DocumentoAuditado.prototype.getEmpresaId = function () {
                 return this.empresaId;
             };
-            
-            
-            
-            
-            
+          
             DocumentoAuditado.prototype.setEmpresaDestino = function (empresaDestino) {
                this.empresaDestino = empresaDestino;
             };

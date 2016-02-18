@@ -35,9 +35,8 @@ define(["angular", "js/controllers",
             
              that.init = function(empresa, callback) {
                
-                
                 $scope.datos_view = {
-                        empresaSeleccionada : EmpresaDespacho.get("TODAS LAS EMPRESAS", -1),
+                        empresaSeleccionada : EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo()),
                         fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
                         fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                         prefijo: "",
@@ -217,7 +216,7 @@ define(["angular", "js/controllers",
                    
                      Request.realizarRequest(API.DESPACHOS_AUDITADOS.LISTAR_DESPACHOS_AUDITADOS, "POST", obj, function(data){ 
 
-
+                        console.log("data ", data)
                             if (data.status === 200) {
 
                                  $scope.datos_view.items = data.obj.despachos_auditados.length;
@@ -283,16 +282,55 @@ define(["angular", "js/controllers",
                             {field: 'getPrefijo()', displayName: 'prefijo', width:"25%"},    
                             {field: 'getNumero()', displayName: 'Numero', width:"20%"},
                             {field: 'fecha_registro', displayName: 'Fecha Registro', width:"20%"},    
-                            {field: 'detalle', width: "10%",
+                            /*{field: 'detalle', width: "10%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
                                 cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
 
-                             }
+                             },*/
+                              {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                            <li ng-if="row.entity.get_estado_cotizacion() == \'0\' || row.entity.get_estado_cotizacion() == \'2\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_estado }}" ng-click="activarCotizacion(row.entity)" >Activar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)" >Reporte</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="detalleDespachoAprobado(row.entity)" >Detalle</a></li>\
+                                             </ul>\
+                                       </div>'
+                               }
                           ]
                       }; 
               
-              
+                      
+                
+                   /*
+                     * @Author: Eduar
+                     * @param {PedidoFarmacia} pedido
+                     * +Descripcion: handler para imprimir el despacho de un pedido
+                     */
+                    $scope.imprimirDespacho = function(documento) {
+                       
+                        var test = {
+                            session: $scope.session,
+                            data: {
+                                movimientos_bodegas: {
+                                    empresa:$scope.datos_view.empresaSeleccionada.getCodigo(),
+                                    numero: documento.getNumero(),
+                                    prefijo:documento.getPrefijo()   
+                                }
+                            }
+                        };
+                        Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
+                         
+                            if (data.status === 200) {
+                                var nombre = data.obj.movimientos_bodegas.nombre_pdf;
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                            }
+
+                        });
+
+                    };
+                      
                     /*
                      * @author Cristian Ardila
                      * @fecha 04/02/2016

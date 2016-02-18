@@ -12,6 +12,7 @@ define(["angular"], function(angular) {
                 "LISTAR_EMPRESAS": BASE_URL + "/ValidacionDespachos/listarempresas",
                 'LISTAR_DESPACHOS_AUDITADOS': BASE_URL + '/movBodegas/E008/listarDespachosAuditados',
                 'DETALLE_DOCUMENTO_AUDITADO': BASE_URL + '/movBodegas/E008/detalleDocumentoAuditado'
+               
                 
             },
             'DOCUMENTOS_TEMPORALES': {

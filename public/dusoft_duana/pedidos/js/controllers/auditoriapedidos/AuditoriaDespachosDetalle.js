@@ -25,8 +25,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             auth_token: Sesion.getUsuarioActual().getToken()
         };
 
-            // Definicion variables del View
-           
+      //Definicion variables del View         
         $scope.datos_view = {
             seleccionarOtros: '',
             empresaSeleccionada: '',
@@ -39,21 +38,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             estadoRegistro: 0,
             prefijoList: '',
             existenciaDocumento:true
-
-
-        };
-            
+        };          
         $scope.documentoDespachoAprobado;
             
         $scope.cargarEmpresaSession = function(){
-
             if($scope.datos_view.seleccionarOtros){
             var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
             var empresa = EmpresaDespacho.get(session.nombre, session.codigo);          
                 $scope.datos_view.empresaSeleccionada = empresa;
-
             }else{
-
                 $scope.datos_view.empresaSeleccionada = "";
             }
         };    
@@ -83,12 +76,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              };
 
              AuditoriaDespachoService.listarDespachosAuditados(obj,function(data){
-
                     if (data.status === 200) {
-
-
                          that.renderListarDespachosAuditados(data);
-
                     }else{
                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
@@ -98,7 +87,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                   
            that.renderListarDespachosAuditados = function(data){
-                    console.log("data ", data   )
+                 
                    $scope.documentoAuditado = [];
                     for (var i in data.obj.despachos_auditados) {
                       var _documento = data.obj.despachos_auditados[i];
@@ -107,12 +96,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                       documento.setEmpresaId(_documento.empresa_id); 
                       documento.setEmpresaDestino(_documento.empresa_destino);
                       documento.setRazonSocialEmpresaDestino(_documento.desc_empresa_destino);
+                      documento.setObservacion(_documento.observacion);
+                     
                       $scope.documentoAuditado.push(documento);
-                  }
-                      that.obtenerProductos($scope.documentoAuditado[0]);
-              };
-                    
+                      
+                  }                     
+                     
+                    //  that.obtenerProductos($scope.documentoAuditado[0]);
+              };                    
               
+              
+              
+              
+            /**
+             * @author Cristian Ardila
+             * @fecha  18/02/2016
+             * +Descripcion Metodo encargado de invocar el servicio que listara
+             *              los productos asociados a un pedido
+             */
             that.obtenerProductos = function(documento){
              
                   var obj = {
@@ -146,12 +147,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *               un arreglo de los productos del detalle
              */ 
             that.renderObtenerProductos = function(productos){
-
+                  console.log("productos ", productos);
                   for (var i in productos) {
                     
                        var _producto = ProductoPedido.get( productos[i].codigo_producto, productos[i].descripcion, 0, 0, 0,  productos[i].cantidad_recibida, "", 0, 0, 0, 0, 0, 0, 0);
                            _producto.setNumeroCaja(productos[i].numero_caja);
-                          
+                           _producto.setTipo(productos[i].tipo);
+                         
                       $scope.productos.push(_producto);
                   }
                      $scope.documentoAuditado[0].agregarProductos($scope.productos);                    
@@ -172,6 +174,43 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                
             };
             
+            /**
+             * @author Cristian Ardila
+             * @fecha  16/02/2016
+             * +Descripcion Metodo encargado de imprimir el rotulo, invocado desde
+             *              la tabla de los productos de un documento
+             * 
+             */
+            $scope.onImprimirRotulo = function(tipo, entity) {
+                
+                console.log("entity ", entity)
+              /*  var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
+
+                if (tipo === 2) {
+                    url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
+                }
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        documento_temporal: {
+                            numero_pedido: numero_pedido,
+                            numero_caja: numero_caja,
+                            tipo: tipoCaja
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
+
+                        $scope.visualizarReporte("/reports/" + nombre_reporte, "Rotulo_" + numero_caja, "download");
+                    } else {
+
+                    }
+                });*/
+            };
            /**
              * +Descripcion Se visualiza la tabla con todas las aprobaciones
              *              por parte del personal de seguridad
@@ -185,9 +224,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 columnDefs: [
                    {field: 'getCodigoProducto()', displayName: 'Codigo', width:"20%"},
                    {field: 'getDescripcionProducto()', displayName: 'Descripcion', width:"30%"},
-                   {field: 'getNumeroCaja()', displayName: 'Numero caja', width:"25%"},
-                   {field: 'getCantidadSeparada()', displayName: 'Cant. Separada', width:"25%"},    
-                   
+                   {field: 'getNumeroCaja()', displayName: 'Numero caja', width:"20%"},
+                   {field: 'getCantidadSeparada()', displayName: 'Cant. Separada', width:"10%"},    
+                   {field: 'getTipo()', displayName: 'Caj/Nev', width:"10%"},
+                   {field: 'movimiento', displayName: "Opciones", width: "10%", cellClass: "txt-center",
+                        cellTemplate: '<div >\
+                            <button class="btn btn-default btn-xs" ng-click="onImprimirRotulo(1,row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
+                        </div>'
+                    }
                    
                  ]
              }; 

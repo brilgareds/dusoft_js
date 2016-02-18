@@ -240,9 +240,7 @@ define(["angular", "js/controllers",
                             <button ng-switch-when="1" class="btn btn-default btn-xs" ng-click="onImprimirRotulo(1,DocumentoTemporal.pedido.numero_pedido,row.entity.numero_caja, row.entity.tipo)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
                         </div>'
                     }
-
                 ]
-
             };
 
             //eventos de widgets

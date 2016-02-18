@@ -2220,7 +2220,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
         res.send(G.utils.r(req.url, 'El numero, empresa o prefijo NO estan vacios', 404, {}));
         return;
     }
-
+    
     var numero = args.movimientos_bodegas.numero;
     var prefijo = args.movimientos_bodegas.prefijo;
     var empresa = args.movimientos_bodegas.empresa;

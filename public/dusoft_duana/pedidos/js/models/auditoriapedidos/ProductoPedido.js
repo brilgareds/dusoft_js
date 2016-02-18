@@ -51,10 +51,28 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.numeroCaja = 0;
             this.codigo = codigo;
             this.descripcion = nombre;
+            this.tipo;
+            this.pedido;
             
         }
 
         ProductoPedido.prototype = Object.create(Producto.getClass().prototype);
+        
+        ProductoPedido.prototype.setPedido = function (tipo) {
+             this.tipo = tipo;
+        };
+
+        ProductoPedido.prototype.getPedido = function () {
+            return this.pedido;
+        };
+        
+        ProductoPedido.prototype.setTipo = function (tipo) {
+             this.tipo = tipo;
+        };
+
+        ProductoPedido.prototype.getTipo = function () {
+            return this.tipo;
+        };
         
         ProductoPedido.prototype.setLote = function(lote) {
             this.lote = lote;

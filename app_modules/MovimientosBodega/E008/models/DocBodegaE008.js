@@ -1075,9 +1075,22 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
            
         }
      
-     var sql = "a.prefijo, a.numero, b.razon_social, a.empresa_id, a.fecha_registro, a.empresa_destino, (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino\
-                FROM inv_bodegas_movimiento a \
+     var sql = "a.prefijo,\
+                a.numero,\
+                b.razon_social,\
+                a.empresa_id,\
+                a.fecha_registro,\
+                a.empresa_destino,\
+               (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \n\
+                a.observacion,\
+                CASE WHEN c.pedido_cliente_id is null THEN d.solicitud_prod_a_bod_ppal_id WHEN d.solicitud_prod_a_bod_ppal_id is null THEN c.pedido_cliente_id end as pedido,\
+                CASE WHEN c.pedido_cliente_id is not null THEN 0 WHEN d.solicitud_prod_a_bod_ppal_id is not null THEN 1 end as tipo_pedido\
+                FROM inv_bodegas_movimiento a\
                 INNER JOIN  empresas b ON b.empresa_id = a.empresa_id\
+                LEFT JOIN inv_bodegas_movimiento_despachos_clientes c\
+                ON  a.prefijo = c.prefijo AND a.numero = c.numero AND a.empresa_id = c.empresa_id\
+                LEFT JOIN inv_bodegas_movimiento_despachos_farmacias d\
+                ON  a.prefijo = d.prefijo AND a.numero = d.numero AND a.empresa_id = d.empresa_id\
                 WHERE "+fecha+"\
                 ( \
                     a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo and\
@@ -1114,10 +1127,15 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
  */
 DocuemntoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback){
      
-     var sql = "SELECT a.codigo_producto,fc_descripcion_producto(a.codigo_producto) as descripcion, a.numero_caja, a.cantidad_recibida\
-        FROM inv_bodegas_movimiento_d a\
-        WHERE a.tipo_caja = '0'\
-        AND a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo\
+     var sql = "SELECT a.codigo_producto,fc_descripcion_producto(a.codigo_producto) as descripcion, a.numero_caja, a.cantidad as cantidad_recibida,\
+        CASE WHEN a.tipo_caja = '0' THEN 'CAJA' WHEN a.tipo_caja = '1' THEN 'Nevera' end as tipo, a.tipo_caja,\
+        CASE WHEN b.pedido_cliente_id is null THEN c.solicitud_prod_a_bod_ppal_id WHEN c.solicitud_prod_a_bod_ppal_id is null THEN b.pedido_cliente_id end as pedido,\
+        CASE WHEN b.pedido_cliente_id is not null THEN 0 WHEN c.solicitud_prod_a_bod_ppal_id is not null THEN 1 end as tipo_pedido\n\
+        FROM inv_bodegas_movimiento_d a LEFT JOIN inv_bodegas_movimiento_despachos_clientes b\
+        ON  a.prefijo = b.prefijo AND a.numero = b.numero AND a.empresa_id = b.empresa_id\
+        LEFT JOIN inv_bodegas_movimiento_despachos_farmacias c\
+        ON  a.prefijo = c.prefijo AND a.numero = c.numero AND a.empresa_id = c.empresa_id\
+        WHERE a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo\
         AND a.numero  :: varchar "+G.constants.db().LIKE+"  :numero\
         AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa;";
    

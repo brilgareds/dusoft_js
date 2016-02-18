@@ -87,7 +87,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                   
            that.renderListarDespachosAuditados = function(data){
-                 
+                 console.log("$scope.documentoAuditado[0] ", data)
                    $scope.documentoAuditado = [];
                     for (var i in data.obj.despachos_auditados) {
                       var _documento = data.obj.despachos_auditados[i];
@@ -97,17 +97,49 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                       documento.setEmpresaDestino(_documento.empresa_destino);
                       documento.setRazonSocialEmpresaDestino(_documento.desc_empresa_destino);
                       documento.setObservacion(_documento.observacion);
-                     
+                      documento.setPedido(_documento.pedido);
+                      documento.setTipoPedido(_documento.tipo_pedido);
                       $scope.documentoAuditado.push(documento);
                       
                   }                     
                      
-                    //  that.obtenerProductos($scope.documentoAuditado[0]);
+                      that.obtenerPedidos($scope.documentoAuditado[0]);
               };                    
               
               
               
-              
+             that.obtenerPedidos = function(documento){
+                /* console.log("documento ", documento)
+                var url = API.DESPACHOS_AUDITADOS.DETALLE_DOCUMENTO_AUDITADO;
+                if(documento.getTipoPedido() === 1){
+                    url = API.DESPACHOS_AUDITADOS.DETALLE_DOCUMENTO_AUDITADO;
+                }*/
+                 var obj = {
+                     session: $scope.session,
+                        data: {
+                            despachos_auditados: {
+                                session:  $scope.session,
+                                prefijo:documento.getPrefijo(),
+                                numero:  documento.getNumero(),
+                                empresa_id:  documento.getEmpresaId()
+                                
+                            }
+                            
+                        }
+                    };
+                    
+                    console.log("obj ", obj)
+                /*  Request.realizarRequest(, "POST", obj, function(data){ 
+                             $scope.productos = []; 
+                              if (data.status === 200) {
+                                  that.renderObtenerProductos(data.obj.despachos_auditados);
+                              }else{
+                                  AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                              }
+                       }); 
+                  };*/
+                 
+             };
             /**
              * @author Cristian Ardila
              * @fecha  18/02/2016

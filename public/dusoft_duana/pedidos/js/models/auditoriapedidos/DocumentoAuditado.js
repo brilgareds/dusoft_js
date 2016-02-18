@@ -26,10 +26,33 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.productos = [];
                 this.empresaDestino;
                 this.razonSocialEmpresaDestino;
+                this.pedido;
+                this.tipo_pedido;
             };
             
 
             DocumentoAuditado.prototype = Object.create(Documento.getClass().prototype);
+            
+            
+            
+            DocumentoAuditado.prototype.setPedido = function (pedido) {
+               this.pedido = pedido;
+            };
+            
+            DocumentoAuditado.prototype.getPedido = function () {
+                return this.pedido;
+            };
+            
+            DocumentoAuditado.prototype.setTipoPedido = function (tipo_pedido) {
+               this.tipo_pedido = tipo_pedido;
+            };
+            
+            DocumentoAuditado.prototype.getTipoPedido = function () {
+                return this.tipo_pedido;
+            };
+            
+            
+            
             
             
             DocumentoAuditado.prototype.getPrefijo = function () {

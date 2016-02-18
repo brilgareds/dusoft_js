@@ -1054,7 +1054,7 @@ DocuemntoBodegaE008.prototype.obtenerDocumento = function(obj, callback) {
      G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}). then(function(resultado){       
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-       console.log("err ", err);
+      
         callback(err);
     });
 };

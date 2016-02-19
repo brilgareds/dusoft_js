@@ -158,7 +158,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                             nombre_cliente: cliente.getNombre() || cliente.get_nombre_farmacia(),*/
                             direccion_cliente: cliente.direccion || cliente.nombre_farmacia,
                             nombre_cliente: cliente.nombre_tercero || cliente.nombre_farmacia,
-                            tipo: $scope.rootVentanaCantidad.tipoCaja.id
+                            tipo: $scope.rootVentanaCantidad.tipoCaja.id,
+                            tipo_pedido:$scope.rootVentanaCantidad.pedido.getTipo()
                         }
                     }
                 };
@@ -254,7 +255,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                         documento_temporal: {
                             documento_temporal:pedido.getTemporalId(),
                             numero_pedido: $scope.rootVentanaCantidad.pedido.get_numero_pedido(),
-                            tipo: $scope.rootVentanaCantidad.tipoCaja.id
+                            tipo: $scope.rootVentanaCantidad.tipoCaja.id,
+                            tipo_pedido:$scope.rootVentanaCantidad.pedido.getTipo()
                         }
                     }
                 };

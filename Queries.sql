@@ -1707,3 +1707,7 @@ ALTER TABLE ONLY aprobacion_despacho_planillas
 --
 -- PostgreSQL database dump complete
 --
+
+
+ALTER TABLE "public"."inv_rotulo_caja"
+  ADD COLUMN "tipo_pedido" CHAR(1);

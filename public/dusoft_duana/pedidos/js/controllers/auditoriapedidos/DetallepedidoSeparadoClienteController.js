@@ -236,7 +236,7 @@ define(["angular", "js/controllers",
                     {field: 'direccion', displayName: 'Direccion'},
                     {field: 'movimiento', displayName: "Opciones", width: 200, cellClass: "txt-center",
                         cellTemplate: '<div ng-switch="row.entity.caja_cerrada">\
-                            <button ng-switch-when="0"  class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok"></span> Cerrar</button>\
+                            <button ng-switch-when="0"  class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity, DocumentoTemporal.pedido.getTipo())"><span class="glyphicon glyphicon-ok"></span> Cerrar</button>\
                             <button ng-switch-when="1" class="btn btn-default btn-xs" ng-click="onImprimirRotulo(1,DocumentoTemporal.pedido.numero_pedido,row.entity.numero_caja, row.entity.tipo)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
                         </div>'
                     }

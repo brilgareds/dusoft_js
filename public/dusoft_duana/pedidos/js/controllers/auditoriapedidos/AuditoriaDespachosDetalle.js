@@ -260,7 +260,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                 
+
                     if (data.status === 200) {
                         var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
 
@@ -269,7 +269,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);   
                     }
                 });
-            };
+              };
            /**
              * +Descripcion Se visualiza la tabla con todas las aprobaciones
              *              por parte del personal de seguridad

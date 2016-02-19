@@ -689,7 +689,8 @@ define(["angular", "js/controllers",
                             numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
                             direccion_cliente: cliente.direccion || cliente.nombre_farmacia,
                             nombre_cliente: cliente.nombre_tercero || cliente.nombre_farmacia,
-                            tipo: $scope.rootEditarProducto.caja.getTipo()
+                            tipo: $scope.rootEditarProducto.caja.getTipo(),
+                            tipo_pedido: $scope.rootEditarProducto.pedido.getTipo()
                         }
                     }
                 };
@@ -823,7 +824,8 @@ define(["angular", "js/controllers",
                         documento_temporal: {
                             documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
                             numero_caja: $scope.rootEditarProducto.caja.getNumero(),
-                            tipo: $scope.rootEditarProducto.caja.getTipo()
+                            tipo: $scope.rootEditarProducto.caja.getTipo(),
+                            tipo_pedido: $scope.rootEditarProducto.pedido.getTipo()
                         }
                     }
                 };

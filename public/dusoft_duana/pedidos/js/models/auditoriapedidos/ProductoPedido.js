@@ -48,6 +48,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.valorIva = 0;
             this.valorUnitarioConIva = 0;
             this.itemId = 0;
+            this.descripcionEstado = "";
             
         }
 
@@ -210,6 +211,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         ProductoPedido.prototype.getEstado = function() {
             return this.estado;
         };
+        
+        ProductoPedido.prototype.setDescripcionEstado = function(descripcionEstado) {
+            this.descripcionEstado = descripcionEstado;
+        };
+        
+        ProductoPedido.prototype.getDescripcionEstado = function() {
+            return this.descripcionEstado;
+        };
+        
         
         ProductoPedido.prototype.setEsRegulado = function(valor) {
             this.es_regulado = valor; // 0: No es regulado, 1: Es regulado

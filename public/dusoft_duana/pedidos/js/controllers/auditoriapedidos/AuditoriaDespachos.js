@@ -106,6 +106,7 @@ define(["angular", "js/controllers",
               $scope.buscarDespachosAprobados = function(event){
 
                      if (event.which === 13) {
+                         $scope.datos_view.paginaactual = 1;
                           if($scope.filtro.nombre === "Prefijo"){
                              $scope.datos_view.numero = ""; 
                              $scope.datos_view.prefijo = $scope.datos_view.termino_busqueda;
@@ -216,7 +217,6 @@ define(["angular", "js/controllers",
                    
                      Request.realizarRequest(API.DESPACHOS_AUDITADOS.LISTAR_DESPACHOS_AUDITADOS, "POST", obj, function(data){ 
 
-                        console.log("data ", data)
                             if (data.status === 200) {
 
                                  $scope.datos_view.items = data.obj.despachos_auditados.length;
@@ -230,20 +230,20 @@ define(["angular", "js/controllers",
                    };
 
                    
-                        that.renderListarDespachosAuditados = function(data){
+                that.renderListarDespachosAuditados = function(data){
 
-                               $scope.documentosAprobados = [];
-                                 for (var i in data.obj.despachos_auditados) {
-                                     
-                                   var _documento = data.obj.despachos_auditados[i];
-                                  
-                                   var documento = DocumentoAuditado.get(1, _documento.prefijo, _documento.numero, _documento.fecha_registro);
-                                   documento.setEmpresaId(_documento.empresa_id);
-                                   documento.setRazonSocial(_documento.razon_social);
-                                   $scope.documentosAprobados.push(documento);
-                                };
-                            console.log("$scope.documentosAprobados ", $scope.documentosAprobados);
-                          };
+                       $scope.documentosAprobados = [];
+                         for (var i in data.obj.despachos_auditados) {
+
+                           var _documento = data.obj.despachos_auditados[i];
+
+                           var documento = DocumentoAuditado.get(1, _documento.prefijo, _documento.numero, _documento.fecha_registro);
+                           documento.setEmpresaId(_documento.empresa_id);
+                           documento.setRazonSocial(_documento.razon_social);
+                           $scope.documentosAprobados.push(documento);
+                        };
+
+                  };
                        /*
                         * funcion para paginar anterior
                         * @returns {lista datos}
@@ -282,12 +282,7 @@ define(["angular", "js/controllers",
                             {field: 'getPrefijo()', displayName: 'prefijo', width:"25%"},    
                             {field: 'getNumero()', displayName: 'Numero', width:"20%"},
                             {field: 'fecha_registro', displayName: 'Fecha Registro', width:"20%"},    
-                            /*{field: 'detalle', width: "10%",
-                                displayName: "Opciones",
-                                cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
-
-                             },*/
+                           
                               {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\

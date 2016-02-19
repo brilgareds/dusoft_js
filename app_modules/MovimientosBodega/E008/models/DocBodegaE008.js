@@ -1079,7 +1079,7 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
                 a.numero,\
                 b.razon_social,\
                 a.empresa_id,\
-                a.fecha_registro,\
+                to_char(a.fecha_registro, 'DD Mon YYYY')as fecha_registro,\
                 a.empresa_destino,\
                (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \n\
                 a.observacion,\
@@ -1096,7 +1096,8 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
                     a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo and\
                     a.numero  :: varchar "+G.constants.db().LIKE+"  :numero\
                    \
-                ) AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id";
+                ) AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id\
+                AND a.prefijo IN ('DTM','EFM','EDFM','EFC')";
    
     var parametros = {
         fechaInicial: obj.fechaInicial, 

@@ -102,16 +102,6 @@
        
         <div class ="row">
    
-    
-        <!-- <div class="col-md-2">
-               <fieldset>                           
-                  <ui-select  ng-model="$parent.seleccion" style="width:300px"  theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
-                          <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.nombre}}</ui-select-match>
-                          <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
-                              {{empresa.nombre}}
-                          </ui-select-choices>
-                 </ui-select>
-           </div> //-->
          <div class="col-md-2">
      <fieldset>                           
         <ui-select ng-model="datos_view.empresaSeleccionada"  ng-change="seleccionar_Empresas(datos_view.empresaSeleccionada)"  theme="select2" class="form-control selectgeneral pull-left" >

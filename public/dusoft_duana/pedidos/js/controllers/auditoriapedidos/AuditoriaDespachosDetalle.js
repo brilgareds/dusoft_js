@@ -24,23 +24,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             usuario_id: Sesion.getUsuarioActual().getId(),
             auth_token: Sesion.getUsuarioActual().getToken()
         };
-
-      //Definicion variables del View         
-        $scope.datos_view = {
-            seleccionarOtros: '',
-            empresaSeleccionada: '',
-            activar_tab: {tab_productos: true, tab_cargar_archivo: false},
-            visualizar: false,
-            // Opciones del Modulo 
-            opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
-            progresoArchivo: 0,
-            btnSolicitarAutorizacionCartera: true,
-            estadoRegistro: 0,
-            prefijoList: '',
-            existenciaDocumento:true
-        };          
+        
+       that.init = function() {
+              //Definicion variables del View         
+            $scope.datos_view = {
+                seleccionarOtros: '',
+                empresaSeleccionada: '',
+                activar_tab: {tab_productos: true, tab_cargar_archivo: false},
+                visualizar: false,
+                // Opciones del Modulo 
+                opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
+                progresoArchivo: 0,
+                btnSolicitarAutorizacionCartera: true,
+                estadoRegistro: 0,
+                prefijoList: '',
+                existenciaDocumento:true
+            };          
         $scope.documentoDespachoAprobado;
             
+         }; 
+     
         $scope.cargarEmpresaSession = function(){
             if($scope.datos_view.seleccionarOtros){
             var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
@@ -263,7 +266,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                         $scope.visualizarReporte("/reports/" + nombre_reporte, "Rotulo_" + entity.getNumeroCaja(), "download");
                     } else {
-
+                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);   
                     }
                 });
             };
@@ -314,8 +317,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $state.go('ValidacionEgresos');
             };
 
-            that.init = function() {
-            };       
+                 
             that.init();
             
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

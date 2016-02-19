@@ -4,12 +4,17 @@
 
     <tabset  class="">
         <tab heading="Clientes" ng-controller="PedidosClientesController">
-
-            <div class="col-md-1">
+                <div class="col-md-2" style="padding-left:15px; padding-right: 15px;">
+                    <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{opcionesModulo.btnAsignarPedidosClientes}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                    <span class="glyphicon glyphicon-ok" ></span> Asignar
+                </button>
+              
+    </div>
+         <!--   <div class="col-md-1">
                 <button type="button" class="form-control btn btn-default btn-sm" ng-validate-events="{{opcionesModulo.btnAsignarPedidosClientes}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
                     <span class="glyphicon glyphicon-ok" ></span> Asignar
                 </button>
-            </div>    
+            </div>    //-->
             <div class="col-sm-12 col-md-3">
                 
                 <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
@@ -28,7 +33,7 @@
                     <button class="btn btn-default" type="submit" ng-click="buscarPedidosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </div>
 
-            </div>
+            </div> 
 
             <div class="table-responsive" >
                 <div class="defaultGrid grid-responsive" ng-grid="lista_pedidos_clientes">
@@ -48,20 +53,10 @@
                 </button>
             </div>
 
-        </tab>
+        </tab> 
 
         <tab heading="Farmacias" ng-controller="PedidosFarmaciasController">
 
-
-            <!--div class="col-sm-12 col-md-3">
-
-                    <label class="control-label col-md-3">fooo</label>
-                    <div class="col-md-9 col-sm-12">
-                        <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                            <option ng-repeat="empresa in  empresas"  ng-value="empresa.codigo" >{{empresa.nombre}}</option>
-                        </select>
-                    </div>
-            </div-->
             <div class="col-md-1">
 
                 <button type="button" class="form-control btn btn-default btn-sm" ng-validate-events="{{opcionesModulo.btnAsignarPedidosFarmacias}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
@@ -116,7 +111,7 @@
                 <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
                     <span class="glyphicon glyphicon-chevron-right" ></span>
                 </button>
-            </div>
+            </div> 
 
         </tab>
 

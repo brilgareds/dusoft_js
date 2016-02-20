@@ -35,7 +35,7 @@ define(["angular", "js/services"], function(angular, services) {
                 var url = API.SEPARACION_PEDIDOS.CLIENTES.LISTAR_PEDIDOS_OPERARIO_CLIENTE;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                   
+                
                     if (data.status === 200) {
 
                        var pedidos = self.serializarPedidosOperario('1', data.obj.pedidos_clientes);
@@ -71,8 +71,9 @@ define(["angular", "js/services"], function(angular, services) {
                 var url = API.SEPARACION_PEDIDOS.FARMACIAS.LISTAR_PEDIDOS_OPERARIO_FARMACIA;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
+                    
                     if (data.status === 200) {
-                        console.log(data)
+                       
                        var pedidos = self.serializarPedidosOperario('2', data.obj.pedidos_farmacias);
                        callback(pedidos);
 
@@ -106,9 +107,7 @@ define(["angular", "js/services"], function(angular, services) {
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                      callback(); 
-                      console.log("pedidos clientes >>>>>>>> ", data);
-
+                        callback(); 
                     } else {
                         callback(false);
                     }
@@ -198,6 +197,7 @@ define(["angular", "js/services"], function(angular, services) {
                         }
                         
                         pedido.setDatos(_pedido);
+                        
                         pedido.agregarDetallePedido(ProductoPedido, _pedido.lista_productos);
                         pedido.setCantidadProductos(pedido.getProductos().length);
                         

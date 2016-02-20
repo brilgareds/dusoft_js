@@ -152,15 +152,17 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos, temporal, modeloLote) {
             for(var i in productos){
                 var _producto = productos[i];
+               
                 var producto = modeloProducto.get(_producto.codigo_producto, _producto.descripcion_producto);
                 var cantidadPendiente =  Number(_producto.cantidad_pendiente);
                 producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
                 producto.setCantidadPendiente(cantidadPendiente);
                 producto.setCodigoBarras(_producto.codigo_barras);
+                producto.setDescripcionEstado(_producto.descripcion_estado_producto);
                 if(_producto.justificacion){
                      producto.setJustificacion(_producto.justificacion);
                 }
-                
+               
                 if(!temporal){
                     
                     if(cantidadPendiente > 0){

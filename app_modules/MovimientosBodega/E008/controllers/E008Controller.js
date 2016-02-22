@@ -2469,8 +2469,12 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 ;
 
 function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, tipoPedido, callback) {
-
-
+    
+    //Temporalmente se inactiva la funcion de cerrar las cajas
+    callback(false, []);
+    
+    return;
+    
     that.m_movimientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
 
         if (err) {

@@ -9,25 +9,36 @@
             </tab-heading>
 
 
-            <ul>
+          <!--  <ul>
                 <li ng-repeat="item in uploader.queue">
                     Name: <span ng-bind="item.file.name"></span><br/>
                     <button ng-click="item.upload()">upload</button>
                 </li>
-            </ul>
-            <div class="input-group navbar-form">
+            </ul>//-->
+            
+        <div class="row">
+         
+              <div class="col-md-2 pull-right">
+                
+                   <div class="input-group">
+                      <input type="text" class="form-control" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
 
-                <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="onKeySeparadosPress({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                </div>
 
-            </div>
+                        <div class="input-group-btn" >
+                           <button class="btn btn-default pull-right" type="submit" ng-click="onKeySeparadosPress({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
 
+                        </div>
+                    </div> 
+                 
+                </div>  
+        </div>
+            
             <div class="table-responsive" >
+               <p class="input-group">
                 <div class="defaultGrid grid-responsive" ng-grid="lista_pedidos_separados_clientes">
 
                 </div>
+               <p>
             </div>
 
             <br/>
@@ -47,32 +58,44 @@
 
         </tab>        
 
-        <tab ng-controller="AuditoriaPedidosFarmaciasController" active="activarTabFarmacias">
+ <tab ng-controller="AuditoriaPedidosFarmaciasController" active="activarTabFarmacias">
 
-            <tab-heading>
-                Farmacias <span ng-show="notificacionfarmacias > 0" class="badge badge-warning">{{notificacionfarmacias}}</span>
-            </tab-heading>
+    <tab-heading>
+        Farmacias <span ng-show="notificacionfarmacias > 0" class="badge badge-warning">{{notificacionfarmacias}}</span>
+    </tab-heading>
+     
+       <div class ="row">
+           <div class="col-md-2">
+             
+                <fieldset>                                        
+                    <ui-select  ng-model="$parent.seleccion"  theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
+                             <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.nombre}}</ui-select-match>
+                             <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
+                                {{empresa.nombre}}
+                             </ui-select-choices>
+                    </ui-select>              
+                </fieldset>  
+              
+           </div>        
+         <div class="col-md-2 pull-right">
+            
+               <div class="input-group">
+                   <input type="text" class="form-control" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
 
+                  
+                    <div class="input-group-btn" >
+                      <button class="btn btn-default pull-right" type="submit" ng-click="onKeySeparadosPress({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
 
-            <ui-select  ng-model="$parent.seleccion" style="width:300px"  theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
-                <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.nombre}}</ui-select-match>
-                <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
-                    {{empresa.nombre}}
-                </ui-select-choices>
-            </ui-select>
-
-            <div class="input-group navbar-form">
-
-                <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="onKeySeparadosPress({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                </div>
-
-            </div>
-
+                    </div>
+                </div> 
+              
+            </div>        
+        </div>
             <div class="table-responsive" >
-                <div class="defaultGrid grid-responsive" ng-grid="lista_pedidos_separados_farmacias">
-                </div>
+               <p class="input-group">
+                    <div class="defaultGrid grid-responsive" ng-grid="lista_pedidos_separados_farmacias">
+                    </div>
+               </p>
             </div>
             <br/>
             <div class="row text-center">
@@ -90,6 +113,118 @@
 
         </tab>
 
+        
+        
+        <!-- Consultar Todos los Despachos //-->
+   <tab ng-controller="AuditoriaDespachos" ng-click ="cargarListaDespachosAuditados()">
+
+            <tab-heading>
+                Despachos <span ng-show="notificacionfarmacias > 0" class="badge badge-warning"></span>
+            </tab-heading>
+
+       
+    <div class ="row">
+         <div class="col-md-2">
+             
+            <fieldset>                           
+                <ui-select ng-model="datos_view.empresaSeleccionada"  ng-change="seleccionar_Empresas(datos_view.empresaSeleccionada)"  theme="select2" class="form-control selectgeneral pull-left" >
+                            <ui-select-match   placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
+                            <ui-select-choices  refresh="onSeleccionarEmpresa($select.search)" refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
+                                {{ empresa.getNombre()}}
+                            </ui-select-choices>
+                </ui-select>  
+             </fieldset>  
+           </div>
+    
+
+             <div class="col-md-2">
+                    <p class="input-group">
+                        <input type="text" class="form-control readonlyinput" 
+                               datepicker-popup="{{format}}" 
+                               ng-model="datos_view.fecha_inicial_aprobaciones" 
+                               is-open="datos_view.datepicker_fecha_inicial" 
+                               min="minDate"   
+                               readonly  close-text="Cerrar" 
+                               ng-change="" 
+                               clear-text="Borrar" 
+                               current-text="Hoy" 
+                               placeholder="Fecha Inicial" 
+                               show-weeks="false" 
+                               toggle-weeks-text="#"  />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </p>
+            </div>
+    
+            <div class="col-md-2">
+                <p class="input-group">
+                    <input type="text" class="form-control readonlyinput" 
+                           datepicker-popup="{{format}}" 
+                           ng-model="datos_view.fecha_final_aprobaciones" 
+                           is-open="datos_view.datepicker_fecha_final" 
+                           min="datos_view.fecha_inicial"  
+                           readonly  close-text="Cerrar"
+                           clear-text="Borrar"  
+                           placeholder="Fecha Final" 
+                           current-text="Hoy" 
+                           show-weeks="false" 
+                           toggle-weeks-text="#" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </p>
+            </div>
+             
+                     
+             <div class="col-md-3 pull-right">                                
+
+               <div class="input-group">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" 
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="filtro in filtros">
+                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <input ng-show="visibleBuscador" 
+                           type="text" 
+                           class="form-control" 
+                           ng-keypress="buscarDespachosAprobados($event);"  
+                           ng-model="datos_view.termino_busqueda" 
+                           placeholder="Buscar" name="" id="" />
+                    <div class="input-group-btn" ng-show="visibleBotonBuscador" >
+                        <button class="btn btn-default pull-right" type="submit" ng-click ="cargarListarDespachosAprobados($event)"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+
+            </div>
+          
+        </div> 
+            <div class="table-responsive" style="clear:both;">
+              <div class="defaultGrid grid-responsive" ng-grid="listaAprobaciones"></div>
+                </div>
+                    </br>
+                    <div class="row text-center">
+                        <button type="button" class="btn btn-default btn-medium" ng-disabled="datos_view.paginaactual == 1" ng-click="paginaAnterior()">
+                            <span class="glyphicon glyphicon-chevron-left" ></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-medium" ng-disabled="datos_view.items <25" ng-click="paginaSiguiente()">
+                            <span class="glyphicon glyphicon-chevron-right" ></span>
+                        </button>
+                    </div>
+            <div slide-content open-callback="mostrardetallefarmacia" close-callback="cerrardetallefarmacia"  class="slide" >
+                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoFarmaciaController" ></div>
+            </div>
+        </tab>
+
+        
+        
+        
+        
     </tabset>
     <visualizar-reporte></visualizar-reporte>
     </br>

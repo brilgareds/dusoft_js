@@ -355,7 +355,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
 
 PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
 
-    var sql = " select\
+    var sql = " select c.estado,\
                     a.pedido_cliente_id as numero_pedido,\
                     a.codigo_producto,\
                     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\

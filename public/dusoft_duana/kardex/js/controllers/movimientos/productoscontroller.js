@@ -179,7 +179,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Nombre', 
-                     cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>' },
+                     cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}<span ng-show="row.entity.estado == "0""><i class="glyphicon glyphicon-lock"></li></span></div>' },
                     {field: 'codigoCum', displayName: 'Cum', width:"90", cellClass :"gridNumber"},
                     {field: 'existencia', displayName: 'Stock', width:"80", cellClass :"gridNumber"},  
                     {field: 'precioRegulado', displayName: 'P.Reg', width:"80",  cellClass :"gridNumber"},

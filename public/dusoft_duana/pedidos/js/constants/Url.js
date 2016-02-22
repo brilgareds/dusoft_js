@@ -31,7 +31,8 @@ define(["angular"], function(angular) {
                 'CONSULTAR_ITEMS_POR_PRODUCTO': BASE_URL + '/movBodegas/E008/buscarItemsTemporal',
                 'ACTUALIZAR_CAJA_TEMPORALES': BASE_URL + '/movBodegas/E008/actualizarCajaDeTemporales',
                 'IMPRIMIR_ROTULO_CLIENTES': BASE_URL + '/movBodegas/E008/imprimirRotuloClientes',
-                'IMPRIMIR_ROTULO_FARMACIAS': BASE_URL + '/movBodegas/E008/imprimirRotuloFarmacias'
+                'IMPRIMIR_ROTULO_FARMACIAS': BASE_URL + '/movBodegas/E008/imprimirRotuloFarmacias',
+                'NUMERO_MAYOR_ROTULO' : BASE_URL + '/movBodegas/E008/consultarNumeroMayorRotulo'
             },
             'PEDIDOS': {
                 CLIENTES: {

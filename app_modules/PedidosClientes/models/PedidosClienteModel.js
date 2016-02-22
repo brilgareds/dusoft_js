@@ -1161,33 +1161,69 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
  */
 PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callback) {
 
-  var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
-                empresa_id, \
-                centro_destino, \
-                bodega_destino, \
-                tipo_id_tercero, \
-                tercero_id, \
-                tipo_id_vendedor, \
-                vendedor_id, \
-                observaciones, \
-                tipo_producto, \
-                estado, \
-                usuario_id , \
-                fecha_registro ) \
-                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9, '1', :10, NOW()) \
-                RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";
+  //var parametros = {1:cotizacion.empresa_id,2:cotizacion.centro_utilidad_id ,3:cotizacion.bodega_id,4:cotizacion.cliente.tipo_id_tercero,5:cotizacion.cliente.id,6:cotizacion.vendedor.tipo_id_tercero,7:cotizacion.vendedor.id,8:cotizacion.observacion,9:cotizacion.tipo_producto,10:cotizacion.usuario_id};
 
+
+  /*var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
+                empresa_id,\
+                centro_destino,\
+                bodega_destino,\
+                tipo_id_tercero,\
+                tercero_id,\
+                tipo_id_vendedor,\
+                vendedor_id,\
+                observaciones,\
+                tipo_producto,\
+                estado,\
+                usuario_id ,\
+                fecha_registro )\
+                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9, '1', :10, NOW()) \
+                RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";*/
+    
+     var parametros = {
+                   1:cotizacion.empresa_id,
+                   2:cotizacion.cliente.tipo_id_tercero,
+                   3:cotizacion.cliente.id,
+                   4:cotizacion.usuario_id,
+                   5:null,
+                   6:cotizacion.vendedor.tipo_id_tercero,
+                   7:cotizacion.vendedor.id,
+                   8:'1',
+                   9:cotizacion.observacion,
+                   10:cotizacion.tipo_producto,
+                   11:cotizacion.centro_utilidad_id ,
+                   12:cotizacion.bodega_id,
+                   13:'',
+                   14:'',
+                   15:cotizacion.centro_utilidad_id ,
+                   16:cotizacion.bodega_id
+                  
+                   };
+        
+    var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
+                empresa_id,\
+                tipo_id_tercero,\
+                tercero_id,\
+                fecha_registro,\
+                usuario_id,\
+                fecha_envio,\
+                tipo_id_vendedor,\
+                vendedor_id,\
+                estado,\
+                observaciones,\
+                tipo_producto,\
+                centro_utilidad_id,\
+                bodega_id,\
+                observacion_cartera,\
+                sw_aprobado_cartera,\
+                centro_destino,\
+                bodega_destino\
+                )\
+                VALUES( :1, :2, :3, NOW(), :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15, :16) \
+                RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";
+    
    //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
-    G.knex.raw(sql, {1:cotizacion.empresa_id, 
-                     2:cotizacion.centro_utilidad_id || '1 ',
-                     3:cotizacion.bodega_id || '03',
-                     4:cotizacion.cliente.tipo_id_tercero,
-                     5:cotizacion.cliente.id,
-                     6:cotizacion.vendedor.tipo_id_tercero,
-                     7:cotizacion.vendedor.id,
-                     8:cotizacion.observacion,
-                     9:cotizacion.tipo_producto,
-                     10:cotizacion.usuario_id}).
+    G.knex.raw(sql, parametros).
     then(function(resultado){
        callback(false, resultado.rows,resultado);
     }).catch(function(err){

@@ -456,15 +456,16 @@ define(["angular", "js/controllers",
 
             };
 
-            $scope.onCerrarCaja = function(caja) {
+            $scope.onCerrarCaja = function(caja, tipoPedido) {
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
                 var obj = {
                     session: $scope.session,
                     data: {
                         documento_temporal: {
-                            documento_temporal_id: caja.documento_id,
+                            documento_temporal_id: caja.documento_temporal_id,
                             numero_caja: caja.numero_caja,
-                            tipo: caja.tipo
+                            tipo: caja.tipo,
+                            tipo_pedido: tipoPedido
                         }
                     }
                 };

@@ -1747,7 +1747,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                             return;
                         }
  
-                        __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, function(err, cajas_no_cerradas) {
+                        __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, "1", function(err, cajas_no_cerradas) {
 
                             if (err) {
                                 res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -1798,7 +1798,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                         that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado, auditor_id, req.session.user.usuario_id, function(err, rows) {
 
                                             that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
-                                                that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
+                                                that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, '1', function(err, rows) {
 
                                                     if (err) {
                                                         console.log("========================================== generar documento despacho clientes error generado ============================");
@@ -1912,7 +1912,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                         }
                     }
 
-                    __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, function(err, cajas_no_cerradas) {
+                    __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, '2', function(err, cajas_no_cerradas) {
 
                         if (err) {
                             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -1966,7 +1966,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                                             req.session.user.usuario_id, function(err, rows) {
 
                                         that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
-                                            that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
+                                            that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, '2', function(err, rows) {
                                                 if (err) {
                                                     console.log("========================================== generar documento despacho clientes error generado ============================");
                                                     console.log(err);
@@ -2000,13 +2000,40 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
     });
 
+};
 
+E008Controller.prototype.consultarNumeroMayorRotulo = function(req, res){
+   var that = this;
 
+    var args = req.body.data;
+    
+    console.log(">>>>>>>>>>>>>>>> ",args.documento_temporal);
+    
+    if (!args.documento_temporal || !args.documento_temporal.numero_pedido || args.documento_temporal.tipo === undefined
+        || !args.documento_temporal.tipo_pedido ) {
+        res.send(G.utils.r(req.url, 'Los datos obligatorios no esta definidos', 404, {}));
+        return;
+    }
+    
+    var documento_temporal_id = args.documento_temporal.documento_temporal || 0;
+    var numero_pedido = args.documento_temporal.numero_pedido;
+    var tipo = args.documento_temporal.tipo;
+    var numeroSiguiente = 1;
+    var tipoPedido = args.documento_temporal.tipo_pedido;
+    
+    that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo,tipoPedido, function(err, rotuloMayor){
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+            return;
+        }
+        console.log("numero actual de la caja ", rotuloMayor);
+        numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
 
-
-
+        res.send(G.utils.r(req.url, "Numero de caja siguiente", 200, {movimientos_bodegas: {numero: numeroSiguiente}}));
+    });
 
 };
+
 
 /**
  * +Descripcion: Metodo encargado de validar Validar que la caja este abierta
@@ -2021,8 +2048,8 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var args = req.body.data;
     
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
-        args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
+        args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined || !args.documento_temporal.tipo_pedido) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo de pedido o tipo no estan definidos', 404, {}));
         return;
     }
 
@@ -2052,6 +2079,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var contenido = "";
     var usuario_id = req.session.user.usuario_id;
     var tipo = args.documento_temporal.tipo;
+    var tipoPedido = args.documento_temporal.tipo_pedido;
     
     /**
      * +Descripcion: funcion que consulta el numero mayor de rotulo en la tabla 
@@ -2061,76 +2089,77 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
      * @param {integer} tipo si es caja o nevera
      */
     
-    that.m_e008.validarTemporal(documento_temporal_id, usuario_id, function(err, temporal){
-        if(err /*|| temporal.length === 0*/){
+    /*that.m_e008.validarTemporal(numero_pedido, tipoPedido, function(err, temporal){
+        if(err || temporal.length === 0){
             var msj = "Error consultado el temporal del usuario";
             
-            /*if(temporal.length === 0){
+            if(temporal.length === 0){
                 msj = "No se encontro el temporal del usuario";
-            }*/
+            }
             
             res.send(G.utils.r(req.url, msj, 500, {movimientos_bodegas: {}}));
             return;
-        }
+        }*/
         
-        that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
+    that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, tipoPedido, function(err, rotuloMayor){
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+            return;
+        }
+
+        var numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
+
+        if(numeroSiguiente < numero_caja){
+            res.send(G.utils.r(req.url, 'El número debe ser consecutivo, el número siguiente debe ser '+numeroSiguiente, 403, {movimientos_bodegas: {caja_valida: false}}));
+            return;
+        }
+
+        /**
+         * +Descripcion: Se consultar la existencia del rotulo de la caja en la
+         * tabla inv_rotulo_caja
+         * @param {String} documento_temporal_id Es el id documento
+         * @param {String} numero_pedido Es el numero de pedido
+         * @param {integer} tipo si es caja o nevera
+         */
+        that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, tipoPedido, function(err, rotulos_cajas) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                 return;
-            }
+            } else {
+                var rotulo_caja;
 
-            var numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
+                //obtener la caja por el tipo 0 = caja, 1= nevera
+                for(var i in rotulos_cajas){
+                    var _rotulo = rotulos_cajas[i];
 
-            if(numeroSiguiente < numero_caja){
-                res.send(G.utils.r(req.url, 'El número debe ser consecutivo, el número siguiente debe ser '+numeroSiguiente, 403, {movimientos_bodegas: {caja_valida: false}}));
-                return;
-            }
-
-            /**
-             * +Descripcion: Se consultar la existencia del rotulo de la caja en la
-             * tabla inv_rotulo_caja
-             * @param {String} documento_temporal_id Es el id documento
-             * @param {String} numero_pedido Es el numero de pedido
-             * @param {integer} tipo si es caja o nevera
-             */
-            that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
-                if (err) {
-                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                    return;
-                } else {
-                    var rotulo_caja;
-
-                    //obtener la caja por el tipo 0 = caja, 1= nevera
-                    for(var i in rotulos_cajas){
-                        var _rotulo = rotulos_cajas[i];
-
-                       // console.log("buscando en caja ", _rotulo.numero_caja, " tipo ", _rotulo.tipo, " con tipo ", tipo );
-                        if(parseInt(_rotulo.tipo) === tipo){
-                            rotulo_caja = _rotulo;
-                            break;
-                        }
-                    }
-
-                    if (rotulo_caja) {
-
-                        res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
-                        return;
-                    } else {
-                        // Crear
-                        that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id,tipo, function(err, rotulo_caja) {
-                            if (err) {
-                                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                return;
-                            } else {
-                                res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
-                                return;
-                            }
-                        });
+                   // console.log("buscando en caja ", _rotulo.numero_caja, " tipo ", _rotulo.tipo, " con tipo ", tipo );
+                    if(parseInt(_rotulo.tipo) === tipo){
+                        rotulo_caja = _rotulo;
+                        break;
                     }
                 }
-            });
+
+                if (rotulo_caja) {
+
+                    res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
+                    return;
+                } else {
+                    // Crear
+                    that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, 
+                                                    cantidad, ruta, contenido, numero_caja, usuario_id, tipo, tipoPedido, function(err, rotulo_caja) {
+                        if (err) {
+                            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                            return;
+                        } else {
+                            res.send(G.utils.r(req.url, 'Rotulo generado correctamente', 200, {movimientos_bodegas: {caja_valida: true}}));
+                            return;
+                        }
+                    });
+                }
+            }
         });
     });
+   // });
     
     
 };
@@ -2143,8 +2172,8 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined 
-        || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
+        || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined || !args.documento_temporal.tipo_pedido ) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo pedido o tipo no estan definidos', 404, {}));
         return;
     }
 
@@ -2159,9 +2188,10 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
     var numero_caja = args.documento_temporal.numero_caja;
     var tipo = args.documento_temporal.tipo;
+    var tipoPedido = args.documento_temporal.tipo_pedido;
     
 
-    that.m_e008.cerrar_caja(documento_temporal_id, numero_caja, tipo, function(err, rows, result) {
+    that.m_e008.cerrar_caja(documento_temporal_id, numero_caja, tipo, tipoPedido, function(err, rows, result) {
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error cerrando la caja', 500, {documento_temporal: {}}));
             return;
@@ -2438,9 +2468,13 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 }
 ;
 
-function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, callback) {
-
-
+function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, tipoPedido, callback) {
+    
+    //Temporalmente se inactiva la funcion de cerrar las cajas
+    callback(false, []);
+    
+    return;
+    
     that.m_movimientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
 
         if (err) {
@@ -2453,7 +2487,7 @@ function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero
 
             detalle_documento_temporal.forEach(function(detalle) {
 
-                that.m_e008.consultar_rotulo_caja(documento_temporal_id, detalle.numero_caja, numero_pedido, function(err, caja_producto) {
+                that.m_e008.consultar_rotulo_caja(documento_temporal_id, detalle.numero_caja, numero_pedido, tipoPedido, function(err, caja_producto) {
                     if (err) {
                         callback(err);
                         return;

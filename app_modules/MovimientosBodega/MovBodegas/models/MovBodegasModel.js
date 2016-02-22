@@ -687,7 +687,8 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
                 b.auditado,\
                 c.codigo_barras,\
                 b.numero_caja, \
-                c.porc_iva as porcentaje_gravament\
+                c.porc_iva as porcentaje_gravament,\
+                a.usuario_id\
                 from inv_bodegas_movimiento_tmp a \
                 inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\

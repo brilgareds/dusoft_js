@@ -158,7 +158,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                             nombre_cliente: cliente.getNombre() || cliente.get_nombre_farmacia(),*/
                             direccion_cliente: cliente.direccion || cliente.nombre_farmacia,
                             nombre_cliente: cliente.nombre_tercero || cliente.nombre_farmacia,
-                            tipo: $scope.rootVentanaCantidad.tipoCaja.id
+                            tipo: $scope.rootVentanaCantidad.tipoCaja.id,
+                            tipo_pedido:$scope.rootVentanaCantidad.pedido.getTipo()
                         }
                     }
                 };
@@ -243,10 +244,48 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             
             /*
              * @author Eduar Garcia
+             * permite Permite obtener el siguiente numero de caja
+             */
+            self.consultarNumeroMayorRotulo = function(){
+                var url = API.DOCUMENTOS_TEMPORALES.NUMERO_MAYOR_ROTULO;
+                
+                var obj = {
+                    session: $scope.rootVentanaCantidad.session,
+                    data: {
+                        documento_temporal: {
+                            documento_temporal:pedido.getTemporalId(),
+                            numero_pedido: $scope.rootVentanaCantidad.pedido.get_numero_pedido(),
+                            tipo: $scope.rootVentanaCantidad.tipoCaja.id,
+                            tipo_pedido:$scope.rootVentanaCantidad.pedido.getTipo()
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        $scope.rootVentanaCantidad.numero_caja = data.obj.movimientos_bodegas.numero;
+                        $scope.rootVentanaCantidad.numeroCajaSiguiente = data.obj.movimientos_bodegas.numero;
+                    } else {
+                        $modalInstance.close();
+                        
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se pudo consultar la caja");
+                    }
+                });
+            };
+            
+            /*
+             * @author Eduar Garcia
              * permite Handler del boton de guardar 
              */
             $scope.gestionarCantidadCaja = function(){
                 var validacion = self.validarLote();
+                
+                
+                if(parseInt($scope.rootVentanaCantidad.numeroCajaSiguiente) < parseInt($scope.rootVentanaCantidad.numero_caja)){
+                    
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El siguiente numero debe ser "+$scope.rootVentanaCantidad.numeroCajaSiguiente);
+                    return;
+                }
                 
                 if(!validacion.valido){
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", validacion.mensaje);
@@ -302,8 +341,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             };
             
             
+            
             self.init(function(){
                 
+            });
+            
+            
+            $modalInstance.opened.then(function() {
+                self.consultarNumeroMayorRotulo();
+
             });
             
         }

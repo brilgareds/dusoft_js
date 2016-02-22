@@ -64,7 +64,7 @@ ValidacionDespachos.prototype.listarDespachosAprobados = function(req, res) {
 
     }).fail(function(err) {
 
-        res.send(G.utils.r(req.url, 'Error consultado las de despachos', 500, {validacionDespachos: {}}));
+        res.send(G.utils.r(req.url, 'Error consultado los de despachos', 500, {validacionDespachos: {}}));
 
     }).done();
 

@@ -1074,10 +1074,154 @@ DocuemntoBodegaE008.prototype.obtenerDocumento = function(obj, callback) {
      G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}). then(function(resultado){       
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-       console.log("err ", err);
+      
         callback(err);
     });
 };
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado listar los despachos auditados
+ */
+DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback){
+   
+     var fecha = "";
+    
+        if(!obj.registroUnico){
+            fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
+           
+        }
+     
+     var sql = "a.prefijo,\
+                a.numero,\
+                b.razon_social,\
+                a.empresa_id,\
+                to_char(a.fecha_registro, 'DD Mon YYYY')as fecha_registro,\
+                a.empresa_destino,\
+               (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \n\
+                a.observacion,\
+                CASE WHEN c.pedido_cliente_id is null THEN d.solicitud_prod_a_bod_ppal_id WHEN d.solicitud_prod_a_bod_ppal_id is null THEN c.pedido_cliente_id end as pedido,\
+                CASE WHEN c.pedido_cliente_id is not null THEN 0 WHEN d.solicitud_prod_a_bod_ppal_id is not null THEN 1 end as tipo_pedido\
+                FROM inv_bodegas_movimiento a\
+                INNER JOIN  empresas b ON b.empresa_id = a.empresa_id\
+                LEFT JOIN inv_bodegas_movimiento_despachos_clientes c\
+                ON  a.prefijo = c.prefijo AND a.numero = c.numero AND a.empresa_id = c.empresa_id\
+                LEFT JOIN inv_bodegas_movimiento_despachos_farmacias d\
+                ON  a.prefijo = d.prefijo AND a.numero = d.numero AND a.empresa_id = d.empresa_id\
+                WHERE "+fecha+"\
+                ( \
+                    a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo and\
+                    a.numero  :: varchar "+G.constants.db().LIKE+"  :numero\
+                   \
+                ) AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa_id\
+                AND a.prefijo IN ('DTM','EFM','EDFM','EFC')";
+   
+    var parametros = {
+        fechaInicial: obj.fechaInicial, 
+        fechaFinal: obj.fechaFinal, 
+        prefijo: "%"+ obj.prefijo +"%", 
+        numero: "%"+ obj.numero  +"%",
+        empresa_id: obj.empresa_id
+    };
+    
+    var query = G.knex.select(G.knex.raw(sql, parametros)).
+    limit(G.settings.limit).
+    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.prefijo", "desc").then(function(resultado){
+        
+        callback(false, resultado);
+    }).catch(function(err){
+     
+        callback(err);
+       
+    });
+};
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado mostrar el detalle de un documento
+ */
+DocuemntoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback){
+     
+     var sql = "SELECT a.codigo_producto,fc_descripcion_producto(a.codigo_producto) as descripcion, a.numero_caja, a.cantidad as cantidad_recibida,\
+        CASE WHEN a.tipo_caja = '0' THEN 'CAJA' WHEN a.tipo_caja = '1' THEN 'Nevera' end as tipo, a.tipo_caja,\
+        CASE WHEN b.pedido_cliente_id is null THEN c.solicitud_prod_a_bod_ppal_id WHEN c.solicitud_prod_a_bod_ppal_id is null THEN b.pedido_cliente_id end as pedido,\
+        CASE WHEN b.pedido_cliente_id is not null THEN 0 WHEN c.solicitud_prod_a_bod_ppal_id is not null THEN 1 end as tipo_pedido\n\
+        FROM inv_bodegas_movimiento_d a LEFT JOIN inv_bodegas_movimiento_despachos_clientes b\
+        ON  a.prefijo = b.prefijo AND a.numero = b.numero AND a.empresa_id = b.empresa_id\
+        LEFT JOIN inv_bodegas_movimiento_despachos_farmacias c\
+        ON  a.prefijo = c.prefijo AND a.numero = c.numero AND a.empresa_id = c.empresa_id\
+        WHERE a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo\
+        AND a.numero  :: varchar "+G.constants.db().LIKE+"  :numero\
+        AND a.empresa_id :: varchar "+G.constants.db().LIKE+"  :empresa;";
+   
+    var parametros = {
+        prefijo: "%"+ obj.prefijo +"%", 
+        numero: "%"+ obj.numero  +"%",
+        empresa: obj.empresa_id 
+    };
+       
+     G.knex.raw(sql, parametros). then(function(resultado){       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+     
+        callback(err);
+    });        
+};
+
+
+/**
+ * @author Cristian Ardila 
+ * @fecha  18/002/2016
+ * +Descripcion Modelo que consulta el pedido amarrado a un documento
+ * @param {type} callback
+ * @returns {undefined} */
+DocuemntoBodegaE008.prototype.detallePedidoClienteDocumento = function(obj, callback) {
+   
+    var sql = "SELECT a.empresa_id, a.prefijo, a.numero, a.empresa_id, a.pedido_cliente_id as pedido\
+               FROM inv_bodegas_movimiento_despachos_clientes a\
+               WHERE empresa_id = :1 AND prefijo = :2 AND numero = :3;";
+
+
+     G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}). then(function(resultado){     
+         
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+        console.log("err ", err)
+        callback(err);
+    });
+};
+
+
+/**
+ * @author Cristian Ardila 
+ * @fecha  18/002/2016
+ * +Descripcion Modelo que consulta el pedido amarrado a un documento
+ * @param {type} callback
+ * @returns {undefined} */
+DocuemntoBodegaE008.prototype.detallePedidoFarmaciaDocumento = function(obj, callback) {
+   
+    var sql = "SELECT a.empresa_id, a.prefijo, a.numero, a.empresa_id, a.solicitud_prod_a_bod_ppal_id as pedido\
+               FROM inv_bodegas_movimiento_despachos_farmacias a\
+               WHERE empresa_id = :1 AND prefijo = :2 AND numero = :3;";
+
+
+     G.knex.raw(sql, {1: obj.empresa_id, 2: obj.prefijo, 3: obj.numero}). then(function(resultado){       
+       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+        console.log("err ", err)
+        callback(err);
+    });
+};
+
+
+
 
 DocuemntoBodegaE008.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
 

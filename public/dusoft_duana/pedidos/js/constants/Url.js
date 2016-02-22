@@ -8,6 +8,14 @@ define(["angular"], function(angular) {
     var data = {
         'API': {
             'BASE_URL': BASE_URL,
+            'DESPACHOS_AUDITADOS': {
+                "LISTAR_EMPRESAS": BASE_URL + "/ValidacionDespachos/listarempresas",
+                'LISTAR_DESPACHOS_AUDITADOS': BASE_URL + '/movBodegas/E008/listarDespachosAuditados',
+                'DETALLE_DOCUMENTO_AUDITADO': BASE_URL + '/movBodegas/E008/detalleDocumentoAuditado',
+                'DETALLE_PEDIDO_CLIENTE_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoClienteDocumento',
+                'DETALLE_PEDIDO_FARMACIA_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoFarmaciaDocumento'
+                
+            },
             'DOCUMENTOS_TEMPORALES': {
                 'LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES': BASE_URL + '/movBodegas/E008/consultarDocumentosTemporalesClientes',
                 'LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS': BASE_URL + '/movBodegas/E008/consultarDocumentosTemporalesFarmacias',

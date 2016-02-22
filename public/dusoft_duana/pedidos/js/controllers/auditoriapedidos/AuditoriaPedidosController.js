@@ -9,6 +9,7 @@ define(["angular", "js/controllers",
     'models/auditoriapedidos/Caja',
     "controllers/auditoriapedidos/AuditoriaPedidosClientesController",
     "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
+   // "controllers/auditoriapedidos/AuditoriaDespachos",
     "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [

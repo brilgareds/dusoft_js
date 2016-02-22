@@ -149,7 +149,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     producto.setPrecioRegulado(obj.precio_regulado);
                     producto.setDescripcionMolecula(obj.descripcion_molecula);
                     producto.setCodigoInvima(obj.codigo_invima);
-                    
+                    producto.setEstado(obj.estado);
                     
                     $scope.Empresa.agregarProducto(
                             producto
@@ -168,7 +168,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 enableRowSelection: false,
                 enableColumnResize:true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "130",
+                    {field: 'codigo_producto', displayName: 'Código', width: "150",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
@@ -176,10 +176,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                                 <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
                                                 <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
+                                                <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Nombre', 
-                     cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}<span ng-show="row.entity.estado == "0""><i class="glyphicon glyphicon-lock"></li></span></div>' },
+                     cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>' },
                     {field: 'codigoCum', displayName: 'Cum', width:"90", cellClass :"gridNumber"},
                     {field: 'existencia', displayName: 'Stock', width:"80", cellClass :"gridNumber"},  
                     {field: 'precioRegulado', displayName: 'P.Reg', width:"80",  cellClass :"gridNumber"},

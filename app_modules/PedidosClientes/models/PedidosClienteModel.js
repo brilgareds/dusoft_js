@@ -355,9 +355,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
 
 PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
 
-    var sql = " select\
-                    case when c.estado = '0' then 'Inactivo'\
-                         when c.estado = '1' then 'Activo' end as descripcion_estado_producto,\
+    var sql = " select c.estado,\
                     a.pedido_cliente_id as numero_pedido,\
                     a.codigo_producto,\
                     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\

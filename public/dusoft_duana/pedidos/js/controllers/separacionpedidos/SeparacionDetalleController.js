@@ -475,7 +475,7 @@ define(["angular", "js/controllers",
                         }
                     }                                 
                     return cantidadIngresada;
-                };                     
+           };                     
               
                 
             

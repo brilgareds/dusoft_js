@@ -46,7 +46,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             };
             
             that.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-            console.log("that.opciones", that.opciones)
             //permisos kardex
             that.opcionesModulo = {
                 columnaCosto: {
@@ -402,7 +401,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.abrirfechafinal = false;
 
 
-                console.log($scope.fechainicial)
+                console.log($scope.fechainicial);
             };
 
             $scope.abrirFechaFinal = function($event) {

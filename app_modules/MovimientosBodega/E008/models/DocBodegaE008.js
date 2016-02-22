@@ -727,7 +727,7 @@ DocuemntoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento
 // Cierra la caja
 DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, tipo, tipoPedido, callback) {
     console.log("arguments  cerrar_caja() ",arguments);
-    var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='1' WHERE documento_temporal_id = :1 and numero_caja = :2 and tipo = :3  and tipo_pedido = :4; ";
+    var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='0' WHERE documento_temporal_id = :1 and numero_caja = :2 and tipo = :3  and tipo_pedido = :4; ";
       
     G.knex.raw(sql, {1:documento_id, 2:numero_caja, 3:tipo, 4:tipoPedido}).
     then(function(resultado){

@@ -753,6 +753,7 @@ define(["angular", "js/controllers",
 
                                     $scope.rootEditarProducto.caja.setValida(true);
                                     $scope.cerrar = true;
+                                    $scope.imprimir = true;
 
                                 } else {
                                     $scope.rootEditarProducto.validacionproducto.valido = false;

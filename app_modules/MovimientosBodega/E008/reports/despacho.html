@@ -51,22 +51,24 @@
         
     </head>
     <body>
-              
-       <div class='docInfo'>
+             
+     <!--  <div class='docInfo'>
            <div style='text-align:right;'><span>{{:encabezado.fecha_impresion}}</span></div>
            <div>Imprime: <span>{{:encabezado.usuario_imprime}}</span></div>
        </div>
-      
-       <table class="table" width='100%'>
+      //-->
+     <br>
+        
+       <table class="table" width='90%' align="center">
             <tr>
-                <td class='title'>Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
-                <td class='title'>Usuario</td><td>{{:encabezado.nombre_usuario}}</td>
-                
+                <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
+                <td class='title' >Usuario</td><td>{{:encabezado.nombre_usuario}}</td>
+                <td class='title' >Imprime</td><td>{{:encabezado.usuario_imprime}}</td>
             </tr>
             <tr>
-                
                  <td class='title'>Bodega</td><td>{{:encabezado.nombre_bodega_destino}}</td>
                 <td class='title'>Documento</td><td>{{:encabezado.prefijo}} - {{:encabezado.numero}}</td>
+                <td class='title'></td><td>{{:encabezado.fecha_impresion}}</td>
             </tr>
             <tr>
                <td class='title'>Pedido</td><td>{{:encabezado.numero_pedido}}<span class='fecha_pedido'>{{:encabezado.fecha_pedido}}</span></td>
@@ -77,7 +79,7 @@
         <hr/>
         
         <div class="panel panel-default">
-             <table class="table" width='100%'>
+             <table width='90%' align="center">
                 {{props   adicionales}}
                     <tr>
                         <td class='title'>{{>prop.titulo}}</td>
@@ -87,36 +89,42 @@
             </table>
         </div>
                 
+        <p class='input-group'></p>
+        <p class='input-group'></p>
+        <p class='input-group'></p>
         
-       <table class="table table-bordered detalle" width='100%'>
+       <table class="table table-bordered detalle" width='90%' align="center">
             <thead>
                 <tr>
                     <th width='50' class='title'>Codigo</th>
-                    <th width='35%' class='title'>Descripci&oacute;n</th>
+                    <th class='title'>Descripci&oacute;n</th>
                     <th class='title'>Cant.</th>
                     <!--<th class='title'>Cum</th>
                     <th class='title'>Invima</th>//-->
                     <th class='title'>Lote</th>
-                    <th class='title'>F/vto</th>
+                    <th class='title' >F/vto</th>
                 </tr>
             </thead>
             <tbody>
                 {{for detalle}}
                     <tr>
-                        <td>{{:codigo_producto}}</td>
+                        <td width='100'>{{:codigo_producto}}</td>
                         <td>{{:nombre}}</td>
-                        <td class='cantidad'>{{:cantidad}}</td>
+                        <td >{{:cantidad}}</td>
                         <!--<td>{{:codigo_cum}}</td>
                         <td>{{:codigo_invima}}</td>//-->
-                        <td>{{:lote}}</td>
-                        <td>{{:fecha_vencimiento}}</td>
+                        <td width='80'>{{:lote}}</td>
+                        <td width='100'>{{:fecha_vencimiento}}</td>
                     </tr>
                 {{/for}}
             </tbody>
         </table>
         
-        
         <table class='footer'>
+        </table>
+        <p class='input-group'></p>
+        <p class='input-group'></p>
+        <table  width='90%' align="center" >
             <tr align='center'>
                 <td>
                     _______________________________

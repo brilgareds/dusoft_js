@@ -6,10 +6,11 @@ var modulos = require('./app_modules/');
 var http = require('http');
 var path = require('path');
 var intravenous = require('intravenous');
-var program = require('commander');
+
 var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
 var multipart = require('connect-multiparty');
+
 //var jsreport = require("jsreport");
 
 var accounting = require("accounting");
@@ -29,8 +30,9 @@ G.fs = require('fs-extra');
 G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
-G.constants =  require("./lib/Constants").create();
 G.XlsParser =  require("./lib/XlsParser");
+G.soap = require('soap');
+G.program = require('commander');
 /**
  * +Descripcion:Se añade dependencia para importar archivo .XLS
  * @fecha: 29/10/2015
@@ -54,7 +56,7 @@ G.jsreport = require("jsreport-client")(reportUrl);
  * Comandos del Servidor
  * =========================================*/
 
-program
+G.program
         .version(G.settings.version)
         .option('-p, --port <n>', 'Run server on provided port', parseInt)
         .option('-d, --dev', 'Run server in Development mode')
@@ -62,26 +64,27 @@ program
         .option('-e, --eco', 'Run server in Testing mode in ecodev')
         .option('-P, --prod', 'Run server in Production mode')
         .option('-c, --config', 'Output settings');
-program.parse(process.argv);
+G.program.parse(process.argv);
 
+G.constants =  require("./lib/Constants").create();
 
 /*=========================================
  * Configuracion de Enviroment
  * =========================================*/
-if (program.dev)
+if (G.program.dev)
     G.settings.setEnv(G.settings.envDevelopment());
-else if (program.test)
+else if (G.program.test)
     G.settings.setEnv(G.settings.envTesting());
-else if (program.prod)
+else if (G.program.prod)
     G.settings.setEnv(G.settings.envProduction());
 else
     G.settings.setEnv(G.settings.env);
 
-if (program.port)
-    G.settings.server_port = program.port;
+if (G.program.port)
+    G.settings.server_port = G.program.port;
 
 
-if (program.config) {
+if (G.program.config) {
     G.settings.outputConfig();
     return;
 }
@@ -89,7 +92,7 @@ if (program.config) {
 /*=========================================
  * Monitoring Server only Production
  * =========================================*/
-if (program.prod) {
+if (G.program.prod) {
     //require('newrelic');
 }
 

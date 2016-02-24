@@ -1704,10 +1704,10 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
     var usuario_id = args.documento_temporal.usuario_id;
     var auditor_id = args.documento_temporal.auditor_id;
+    var empresa_id, prefijo_documento, numero_documento, estado;
 
-
-    that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function(err, responsables) {
-
+  
+    G.Q.ninvoke(that.m_pedidos_clientes,'obtener_responsables_del_pedido', numero_pedido).then(function(responsables){ 
         var existe_estado_auditoria = false;
         var _responsables = [];
 
@@ -1722,115 +1722,79 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                 _responsables.push(responsable);
             }
         }
-
-        //deja asignar el documento al auditor siempre y cuando sea el mismo o no exista auditor
+        
         if (_responsables.length > 0 || (_responsables.length === 0 && !existe_estado_auditoria)) {
-
-            that.m_terceros.seleccionar_operario_por_usuario_id(req.session.user.usuario_id, function(err, operario) {
-
-                if (operario.length === 0) {
-                    res.send(G.utils.r(req.url, 'El usuario no esta registrado como operario', 500, {movimientos_bodegas: {}}));
-                    return;
-                }
-
-                auditor_id = operario[0].operario_id;  
-
-                __validar_productos_pedidos_clientes(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
-
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                        return;
-                    } else {
-                        if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {
-
-                            res.send(G.utils.r(req.url, 'Algunos productos no ha sido auditados o tienen pendientes la justificacion', 404, {movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}));
-                            return;
-                        }
- 
-                        __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, "1", function(err, cajas_no_cerradas) {
-
-                            if (err) {
-                                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                return;
-                            } else {
-
-                                if (cajas_no_cerradas.length > 0) {
-                                    res.send(G.utils.r(req.url, 'Algunas cajas no se han cerrado', 404, {movimientos_bodegas: {cajas_no_cerradas: cajas_no_cerradas}}));
-                                    return;
-                                }
-    
-                                that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {  
-
-                                    if (err) {
-                                        res.send(G.utils.r(req.url, "Se genero un error interno...", 500, {movimientos_bodegas: {}}));
-                                        return;
-                                    }
-
-                                    that.m_pedidos_clientes.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
-
-                                        if (err) {
-                                            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                            return;
-                                        }
-
-                                        var cantidad_pendiente = 0;
-
-                                        //temporalmente el pedido queda con estados despachado o despachado con pendientes al terminar de auditar
-                                        var estado = "2";
-
-                                        detalle_pedido.forEach(function(producto_pedido) {
-
-                                            cantidad_pendiente += producto_pedido.cantidad_pendiente;
-
-                                        });
-
-                                        if (cantidad_pendiente > 0) {
-                                            estado = "8"; 
-                                        }
-
-
-                                        if (err) {
-                                            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                            return;
-                                        }
-
-
-                                        that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado, auditor_id, req.session.user.usuario_id, function(err, rows) {
-
-                                            that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
-                                                that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, '1', function(err, rows) {
-
-                                                    if (err) {
-                                                        console.log("========================================== generar documento despacho clientes error generado ============================");
-                                                        console.log(err);
-                                                        res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                                        return;
-                                                    } else {
-                                                        console.log("========================================== generar documento despacho clientes satisfactorio ============================");
-                                                        that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-                                                        res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
-
-                                                    }
-                                                });
-                                            });
-                                        });
-
-                                    });
-
-
-                                });
-                            }
-                        });
-                    }
-                });
-            });
+             return G.Q.ninvoke(that.m_terceros, "seleccionar_operario_por_usuario_id", req.session.user.usuario_id);
         } else {
-            res.send(G.utils.r(req.url, 'El pedido esta siendo auditado', 403, {movimientos_bodegas: {}}));
-            return;
+            throw {msj:"El pedido esta siendo auditado", status:500};
+        }
+    }).then(function(operario){
+        if (operario.length === 0) {
+            console.log("usuario operario ==============================================", operario, auditor_id);
+            throw {msj:"El usuario no esta registrado como operario", status:500};
         }
 
-    });
+        auditor_id = operario[0].operario_id;
+            
+        return G.Q.nfcall(__validar_productos_pedidos_clientes, that, numero_pedido, documento_temporal_id, usuario_id);
+        
+    }).spread(function(productos_no_auditados, productos_pendientes){
+        console.log("spread 1 >>>>>>>>>>>>>>>>>>>>");
+        if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
+            throw {msj:"Algunos productos no ha sido auditados o tienen pendientes la justificacion.", status:404,
+                   obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
+        }
 
+        return G.Q.nfcall(__validar_rotulos_cajas, that, documento_temporal_id, usuario_id, numero_pedido, '1');
+       
+        
+    }).then(function(cajas_no_cerradas){
+        console.log(">>>>>>>>>>>>>>>>>>>> generar_documento_despacho_clientes");
+        if (cajas_no_cerradas.length > 0) {            
+            throw {msj:"Algunas cajas no se han cerrado", status:404,
+                   obj:{movimientos_bodegas: {cajas_no_cerradas: cajas_no_cerradas}}};
+        }
+        
+        return G.Q.ninvoke(that.m_e008,"generar_documento_despacho_clientes",documento_temporal_id, numero_pedido, usuario_id, auditor_id);
+        
+    }).spread(function(_empresa_id, _prefijo_documento, _numero_documento){
+        console.log("spread 2 >>>>>>>>>>>>>>>>>>>>");
+        empresa_id = _empresa_id; prefijo_documento = _prefijo_documento; numero_documento = _numero_documento;
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, "consultar_detalle_pedido",numero_pedido);
+       
+    }).then(function(detalle_pedido){
+        var cantidad_pendiente = 0;
+        //temporalmente el pedido queda con estados despachado o despachado con pendientes al terminar de auditar
+        estado = "2";
+
+        detalle_pedido.forEach(function(producto_pedido) {
+
+            cantidad_pendiente += producto_pedido.cantidad_pendiente_real;
+
+        });
+
+        if (cantidad_pendiente > 0) {
+            estado = "8";
+        }
+        
+        return G.Q.ninvoke(that.m_pedidos_clientes, "asignar_responsables_pedidos", numero_pedido, estado, auditor_id,
+                         req.session.user.usuario_id );
+    }).then(function(rows){
+        return G.Q.ninvoke(that.m_pedidos_clientes,"terminar_estado_pedido", numero_pedido, [estado, '7'], '1');
+    }).then(function(rows){
+        return G.Q.ninvoke(that.m_e008, "marcar_cajas_como_despachadas", documento_temporal_id, numero_pedido, '1');
+    }).then(function(rows){
+        that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+        res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
+                           {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
+    }).fail(function(err){
+        if(typeof err === "object"){
+            res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+        } else {
+            res.send(G.utils.r(req.url, "Error interno", "500"));
+        }
+    }).done();
 
 };
 
@@ -1887,7 +1851,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
         if (_responsables.length > 0 || (_responsables.length === 0 && !existe_estado_auditoria)) {
             return G.Q.ninvoke(that.m_terceros, "seleccionar_operario_por_usuario_id", req.session.user.usuario_id);
         } else {
-            throw {msj:"El pedido esta siendo auditado", status:500};
+            throw {msj:"El pedido esta siendo auditado", status:403};
         }
         
     }).then(function(operario){
@@ -1955,7 +1919,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
         } else {
             res.send(G.utils.r(req.url, "Error interno", "500"));
         }
-    });    
+    }).done();    
 
 };
 

@@ -1047,6 +1047,23 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1:empresa, 2:centro_utilidad_id, 3:bodega_id, 4:contrato_cliente_id};
     
+    /***
+     * +Descripcion Campos para obtener la fecha actual
+     */
+    var sysdate = new Date();
+    var dd = sysdate.getDate();
+    var mm = sysdate.getMonth()+1; //hoy es 0!
+    var yyyy = sysdate.getFullYear();
+    
+    if(dd<10) {
+        dd='0'+dd
+    } 
+
+    if(mm<10) {
+        mm='0'+mm
+    } 
+    
+    sysdate = mm+'/'+dd+'/'+yyyy;
     
     if (tipo_producto !== undefined && tipo_producto !== ''){
         sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
@@ -1056,12 +1073,12 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     }
     if(filtros.tipo_busqueda === 0){
         filtroProducto = "AND (fc_descripcion_producto(b.codigo_producto) "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= termino_busqueda + '%';
+        parametros["5"]= '%' + termino_busqueda + '%';
     } 
     
     if(filtros.tipo_busqueda === 1){
         filtroProducto = "AND (e.descripcion "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= termino_busqueda + '%';
+        parametros["5"]= '%' + termino_busqueda + '%';
     }
     
     if(filtros.tipo_busqueda === 2){
@@ -1078,7 +1095,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     
     //Se agregar un nuevo campo llamado contrato que retornara FALSE si no tiene
    //contrato con la empresa y TRUE si lo tiene
-             var sql = "a.codigo_producto,\
+   var sql = "a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 b.tipo_producto_id,\
                 d.descripcion as descripcion_tipo_producto,\
@@ -1140,13 +1157,80 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;
+    
+     /*var sql = "a.codigo_producto,\
+                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                b.tipo_producto_id,\
+                d.descripcion as descripcion_tipo_producto,\
+                b.codigo_cum,\
+                b.codigo_invima,\
+                b.vencimiento_codigo_invima,\
+                b.porc_iva as iva,\
+                a.existencia::integer as existencia,\
+                (SELECT cantidad_total_pendiente\
+                 FROM disponibilidad_productos(a.codigo_producto,'2016-02-23','2016-02-23') \
+                         as (cantidad_total_pendiente integer, total_solicitado integer))as cantidad_total_pendiente,\
+                case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0) )::integer, 0) < 0 then 0 \
+                        else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0) )::integer, 0) end as cantidad_disponible,\
+                case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
+                split_part(coalesce(fc_precio_producto_contrato_cliente( :4, a.codigo_producto, :1 ),'0'), '@', 1) as precio_producto,\
+                b.sw_regulado,\
+                c.precio_regulado,\
+                b.estado,\
+                c.costo_ultima_compra,\
+                CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
+                from existencias_bodegas a \
+                inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
+                inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
+                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
+                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
+                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
+                left join (\
+                    select b.codigo_producto, coalesce(b.precio_pactado,0) as precio_pactado\
+                    from vnts_contratos_clientes a\
+                    inner join vnts_contratos_clientes_productos b on a.contrato_cliente_id = b.contrato_cliente_id\
+                    where a.contrato_cliente_id = :4\
+                ) g on c.codigo_producto = g.codigo_producto\
+                left join (\
+                    select aa.empresa_id, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
+                    from (\
+                      select a.empresa_id, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
+                      from ventas_ordenes_pedidos a\
+                      inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
+                      where (b.numero_unidades - b.cantidad_despachada) > 0  and a.estado='1' \
+                      group by 1,2 \
+                      UNION\
+                      select a.empresa_destino as empresa_id, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
+                      from solicitud_productos_a_bodega_principal a \
+                      inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
+                      where b.cantidad_pendiente > 0 \
+                      group by 1,2\
+                    ) aa group by 1,2\
+                ) h on (a.empresa_id = h.empresa_id) and c.codigo_producto = h.codigo_producto\
+                left join(\
+                   SELECT aa.empresa_id, aa.codigo_producto, SUM(aa.total_reservado) as total_solicitado FROM( \
+                        select b.codigo_producto, a.empresa_destino as empresa_id,  SUM(cantidad_solic)::integer as total_reservado\
+                        from  solicitud_bodega_principal_aux a\
+                        inner join solicitud_pro_a_bod_prpal_tmp b on a.farmacia_id = b.farmacia_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.usuario_id = b.usuario_id\
+                        group by 1,2\
+                        union\
+                        SELECT b.codigo_producto, a.empresa_id, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
+                        INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
+                        WHERE  a.estado = '1'\
+                        GROUP BY 1,2\
+                    ) aa group by 1,2\
+                ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
+                where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
+                 " + filtroProducto;*/
+    
+   
         
       var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-      
+        console.log("err -------->>>>>>>><<<>>>>> ", err);
         callback(err);
     });
     

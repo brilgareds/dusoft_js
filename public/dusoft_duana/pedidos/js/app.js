@@ -25,6 +25,7 @@ define([
     "includes/classes/Usuario",
     "includes/http/Request",
     "includes/helpersdirectives/visualizarReporte",
+    "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",
     "models/pedidos/EmpresaPedido",
     "controllers/asignarpedidos/PedidosController",

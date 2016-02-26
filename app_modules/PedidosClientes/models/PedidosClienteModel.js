@@ -1093,7 +1093,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     } 
     
     fechaActual = yyyy+'-'+ mm +'-'+ dd;
-     
+     // coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
     var sql = "a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 b.tipo_producto_id,\
@@ -1103,7 +1103,6 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 b.vencimiento_codigo_invima,\
                 b.porc_iva as iva,\
                 a.existencia::integer as existencia,\
-                coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
                 (select case when coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) < 0 then 0\
                     else coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) end as disponibilidad_bodega\
                 from  disponibilidad_productos(b.codigo_producto,'"+fechaActual+"','"+fechaActual+"') as (\
@@ -1129,35 +1128,6 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     inner join vnts_contratos_clientes_productos b on a.contrato_cliente_id = b.contrato_cliente_id\
                     where a.contrato_cliente_id = :4\
                 ) g on c.codigo_producto = g.codigo_producto\
-                left join (\
-                    select aa.empresa_id, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
-                    from (\
-                      select a.empresa_id, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
-                      from ventas_ordenes_pedidos a\
-                      inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                      where (b.numero_unidades - b.cantidad_despachada) > 0  and a.estado='1' \
-                      group by 1,2 \
-                      UNION\
-                      select a.empresa_destino as empresa_id, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
-                      from solicitud_productos_a_bodega_principal a \
-                      inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
-                      where b.cantidad_pendiente > 0 \
-                      group by 1,2\
-                    ) aa group by 1,2\
-                ) h on (a.empresa_id = h.empresa_id) and c.codigo_producto = h.codigo_producto\
-                left join(\
-                   SELECT aa.empresa_id, aa.codigo_producto, SUM(aa.total_reservado) as total_solicitado FROM( \
-                        select b.codigo_producto, a.empresa_destino as empresa_id,  SUM(cantidad_solic)::integer as total_reservado\
-                        from  solicitud_bodega_principal_aux a\
-                        inner join solicitud_pro_a_bod_prpal_tmp b on a.farmacia_id = b.farmacia_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.usuario_id = b.usuario_id\
-                        group by 1,2\
-                        union\
-                        SELECT b.codigo_producto, a.empresa_id, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
-                        INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
-                        WHERE  a.estado = '1'\
-                        GROUP BY 1,2\
-                    ) aa group by 1,2\
-                ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;
         

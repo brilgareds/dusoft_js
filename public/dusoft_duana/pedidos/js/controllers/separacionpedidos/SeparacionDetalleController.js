@@ -665,7 +665,7 @@ define(["angular", "js/controllers",
                    
                     if(justificacion === null || justificacion === undefined || justificacion.length === 0 &&
                       cantidadIngresada < producto.getCantidadSolicitada()){
-                        _productosInvalidos.push(_producto);
+                        _productosInvalidos.push(producto);
                     }                                       
                 }                           
                 return _productosInvalidos;

@@ -1175,6 +1175,49 @@ DocuemntoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback)
 };
 
 
+DocuemntoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callback){
+     
+     var sql = "SELECT\
+                    a.*,\
+                    b.descripcion,\
+                    b.unidad_id,\
+		    b.contenido_unidad_venta,\
+                    c.descripcion as descripcion_unidad,\
+                    fc_descripcion_producto(b.codigo_producto) as nombre,\
+					(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
+					(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
+					((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
+					(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\
+					((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva_1,\
+					((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1,\
+					(((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1\
+                FROM\
+                    inv_bodegas_movimiento_d as a,\
+                    inventarios_productos as b,\
+                    unidades as c\
+                WHERE\
+                    a.empresa_id = :1\
+                    AND a.prefijo = :2\
+                    AND a.numero = :3\
+                    AND b.codigo_producto = a.codigo_producto\
+                    AND c.unidad_id = b.unidad_id\
+                    ORDER BY a.codigo_producto";
+   
+    var parametros = {
+        1: obj.empresa,
+        2: obj.prefijoDocumento , 
+        3: obj.numeroDocumento 
+    };
+       
+     G.knex.raw(sql, parametros). then(function(resultado){       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+     
+        callback(err);
+    });        
+};
+
+
 /**
  * @author Cristian Ardila 
  * @fecha  18/002/2016

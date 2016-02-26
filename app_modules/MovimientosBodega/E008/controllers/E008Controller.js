@@ -1704,10 +1704,12 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
     var usuario_id = args.documento_temporal.usuario_id;
     var auditor_id = args.documento_temporal.auditor_id;
-    var empresa_id, prefijo_documento, numero_documento, estado;
+    var empresa_id, prefijo_documento, numero_documento, estado, pedido;
 
-  
-    G.Q.ninvoke(that.m_pedidos_clientes,'obtener_responsables_del_pedido', numero_pedido).then(function(responsables){ 
+    G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function(resultado){
+        pedido = resultado[0];
+        return G.Q.ninvoke(that.m_pedidos_clientes,'obtener_responsables_del_pedido', numero_pedido);
+    }).then(function(responsables){ 
         var existe_estado_auditoria = false;
         var _responsables = [];
 
@@ -1785,6 +1787,24 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     }).then(function(rows){
         return G.Q.ninvoke(that.m_e008, "marcar_cajas_como_despachadas", documento_temporal_id, numero_pedido, '1');
     }).then(function(rows){
+        
+        var def = G.Q.defer();
+        if(pedido.tercero_id === '10490' && pedido.tipo_id_tercero === "CE" ){
+            var obj = {
+                documentoId:418,
+                prefijoDocumento : prefijo_documento,
+                numeroDocumento : numero_documento,
+                bodegasDoc : "BD",
+                empresa: empresa_id,
+                tipo:"1"
+            };
+
+            return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
+        } else {
+            def.resolve();
+        }
+        
+    }).then(function(rows){
         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
                            {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
@@ -1808,10 +1828,11 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
-            || args.documento_temporal.usuario_id === undefined) {
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || 
+        args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined || 
+        !args.documento_temporal.bodega_documento_id || !args.documento_temporal.bodega) {
 
-        res.send(G.utils.r(req.url, 'documento_temporal_id,  usuario_id o numero_pedido No Estan Definidos', 404, {}));
+        res.send(G.utils.r(req.url, 'documento_temporal_id,  usuario_id, bodega_documento_id, bodega o numero_pedido No Estan Definidos', 404, {}));
         return;
     }
 
@@ -1830,9 +1851,16 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
     var usuario_id = args.documento_temporal.usuario_id;
     var auditor_id = args.documento_temporal.auditor_id;    
     var empresa_id, prefijo_documento, numero_documento, estado;
+    var bodegaDocumentoId = args.documento_temporal.bodega_documento_id;
+    var bodega = args.documento_temporal.bodega;
+    var pedido;
     
     
-    G.Q.ninvoke(that.m_pedidos_farmacias,'obtener_responsables_del_pedido', numero_pedido).then(function(responsables){ 
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(resultado){
+        pedido = resultado[0];
+        return G.Q.ninvoke(that.m_pedidos_farmacias,'obtener_responsables_del_pedido', numero_pedido);
+        
+    }).then(function(responsables){ 
         var existe_estado_auditoria = false;
         var _responsables = [];
 
@@ -1910,18 +1938,158 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
     }).then(function(rows){
         return G.Q.ninvoke(that.m_e008, "marcar_cajas_como_despachadas", documento_temporal_id, numero_pedido, '2');
     }).then(function(rows){
+        
+        var def = G.Q.defer();
+        if(pedido.farmacia_id === '01'){
+            var obj = {
+                documentoId:418,
+                prefijoDocumento : prefijo_documento,
+                numeroDocumento : numero_documento,
+                bodegasDoc : bodega,
+                empresa: empresa_id
+            };
+
+            return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
+        } else {
+            def.resolve();
+        }
+        
+    }).then(function(){
         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
                            {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
     }).fail(function(err){
-        if(typeof err === "object"){
+        console.log("se ha generado un error en el documento ", err);
+        if(err.status){
             res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+            
         } else {
-            res.send(G.utils.r(req.url, "Error interno", "500"));
+            
+            res.send(G.utils.r(req.url, "Error interno", "500", {}));
         }
     }).done();    
+    
 
 };
+
+
+E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
+    var that = this;
+    
+     var args = req.body.data;
+     var numeroPedido = args.documento_despacho.numero_pedido;
+
+    if (!args.documento_despacho || !numeroPedido) {
+
+        res.send(G.utils.r(req.url, 'Los datos obligatoris no esta definidos', 404, {}));
+        return;
+    }
+    
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numeroPedido).then(function(resultado){
+        pedido = resultado[0];
+        return G.Q.ninvoke(that.m_pedidos_farmacias,'obtener_responsables_del_pedido', numero_pedido);
+        
+    })
+};
+
+function __sincronizarDocumentoDespacho(obj, callback){
+    console.log("sincronizarEncabezadoDocumento >>>>>>>>>>>>>>>");
+    obj.observacion = obj.prefijoDocumento + " - " + obj.numeroDocumento;
+    var that = this;
+    
+    G.Q.ninvoke(that.m_e008,"obtenerTotalDetalleDespacho",obj).
+    then(function(detalle){
+        obj.detalle = detalle;
+        //console.log("detalle del documento >>>>>>>>>>>>>>>", detalle);
+        
+        return G.Q.nfcall(__sincronizarEncabezadoDocumento,obj);
+        
+    }).then(function(temporal){
+        console.log("temporal recibido !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", temporal);
+        obj.temporal = temporal;
+        //callback(false, temporal);
+        return G.Q.ninvoke(__sincronizarDetalleDocumento, obj);
+    }).fail(function(err){
+        callback(err);
+    }).done();
+    
+};
+
+
+function __sincronizarEncabezadoDocumento(obj, callback){
+    var url = (obj.tipo === '1')? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
+    var args = {
+        usuarioId:"4608",
+        bodegasDoc:obj.bodegasDoc,
+        documentoId:obj.documentoId,
+        observacion:obj.observacion
+    };
+    
+    console.log("enviando informacion >>>>>>>>>>>>>>>>>>>>>>>>> ", args);
+    
+    G.Q.nfcall(G.soap.createClient, url).
+    then(function(client) {
+        return G.Q.ninvoke(client, "bodegasMovimientoTmp", args);
+    }).
+    spread(function(result,raw,soapHeader){
+        if(!result.return.estado["$value"]){
+           throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
+        }
+        callback(false, result.return.doctTmpId["$value"]);
+    }).fail(function(err) {
+        console.log("error generado ", err);
+        callback(err);
+    }).
+    done();
+}
+
+function __sincronizarDetalleDocumento(obj, callback){
+    var producto = obj.detalle[0];
+    
+    
+    if(!producto){
+        callback(false);
+        return;
+    }
+    
+    var url = G.constants.WS().DOCUMENTOS.COSMITET.E008;
+    var args = {
+        usuarioId:"4608",
+        docTmpId:obj.temporal,
+        tipoTercero: "NIT",
+        terceroId:"830080649",
+        documentoCompra:"AAA000",
+        fechaDocCompra:"2014-06-27",
+        codigoProducto:producto.codigo_producto,
+        cantidad:producto.cantidad,
+        porcentajeGravamen:producto.porcentaje_gravamen,
+        totalCosto:producto.total_costo,
+        fechaVencimiento:producto.fecha_vencimiento,
+        lote:producto.lote,
+        localizacionProducto:"N/A",
+        totalcostoPedido:producto.total_costo_pedido,
+        valorUnitario:producto.valor_unitario,
+        descuento:0
+    };
+        
+    G.Q.nfcall(G.soap.createClient, url).
+    then(function(client) {
+        return G.Q.ninvoke(client, "bodegasMovimientoTmpD", args);
+    }).
+    spread(function(result,raw,soapHeader){
+        if(!result.return.estado["$value"]){
+           throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
+        } else {
+            obj.detalle.splice(0,1);
+            __sincronizarDetalleDocumento(obj,callback);
+        }
+        
+    }).fail(function(err) {
+        console.log("error generado ", err);
+        callback(err);
+    }).
+    done();
+}
 
 E008Controller.prototype.consultarNumeroMayorRotulo = function(req, res){
    var that = this;

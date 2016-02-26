@@ -1237,7 +1237,7 @@ PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_p
 PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino,
                                                            pagina, filtro, callback) {
     
-    console.log(">>>>---Datos Recibidos---<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    
     var sql_aux = "";
     var parametros = {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:empresa_destino, 
                             5:centro_destino, 6:bodega_destino, 7:"%" + filtro.termino_busqueda + "%"};
@@ -1256,7 +1256,23 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
         sql_filtro =  " and a.codigo_producto "+G.constants.db().LIKE+" :7 ";
     }
     
-    console.log("sql aux ", sql_aux, pagina);
+    /***
+    * +Descripcion Campos para obtener la fecha actual
+    */
+    var fechaActual = new Date();
+    var dd = fechaActual.getDate();
+    var mm = fechaActual.getMonth()+1; //hoy es 0!
+    var yyyy = fechaActual.getFullYear();
+    
+    if(dd<10) {
+        dd='0'+dd
+    } 
+
+    if(mm<10) {
+        mm='0'+mm
+    } 
+    
+    fechaActual = yyyy+'-'+ mm +'-'+ dd;
     
     var sql = " b.codigo_producto,\
                 a.empresa_id,\
@@ -1291,8 +1307,12 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 b.subclase_id,\
                 b.porc_iva,\
                 b.tipo_producto_id,\
-                case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
-                        else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
+                (select case when coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) < 0 then 0\
+                    else coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) end as disponibilidad_bodega\
+                from  disponibilidad_productos(b.codigo_producto,'"+fechaActual+"','"+fechaActual+"') as (\
+                        cantidad_total_pendiente integer, total_solicitado INTEGER\
+                 )\
+               )as disponibilidad_bodega,\
                 coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\

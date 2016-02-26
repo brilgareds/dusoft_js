@@ -11,11 +11,11 @@ define(["angular","js/directive"], function(angular, directive){
 
 
         directive.controller = ["$scope",function($scope){
-            console.log("directive >>>>>>>>>>", $scope)
+          
             $scope.$parent.$parent.esEventoPropagadoPorFila = function(event){
-                console.log(event.target);
+               
                 if($(event.target).hasClass("ngCellText")){
-                    console.log("================row");
+                   
                     return true;
                 } else {
                     return false;

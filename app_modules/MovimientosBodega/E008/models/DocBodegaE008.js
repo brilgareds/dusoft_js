@@ -1235,7 +1235,7 @@ DocuemntoBodegaE008.prototype.detallePedidoClienteDocumento = function(obj, call
          
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-        console.log("err ", err)
+      
         callback(err);
     });
 };
@@ -1258,7 +1258,7 @@ DocuemntoBodegaE008.prototype.detallePedidoFarmaciaDocumento = function(obj, cal
        
         callback(false, resultado.rows);   
     }).catch(function(err) { 
-        console.log("err ", err)
+       
         callback(err);
     });
 };

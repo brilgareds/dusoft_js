@@ -499,7 +499,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         </div>'},
                 //    {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
                 {field: 'precio_venta', width: "8%", displayName: "$ Venta", cellFilter: "number",
-                     cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" \
+                     cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
                      ng-model="row.entity.precio_venta" \
                      validacion-numero-decimal\
                      ng-disabled = "row.entity.sw_pactado"\n\
@@ -510,8 +510,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
                         </div></div>'
                     },
-                   // ng-disabled = "row.entity.contrato"\n\ 
-                    
+                   
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
                     {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",
@@ -531,6 +530,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $scope.agregar_clase_tipo_producto = function(tipo_producto) {
+              //  console.log("tipo_producto ", tipo_producto);
+              //  console.log("$scope.datos_form.clases_tipo_producto ", $scope.datos_form.clases_tipo_producto);
                 return $scope.datos_form.clases_tipo_producto[tipo_producto];
             };
 
@@ -547,10 +548,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
 
-
-
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                //$scope.datos_form = null;
             });
         }]);
 });

@@ -1796,7 +1796,8 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                 numeroDocumento : numero_documento,
                 bodegasDoc : "BD",
                 empresa: empresa_id,
-                tipo:"1"
+                tipo:"1",
+                contexto:that
             };
 
             return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
@@ -1942,11 +1943,12 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
         var def = G.Q.defer();
         if(pedido.farmacia_id === '01'){
             var obj = {
-                documentoId:418,
+                documentoId:1138,
                 prefijoDocumento : prefijo_documento,
                 numeroDocumento : numero_documento,
                 bodegasDoc : bodega,
-                empresa: empresa_id
+                empresa: empresa_id,
+                contexto:that
             };
 
             return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
@@ -1974,30 +1976,46 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
 
 E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
-    var that = this;
+     var that = this;
     
      var args = req.body.data;
      var numeroPedido = args.documento_despacho.numero_pedido;
+     var tipoPedido = args.documento_despacho.tipo_pedido;
+     var prefijoDocumento = args.documento_despacho.prefijo_documento;
+     var numeroDocumento = args.documento_despacho.numero_documento; 
+     var empresaId = args.documento_despacho.empresa_id; 
+     var pedido;
 
-    if (!args.documento_despacho || !numeroPedido) {
+    if (!args.documento_despacho || !numeroPedido || !tipoPedido || !numeroDocumento || !prefijoDocumento || !!empresaId) {
 
         res.send(G.utils.r(req.url, 'Los datos obligatoris no esta definidos', 404, {}));
         return;
     }
     
-    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numeroPedido).then(function(resultado){
+    var modeloPedido = (tipoPedido === '1')? that.m_pedidos_clientes : that.m_pedidos_farmacias;
+    
+    G.Q.ninvoke(modeloPedido, "consultar_pedido", numeroPedido).then(function(resultado){
         pedido = resultado[0];
-        return G.Q.ninvoke(that.m_pedidos_farmacias,'obtener_responsables_del_pedido', numero_pedido);
         
-    })
+        var obj = {
+              documentoId:1138,
+              prefijoDocumento : prefijoDocumento,
+              numeroDocumento : numeroDocumento,
+              bodegasDoc : bodega,
+              empresa: empresaId,
+              contexto:that
+         };
+
+         return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
+        
+    });
 };
 
 function __sincronizarDocumentoDespacho(obj, callback){
     console.log("sincronizarEncabezadoDocumento >>>>>>>>>>>>>>>");
     obj.observacion = obj.prefijoDocumento + " - " + obj.numeroDocumento;
-    var that = this;
     
-    G.Q.ninvoke(that.m_e008,"obtenerTotalDetalleDespacho",obj).
+    G.Q.ninvoke(obj.contexto.m_e008,"obtenerTotalDetalleDespacho",obj).
     then(function(detalle){
         obj.detalle = detalle;
         //console.log("detalle del documento >>>>>>>>>>>>>>>", detalle);

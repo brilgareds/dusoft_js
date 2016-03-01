@@ -500,7 +500,7 @@ define(["angular", "js/controllers",
            
             
             $scope.generarDocumento = function(documento) {
-                
+
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -514,7 +514,9 @@ define(["angular", "js/controllers",
                             numero_pedido: documento.pedido.numero_pedido,
                             documento_temporal_id: documento.documento_temporal_id,
                             auditor_id: documento.auditor.operario_id,
-                            usuario_id: documento.separador.usuario_id
+                            usuario_id: documento.separador.usuario_id,
+                            bodega_documento_id : documento.getBodegasDocId(),
+                            bodega: documento.bodega_id
                         }
                     }
                 };

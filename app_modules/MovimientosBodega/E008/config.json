@@ -38,6 +38,11 @@
                     "module": "Pedidos",
                     "model": "PedidosModel",
                     "alias": "m_pedidos"
+                },
+                 "E008_log": {
+                    "module": "MovimientosBodega/E008",
+                    "model": "DocBodegaE008Logs",
+                    "alias": "log_e008"
                 }
             }],
         "events": [{

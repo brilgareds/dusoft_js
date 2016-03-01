@@ -13,8 +13,7 @@ define(["angular"], function(angular) {
                 'LISTAR_DESPACHOS_AUDITADOS': BASE_URL + '/movBodegas/E008/listarDespachosAuditados',
                 'DETALLE_DOCUMENTO_AUDITADO': BASE_URL + '/movBodegas/E008/detalleDocumentoAuditado',
                 'DETALLE_PEDIDO_CLIENTE_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoClienteDocumento',
-                'DETALLE_PEDIDO_FARMACIA_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoFarmaciaDocumento'
-                
+                'DETALLE_PEDIDO_FARMACIA_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoFarmaciaDocumento'                
             },
             'DOCUMENTOS_TEMPORALES': {
                 'LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES': BASE_URL + '/movBodegas/E008/consultarDocumentosTemporalesClientes',
@@ -177,7 +176,8 @@ define(["angular"], function(angular) {
                 'BUSCAR_CIUDAD': BASE_URL + '/Ciudades/seleccionarCiudad'
             },
             'DOCUMENTOS_DESPACHO': {
-                'IMPRIMIR_DOCUMENTO_DESPACHO': BASE_URL + "/movBodegas/E008/imprimirDocumentoDespacho"
+                'IMPRIMIR_DOCUMENTO_DESPACHO': BASE_URL + "/movBodegas/E008/imprimirDocumentoDespacho",
+                'SINCRONIZAR_DOCUMENTO' : BASE_URL + '/movBodegas/E008/sincronizarDocumentoDespacho'
             }
         },
         'STATIC': {

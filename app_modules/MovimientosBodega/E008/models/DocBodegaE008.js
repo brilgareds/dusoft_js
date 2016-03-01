@@ -1090,10 +1090,10 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
    
      var fecha = "";
     
-        if(!obj.registroUnico){
-            fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
-           
-        }
+     if(!obj.registroUnico){
+        fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
+
+     }
      
      var sql = "a.prefijo,\
                 a.numero,\
@@ -1101,16 +1101,18 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
                 a.empresa_id,\
                 to_char(a.fecha_registro, 'DD Mon YYYY')as fecha_registro,\
                 a.empresa_destino,\
-               (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \n\
+               (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \
                 a.observacion,\
                 CASE WHEN c.pedido_cliente_id is null THEN d.solicitud_prod_a_bod_ppal_id WHEN d.solicitud_prod_a_bod_ppal_id is null THEN c.pedido_cliente_id end as pedido,\
-                CASE WHEN c.pedido_cliente_id is not null THEN 0 WHEN d.solicitud_prod_a_bod_ppal_id is not null THEN 1 end as tipo_pedido\
+                CASE WHEN c.pedido_cliente_id is not null THEN 1 WHEN d.solicitud_prod_a_bod_ppal_id is not null THEN 2 end as tipo_pedido,\
+                e.bodega as bodega_destino,\
+                e.farmacia_id as empresa_destino\
                 FROM inv_bodegas_movimiento a\
                 INNER JOIN  empresas b ON b.empresa_id = a.empresa_id\
                 LEFT JOIN inv_bodegas_movimiento_despachos_clientes c\
                 ON  a.prefijo = c.prefijo AND a.numero = c.numero AND a.empresa_id = c.empresa_id\
-                LEFT JOIN inv_bodegas_movimiento_despachos_farmacias d\
-                ON  a.prefijo = d.prefijo AND a.numero = d.numero AND a.empresa_id = d.empresa_id\
+                LEFT JOIN inv_bodegas_movimiento_despachos_farmacias d ON  a.prefijo = d.prefijo AND a.numero = d.numero AND a.empresa_id = d.empresa_id\
+                LEFT JOIN solicitud_productos_a_bodega_principal e ON d.solicitud_prod_a_bod_ppal_id = e.solicitud_prod_a_bod_ppal_id\
                 WHERE "+fecha+"\
                 ( \
                     a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo and\

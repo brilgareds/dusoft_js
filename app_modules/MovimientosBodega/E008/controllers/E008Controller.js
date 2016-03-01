@@ -1,5 +1,5 @@
 
-var E008Controller = function(movimientos_bodegas, m_e008, e_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos) {
+var E008Controller = function(movimientos_bodegas, m_e008, e_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos, log_e008) {
 
     console.log("Modulo E008 Cargado ");
 
@@ -16,6 +16,7 @@ var E008Controller = function(movimientos_bodegas, m_e008, e_e008, pedidos_clien
 
     this.m_terceros = terceros;
     this.m_pedidos = m_pedidos;
+    this.log_e008 = log_e008;
 };
 
 // Generar Cabecera del Documento Temporal de CLIENTES
@@ -1797,7 +1798,8 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                 bodegasDoc : "BD",
                 empresa: empresa_id,
                 tipo:"1",
-                contexto:that
+                contexto:that,
+                numeroPedido:pedido.numero_pedido
             };
 
             return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
@@ -1948,7 +1950,8 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                 numeroDocumento : numero_documento,
                 bodegasDoc : bodega,
                 empresa: empresa_id,
-                contexto:that
+                contexto:that,
+                numeroPedido:pedido.numero_pedido
             };
 
             return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
@@ -1985,8 +1988,9 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
      var numeroDocumento = args.documento_despacho.numero_documento; 
      var empresaId = args.documento_despacho.empresa_id; 
      var pedido;
+     var bodega = args.documento_despacho.bodega_destino;
 
-    if (!args.documento_despacho || !numeroPedido || !tipoPedido || !numeroDocumento || !prefijoDocumento || !!empresaId) {
+    if (!args.documento_despacho || !numeroPedido || !tipoPedido || !numeroDocumento || !prefijoDocumento || !empresaId || !bodega) {
 
         res.send(G.utils.r(req.url, 'Los datos obligatoris no esta definidos', 404, {}));
         return;
@@ -1997,18 +2001,36 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
     G.Q.ninvoke(modeloPedido, "consultar_pedido", numeroPedido).then(function(resultado){
         pedido = resultado[0];
         
-        var obj = {
-              documentoId:1138,
-              prefijoDocumento : prefijoDocumento,
-              numeroDocumento : numeroDocumento,
-              bodegasDoc : bodega,
-              empresa: empresaId,
-              contexto:that
-         };
-
-         return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
         
-    });
+        if((pedido.farmacia_id && pedido.farmacia_id === '01') || (pedido.tercero_id === '10490' && pedido.tipo_id_tercero === "CE" )){
+            
+            var obj = {
+                  documentoId:418,
+                  prefijoDocumento : prefijoDocumento,
+                  numeroDocumento : numeroDocumento,
+                  bodegasDoc : bodega,
+                  empresa: empresaId,
+                  contexto:that,
+                  tipo:tipoPedido,
+                  numeroPedido:pedido.numero_pedido
+             };
+
+             return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
+        } else {
+            throw {msj:"El documento no esta parametrizado para sincronizarse", status:404,
+                   obj:{documento_despacho: {}}};
+        }
+        
+    }).fail(function(err){
+        console.log("se ha generado un error en el documento ", err);
+        if(err.status){
+            res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+            
+        } else {
+            
+            res.send(G.utils.r(req.url, "Error interno", "500", {}));
+        }
+    }).done();
 };
 
 function __sincronizarDocumentoDespacho(obj, callback){
@@ -2025,35 +2047,52 @@ function __sincronizarDocumentoDespacho(obj, callback){
     }).then(function(temporal){
         console.log("temporal recibido !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", temporal);
         obj.temporal = temporal;
-        //callback(false, temporal);
+        
         return G.Q.ninvoke(__sincronizarDetalleDocumento, obj);
+    }).then(function(resultado){
+        
+        callback(false);
+        
     }).fail(function(err){
         callback(err);
     }).done();
+
     
 };
 
 
 function __sincronizarEncabezadoDocumento(obj, callback){
     var url = (obj.tipo === '1')? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
-    var args = {
+    var resultado;
+    var def = G.Q.defer();  
+    obj.parametros = {
         usuarioId:"4608",
         bodegasDoc:obj.bodegasDoc,
         documentoId:obj.documentoId,
         observacion:obj.observacion
     };
     
-    console.log("enviando informacion >>>>>>>>>>>>>>>>>>>>>>>>> ", args);
+    obj.tipo = '0';
+    
+    console.log("enviando informacion >>>>>>>>>>>>>>>>>>>>>>>>> ", obj.parametros);
     
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
-        return G.Q.ninvoke(client, "bodegasMovimientoTmp", args);
+        return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
+
+        obj.resultado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
            throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
         }
+        
+        def.resolve();
         callback(false, result.return.doctTmpId["$value"]);
+        
+    }).finally(function(){
+       return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincroniacionDespachos", obj);
+        
     }).fail(function(err) {
         console.log("error generado ", err);
         callback(err);
@@ -2063,7 +2102,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
 
 function __sincronizarDetalleDocumento(obj, callback){
     var producto = obj.detalle[0];
-    
+     var def = G.Q.defer();  
     
     if(!producto){
         callback(false);
@@ -2071,7 +2110,8 @@ function __sincronizarDetalleDocumento(obj, callback){
     }
     
     var url = G.constants.WS().DOCUMENTOS.COSMITET.E008;
-    var args = {
+    
+    obj.parametros = {
         usuarioId:"4608",
         docTmpId:obj.temporal,
         tipoTercero: "NIT",
@@ -2089,18 +2129,25 @@ function __sincronizarDetalleDocumento(obj, callback){
         valorUnitario:producto.valor_unitario,
         descuento:0
     };
+    
+    obj.tipo = '1';
         
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
-        return G.Q.ninvoke(client, "bodegasMovimientoTmpD", args);
+        return G.Q.ninvoke(client, "bodegasMovimientoTmpD", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
+        obj.resultado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
            throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
         } else {
             obj.detalle.splice(0,1);
             __sincronizarDetalleDocumento(obj,callback);
         }
+         def.resolve();
+        
+    }).finally(function(){
+       return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincroniacionDespachos", obj);
         
     }).fail(function(err) {
         console.log("error generado ", err);
@@ -2725,22 +2772,22 @@ E008Controller.prototype.obtenerDocumento = function(req, res) {
     var that = this;
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined) {
+    if (!args.documento_temporal) {
           res.send(G.utils.r(req.url, 'Variable (documento_temporal) no esta definida', 404, {}));
           return;
     }
     
-    if (args.documento_temporal.empresa_id === undefined) {
+    if (!args.documento_temporal.empresa_id) {
         res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
         return;
     }
     
-    if (args.documento_temporal.prefijo === undefined) {
+    if (!args.documento_temporal.prefijo) {
         res.send(G.utils.r(req.url, 'Se requiere el prefijo', 404, {pedidos_clientes: []}));
         return;
     }
     
-    if (args.documento_temporal.numero === undefined) {
+    if (!args.documento_temporal.numero) {
         res.send(G.utils.r(req.url, 'Se requiere el numero', 404, {pedidos_clientes: []}));
         return;
     }
@@ -2750,11 +2797,12 @@ E008Controller.prototype.obtenerDocumento = function(req, res) {
     var prefijo = args.documento_temporal.prefijo;
     var numero = args.documento_temporal.numero;
  
-    var obj = {empresa_id: empresa_id,
-               prefijo: prefijo,
-               numero: numero,
+    var obj = {
+        empresa_id: empresa_id,
+        prefijo: prefijo,
+        numero: numero
                
-          };
+    };
      
      G.Q.ninvoke(that.m_e008,'obtenerDocumento', obj).then(function(resultado){ 
          
@@ -3055,6 +3103,6 @@ E008Controller.prototype.detallePedidoFarmaciaDocumento = function(req, res) {
 
 
 
-E008Controller.$inject = ["m_movimientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos"];
+E008Controller.$inject = ["m_movimientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos", "log_e008"];
 
 module.exports = E008Controller;

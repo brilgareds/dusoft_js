@@ -48,10 +48,46 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.valorIva = 0;
             this.valorUnitarioConIva = 0;
             this.itemId = 0;
+
+            this.descripcionEstado = "";
+
+            this.numeroCaja = 0;
+            this.codigo = codigo;
+            this.descripcion = nombre;
+            this.tipo;
+            this.tipoCajaId;
+            this.pedido;
+
             
         }
 
         ProductoPedido.prototype = Object.create(Producto.getClass().prototype);
+        
+        ProductoPedido.prototype.setPedido = function (tipo) {
+             this.tipo = tipo;
+        };
+
+        ProductoPedido.prototype.getPedido = function () {
+            return this.pedido;
+        };
+        
+        ProductoPedido.prototype.setTipo = function (tipo) {
+             this.tipo = tipo;
+        };
+
+        ProductoPedido.prototype.getTipo = function () {
+            return this.tipo;
+        };
+        
+        ProductoPedido.prototype.setTipoCajaId = function (tipoCajaId) {
+             this.tipoCajaId = tipoCajaId;
+        };
+
+        ProductoPedido.prototype.getTipoCajaId = function () {
+            return this.tipoCajaId;
+        };
+        
+        
         
         ProductoPedido.prototype.setLote = function(lote) {
             this.lote = lote;
@@ -59,6 +95,20 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         
         ProductoPedido.prototype.getLote = function() {
             return this.lote;
+        };
+        
+        ProductoPedido.prototype.getCantidadSeparada = function() {
+            return this.cantidad_separada;
+        };
+        
+      
+        
+        ProductoPedido.prototype.getDescripcionProducto = function() {
+            return this.descripcion;
+        };
+        
+        ProductoPedido.prototype.getCodigoProducto = function() {
+            return this.codigo;
         };
         
         ProductoPedido.prototype.setCantidadSolicitada = function(cantidad_solicitada) {
@@ -211,6 +261,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.estado;
         };
         
+        ProductoPedido.prototype.setDescripcionEstado = function(descripcionEstado) {
+            this.descripcionEstado = descripcionEstado;
+        };
+        
+        ProductoPedido.prototype.getDescripcionEstado = function() {
+            return this.descripcionEstado;
+        };
+        
+        
         ProductoPedido.prototype.setEsRegulado = function(valor) {
             this.es_regulado = valor; // 0: No es regulado, 1: Es regulado
         };
@@ -270,7 +329,25 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         ProductoPedido.prototype.getValorUnitarioConIva = function() {
             return this.valorUnitarioConIva;
         };
-                
+             
+        
+        
+        /**
+         * +Descripcion Numero caja this.numeroCaja
+         * @returns {Number}
+         */
+        ProductoPedido.prototype.setNumeroCaja = function(numeroCaja) {
+           
+            this.numeroCaja = numeroCaja === null?0: numeroCaja;
+            
+        };  
+        
+        ProductoPedido.prototype.getNumeroCaja = function() {
+            return this.numeroCaja;
+        };
+        
+        
+        
         ProductoPedido.prototype.obtenerCantidadSeleccionada = function() {
             var cantidad = 0;
             for(var i in this.lotesSeleccionados){

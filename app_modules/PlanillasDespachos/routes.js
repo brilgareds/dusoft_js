@@ -45,4 +45,25 @@ module.exports = function(app, di_container) {
     app.post('/api/PlanillasDespachos/reportePlanillaDespacho', function(req, res) {
         c_planillas_despachos.reportePlanillaDespacho(req, res);
     });
+    
+    
+    
+    
+    /**
+     * @author Cristian Ardila
+     * @fecha 02/02/2016
+     * +Descripcion: METODO ENCARGADO DE CONSULTAR LAS CANTIDADES DE CAJAS Y NEVERAS AUDITADAS
+     */
+    app.post('/api/PlanillasDespachos/consultarCantidadCajaNevera', function(req, res) {
+        c_planillas_despachos.consultarCantidadCajaNevera(req, res);
+    });
+    
+   /**
+     * @author Cristian Ardila
+     * @fecha 02/02/2016
+     * +Descripcion: METODO ENCARGADO DE CONSULTAR LAS CANTIDADES DE CAJAS
+     */
+    app.post('/api/PlanillasDespachos/gestionarLios', function(req, res) {
+        c_planillas_despachos.gestionarLios(req, res);
+    });
 };

@@ -124,9 +124,9 @@ define(["angular", "js/controllers",
              * @fecha: 10/09/2015
              * */
             $scope.onGenerarDocumento = function() {
-
-                if (!self.validarProductos()) {
-                    SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
+                var productos = self.validarProductos();
+                if (productos.length > 0) {
+                    self.mostrarProductosSinCajaJustificacion(productos);
                     return;
                 }
 
@@ -139,7 +139,7 @@ define(["angular", "js/controllers",
                                 $state.go("SeparacionPedidos");
                                 AlertService.mostrarMensaje("success", "Separacion finalizada");
                             } else {
-                                SeparacionService.mostrarAlerta("Error", "Se genero un error");
+                                AlertService.mostrarVentanaAlerta("Error", "Se genero un error");
                             }
                         });
                     }
@@ -272,7 +272,7 @@ define(["angular", "js/controllers",
                         pedido.getProductos().splice(index, 1);
                         AlertService.mostrarMensaje("success", "Lote eliminado correctamente");
                     } else {
-                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                     }
                 });
             };
@@ -307,7 +307,7 @@ define(["angular", "js/controllers",
                         $scope.$emit("onFinalizar");
                         AlertService.mostrarMensaje("success", "Documento eliminado");
                     } else {
-                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                     }
                 });
             };
@@ -422,7 +422,7 @@ define(["angular", "js/controllers",
 
                 self.renderDocumentoTemporalClienteFarmacia(obj, pedido.getTipo(), function(continuar) {
                     if (!continuar) {
-                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                     }
 
                     var productos = angular.copy($scope.rootDetalle.pedido.getProductos());
@@ -448,7 +448,7 @@ define(["angular", "js/controllers",
                                 }
                             });
                         } else {
-                            SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                            AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                         }
                     })
                 });
@@ -475,7 +475,7 @@ define(["angular", "js/controllers",
                         }
                     }                                 
                     return cantidadIngresada;
-                };                     
+           };                     
               
                 
             
@@ -570,10 +570,10 @@ define(["angular", "js/controllers",
              * @fecha: 10/09/2015
              * */
             $scope.onGenerarAuditar = function() {
+                var productos = self.validarProductos();
 
-
-                if (!self.validarProductos()) {
-                    SeparacionService.mostrarAlerta("Error", "Hay productos pendientes sin una previa justificacion");
+                if (productos.length > 0) {
+                    self.mostrarProductosSinCajaJustificacion(productos);
                     return;
                 }
 
@@ -598,20 +598,20 @@ define(["angular", "js/controllers",
                             self.generarAuditar();
 
                         } else {
-                            self.mostrarProductosSinCaja(productosInvalidos);
+                            self.mostrarProductosSinCajaJustificacion(productosInvalidos);
                         }
                     }
                 });
             };
             
-            self.mostrarProductosSinCaja = function(productosInvalidos){
+            self.mostrarProductosSinCajaJustificacion = function(productosInvalidos){
                 $scope.productos = productosInvalidos; 
                 $scope.opts = {
                     backdrop: 'static',
                     dialogClass: "editarproductomodal",
                      template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="cerrarGenerarAuditar();">&times;</button>\
-                                    <h4 class="modal-title">Los siguientes productos no tiene caja asignada</h4>\
+                                    <h4 class="modal-title">Productos sin caja asignada o sin justificación.</h4>\
                                 </div>\
                                 <div class="modal-body row">\
                                     <div class="col-md-12">\
@@ -648,8 +648,8 @@ define(["angular", "js/controllers",
              * @returns {Boolean}
              */
             self.validarProductos = function() {
-                var validarLote = true;
                 var productos = $scope.rootDetalle.pedido.getProductos();
+                var _productosInvalidos = [];
                 
                 for(var i in  productos){
                     var justificacion = productos[i].getJustificacion(); 
@@ -665,12 +665,10 @@ define(["angular", "js/controllers",
                    
                     if(justificacion === null || justificacion === undefined || justificacion.length === 0 &&
                       cantidadIngresada < producto.getCantidadSolicitada()){
-                       
-                        validarLote = false;
-                        break;
+                        _productosInvalidos.push(producto);
                     }                                       
                 }                           
-                return validarLote;
+                return _productosInvalidos;
             };
             
            

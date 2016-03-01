@@ -22,11 +22,34 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.bodegaDestino;
             this.temporalId = 0;
             this.productoSeleccionado = {};
+            this.prefijo;
+            this.numero;
+            this.productosPedido = [];
         }
 
-         PedidoAuditoria.prototype = Object.create(Pedido.getClass().prototype);
+        PedidoAuditoria.prototype = Object.create(Pedido.getClass().prototype);
 
-        // Pedidos
+        
+        
+        
+        PedidoAuditoria.prototype.setPrefijo = function (prefijo) {
+             this.prefijo=prefijo;
+        };
+        
+        PedidoAuditoria.prototype.getPrefijo = function () {
+             return this.prefijo;
+        };
+        
+        PedidoAuditoria.prototype.setNumero = function (numero) {
+             this.numero=numero;
+        };
+        
+        PedidoAuditoria.prototype.getNumero = function () {
+             return this.numero;
+        };
+       
+       
+       
         
         PedidoAuditoria.prototype.agregarProducto = function(producto, validar_existencia) {
             
@@ -152,15 +175,18 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos, temporal, modeloLote) {
             for(var i in productos){
                 var _producto = productos[i];
+               
                 var producto = modeloProducto.get(_producto.codigo_producto, _producto.descripcion_producto);
                 var cantidadPendiente =  Number(_producto.cantidad_pendiente);
                 producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
                 producto.setCantidadPendiente(cantidadPendiente);
                 producto.setCodigoBarras(_producto.codigo_barras);
+                
+                producto.setEstado(_producto.estado);
                 if(_producto.justificacion){
                      producto.setJustificacion(_producto.justificacion);
                 }
-                
+               
                 if(!temporal){
                     
                     if(cantidadPendiente > 0){
@@ -194,6 +220,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             }
         };
         
+        
+        
+         PedidoAuditoria.prototype.agregarProductos = function (productosPedido) {
+                this.productosPedido.push(productosPedido);
+            };
+
+            PedidoAuditoria.prototype.obtenerProductos = function () {
+                return this.productosPedido;
+            };
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that
         this.get = function() {
             return new PedidoAuditoria();

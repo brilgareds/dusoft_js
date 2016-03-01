@@ -699,7 +699,8 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 b.tipo_estado_auditoria,\
                 b.cantidad_ingresada,\
                 COALESCE(b.auditado, '0') as auditado,\
-                a.tipo_producto as tipo_producto_id\
+                a.tipo_producto as tipo_producto_id,\
+                c.codigo_barras\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
@@ -728,6 +729,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
    then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
+       console.log("eroro >", err); 
        callback(err);
    });
 
@@ -1235,7 +1237,7 @@ PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_p
 PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino,
                                                            pagina, filtro, callback) {
     
-    console.log(">>>>---Datos Recibidos---<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    
     var sql_aux = "";
     var parametros = {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:empresa_destino, 
                             5:centro_destino, 6:bodega_destino, 7:"%" + filtro.termino_busqueda + "%"};
@@ -1254,7 +1256,23 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
         sql_filtro =  " and a.codigo_producto "+G.constants.db().LIKE+" :7 ";
     }
     
-    console.log("sql aux ", sql_aux, pagina);
+    /***
+    * +Descripcion Campos para obtener la fecha actual
+    */
+    var fechaActual = new Date();
+    var dd = fechaActual.getDate();
+    var mm = fechaActual.getMonth()+1; //hoy es 0!
+    var yyyy = fechaActual.getFullYear();
+    
+    if(dd<10) {
+        dd='0'+dd
+    } 
+
+    if(mm<10) {
+        mm='0'+mm
+    } 
+    
+    fechaActual = yyyy+'-'+ mm +'-'+ dd;
     
     var sql = " b.codigo_producto,\
                 a.empresa_id,\
@@ -1289,8 +1307,12 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 b.subclase_id,\
                 b.porc_iva,\
                 b.tipo_producto_id,\
-                case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
-                        else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
+                (select case when coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) < 0 then 0\
+                    else coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) end as disponibilidad_bodega\
+                from  disponibilidad_productos(b.codigo_producto,'"+fechaActual+"','"+fechaActual+"') as (\
+                        cantidad_total_pendiente integer, total_solicitado INTEGER\
+                 )\
+               )as disponibilidad_bodega,\
                 coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
@@ -1298,36 +1320,6 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
                 inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
                 inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
-                left join (\
-		    select aa.empresa_id, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
-                    from(\
-                          select a.empresa_destino as empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente\
-                          from solicitud_productos_a_bodega_principal a\
-                          inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
-                          where b.cantidad_pendiente > 0\
-                          group by 1, 2\
-                          union\
-                          SELECT\
-                          a.empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
-                          FROM ventas_ordenes_pedidos a\
-                          inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                          where (b.numero_unidades - b.cantidad_despachada) > 0 and a.estado = '1'  \
-                          GROUP BY 1, 2\
-                       ) aa group by 1,2\
-		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto \
-                left join(\
-                   SELECT aa.empresa_id, aa.codigo_producto, /*aa.centro_destino, aa.bodega_destino,*/ SUM(aa.total_reservado) as total_solicitado FROM(\
-                        select b.codigo_producto, a.empresa_destino as empresa_id, /*a.centro_destino as centro_destino, a.bogega_destino as bodega_destino,*/ SUM(cantidad_solic)::integer as total_reservado\
-                        from  solicitud_bodega_principal_aux a\
-                        inner join solicitud_pro_a_bod_prpal_tmp b on a.farmacia_id = b.farmacia_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.usuario_id = b.usuario_id\
-                        group by 1,2\
-                        union\
-                        SELECT b.codigo_producto, a.empresa_id, /*a.centro_destino, a.bodega_destino,*/ sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
-                        INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
-                        WHERE  a.estado = '1'\
-                        GROUP BY 1,2\
-                    ) aa group by 1,2\
-                ) i on (a.empresa_id = i.empresa_id) and i.codigo_producto = c.codigo_producto\
                 left join (\
                     select\
                     a.codigo_producto,\

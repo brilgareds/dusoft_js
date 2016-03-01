@@ -18,6 +18,11 @@ define(["angular"], function(angular) {
                 'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/PlanillasDespachos/documentosDespachosPorFarmacia',
                 'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/PlanillasDespachos/documentosDespachosPorCliente',
                 'REPORTE_PLANILLA_DESPACHO': BASE_URL + '/PlanillasDespachos/reportePlanillaDespacho',
+                
+                'CANTIDADES_CAJA_NEVERA': BASE_URL + '/PlanillasDespachos/consultarCantidadCajaNevera',
+                'GESTIONAR_LIOS': BASE_URL + '/PlanillasDespachos/gestionarLios',
+                'LISTAR_DOCUMENTOS_OTRAS_SALIDAS' : BASE_URL + '/ValidacionDespachos/listarDocumentosOtrasSalidas',
+                'LISTAR_NUMERO_PREFIJO_OTRAS_SALIDAS' : BASE_URL + '/ValidacionDespachos/listarNumeroPrefijoOtrasSalidas'
             },
             'CIUDADES': {
                 'LISTAR_CIUDADES': BASE_URL + '/Ciudades/listar'
@@ -45,8 +50,8 @@ define(["angular"], function(angular) {
                 'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasFarmacias/despacharPlanilla',
                 'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasFarmacias/consultarPlanillaFarmacia',
                 'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasFarmacias/consultarDocumentosPlanillaFarmacia',
-                'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasFarmacias/eliminarDocumentoPlanillaFarmacia',                                
-                                        
+                'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasFarmacias/eliminarDocumentoPlanillaFarmacia'                               
+                                 
               
             },
             'FARMACIAS': {

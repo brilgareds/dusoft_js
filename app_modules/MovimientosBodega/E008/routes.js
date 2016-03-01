@@ -152,6 +152,44 @@ module.exports = function(app, di_container) {
         c_e008.imprimirDocumentoDespacho(req, res);
     });
     
+     /**
+     * @author Cristian Ardila
+     * @fecha  16/02/2016
+     * +Descripcion Servicio para consultar los despachos auditados
+     */
+    app.post('/api/movBodegas/E008/listarDespachosAuditados', function(req, res) {
+        c_e008.listarDespachosAuditados(req, res);
+    });
+    
+    /**
+     * @author Cristian Ardila
+     * @fecha  16/02/2016
+     * +Descripcion Servicio para consultar los despachos auditados
+     */
+    app.post('/api/movBodegas/E008/detalleDocumentoAuditado', function(req, res) {
+        c_e008.detalleDocumentoAuditado(req, res);
+    });
+    
+    /**
+     * @author Cristian Ardila
+     * @fecha  16/02/2016
+     * +Descripcion Servicio para consultar los pedidos de un documento
+     */
+    app.post('/api/movBodegas/E008/detallePedidoClienteDocumento', function(req, res) {
+        c_e008.detallePedidoClienteDocumento(req, res);
+    });
+    
+   /**
+     * @author Cristian Ardila
+     * @fecha  16/02/2016
+     * +Descripcion Servicio para consultar los pedidos de farmacia de un documento
+     */
+    app.post('/api/movBodegas/E008/detallePedidoFarmaciaDocumento', function(req, res) {
+        c_e008.detallePedidoFarmaciaDocumento(req, res);
+    });
+    
+    
+    
     // ======== FIN Auditoria de Documento de Despacho ====================
     
     
@@ -172,7 +210,23 @@ module.exports = function(app, di_container) {
         
     });    
       
+     // Consultar el documento de la tabla inventario movimientos
+    app.post('/api/movBodegas/E008/obtenerDocumento', function(req, res) {
+        
+        console.log("/api/movBodegas/E008/obtenerDocumento");
+        console.log("/api/movBodegas/E008/obtenerDocumento");
+        console.log("/api/movBodegas/E008/obtenerDocumento");
+        console.log("/api/movBodegas/E008/obtenerDocumento");
+        
+        c_e008.obtenerDocumento(req, res);
+    });  
     
+   app.post('/api/movBodegas/E008/consultarNumeroMayorRotulo', function(req, res) {
+       
+        c_e008.consultarNumeroMayorRotulo(req, res);
+    }); 
+    
+      
     //========================== FIN Despachos bodegas =========================
     
     

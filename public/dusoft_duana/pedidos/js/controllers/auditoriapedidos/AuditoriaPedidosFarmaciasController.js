@@ -129,7 +129,7 @@ define(["angular", "js/controllers",
                                 
                 if(localStorageService.get("auditoriaFarmacia")){
                     var numero = parseInt(localStorageService.get("auditoriaFarmacia"));
-                    console.log("buscar pedido de auditoria de separacion code 2 ", numero);
+                  
                     var documento =  $scope.obtenerDocumento(numero, 2);
                     that.mostrarDetalle(documento);
                 }

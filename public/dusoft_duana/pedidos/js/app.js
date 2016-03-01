@@ -25,6 +25,7 @@ define([
     "includes/classes/Usuario",
     "includes/http/Request",
     "includes/helpersdirectives/visualizarReporte",
+    "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",
     "models/pedidos/EmpresaPedido",
     "controllers/asignarpedidos/PedidosController",
@@ -35,7 +36,6 @@ define([
     "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController",
     
     //pedidos farmacias
-
     "models/generacionpedidos/pedidosfarmacias/EmpresaPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/PedidosFarmaciaController",
     "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoBaseController",
@@ -58,7 +58,19 @@ define([
     "controllers/auditoriapedidos/AuditoriaHTMLReportController",
     
     //Service notificaciones
-    "webNotification"
+    "webNotification",
+    
+    //Nuevos modelos para Opcion Despachos
+     "models/auditoriapedidos/DocumentoAuditado",
+     "models/auditoriapedidos/EmpresaDespacho",
+     
+    //Nuevo Controlador para el detalle de los EFC
+    "controllers/auditoriapedidos/AuditoriaDespachosDetalle",
+    "controllers/auditoriapedidos/AuditoriaDespachos",
+    
+    //NUevo servicio para AUditoriaDespachos
+    "services/auditoriadespacho/AuditoriaDespachoService",
+    
     
 ], function(angular) {
     /* App Module and its dependencies */
@@ -132,13 +144,17 @@ define([
                     templateUrl: "views/generacionpedidos/pedidosfarmacias/guardarpedido.html",
                     parent_name: "ListarPedidosFarmacias",
                     controller: "GuardarPedidoBaseController"
-                })
-                
-                 .state('DocumentoDespacho',{
+                }).state('DocumentoDespacho',{              
                     url: "/DocumentoDespacho",
                     templateUrl: "views/auditoriapedidos/AuditoriaHTMLReport.html",
                     parent_name: "AuditarPedidos",
                     controller: "AuditoriaHTMLReportController"
+                }).state('AuditoriaDespachos', {
+                    url: "/AuditoriaDespachos",
+                    text: "Detalle de despachos auditados",
+                    templateUrl: "views/auditoriapedidos/AuditoriaDespachos.html",
+                    parent_name: "AuditarPedidos",
+                    controller: 'AuditoriaDespachosDetalle'
                 });
                 // URL's Pedidos Clientes
                 pedidos.stateProvider.state('ListarPedidosClientes', {

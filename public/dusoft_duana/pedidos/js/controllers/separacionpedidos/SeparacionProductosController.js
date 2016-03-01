@@ -32,7 +32,7 @@ define(["angular", "js/controllers",
                         $scope.filtros = [
                             {nombre: "Seleccionar", id: 0},
                             {nombre: "Justificar", id: 1},
-                            //No borrar {nombre: "Listar productos", id: 2},
+                            {nombre: "Listar productos", id: 2},
                             {nombre: "Refrescar", id: 3}
                         ];
 
@@ -71,7 +71,6 @@ define(["angular", "js/controllers",
                             var _producto = pedido[i];
                             
                            
-                            
                             if (!codigoBarras && _producto.getCodigoProducto() === $scope.rootSeparacion.filtro.termino) {
                                   
                                 index = i;
@@ -82,7 +81,7 @@ define(["angular", "js/controllers",
                                 break;
                             }
                         }
-                      
+                       
                         $scope.$emit("onMostarProductoEnPosicion", index);
                     };
 
@@ -356,7 +355,7 @@ define(["angular", "js/controllers",
 
                         //Se separaron todos los lotes
                         if (!producto && pedido.getTemporalId() !== 0) {
-                            SeparacionService.mostrarAlerta("Separación", "No hay mas productos por separar, favor revisar el detalle del temporal");
+                            AlertService.mostrarVentanaAlerta("Separación", "No hay mas productos por separar, favor revisar el detalle del temporal");
                             return;
                         }
 
@@ -497,18 +496,30 @@ define(["angular", "js/controllers",
                             {field: 'fecha_vencimiento', displayName: 'F. vencimiento'},
                             {field: 'existencia_actual', displayName: 'Existencia'},
                             {field: 'disponible', width: "10%", displayName: "Disponible"},
-                            {field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
+                            {field: 'opciones', displayName: "", cellClass: "txt-center", width: 80,
                                 cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.separado"  ng-click="onSeleccion(row.entity)">\n\
                                              <span class="glyphicon glyphicon-search"></span>\
-                                         </button>\n\
+                                         </button>\
+                                         <button class="btn btn-default btn-xs"  ng-click="duplicarLote(row.entity, row)">\n\
+                                             <span class="glyphicon glyphicon-plus"></span>\n\
+                                         </button>\
                                      </div>'
                             }
 
                         ]
+                        
+                    };
+                    
+                     $scope.duplicarLote = function(lote, row) {
+
+                        var _lote = angular.copy(lote);
+                        _lote.setItemId(0);
+                        _lote.setNumeroCaja(0);
+                        _lote.setSeparado(false);
+                        $scope.rootSeparacion.empresa.getPedidoSeleccionado().getProductoSeleccionado().getLotesSeleccionados().splice(row.rowIndex + 1, 0, _lote);
 
                     };
-
 
                     $scope.onSeleccion = function(lote) {
                         self.ventanaCantidad(lote);
@@ -577,7 +588,7 @@ define(["angular", "js/controllers",
                         }
 
                         if (!mostrar) {
-                            SeparacionService.mostrarAlerta("Error", "No se han separado productos");
+                            AlertService.mostrarVentanaAlerta("Error", "No se han separado productos");
                             return;
                         }
 

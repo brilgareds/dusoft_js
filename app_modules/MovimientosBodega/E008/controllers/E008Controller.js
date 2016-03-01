@@ -1747,7 +1747,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                             return;
                         }
  
-                        __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, function(err, cajas_no_cerradas) {
+                        __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, "1", function(err, cajas_no_cerradas) {
 
                             if (err) {
                                 res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -1798,7 +1798,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                         that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado, auditor_id, req.session.user.usuario_id, function(err, rows) {
 
                                             that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
-                                                that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
+                                                that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, '1', function(err, rows) {
 
                                                     if (err) {
                                                         console.log("========================================== generar documento despacho clientes error generado ============================");
@@ -1912,7 +1912,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                         }
                     }
 
-                    __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, function(err, cajas_no_cerradas) {
+                    __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, '2', function(err, cajas_no_cerradas) {
 
                         if (err) {
                             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -1966,7 +1966,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                                             req.session.user.usuario_id, function(err, rows) {
 
                                         that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
-                                            that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
+                                            that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, '2', function(err, rows) {
                                                 if (err) {
                                                     console.log("========================================== generar documento despacho clientes error generado ============================");
                                                     console.log(err);
@@ -2000,13 +2000,40 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
     });
 
+};
 
+E008Controller.prototype.consultarNumeroMayorRotulo = function(req, res){
+   var that = this;
 
+    var args = req.body.data;
+    
+    console.log(">>>>>>>>>>>>>>>> ",args.documento_temporal);
+    
+    if (!args.documento_temporal || !args.documento_temporal.numero_pedido || args.documento_temporal.tipo === undefined
+        || !args.documento_temporal.tipo_pedido ) {
+        res.send(G.utils.r(req.url, 'Los datos obligatorios no esta definidos', 404, {}));
+        return;
+    }
+    
+    var documento_temporal_id = args.documento_temporal.documento_temporal || 0;
+    var numero_pedido = args.documento_temporal.numero_pedido;
+    var tipo = args.documento_temporal.tipo;
+    var numeroSiguiente = 1;
+    var tipoPedido = args.documento_temporal.tipo_pedido;
+    
+    that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo,tipoPedido, function(err, rotuloMayor){
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+            return;
+        }
+        console.log("numero actual de la caja ", rotuloMayor);
+        numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
 
-
-
+        res.send(G.utils.r(req.url, "Numero de caja siguiente", 200, {movimientos_bodegas: {numero: numeroSiguiente}}));
+    });
 
 };
+
 
 /**
  * +Descripcion: Metodo encargado de validar Validar que la caja este abierta
@@ -2021,8 +2048,8 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var args = req.body.data;
     
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
-        args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
+        args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined || !args.documento_temporal.tipo_pedido) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo de pedido o tipo no estan definidos', 404, {}));
         return;
     }
 
@@ -2052,6 +2079,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var contenido = "";
     var usuario_id = req.session.user.usuario_id;
     var tipo = args.documento_temporal.tipo;
+    var tipoPedido = args.documento_temporal.tipo_pedido;
     
     /**
      * +Descripcion: funcion que consulta el numero mayor de rotulo en la tabla 
@@ -2060,19 +2088,32 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
      * @param {String} numero_pedido Es el numero de pedido
      * @param {integer} tipo si es caja o nevera
      */
-    that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
+    
+    /*that.m_e008.validarTemporal(numero_pedido, tipoPedido, function(err, temporal){
+        if(err || temporal.length === 0){
+            var msj = "Error consultado el temporal del usuario";
+            
+            if(temporal.length === 0){
+                msj = "No se encontro el temporal del usuario";
+            }
+            
+            res.send(G.utils.r(req.url, msj, 500, {movimientos_bodegas: {}}));
+            return;
+        }*/
+        
+    that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, tipoPedido, function(err, rotuloMayor){
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;
         }
-        
+
         var numeroSiguiente = parseInt(rotuloMayor[0].numero_caja) + 1;
-        
+
         if(numeroSiguiente < numero_caja){
             res.send(G.utils.r(req.url, 'El número debe ser consecutivo, el número siguiente debe ser '+numeroSiguiente, 403, {movimientos_bodegas: {caja_valida: false}}));
             return;
         }
-        
+
         /**
          * +Descripcion: Se consultar la existencia del rotulo de la caja en la
          * tabla inv_rotulo_caja
@@ -2080,7 +2121,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
          * @param {String} numero_pedido Es el numero de pedido
          * @param {integer} tipo si es caja o nevera
          */
-        that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
+        that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, tipoPedido, function(err, rotulos_cajas) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                 return;
@@ -2104,7 +2145,8 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
                     return;
                 } else {
                     // Crear
-                    that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id,tipo, function(err, rotulo_caja) {
+                    that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, 
+                                                    cantidad, ruta, contenido, numero_caja, usuario_id, tipo, tipoPedido, function(err, rotulo_caja) {
                         if (err) {
                             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                             return;
@@ -2117,6 +2159,8 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
             }
         });
     });
+   // });
+    
     
 };
 
@@ -2128,8 +2172,8 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined 
-        || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
-        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
+        || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined || !args.documento_temporal.tipo_pedido ) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja, tipo pedido o tipo no estan definidos', 404, {}));
         return;
     }
 
@@ -2144,9 +2188,10 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
     var numero_caja = args.documento_temporal.numero_caja;
     var tipo = args.documento_temporal.tipo;
+    var tipoPedido = args.documento_temporal.tipo_pedido;
     
 
-    that.m_e008.cerrar_caja(documento_temporal_id, numero_caja, tipo, function(err, rows, result) {
+    that.m_e008.cerrar_caja(documento_temporal_id, numero_caja, tipo, tipoPedido, function(err, rows, result) {
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error cerrando la caja', 500, {documento_temporal: {}}));
             return;
@@ -2220,7 +2265,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
         res.send(G.utils.r(req.url, 'El numero, empresa o prefijo NO estan vacios', 404, {}));
         return;
     }
-
+    
     var numero = args.movimientos_bodegas.numero;
     var prefijo = args.movimientos_bodegas.prefijo;
     var empresa = args.movimientos_bodegas.empresa;
@@ -2423,9 +2468,13 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 }
 ;
 
-function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, callback) {
-
-
+function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero_pedido, tipoPedido, callback) {
+    
+    //Temporalmente se inactiva la funcion de cerrar las cajas
+    callback(false, []);
+    
+    return;
+    
     that.m_movimientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
 
         if (err) {
@@ -2438,7 +2487,7 @@ function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero
 
             detalle_documento_temporal.forEach(function(detalle) {
 
-                that.m_e008.consultar_rotulo_caja(documento_temporal_id, detalle.numero_caja, numero_pedido, function(err, caja_producto) {
+                that.m_e008.consultar_rotulo_caja(documento_temporal_id, detalle.numero_caja, numero_pedido, tipoPedido, function(err, caja_producto) {
                     if (err) {
                         callback(err);
                         return;
@@ -2563,6 +2612,339 @@ function __generarPdfDespacho(datos, callback) {
     });
 }
 
+
+E008Controller.prototype.obtenerDocumento = function(req, res) {
+    
+    var that = this;
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined) {
+          res.send(G.utils.r(req.url, 'Variable (documento_temporal) no esta definida', 404, {}));
+          return;
+    }
+    
+    if (args.documento_temporal.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (args.documento_temporal.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el prefijo', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (args.documento_temporal.numero === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    
+    var empresa_id = args.documento_temporal.empresa_id;
+    var prefijo = args.documento_temporal.prefijo;
+    var numero = args.documento_temporal.numero;
+ 
+    var obj = {empresa_id: empresa_id,
+               prefijo: prefijo,
+               numero: numero,
+               
+          };
+     
+     G.Q.ninvoke(that.m_e008,'obtenerDocumento', obj).then(function(resultado){ 
+         
+         if(resultado.length>0){
+             
+            return res.send(G.utils.r(req.url, 'Documento existente', 200, {documento_temporal: resultado}));
+         
+         }else{
+             
+            return res.send(G.utils.r(req.url, 'No se encuentra el documento ', 404, {documento_temporal: {}}));   
+          
+         }
+         
+     }).fail(function(err){ 
+         
+             res.send(G.utils.r(req.url, 'Error en la consulta ', 500, {documento_temporal: {}}));
+       
+    }).done();
+   
+};
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para listar los despachos
+ *              Auditados
+ */
+E008Controller.prototype.listarDespachosAuditados = function(req, res) {
+  
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (DespachosAuditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+    var fechaInicial = args.despachos_auditados.fechaInicial;
+    var fechaFinal = args.despachos_auditados.fechaFinal;
+    var paginaActual = args.despachos_auditados.paginaactual;
+    var registroUnico = args.despachos_auditados.registroUnico;
+
+
+    var obj = {
+        fechaInicial: fechaInicial,
+        fechaFinal: fechaFinal,
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+        paginaActual: paginaActual,
+        registroUnico: registroUnico
+    };
+    
+    G.Q.ninvoke(that.m_e008, 'listarDespachosAuditados', obj).then(function(resultado) {
+
+        return res.send(G.utils.r(req.url, 'Lista de despachos audtados', 200, {despachos_auditados: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado los de despachos', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
+ *              un documento
+ */
+E008Controller.prototype.detalleDocumentoAuditado = function(req, res) {
+   
+    
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (DespachosAuditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+
+
+
+    var obj = {
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+    };
+    
+    G.Q.ninvoke(that.m_e008, 'detalleDocumentoAuditado', obj).then(function(resultado) {
+
+        return res.send(G.utils.r(req.url, 'Detalle de documento auditados', 200, {despachos_auditados: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado el detalle', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
+ *              de los pedidos de un documento
+ */
+E008Controller.prototype.detallePedidoClienteDocumento = function(req, res) {
+   
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (despachos_auditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+
+
+
+    var obj = {
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+    };
+    var status = {};   
+    
+    G.Q.ninvoke(that.m_e008, 'detallePedidoClienteDocumento', obj).then(function(resultado) {
+        
+         var def = G.Q.defer();  
+     
+        if(resultado.length > 0){
+             
+             status.codigo = 200;
+             status.mensaje = 'Detalle de pedidos cliente del documento auditados';
+           
+         }else{
+            
+             status.codigo = 403;
+             status.mensaje = 'El pedido no tiene productos asignados';
+             def.resolve();
+        }
+        res.send(G.utils.r(req.url, status.mensaje, status.codigo, {despachos_auditados: resultado}));
+
+    
+        //return res.send(G.utils.r(req.url, 'Detalle de pedidos cliente del documento auditados', 200, {despachos_auditados: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
+ *              de los pedidos de un documento
+ */
+E008Controller.prototype.detallePedidoFarmaciaDocumento = function(req, res) {
+   
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (despachos_auditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+
+
+
+    var obj = {
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+    };
+    var status = {}; 
+    
+    G.Q.ninvoke(that.m_e008, 'detallePedidoFarmaciaDocumento', obj).then(function(resultado) {
+        
+       var def = G.Q.defer();  
+     
+        if(resultado.length > 0){
+             
+             status.codigo = 200;
+             status.mensaje = 'Detalle del pedido farmacia del documento auditados';
+           
+         }else{
+            
+             status.codigo = 403;
+             status.mensaje = 'El pedido no tiene productos asignados';
+             def.resolve();
+        }
+        res.send(G.utils.r(req.url, status.mensaje, status.codigo, {despachos_auditados: resultado}));
+
+       
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
 
 
 

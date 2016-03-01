@@ -33,6 +33,14 @@ define(["angular", "js/models", "includes/classes/Lote"], function(angular, mode
             return this.tipoCaja;
         };
         
+        LoteProductoPedido.prototype.setSeleccionado = function(seleccionado){
+            this.seleccionado = seleccionado;
+        };
+        
+        LoteProductoPedido.prototype.getSeleccionado = function(){
+            return this.seleccionado;
+        };
+        
         
         LoteProductoPedido.prototype.setNumeroCaja = function(numero_caja){
             this.numero_caja = numero_caja;

@@ -8,6 +8,14 @@ define(["angular"], function(angular) {
     var data = {
         'API': {
             'BASE_URL': BASE_URL,
+            'DESPACHOS_AUDITADOS': {
+                "LISTAR_EMPRESAS": BASE_URL + "/ValidacionDespachos/listarempresas",
+                'LISTAR_DESPACHOS_AUDITADOS': BASE_URL + '/movBodegas/E008/listarDespachosAuditados',
+                'DETALLE_DOCUMENTO_AUDITADO': BASE_URL + '/movBodegas/E008/detalleDocumentoAuditado',
+                'DETALLE_PEDIDO_CLIENTE_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoClienteDocumento',
+                'DETALLE_PEDIDO_FARMACIA_DOCUMENTO' : BASE_URL + '/movBodegas/E008/detallePedidoFarmaciaDocumento'
+                
+            },
             'DOCUMENTOS_TEMPORALES': {
                 'LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES': BASE_URL + '/movBodegas/E008/consultarDocumentosTemporalesClientes',
                 'LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS': BASE_URL + '/movBodegas/E008/consultarDocumentosTemporalesFarmacias',
@@ -31,7 +39,8 @@ define(["angular"], function(angular) {
                 'CONSULTAR_ITEMS_POR_PRODUCTO': BASE_URL + '/movBodegas/E008/buscarItemsTemporal',
                 'ACTUALIZAR_CAJA_TEMPORALES': BASE_URL + '/movBodegas/E008/actualizarCajaDeTemporales',
                 'IMPRIMIR_ROTULO_CLIENTES': BASE_URL + '/movBodegas/E008/imprimirRotuloClientes',
-                'IMPRIMIR_ROTULO_FARMACIAS': BASE_URL + '/movBodegas/E008/imprimirRotuloFarmacias'
+                'IMPRIMIR_ROTULO_FARMACIAS': BASE_URL + '/movBodegas/E008/imprimirRotuloFarmacias',
+                'NUMERO_MAYOR_ROTULO' : BASE_URL + '/movBodegas/E008/consultarNumeroMayorRotulo'
             },
             'PEDIDOS': {
                 CLIENTES: {

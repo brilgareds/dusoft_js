@@ -1274,7 +1274,90 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     
     fechaActual = yyyy+'-'+ mm +'-'+ dd;
     
-    var sql = " b.codigo_producto,\
+     var sql = " b.codigo_producto,\
+                a.empresa_id,\
+                a.centro_utilidad,\
+                a.bodega,\
+                f.descripcion as descripcion_laboratorio,\
+                e.descripcion as descripcion_molecula,\
+                fc_descripcion_producto(b.codigo_producto) as nombre_producto,\
+                b.unidad_id,\
+                b.estado,\
+                b.codigo_invima,\
+                b.contenido_unidad_venta,\
+                b.sw_control_fecha_vencimiento,\
+                a.existencia_minima,\
+                a.existencia_maxima,\
+                a.existencia::integer as existencia,\
+                c.existencia as existencia_total,\
+                c.costo_anterior,\
+                c.costo,\
+                CASE WHEN c.costo > 0 THEN ROUND(((c.precio_venta/c.costo)-1) * 100) ELSE NULL END as porcentaje_utilidad,\
+                c.costo_penultima_compra,\
+                c.costo_ultima_compra,\
+                c.precio_venta_anterior,\
+                c.precio_venta,\
+                c.precio_minimo,\
+                c.precio_maximo,\
+                c.sw_vende,\
+                c.grupo_contratacion_id,\
+                c.nivel_autorizacion_id,\
+                b.grupo_id,\
+                b.clase_id,\
+                b.subclase_id,\
+                b.porc_iva,\
+                b.tipo_producto_id,\
+                case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
+                        else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
+                coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
+                from existencias_bodegas a\
+                inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
+                inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
+                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
+                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
+                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
+                left join (\
+		    select aa.empresa_id, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
+                    from(\
+                          select a.empresa_destino as empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente\
+                          from solicitud_productos_a_bodega_principal a\
+                          inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
+                          where b.cantidad_pendiente > 0\
+                          group by 1, 2\
+                          union\
+                          SELECT\
+                          a.empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
+                          FROM ventas_ordenes_pedidos a\
+                          inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
+                          where (b.numero_unidades - b.cantidad_despachada) > 0 and a.estado = '1'  \
+                          GROUP BY 1, 2\
+                       ) aa group by 1,2\
+		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto \
+                left join(\
+                   SELECT aa.empresa_id, aa.codigo_producto, /*aa.centro_destino, aa.bodega_destino,*/ SUM(aa.total_reservado) as total_solicitado FROM(\
+                        select b.codigo_producto, a.empresa_destino as empresa_id, /*a.centro_destino as centro_destino, a.bogega_destino as bodega_destino,*/ SUM(cantidad_solic)::integer as total_reservado\
+                        from  solicitud_bodega_principal_aux a\
+                        inner join solicitud_pro_a_bod_prpal_tmp b on a.farmacia_id = b.farmacia_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.usuario_id = b.usuario_id\
+                        group by 1,2\
+                        union\
+                        SELECT b.codigo_producto, a.empresa_id, /*a.centro_destino, a.bodega_destino,*/ sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
+                        INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
+                        WHERE  a.estado = '1'\
+                        GROUP BY 1,2\
+                    ) aa group by 1,2\
+                ) i on (a.empresa_id = i.empresa_id) and i.codigo_producto = c.codigo_producto\
+                left join (\
+                    select\
+                    a.codigo_producto,\
+                    a.existencia::integer as existencias_farmacia\
+                    from existencias_bodegas a\
+                    where a.empresa_id= :4 and a.centro_utilidad = :5 and a.bodega = :6 \
+                    ORDER BY 1 ASC \
+                ) j on j.codigo_producto = c.codigo_producto\
+                where a.empresa_id= :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + sql_filtro;
+
+
+    /*var sql = " b.codigo_producto,\
                 a.empresa_id,\
                 a.centro_utilidad,\
                 a.bodega,\
@@ -1328,7 +1411,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                     where a.empresa_id= :4 and a.centro_utilidad = :5 and a.bodega = :6 \
                     ORDER BY 1 ASC \
                 ) j on j.codigo_producto = c.codigo_producto\
-                where a.empresa_id= :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + sql_filtro;
+                where a.empresa_id= :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + sql_filtro;*/
 
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).

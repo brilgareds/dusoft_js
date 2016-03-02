@@ -1,16 +1,26 @@
 <div ng-controller="ListarRecepcionesController">
 
     <div class="row">
-        <div class="col-md-3">
+      
+        <!-- <div class="col-md-3">
             <p class="input-group">
 
                 <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_recepcion()">
                     <span class="glyphicon glyphicon-plus"></span> Generar Recepción
                 </button>
             </p>
-        </div>
-
-        <div class="col-md-3">
+        </div>//-->
+        
+        <div class="col-md-2 col-lg-1">
+            <p class="input-group">
+                 <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_recepcion()">
+                    <span class="glyphicon glyphicon-plus"></span> Crear Recepción
+                </button>          
+            </p> 
+        </div> 
+        
+        
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="datos_view.fecha_inicial" is-open="datos_view.datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
@@ -21,7 +31,7 @@
             </p>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="datos_view.fecha_final" is-open="datos_view.datepicker_fecha_final" min="fecha_inicial"  readonly  close-text="Cerrar"

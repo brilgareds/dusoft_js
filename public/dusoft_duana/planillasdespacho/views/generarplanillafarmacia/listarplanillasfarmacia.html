@@ -34,8 +34,44 @@
                 </p>
             </div>
 
+            
+       <div class="col-md-3 pull-right">                                
 
-            <div ng-class="contenedorBuscador">                                
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" 
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="filtro in filtros">
+                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    
+                    <button ng-show="visibleListaEstados" type="button" 
+                            class="btn btn-default dropdown-toggle " 
+                            data-toggle="dropdown" 
+                            aria-haspopup="true" aria-expanded="false" >{{filtroEstado.nombre}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="estado in filtrosEstados">
+                            <a href="javascript:void(0)" ng-click="onSeleccionEstadoFiltro(estado)">{{estado.nombre}}</a>
+                        </li>
+                    </ul>
+                    
+                    <input ng-show="visibleBuscador" 
+                           type="text" 
+                           class="form-control" 
+                           ng-keypress="buscador_planillas_despacho($event, termino_busqueda);"  
+                           ng-model="datos_view.termino_busqueda" 
+                           placeholder="Buscar" name="" id="" />
+                    <div class="input-group-btn" ng-show="visibleBotonBuscador" >
+                        <button class="btn btn-default pull-right" type="submit" ng-click="buscar_planillas_despacho( termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+                   
+                </div> 
+        <!--     <div ng-class="contenedorBuscador">                                
 
                 <div class="input-group">
                     <div class="input-group-btn">
@@ -75,13 +111,17 @@
 
 
 
+            </div> //--> 
             </div>
+       
 
+       
+
+
+        <div class="table-responsive" >
+           <div class="defaultGrid grid-responsive"  ng-grid="lista_planillas_farmacia"></div>
         </div>
-
-
-
-        <div class="defaultGrid" ng-grid="lista_planillas_farmacia" > </div>
+       <!-- <div class="defaultGrid" ng-grid="lista_planillas_farmacia" > </div> //-->
 
         </br>
 

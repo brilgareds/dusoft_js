@@ -133,6 +133,8 @@ define(["angular",
                 data: 'Empresa.getPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "3%",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +

@@ -74,7 +74,9 @@ define(["angular",
             $scope.lista_pedidos_farmacias = {
                 data: 'Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
-                enablehightlight: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "3%",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='habilitar_asignacion_pedidos(row.entity)'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},

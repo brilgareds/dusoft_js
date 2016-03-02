@@ -68,6 +68,8 @@ define(["angular", "js/controllers",
                 data: 'rootSeparacionClientes.empresa.getPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'numero_pedido', displayName: 'Pedido No',width:100},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente', 

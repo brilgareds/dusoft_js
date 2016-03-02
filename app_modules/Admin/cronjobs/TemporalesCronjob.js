@@ -2,7 +2,7 @@ var TemporalesCronjob = function(m_cronjob) {
    var that = this;
    this.m_cronjob = m_cronjob;
           
-   that.iniciar();
+  // that.iniciar();
 
 };
 

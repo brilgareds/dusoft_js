@@ -118,6 +118,8 @@ var cluster = require('cluster'),
         sub = redis.createClient(),
         client = redis.createClient();
 
+G.cronJob = require('cron-cluster')(client).CronJob
+
 if (cluster.isMaster) {
 
     var numCPUs = require('os').cpus().length;

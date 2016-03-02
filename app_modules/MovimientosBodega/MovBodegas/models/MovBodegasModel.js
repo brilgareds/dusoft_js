@@ -580,7 +580,8 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
                     prefijo, \
                     numero, \
                     centro_utilidad, \
-                    bodega, codigo_producto, \
+                    bodega, \
+                    codigo_producto, \
                     cantidad, \
                     porcentaje_gravamen, \
                     total_costo, \

@@ -29,6 +29,8 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.pedido;
                 this.tipo_pedido;
                 this.pedidos =[];
+                this.bodegaDestino;
+                this.empresaDestino;
             };
             
 
@@ -44,6 +46,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 return this.pedido;
             };
             
+            DocumentoAuditado.prototype.setBodegaDestino = function (bodegaDestino) {
+               this.bodegaDestino = bodegaDestino;
+            };
+            
+            DocumentoAuditado.prototype.getBodegaDestino = function () {
+                return this.bodegaDestino;
+            };
+             
             DocumentoAuditado.prototype.setTipoPedido = function (tipo_pedido) {
                this.tipo_pedido = tipo_pedido;
             };
@@ -71,6 +81,14 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoAuditado.prototype.getEmpresaId = function () {
                 return this.empresaId;
+            };
+
+            DocumentoAuditado.prototype.setEmpresaDestino = function (empresaDestino) {
+               this.empresaDestino = empresaDestino;
+            };
+            
+            DocumentoAuditado.prototype.getEmpresaDestino = function () {
+                return this.empresaDestino;
             };
           
             DocumentoAuditado.prototype.setEmpresaDestino = function (empresaDestino) {

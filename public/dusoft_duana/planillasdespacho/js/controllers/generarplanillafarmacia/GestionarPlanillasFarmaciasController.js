@@ -453,13 +453,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 enableRowSelection: false,
                // showFooter: true,
                 showFilter: true,
-                footerTemplate: '<div class="row col-md-12">\
+                footerTemplate: '<br><div class="row col-md-12">\
                                     <div class="col-md-3 pull-right">\
                                         <table class="table table-clear">\
                                             <tbody>\
                                                 <tr>\
                                                     <td class="left"><strong>Total Cajas</strong></td>\
-                                                    <td class="right">{{ planilla.get_cantidad_cajas() }}</td>    \
+                                                    <td class="right">{{ planilla.get_cantidad_cajas() }}</td>\
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>Total Neveras</strong></td>\
@@ -482,7 +482,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 ]
             };
-
 
             that.validarEmpresa();
 

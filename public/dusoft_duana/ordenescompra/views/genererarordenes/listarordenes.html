@@ -1,21 +1,18 @@
 <div ng-controller="ListarOrdenesController">
 
     <div class="row">        
-
-       <div class="pull-left btn-principal btnOpcionesOrdenCompra" >  
-       
-        <div class="input-group">
-             <div class="input-group-btn">
-                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Seleccioar <span class="caret"></span></button>
-                 <ul class="dropdown-menu">
-                     <li>
-                         <a href="javascript:void(0)" ng-click="crear_orden_compra()">Generar orden de compra</a>
-                         <a href="javascript:void(0)" ng-click="onSubirArchivoOrdenes(filtro)" ng-if="opciones.sw_subir_ordenes_masivas">Subir archivo de ordenes</a>
-                     </li>
-                 </ul>
-             </div>
-         </div>
-       </div>
+        <p class="input-group">
+             <div class="col-md-1" >             
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Seleccionar <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="javascript:void(0)" ng-click="crear_orden_compra()">Generar orden de compra</a>
+                        <a href="javascript:void(0)" ng-click="onSubirArchivoOrdenes(filtro)" ng-if="opciones.sw_subir_ordenes_masivas">Subir archivo de ordenes</a>
+                    </li>
+                </ul>
+             </div>  
+         </p> 
+        
         <div class="col-md-2">
             <p class="input-group">
 

@@ -113,6 +113,8 @@ define(["angular", "js/controllers",
                 data: 'Empresa.get_planillas()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'get_numero_guia()', displayName: '# Guía', width: "5%"},
                     {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "15%"},

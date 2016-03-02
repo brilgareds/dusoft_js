@@ -45,8 +45,11 @@ define(["angular", "js/controllers", "controllers/OperariosBodega/Administracion
             //definicion y delegados del Tabla de pedidos clientes
             $scope.lista_operarios_bodega = {
                 data: 'operarios',
-                enableColumnResize: true,
                 multiSelect: false,
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'nombre_operario', displayName: 'Nombre Operario'},
                     {field: 'descripcion_estado', displayName: 'Estado'},

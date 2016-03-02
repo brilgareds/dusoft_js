@@ -14,21 +14,21 @@
                     <div class="panel-body">                    
                         <div class="row">
                             <div class="col-md-4">
-                                <fieldset>
-                                    <legend>Empresas</legend>  
-                                    <p class="input-group contenedorfiltrocombobox">
-
-                                    <ui-select ng-model="planilla.empresa"  
-                                               theme="select2" 
-                                               class="form-control selectgeneral pull-left" 
-                                               ng-disabled="planilla.get_numero_guia() > 0">
-                                        <ui-select-match  placeholder="Seleccionar empresas" >{{ $select.selected.getNombre()}}</ui-select-match>
-                                        <ui-select-choices  refresh-delay="0" repeat="empresa in Empresa.obtenerEmpresasFiltradasCodigo(EmpresaOrigen) | filter:$select.search">
-                                            {{ empresa.getNombre() }}
-                                        </ui-select-choices>
-                                    </ui-select> </p>       
-                                </fieldset>                                                           
-                                  
+                                <div class="col-md-6">
+                                    <fieldset>
+                                      <legend>Empresas</legend>  
+                                       
+                                         <ui-select ng-model="planilla.empresa"  
+                                                   theme="select2" 
+                                                   class="form-control selectgeneral pull-left" 
+                                                   ng-disabled="planilla.get_numero_guia() > 0">
+                                            <ui-select-match  placeholder="Seleccionar empresas" >{{ $select.selected.getNombre()}}</ui-select-match>
+                                            <ui-select-choices  refresh-delay="0" repeat="empresa in Empresa.obtenerEmpresasFiltradasCodigo(EmpresaOrigen) | filter:$select.search">
+                                                {{ empresa.getNombre() }}
+                                            </ui-select-choices>
+                                        </ui-select>     
+                                    </fieldset>                                                           
+                                 </div>  
                             </div>                        
                             <div class="col-md-4">
                                 <div class="col-md-6">
@@ -57,24 +57,24 @@
                                         </div>
                                     </fieldset>
                                 </div>
-
-
                             </div>
                             <div class="col-md-4">
-                                <fieldset>
-                                    <legend>Fecha</legend> 
-                                    <div class="row">
-                                        <div class="col-md-7" style="margin-top: -14px">  
-                                            <h3><strong>{{planilla.get_fecha_registro()}}</strong></h3>
+                                <div class="col-md-6">
+                                    <fieldset>
+                                        <legend>Fecha</legend> 
+                                        <div class="row">
+                                            <div class="col-md-7" style="margin-top: -14px">  
+                                                <h3><strong>{{planilla.get_fecha_registro()}}</strong></h3>
+                                            </div>
                                         </div>
-                                    </div>
-                                </fieldset>
+                                    </fieldset>
+                                 </div>
                             </div>
                         </div>
                         <br>
                         <div class="row">  
                             <div class="col-md-4">
-
+                                <div class="col-md-12">
                                 <fieldset>
                                     <legend>Observación</legend>                                 
                                     <div class="row">  
@@ -83,9 +83,10 @@
                                         </div>
                                     </div>
                                 </fieldset>
+                                </div>
                             </div>
                             <div class="col-md-4">
-
+                                 <div class="col-md-6">
                                 <fieldset>
                                     <legend>Conductor</legend>                                 
                                     <div class="row">  
@@ -94,31 +95,36 @@
                                         </div>
                                     </div>
                                 </fieldset>
+                                </div>
                             </div>
                             <div class="col-md-4">
-                                <fieldset>
-                                    <legend>Estado</legend> 
-                                    <div class="row">
-                                        <div class="col-md-7" style="margin-top: -14px">  
-                                            <h3><strong>{{planilla.get_descripcion_estado()}}</strong></h3>
-                                        </div>
-                                    </div>
-                                </fieldset>
+                                <div class="col-md-6">
+                                        <fieldset>
+                                            <legend>Estado</legend> 
+                                            <div class="row">
+                                                <div class="col-md-7" style="margin-top: -14px">  
+                                                    <h3><strong>{{planilla.get_descripcion_estado()}}</strong></h3>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                 </div>
                             </div>
                         </div>   
                         <br>
                         <br>
                         <div class="row">  
                             <div class="col-md-12">
-
+                                
                                 <div class="row">  
                                     <div class="">
                                         <div class="col-md-3">
+                                             <div class="col-md-6">
                                             <p class="input-group">
                                                 <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_farmacia()" ng-disabled="validar_btn_ingreso_documentos(planilla)" > 
                                                     <span class="glyphicon glyphicon-plus"></span> Buscar Remisiones
                                                 </button>
                                             </p>
+                                            </div>
                                         </div>
 
                                         <div class="col-md-3 pull-right">
@@ -128,8 +134,11 @@
                                     </div>
 
                                 </div>
-                                <div class="" style="height: 240px" ng-grid="listaDocumentosPlanillados" > </div>
-
+                                
+                                <div class="table-responsive" >
+                                     <div class="defaultGrid grid-responsive"  ng-grid="listaDocumentosPlanillados"></div>
+                                </div>
+                              
                           
                                 <div class="modal-footer col-md-12">
                                     <button class="btn btn-default" ng-click="cancelarPlanillaFarmacia()">
@@ -137,7 +146,7 @@
                                     </button>
                                    
                                     <button class="btn btn-default" ng-disabled="planilla.get_estado()=='2' || planilla.get_documentos().length === 0" ng-click="despacharPlanilla()">
-                                        <span class="glyphicon glyphicon-ok" ></span> Despachar
+                                        <span class="glyphicon glyphicon-ok" ></span> Despachar 
                                     </button>
                                 </div>                            
                             </div>

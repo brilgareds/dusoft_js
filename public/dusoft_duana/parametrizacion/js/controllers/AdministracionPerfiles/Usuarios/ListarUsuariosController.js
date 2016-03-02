@@ -18,11 +18,7 @@ define(["angular", "js/controllers", "js/models",
             $scope.opciones = (moduloActual)? moduloActual.opciones : {};
             $scope.variables = (moduloActual)? moduloActual.variables : {}; 
             $scope.foo = "Duana";
-            
-            console.log($scope.opciones.sw_crear_usuario && !$scope.foo === 'Duanas');
-            
-
-            
+           
             
             $scope.opcionesModulo = {
                 btnCrear : {
@@ -104,6 +100,8 @@ define(["angular", "js/controllers", "js/models",
                 data: 'rootUsuarios.usuarios',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'nombre', displayName: 'Nombre'},
                     {field: 'usuario', displayName: 'Usuario'},

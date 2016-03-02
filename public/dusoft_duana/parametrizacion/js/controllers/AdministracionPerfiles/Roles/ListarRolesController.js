@@ -88,9 +88,11 @@ define(["angular", "js/controllers", "js/models",
 
 
             $scope.listado_roles = {
-                data: 'rootRoles.empresaSeleccionada.getRoles()',
+                data: 'rootRoles.empresaSeleccionada.getRoles()',  
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                    /* {field: 'estado', displayName: "", cellClass: "txt-center", width: "30",
                              cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;" title="Activo"><i class="glyphicon glyphicon-ok icon-success"></i></div>\

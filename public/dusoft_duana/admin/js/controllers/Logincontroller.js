@@ -30,7 +30,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
                 Request.realizarRequest("/login", "POST", obj, function(datos) {
                     if (datos.status === 200) {
-                        console.log("datos >>>>>>>>>>>>>>> ", datos);
+                        
                         localStorageService.add("session", JSON.stringify(datos.obj.sesion));
                         $state.go("ControlPanel");
                         //window.location = "../kardex/";

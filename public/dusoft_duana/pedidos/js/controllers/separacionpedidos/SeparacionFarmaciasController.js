@@ -52,6 +52,8 @@ define(["angular", "js/controllers",
                 data: 'rootSeparacionFarmacias.empresa.getPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'numero_pedido', displayName: 'Pedido No'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},

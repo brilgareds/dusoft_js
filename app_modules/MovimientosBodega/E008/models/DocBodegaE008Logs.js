@@ -20,7 +20,7 @@ DocuemntoBodegaE008Logs.prototype.ingresarLogsSincroniacionDespachos = function(
         4:obj.prefijoDocumento,
         5:obj.numeroDocumento,
         6:JSON.stringify(obj.parametros),
-        7:JSON.stringify(obj.resultado),
+        7:JSON.stringify(obj.resultado) || "",
         8:obj.tipo
     };
     

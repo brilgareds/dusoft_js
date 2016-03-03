@@ -12,7 +12,7 @@ PedidosCronJobs.prototype.liberarReservas = function() {
     
     var job = new G.cronJob('*/5 * * * * *', function () {
         // Do some stuff here 
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>> liberar Reservas");
+        //console.log(">>>>>>>>>>>>>>>>>>>>>>>>>> liberar Reservas");
     });
     job.start()
 };

@@ -1945,7 +1945,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
         var def = G.Q.defer();
         if(pedido.farmacia_id === '01'){
             var obj = {
-                documentoId:1138,
+                documentoId:418,
                 prefijoDocumento : prefijo_documento,
                 numeroDocumento : numero_documento,
                 bodegasDoc : bodega,
@@ -2068,27 +2068,27 @@ function __sincronizarEncabezadoDocumento(obj, callback){
     obj.parametros = {
         usuarioId:"4608",
         bodegasDoc:obj.bodegasDoc,
-        documentoId:obj.documentoId,
-        observacion:obj.observacion
+        observacion:obj.observacion,    
+        documentoId:obj.documentoId
     };
     
     obj.tipo = '0';
     
-    console.log("enviando informacion >>>>>>>>>>>>>>>>>>>>>>>>> ", obj.parametros);
+    console.log("enviando informacion >>>>>>>>>>>>>>>>>>>>>>>>> ", url);
     
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
         return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
-
+        console.log("RESULTADO >>>>>>>>>>>>>> ", result.return.docTmpId);
         obj.resultado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
            throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
         }
         
         def.resolve();
-        callback(false, result.return.doctTmpId["$value"]);
+        callback(false, result.return.docTmpId["$value"]);
         
     }).finally(function(){
        return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincroniacionDespachos", obj);

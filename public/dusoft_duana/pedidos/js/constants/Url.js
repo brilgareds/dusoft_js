@@ -49,6 +49,7 @@ define(["angular"], function(angular) {
                     'CONSULTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/consultarDetalleCotizacion',
                     'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes',
                     'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios',
+                    'LISTAR_MOLECULA': BASE_URL + '/Laboratorios/listarMoleculas',
                     'INSERTAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
                     'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
                     'MODIFICAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/modificarDetalleCotizacion',

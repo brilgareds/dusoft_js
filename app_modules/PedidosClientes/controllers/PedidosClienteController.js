@@ -351,12 +351,12 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         return;
     }
 
-    if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
+    if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === ''){
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
         return;
     }
 
-    if (args.pedidos_clientes.contrato_cliente_id === '') {
+    if (args.pedidos_clientes.contrato_cliente_id === ''){
         res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacío', 404, {}));
         return;
     }
@@ -365,7 +365,10 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         res.send(G.utils.r(req.url, 'pagina_actual esta vacio o es 0', 404, {}));
         return;
     }
-
+    
+    if(args.pedidos_clientes.molecula === undefined ){   
+       args.pedidos_clientes.molecula = ''; 
+    }
 
     var empresa_id = args.pedidos_clientes.empresa_id;
     var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
@@ -379,15 +382,31 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
         numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
     };
+    
+    
+   
+    
+    var filtroAvanzado = {      
+          molecula : args.pedidos_clientes.molecula,
+          laboratorio_id : args.pedidos_clientes.laboratorio_id,
+          codigoProducto : args.pedidos_clientes.codigoProducto,
+          descripcionProducto : args.pedidos_clientes.descripcionProducto,
+          concentracion : args.pedidos_clientes.concentracion,
+          tipoBusqueda : args.pedidos_clientes.tipoBusqueda
+    };
+    
 
     var filtros = args.pedidos_clientes.filtro;
-
-
-
-
     var pagina = args.pedidos_clientes.pagina_actual;
 
-    that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, filtros, function(err, lista_productos) {
+    that.m_pedidos_clientes.listar_productos(empresa_id, 
+                                             centro_utilidad, 
+                                             bodega, 
+                                             contrato_cliente, 
+                                             filtro, 
+                                             pagina, 
+                                             filtros,filtroAvanzado, 
+                                             function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));

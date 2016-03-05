@@ -6,6 +6,7 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosclientes/VendedorPedidoCliente",
     "models/generacionpedidos/pedidosclientes/ProductoPedidoCliente",
     "models/generacionpedidos/pedidosclientes/Laboratorio",
+    "models/generacionpedidos/pedidosclientes/Molecula",
 ], function(angular, controllers) {
 
     controllers.controller('ListarPedidosClientesController', [
@@ -25,12 +26,12 @@ define(["angular", "js/controllers",
         "ClientePedido",
         "VendedorPedidoCliente",
         "Usuario",
-        "webNotification",
+        "webNotification","Laboratorio","Molecula",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Pedido, Cliente, Vendedor, Sesion, webNotification) {
+                Empresa, Pedido, Cliente, Vendedor, Sesion, webNotification,Laboratorio,Molecula) {
 
             var that = this;
-
+             
             // Definicion Variables de Sesion
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
@@ -65,6 +66,8 @@ define(["angular", "js/controllers",
                 pagina_actual_pedidos: 1,
                 cantidad_items_pedidos: 0,
                 paginando_pedidos: false,
+                activarTabPedidos: false,
+                termino_busqueda_moleculas: '',
                 // Estados Botones n-grid
                 estados_cotizaciones: [
                     "btn btn-danger btn-xs",
@@ -87,11 +90,13 @@ define(["angular", "js/controllers",
                     "btn btn-primary btn-xs",
                     "btn btn-info btn-xs"
                 ],
+                        
                 // Opciones del Modulo 
-                opciones: Sesion.getUsuarioActual().getModuloActual().opciones
+                opciones: Sesion.getUsuarioActual().getModuloActual().opciones               
             };
-
-
+            
+            
+            
             // Validar Seleccion Empresa Centro Bodega
             that.validacion_inicial = function() {
 
@@ -162,27 +167,19 @@ define(["angular", "js/controllers",
             };
 
 
-            // Acciones Botones 
+            //Acciones Botones 
             $scope.gestionar_cotizacion_cliente = function() {
-
                 localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0'});
                 $state.go('Cotizaciones');
             };
-
+            
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
-
-                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0'});
+                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0', busqueda: $scope.datos_view.termino_busqueda_cotizaciones});
                 $state.go('Cotizaciones');
-
-
             };
 
-
-
             $scope.modificar_pedido_cliente = function(pedido) {
-
-                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido()});
-
+                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),busqueda: $scope.datos_view.termino_busqueda_pedidos});
                 $state.go('PedidoCliente');
             };
 
@@ -269,6 +266,12 @@ define(["angular", "js/controllers",
              */
             that.buscar_cotizaciones = function(estado) {
                 
+                var terminoBusqueda = localStorageService.get("terminoBusqueda");
+                
+                if(terminoBusqueda){
+                    $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
+                }
+               
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {
                     $scope.datos_view.pagina_actual_cotizaciones = 1;
                 }
@@ -311,6 +314,8 @@ define(["angular", "js/controllers",
                         that.render_cotizaciones(data.obj.pedidos_clientes.lista_cotizaciones);
                     }
                 });
+                 
+                 localStorageService.add("terminoBusqueda", null);
             };
             
             /**
@@ -484,7 +489,16 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_pedidos = function(estado,estadoSolicitud) {
-
+                //Se obtiene el criterio de busqueda a traves del local storage
+                //con el objetivo de que el usuario al modificar un pedido
+                //y regrese al listado de todos los pedidos, conserve el filtro
+                var terminoBusqueda = localStorageService.get("terminoBusquedaPedido");
+                
+                if(terminoBusqueda){
+                    $scope.datos_view.activarTabPedidos = terminoBusqueda.activar;
+                    $scope.datos_view.termino_busqueda_pedidos = terminoBusqueda.busqueda;
+                }
+             
                 if ($scope.datos_view.ultima_busqueda_pedidos !== $scope.datos_view.termino_busqueda_pedidos) {
                     $scope.datos_view.pagina_actual_pedidos = 1;
                 }
@@ -523,6 +537,8 @@ define(["angular", "js/controllers",
                         that.render_pedidos(data.obj.pedidos_clientes);
                     }
                 });
+                
+                localStorageService.add("terminoBusquedaPedido", null);
             };
 
             that.render_pedidos = function(pedidos) {
@@ -720,8 +736,6 @@ define(["angular", "js/controllers",
              */          
             socket.on("onListarEstadoCotizacion", function(datos) {
                 
-                console.log("onListarEstadoCotizacion");
-                console.log("datos ", datos)
                 if (datos.status === 200) {
                     var estado = ['Inactivo', 'Activo', 'Anulado', 'Aprobado cartera', 'No autorizado por cartera', 'Tiene un pedido', 'Se solicita autorizacion']
                     $scope.Empresa.get_cotizaciones().forEach(function(data) {
@@ -773,12 +787,16 @@ define(["angular", "js/controllers",
                     }
                 }
             });
+            
+            
+           
+          
 
             that.init();
-
+          
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-               
+                 
                 socket.removeAllListeners();
             });
 

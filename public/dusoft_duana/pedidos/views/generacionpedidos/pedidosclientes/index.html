@@ -10,8 +10,8 @@
                         <br> 
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarcotizacionesclientes.html'"></div>
                     </tab>                        
-                    <tab>
-                        <tab-heading ng-click="cargarListaPedidos('','')">
+                    <tab active="datos_view.activarTabPedidos">
+                        <tab-heading ng-click="cargarListaPedidos('','')" >
                              Pedidos Clientes 
                              <!--<span ng-show="notificacionClientesAutorizar > 0" class="badge badge-warning">{{notificacionClientesAutorizar}}</span>//-->
                          <!--   <i class="glyphicon glyphicon-th"></i> Pedidos Clientes//-->

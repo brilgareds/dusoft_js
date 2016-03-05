@@ -2021,8 +2021,11 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                    obj:{documento_despacho: {}}};
         }
         
+    }).then(function(){
+        res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
+                           {movimientos_bodegas: {}}));
     }).fail(function(err){
-        console.log("se ha generado un error en el documento ", err);
+       // console.log("se ha generado un error en el documento ", err);
         if(err.status){
             res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
             
@@ -2034,23 +2037,23 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 };
 
 function __sincronizarDocumentoDespacho(obj, callback){
-    console.log("sincronizarEncabezadoDocumento >>>>>>>>>>>>>>>");
     obj.observacion = obj.prefijoDocumento + " - " + obj.numeroDocumento;
     
     G.Q.ninvoke(obj.contexto.m_e008,"obtenerTotalDetalleDespacho",obj).
     then(function(detalle){
-        obj.detalle = detalle;
-        //console.log("detalle del documento >>>>>>>>>>>>>>>", detalle);
-        
+        obj.detalle = detalle;        
         return G.Q.nfcall(__sincronizarEncabezadoDocumento,obj);
         
-    }).then(function(temporal){
-        console.log("temporal recibido !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", temporal);
-        obj.temporal = temporal;
-        
-        return G.Q.ninvoke(__sincronizarDetalleDocumento, obj);
+    }).then(function(obj){
+       console.log("temporal recibido !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", obj.temporal);
+       obj.tipo = '0';
+       return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj);
+                
     }).then(function(resultado){
         
+        return G.Q.nfcall(__sincronizarDetalleDocumento, obj);
+        
+    }).then(function(){
         callback(false);
         
     }).fail(function(err){
@@ -2064,15 +2067,12 @@ function __sincronizarDocumentoDespacho(obj, callback){
 function __sincronizarEncabezadoDocumento(obj, callback){
     var url = (obj.tipo === '1')? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
     var resultado;
-    var def = G.Q.defer();  
     obj.parametros = {
-        usuarioId:"4608",
+        usuarioId:"2",
         bodegasDoc:obj.bodegasDoc,
         observacion:obj.observacion,    
         documentoId:obj.documentoId
     };
-    
-    obj.tipo = '0';
     
     console.log("enviando informacion >>>>>>>>>>>>>>>>>>>>>>>>> ", url);
     
@@ -2081,17 +2081,14 @@ function __sincronizarEncabezadoDocumento(obj, callback){
         return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
-        console.log("RESULTADO >>>>>>>>>>>>>> ", result.return.docTmpId);
-        obj.resultado = result.return.descripcion["$value"];
+        //console.log("RESULTADO >>>>>>>>>>>>>> ", result.return.docTmpId);
+        obj.resultadoEncabezado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
            throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
+        } else {            
+            obj.temporal = result.return.docTmpId["$value"];
+            callback(false, obj);
         }
-        
-        def.resolve();
-        callback(false, result.return.docTmpId["$value"]);
-        
-    }).finally(function(){
-       return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincroniacionDespachos", obj);
         
     }).fail(function(err) {
         console.log("error generado ", err);
@@ -2103,16 +2100,15 @@ function __sincronizarEncabezadoDocumento(obj, callback){
 function __sincronizarDetalleDocumento(obj, callback){
     var producto = obj.detalle[0];
      var def = G.Q.defer();  
-    
     if(!producto){
         callback(false);
         return;
     }
     
-    var url = G.constants.WS().DOCUMENTOS.COSMITET.E008;
+    var url = (obj.tipo === '1')? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
     
     obj.parametros = {
-        usuarioId:"4608",
+        usuarioId:"2",
         docTmpId:obj.temporal,
         tipoTercero: "NIT",
         terceroId:"830080649",
@@ -2122,7 +2118,7 @@ function __sincronizarDetalleDocumento(obj, callback){
         cantidad:producto.cantidad,
         porcentajeGravamen:producto.porcentaje_gravamen,
         totalCosto:producto.total_costo,
-        fechaVencimiento:producto.fecha_vencimiento,
+        fechaVencimiento:producto.fecha_vencimiento_producto,
         lote:producto.lote,
         localizacionProducto:"N/A",
         totalcostoPedido:producto.total_costo_pedido,
@@ -2130,24 +2126,25 @@ function __sincronizarDetalleDocumento(obj, callback){
         descuento:0
     };
     
-    obj.tipo = '1';
         
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
         return G.Q.ninvoke(client, "bodegasMovimientoTmpD", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
-        obj.resultado = result.return.descripcion["$value"];
+        obj.resultadoDetalle = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
            throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
         } else {
             obj.detalle.splice(0,1);
             __sincronizarDetalleDocumento(obj,callback);
         }
-         def.resolve();
+        def.resolve();
         
     }).finally(function(){
-       return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincroniacionDespachos", obj);
+       console.log("finally de >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> __sincronizarDetalleDocumento");
+       obj.tipo = '1';
+       return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj);
         
     }).fail(function(err) {
         console.log("error generado ", err);

@@ -7,10 +7,13 @@ var DocuemntoBodegaE008Logs = function(movientos_bodegas, m_pedidos_clientes, m_
 };
 
 
-DocuemntoBodegaE008Logs.prototype.ingresarLogsSincroniacionDespachos = function(obj, callback){
+DocuemntoBodegaE008Logs.prototype.ingresarLogsSincronizacionDespachos = function(obj, callback){
 
     var sql = " insert into logs_despachos_ws (tipo_pedido, numero_pedido, empresa_id, prefijo, numero, datos_envidos, datos_recibidos, tipo)\
             values ( :1, :2, :3, :4, :5, :6, :7, :8 ) ; ";
+    
+    
+    var resultado = (obj.tipo === '1') ? obj.resultadoDetalle : obj.resultadoEncabezado;
     
     
     var parametros = {
@@ -20,7 +23,7 @@ DocuemntoBodegaE008Logs.prototype.ingresarLogsSincroniacionDespachos = function(
         4:obj.prefijoDocumento,
         5:obj.numeroDocumento,
         6:JSON.stringify(obj.parametros),
-        7:JSON.stringify(obj.resultado) || "",
+        7:JSON.stringify(resultado) || "",
         8:obj.tipo
     };
     

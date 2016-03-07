@@ -1,6 +1,4 @@
 <div>
-
-
     <div>
         <div class="row">
             <div class="col-md-12">
@@ -20,7 +18,7 @@
                         <div>
  
                             <div class="row" >
-                                <div class="col-xs-1 col-md-3">
+                                <div class="col-md-3">
                                     <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4> 
                                     <button ng-click="seleccionar_tipo_producto('')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-primary" style="position: relative;">Todos</button>
                                     <button ng-click="seleccionar_tipo_producto('1')"  ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-success" style="position: relative;">Normales</button>
@@ -30,12 +28,12 @@
                                     <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-grey" style="position: relative;">Neveras</button>                                                                           
                                                                            
                                 </div>
-                                <div class="col-xs-1 col-md-4">
+                              <div class="col-md-3">
                                    <h4>Con convenciones</h4> 
                                      <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-success" style="position: relative;">Con contrato</button>  
-                                </div>
-                                
-                                </div>
+                                </div>                              
+                            </div>
+                            
                             </div>
                             <div class="row">
                                 <div class="col-md-3">

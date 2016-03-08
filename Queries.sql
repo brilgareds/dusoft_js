@@ -1719,3 +1719,23 @@ ALTER TABLE ONLY aprobacion_despacho_planillas
 
 ALTER TABLE "public"."inv_rotulo_caja"
   ADD COLUMN "tipo_pedido" CHAR(1);
+
+
+
+ALTER TABLE "public"."inv_rotulo_caja"
+  ADD COLUMN "documento_temporal_id" INTEGER;
+
+COMMENT ON COLUMN "public"."inv_rotulo_caja"."documento_temporal_id"
+IS 'referencia documento temporal dusoft v2';
+
+
+
+
+ALTER TABLE "public"."logs_despachos_ws"
+  ADD COLUMN "error" CHAR(1);
+
+ALTER TABLE "public"."logs_despachos_ws"
+  ALTER COLUMN "error" SET DEFAULT 0;
+
+COMMENT ON COLUMN "public"."logs_despachos_ws"."error"
+IS 'Describe si hay error en la cabecera';

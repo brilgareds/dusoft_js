@@ -9,8 +9,8 @@ var DocuemntoBodegaE008Logs = function(movientos_bodegas, m_pedidos_clientes, m_
 
 DocuemntoBodegaE008Logs.prototype.ingresarLogsSincronizacionDespachos = function(obj, callback){
 
-    var sql = " insert into logs_despachos_ws (tipo_pedido, numero_pedido, empresa_id, prefijo, numero, datos_envidos, datos_recibidos, tipo)\
-            values ( :1, :2, :3, :4, :5, :6, :7, :8 ) ; ";
+    var sql = " insert into logs_despachos_ws (tipo_pedido, numero_pedido, empresa_id, prefijo, numero, datos_envidos, datos_recibidos, tipo, error)\
+            values ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) ; ";
     
     
     var resultado = (obj.tipo === '1') ? obj.resultadoDetalle : obj.resultadoEncabezado;
@@ -24,13 +24,52 @@ DocuemntoBodegaE008Logs.prototype.ingresarLogsSincronizacionDespachos = function
         5:obj.numeroDocumento,
         6:JSON.stringify(obj.parametros),
         7:JSON.stringify(resultado) || "",
-        8:obj.tipo
+        8:obj.tipo,
+        9:(obj.error === true) ? '1' : '0'
     };
     
     
     var query = G.knex.raw(sql, parametros);
             
-    console.log("insertando logs ", parametros);
+    console.log("insertando logs ************************ ", parametros, " erorr ??????????????? ", obj.error);
+    query.then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        console.log("error en logs ", err);
+        callback(err);
+    });
+};
+
+
+DocuemntoBodegaE008Logs.prototype.obtenerEncabezadoLog = function(obj, callback){
+
+    var sql = " SELECT * FROM  logs_despachos_ws  WHERE  numero = :1 AND prefijo = :2 ; ";
+    
+    var parametros = { 
+        1:obj.numeroDocumento,
+        2:obj.prefijoDocumento
+    };
+    
+    var query = G.knex.raw(sql, parametros);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
+DocuemntoBodegaE008Logs.prototype.borrarLog = function(obj, callback){
+
+    var sql = " DELETE FROM  logs_despachos_ws  WHERE  numero = :1 AND prefijo = :2 ; ";
+    
+    var parametros = { 
+        1:obj.numeroDocumento,
+        2:obj.prefijoDocumento
+    };
+    
+    var query = G.knex.raw(sql, parametros);
+            
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){

@@ -9,11 +9,11 @@ define(["angular", "js/controllers",
         'EmpresaPedido', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "Usuario",
-        "localStorageService", "$filter", "$state", "DocumentoAuditado", "EmpresaDespacho",
+        "localStorageService", "$filter", "$state", "DocumentoAuditado", "EmpresaDespacho", "AuditoriaDespachoService",
         function($scope, $rootScope, Request, Empresa,
                 Farmacia, PedidoAuditoria, Separador,
                 DocumentoTemporal, API, socket, AlertService, Usuario,
-                localStorageService, $filter, $state, DocumentoAuditado, EmpresaDespacho) {
+                localStorageService, $filter, $state, DocumentoAuditado, EmpresaDespacho, AuditoriaDespachoService) {
 
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
@@ -307,26 +307,32 @@ define(["angular", "js/controllers",
              * +Descripcion: handler para sincronizar documento
              */
             $scope.sincronizarDocumento = function(documento){
-                console.log("documento ", documento);
                 var obj = {
                     session: $scope.session,
-                    data: {
-                        documento_despacho: {
-                            prefijo_documento : documento.getPrefijo(),
-                            numero_documento : documento.getNumero(),
-                            bodega_destino : documento.getBodegaDestino(),
-                            empresa_id: documento.getEmpresaId(),
-                            tipo_pedido:documento.getTipoPedido(),
-                            numero_pedido : documento.getPedido().getNumero()
-                        }
+                    documento: {
+                        prefijo_documento : documento.getPrefijo(),
+                        numero_documento : documento.getNumero(),
+                        bodega_destino : documento.getBodegaDestino(),
+                        empresa_id: documento.getEmpresaId(),
+                        tipo_pedido:documento.getTipoPedido(),
+                        numero_pedido : documento.getPedido().getNumero()
                     }
                 };
-                
-                Request.realizarRequest(API.DOCUMENTOS_DESPACHO.SINCRONIZAR_DOCUMENTO, "POST", obj, function(data) {
 
-                   console.log("respuesta al sincronizar ", data);
-
+                AuditoriaDespachoService.sincronizarDocumento(obj, function(data){
+                    var msj = "Ha ocurrido un error sincronizando el documento";
+                    var titulo = "Error";
+                    
+                    if(data.status === 200){
+                        msj = "Documento sincronizado correctamente";
+                        titulo = "Mensaje del sistema";
+                    } else if(data.status !== 500) {
+                        msj = data.msj;
+                    } 
+                    
+                    AlertService.mostrarVentanaAlerta(titulo, data.msj);
                 });
+                
             };
 
             /*

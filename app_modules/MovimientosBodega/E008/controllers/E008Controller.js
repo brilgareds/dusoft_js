@@ -2034,7 +2034,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
             
         } else {
             
-            res.send(G.utils.r(req.url, "La sincronización a terminado con errores", "500", {}));
+            res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
         }
     }).done();
 };
@@ -2097,7 +2097,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
 
         obj.resultadoEncabezado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
-           throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
+           throw {msj:/*result.return.descripcion["$value"]*/"Se ha generado un error", status:403, obj:{}}; 
         } else {            
             obj.temporal = result.return.docTmpId["$value"];
             obj.tipo = '0';

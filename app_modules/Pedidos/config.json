@@ -31,6 +31,12 @@
                 }
             }],
         "events": [],
-        "cronJobs": []
+        "cronJobs": [{
+            "pedidos_crontab": {
+                "module": "Pedidos",
+                "cronjob": "PedidosCronJobs",
+                "alias": "j_pedidos"
+            }
+        }]
     }
 }

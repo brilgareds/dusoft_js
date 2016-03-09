@@ -120,7 +120,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              that.obtenerPedidos = function(documento){
               
                 var url = API.DESPACHOS_AUDITADOS.DETALLE_PEDIDO_CLIENTE_DOCUMENTO;
-                if(documento.getTipoPedido() === 1){
+                if(documento.getTipoPedido() === 2){
                     url = API.DESPACHOS_AUDITADOS.DETALLE_PEDIDO_FARMACIA_DOCUMENTO;
                 }
                  var obj = {

@@ -10,6 +10,7 @@
     "commander": "2.1.0",
     "connect-multiparty": "~1.2.5",
     "cron": ">=1.0.1",
+    "cron-cluster": "^1.0.0",
     "date-utils": "~1.2.15",
     "db-migrate": "0.6.4",
     "express": "3.4.7",
@@ -25,6 +26,7 @@
     "pg": "2.x",
     "pg-query": "0.x",
     "q": "*",
+    "soap": "^0.13.0",
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
     "xls-to-json": "*"

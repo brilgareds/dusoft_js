@@ -1541,6 +1541,14 @@ ALTER TABLE "public"."compras_ordenes_destino"
     NOT DEFERRABLE;
 
 
+<<<<<<< HEAD
+CREATE TABLE "public"."cronjobs" (
+  "id" SERIAL, 
+  "nombre" CHAR(40), 
+  "descripcion" TEXT, 
+  "estado" CHAR(1)
+) WITH OIDS;
+=======
 
 
 
@@ -1714,6 +1722,7 @@ ALTER TABLE "public"."inv_rotulo_caja"
 
 
 
+<<<<<<< HEAD
 
 
 --===========================================TABLA CREADA PARA EL MODULO DE CLIENTES ===================================
@@ -1752,3 +1761,22 @@ IS 'Estado del pedido o de la cotizacion si ya ha sido aprobado por cartera';
 
 COMMENT ON COLUMN "public"."ventas_trazabilidad"."fecha_aprobacion"
 IS 'Fecha de registro de la aprobacion';
+
+ALTER TABLE "public"."inv_rotulo_caja"
+  ADD COLUMN "documento_temporal_id" INTEGER;
+
+COMMENT ON COLUMN "public"."inv_rotulo_caja"."documento_temporal_id"
+IS 'referencia documento temporal dusoft v2';
+
+
+
+
+ALTER TABLE "public"."logs_despachos_ws"
+  ADD COLUMN "error" CHAR(1);
+
+ALTER TABLE "public"."logs_despachos_ws"
+  ALTER COLUMN "error" SET DEFAULT 0;
+
+COMMENT ON COLUMN "public"."logs_despachos_ws"."error"
+IS 'Describe si hay error en la cabecera';
+ 

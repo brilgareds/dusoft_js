@@ -1090,10 +1090,10 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
    
      var fecha = "";
     
-        if(!obj.registroUnico){
-            fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
-           
-        }
+     if(!obj.registroUnico){
+        fecha = "a.fecha_registro between :fechaInicial and :fechaFinal and";
+
+     }
      
      var sql = "a.prefijo,\
                 a.numero,\
@@ -1101,16 +1101,18 @@ DocuemntoBodegaE008.prototype.listarDespachosAuditados = function(obj, callback)
                 a.empresa_id,\
                 to_char(a.fecha_registro, 'DD Mon YYYY')as fecha_registro,\
                 a.empresa_destino,\
-               (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \n\
+               (SELECT empr.razon_social FROM empresas empr WHERE empr.empresa_id = a.empresa_destino) as desc_empresa_destino, \
                 a.observacion,\
                 CASE WHEN c.pedido_cliente_id is null THEN d.solicitud_prod_a_bod_ppal_id WHEN d.solicitud_prod_a_bod_ppal_id is null THEN c.pedido_cliente_id end as pedido,\
-                CASE WHEN c.pedido_cliente_id is not null THEN 0 WHEN d.solicitud_prod_a_bod_ppal_id is not null THEN 1 end as tipo_pedido\
+                CASE WHEN c.pedido_cliente_id is not null THEN 1 WHEN d.solicitud_prod_a_bod_ppal_id is not null THEN 2 end as tipo_pedido,\
+                e.bodega as bodega_destino,\
+                e.farmacia_id as empresa_destino\
                 FROM inv_bodegas_movimiento a\
                 INNER JOIN  empresas b ON b.empresa_id = a.empresa_id\
                 LEFT JOIN inv_bodegas_movimiento_despachos_clientes c\
                 ON  a.prefijo = c.prefijo AND a.numero = c.numero AND a.empresa_id = c.empresa_id\
-                LEFT JOIN inv_bodegas_movimiento_despachos_farmacias d\
-                ON  a.prefijo = d.prefijo AND a.numero = d.numero AND a.empresa_id = d.empresa_id\
+                LEFT JOIN inv_bodegas_movimiento_despachos_farmacias d ON  a.prefijo = d.prefijo AND a.numero = d.numero AND a.empresa_id = d.empresa_id\
+                LEFT JOIN solicitud_productos_a_bodega_principal e ON d.solicitud_prod_a_bod_ppal_id = e.solicitud_prod_a_bod_ppal_id\
                 WHERE "+fecha+"\
                 ( \
                     a.prefijo :: varchar "+G.constants.db().LIKE+"  :prefijo and\
@@ -1164,6 +1166,50 @@ DocuemntoBodegaE008.prototype.detalleDocumentoAuditado = function(obj, callback)
         prefijo: "%"+ obj.prefijo +"%", 
         numero: "%"+ obj.numero  +"%",
         empresa: obj.empresa_id 
+    };
+       
+     G.knex.raw(sql, parametros). then(function(resultado){       
+        callback(false, resultado.rows);   
+    }).catch(function(err) { 
+     
+        callback(err);
+    });        
+};
+
+
+DocuemntoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callback){
+     
+     var sql = "SELECT\
+                    a.*,\
+                    to_char(a.fecha_vencimiento, 'YYYY-MM-DD') AS fecha_vencimiento_producto,\
+                    b.descripcion,\
+                    b.unidad_id,\
+		    b.contenido_unidad_venta,\
+                    c.descripcion as descripcion_unidad,\
+                    fc_descripcion_producto(b.codigo_producto) as nombre,\
+					(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
+					(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
+					((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
+					(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\
+					((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva_1,\
+					((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1,\
+					(((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1\
+                FROM\
+                    inv_bodegas_movimiento_d as a,\
+                    inventarios_productos as b,\
+                    unidades as c\
+                WHERE\
+                    a.empresa_id = :1\
+                    AND a.prefijo = :2\
+                    AND a.numero = :3\
+                    AND b.codigo_producto = a.codigo_producto\
+                    AND c.unidad_id = b.unidad_id\
+                    ORDER BY a.codigo_producto";
+   
+    var parametros = {
+        1: obj.empresa,
+        2: obj.prefijoDocumento , 
+        3: obj.numeroDocumento 
     };
        
      G.knex.raw(sql, parametros). then(function(resultado){       

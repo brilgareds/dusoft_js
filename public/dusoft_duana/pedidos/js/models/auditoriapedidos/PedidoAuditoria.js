@@ -42,6 +42,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoAuditoria.prototype.setNumero = function (numero) {
              this.numero=numero;
+             return this;
         };
         
         PedidoAuditoria.prototype.getNumero = function () {

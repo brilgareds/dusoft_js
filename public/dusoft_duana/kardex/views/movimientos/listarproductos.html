@@ -1,14 +1,21 @@
 <div>
     <div class="row">
-       
+       <!--
         <p class="input-group">
-             <div class="col-md-1" >  
-                <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="onSeleccionarEmpresa()">Seleccionar</button>
-                
+             <div class="col-md-2 col-lg-1" >  
+                <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="onSeleccionarEmpresa()">Seleccionar</button>          
              </div>  
-         </p> 
-     
-        <div class="col-lg-2 col-sm-12">
+         </p> //-->
+      <div class="col-md-2 col-lg-1">
+            <p class="input-group">
+                 <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="onSeleccionarEmpresa()">
+                      <span class="glyphicon glyphicon-ok"></span> Empresa</button>          
+            </p> 
+        </div> 
+         
+         
+         
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
@@ -20,7 +27,7 @@
             </p>
         </div>
 
-        <div class="col-lg-2">
+        <div class="col-md-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="fechafinal" is-open="abrirfechafinal" min="fechainicial"  readonly  close-text="Cerrar"

@@ -211,13 +211,7 @@ module.exports = function(app, di_container) {
     });    
       
      // Consultar el documento de la tabla inventario movimientos
-    app.post('/api/movBodegas/E008/obtenerDocumento', function(req, res) {
-        
-        console.log("/api/movBodegas/E008/obtenerDocumento");
-        console.log("/api/movBodegas/E008/obtenerDocumento");
-        console.log("/api/movBodegas/E008/obtenerDocumento");
-        console.log("/api/movBodegas/E008/obtenerDocumento");
-        
+    app.post('/api/movBodegas/E008/obtenerDocumento', function(req, res) {     
         c_e008.obtenerDocumento(req, res);
     });  
     
@@ -226,6 +220,10 @@ module.exports = function(app, di_container) {
         c_e008.consultarNumeroMayorRotulo(req, res);
     }); 
     
+   app.post('/api/movBodegas/E008/sincronizarDocumentoDespacho', function(req, res) {
+       
+        c_e008.sincronizarDocumentoDespacho(req, res);
+    }); 
       
     //========================== FIN Despachos bodegas =========================
     

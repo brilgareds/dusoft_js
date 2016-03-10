@@ -398,7 +398,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 };
                 Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function(data) {
-                    console.log("data ", data)
+                   
                     if (data.status === 200) {
                         callback(data.obj.listado_clientes);
                     }

@@ -1094,7 +1094,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     
     fechaActual = yyyy+'-'+ mm +'-'+ dd;
      // coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
-    var sql = "a.codigo_producto,\
+   /* var sql = "a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 b.tipo_producto_id,\
                 d.descripcion as descripcion_tipo_producto,\
@@ -1129,7 +1129,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     where a.contrato_cliente_id = :4\
                 ) g on c.codigo_producto = g.codigo_producto\
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
-                 " + filtroProducto;
+                 " + filtroProducto;*/
         
 
     
@@ -1137,7 +1137,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     
     //Se agregar un nuevo campo llamado contrato que retornara FALSE si no tiene
    //contrato con la empresa y TRUE si lo tiene
-            /* var sql = "a.codigo_producto,\
+             var sql = "a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 b.tipo_producto_id,\
                 d.descripcion as descripcion_tipo_producto,\
@@ -1198,14 +1198,14 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     ) aa group by 1,2\
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
-                 " + filtroProducto;*/
+                 " + filtroProducto;
         
       var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("error ", err)
+        
         callback(err);
     });
     

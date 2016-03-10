@@ -17,12 +17,12 @@ define(["angular", "js/controllers",
         'EmpresaPedido', 'Cliente', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
-        "$modal", 'Auditor', 'Usuario',"localStorageService",
+        "$modal", 'Auditor', 'Usuario',"localStorageService","AuditoriaDespachoService",
         function($scope, $rootScope, Request,
                 Empresa, Cliente, Farmacia,
                 PedidoAuditoria, Separador, DocumentoTemporal,
                 API, socket, AlertService,
-                ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario, localStorageService) {
+                ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario, localStorageService, AuditoriaDespachoService) {
 
             $scope.Empresa = Empresa;
 
@@ -496,11 +496,32 @@ define(["angular", "js/controllers",
                 }
             };
             
-          
+           that.sincronizarDocumento = function(documento, despacho){
+                var obj = {
+                    session: $scope.session,
+                    documento: {
+                        prefijo_documento : despacho.prefijo_documento,
+                        numero_documento : despacho.numero_documento,
+                        bodega_destino : documento.pedido.farmacia.bodega_id,
+                        empresa_id: despacho.empresa_id,
+                        tipo_pedido:documento.pedido.tipo,
+                        numero_pedido : documento.pedido.numero_pedido
+                    }
+                };
+                
+                console.log("informacion para enviar ", obj);
+
+                AuditoriaDespachoService.sincronizarDocumento(obj, function(data){
+                    if(data.status === 200){
+                        AlertService.mostrarMensaje("success", "Documento sincronizado correctamente");
+                    }
+                });
+                
+            };
            
             
             $scope.generarDocumento = function(documento) {
-                
+
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -514,7 +535,9 @@ define(["angular", "js/controllers",
                             numero_pedido: documento.pedido.numero_pedido,
                             documento_temporal_id: documento.documento_temporal_id,
                             auditor_id: documento.auditor.operario_id,
-                            usuario_id: documento.separador.usuario_id
+                            usuario_id: documento.separador.usuario_id,
+                            bodega_documento_id : documento.getBodegasDocId(),
+                            bodega: documento.bodega_id
                         }
                     }
                 };
@@ -589,6 +612,8 @@ define(["angular", "js/controllers",
                                     localStorageService.set("DocumentoDespachoImprimir",detallado);
                                 
                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                                   
+                                   that.sincronizarDocumento(documento, $scope.documento_generado);
                             }
 
                         });

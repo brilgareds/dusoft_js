@@ -2224,10 +2224,9 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
     var args = req.body.data;
     var cotizacion = args.pedidos_clientes.cotizacion;
     var productos = args.pedidos_clientes.cotizacion.cotizacion.productos;
+    cotizacion.usuario_id = req.session.user.usuario_id; 
+    var detalleCotizacion = []; 
     
-   // console.log("cotizacion ", cotizacion);
-   
-     var detalleCotizacion = []; 
      productos[0].forEach(function(data) {
          
          detalleCotizacion.push("Detalle (  CodigoProducto: "        + data.codigo_producto 
@@ -2237,7 +2236,51 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
                                       + " - CantidadInicial: "       + data.cantidad_inicial);
      });
      
-     console.log("detalleCotizacion ", detalleCotizacion.toString())
+    
+     var paramLogCliente = {
+        detalle: {
+            tipo: 0,
+            pendiente: 0,
+            numero: cotizacion.numeroCotizacion,
+            solicitud: detalleCotizacion.toString(),
+            fecha_solicitud: 'now()',
+            aprobacion: '',
+            fecha_aprobacion: null,
+            usuario_id:cotizacion.usuario_id
+        }
+    };
+    
+    
+     console.log("paramLogCliente ", paramLogCliente)
+     
+
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento para cuando se quiera eliminar un producto
+     * de una cotizacion o un pedido
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogCliente).then(function(resultado){ 
+        
+        if (resultado.rowCount === 0) {
+               throw 'Error actualizando la observacion de cartera';
+           } else {
+              
+               res.send(G.utils.r(req.url, 'Producto añadido correctamente', 200, {pedidos_clientes: {}}));            
+           }                                          
+      }).fail(function(err){      
+        res.send(G.utils.r(req.url, err, 500, {}));
+      }).done();
+     
+     
+     
+   /* that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function() {
+
+            
+    }); */
+    
     res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes: []}));
     return;
    /* that.m_pedidos_clientes.solicitarAutorizacion(cotizacion, function(estado, rows) {

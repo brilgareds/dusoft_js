@@ -91,4 +91,46 @@ PedidosClienteLog.prototype.logEliminarProductoCotizacion = function(paramLogCli
     }).done();*/
 };
 
+
+
+
+/**
+ * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+ * @param {funcion} callback
+ * @returns {void}
+ * +Descripcion: Metodo encargado de encargado de insertar los registros
+ * a una tabla log de seguimiento
+ * @author Cristian Ardila
+ * @fecha 29/09/2015
+ */
+PedidosClienteLog.prototype.logTrazabilidadVentas = function(cotizacion, callback) {
+
+   console.log("<<<<<<<<<<<<< PedidosClienteLog.prototype.logTrazabilidadVentas >>>>>>>>>>>>>>>>>>");
+   console.log("paramLogCliente ", cotizacion);
+   
+   //callback();
+     G.knex("ventas_trazabilidad").
+    insert({
+            tipo: cotizacion.detalle.tipo,
+            pendiente:cotizacion.detalle.pendiente, 
+            numero:cotizacion.detalle.numero,
+            solicitud:cotizacion.detalle.solicitud, 
+            fecha_solicitud: cotizacion.detalle.fecha_solicitud,
+            aprobacion: cotizacion.detalle.aprobacion,
+            fecha_aprobacion:cotizacion.detalle.fecha_aprobacion,
+            usuario_id:cotizacion.detalle.usuario_id
+            
+        }).
+    then(function(resultado){
+         console.log("resultado ", resultado);
+        callback(false, resultado);
+       
+    }).catch(function(err){
+         console.log("err ", err);
+        callback(err);
+        
+    }).done();
+};
+
+
 module.exports = PedidosClienteLog;

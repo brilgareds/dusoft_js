@@ -25,7 +25,7 @@
             }
             
             .footer{
-                margin-top:80px;
+                margin-top:20px;
                 width:100%;
             }
             
@@ -103,6 +103,10 @@
                     <th class='title'>Invima</th>//-->
                     <th class='title'>Lote</th>
                     <th class='title' >F/vto</th>
+                    <th class='title' >% GRAV</th>
+                    <th class='title'>Precio</th>
+                    <th class='title'>V/u+iva
+                    <th class='title'>Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -115,13 +119,40 @@
                         <td>{{:codigo_invima}}</td>//-->
                         <td width='80'>{{:lote}}</td>
                         <td width='100'>{{:fecha_vencimiento}}</td>
+                        <td width='100'>{{:porcentaje_gravamen}}</td>
+                        <td width='100'>{{:valor_unitario}}</td>
+                        <td width='100'>{{:valor_unitario_iva}}</td>
+                        <td width='100'>{{:valor_total_iva}}</td>
                     </tr>
                 {{/for}}
+                
+                <tr>
+                    <td colspan="9">
+                        <table class='footer'>
+                             <tr>    
+                                 <td>
+                                     Subtotal : {{:encabezado.subTotal}}
+                                 </td>
+                             </tr>
+                             <tr>
+                                 <td>
+                                     Total Iva : {{:encabezado.totalIva}}
+                                 </td>
+                             </tr>
+                             <tr>
+
+                                 <td>
+                                     Total  : {{:encabezado.total}}
+                                 </td>
+                             </tr>
+
+                         </table>
+                    </td>
+                </tr>
             </tbody>
         </table>
         
-        <table class='footer'>
-        </table>
+
         <p class='input-group'></p>
         <p class='input-group'></p>
         <table  width='90%' align="center" >

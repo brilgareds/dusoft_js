@@ -25,9 +25,8 @@
             }
             
             .footer{
-                margin-top:20px;
+                margin-top:80px;
                 width:100%;
-                text-align:right;
             }
             
 
@@ -40,45 +39,18 @@
                 text-align: left;
             }
             
-            .rellenoCelda{
-                padding-top:15px;
-            }
-            
            @page 
             {
                 size: auto;   /* auto is the initial value */
                 margin: 0mm;  /* this affects the margin in the printer settings */
-            }
-            
-            .thDetalle{
-                width:15%;            
             }
 
         </style>
         
         <!-- link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css" / -->
         
-        <script>
-            function onload(){
-                
-                var tipoDespacho = document.getElementById("tipoPedido").value;
-                //Se oculta los valores cuando el pedido no es de clientes
-                if(tipoDespacho !== '1'){
-                    
-                    var valoresClientes = document.getElementsByClassName('valoresClientes'), i;
-
-                    for (var i = 0; i < valoresClientes.length; i ++) {
-                        valoresClientes[i].style.display = 'none';
-                    }
-                }
-            }
-        </script>
-        
     </head>
-    
-
-    
-    <body onload="onload()">
+    <body>
              
      <!--  <div class='docInfo'>
            <div style='text-align:right;'><span>{{:encabezado.fecha_impresion}}</span></div>
@@ -86,7 +58,7 @@
        </div>
       //-->
      <br>
-       <input type="hidden" id="tipoPedido" value="{{:encabezado.tipo_pedido}}" />
+        
        <table class="table" width='90%' align="center">
             <tr>
                 <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
@@ -121,51 +93,38 @@
         <p class='input-group'></p>
         <p class='input-group'></p>
         
-        {{for detalle}}
-
-            
-            <table class="table table-bordered detalle" width='90%' align="center">
+       <table class="table table-bordered detalle" width='90%' align="center">
+            <thead>
                 <tr>
-                   <th class='title'>Producto</th>      
-                    <th class='title valoresClientes' >% GRAV</th>
-                    <th class='title valoresClientes'>Precio</th>
-                    <th class='title valoresClientes'>V/u+iva
-                    <th class='title valoresClientes'>Total</th>
+                    <th width='50' class='title'>Codigo</th>
+                    <th class='title'>Descripci&oacute;n</th>
+                    <th class='title'>Cant.</th>
+                    <!--<th class='title'>Cum</th>
+                    <th class='title'>Invima</th>//-->
+                    <th class='title'>Lote</th>
+                    <th class='title' >F/vto</th>
                 </tr>
-                <tr>
-                  <td>{{:codigo_producto}}- {{:nombre}}</td>
-                  <td width='70' class="valoresClientes">{{:porcentaje_gravamen}}</td>
-                  <td width='70' class="valoresClientes">{{:valor_unitario}}</td>
-                  <td width='70' class="valoresClientes">{{:valor_unitario_iva}}</td>
-                  <td width='80' class="valoresClientes">{{:valor_total_iva}}</td>
-                </tr>
-            </table>   
-        
-            <table class="table table-bordered detalle" style="table-layout:auto" width='90%' align="center">
-                <thead>
-                    
+            </thead>
+            <tbody>
+                {{for detalle}}
                     <tr>
-                        <th   class='title thDetalle'>Invima</th>
-                        <th   class='title thDetalle'>Lote</th>
-                        <th   class='title thDetalle' >F/vto</th>
-                        <th></th>
+                        <td width='100'>{{:codigo_producto}}</td>
+                        <td>{{:nombre}}</td>
+                        <td >{{:cantidad}}</td>
+                        <!--<td>{{:codigo_cum}}</td>
+                        <td>{{:codigo_invima}}</td>//-->
+                        <td width='80'>{{:lote}}</td>
+                        <td width='100'>{{:fecha_vencimiento}}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                         <td>{{:codigo_invima}}</td>
-                         <td >{{:lote}}</td>
-                         <td >{{:fecha_vencimiento}}</td>
-                         <td></td>
-                    </tr>
-                </tbody>
-            </table> 
-            </br>
-        {{/for}}
+                {{/for}}
+            </tbody>
+        </table>
         
+        <table class='footer'>
+        </table>
         <p class='input-group'></p>
         <p class='input-group'></p>
-        <table  width='90%' align="center" style="margin-top:20px" >
+        <table  width='90%' align="center" >
             <tr align='center'>
                 <td>
                     _______________________________
@@ -188,7 +147,7 @@
                     Verifico
                 </td>
             </tr>
-        </table -->
+        </table>
         
     </body>
 </html>

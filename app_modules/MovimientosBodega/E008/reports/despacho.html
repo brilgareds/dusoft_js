@@ -8,7 +8,7 @@
             }
             
              BODY { 
-                font: 7pt Verdana, Geneva, Arial, Helvetica, sans-serif; 
+                font: 6pt Verdana, Geneva, Arial, Helvetica, sans-serif; 
                 margin: 1 0 1 0px; 
                 background-color: #ffffff; 
             } 
@@ -16,7 +16,7 @@
             .title{
                 font-weight:bold;
                 /*font-family:"Times New Roman", Georgia, Serif;*/
-                font-size:7pt;
+                font-size:6pt;
             }
             
             .docInfo{
@@ -120,37 +120,37 @@
        <table class="table table-bordered detalle" width='90%' align="center">
             <thead>
                 <tr>
-                    <th width='50' class='title'>Codigo</th>
+                    <th width='60' class='title'>Codigo</th>
                     <th class='title'>Descripci&oacute;n</th>
                     <th class='title'>Cant.</th>
                     <!-- th class='title'>Cum</th -->
                     <th class='title'>Invima</th>
                     <th class='title'>Lote</th>
                     <th class='title' >F/vto</th>
-                    <th class='title valoresClientes' >% GRAV</th>
+                    <!-- th class='title valoresClientes' >% GRAV</th>
                     <th class='title valoresClientes'>Precio</th>
                     <th class='title valoresClientes'>V/u+iva
-                    <th class='title valoresClientes'>Total</th>
+                    <th class='title valoresClientes'>Total</th -->
                 </tr>
             </thead>
             <tbody>
                 {{for detalle}}
                     <tr>
-                        <td width='100'>{{:codigo_producto}}</td>
+                        <td width='60'>{{:codigo_producto}}</td>
                         <td>{{:nombre}}</td>
                         <td >{{:cantidad}}</td>
                         <!-- td>{{:codigo_cum}}</td -->
                         <td>{{:codigo_invima}}</td>
-                        <td width='80'>{{:lote}}</td>
-                        <td width='100'>{{:fecha_vencimiento}}</td>
-                        <td width='100' class="valoresClientes">{{:porcentaje_gravamen}}</td>
-                        <td width='100' class="valoresClientes">{{:valor_unitario}}</td>
-                        <td width='100' class="valoresClientes">{{:valor_unitario_iva}}</td>
-                        <td width='100' class="valoresClientes">{{:valor_total_iva}}</td>
+                        <td width='70'>{{:lote}}</td>
+                        <td width='70'>{{:fecha_vencimiento}}</td>
+                        <!-- td width='70' class="valoresClientes">{{:porcentaje_gravamen}}</td>
+                        <td width='70' class="valoresClientes">{{:valor_unitario}}</td>
+                        <td width='0' class="valoresClientes">{{:valor_unitario_iva}}</td>
+                        <td width='80' class="valoresClientes">{{:valor_total_iva}}</td -->
                     </tr>
                 {{/for}}
                 
-                <tr class="valoresClientes">
+                <!-- tr class="valoresClientes">
                     <td colspan="8" class="rellenoCelda">
                         <div>
                             
@@ -186,7 +186,7 @@
                     <td>
                         {{:encabezado.total}}
                     </td>
-                </tr>
+                </tr -->
             </tbody>
         </table>
         

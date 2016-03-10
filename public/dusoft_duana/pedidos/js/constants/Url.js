@@ -74,7 +74,8 @@ define(["angular"], function(angular) {
                     'VALIDAR_ESTADO_TOTAL_PEDIDO' : BASE_URL + '/PedidosClientes/validarEstadoTotalValorPedido',
                     'INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO' : BASE_URL + '/PedidosClientes/insertarCantidadProductoDetallePedido',
                     
-                    'ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES' : BASE_URL + '/PedidosClientes/enviarNotificacionPedidosClientes'
+                    'ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES' : BASE_URL + '/PedidosClientes/enviarNotificacionPedidosClientes',
+                    'PRODUCTOS_COTIZACION': BASE_URL + '/PedidosClientes/ProductosCotizacion'
                     
                     
                 },

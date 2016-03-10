@@ -2206,6 +2206,9 @@ PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
 
     });
 };
+
+
+
 /**
  * @author Cristian Ardila
  * @fecha 09/11/2015
@@ -2220,8 +2223,24 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
     var that = this;
     var args = req.body.data;
     var cotizacion = args.pedidos_clientes.cotizacion;
-
-    that.m_pedidos_clientes.solicitarAutorizacion(cotizacion, function(estado, rows) {
+    var productos = args.pedidos_clientes.cotizacion.cotizacion.productos;
+    
+   // console.log("cotizacion ", cotizacion);
+   
+     var detalleCotizacion = []; 
+     productos[0].forEach(function(data) {
+         
+         detalleCotizacion.push("Detalle (  CodigoProducto: "        + data.codigo_producto 
+                                      + " - Descripcion: "           + data.descripcion 
+                                      + " - PrecioVenta: "           + data.precio_venta
+                                      + " - CantidadSolicitada: "    + data.cantidad_solicitada
+                                      + " - CantidadInicial: "       + data.cantidad_inicial);
+     });
+     
+     console.log("detalleCotizacion ", detalleCotizacion.toString())
+    res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes: []}));
+    return;
+   /* that.m_pedidos_clientes.solicitarAutorizacion(cotizacion, function(estado, rows) {
 
         if (!estado) {
             res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes: []}));
@@ -2233,7 +2252,7 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
             return;
         }
 
-    });
+    });*/
 };
 
 

@@ -26,9 +26,9 @@ define(["angular", "js/controllers",
         "ClientePedido",
         "VendedorPedidoCliente",
         "Usuario",
-        "webNotification","Laboratorio","Molecula",
+        "webNotification","Laboratorio","Molecula","ProductoPedidoCliente",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Pedido, Cliente, Vendedor, Sesion, webNotification,Laboratorio,Molecula) {
+                Empresa, Pedido, Cliente, Vendedor, Sesion, webNotification,Laboratorio,Molecula,Producto) {
 
             var that = this;
              
@@ -452,7 +452,35 @@ define(["angular", "js/controllers",
                     }
                 });
             };
+            
+            
+          that.buscar_detalle_cotizacion = function(cotizacion, callback) {
 
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: cotizacion,
+                            termino_busqueda: ''
+                        }
+                    }
+                };
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
+                     
+                    if (data.status === 200) {
+                        callback(true,data)
+                        //console.log("data ", data)
+                        //that.render_productos_cotizacion(data.obj.pedidos_clientes.lista_productos);
+                    }
+                });
+            };
+            
+            
+             $scope.Pedido = Pedido.get(
+                    Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                    );
             /**
              * +Descripcion: FUncion encargada de actualizar el estado de una cotizacion
              *               estado =6 (Se solicita autorizacion)
@@ -460,26 +488,42 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
             that.cambiarEstadoCotizacionAutorizacion = function(cotizacion) {
-                
                
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            cotizacion: {numeroCotizacion: cotizacion.get_numero_cotizacion(), estado: '6'}
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        that.buscar_cotizaciones('');
+                that.buscar_detalle_cotizacion(cotizacion, function(estado, data){
                         
-                    } else {
-                        AlertService.mostrarMensaje("warning", "Se genero un error");
-                    }
-                });
+                    var productos = data.obj.pedidos_clientes.lista_productos;
+                     $scope.Pedido.limpiar_productos();
+                        productos.forEach(function(data) {
+                          
+                            var _producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
+                           _producto.set_cantidad_inicial(data.cantidad_solicitada);
+                           _producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                           _producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
+                           $scope.Pedido.set_productos(_producto);
+                           
+                       });
+                    cotizacion.set_productos($scope.Pedido.get_productos())
+                       
+                       
+                     var obj = {
+                            session: $scope.session,
+                            data: {
+                                pedidos_clientes: {
+                                    cotizacion: {numeroCotizacion: cotizacion.get_numero_cotizacion(), estado: '6', cotizacion: cotizacion}
+                                }
+                            }
+                     };
+
+                    Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
+
+                        if (data.status === 200) {
+                            that.buscar_cotizaciones('');
+
+                        } else {
+                            AlertService.mostrarMensaje("warning", "Se genero un error");
+                        }
+                    });
+                });                            
             };
             
             /**

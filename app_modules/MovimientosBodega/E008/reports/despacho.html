@@ -27,6 +27,7 @@
             .footer{
                 margin-top:20px;
                 width:100%;
+                text-align:right;
             }
             
 
@@ -39,6 +40,10 @@
                 text-align: left;
             }
             
+            .rellenoCelda{
+                padding-top:15px;
+            }
+            
            @page 
             {
                 size: auto;   /* auto is the initial value */
@@ -49,8 +54,27 @@
         
         <!-- link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css" / -->
         
+        <script>
+            function onload(){
+                
+                var tipoDespacho = document.getElementById("tipoPedido").value;
+                //Se oculta los valores cuando el pedido no es de clientes
+                if(tipoDespacho !== '1'){
+                    
+                    var valoresClientes = document.getElementsByClassName('valoresClientes'), i;
+
+                    for (var i = 0; i < valoresClientes.length; i ++) {
+                        valoresClientes[i].style.display = 'none';
+                    }
+                }
+            }
+        </script>
+        
     </head>
-    <body>
+    
+
+    
+    <body onload="onload()">
              
      <!--  <div class='docInfo'>
            <div style='text-align:right;'><span>{{:encabezado.fecha_impresion}}</span></div>
@@ -58,7 +82,7 @@
        </div>
       //-->
      <br>
-        
+       <input type="hidden" id="tipoPedido" value="{{:encabezado.tipo_pedido}}" />
        <table class="table" width='90%' align="center">
             <tr>
                 <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
@@ -99,14 +123,14 @@
                     <th width='50' class='title'>Codigo</th>
                     <th class='title'>Descripci&oacute;n</th>
                     <th class='title'>Cant.</th>
-                    <!--<th class='title'>Cum</th>
-                    <th class='title'>Invima</th>//-->
+                    <!-- th class='title'>Cum</th -->
+                    <th class='title'>Invima</th>
                     <th class='title'>Lote</th>
                     <th class='title' >F/vto</th>
-                    <th class='title' >% GRAV</th>
-                    <th class='title'>Precio</th>
-                    <th class='title'>V/u+iva
-                    <th class='title'>Total</th>
+                    <th class='title valoresClientes' >% GRAV</th>
+                    <th class='title valoresClientes'>Precio</th>
+                    <th class='title valoresClientes'>V/u+iva
+                    <th class='title valoresClientes'>Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -115,38 +139,52 @@
                         <td width='100'>{{:codigo_producto}}</td>
                         <td>{{:nombre}}</td>
                         <td >{{:cantidad}}</td>
-                        <!--<td>{{:codigo_cum}}</td>
-                        <td>{{:codigo_invima}}</td>//-->
+                        <!-- td>{{:codigo_cum}}</td -->
+                        <td>{{:codigo_invima}}</td>
                         <td width='80'>{{:lote}}</td>
                         <td width='100'>{{:fecha_vencimiento}}</td>
-                        <td width='100'>{{:porcentaje_gravamen}}</td>
-                        <td width='100'>{{:valor_unitario}}</td>
-                        <td width='100'>{{:valor_unitario_iva}}</td>
-                        <td width='100'>{{:valor_total_iva}}</td>
+                        <td width='100' class="valoresClientes">{{:porcentaje_gravamen}}</td>
+                        <td width='100' class="valoresClientes">{{:valor_unitario}}</td>
+                        <td width='100' class="valoresClientes">{{:valor_unitario_iva}}</td>
+                        <td width='100' class="valoresClientes">{{:valor_total_iva}}</td>
                     </tr>
                 {{/for}}
                 
-                <tr>
-                    <td colspan="9">
-                        <table class='footer'>
-                             <tr>    
-                                 <td>
-                                     Subtotal : {{:encabezado.subTotal}}
-                                 </td>
-                             </tr>
-                             <tr>
-                                 <td>
-                                     Total Iva : {{:encabezado.totalIva}}
-                                 </td>
-                             </tr>
-                             <tr>
-
-                                 <td>
-                                     Total  : {{:encabezado.total}}
-                                 </td>
-                             </tr>
-
-                         </table>
+                <tr class="valoresClientes">
+                    <td colspan="8" class="rellenoCelda">
+                        <div>
+                            
+                        </div
+                    </td>
+                    <td class='title rellenoCelda'>
+                        Subtotal 
+                    </td>
+                    <td class="rellenoCelda">
+                        {{:encabezado.subTotal}}
+                    </td>
+                </tr>
+                
+                <tr class="valoresClientes">
+                    <td colspan="8">
+                        
+                    </td>
+                     <td class='title'>
+                        Total Iva 
+                    </td>
+                    <td>
+                        {{:encabezado.totalIva}}
+                    </td>
+                </tr>
+                
+                <tr class="valoresClientes">
+                    <td colspan="8">
+                        
+                    </td>
+                    <td class='title'>
+                        Total  
+                    </td>
+                    <td>
+                        {{:encabezado.total}}
                     </td>
                 </tr>
             </tbody>
@@ -155,7 +193,7 @@
 
         <p class='input-group'></p>
         <p class='input-group'></p>
-        <table  width='90%' align="center" >
+        <table  width='90%' align="center" style="margin-top:20px" >
             <tr align='center'>
                 <td>
                     _______________________________

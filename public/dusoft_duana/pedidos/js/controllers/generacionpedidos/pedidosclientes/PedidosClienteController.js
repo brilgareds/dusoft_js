@@ -1196,6 +1196,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
+             
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
                  
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -1263,32 +1264,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
             
             
-            that.init = function(callback) {
+            that.init = function() {
 
-              callback();
-            };
-
-
-         
-            that.init(function() {            
-                         
-                         if(!Sesion.getUsuarioActual().getEmpresa()){
-                             AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
-                         }else {
-                          
-                            if (!Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado()||
-                                Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
-
-                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
-
-                            }else{
-                               
-                                if (!Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) { 
-                                    
-                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
-                                }else{
-                                
-                                    that.buscar_vendedores(function() {
+                     that.buscar_vendedores(function() {
 
                                     });
                                     that.cargar_permisos();
@@ -1297,26 +1275,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     }
                                     if ($scope.Pedido.get_numero_cotizacion() > 0) {
                                         that.gestionar_consultas_cotizaciones();
-                                    }                           
-                                }   
-                            }
-                         }                        
-                     });
+                                    }     
+            };
+
+            that.init();
+         
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.$$watchers = null;
-
-
                 // set localstorage
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);
                 localStorageService.get("estadoPedido", null);
 
-                //socket.removeAllListeners();
-                // datos view
-                //$scope.datos_view = null;
             });
         }]);
 });

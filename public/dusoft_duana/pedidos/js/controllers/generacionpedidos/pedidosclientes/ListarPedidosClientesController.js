@@ -801,24 +801,20 @@ define(["angular", "js/controllers",
              */
             socket.on("onListarEstadoPedido", function(datos) {
                
-               console.log("Frontend onListarEstadoPedido");
-                console.log("datos ", datos);
                 if (datos.status === 200) {
                     
                     var estado = ['Inactivo', 'No asignado', 'Anulado',
                         'Entregado', 'Debe autorizar cartera']
-                    console.log("$scope.Empresa.get_pedidos() ", $scope.Empresa.get_pedidos());
+                   
                     $scope.Empresa.get_pedidos().forEach(function(data) {
                         
-                        console.log("datos.obj.numero_pedido ", datos.obj.numero_pedido);
                         if (datos.obj.numero_pedido === data.get_numero_pedido()) {
                             data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);
                         }
                     });
-                       console.log("datos.obj.pedidos_clientes[0].estado ", datos.obj.pedidos_clientes[0].estado)
+                      
                      if (datos.obj.pedidos_clientes[0].estado === '4') {
                         
-                        console.log("$scope.datos_view.opciones.sw_notificar_aprobacion ", $scope.datos_view.opciones.sw_notificar_aprobacion);
                         $scope.notificacionPedidoAutorizar++;
                         if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {                             
                             that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido );

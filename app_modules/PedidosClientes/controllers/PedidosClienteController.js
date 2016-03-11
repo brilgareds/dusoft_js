@@ -1437,7 +1437,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
     var cotizacion = args.pedidos_clientes.cotizacion;
         cotizacion.usuario_id = req.session.user.usuario_id;
     var productos = cotizacion.productos;
-    var  paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion,productos,cotizacion.usuario_id,1);
+   
     
     if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
@@ -1456,10 +1456,13 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
     
     var paramLogExistencia = {
         numero: cotizacion.numero_cotizacion,
-        tipo: '0',
-        pendiente: '0',
+        tipo: '0'
+       
     };
-        
+    /*Se invoca la funcion encargada de traer los parametros para actualizar el estado
+      del pedido a aprobado o denegado por cartera*/
+    var  paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion,productos,cotizacion.usuario_id,cotizacion.observacion_cartera,cotizacion.total,1);
+   
     /**
      * +Descripcion: Se invoca un modelo encargado de insertar los registros
      * a una tabla log de seguimiento para cuando se realice la aprobacion
@@ -1478,11 +1481,9 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
       }).then(function(resultado){ 
             res.send(G.utils.r(req.url, 'Observacion registrada correctamente', 200, {pedidos_clientes: {}}));
             that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion); 
-            console.log("resultado ", resultado);
-            if(resultado.length > 0){
-                 if(resultado[0].pendiente === '0'){
-                        return G.Q.ninvoke(that.m_pedidos_clientes_log,'logAprobacionCotizacion', paramLogCliente);     
-                 }
+         
+            if(resultado.length > 0){              
+                return G.Q.ninvoke(that.m_pedidos_clientes_log,'logAprobacionCotizacion', paramLogCliente);                  
             }               
             return;
             
@@ -2241,19 +2242,20 @@ PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
  * +Descripcion Metodo el cual se encarga de ordenar los parametros para los
  *              logs de trazabilidad de ventas
  */
-function __parametrosLogs(numero,productos,usuario, accion) {
+function __parametrosLogs(numero,productos,usuario,observacion,total, accion) {
+    
     
     var detalleCotizacion = []; 
     var paramLogCliente ={};
-    productos.forEach(function(data) {        
+   /* productos.forEach(function(data) {        
          detalleCotizacion.push("Detalle (  CodigoProducto: "        + data.codigo_producto 
                                       + " - Descripcion: "           + data.descripcion 
                                       + " - PrecioVenta: "           + data.precio_venta
                                       + " - CantidadSolicitada: "    + data.cantidad_solicitada
                                       + " - CantidadInicial: "       + data.cantidad_inicial + ")");
-     });
+     });*/
     
-    
+    detalleCotizacion.push("Detalle (  Cantidad de items: " +productos.length+ " productos, Total: "+total+")");
     if( accion === 1){
         
         paramLogCliente = {
@@ -2262,12 +2264,11 @@ function __parametrosLogs(numero,productos,usuario, accion) {
                pendiente: '1',
                numero: numero,
                solicitud: detalleCotizacion.toString(),          
-               aprobacion: "OK",
+               aprobacion: observacion,
                fecha_aprobacion: 'now()',
-               usuario_id:usuario
+               usuario_aprobacion:usuario
           }
-       };
-       
+       };       
     }
      
      if( accion === 0){
@@ -2279,7 +2280,7 @@ function __parametrosLogs(numero,productos,usuario, accion) {
                numero: numero,
                solicitud: detalleCotizacion.toString(),
                fecha_solicitud: 'now()',
-               aprobacion: '',
+               aprobacion: observacion,
                fecha_aprobacion: null,
                usuario_id:usuario
            }
@@ -2297,15 +2298,17 @@ function __parametrosLogs(numero,productos,usuario, accion) {
  *               para solicitar aprobacion por cartera
  */
 PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
-
+    
     var that = this;
     var args = req.body.data;
     var cotizacion = args.pedidos_clientes.cotizacion;
     var productos = args.pedidos_clientes.cotizacion.cotizacion.productos;
     cotizacion.usuario_id = req.session.user.usuario_id; 
-    var  paramLogCliente = __parametrosLogs(cotizacion.numeroCotizacion,productos,cotizacion.usuario_id,0);
+    var  paramLogCliente = __parametrosLogs(cotizacion.numeroCotizacion,productos[0],cotizacion.usuario_id,"Se solicita aprobacion","",0);
+
     
-    
+   // console.log("cotizacion ", cotizacion)
+   // return res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion para solicitar autorizacion a cartera', 200, {pedidos_clientes: []}));
     /**
      * +Descripcion: Se invoca un modelo encargado de insertar los registros
      * a una tabla log de seguimiento para cuando realiza la solicitud de autorizar

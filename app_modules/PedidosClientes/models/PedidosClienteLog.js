@@ -118,10 +118,12 @@ PedidosClienteLog.prototype.logTrazabilidadVentas = function(cotizacion, callbac
             fecha_aprobacion:cotizacion.detalle.fecha_aprobacion,
             usuario_id:cotizacion.detalle.usuario_id          
         }).
-    then(function(resultado){     
+    then(function(resultado){  
+       
         callback(false, resultado);
        
-    }).catch(function(err){       
+    }).catch(function(err){  
+       
         callback(err);
     }).done();
 };
@@ -140,9 +142,12 @@ PedidosClienteLog.prototype.logTrazabilidadVentas = function(cotizacion, callbac
  * @Funciones que hacen uso del model : 
  *  --PedidosCliente.prototype.observacionCarteraCotizacion
  */
- 
 PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callback) {
    
+   console.log("************PedidosClienteLog.prototype.logAprobacionCotizacion****************");
+   console.log("************PedidosClienteLog.prototype.logAprobacionCotizacion****************");
+   console.log("************PedidosClienteLog.prototype.logAprobacionCotizacion****************");
+   console.log("cotizacion ", cotizacion);
    G.knex('ventas_trazabilidad')
     .where('numero', cotizacion.detalle.numero)
     .update({
@@ -151,11 +156,14 @@ PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callb
             numero:cotizacion.detalle.numero,
             solicitud: cotizacion.detalle.solicitud,
             aprobacion: cotizacion.detalle.aprobacion,
-            fecha_aprobacion:cotizacion.detalle.fecha_aprobacion
+            fecha_aprobacion:cotizacion.detalle.fecha_aprobacion,
+            usuario_aprobacion:cotizacion.detalle.usuario_aprobacion
             
     }).then(function(rows) { 
+        console.log("rows ", rows)
         callback(false, rows);
     }).catch(function(error){
+        console.log("error ", error);
         callback(error);
     });
 };
@@ -164,27 +172,20 @@ PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callb
 
 /*
  * @author : Cristian Ardila
- * Descripcion : Funcion encargada de consultar la existencia de un pedido ó
- *               cotización
+ * Descripcion : Funcion encargada de consultar el estado de una cotizacion
  * @fecha: 11/03/2016
  * @Funciones que hacen uso del model : 
- *  --PedidosCliente.prototype.consultarEstadoCotizacion
- *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
- *  --PedidosCliente.prototype.generarPedido
- *  --PedidosCliente.prototype.eliminarCotizacion
+ *  --PedidosCliente.prototype.observacionCarteraCotizacion
  */
 PedidosClienteLog.prototype.logConsultarExistenciaNumero = function(parametro, callback) {
     
-    console.log("parametro ", parametro);
     G.knex('ventas_trazabilidad').where({
         numero: parametro.numero,
-        tipo: parametro.tipo,
-        pendiente: parametro.pendiente,
+        tipo: parametro.tipo
+     
     }).select('pendiente').then(function(rows) {
-         console.log("rows ", rows);
         callback(false, rows);
     }).catch (function(error) {
-        console.log("error ", error);
         callback(error);
     });
 };

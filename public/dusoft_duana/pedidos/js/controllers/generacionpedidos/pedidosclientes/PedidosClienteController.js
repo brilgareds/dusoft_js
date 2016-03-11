@@ -1259,23 +1259,49 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-            that.init = function() {
+            
+            
+            
+            
+            that.init = function(callback) {
 
-                that.buscar_vendedores(function() {
-
-                });
-                that.cargar_permisos();
-                if ($scope.Pedido.get_numero_pedido() > 0) {
-                    that.gestionar_consultas_pedidos();
-                }
-                if ($scope.Pedido.get_numero_cotizacion() > 0) {
-                    that.gestionar_consultas_cotizaciones();
-                }
+              callback();
             };
 
 
          
-            that.init();
+            that.init(function() {            
+                         
+                         if(!Sesion.getUsuarioActual().getEmpresa()){
+                             AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+                         }else {
+                          
+                            if (!Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado()||
+                                Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+
+                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+
+                            }else{
+                               
+                                if (!Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) { 
+                                    
+                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                }else{
+                                
+                                    that.buscar_vendedores(function() {
+
+                                    });
+                                    that.cargar_permisos();
+                                    if ($scope.Pedido.get_numero_pedido() > 0) {
+                                        that.gestionar_consultas_pedidos();
+                                    }
+                                    if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                                        that.gestionar_consultas_cotizaciones();
+                                    }                           
+                                }   
+                            }
+                         }                        
+                     });
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

@@ -37,7 +37,8 @@ define(["angular", "js/controllers",
                 usuario_id: Sesion.getUsuarioActual().getId(),
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
-
+            
+            
             // Definicion Variables            
             $scope.Empresa = Empresa;
 
@@ -92,7 +93,8 @@ define(["angular", "js/controllers",
                 ],
                         
                 // Opciones del Modulo 
-                opciones: Sesion.getUsuarioActual().getModuloActual().opciones               
+                opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
+                inactivarTab: false
             };
             
             
@@ -265,7 +267,7 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-                
+         
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
                 
                 if(terminoBusqueda){
@@ -291,7 +293,7 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_COTIZACIONES, "POST", obj, function(data) {
-
+                        
                     if (data.status === 500) {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         return;
@@ -331,7 +333,11 @@ define(["angular", "js/controllers",
                 
             };
             
-            
+            /**
+             * @author Cristian Ardila
+             * @fecha 10/03/2016
+             * +Descripcion Metodo encargado de modelar el detallado de una cotizacion
+             */
             that.render_cotizaciones = function(cotizaciones) {
 
                 $scope.Empresa.limpiar_cotizaciones();
@@ -353,7 +359,7 @@ define(["angular", "js/controllers",
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
-
+                    $scope.Empresa.get_cotizaciones();
             };
 
             $scope.lista_cotizaciones_clientes = {
@@ -443,8 +449,8 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_ESTADO_COTIZACION, "POST", obj, function(data) {
-
-
+                    
+                  
                     if (data.status === 200) {
                         that.buscar_cotizaciones('');
                     } else {
@@ -476,11 +482,7 @@ define(["angular", "js/controllers",
             };
             
             
-             $scope.Pedido = Pedido.get(
-                    Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
-                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
-                    );
+             
             /**
              * +Descripcion: FUncion encargada de actualizar el estado de una cotizacion
              *               estado =6 (Se solicita autorizacion)
@@ -515,7 +517,7 @@ define(["angular", "js/controllers",
                      };
 
                     Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
-
+                         
                         if (data.status === 200) {
                             that.buscar_cotizaciones('');
 
@@ -725,20 +727,9 @@ define(["angular", "js/controllers",
 
             };
             
-
-            that.init = function() {
-
-                that.validacion_inicial();
-
-                that.cargar_permisos();
-
-                that.buscar_cotizaciones('');
-
-                that.buscar_pedidos('','');
-
-
-            };
-
+            
+            
+               
 
             /**
              * @author Cristian Ardila
@@ -810,20 +801,24 @@ define(["angular", "js/controllers",
              */
             socket.on("onListarEstadoPedido", function(datos) {
                
-           
-            
+               console.log("Frontend onListarEstadoPedido");
+                console.log("datos ", datos);
                 if (datos.status === 200) {
-
+                    
                     var estado = ['Inactivo', 'No asignado', 'Anulado',
                         'Entregado', 'Debe autorizar cartera']
+                    console.log("$scope.Empresa.get_pedidos() ", $scope.Empresa.get_pedidos());
                     $scope.Empresa.get_pedidos().forEach(function(data) {
+                        
+                        console.log("datos.obj.numero_pedido ", datos.obj.numero_pedido);
                         if (datos.obj.numero_pedido === data.get_numero_pedido()) {
                             data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);
                         }
                     });
-                       
+                       console.log("datos.obj.pedidos_clientes[0].estado ", datos.obj.pedidos_clientes[0].estado)
                      if (datos.obj.pedidos_clientes[0].estado === '4') {
                         
+                        console.log("$scope.datos_view.opciones.sw_notificar_aprobacion ", $scope.datos_view.opciones.sw_notificar_aprobacion);
                         $scope.notificacionPedidoAutorizar++;
                         if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {                             
                             that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido );
@@ -833,10 +828,52 @@ define(["angular", "js/controllers",
             });
             
             
-           
+                that.init= function(callback){
+                
+                    callback();
+                };
           
+               
+                that.init(function() {            
+                         
+                         if(!Sesion.getUsuarioActual().getEmpresa()){
+                             AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+                         }else {
+                          
+                            if (!Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado()||
+                                Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
 
-            that.init();
+                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+
+                            }else{
+                               
+                                if (!Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) { 
+                                    
+                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                }else{
+                                
+                                   $scope.Pedido = Pedido.get(
+                                        Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                                        Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                                        Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                                    );
+
+                                    that.validacion_inicial();
+
+                                    that.cargar_permisos();
+
+                                    that.buscar_cotizaciones('');
+
+                                    that.buscar_pedidos('','');  
+                                    
+                                    $scope.datos_view.inactivarTab = true;
+                                }   
+                            }
+                         }                        
+                     });
+           
+
+            
           
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

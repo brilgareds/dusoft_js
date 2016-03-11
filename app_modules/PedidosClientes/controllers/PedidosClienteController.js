@@ -1435,7 +1435,10 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
     }
 
     var cotizacion = args.pedidos_clientes.cotizacion;
-
+        cotizacion.usuario_id = req.session.user.usuario_id;
+    var productos = cotizacion.productos;
+    var  paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion,productos,cotizacion.usuario_id,1);
+    
     if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
         return;
@@ -1450,18 +1453,43 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'observacion_cartera no esta definido o esta vacio', 404, {}));
         return;
     }
-
-    that.m_pedidos_clientes.observacion_cartera_cotizacion(cotizacion, function(err, rows, result) {
-
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-            return;
-        } else {
-            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
+    
+    var paramLogExistencia = {
+        numero: cotizacion.numero_cotizacion,
+        tipo: '0',
+        pendiente: '0',
+    };
+        
+    /**
+     * +Descripcion: Se invoca un modelo encargado de insertar los registros
+     * a una tabla log de seguimiento para cuando se realice la aprobacion
+     * de la cotizacion por parte de cartera
+     * @fecha: 29/09/2015
+     * @author Cristian Ardila
+     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+     */
+    G.Q.ninvoke(that.m_pedidos_clientes,'observacion_cartera_cotizacion', cotizacion).then(function(resultado){ 
+        if (resultado.rowCount === 0) {
+               throw 'Error actualizando la observacion de cartera';
+           } else {                      
+              return G.Q.ninvoke(that.m_pedidos_clientes_log,'logConsultarExistenciaNumero', paramLogExistencia);            
+           }    
+           
+      }).then(function(resultado){ 
             res.send(G.utils.r(req.url, 'Observacion registrada correctamente', 200, {pedidos_clientes: {}}));
+            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion); 
+            console.log("resultado ", resultado);
+            if(resultado.length > 0){
+                 if(resultado[0].pendiente === '0'){
+                        return G.Q.ninvoke(that.m_pedidos_clientes_log,'logAprobacionCotizacion', paramLogCliente);     
+                 }
+            }               
             return;
-        }
-    });
+            
+      }).fail(function(err){      
+            res.send(G.utils.r(req.url, err, 500, {}));
+      }).done();
+  
 };
 
 
@@ -2207,16 +2235,66 @@ PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
     });
 };
 
-
-
+/**
+ * @author Cristian Ardila
+ * @fecha  11/03/2016
+ * +Descripcion Metodo el cual se encarga de ordenar los parametros para los
+ *              logs de trazabilidad de ventas
+ */
+function __parametrosLogs(numero,productos,usuario, accion) {
+    
+    var detalleCotizacion = []; 
+    var paramLogCliente ={};
+    productos.forEach(function(data) {        
+         detalleCotizacion.push("Detalle (  CodigoProducto: "        + data.codigo_producto 
+                                      + " - Descripcion: "           + data.descripcion 
+                                      + " - PrecioVenta: "           + data.precio_venta
+                                      + " - CantidadSolicitada: "    + data.cantidad_solicitada
+                                      + " - CantidadInicial: "       + data.cantidad_inicial + ")");
+     });
+    
+    
+    if( accion === 1){
+        
+        paramLogCliente = {
+           detalle: {
+               tipo: 0,
+               pendiente: '1',
+               numero: numero,
+               solicitud: detalleCotizacion.toString(),          
+               aprobacion: "OK",
+               fecha_aprobacion: 'now()',
+               usuario_id:usuario
+          }
+       };
+       
+    }
+     
+     if( accion === 0){
+         
+        paramLogCliente = {
+           detalle: {
+               tipo: 0,
+               pendiente: 0,
+               numero: numero,
+               solicitud: detalleCotizacion.toString(),
+               fecha_solicitud: 'now()',
+               aprobacion: '',
+               fecha_aprobacion: null,
+               usuario_id:usuario
+           }
+        };
+        
+     }
+    
+    return paramLogCliente;
+    
+}
 /**
  * @author Cristian Ardila
  * @fecha 09/11/2015
  * +Descripcion: Controlador encargado de actualizar el estado de la cotizacion
  *               para solicitar aprobacion por cartera
- * @param {type} req
- * @param {type} res
- * @returns {undefined}
  */
 PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
 
@@ -2225,77 +2303,34 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
     var cotizacion = args.pedidos_clientes.cotizacion;
     var productos = args.pedidos_clientes.cotizacion.cotizacion.productos;
     cotizacion.usuario_id = req.session.user.usuario_id; 
-    var detalleCotizacion = []; 
-    
-     productos[0].forEach(function(data) {
-         
-         detalleCotizacion.push("Detalle (  CodigoProducto: "        + data.codigo_producto 
-                                      + " - Descripcion: "           + data.descripcion 
-                                      + " - PrecioVenta: "           + data.precio_venta
-                                      + " - CantidadSolicitada: "    + data.cantidad_solicitada
-                                      + " - CantidadInicial: "       + data.cantidad_inicial);
-     });
-     
-    
-     var paramLogCliente = {
-        detalle: {
-            tipo: 0,
-            pendiente: 0,
-            numero: cotizacion.numeroCotizacion,
-            solicitud: detalleCotizacion.toString(),
-            fecha_solicitud: 'now()',
-            aprobacion: '',
-            fecha_aprobacion: null,
-            usuario_id:cotizacion.usuario_id
-        }
-    };
+    var  paramLogCliente = __parametrosLogs(cotizacion.numeroCotizacion,productos,cotizacion.usuario_id,0);
     
     
-     console.log("paramLogCliente ", paramLogCliente)
-     
-
     /**
      * +Descripcion: Se invoca un modelo encargado de insertar los registros
-     * a una tabla log de seguimiento para cuando se quiera eliminar un producto
-     * de una cotizacion o un pedido
+     * a una tabla log de seguimiento para cuando realiza la solicitud de autorizar
+     * una cotizacion pero previamente se invoca el modelo para cambiar el estado
+     * de la cotizacion para solicitar autorizacion por cartera
      * @fecha: 29/09/2015
      * @author Cristian Ardila
      * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
      */
-    G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogCliente).then(function(resultado){ 
-        
+    G.Q.ninvoke(that.m_pedidos_clientes,'solicitarAutorizacion', cotizacion).then(function(resultado){ 
         if (resultado.rowCount === 0) {
                throw 'Error actualizando la observacion de cartera';
-           } else {
-              
-               res.send(G.utils.r(req.url, 'Producto añadido correctamente', 200, {pedidos_clientes: {}}));            
-           }                                          
-      }).fail(function(err){      
-        res.send(G.utils.r(req.url, err, 500, {}));
-      }).done();
-     
-     
-     
-   /* that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function() {
-
+           } else {             
+              return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogCliente);            
+           }    
+           
+      }).then(function(resultado){ 
+            res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion para solicitar autorizacion a cartera', 200, {pedidos_clientes: []}));
+            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion); 
+            return; 
             
-    }); */
-    
-    res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes: []}));
-    return;
-   /* that.m_pedidos_clientes.solicitarAutorizacion(cotizacion, function(estado, rows) {
-
-        if (!estado) {
-            res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion', 200, {pedidos_clientes: []}));
-            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion);
-            return;
-        }
-        else {
-            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
-            return;
-        }
-
-    });*/
+      }).fail(function(err){      
+            res.send(G.utils.r(req.url, err, 500, {}));
+      }).done();
+      
 };
 
 

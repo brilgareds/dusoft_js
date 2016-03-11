@@ -102,14 +102,12 @@ PedidosClienteLog.prototype.logEliminarProductoCotizacion = function(paramLogCli
  * a una tabla log de seguimiento
  * @author Cristian Ardila
  * @fecha 29/09/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.solicitarAutorizacion
  */
 PedidosClienteLog.prototype.logTrazabilidadVentas = function(cotizacion, callback) {
-
-   console.log("<<<<<<<<<<<<< PedidosClienteLog.prototype.logTrazabilidadVentas >>>>>>>>>>>>>>>>>>");
-   console.log("paramLogCliente ", cotizacion);
-   
-   //callback();
-     G.knex("ventas_trazabilidad").
+ 
+    G.knex("ventas_trazabilidad").
     insert({
             tipo: cotizacion.detalle.tipo,
             pendiente:cotizacion.detalle.pendiente, 
@@ -118,19 +116,77 @@ PedidosClienteLog.prototype.logTrazabilidadVentas = function(cotizacion, callbac
             fecha_solicitud: cotizacion.detalle.fecha_solicitud,
             aprobacion: cotizacion.detalle.aprobacion,
             fecha_aprobacion:cotizacion.detalle.fecha_aprobacion,
-            usuario_id:cotizacion.detalle.usuario_id
-            
+            usuario_id:cotizacion.detalle.usuario_id          
         }).
-    then(function(resultado){
-         console.log("resultado ", resultado);
+    then(function(resultado){     
         callback(false, resultado);
        
-    }).catch(function(err){
-         console.log("err ", err);
+    }).catch(function(err){       
         callback(err);
-        
     }).done();
 };
 
+
+
+
+/**
+ * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
+ * @param {funcion} callback
+ * @returns {void}
+ * +Descripcion: Metodo encargado de encargado de insertar los registros
+ * a una tabla log de seguimiento
+ * @author Cristian Ardila
+ * @fecha 29/09/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.observacionCarteraCotizacion
+ */
+ 
+PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callback) {
+   
+   G.knex('ventas_trazabilidad')
+    .where('numero', cotizacion.detalle.numero)
+    .update({
+            tipo: cotizacion.detalle.tipo,
+            pendiente:cotizacion.detalle.pendiente, 
+            numero:cotizacion.detalle.numero,
+            solicitud: cotizacion.detalle.solicitud,
+            aprobacion: cotizacion.detalle.aprobacion,
+            fecha_aprobacion:cotizacion.detalle.fecha_aprobacion
+            
+    }).then(function(rows) { 
+        callback(false, rows);
+    }).catch(function(error){
+        callback(error);
+    });
+};
+
+
+
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar la existencia de un pedido ó
+ *               cotización
+ * @fecha: 11/03/2016
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.consultarEstadoCotizacion
+ *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
+ *  --PedidosCliente.prototype.generarPedido
+ *  --PedidosCliente.prototype.eliminarCotizacion
+ */
+PedidosClienteLog.prototype.logConsultarExistenciaNumero = function(parametro, callback) {
+    
+    console.log("parametro ", parametro);
+    G.knex('ventas_trazabilidad').where({
+        numero: parametro.numero,
+        tipo: parametro.tipo,
+        pendiente: parametro.pendiente,
+    }).select('pendiente').then(function(rows) {
+         console.log("rows ", rows);
+        callback(false, rows);
+    }).catch (function(error) {
+        console.log("error ", error);
+        callback(error);
+    });
+};
 
 module.exports = PedidosClienteLog;

@@ -11,6 +11,8 @@
                 font: 7pt Verdana, Geneva, Arial, Helvetica, sans-serif; 
                 margin: 1 0 1 0px; 
                 background-color: #ffffff; 
+                overflow:visible;
+                overflow-y:visible;
             } 
             
             .title{
@@ -65,13 +67,6 @@
     
     <body>
              
-     <!--  <div class='docInfo'>
-           <div style='text-align:right;'><span>{{:encabezado.fecha_impresion}}</span></div>
-           <div>Imprime: <span>{{:encabezado.usuario_imprime}}</span></div>
-       </div>
-      //-->
-     <br>
-       <input type="hidden" id="tipoPedido" value="{{:encabezado.tipo_pedido}}" />
        <table class="table" width='95%' align="center">
             <tr>
                 <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
@@ -101,10 +96,6 @@
                 {{/props}}
             </table>
         </div>
-                
-        <p class='input-group'></p>
-        <p class='input-group'></p>
-        <p class='input-group'></p>
         
         {{if encabezado.tipo_pedido == '1'}}
             <table class="table table-bordered detalle" width='95%' align="center" cellspacing="0">
@@ -210,11 +201,7 @@
             </table>
         
         {{/if}}
-        
-        
-        <p class='input-group'></p>
-        <p class='input-group'></p>
-        <table  width='90%' align="center" style="margin-top:20px" >
+        <table  width='95%' align="center" style="margin-top:20px" >
             <tr align='center'>
                 <td>
                     _______________________________
@@ -237,7 +224,7 @@
                     Verifico
                 </td>
             </tr>
-        </table -->
+        </table>
         
     </body>
 </html>

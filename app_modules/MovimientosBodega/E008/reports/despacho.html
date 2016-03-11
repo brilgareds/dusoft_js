@@ -25,8 +25,9 @@
             }
             
             .footer{
-                margin-top:80px;
+                margin-top:20px;
                 width:100%;
+                text-align:right;
             }
             
 
@@ -39,17 +40,29 @@
                 text-align: left;
             }
             
+            .rellenoCelda{
+                padding-top:15px;
+            }
+            
            @page 
             {
                 size: auto;   /* auto is the initial value */
                 margin: 0mm;  /* this affects the margin in the printer settings */
+            }
+            
+            .thDetalle{
+                width:25%;            
             }
 
         </style>
         
         <!-- link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css" / -->
         
+        
     </head>
+    
+
+    
     <body>
              
      <!--  <div class='docInfo'>
@@ -58,7 +71,7 @@
        </div>
       //-->
      <br>
-        
+       <input type="hidden" id="tipoPedido" value="{{:encabezado.tipo_pedido}}" />
        <table class="table" width='90%' align="center">
             <tr>
                 <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
@@ -93,38 +106,115 @@
         <p class='input-group'></p>
         <p class='input-group'></p>
         
-       <table class="table table-bordered detalle" width='90%' align="center">
-            <thead>
+        {{if encabezado.tipo_pedido == '1'}}
+            <table class="table table-bordered detalle" width='95%' align="center" cellspacing="0">
                 <tr>
-                    <th width='50' class='title'>Codigo</th>
-                    <th class='title'>Descripci&oacute;n</th>
-                    <th class='title'>Cant.</th>
-                    <!--<th class='title'>Cum</th>
-                    <th class='title'>Invima</th>//-->
-                    <th class='title'>Lote</th>
-                    <th class='title' >F/vto</th>
+                   <th class='title'>Producto</th>      
+                   <th class='title valoresClientes' >Cant</th>
+                    <th class='title valoresClientes' >% GRAV</th>
+                    <th class='title valoresClientes'>Precio</th>
+                    <!-- th class='title valoresClientes'>V/u+iva -->
+                    <th class='title valoresClientes'>Total</th>
                 </tr>
-            </thead>
-            <tbody>
                 {{for detalle}}
+
                     <tr>
-                        <td width='100'>{{:codigo_producto}}</td>
-                        <td>{{:nombre}}</td>
-                        <td >{{:cantidad}}</td>
-                        <!--<td>{{:codigo_cum}}</td>
-                        <td>{{:codigo_invima}}</td>//-->
-                        <td width='80'>{{:lote}}</td>
-                        <td width='100'>{{:fecha_vencimiento}}</td>
+                      <td>{{:codigo_producto}}- {{:nombre}}</td>
+                      <td width='60' class="valoresClientes">{{:cantidad}}</td>
+                      <td width='70' class="valoresClientes">{{:porcentaje_gravamen}}</td>
+                      <td width='70' class="valoresClientes">{{:valor_unitario}}</td>
+                      <!-- td width='70' class="valoresClientes">{{:valor_unitario_iva}}</td -->
+                      <td width='80' class="valoresClientes">{{:valor_total_iva}}</td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding-bottom:5px" colspan="6">
+                             <table class="table table-bordered detalle" style="table-layout:auto" width='100%' align="center">
+
+                                <tbody>
+                                    <tr>
+                                         <td class='thDetalle'><span class='title'>Invima:</span> {{:codigo_invima}}</td>
+                                         <td class='thDetalle'><span class='title'>Lote:</span> {{:lote}}</td>
+                                         <td class='thDetalle'><span class='title'>F/vto:</span> {{:fecha_vencimiento}}</td>
+                                         <td ></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </td>
                     </tr>
                 {{/for}}
-            </tbody>
-        </table>
+                
+                <tr class="valoresClientes">
+                    <td colspan="3" class="rellenoCelda">
+                        <div>
+                            
+                        </div
+                    </td>
+                    <td class='title rellenoCelda'>
+                        Subtotal 
+                    </td>
+                    <td class="rellenoCelda">
+                        {{:encabezado.subTotal}}
+                    </td>
+                </tr>
+                
+                <tr class="valoresClientes">
+                    <td colspan="3">
+                        
+                    </td>
+                     <td class='title'>
+                        Total Iva 
+                    </td>
+                    <td>
+                        {{:encabezado.totalIva}}
+                    </td>
+                </tr>
+                
+                <tr class="valoresClientes">
+                    <td colspan="3">
+                        
+                    </td>
+                    <td class='title'>
+                        Total  
+                    </td>
+                    <td>
+                        {{:encabezado.total}}
+                    </td>
+                </tr>
+            </table>
+        {{/if}}
         
-        <table class='footer'>
-        </table>
+        {{if encabezado.tipo_pedido == '2'}}
+            <table class="table table-bordered detalle" width='95%' align="center">
+                <tr>
+                   <th class='title'>Producto</th>      
+                   <th class='title' >Cant</th>
+                   <th class='title'>Invima</th>
+                   <th class='title'>Lote</th>
+                   <th class='title'>F/vto</th>
+                </tr>
+                
+                {{for detalle}}
+
+                    <tr>
+                      <td>{{:codigo_producto}} - {{:nombre}}</td>
+                      <td width='45'>{{:cantidad}}</td>
+                      <td width='85'>{{:codigo_invima}}</td>
+                      <td width='80'>{{:lote}}</td>
+                      <td width='65'>{{:fecha_vencimiento}}</td>
+                    </tr>
+
+                {{/for}}
+                
+            </table>
+        
+        {{/if}}
+        
+        
         <p class='input-group'></p>
         <p class='input-group'></p>
-        <table  width='90%' align="center" >
+        <table  width='90%' align="center" style="margin-top:20px" >
             <tr align='center'>
                 <td>
                     _______________________________
@@ -147,7 +237,7 @@
                     Verifico
                 </td>
             </tr>
-        </table>
+        </table -->
         
     </body>
 </html>

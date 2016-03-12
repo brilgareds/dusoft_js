@@ -144,10 +144,7 @@ PedidosClienteLog.prototype.logTrazabilidadVentas = function(cotizacion, callbac
  */
 PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callback) {
    
-   console.log("************PedidosClienteLog.prototype.logAprobacionCotizacion****************");
-   console.log("************PedidosClienteLog.prototype.logAprobacionCotizacion****************");
-   console.log("************PedidosClienteLog.prototype.logAprobacionCotizacion****************");
-   console.log("cotizacion ", cotizacion);
+
    G.knex('ventas_trazabilidad')
     .where('numero', cotizacion.detalle.numero)
     .update({
@@ -160,16 +157,11 @@ PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callb
             usuario_aprobacion:cotizacion.detalle.usuario_aprobacion
             
     }).then(function(rows) { 
-        console.log("rows ", rows)
         callback(false, rows);
     }).catch(function(error){
-        console.log("error ", error);
         callback(error);
     });
 };
-
-
-
 /*
  * @author : Cristian Ardila
  * Descripcion : Funcion encargada de consultar el estado de una cotizacion
@@ -179,15 +171,75 @@ PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callb
  */
 PedidosClienteLog.prototype.logConsultarExistenciaNumero = function(parametro, callback) {
     
-    G.knex('ventas_trazabilidad').where({
-        numero: parametro.numero,
-        tipo: parametro.tipo
-     
-    }).select('pendiente').then(function(rows) {
+    console.log("*******PedidosClienteLog.prototype.logConsultarExistenciaNumero *************");
+    console.log("*******PedidosClienteLog.prototype.logConsultarExistenciaNumero *************");
+    console.log("*******PedidosClienteLog.prototype.logConsultarExistenciaNumero *************");
+    
+    console.log("parametro.tipo ", parametro)
+    var obj = {};
+   
+    if(parametro.pendiente === 0){
+        obj = {
+           numero: parametro.numero,
+           tipo: parametro.tipo,
+           pendiente: parametro.pendiente
+            
+       };
+    }else{
+        
+         obj = {
+           numero: parametro.numero,
+           tipo: parametro.tipo
+          
+            
+       };
+    }
+    
+    console.log("obj ", obj)
+    G.knex('ventas_trazabilidad').where(
+            obj
+        ).select('pendiente').then(function(rows) {
         callback(false, rows);
     }).catch (function(error) {
         callback(error);
     });
 };
+
+
+
+/**
+ * @returns {void}
+ * +Descripcion: Metodo encargado de actualizar la tabla de trazabilidad si
+ *               un pedido ya tiene una autorizacion y los valores son los mismos
+ * @author Cristian Ardila
+ * @fecha 29/09/2015
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.
+ */
+PedidosClienteLog.prototype.logActualizarSolicitudProducto = function(pedido, callback) {
+   
+   G.knex('ventas_trazabilidad')
+    .where('numero', pedido.detalle.numero)
+    .andWhere('pendiente',pedido.detalle.pendiente)
+    .andWhere('tipo',pedido.detalle.tipo)
+           
+    .update({
+            tipo: pedido.detalle.tipo,
+            pendiente:pedido.detalle.pendiente, 
+            numero:pedido.detalle.numero,
+            solicitud:pedido.detalle.solicitud, 
+            fecha_solicitud: pedido.detalle.fecha_solicitud,
+            //aprobacion: cotizacion.detalle.aprobacion,
+            //fecha_aprobacion:cotizacion.detalle.fecha_aprobacion,
+            usuario_id:pedido.detalle.usuario_id  
+            
+    }).then(function(rows) { 
+        callback(false, rows);
+    }).catch(function(error){
+        console.log("error ---->", error)
+        callback(error);
+    });
+};
+
 
 module.exports = PedidosClienteLog;

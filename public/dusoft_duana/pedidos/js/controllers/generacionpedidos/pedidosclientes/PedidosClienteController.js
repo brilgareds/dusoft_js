@@ -822,7 +822,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 //socket.emit("onEnviarNotificacionPedidosClientes", obj);
                   Request.realizarRequest(API.PEDIDOS.CLIENTES.ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES, "POST", obj, function(data) {
 
-                                });
+                  });
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {

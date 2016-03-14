@@ -630,6 +630,23 @@ define(["angular", "js/controllers",
 
                         if (documento, movimientos_bodegas.productos_no_auditados !== undefined) {
                             that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
+                        } else if(documento, movimientos_bodegas.productosSinExistencias !== undefined){
+                            // that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productosSinExistencias, 2);
+                            
+                            //Señala los productos que no tienen existencias debido a traslados realizados en los lotes
+                            for(var i in $scope.productosAuditados){
+                                var _producto = $scope.productosAuditados[i];
+                                for(var ii in movimientos_bodegas.productosSinExistencias){
+                                    
+                                    var _productoSinExistencia = movimientos_bodegas.productosSinExistencias[ii];
+                                    if(_producto.getCodigoProducto() === _productoSinExistencia.codigo_producto && 
+                                       _producto.getLote().getCodigo() === _productoSinExistencia.lote &&
+                                       _producto.getLote().getFechaVencimiento() === _productoSinExistencia.fecha_vencimiento){
+                                            console.log("producto sin existencia ", _producto);
+                                       }
+                                }
+                                
+                            }
                         }
 
 

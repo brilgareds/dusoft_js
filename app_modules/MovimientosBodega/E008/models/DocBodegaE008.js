@@ -851,7 +851,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
        callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
         
     }).catch(function(err){
-        console.log("error generado >>>>>>>>>>>>", err);
+        //console.log("error generado >>>>>>>>>>>>", err);
         callback(err);
     }).
     done();        

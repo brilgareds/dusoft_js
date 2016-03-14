@@ -653,7 +653,7 @@ define(["angular", "js/controllers",
                                             _producto.getLote().setTieneExistencia(false);
                                             _producto.getLote().setExistenciaActual(_productoSinExistencia.existencia_actual);
                                             _producto.setExistencia(_productoSinExistencia.existencia_bodega);
-                                       }
+                                    }
                                 }
                                 
                             }

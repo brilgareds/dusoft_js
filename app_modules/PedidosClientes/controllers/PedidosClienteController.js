@@ -2150,38 +2150,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
                 pedido.aprobado_cartera = '0';
                 pedido.observacion_cartera = '';
 
-                /**
-                 * +Descripcion: Esta funcion sera la encargada de actualizar el
-                 *               estado del pedido
-                 */
-                 G.Q.ninvoke(that.m_pedidos_clientes,'actualizarEstadoPedido', pedido, estado_pedido).then(function(resultado){ 
-                     
-                     console.log("resultado actualizarEstadoPedido ", resultado)
-                    if (resultado.rowCount === 0) {
-                           throw 'Error actualizando la observacion de cartera';
-                       } else {             
-                          //return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogCliente);   
-                          return G.Q.ninvoke(that.m_pedidos_clientes_log,'logConsultarExistenciaNumero', paramLogExistencia);  
-                       }    
-
-                  }).then(function(resultado){ 
-                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
-                         
-                         if(resultado.length === 0){     
-                             //Validar si ya existe el registro
-                           // return G.Q.ninvoke(that.m_pedidos_clientes_log,'logConsultarExistenciaNumero', paramLogExistencia);  
-                             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogAutorizarPedido);                  
-                         }
-                         if(resultado.length > 0){              
-                           return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogActualizarAutorizarPedido);                  
-                         }
-                         
-                        return;
-
-                  }).fail(function(err){      
-                        res.send(G.utils.r(req.url, err, 500, {}));
-                  }).done();
-              /* that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
+               that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
@@ -2191,7 +2160,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
                         res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
                         return;
                     }
-                });*/
+                });
             }
         });
     }

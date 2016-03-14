@@ -1293,10 +1293,10 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
 
 
                     if (!error) {
-
+                        console.log("contenido ------------- ", contenido)
                         __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
-
+                        
                             cantidad_productos = productos_validos.length;
 
                             if (cantidad_productos > limite_productos) {
@@ -1304,7 +1304,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                 res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
                                 return;
                             }
-                            
+                           
                             __validar_datos_productos_archivo_plano(that, cotizacion, productos_validos,[],[],0, function(_productos_validos, _productos_invalidos) {
                                 
                                
@@ -1384,7 +1384,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                 return;
             }
         } else {
-            res.send(G.utils.r(req.url, 'Ha ocurrido un error QUI!!!!', 500, {pedidos_clientes: []}));
+            res.send(G.utils.r(req.url, 'Ha ocurrido un error !!!!', 500, {pedidos_clientes: []}));
             return;
         }
     });
@@ -2112,19 +2112,19 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
     pedido.usuario_id = req.session.user.usuario_id;
     var producto = args.pedidos_clientes.producto;
     var estado_pedido = args.pedidos_clientes.estado;
-    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
-    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
+    //var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
+    //var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
     
     /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
      *        tipo:   0=cotizacion, 1=pedido
      *        pendiente: 0=solictado autorizacion
      */
-    var paramLogExistencia = {
+    /*var paramLogExistencia = {
         numero: pedido.numero_pedido,
         tipo: '1',
         pendiente:0
-    };
+    };*/
    
     /**
      * +Descripcion: Este ciclo repetitivo recorrera el objeto producto, el cual
@@ -2150,7 +2150,11 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
                 pedido.aprobado_cartera = '0';
                 pedido.observacion_cartera = '';
 
-               that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
+                /**
+                 * +Descripcion: Esta funcion sera la encargada de actualizar el
+                 *               estado del pedido
+                 */
+                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
 
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
@@ -2890,7 +2894,7 @@ PedidosCliente.prototype.reportePedido = function(req, res) {
  * Descripcion : Cargar Archivo Plano
  */
 function __subir_archivo_plano(files, callback) {
-
+    
     var ruta_tmp = files.file.path;
     var ext = G.path.extname(ruta_tmp);
     var nombre_archivo = G.random.randomKey(3, 3) + ext;
@@ -2901,8 +2905,7 @@ function __subir_archivo_plano(files, callback) {
         G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
                 then(function() {
             return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
-        }).
-                then(function() {
+        }).then(function() {
             var parser = G.XlsParser;
             var workbook = parser.readFile(ruta_nueva);
             var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad']);
@@ -2944,22 +2947,25 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
     filas.forEach(function(row) {
         var codigo_producto = row.codigo || '';
         var cantidad_solicitada = row.cantidad || 0;
-
+        //console.log("codigo_producto ", codigo_producto);
+        //console.log("cantidad_solicitada ", cantidad_solicitada);
         that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
 
-
+            //console.log("existe_producto ", existe_producto)
             var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
-
+            // console.log("producto ", producto)
             if (existe_producto.length > 0 && cantidad_solicitada > 0) {
-
+                
                 producto.tipoProductoId = existe_producto[0].tipo_producto_id;
                 producto.descripcion = existe_producto[0].descripcion_producto;
                 productos_validos.push(producto);
+               // console.log("productos_validos ", productos_validos)
 
             } else {
                 producto.mensajeError = "No existe en inventario";
                 producto.existeInventario = false;
                 productos_invalidos.push(producto);
+            //    console.log("productos_invalidos ", productos_invalidos)
             }
 
             if (--i === 0) {
@@ -2987,30 +2993,36 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
         callback( productos_validos, productos_invalidos);
         return;
     }    
-    
-    var filtro = {numero_cotizacion: cotizacion.numero_cotizacion, termino_busqueda: producto.codigo_producto};
-    var parametros = {empresaId:cotizacion.empresa_id, codigoProducto:producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
    
-    that.m_pedidos_clientes.listar_productos(cotizacion.empresa_id,
+    var filtro = {numero_cotizacion: cotizacion.numero_cotizacion, termino_busqueda: producto.codigo_producto};
+    var filtros = {tipo_busqueda:2};
+    var filtroAvanzado = {tipoBusqueda:0};
+    var parametros = {empresaId:cotizacion.empresa_id, codigoProducto:producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+  
+    that.m_pedidos_clientes.listar_productos(
+          cotizacion.empresa_id,
           cotizacion.centro_utilidad_id,
           cotizacion.bodega_id,
           cotizacion.cliente.contrato_id,
           filtro,
-          1, '', function(err, lista_productos) {
+          1, filtros,filtroAvanzado, function(err, lista_productos) {
           index++;
-      if(err || lista_productos.length === 0) {
+          
+      
+          
+        if(err || lista_productos.length === 0) {
           productos_invalidos.push(producto);
-
-          __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos,index, callback);
+          
+        __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos,index, callback);
           return;
         }else{
-          
+              
             var _producto = lista_productos[0];
             producto.codigo_producto = _producto.codigo_producto;
             producto.iva = _producto.iva;
             producto.precio_venta = _producto.precio_producto;
             producto.tipo_producto = _producto.tipo_producto_id;
-
+            
            __validarPrecioRegulado(that, parametros, function(valido, productoValido){
                
            
@@ -3024,7 +3036,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
                  __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos,index, callback);
                  return;               
            });             
-         }     
+         }    
      });  
 };
 

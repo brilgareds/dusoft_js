@@ -1035,21 +1035,19 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Funciones que usan el model:
  *  (PedidosClienteController.js)-- __validar_datos_productos_archivo_plano
  *  -- PedidosCliente.prototype.listarProductosClientes     
+ *  -- PedidosCliente __validar_datos_productos_archivo_plano     
  * Modificacion: Se migra a KNEX.js 
  * @fecha: 04/12/2015 6:10 pm                       
  */
 PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina,filtros,filtroAvanzado, callback) {
    
+ 
     var filtroProducto ="";
     var sql_aux = "";
     var termino_busqueda = filtro.termino_busqueda;
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1:empresa, 2:centro_utilidad_id, 3:bodega_id, 4:contrato_cliente_id};
-    
-   console.log("*************PedidosClienteModel.prototype.listar_productos*******************");
-   console.log("*************PedidosClienteModel.prototype.listar_productos*******************");
-   console.log("*************PedidosClienteModel.prototype.listar_productos*******************");
     
     if(filtroAvanzado.tipoBusqueda === 0){
          
@@ -1072,7 +1070,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         if(filtros.tipo_busqueda === 2){
             filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
             parametros["5"]= '%' +termino_busqueda + '%';
-
+              
         }
 
         if(filtros === ''){
@@ -1098,7 +1096,6 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         //filtroAvanzado.tipoBusqueda
     } 
     
-    console.log("filtroAvanzado ----> ", filtroAvanzado)
     /***
      * +Descripcion Campos para obtener la fecha actual
      */
@@ -1222,7 +1219,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;
-        
+      
       var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){
@@ -2188,6 +2185,24 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
 }
 ;
 
+
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Modificar Detalle Pedido
+ * Modificacion: Se migra a KNEX.js 
+ * @fecha: 05/12/2015 9:34 pm
+ * @Funciones que hacen uso del modelo:
+ *  Controller: PedidosClienteController
+ *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
+ *  --PedidosCliente.prototype.modificarDetallePedido
+ */
+/*PedidosClienteModel.prototype.productosPedidos = function(producto, callback) {
+ 
+   for (var i = 0; i < producto.length; i++) {      
+        callback(false, resultado.rows,resultado);
+    }
+};*/
 
 PedidosClienteModel.$inject = ["m_productos"];
 

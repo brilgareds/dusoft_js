@@ -1744,13 +1744,14 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias){
         console.log("spread 1 >>>>>>>>>>>>>>>>>>>>");
         if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
-            throw {msj:"Algunos productos no ha sido auditados o tienen pendientes la justificacion.", status:404,
+            throw {msj:"Hay productos sin auditar o pendientes sin justificación.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
+       
         } else if(productosSinExistencias.length > 0){
-            throw {msj:"Algunos productos no tienen existencias", status:404,
+            throw {msj:"Hay productos con existencias menores a las cantidades ingresadas en la auditoria.", status:404,
                    obj:{movimientos_bodegas: {productosSinExistencias: productosSinExistencias}}};
         }
-
+                
         return G.Q.nfcall(__validar_rotulos_cajas, that, documento_temporal_id, usuario_id, numero_pedido, '1');
        
         

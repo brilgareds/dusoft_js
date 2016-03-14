@@ -394,15 +394,22 @@ define(["angular", "js/controllers",
             };
 
             that.renderProductosAuditados = function(data, arreglo) {
-
+                
                 for (var i in data) {
                     var obj = data[i];
                     var producto = ProductoPedido.get(
-                            obj.codigo_producto, obj.descripcion_producto, 0, 0, obj.cantidad_solicitada,
+                            obj.codigo_producto, obj.descripcion_producto, obj.existencia_bodega, 0, obj.cantidad_solicitada,
                             obj.cantidad_ingresada, obj.observacion_cambio
-                            );
+                    );
                     var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
                     lote.item_id = obj.item_id;
+                    lote.setExistenciaActual(obj.existencia_actual);
+                    
+                    
+                    if((parseInt(lote.getExistenciaActual()) <  parseInt(obj.cantidad_ingresada)) ||
+                      (parseInt(producto.getExistencia()) <  parseInt(obj.cantidad_ingresada))){
+                         lote.setTieneExistencia(false);
+                     }
 
                     producto.setLote(lote);
 
@@ -620,7 +627,7 @@ define(["angular", "js/controllers",
 
 
                     } else {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
                         $scope.productosPendientes = [];
@@ -642,7 +649,10 @@ define(["angular", "js/controllers",
                                     if(_producto.getCodigoProducto() === _productoSinExistencia.codigo_producto && 
                                        _producto.getLote().getCodigo() === _productoSinExistencia.lote &&
                                        _producto.getLote().getFechaVencimiento() === _productoSinExistencia.fecha_vencimiento){
-                                            console.log("producto sin existencia ", _producto);
+                                            //console.log("producto sin existencia ", _productoSinExistencia);
+                                            _producto.getLote().setTieneExistencia(false);
+                                            _producto.getLote().setExistenciaActual(_productoSinExistencia.existencia_actual);
+                                            _producto.setExistencia(_productoSinExistencia.existencia_bodega);
                                        }
                                 }
                                 

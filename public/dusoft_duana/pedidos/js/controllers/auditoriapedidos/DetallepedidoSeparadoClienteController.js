@@ -177,12 +177,21 @@ define(["angular", "js/controllers",
             $scope.lista_productos_auditados_clientes = {
                 data: 'productosAuditados',
                 enableRowSelection: false,
+                enableHighlighting: true,
                 showFilter:true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: 100},
                     {field: 'descripcion', displayName: 'Nombre Producto', width: 500},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
-                    {field: 'lote.codigo_lote', displayName: 'Lote'},
+                    {field: 'existencia', displayName: "Existencia Producto"},
+                    {field: 'lote.existencia_actual', displayName: "Existencia Lote"},
+                    {field: 'lote.codigo_lote', displayName: 'Lote', cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                         <span class="glyphicon glyphicon-warning-sign pull-right" style="color:red; font-size:17px;" \
+                                            ng-if="!row.entity.lote.tieneExistencia">\
+                                        </span>\
+                                         {{row.entity.lote.codigo_lote}}   \
+                                    </div>'
+                    },
                     {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
                     //{field: 'lote.item_id', displayName: 'Item'},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",

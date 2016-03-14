@@ -1722,6 +1722,46 @@ ALTER TABLE "public"."inv_rotulo_caja"
 
 
 
+<<<<<<< HEAD
+
+
+--===========================================TABLA CREADA PARA EL MODULO DE CLIENTES ===================================
+CREATE TABLE "public"."ventas_trazabilidad" (
+  "id" SERIAL NOT NULL, 
+  "tipo" CHAR(1), 
+  "pendiente" CHAR(1), 
+  "numero" NUMERIC(20,0), 
+  "solicitud" VARCHAR(400), 
+  "fecha_solicitud" TIMESTAMP WITH TIME ZONE, 
+  "aprobacion" CHAR(1), 
+  "fecha_aprobacion" TIMESTAMP WITH TIME ZONE, 
+  PRIMARY KEY("id")
+) WITH OIDS;
+
+COMMENT ON COLUMN "public"."ventas_trazabilidad"."id"
+IS 'Llave primaria';
+
+COMMENT ON COLUMN "public"."ventas_trazabilidad"."tipo"
+IS 'Tipo que determina si es una cotizacion  un producto';
+
+COMMENT ON COLUMN "public"."ventas_trazabilidad"."pendiente"
+IS 'Estado de la cotizacion o pedido, pendiente =0, terminado =1';
+
+COMMENT ON COLUMN "public"."ventas_trazabilidad"."numero"
+IS 'Campo que almacenara el numero de pedido o de cotizacion';
+
+COMMENT ON COLUMN "public"."ventas_trazabilidad"."solicitud"
+IS 'Campo que almacenara la solicitud, si es un producto, o el valor';
+
+COMMENT ON COLUMN "public"."ventas_trazabilidad"."fecha_solicitud"
+IS 'Fecha de solicitud de aprobacion';
+
+COMMENT ON COLUMN "public"."ventas_trazabilidad"."aprobacion"
+IS 'Estado del pedido o de la cotizacion si ya ha sido aprobado por cartera';
+
+COMMENT ON COLUMN "public"."ventas_trazabilidad"."fecha_aprobacion"
+IS 'Fecha de registro de la aprobacion';
+
 ALTER TABLE "public"."inv_rotulo_caja"
   ADD COLUMN "documento_temporal_id" INTEGER;
 
@@ -1739,3 +1779,4 @@ ALTER TABLE "public"."logs_despachos_ws"
 
 COMMENT ON COLUMN "public"."logs_despachos_ws"."error"
 IS 'Describe si hay error en la cabecera';
+ 

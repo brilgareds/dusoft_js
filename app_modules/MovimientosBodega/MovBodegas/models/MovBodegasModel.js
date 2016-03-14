@@ -441,13 +441,15 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
                 b.codigo_invima,\
                 b.codigo_cum,\
                 fc_descripcion_producto(b.codigo_producto) as nombre,\
+                a.porcentaje_gravamen,\
                 (a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
                 (a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
                 ((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
                 (((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\
                 ((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva_1,\
                 ((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1,\
-                (((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1\
+                (((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1,\
+                a.valor_unitario\
                 FROM\
                 inv_bodegas_movimiento_d as a,\
                 inventarios_productos as b,\

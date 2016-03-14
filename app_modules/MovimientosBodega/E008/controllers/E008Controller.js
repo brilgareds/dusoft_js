@@ -2453,6 +2453,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
     var empresa = args.movimientos_bodegas.empresa;
     var datos_documento = {};
 
+
     that.m_e008.consultar_documento_despacho(numero, prefijo, empresa, req.session.user.usuario_id, function(err, rows) {
 
         if (err || rows.length === 0) {
@@ -2461,6 +2462,9 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
             return;
         }
         datos_documento.encabezado = rows[0];
+        datos_documento.encabezado.total = 0;
+        datos_documento.encabezado.subTotal = 0;
+        datos_documento.encabezado.totalIva = 0;
 
         that.m_movimientos_bodegas.consultar_detalle_documento_despacho(numero, prefijo, empresa, function(err, rows) {
             if (err) {
@@ -2477,7 +2481,18 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
 
                 datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
                 datos_documento.serverUrl = req.protocol + '://' + req.get('host')+ "/";
-
+                
+                //Calculo de totales
+                datos_documento.detalle.forEach(function(detalle){
+                    datos_documento.encabezado.subTotal += detalle.valor_unitario * detalle.cantidad;
+                    datos_documento.encabezado.totalIva += detalle.iva;
+                });
+                
+                datos_documento.encabezado.total = datos_documento.encabezado.subTotal + datos_documento.encabezado.totalIva;
+                datos_documento.encabezado.total = datos_documento.encabezado.total.toFixed(2);
+                datos_documento.encabezado.subTotal = datos_documento.encabezado.subTotal.toFixed(2);
+                datos_documento.encabezado.totalIva = datos_documento.encabezado.totalIva.toFixed(2);
+                
                 __generarPdfDespacho(datos_documento, function(nombre_pdf) {
                     
                     res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200,{

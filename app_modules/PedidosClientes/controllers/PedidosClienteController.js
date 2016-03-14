@@ -2112,62 +2112,80 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
     pedido.usuario_id = req.session.user.usuario_id;
     var producto = args.pedidos_clientes.producto;
     var estado_pedido = args.pedidos_clientes.estado;
-    //var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
-    //var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
+    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
+    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
     
     /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
      *        tipo:   0=cotizacion, 1=pedido
      *        pendiente: 0=solictado autorizacion
      */
-    /*var paramLogExistencia = {
+    var paramLogExistencia = {
         numero: pedido.numero_pedido,
         tipo: '1',
         pendiente:0
-    };*/
+    };
    
-    /**
-     * +Descripcion: Este ciclo repetitivo recorrera el objeto producto, el cual
+     /**
+     * +Descripcion: Esta funcion es un ciclo repetitivo que recorrera el objeto producto, el cual
      *               contiene todos los productos del pedido, y de esta forma
      *               se iran modificando secuencialmente y se ira cambiando el 
      *               estado del pedido
      */
-    for (var i = 0; i < producto.length; i++) {
-
-
+    G.Q.ninvoke(that.m_pedidos_clientes,'productosPedidos', producto).then(function(producto){ 
+    //  G.Q.nfCall()
         /**
          * +Descripcion: la funcion se encargara de modificar el detalle del pedido
          *               en este caso, lo mas relevante sera la cantidad de un
          *               producto
          */
-        that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto[i], function(err, rows, result) {
-
-            if (err || result.rowCount === 0) {
-                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                return;
-            } else {
-
-                pedido.aprobado_cartera = '0';
-                pedido.observacion_cartera = '';
-
+        return G.Q.ninvoke(that.m_pedidos_clientes,'modificar_detalle_pedido', pedido,producto);  
+        
+        
+    }).then(function(resultado){ 
+      
+         if (resultado > 0) {
+               pedido.aprobado_cartera = '0';
+               pedido.observacion_cartera = '';             
                 /**
                  * +Descripcion: Esta funcion sera la encargada de actualizar el
                  *               estado del pedido
                  */
-                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
-
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                        return;
-                    } else {
-                         //that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
-                        return;
-                    }
-                });
-            }
-        });
-    }
+                return G.Q.ninvoke(that.m_pedidos_clientes,'actualizarEstadoPedido', pedido, estado_pedido);   
+          } else {
+            throw 'Error actualizando la observacion de cartera';
+        }
+          
+    }).then(function(resultado){
+         
+        /**
+         * +Descripcion: Si se actualiza el estado del pedido satisfactoriamente
+         *               se procede a consultar si este pedido con el estdo actual
+         *               se encuentra ya registrado en la table de trazabilidad
+         *               
+         */
+        if (resultado > 0) {
+             
+            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            return G.Q.ninvoke(that.m_pedidos_clientes_log,'logConsultarExistenciaNumero', paramLogExistencia);
+        } else {
+            throw 'Error actualizando la observacion de cartera';
+        }
+                    
+    }).then(function(resultado){
+        /**
+         * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
+         *              se procede a registrarlo, de lo contrario solo lo actualizara
+         */
+        if(resultado.length === 0){
+            return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogAutorizarPedido);  
+        }else{
+             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogActualizarAutorizarPedido);      
+        }
+          
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
 };
 
 
@@ -2428,7 +2446,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
-    console.log("pedido ", pedido);
+  
     pedido.usuario_id = req.session.user.usuario_id;
 
     var paramLogCliente = {
@@ -2471,9 +2489,103 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
      */
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
-
-
-    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(err, resultado) {
+    var estado_pedido = 0;
+  
+    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
+    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
+    
+    /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
+     * @param numero: numero del pedido
+     *        tipo:   0=cotizacion, 1=pedido
+     *        pendiente: 0=solictado autorizacion
+     */
+    var paramLogExistencia = {
+        numero: pedido.numero_pedido,
+        tipo: '1',
+        pendiente:0
+    };
+    
+     /**
+      * +Descripcion Metodo encargado de consultar el estado de un pedido, recibiendo
+      *              como parametro el numero del pedido
+      */
+     G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoPedidoEstado', numeroPedido).then(function(resultado){ 
+        /**
+          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
+          *               siempre y cuando el pedido tenga el 
+          *               estado (Estado del Pedido ) 1
+          *               estado_pedido (Estado de solicitud ) 0
+          */
+           if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {              
+                  return G.Q.ninvoke(that.m_pedidos_clientes,'consultarTotalValorPedidoCliente', numeroPedido);                      
+           }else{
+               throw ("El pedido debe estar activo o para autorizar nuevamente por cartera");
+           }
+     }).then(function(resultado){ 
+         
+          if(resultado.length >0){
+            var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
+  
+            if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                estado_pedido = 4;
+            }else{
+                estado_pedido = 1;
+            }       
+            /**
+            * +Descripcion: la funcion se encargara de modificar el detalle del pedido
+            *               en este caso, lo mas relevante sera la cantidad de un
+            *               producto
+            */
+            return G.Q.ninvoke(that.m_pedidos_clientes,'modificar_detalle_pedido', pedido,producto);  
+          }else{
+              throw ("Error Interno");
+          }
+           
+     }).then(function(resultado){ 
+         
+         if (resultado > 0) {
+               pedido.aprobado_cartera = '0';
+               pedido.observacion_cartera = '';   
+               
+                /**
+                 * +Descripcion: Esta funcion sera la encargada de actualizar el
+                 *               estado del pedido
+                 */
+                return G.Q.ninvoke(that.m_pedidos_clientes,'actualizarEstadoPedido', pedido, estado_pedido);   
+          } else {
+            throw 'Error actualizando la observacion de cartera';
+        }
+          
+    }).then(function(resultado){
+        /**
+         * +Descripcion: Si se actualiza el estado del pedido satisfactoriamente
+         *               se procede a consultar si este pedido con el estdo actual
+         *               se encuentra ya registrado en la table de trazabilidad
+         *               
+         */
+        if (resultado > 0) {
+            that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
+            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            return G.Q.ninvoke(that.m_pedidos_clientes_log,'logConsultarExistenciaNumero', paramLogExistencia);
+        } else {
+            throw 'Error actualizando la observacion de cartera';
+        }
+                    
+    }).then(function(resultado){
+        /**
+         * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
+         *              se procede a registrarlo, de lo contrario solo lo actualizara
+         */
+        if(resultado.length === 0){
+            return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogAutorizarPedido);  
+        }else{
+             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogActualizarAutorizarPedido);      
+        }
+          
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+   /* that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(err, resultado) {
 
         if (!err) {
             /**
@@ -2482,7 +2594,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
              *               estado (Estado del Pedido ) 1
              *               estado_pedido (Estado de solicitud ) 0
              */
-            if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
+           /* if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
 
 
                  that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, resultado) {
@@ -2497,11 +2609,12 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
                         } else {
                             estado_pedido = 1;
                         }
+                        
+                        
+                        that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, result) {
 
-                        that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, rows, result) {
-
-                            if (err || result.rowCount === 0) {
-                                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+                            if (result === 0) {
+                                res.send(G.utils.r(req.url, 'Lo datos no se actualizaron', 500, {pedidos_clientes: []}));
                                 return;
                             } else {
 
@@ -2537,7 +2650,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             return;
         }
 
-    });
+    });*/
 
 };
 
@@ -2947,25 +3060,22 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
     filas.forEach(function(row) {
         var codigo_producto = row.codigo || '';
         var cantidad_solicitada = row.cantidad || 0;
-        //console.log("codigo_producto ", codigo_producto);
-        //console.log("cantidad_solicitada ", cantidad_solicitada);
+       
         that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
 
-            //console.log("existe_producto ", existe_producto)
             var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
-            // console.log("producto ", producto)
+         
             if (existe_producto.length > 0 && cantidad_solicitada > 0) {
                 
                 producto.tipoProductoId = existe_producto[0].tipo_producto_id;
                 producto.descripcion = existe_producto[0].descripcion_producto;
                 productos_validos.push(producto);
-               // console.log("productos_validos ", productos_validos)
-
+            
             } else {
                 producto.mensajeError = "No existe en inventario";
                 producto.existeInventario = false;
                 productos_invalidos.push(producto);
-            //    console.log("productos_invalidos ", productos_invalidos)
+          
             }
 
             if (--i === 0) {

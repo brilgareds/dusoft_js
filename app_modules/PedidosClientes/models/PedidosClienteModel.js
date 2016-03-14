@@ -1731,7 +1731,8 @@ PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_p
  *  --PedidosCliente.prototype.eliminarProductoPedido  
  */
 PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero_pedido, callback) {
-
+  
+    
     G.knex.select(
             G.knex.raw('sum(ventas_ordenes_pedidos_d_tmp.valor_unitario * ventas_ordenes_pedidos_d_tmp.numero_unidades) as valor_total_cotizacion')
             ).from('ventas_ordenes_pedidos_d_tmp').leftJoin('ventas_ordenes_pedidos',
@@ -1739,6 +1740,7 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
             'ventas_ordenes_pedidos.pedido_cliente_id_tmp').where('ventas_ordenes_pedidos.pedido_cliente_id', numero_pedido).then(function(rows) {
         callback(false, rows);
     }).catch (function(err) {
+        
          callback(err);     
     });
 };
@@ -1976,6 +1978,7 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
  
+ 
     G.knex('ventas_ordenes_pedidos_d')
     .where('pedido_cliente_id', pedido.numero_pedido)
     .andWhere('codigo_producto', producto.codigo_producto)
@@ -1986,8 +1989,9 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
         usuario_id: pedido.usuario_id,
         fecha_registro: 'NOW()'
     }).then(function(resultado) {          
-        callback(false, resultado.rows,resultado);
+        callback(false, resultado);
     }).catch(function(error) {
+        
         callback(error);
     });
 };
@@ -2197,12 +2201,13 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
  *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
  *  --PedidosCliente.prototype.modificarDetallePedido
  */
-/*PedidosClienteModel.prototype.productosPedidos = function(producto, callback) {
- 
+PedidosClienteModel.prototype.productosPedidos = function(producto, callback) {
+
    for (var i = 0; i < producto.length; i++) {      
-        callback(false, resultado.rows,resultado);
+        callback(false,producto[i]);
+       // console.log("producto ", producto[i])
     }
-};*/
+};
 
 PedidosClienteModel.$inject = ["m_productos"];
 

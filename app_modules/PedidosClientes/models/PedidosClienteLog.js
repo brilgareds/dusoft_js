@@ -175,7 +175,7 @@ PedidosClienteLog.prototype.logConsultarExistenciaNumero = function(parametro, c
     console.log("*******PedidosClienteLog.prototype.logConsultarExistenciaNumero *************");
     console.log("*******PedidosClienteLog.prototype.logConsultarExistenciaNumero *************");
     
-    console.log("parametro.tipo ", parametro)
+   // console.log("parametro.tipo ", parametro)
     var obj = {};
    
     if(parametro.pendiente === 0){

@@ -104,8 +104,7 @@ PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callb
    
    console.log("***********PedidosClienteLog.prototype.logAprobacionCotizacion*****************");
    console.log("***********PedidosClienteLog.prototype.logAprobacionCotizacion*****************");
-   console.log("***********PedidosClienteLog.prototype.logAprobacionCotizacion*****************");
-   
+   console.log("***********PedidosClienteLog.prototype.logAprobacionCotizacion*****************"); 
    console.log("paramLogActualizarAutorizarPedido ", cotizacion);
    var parametros = {
             tipo: cotizacion.detalle.tipo,

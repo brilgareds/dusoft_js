@@ -2585,10 +2585,13 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                 }
                                 
                                 //Valida si los productos se han quedado sin existencias, debido al traslado de lotes
-                                if((parseInt(producto_pedido.existencia_actual) <  parseInt(producto_pedido.cantidad_ingresada)) ||
+                               /*console.log("producto_pedido.existencia_actua ", producto_pedido.existencia_actual, " producto_pedido.cantidad_ingresada ", producto_pedido.cantidad_ingresada, 
+                                            " producto_pedido.existencia_bodega ", parseInt(producto_pedido.existencia_bodega), 
+                                           "producto_pedido.cantidad_ingresada ", producto_pedido.cantidad_ingresada);*/
+                               /* if((parseInt(producto_pedido.existencia_actual) <  parseInt(producto_pedido.cantidad_ingresada)) ||
                                    (parseInt(producto_pedido.existencia_bodega) <  parseInt(producto_pedido.cantidad_ingresada))){
                                     productosSinExistencias.push(producto_pedido);
-                                }
+                                }*/
                             }
                         }
 
@@ -2661,10 +2664,10 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
                                 }
                                 
                                 //Valida si los productos se han quedado sin existencias, debido al traslado de lotes
-                                if((parseInt(producto_pedido.existencia_actual) <  parseInt(producto_pedido.cantidad_ingresada)) ||
+                               /* if((parseInt(producto_pedido.existencia_actual) <  parseInt(producto_pedido.cantidad_ingresada)) ||
                                    (parseInt(producto_pedido.existencia_bodega) <  parseInt(producto_pedido.cantidad_ingresada))){
                                     productosSinExistencias.push(producto_pedido);
-                                }
+                                }*/
                             }
                         }
                     });

@@ -2112,8 +2112,12 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
     pedido.usuario_id = req.session.user.usuario_id;
     var producto = args.pedidos_clientes.producto;
     var estado_pedido = args.pedidos_clientes.estado;
-    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
-    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
+    
+    var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
+  
+    
+    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",totalValorPedidoNuevo,1,0);
+    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",totalValorPedidoNuevo,1,0);
     
     /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
@@ -2319,7 +2323,7 @@ function __parametrosLogs(numero,productos,usuario,observacion,total,tipo, accio
         };
         
      }
-     console.log("paramLogCliente ********", paramLogCliente)
+    // console.log("paramLogCliente ********", paramLogCliente)
     return paramLogCliente; 
 }
 /**
@@ -2401,8 +2405,6 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
  * Descripcion : Modificar detalle pedido
  */
 PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
-
-
 
     var that = this;
 
@@ -2490,9 +2492,10 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
     var estado_pedido = 0;
-  
-    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
-    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,producto,pedido.usuario_id,"Se solicita aprobacion Pedido",pedido.total,1,0);
+
+    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo,1,0);
+    //var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", pedido.total,1,1);
+    
     
     /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
@@ -2536,6 +2539,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             *               en este caso, lo mas relevante sera la cantidad de un
             *               producto
             */
+         
             return G.Q.ninvoke(that.m_pedidos_clientes,'modificar_detalle_pedido', pedido,producto);  
           }else{
               throw ("Error Interno");
@@ -2569,89 +2573,20 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
             throw 'Error actualizando la observacion de cartera';
-        }
-                    
+        }                  
     }).then(function(resultado){
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
          *              se procede a registrarlo, de lo contrario solo lo actualizara
          */
-        if(resultado.length === 0){
+        if(resultado.length === 0){            
             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogAutorizarPedido);  
-        }else{
-             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogActualizarAutorizarPedido);      
-        }
-          
+        }else{        
+             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogAutorizarPedido);              
+        }        
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
-   /* that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(err, resultado) {
-
-        if (!err) {
-            /**
-             * +Descripcion: Se permitira ejecutar la accion de modificarDetallePedido
-             *               siempre y cuando el pedido tenga el 
-             *               estado (Estado del Pedido ) 1
-             *               estado_pedido (Estado de solicitud ) 0
-             */
-           /* if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
-
-
-                 that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, resultado) {
-
-                    if (!err) {
-
-                        var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
-                        var estado_pedido = 0;
-
-                        if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                            estado_pedido = 4;
-                        } else {
-                            estado_pedido = 1;
-                        }
-                        
-                        
-                        that.m_pedidos_clientes.modificar_detalle_pedido(pedido, producto, function(err, result) {
-
-                            if (result === 0) {
-                                res.send(G.utils.r(req.url, 'Lo datos no se actualizaron', 500, {pedidos_clientes: []}));
-                                return;
-                            } else {
-
-                                pedido.aprobado_cartera = '0';
-                                pedido.observacion_cartera = '';
-
-
-                                that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
-
-                                    if (err || result.rowCount === 0) {
-                                        res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
-                                        return;
-                                    } else {
-                                        that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-                                        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
-                                        return;
-                                    }
-                                });
-
-                            }
-                        });
-                    } else {
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {}}));
-                        return;
-                    }
-                });
-            } else {
-                res.send(G.utils.r(req.url, 'El pedido debe estar activo o para autorizar nuevamente por cartera', 500, {pedidos_clientes: []}));
-                return;
-            }
-        } else {
-            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
-            return;
-        }
-
-    });*/
-
 };
 
 
@@ -2841,20 +2776,17 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
  */
 PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
 
-
-
     var that = this;
-
     var args = req.body.data;
 
-    // Pedido
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o pedido No Estan Definidos', 404, {}));
         return;
     }
 
     var pedido = args.pedidos_clientes.pedido;
-
+        pedido.usuario_id = req.session.user.usuario_id;
+        
     if (pedido.numero_pedido === undefined || pedido.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'El numero de pedido no esta definido o esta vacio', 404, {}));
         return;
@@ -2869,8 +2801,38 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
         res.send(G.utils.r(req.url, 'El campo de observacion de cartera no esta definido o esta vacio', 404, {}));
         return;
     }
+    
+    var paramLogExistencia = {
+        numero: pedido.numero_pedido,
+        tipo: '1',
+        pendiente:0
+    };
 
-    that.m_pedidos_clientes.actualizarPedidoCarteraEstadoNoAsigando(pedido, function(err, rows, result) {
+    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id,pedido.observacion_cartera,pedido.total,1,1);
+    
+    G.Q.ninvoke(that.m_pedidos_clientes,'actualizarPedidoCarteraEstadoNoAsigando', pedido).then(function(resultado){ 
+        
+        if(resultado > 0){
+            
+           res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+           return G.Q.ninvoke(that.m_pedidos_clientes_log,'logConsultarExistenciaNumero', paramLogExistencia);
+           
+        }else{
+            
+            throw ('Error Actualizando el estado del pedidopara la aprobacion')
+        }
+     }).then(function(resultado){        
+        /**
+         * +Descripcion Se actualizara el estado del pedido a aprobado
+         */
+        if(resultado.length > 0){
+            return G.Q.ninvoke(that.m_pedidos_clientes_log,'logAprobacionCotizacion', paramLogActualizarAutorizarPedido);  
+        }
+     
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+    /*that.m_pedidos_clientes.actualizarPedidoCarteraEstadoNoAsigando(pedido, function(err,resultado) {
         
         
         if (err || result.rowCount === 0) {
@@ -2880,7 +2842,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
             res.send(G.utils.r(req.url, 'Observacion registrada correctamente', 200, {pedidos_clientes: {}}));
             return;
         }
-    });
+    });*/
 };
 
 
@@ -3119,7 +3081,6 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
           index++;
           
       
-          
         if(err || lista_productos.length === 0) {
           productos_invalidos.push(producto);
           

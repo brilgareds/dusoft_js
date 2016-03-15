@@ -21,21 +21,32 @@ define(["angular", "js/controllers",
              * +Descripcion: Permite inicializar el controlador
              */
              self.init = function(callback){ 
-                $scope.root = {};
-                $scope.root.esTemporal = false;
-                $scope.root.vistas = [
-                    {path:"separacionclientes.html", nombre:"Asignacion Clientes", tipo:"Clientes"},
-                    {path:"separacionfarmacias.html", nombre:"Asignacion Farmacias", tipo:"Farmacias"},
-                    {path:"separacionclientes.html", nombre:"Temporales Clientes", tipoTemporal:"Clientes"},
-                    {path:"separacionfarmacias.html", nombre:"Temporales Farmacias", tipoTemporal:"Farmacias"}
-                ];
-                
-                $scope.root.session = {
-                    usuario_id: Usuario.getUsuarioActual().getId(),
-                    auth_token: Usuario.getUsuarioActual().getToken()
-                };
+                 
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                        
+                if(!empresa){
+                    $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para separar el pedido.", tipo:"warning"});
+                } else if(!empresa.getCentroUtilidadSeleccionado()){
+                    $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para separar el pedido.", tipo:"warning"});
+                } else if(!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
+                    $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para separar el pedido", tipo:"warning"});
+                } else {
+                    $scope.root = {};
+                    $scope.root.esTemporal = false;
+                    $scope.root.vistas = [
+                        {path:"separacionclientes.html", nombre:"Asignacion Clientes", tipo:"Clientes"},
+                        {path:"separacionfarmacias.html", nombre:"Asignacion Farmacias", tipo:"Farmacias"},
+                        {path:"separacionclientes.html", nombre:"Temporales Clientes", tipoTemporal:"Clientes"},
+                        {path:"separacionfarmacias.html", nombre:"Temporales Farmacias", tipoTemporal:"Farmacias"}
+                    ];
 
-                callback();
+                    $scope.root.session = {
+                        usuario_id: Usuario.getUsuarioActual().getId(),
+                        auth_token: Usuario.getUsuarioActual().getToken()
+                    };
+
+                    callback();
+                }
              };
              
             /*

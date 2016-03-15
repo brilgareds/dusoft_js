@@ -55,6 +55,11 @@
             .thDetalle{
                 width:25%;            
             }
+            
+            .tablaPrincipal{
+                overflow:visible;
+                overflow-y:visible;
+            }
 
         </style>
         
@@ -98,7 +103,7 @@
         </div>
         
         {{if encabezado.tipo_pedido == '1'}}
-            <table class="table table-bordered detalle" width='95%' align="center" cellspacing="0">
+            <table class="table table-bordered detalle tablaPrincipal" width='95%' align="center" cellspacing="0">
                 <tr>
                    <th class='title'>Producto</th>      
                    <th class='title valoresClientes' >Cant</th>
@@ -177,7 +182,7 @@
         {{/if}}
         
         {{if encabezado.tipo_pedido == '2'}}
-            <table class="table table-bordered detalle" width='95%' align="center">
+            <table class="table table-bordered detalle tablaPrincipal" width='95%' align="center">
                 <tr>
                    <th class='title'>Producto</th>      
                    <th class='title' >Cant</th>

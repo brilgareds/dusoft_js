@@ -117,7 +117,9 @@ PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callb
             usuario_aprobacion:cotizacion.detalle.usuario_aprobacion          
     };
     
+  // var subquery = knex('ventas_trazabilidad').where('numero',cotizacion.detalle.numero).max('id');
    var condicional = {numero: cotizacion.detalle.numero};
+   
    G.knex('ventas_trazabilidad')
     .where(condicional)
     .update(parametros).then(function(rows) { 

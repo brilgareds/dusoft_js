@@ -2821,7 +2821,8 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
             
             throw ('Error Actualizando el estado del pedidopara la aprobacion')
         }
-     }).then(function(resultado){        
+     }).then(function(resultado){    
+     console.log("resultadoresultadoresultado ",resultado)    
         /**
          * +Descripcion Se actualizara el estado del pedido a aprobado
          */

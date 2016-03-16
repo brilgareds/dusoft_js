@@ -102,10 +102,6 @@ PedidosClienteLog.prototype.logEliminarProductoCotizacion = function(paramLogCli
  */
 PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callback) {
    
-   console.log("***********PedidosClienteLog.prototype.logAprobacionCotizacion*****************");
-   console.log("***********PedidosClienteLog.prototype.logAprobacionCotizacion*****************");
-   console.log("***********PedidosClienteLog.prototype.logAprobacionCotizacion*****************"); 
-   console.log("paramLogActualizarAutorizarPedido ", cotizacion);
    var parametros = {
             tipo: cotizacion.detalle.tipo,
             pendiente:cotizacion.detalle.pendiente, 
@@ -116,8 +112,8 @@ PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callb
             usuario_aprobacion:cotizacion.detalle.usuario_aprobacion          
     };
     
-  // var subquery = knex('ventas_trazabilidad').where('numero',cotizacion.detalle.numero).max('id');
-   var condicional = {numero: cotizacion.detalle.numero};
+   var subquery = G.knex('ventas_trazabilidad').where('numero',cotizacion.detalle.numero).max('id');
+   var condicional = {numero: cotizacion.detalle.numero,id:subquery};
    
    G.knex('ventas_trazabilidad')
     .where(condicional)

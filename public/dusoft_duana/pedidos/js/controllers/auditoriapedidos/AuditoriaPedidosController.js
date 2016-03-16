@@ -626,7 +626,7 @@ define(["angular", "js/controllers",
                         });
 
 
-                    } else {
+                    } else if(parseInt(data.status) !== 500 ) {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
@@ -637,7 +637,7 @@ define(["angular", "js/controllers",
 
                         if (documento, movimientos_bodegas.productos_no_auditados !== undefined) {
                             that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
-                        } else if(documento, movimientos_bodegas.productosSinExistencias !== undefined){
+                        } /*else if(documento, movimientos_bodegas.productosSinExistencias !== undefined){
                             // that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productosSinExistencias, 2);
                             
                             //Señala los productos que no tienen existencias debido a traslados realizados en los lotes
@@ -657,14 +657,17 @@ define(["angular", "js/controllers",
                                 }
                                 
                             }
-                        }
-
+                        }*/
+                        
+                        
 
                         if (movimientos_bodegas.cajas_no_cerradas) {
                             $scope.cajasSinCerrar = movimientos_bodegas.cajas_no_cerradas;
                         }
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error generando el documento, favor revisar los productos auditados.");
+                        $rootScope.$emit("productoAuditado",{},documento);
                     }
-
                 });
 
             };

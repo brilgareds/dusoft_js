@@ -681,7 +681,6 @@ PedidosFarmacias.prototype.obtenerDetallePedido = function(req, res) {
 };
 
 
-// *******************nuevo Eduar Garcia temporal farmacias  *************
 
 /*
  * @Author: Eduar

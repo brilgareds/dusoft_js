@@ -1313,7 +1313,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 b.tipo_producto_id,\
                 case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
                         else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
-                coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
+                coalesce(j.existencias_farmacia, 0) as existencias_farmacia,\
+                b.unidad_medida\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\

@@ -1,5 +1,5 @@
-var PedidosFarmaciasModel = function() {
-
+var PedidosFarmaciasModel = function(m_productos) {
+    this.m_productos = m_productos;
 };
 
 PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
@@ -225,17 +225,31 @@ PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(emp
 
 PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  tipo_producto_id, cantidad_pendiente, usuario_id, callback) {
 
-    var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, cantidad_pendiente, usuario_id ) \
-                VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) ;";
 
-    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 
-                     6:cantidad_solicitada,  7:tipo_producto_id, 8:cantidad_pendiente, 9:usuario_id}).then(function(resultado){
+    var that = this;
+    
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solicitada, codigo_producto:codigo_producto}).then(function(resultado){
+        //console.log("producto validcion ", resultado);
+        if(resultado.length > 0 && resultado[0].valido === '1'){
+            
+            var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, cantidad_pendiente, usuario_id ) \
+            VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) ;";
+            
+            return  G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 
+                                     6:cantidad_solicitada,  7:tipo_producto_id, 8:cantidad_pendiente, 9:usuario_id});
+        } else {
+            throw {msj:"La cantidad ingresada del producto no es valida", status:403};
+        }
+        
+    }).then(function(resultado){
         callback(false, resultado.rows, resultado);
-    }).catch(function(err){
+    }).fail(function(err){
         callback(err);
     });
+    
 
 };
+
 
 PedidosFarmaciasModel.prototype.buscar_usuario_bloqueo = function(codigo_temporal, callback) {
 
@@ -347,16 +361,26 @@ PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_
 //insertar_producto_detalle_pedido_farmacia
 
 PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solic, tipo_producto_id, usuario_id, cantidad_pendiente, callback){
+    
+    var that = this;
  
-    var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solic, codigo_producto:codigo_producto}).then(function(resultado){
+        if(resultado.length > 0 && resultado[0].valido === '1'){
+            var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, CURRENT_TIMESTAMP, 0, :9 )";
-
-    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 6:cantidad_solic, 
-                     7:tipo_producto_id, 8:usuario_id, 9:cantidad_pendiente}).then(function(resultado){
+            
+            return G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 6:cantidad_solic, 
+                     7:tipo_producto_id, 8:usuario_id, 9:cantidad_pendiente});
+        } else {
+            throw {msj:"La cantidad ingresada del producto no es valida", status:403};
+        }
+    }).then(function(resultado){
         callback(false, resultado.rows, resultado);
-    }).catch(function(err){
+    }).fail(function(err){
         callback(err);
     });
+       
+    
 };
 
 
@@ -1481,5 +1505,8 @@ function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, 
         callback(err);
     });
 };
+
+
+PedidosFarmaciasModel.$inject = ["m_productos"];
 
 module.exports = PedidosFarmaciasModel;

@@ -976,19 +976,21 @@ PedidosFarmacias.prototype.ingresarDetallePedidoTemporal = function(req, res) {
 
     var cantidad_pendiente = producto.cantidadPendiente;
 
-
-    that.m_pedidos_farmacias.insertar_detalle_pedido_farmacia_temporal(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidadSolicitada, tipo_producto_id, cantidad_pendiente, usuario_id, function(err, rows, result) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Inserción del detalle del pedido', 500, {error: err}));
-            return;
+    
+    G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_detalle_pedido_farmacia_temporal",numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto,
+                                                                                      cantidadSolicitada, tipo_producto_id, cantidad_pendiente,
+                                                                                      usuario_id).then(function(){
+        res.send(G.utils.r(req.url, 'Inserción de detalle del pedido Exitosa!', 200, {}));
+    }).fail(function(err){
+        var msj = "Se ha Generado un Error en la Inserción del detalle del pedido";
+            
+        if(err.status){
+            msj = err.msj;
         }
-        else
-        {
-            res.send(G.utils.r(req.url, 'Inserción de detalle del pedido Exitosa!', 200, {}));
-            return;
-        }
+
+        res.send(G.utils.r(req.url, msj, 500, {error: err}));
     });
+    
 
 };
 
@@ -1807,33 +1809,24 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
 
     var usuario_id = req.session.user.usuario_id;
 
-
-    that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, cabecera_pedido) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
+    
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido",numero_pedido).then(function(cabecera_pedido){
+        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
+            
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia",numero_pedido, empresa_id, centro_utilidad_id,
+                                                                                                     bodega_id, codigo_producto,cantidad_solic, 
+                                                                                                     tipo_producto_id, usuario_id, cantidad_pendiente );
         } else {
-
-            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
-
-                that.m_pedidos_farmacias.insertar_producto_detalle_pedido_farmacia(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto,
-                        cantidad_solic, tipo_producto_id, usuario_id, cantidad_pendiente, function(err, row) {
-
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Detalle', 500, {error: err}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Detalle del pedido almacenado exitosamente', 200, {}));
-                        return;
-                    }
-                });
-            } else {
-                res.send(G.utils.r(req.url, 'El estado actual del pedido no permite modificarlo', 403, {}));
-                return;
-            }
-
+            throw {msj:"El estado actual del pedido no permite modificarlo", status:403, obj:{encabezado_pedido: {}}};
         }
-
+    }).then(function(rows){
+        res.send(G.utils.r(req.url, 'Detalle del pedido almacenado exitosamente', 200, {}));
+    }).fail(function(err){
+        if(err.status){
+            res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+        } else {
+            res.send(G.utils.r(req.url, "Error interno", "500", {encabezado_pedido: {}}));
+        }
     });
 
 };

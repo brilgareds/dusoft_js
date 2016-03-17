@@ -562,3 +562,15 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 .gridNumber{
     text-align: right;
 }
+
+
+@-moz-document url-prefix() {
+    input.form-control{
+        padding-top:1px;
+        padding-bottom:1px;
+    }
+    
+    a{
+        outline:none!important;
+    }
+}

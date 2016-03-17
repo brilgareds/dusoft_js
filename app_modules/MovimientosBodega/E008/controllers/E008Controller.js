@@ -1741,13 +1741,17 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
             
         return G.Q.nfcall(__validar_productos_pedidos_clientes, that, numero_pedido, documento_temporal_id, usuario_id);
         
-    }).spread(function(productos_no_auditados, productos_pendientes){
+    }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias){
         console.log("spread 1 >>>>>>>>>>>>>>>>>>>>");
         if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
-            throw {msj:"Algunos productos no ha sido auditados o tienen pendientes la justificacion.", status:404,
+            throw {msj:"Hay productos sin auditar o pendientes sin justificación.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
+       
+        } else if(productosSinExistencias.length > 0){
+            throw {msj:"Hay productos con existencias menores a las cantidades ingresadas en la auditoria.", status:404,
+                   obj:{movimientos_bodegas: {productosSinExistencias: productosSinExistencias}}};
         }
-
+                
         return G.Q.nfcall(__validar_rotulos_cajas, that, documento_temporal_id, usuario_id, numero_pedido, '1');
        
         
@@ -1813,7 +1817,8 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     }).then(function(rows){
         console.log("proceso de sincronizacion terminado");
     }).fail(function(err){
-        if(typeof err === "object"){
+        console.log("errorr aqui >>>>>>>>>>>>>>> ",err);
+        if(err.status){
             res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
         } else {
             res.send(G.utils.r(req.url, "Error interno", "500"));
@@ -1897,12 +1902,16 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
             
         return G.Q.nfcall(__validar_productos_pedidos_farmacias, that, numero_pedido, documento_temporal_id, usuario_id);
         
-    }).spread(function(productos_no_auditados, productos_pendientes){
+    }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias){
         console.log("spread 1 >>>>>>>>>>>>>>>>>>>>");
         if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
             throw {msj:"Algunos productos no ha sido auditados o tienen pendientes la justificacion.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
+        } else if(productosSinExistencias.length > 0){
+            throw {msj:"Hay productos con existencias menores a las cantidades ingresadas en la auditoria.", status:404,
+                   obj:{movimientos_bodegas: {productosSinExistencias: productosSinExistencias}}};
         }
+        
 
         return G.Q.nfcall(__validar_rotulos_cajas, that, documento_temporal_id, usuario_id, numero_pedido, '2');
         
@@ -2480,12 +2489,15 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
                 
                 //Calculo de totales
                 datos_documento.detalle.forEach(function(detalle){
-                    datos_documento.encabezado.subTotal += detalle.valor_unitario;
+                    datos_documento.encabezado.subTotal += detalle.valor_unitario * detalle.cantidad;
                     datos_documento.encabezado.totalIva += detalle.iva;
                 });
                 
                 datos_documento.encabezado.total = datos_documento.encabezado.subTotal + datos_documento.encabezado.totalIva;
-
+                datos_documento.encabezado.total = datos_documento.encabezado.total.toFixed(2);
+                datos_documento.encabezado.subTotal = datos_documento.encabezado.subTotal.toFixed(2);
+                datos_documento.encabezado.totalIva = datos_documento.encabezado.totalIva.toFixed(2);
+                
                 __generarPdfDespacho(datos_documento, function(nombre_pdf) {
                     
                     res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200,{
@@ -2532,9 +2544,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
 
                     var productos_pendientes = [];
                     var productos_no_auditados = [];
-
-
-
+                    var productosSinExistencias = [];
 
                     detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
 
@@ -2550,7 +2560,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                 return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
                             });
 
-                            //console.log("producto separarod   >>>>>>>>>>>>>>>>", documento_temporal_id, usuario_id, detalle_documento_temporal, producto_pedido);
+                            console.log("producto separado   >>>>>>>>>>>>>>>>", producto_pedido);
                             var cantidad_pendiente = producto_pedido.cantidad_pendiente;
 
                             if (producto_separado.length === 0) {
@@ -2561,7 +2571,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                 } else if (producto_pedido.item_id > 0) {
                                     productos_no_auditados.push(producto_pedido);
                                     //productos_no_auditados = __agregarProducto(producto_pedido, productos_no_auditados);
-                                }
+                                } 
                             } else {
 
                                 // Verificar que los productos con pendientes esten justificados po el auditor/
@@ -2573,12 +2583,21 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                     productos_no_auditados.push(producto_pedido);
 
                                 }
+                                
+                                //Valida si los productos se han quedado sin existencias, debido al traslado de lotes
+                               /*console.log("producto_pedido.existencia_actua ", producto_pedido.existencia_actual, " producto_pedido.cantidad_ingresada ", producto_pedido.cantidad_ingresada, 
+                                            " producto_pedido.existencia_bodega ", parseInt(producto_pedido.existencia_bodega), 
+                                           "producto_pedido.cantidad_ingresada ", producto_pedido.cantidad_ingresada);*/
+                               /* if((parseInt(producto_pedido.existencia_actual) <  parseInt(producto_pedido.cantidad_ingresada)) ||
+                                   (parseInt(producto_pedido.existencia_bodega) <  parseInt(producto_pedido.cantidad_ingresada))){
+                                    productosSinExistencias.push(producto_pedido);
+                                }*/
                             }
                         }
 
                     });
 
-                    callback(err, productos_no_auditados, productos_pendientes);
+                    callback(err, productos_no_auditados, productos_pendientes, productosSinExistencias);
                     return;
                 }
             });
@@ -2608,9 +2627,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 
                     var productos_pendientes = [];
                     var productos_no_auditados = [];
-
-
-
+                    var productosSinExistencias = [];
 
                     detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
 
@@ -2645,11 +2662,17 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
                                     productos_no_auditados.push(producto_pedido);
 
                                 }
+                                
+                                //Valida si los productos se han quedado sin existencias, debido al traslado de lotes
+                               /* if((parseInt(producto_pedido.existencia_actual) <  parseInt(producto_pedido.cantidad_ingresada)) ||
+                                   (parseInt(producto_pedido.existencia_bodega) <  parseInt(producto_pedido.cantidad_ingresada))){
+                                    productosSinExistencias.push(producto_pedido);
+                                }*/
                             }
                         }
                     });
 
-                    callback(err, productos_no_auditados, productos_pendientes);
+                    callback(err, productos_no_auditados, productos_pendientes, productosSinExistencias);
                     return;
                 }
             });

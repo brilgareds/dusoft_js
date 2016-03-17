@@ -190,9 +190,16 @@ MovimientosBodegasModel.prototype.consultar_productos_auditados = function(docum
         b.cantidad :: integer as cantidad_ingresada,\
         to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
         b.lote,\
-        b.auditado\
+        b.auditado,\
+        b.empresa_id,\
+        b.centro_utilidad,\
+        c.existencia_actual,\
+        d.existencia as existencia_bodega\
         from inv_bodegas_movimiento_tmp a\
         inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id and b.auditado = '1'\
+        left join existencias_bodegas_lote_fv c on c.empresa_id = b.empresa_id and c.centro_utilidad = b.centro_utilidad\
+        and c.codigo_producto = b.codigo_producto and c.lote = b.lote and c.fecha_vencimiento = b.fecha_vencimiento\
+        left join existencias_bodegas d on d.empresa_id = b.empresa_id and d.centro_utilidad = b.centro_utilidad and d.codigo_producto = b.codigo_producto\
         where a.doc_tmp_id = :1 and a.usuario_id = :2\
         UNION\
         select\
@@ -203,7 +210,11 @@ MovimientosBodegasModel.prototype.consultar_productos_auditados = function(docum
         0 as cantidad_ingresada,\
         null as fecha_vencimiento,\
         '' as lote,\
-        '1' as auditado\
+        '1' as auditado,\
+        '' as empresa_id,\
+        '' as centro_utilidad,\
+        0 as existencia_actual,\
+        0 as existencia_bodega\
         from inv_bodegas_movimiento_tmp a\
         inner join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
         where a.doc_tmp_id = :1 and a.usuario_id = :2 and b.codigo_producto not in(\
@@ -215,6 +226,7 @@ MovimientosBodegasModel.prototype.consultar_productos_auditados = function(docum
     then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
+        console.log("error generado ", err);
         callback(err);
     });
     

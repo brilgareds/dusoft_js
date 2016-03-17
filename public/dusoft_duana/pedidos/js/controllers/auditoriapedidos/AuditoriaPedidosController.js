@@ -394,15 +394,22 @@ define(["angular", "js/controllers",
             };
 
             that.renderProductosAuditados = function(data, arreglo) {
-
+                
                 for (var i in data) {
                     var obj = data[i];
                     var producto = ProductoPedido.get(
-                            obj.codigo_producto, obj.descripcion_producto, 0, 0, obj.cantidad_solicitada,
+                            obj.codigo_producto, obj.descripcion_producto, obj.existencia_bodega, 0, obj.cantidad_solicitada,
                             obj.cantidad_ingresada, obj.observacion_cambio
-                            );
+                    );
                     var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
                     lote.item_id = obj.item_id;
+                    lote.setExistenciaActual(obj.existencia_actual);
+                    
+                    
+                    if((parseInt(lote.getExistenciaActual()) <  parseInt(obj.cantidad_ingresada)) ||
+                      (parseInt(producto.getExistencia()) <  parseInt(obj.cantidad_ingresada))){
+                         lote.setTieneExistencia(false);
+                     }
 
                     producto.setLote(lote);
 
@@ -619,8 +626,8 @@ define(["angular", "js/controllers",
                         });
 
 
-                    } else {
-                        AlertService.mostrarMensaje("warning", data.msj);
+                    } else if(parseInt(data.status) !== 500 ) {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
                         $scope.productosPendientes = [];
@@ -630,14 +637,37 @@ define(["angular", "js/controllers",
 
                         if (documento, movimientos_bodegas.productos_no_auditados !== undefined) {
                             that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
-                        }
-
+                        } /*else if(documento, movimientos_bodegas.productosSinExistencias !== undefined){
+                            // that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productosSinExistencias, 2);
+                            
+                            //Señala los productos que no tienen existencias debido a traslados realizados en los lotes
+                            for(var i in $scope.productosAuditados){
+                                var _producto = $scope.productosAuditados[i];
+                                for(var ii in movimientos_bodegas.productosSinExistencias){
+                                    
+                                    var _productoSinExistencia = movimientos_bodegas.productosSinExistencias[ii];
+                                    if(_producto.getCodigoProducto() === _productoSinExistencia.codigo_producto && 
+                                       _producto.getLote().getCodigo() === _productoSinExistencia.lote &&
+                                       _producto.getLote().getFechaVencimiento() === _productoSinExistencia.fecha_vencimiento){
+                                            //console.log("producto sin existencia ", _productoSinExistencia);
+                                            _producto.getLote().setTieneExistencia(false);
+                                            _producto.getLote().setExistenciaActual(_productoSinExistencia.existencia_actual);
+                                            _producto.setExistencia(_productoSinExistencia.existencia_bodega);
+                                    }
+                                }
+                                
+                            }
+                        }*/
+                        
+                        
 
                         if (movimientos_bodegas.cajas_no_cerradas) {
                             $scope.cajasSinCerrar = movimientos_bodegas.cajas_no_cerradas;
                         }
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error generando el documento, favor revisar los productos auditados.");
+                        $rootScope.$emit("productoAuditado",{},documento);
                     }
-
                 });
 
             };

@@ -1785,13 +1785,18 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
 
 /*
- * Autor : Camilo Orozco
- * Descripcion : Insertar detalle pedido
+ * @author  Cristian Ardila
+ * @fecha 18/03/2016 4:39 pm
+ * +Descripcion : Metodo encargado de insertar los productos en un pedido
+ *                validando si el producto tiene o no precio regulado
+ *                y enviando notificaciones a cartera cada vez que el costo total
+ *                del pedido este por encima del valor total de cuando se creo
+ *                la cotizacion, prosiguiendo a almacenar la trazabilidad de este
+ *                proceso en los logs de trazabilidad ventas
  */
 PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
     var that = this;
-
     var args = req.body.data;
 
     // Pedido
@@ -1833,18 +1838,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         return;
     }
 
-    pedido.usuario_id = req.session.user.usuario_id;
-    
-    console.log("************PedidosCliente.prototype.insertarDetallePedido****************");
-    console.log("************PedidosCliente.prototype.insertarDetallePedido****************");
-    console.log("************PedidosCliente.prototype.insertarDetallePedido****************");
-    /**
-     * @fecha 18/03/2016 10:22 am
-     * +Descripcion Variables para la trazabilidad de ventas
-     */
-     var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo,1,0);
-
-		 
+    pedido.usuario_id = req.session.user.usuario_id; 	 
      /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
       * @param numero: numero del pedido
       *        tipo:   0=cotizacion, 1=pedido
@@ -1854,8 +1848,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             numero: pedido.numero_pedido,
             tipo: '1',
             pendiente:0
-     };
-    
+     }; 
     /**
      * +Descripcion: Proceso para validar que al modificar las cantidades de los 
      *               productos o añadirle mas productos a un pedido el total es 
@@ -1869,8 +1862,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
      */
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
-    var estado_pedido = 0;
-    
+    var estado_pedido = 0; 
     /**
      * +Descripcion: Promesa encargada de consultar el precio reguladod de un
      *               producto, y validar si este precio esta por debajo del valor
@@ -1880,15 +1872,12 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
      * @param {string} codigo_producto
      * @returns {function}
      */
-    var parametros = {empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, contratoId: pedido.cliente.contrato_id}
-    
+    var parametros = {empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, contratoId: pedido.cliente.contrato_id}  
     var precioVenta;
     var precioRegulado;
     var precioPactado;
     var valido;
-    var costoCompra;
-    
-    		 
+    var costoCompra; 		 
     /*+Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
      *        tipo:   0=cotizacion, 1=pedido
@@ -1906,8 +1895,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         precioVenta = Number(producto.precioVentaIva);
         precioRegulado = Number(resultado[0].precio_regulado);
         precioPactado = Number(resultado[0].precio_pactado);
-        costoCompra  = Number(resultado[0].costo_ultima_compra);
-        
+        costoCompra  = Number(resultado[0].costo_ultima_compra);  
         /**
          * +Descripcion: Valida si el producto es regulado
          */
@@ -1920,8 +1908,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             if(precioVenta > precioRegulado || precioPactado > precioRegulado){
                   valido = false;
             }
-        }
-      
+        }  
       /**
        * +Descripcion: Valida si el producto no es regulado y su precio pctado
        *               esta en 0
@@ -1930,17 +1917,13 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
          if(precioVenta < costoCompra){
                valido = false;
          }
-       }
-        
-
-
+       }     
        if(valido ){
             return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoPedidoEstado', numeroPedido);  
        }else{
           throw 'El precio de venta esta por encima del regulado';
        }
     }).then(function(resultado){
-
         /**
          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
          *               siempre y cuando el pedido tenga el 
@@ -1993,7 +1976,12 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
      }).then(function(resultado){
        
           if (resultado > 0){
-                
+               /*
+                * +Descripcion Se valida el estado del pedido, si es estado 4
+                *              entonces se enviara la notificacion de que el pedido
+                *              solicita a cartera la aprobacion y se almacenara esta
+                *              trazabilidad en la tabla (ventas_trazabilidad)
+                */
               if(estado_pedido === 4){
                   
                   that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
@@ -2010,23 +1998,18 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
       }).then(function(resultado){
       
        var paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo,1,0);
-     
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
          *              se procede a registrarlo, de lo contrario solo lo actualizara
          */
-        if(resultado.length === 0){  
-                        
+        if(resultado.length === 0){                         
             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogAutorizarPedido);  
         }else{
             return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogAutorizarPedido); 
         }
     }).fail(function(err){      
         res.send(G.utils.r(req.url, err, 500, {}));
-     }).done();
-     
-    
-    
+     }).done();          
 };
 
 

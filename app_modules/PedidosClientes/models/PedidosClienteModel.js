@@ -1360,7 +1360,7 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
         fecha_registro: 'NOW()'
         
     }).then(function(resultado) {
-         callback(false, resultado.rows,resultado);
+         callback(false, resultado);
     }).catch (function(error) {
         callback(error);
     });
@@ -1973,11 +1973,10 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  * @fecha: 05/12/2015 9:34 pm
  * @Funciones que hacen uso del modelo:
  *  Controller: PedidosClienteController
- *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
+ *  --PedidosCliente __productosPedidos
  *  --PedidosCliente.prototype.modificarDetallePedido
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
- 
  
     G.knex('ventas_ordenes_pedidos_d')
     .where('pedido_cliente_id', pedido.numero_pedido)
@@ -1988,10 +1987,11 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
         valor_unitario: producto.precio_venta,
         usuario_id: pedido.usuario_id,
         fecha_registro: 'NOW()'
-    }).then(function(resultado) {          
+    }).then(function(resultado) { 
+        console.log("resultado ***99");
         callback(false, resultado);
     }).catch(function(error) {
-        
+    console.log("error ***99");
         callback(error);
     });
 };
@@ -2190,24 +2190,6 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
 ;
 
 
-
-/*
- * Author : Camilo Orozco
- * Descripcion :  SQL Modificar Detalle Pedido
- * Modificacion: Se migra a KNEX.js 
- * @fecha: 05/12/2015 9:34 pm
- * @Funciones que hacen uso del modelo:
- *  Controller: PedidosClienteController
- *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
- *  --PedidosCliente.prototype.modificarDetallePedido
- */
-PedidosClienteModel.prototype.productosPedidos = function(producto, callback) {
-
-   for (var i = 0; i < producto.length; i++) {      
-        callback(false,producto[i]);
-       // console.log("producto ", producto[i])
-    }
-};
 
 PedidosClienteModel.$inject = ["m_productos"];
 

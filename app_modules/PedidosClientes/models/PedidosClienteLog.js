@@ -101,6 +101,11 @@ PedidosClienteLog.prototype.logEliminarProductoCotizacion = function(paramLogCli
  *  --PedidosCliente.prototype.observacionCarteraCotizacion
  */
 PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callback) {
+   console.log("**********logAprobacionCotizacion********************");
+   console.log("**********logAprobacionCotizacion********************");
+   console.log("**********logAprobacionCotizacion********************");
+   
+   console.log("cotizacion ", cotizacion);
    
    var parametros = {
             tipo: cotizacion.detalle.tipo,
@@ -111,17 +116,17 @@ PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callb
             fecha_aprobacion:cotizacion.detalle.fecha_aprobacion,
             usuario_aprobacion:cotizacion.detalle.usuario_aprobacion          
     };
-    
+  
    var subquery = G.knex('ventas_trazabilidad').where('numero',cotizacion.detalle.numero).max('id');
    var condicional = {numero: cotizacion.detalle.numero,id:subquery};
    
    G.knex('ventas_trazabilidad')
     .where(condicional)
     .update(parametros).then(function(rows) { 
-        console.log("rows ", rows);
+       
         callback(false, rows);
     }).catch(function(error){
-        console.log("error ", error);
+      
         callback(error);
     });
 };

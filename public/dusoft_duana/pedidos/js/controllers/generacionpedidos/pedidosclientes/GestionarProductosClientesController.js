@@ -1,5 +1,8 @@
 
-define(["angular", "js/controllers"], function(angular, controllers) {
+define(["angular", "js/controllers",
+        "models/generacionpedidos/pedidosclientes/Laboratorio",
+        "models/generacionpedidos/pedidosclientes/Molecula"
+], function(angular, controllers) {
 
     controllers.controller('GestionarProductosClientesController', [
         '$scope',
@@ -14,9 +17,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         "$state",
         "Laboratorio",
         "ProductoPedidoCliente",
-        "Usuario",
+        "Usuario","Molecula",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,
-                Laboratorio, Producto, Sesion) {
+                Laboratorio, Producto, Sesion,Molecula) {
 
             var that = this;
 
@@ -44,12 +47,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     ultima_busqueda: "",
                     pagina_actual: 1,
                     laboratorio: Laboratorio.get('', ''),
-                    producto_seleccionado: Producto.get()
+                    producto_seleccionado: Producto.get(),
+                    molecula: '', //Molecula.get('', ''),
+                    laboratorioAvanzado: Laboratorio.get('', ''),
+                    codigoProductoAvanzado:'',
+                    nombreProductoAvanzado: '',
+                    concentracionProductoAvanzado: '',
+                    tipoBusqueda:0
                 };
 
                 $scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
                 that.buscar_laboratorios();
-                //that.buscar_productos_clientes();
+               
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
@@ -266,8 +275,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 });
             };
-
-            // Laboratorios
+            
+            /*
+             * @author Cristian Ardila
+             * @fecha  04/03/2016
+             * +Descripcion Funcion encargada de invocar los laboratorios
+             */
             that.buscar_laboratorios = function() {
 
                 var obj = {
@@ -329,9 +342,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.datos_form.seleccion_tipo_producto = "- Neveras -";
             };
 
-            $scope.buscador_productos = function(ev) {
-
-
+            $scope.buscador_productos = function(ev,tipo) {
+                $scope.datos_form.tipoBusqueda = tipo;
                 if (ev.which === 13) {
                     that.buscar_productos_clientes();
                 }
@@ -343,13 +355,45 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             that.buscar_productos_clientes = function() {
-
-
+               
+               var obj ={};
+               
+               if($scope.datos_form.tipoBusqueda === 1){
+                
+                 obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            empresa_id: $scope.Pedido.get_empresa_id(),
+                            centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                            bodega_id: $scope.Pedido.get_bodega_id(),
+                            contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(),//894
+                            pagina_actual: $scope.datos_form.pagina_actual,
+                            termino_busqueda: $scope.datos_form.termino_busqueda,
+                            tipo_producto: $scope.datos_form.tipo_producto,                            
+                            numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                            numero_pedido: $scope.Pedido.get_numero_pedido(),
+                            filtro: $scope.rootSeleccionProducto.filtro,
+                            //nuevo campos
+                            molecula: $scope.datos_form.molecula,
+                            laboratorio_id: $scope.datos_form.laboratorioAvanzado.id,
+                            codigoProducto: $scope.datos_form.codigoProductoAvanzado,
+                            descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
+                            concentracion: $scope.datos_form.concentracionProductoAvanzado,
+                            tipoBusqueda: $scope.datos_form.tipoBusqueda
+                       }
+                    }
+                 };        
+               }
+                  
+                
+                
                 if ($scope.datos_form.ultima_busqueda !== $scope.datos_form.termino_busqueda) {
                     $scope.datos_form.pagina_actual = 1;
                 }
-
-                var obj = {
+                
+               if($scope.datos_form.tipoBusqueda === 0){
+                 obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
@@ -360,15 +404,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             pagina_actual: $scope.datos_form.pagina_actual,
                             termino_busqueda: $scope.datos_form.termino_busqueda,
                             tipo_producto: $scope.datos_form.tipo_producto,
-                            laboratorio_id: $scope.datos_form.laboratorio.get_id(),
                             numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
                             numero_pedido: $scope.Pedido.get_numero_pedido(),
-                            filtro: $scope.rootSeleccionProducto.filtro
+                            filtro: $scope.rootSeleccionProducto.filtro,
+                            //nuevo campos
+                            molecula: '',
+                            laboratorio_id: $scope.datos_form.laboratorio.get_id(),
+                            codigoProducto: '',
+                            descripcionProducto: '',
+                            concentracion: '',
+                            tipoBusqueda: $scope.datos_form.tipoBusqueda
                         }
                     }
-                };
-
-
+                 };
+              }
+              
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
                     
                    // console.log("data ", data);
@@ -413,7 +463,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                      
                 });
-
+               
             };
 
 
@@ -491,6 +541,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         </div>'},
                     {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
                     {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},
+                    {field: 'get_codigo_invima()', displayName: 'Cod. Invima', width: "7%"},
                     {field: 'get_iva()', displayName: 'IVA', width: "50"},
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
@@ -501,7 +552,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 {field: 'precio_venta', width: "8%", displayName: "$ Venta", cellFilter: "number",
                      cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
                      ng-model="row.entity.precio_venta" \
-                     validacion-numero-decimal\
+                     validacion-numero-entero\
                      ng-disabled = "row.entity.sw_pactado"\n\
                      class="form-control grid-inline-input" name="" id="" /> \n\
                      <div ng-if="row.entity.sw_pactado" class="ngCellText" >\n\
@@ -530,8 +581,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $scope.agregar_clase_tipo_producto = function(tipo_producto) {
-              //  console.log("tipo_producto ", tipo_producto);
-              //  console.log("$scope.datos_form.clases_tipo_producto ", $scope.datos_form.clases_tipo_producto);
                 return $scope.datos_form.clases_tipo_producto[tipo_producto];
             };
 
@@ -547,7 +596,95 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 that.buscar_productos_clientes();
             };
 
+            
+             /*
+             * @author Cristian Ardila
+             * @fecha  04/03/2016
+             * +Descripcion Funcion encargada de invocar el servicio que consulta
+             *              las moleculas
+             */
+            that.buscar_moleculas = function(callback) {
+               
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        moleculas: {
+                            termino_busqueda: $scope.datos_view.termino_busqueda_moleculas
+                        }
+                    }
+                };
 
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_MOLECULA, "POST", obj, function(data) {
+                    
+                    if (data.status === 200) {
+                        callback(data.obj.moleculas);
+                    }
+                });
+            };    
+            that.render_moleculas = function(moleculas) {
+
+                $scope.Empresa.limpiar_moleculas();  
+                var molecula = Molecula.get("", "-- TODOS --");
+                $scope.Empresa.set_moleculas(moleculas);
+                moleculas.forEach(function(data) {
+                    molecula = Molecula.get(data.subclase_id, data.descripcion_molecula);
+                    $scope.Empresa.set_moleculas(molecula);
+                });
+               
+            };
+
+            $scope.listar_moleculas = function(termino_busqueda) {
+
+                if (termino_busqueda.length < 3) {
+                    return;
+                }
+
+                $scope.datos_view.termino_busqueda_moleculas = termino_busqueda;
+            
+                that.buscar_moleculas(function(moleculas) {
+                   // console.log("moleculas ", moleculas)
+                    that.render_moleculas(moleculas);
+                });
+             };
+            
+            
+         
+            
+             /**
+            * @author Cristian Manuel Ardila Troches
+            * @fecha  04/03/2016
+            * +Descripcion: Se desplegara una ventana modal con un formulario
+            *               el cual permitira hacer una busqueda avanzada por
+            *               producto
+            * @param {type} cotizacion_pedido
+            */
+           $scope.busquedaAvanzadaProducto = function(cotizacion_pedido) {
+
+                $scope.datos_view.pedido_seleccionado = cotizacion_pedido;
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/generacionpedidos/pedidosclientes/formularioBusquedaAvanzadaProducto.html',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                      
+
+                        $scope.cerrarVentanaBusquedaAvanzada = function() {
+                           
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            
+            that.buscar_laboratorios();
+            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 //$scope.datos_form = null;

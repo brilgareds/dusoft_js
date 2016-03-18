@@ -1035,11 +1035,13 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Funciones que usan el model:
  *  (PedidosClienteController.js)-- __validar_datos_productos_archivo_plano
  *  -- PedidosCliente.prototype.listarProductosClientes     
+ *  -- PedidosCliente __validar_datos_productos_archivo_plano     
  * Modificacion: Se migra a KNEX.js 
  * @fecha: 04/12/2015 6:10 pm                       
  */
-PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina,filtros, callback) {
-
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina,filtros,filtroAvanzado, callback) {
+   
+ 
     var filtroProducto ="";
     var sql_aux = "";
     var termino_busqueda = filtro.termino_busqueda;
@@ -1047,34 +1049,52 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1:empresa, 2:centro_utilidad_id, 3:bodega_id, 4:contrato_cliente_id};
     
+    if(filtroAvanzado.tipoBusqueda === 0){
+         
+        if (tipo_producto !== undefined && tipo_producto !== ''){
+            sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
+        }
+        if (laboratorio_id !== undefined && laboratorio_id !== ''){
+            sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
+        }
+        if(filtros.tipo_busqueda === 0){
+            filtroProducto = "AND (fc_descripcion_producto(b.codigo_producto) "+G.constants.db().LIKE+" :5)";
+            parametros["5"]= '%' + termino_busqueda + '%';
+        } 
+
+        if(filtros.tipo_busqueda === 1){
+            filtroProducto = "AND (e.descripcion "+G.constants.db().LIKE+" :5)";
+            parametros["5"]= '%' +termino_busqueda + '%';
+        }
+
+        if(filtros.tipo_busqueda === 2){
+            filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
+            parametros["5"]= '%' +termino_busqueda + '%';
+              
+        }
+
+        if(filtros === ''){
+            filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
+            parametros["5"]= '%' +termino_busqueda + '%';
+
+        }
+     }
     
-    if (tipo_producto !== undefined && tipo_producto !== ''){
-        sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
-    }
-    if (laboratorio_id !== undefined && laboratorio_id !== ''){
-        sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
-    }
-    if(filtros.tipo_busqueda === 0){
-        filtroProducto = "AND (fc_descripcion_producto(b.codigo_producto) "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= '%' + termino_busqueda + '%';
+    if(filtroAvanzado.tipoBusqueda === 1){
+        parametros["5"]= '%' +filtroAvanzado.molecula + '%';
+        parametros["6"]= '%' +filtroAvanzado.descripcionProducto + '%';
+        parametros["7"]= '%' +filtroAvanzado.concentracion + '%';
+        parametros["8"]= '%' +filtroAvanzado.codigoProducto + '%';
+        parametros["9"]= '%' +filtroAvanzado.laboratorio_id + '%';
+      
+        sql_aux = "AND a.codigo_producto "+G.constants.db().LIKE+" :8\
+                   AND b.contenido_unidad_venta "+G.constants.db().LIKE+" :7\
+                   AND fc_descripcion_producto(b.codigo_producto) "+G.constants.db().LIKE+" :6\
+                   AND b.subclase_id "+G.constants.db().LIKE+" :5\
+                   AND f.clase_id "+G.constants.db().LIKE+" :9";
+       
+        //filtroAvanzado.tipoBusqueda
     } 
-    
-    if(filtros.tipo_busqueda === 1){
-        filtroProducto = "AND (e.descripcion "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= '%' +termino_busqueda + '%';
-    }
-    
-    if(filtros.tipo_busqueda === 2){
-        filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= '%' +termino_busqueda + '%';
-    
-    }
-    
-    if(filtros === ''){
-        filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= '%' +termino_busqueda + '%';
-   
-    }
     
     /***
      * +Descripcion Campos para obtener la fecha actual
@@ -1094,7 +1114,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     
     fechaActual = yyyy+'-'+ mm +'-'+ dd;
      // coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
-    var sql = "a.codigo_producto,\
+   /* var sql = "a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 b.tipo_producto_id,\
                 d.descripcion as descripcion_tipo_producto,\
@@ -1129,7 +1149,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     where a.contrato_cliente_id = :4\
                 ) g on c.codigo_producto = g.codigo_producto\
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
-                 " + filtroProducto;
+                 " + filtroProducto;*/
         
 
     
@@ -1137,7 +1157,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     
     //Se agregar un nuevo campo llamado contrato que retornara FALSE si no tiene
    //contrato con la empresa y TRUE si lo tiene
-            /* var sql = "a.codigo_producto,\
+             var sql = "a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 b.tipo_producto_id,\
                 d.descripcion as descripcion_tipo_producto,\
@@ -1198,14 +1218,14 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     ) aa group by 1,2\
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
-                 " + filtroProducto;*/
-        
+                 " + filtroProducto;
+      
       var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("error ", err)
+        
         callback(err);
     });
     
@@ -1340,7 +1360,7 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
         fecha_registro: 'NOW()'
         
     }).then(function(resultado) {
-         callback(false, resultado.rows,resultado);
+         callback(false, resultado);
     }).catch (function(error) {
         callback(error);
     });
@@ -1598,7 +1618,7 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
         sw_aprobado_cartera:  pedido.aprobado_cartera,
         estado: '1'
     }).then(function(resultado) {
-        callback(false, resultado.rows,resultado);
+        callback(false, resultado);
     }).catch (function(error) {
         callback(error);
     });
@@ -1711,7 +1731,8 @@ PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_p
  *  --PedidosCliente.prototype.eliminarProductoPedido  
  */
 PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero_pedido, callback) {
-
+  
+    
     G.knex.select(
             G.knex.raw('sum(ventas_ordenes_pedidos_d_tmp.valor_unitario * ventas_ordenes_pedidos_d_tmp.numero_unidades) as valor_total_cotizacion')
             ).from('ventas_ordenes_pedidos_d_tmp').leftJoin('ventas_ordenes_pedidos',
@@ -1719,6 +1740,7 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
             'ventas_ordenes_pedidos.pedido_cliente_id_tmp').where('ventas_ordenes_pedidos.pedido_cliente_id', numero_pedido).then(function(rows) {
         callback(false, rows);
     }).catch (function(err) {
+        
          callback(err);     
     });
 };
@@ -1951,7 +1973,7 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  * @fecha: 05/12/2015 9:34 pm
  * @Funciones que hacen uso del modelo:
  *  Controller: PedidosClienteController
- *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
+ *  --PedidosCliente __productosPedidos
  *  --PedidosCliente.prototype.modificarDetallePedido
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
@@ -1965,9 +1987,11 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
         valor_unitario: producto.precio_venta,
         usuario_id: pedido.usuario_id,
         fecha_registro: 'NOW()'
-    }).then(function(resultado) {          
-        callback(false, resultado.rows,resultado);
+    }).then(function(resultado) { 
+        console.log("resultado ***99");
+        callback(false, resultado);
     }).catch(function(error) {
+    console.log("error ***99");
         callback(error);
     });
 };
@@ -2164,6 +2188,7 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
 
 }
 ;
+
 
 
 PedidosClienteModel.$inject = ["m_productos"];

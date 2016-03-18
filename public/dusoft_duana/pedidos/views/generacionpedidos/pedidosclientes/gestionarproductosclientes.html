@@ -1,6 +1,4 @@
 <div>
-
-
     <div>
         <div class="row">
             <div class="col-md-12">
@@ -19,8 +17,8 @@
                     <div class="panel-body">
                         <div>
  
-                            <div class="row" style="margin-bottom: 20px;">
-                                <div class="col-xs-1 col-md-3">
+                            <div class="row" >
+                                <div class="col-md-3">
                                     <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4> 
                                     <button ng-click="seleccionar_tipo_producto('')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-primary" style="position: relative;">Todos</button>
                                     <button ng-click="seleccionar_tipo_producto('1')"  ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-success" style="position: relative;">Normales</button>
@@ -30,12 +28,12 @@
                                     <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-grey" style="position: relative;">Neveras</button>                                                                           
                                                                            
                                 </div>
-                                <div class="col-xs-1 col-md-4">
+                              <div class="col-md-3">
                                    <h4>Con convenciones</h4> 
                                      <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-success" style="position: relative;">Con contrato</button>  
-                                </div>
-                                
-                                </div>
+                                </div>                              
+                            </div>
+                            
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
@@ -71,9 +69,13 @@
                                        ng-model="datos_form.termino_busqueda" placeholder="Buscar Producto" name="" id="">
                                 
                                  <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13})">
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13},0)">
                                         <i class="glyphicon glyphicon-search"></i></button>
                                 </div>
+                                
+                                 <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" ng-click="busquedaAvanzadaProducto();"><i >Avanzado</i></button>
+                                </span>
                               </div><!-- /input-group -->
                             
 
@@ -85,9 +87,7 @@
                             <br>
                             <div class="table-responsive" style="clear:both;">
                                   <div class="defaultGrid grid-responsive" ng-grid="lista_productos" > </div>
-                            </div>
-                            
-
+                            </div>                          
                             </br>
 
                             <div class="row text-center">

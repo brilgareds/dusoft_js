@@ -1,30 +1,20 @@
-
-<div class="altoSlide">
-    
+<div class="altoSlide">   
     <div>
         <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs marginRightCerrarSlide"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
-    </div>  
-    
+    </div>   
     <div class="row">
-        <div class="col-xs-12">
-          
+        <div class="col-xs-12">         
             <div class="panel panel-info marginBottom5">
-
                 <div class="panel-heading">
                   <h4 class="h4MarginTopBottom" align="center">Selección de Producto para Farmacias</h4>
                 </div>
-                <div class="panel-body">
-                        
-
-                    <div class="input-group col-sm-12 col-md-12 col-lg-12">
-                        
-                        <div class="col-sm-12 col-md-6 col-lg-5 pull-left input-group">
-                            <div class="row" style="margin-bottom: 20px;">
-                                <div class="col-lg-12">
+                <div class="panel-body">                       
+                    <div class="input-group col-sm-12 col-md-12 col-lg-12">                       
+                         <div class="row" >
+                                <div class="col-md-4">
+                                    <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4> 
                                     
-                                    <h4>Filtro Tipo Producto:</h4>
-                                 
-                                    <div class="btn-group">
+                                  <div class="btn-group">
                                         <label class="btn btn-default">
                                           <input type="radio" name="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="0" /><span class="label label-default">Todos</span>
                                         </label>
@@ -42,36 +32,23 @@
                                         </label>
                                         <label class="btn btn-default">
                                           <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="5" /><span class="label label-info">Nevera</span>
-                                        </label>                                        
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                        
-                        
-                        
+                                        </label>    
+                                  </div>                               
+                                </div>                                                              
                         <div class="col-sm-12 col-md-6 col-lg-3 pull-left" ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true">
                             <alert ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true" type="danger">El Producto que intenta Incluir ya fue INGRESADO. Elimínelo primero de los Productos Seleccionados.</alert>
-                        </div>
-                        
-                        <div class="col-sm-12 col-md-6 col-lg-3 pull-right">
-                            
-                            <div class=" row col-sm-12 col-md-12 col-lg-12 paddingLeftZero">
-
-                                <label>Tipo Producto Búsqueda: </label><!--{{rootSeleccionProductoFarmacia.tipoProducto}}-->
+                        </div>                                        
+                      <div class="col-md-3 pull-right">                                                                
+                           <div class=" row col-sm-12 col-md-12 col-lg-12 paddingLeftZero">
+                                <label>Tipo Producto Búsqueda: </label>
                                 <span class="label label-default" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 0" >Todos</span>
                                 <span class="label label-success" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 1" >Normales</span>
                                 <span class="label label-danger" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 2">Alto Costo</span>
                                 <span class="label label-warning" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 3">Controlados</span>
                                 <span class="label label-primary" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 4">Insumos</span>
-                                <span class="label label-info" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 5">Nevera</span>
-                                
-                            </div>
-                            
-                            <div class=" row col-sm-12 col-md-12 col-lg-12 input-group">                                
-                                
-                                <div class="input-group">
+                                <span class="label label-info" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 5">Nevera</span>                              
+                            </div>                              
+                           <div class="input-group">
                                 <div class="input-group-btn">
                                   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootSeleccionProductoFarmacia.filtro.nombre}} <span class="caret"></span></button>
                                   <ul class="dropdown-menu">
@@ -79,35 +56,15 @@
                                         <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
                                     </li>
                                   </ul>
-                                </div><!-- /btn-group -->
-                                <input type="text" class="form-control" ng-keypress="onBuscarProductos($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
-                              </div><!-- /input-group -->
-                            
-
-                                <div class="input-group-btn" >
+                                </div>
+                                <input type="text" class="form-control" ng-keypress="onBuscarProductos($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">                                                                                                                      
+                                 <div class="input-group-btn" >
                                     <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarProductos({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                                 </div>
-                            
-                            </div>
-                            
-<!--                            <div class=" row col-sm-12 col-md-12 col-lg-12 paddingLeftZero">
-                                <br/>
-                                Tipo Producto Búsqueda: {{rootSeleccionProductoFarmacia.tipoProducto}}
-                                <span class="label label-default" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 0" >Todos</span>
-                                <span class="label label-success" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 1" >Normales</span>
-                                <span class="label label-danger" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 2">Alto Costo</span>
-                                <span class="label label-warning" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 3">Controlados</span>
-                                <span class="label label-primary" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 4">Insumos</span>
-                                <span class="label label-info" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 5">Nevera</span>
-                                
-                            </div>-->
-
-                        </div>
-                        <!--
-                        <div class="col-sm-12 col-md-6 col-lg-3 pull-left">
-                            Tipo Producto Seleccionado: {{rootSeleccionProductoFarmacia.tipoProducto}}
-                        </div>
-                        -->
+                          </div>                            
+                     </div>                               
+                   </div>                    
+             </div>                      
                     </div>
 
                 </div>

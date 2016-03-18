@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaPedidoCliente.cotizaciones = [];
             EmpresaPedidoCliente.pedidos = [];
             EmpresaPedidoCliente.laboratorios = [];
+            EmpresaPedidoCliente.moleculas = [];
             EmpresaPedidoCliente.productos = [];
 
 
@@ -87,10 +88,22 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaPedidoCliente.get_laboratorios = function() {
                 return this.laboratorios;
             };
-
+            
             EmpresaPedidoCliente.limpiar_laboratorios = function() {
                 this.laboratorios = [];
             };
+            
+            // Laboratorios
+            EmpresaPedidoCliente.set_moleculas = function(molecula) {
+                this.moleculas.push(molecula);
+            };
+            EmpresaPedidoCliente.get_moleculas = function() {
+                return this.moleculas;
+            };
+            EmpresaPedidoCliente.limpiar_moleculas = function() {
+                this.moleculas = [];
+            };
+            
             
             // Set Default values
             EmpresaPedidoCliente.set_default = function() {

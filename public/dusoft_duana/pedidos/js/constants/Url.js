@@ -48,6 +48,7 @@ define(["angular"], function(angular) {
                     'CONSULTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/consultarDetalleCotizacion',
                     'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes',
                     'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios',
+                    'LISTAR_MOLECULA': BASE_URL + '/Laboratorios/listarMoleculas',
                     'INSERTAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
                     'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
                     'MODIFICAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/modificarDetalleCotizacion',
@@ -72,7 +73,8 @@ define(["angular"], function(angular) {
                     'VALIDAR_ESTADO_TOTAL_PEDIDO' : BASE_URL + '/PedidosClientes/validarEstadoTotalValorPedido',
                     'INSERTAR_CANTIDAD_DETALLE_PRODUCTO_PEDIDO' : BASE_URL + '/PedidosClientes/insertarCantidadProductoDetallePedido',
                     
-                    'ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES' : BASE_URL + '/PedidosClientes/enviarNotificacionPedidosClientes'
+                    'ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES' : BASE_URL + '/PedidosClientes/enviarNotificacionPedidosClientes',
+                    'PRODUCTOS_COTIZACION': BASE_URL + '/PedidosClientes/ProductosCotizacion'
                     
                     
                 },

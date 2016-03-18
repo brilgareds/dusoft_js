@@ -2014,13 +2014,36 @@ PedidosClienteModel.prototype.eliminar_producto_pedido = function(pedido, produc
      .andWhere('codigo_producto',producto.codigo_producto)
      .del().then(function(resultado){
       
-        callback(false, resultado.rows, resultado);
+        callback(false,resultado);
        }).catch (function(error) {  
           
            callback(error);
        });
 };
 
+
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar el total de productos de un pedido
+ * @fecha: 18/03/2016
+ * @Funciones que hacen uso del model : 
+ *  --PedidosCliente.prototype.eliminarProductoPedido
+ */
+PedidosClienteModel.prototype.consultarTotalProductosPedido = function(pedido, callback) {
+   
+    var obj = {
+           pedido_cliente_id: pedido,    
+       };
+   
+    G.knex('ventas_ordenes_pedidos_d')
+     .where(obj)
+     .count('pedido_cliente_id as total')
+     .then(function(rows) {
+        callback(false, rows);
+    }).catch (function(error) {
+        callback(error);
+    });
+};
 
 /*************************************************
  * 

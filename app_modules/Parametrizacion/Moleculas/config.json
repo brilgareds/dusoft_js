@@ -1,0 +1,21 @@
+{
+    "module": "Moleculas",
+    "dependency": {
+        "controllers": [{
+                "moleculas_controller": {
+                    "module": "Parametrizacion/Moleculas",
+                    "controller": "MoleculasController",
+                    "alias": "c_moleculas"
+                }
+            }],
+        "models": [{
+                "moleculas_model": {
+                    "module": "Parametrizacion/Moleculas",
+                    "model": "MoleculasModel",
+                    "alias": "m_moleculas"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

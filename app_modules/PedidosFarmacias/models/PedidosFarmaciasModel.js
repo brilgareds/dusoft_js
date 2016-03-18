@@ -403,11 +403,12 @@ PedidosFarmaciasModel.prototype.anularCantidadPendienteProducto = function(param
 
 PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, callback)
 {    
+    var that = this;
 
      G.knex.transaction(function(transaccion) {  
          G.Q.nfcall(__log_eliminar_producto_detalle_pedido, numero_pedido, codigo_producto, usuario, transaccion).then(function(resultado){
              
-             return G.Q.nfcall(__actualizar_cantidades_detalle_pedido, numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, transaccion);
+             return G.Q.nfcall(__actualizar_cantidades_detalle_pedido, numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, that, transaccion);
              
          }).then(function(){
              transaccion.commit();
@@ -1452,21 +1453,30 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     
 };
 
-function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, transaccion, callback){
-    
-    var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
-                SET cantidad_solic = :3, cantidad_pendiente = :4 \
-                WHERE solicitud_prod_a_bod_ppal_id = :1 and codigo_producto = :2";
-    
-    var query = G.knex.raw(sql, {1:numero_pedido, 2:codigo_producto, 3:cantidad_solicitada, 4:cantidad_pendiente});
-    
-    if(transaccion) query.transacting(transaccion);
-    
-    query.then(function(resultado){
+function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, that, transaccion, callback){
+
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solicitada, codigo_producto:codigo_producto}).then(function(resultado){
+        if(resultado.length > 0 && resultado[0].valido === '1'){
+            
+            var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
+                        SET cantidad_solic = :3, cantidad_pendiente = :4 \
+                        WHERE solicitud_prod_a_bod_ppal_id = :1 and codigo_producto = :2";
+            
+            var query = G.knex.raw(sql, {1:numero_pedido, 2:codigo_producto, 3:cantidad_solicitada, 4:cantidad_pendiente});
+
+            if(transaccion) query.transacting(transaccion);
+            
+            return query;
+
+        } else {
+            throw {msj:"La cantidad ingresada del producto no es valida", status:403};
+        }
+    }).then(function(resultado){
         callback(false, resultado.rows);
-    }).catch(function(err){
+    }).fail(function(err){
         callback(err);
     });
+    
 };
 
 function __eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, transaccion, callback) {

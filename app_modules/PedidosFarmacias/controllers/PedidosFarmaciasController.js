@@ -988,7 +988,7 @@ PedidosFarmacias.prototype.ingresarDetallePedidoTemporal = function(req, res) {
             msj = err.msj;
         }
 
-        res.send(G.utils.r(req.url, msj, 500, {error: err}));
+        res.send(G.utils.r(req.url, msj, err.status, err.obj));
     });
     
 
@@ -1389,7 +1389,7 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
     G.utils.subirArchivoPlano(req.files, ['codigo', 'cantidad'], function(error, contenido) {
         if (!error) {
 
-            __validar_productos_archivo_plano(that, contenido, function(productosValidadosArchivo, productosInvalidosArchivo) {
+            __validar_productos_archivo_plano(that, contenido, 0, [], [], function(productosValidadosArchivo, productosInvalidosArchivo) {
 
                 if (productosValidadosArchivo.length === 0) {
                     res.send(G.utils.r(req.url, 'Lista de Productos', 200,
@@ -1486,32 +1486,25 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
     var cantidad_pendiente = args.pedidos_farmacias.cantidad_pendiente;
     var usuario = req.session.user.usuario_id;
 
-
-
-    that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, cabecera_pedido) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido ).then(function(cabecera_pedido){
+        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
+            
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_cantidades_detalle_pedido", numero_pedido, codigo_producto, cantidad_solicitada,
+                                                                                                 cantidad_pendiente, usuario);
         } else {
-
-            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
-
-                that.m_pedidos_farmacias.actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, function(err, rows) {
-
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'Error en la modificación de cantidades', 500, {error: err}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Cantidades modificadas satisfactoriamente', 200, {}));
-                    }
-                });
-            } else {
-                res.send(G.utils.r(req.url, 'El estado actual del pedido no permite modificarlo', 403, {}));
-                return;
-            }
-
+            throw {msj:"El estado actual del pedido no permite modificarlo", status:403};
+        }
+    }).then(function(){
+        res.send(G.utils.r(req.url, 'Cantidades modificadas satisfactoriamente', 200, {}));
+        
+    }).fail(function(err){
+        var msj = "Se ha generado un error";
+            
+        if(err.status){
+            msj = err.msj;
         }
 
+        res.send(G.utils.r(req.url, msj, err.status, err.obj));
     });
 
 };
@@ -2069,42 +2062,61 @@ function __agruparProductosPorTipo(that, productos, callback) {
  * @fecha: 30/10/2015
  */
 
-function __validar_productos_archivo_plano(contexto, filas, callback) {
-
+function __validar_productos_archivo_plano(contexto, filas, index, productos_validos, productos_invalidos,  callback) {
+    
+    var fila = filas[index];
     var that = contexto;
+    
+    if(!fila){
+        callback(productos_validos, productos_invalidos);
+        return;
+    }
 
-    var productos_validos = [];
-    var productos_invalidos = [];
-    var i = filas.length;
+    var producto = {codigo_producto: fila.codigo || '', cantidad_solicitada: fila.cantidad || 0};
+    
+    G.Q.ninvoke(that.m_productos, "validar_producto", producto.codigo_producto ).then(function(resultado){        
+        if (resultado.length > 0 && producto.cantidad_solicitada > 0) {
 
-    filas.forEach(function(row) {
-        var codigo_producto = row.codigo || '';
-        var cantidad_solicitada = row.cantidad || 0;
+            producto.tipoProductoId = resultado[0].tipo_producto_id;
+            producto.descripcion = resultado[0].descripcion_producto;
+            
+            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:producto.cantidad_solicitada,codigo_producto:producto.codigo_producto});
 
-        that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
+        } else {
+            index++;
+            producto.mensajeError = "No existe en inventario";
+            producto.existeInventario = false;
+            productos_invalidos.push(producto);
+            
+            setTimeout(function(){
+                __validar_productos_archivo_plano(that, filas, index, productos_validos, productos_invalidos,  callback);
+            },0);
+        }
 
-
-            var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
-
-            if (existe_producto.length > 0 && cantidad_solicitada > 0) {
-
-                producto.tipoProductoId = existe_producto[0].tipo_producto_id;
-                producto.descripcion = existe_producto[0].descripcion_producto;
-                productos_validos.push(producto);
-
-            } else {
-                producto.mensajeError = "No existe en inventario";
-                producto.existeInventario = false;
-                productos_invalidos.push(producto);
-            }
-
-            if (--i === 0) {
-                callback(productos_validos, productos_invalidos);
-            }
-        });
-    });
+    }).then(function(resultado){
+        index++;
+        if(resultado.length > 0 && resultado[0].valido === '1'){
+             productos_validos.push(producto);
+            
+             setTimeout(function(){
+                __validar_productos_archivo_plano(that, filas, index, productos_validos, productos_invalidos,  callback);
+            },0);
+            
+        } else {
+            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
+            producto.cantidadValida = false;
+            productos_invalidos.push(producto);
+            
+            setTimeout(function(){
+                __validar_productos_archivo_plano(that, filas, index, productos_validos, productos_invalidos,  callback);
+            },0);
+        }
+    }).fail(function(err){
+       callback(err); 
+    }).done();
 
 };
+
 
 
 function _generarDocumentoPedido(obj, callback) {

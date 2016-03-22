@@ -46,14 +46,56 @@
                 padding-top:15px;
             }
             
-           @page 
+           @page
             {
                 size: auto;   /* auto is the initial value */
-                margin: 0mm;  /* this affects the margin in the printer settings */
+                margin: 10mm 10mm 10mm 10mm;  ;  /* this affects the margin in the printer settings */
+            }
+            
+            table,
+            table tr td,
+            table tr th {
+                   /* page-break-inside: avoid;*/
             }
             
             .thDetalle{
                 width:25%;            
+            }
+            
+            .tablaPrincipal{   
+                overflow:visible;
+                overflow-y:visible;
+               /* display:inline;*/
+            }
+            
+            table{
+                padding:0px 5px;
+            }
+            
+            .detalle{
+                padding:0px;
+            }
+            
+            @-moz-document url-prefix() {
+                td{
+                     font-size:10pt!important;
+
+                 }
+
+                  BODY { 
+                     font: 10pt Verdana, Geneva, Arial, Helvetica, sans-serif!important; 
+
+                 } 
+
+                 .title{
+                     font-weight:bold;
+                     /*font-family:"Times New Roman", Georgia, Serif;*/
+                     font-size:10pt!important;
+                 }
+
+                 .docInfo{
+                     font-size:10pt!important;
+                 }
             }
 
         </style>
@@ -67,7 +109,7 @@
     
     <body>
              
-       <table class="table" width='95%' align="center">
+       <table class="table" width='100%'>
             <tr>
                 <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
                 <td class='title' >Usuario</td><td>{{:encabezado.nombre_usuario}}</td>
@@ -87,7 +129,7 @@
         <hr/>
         
         <div class="panel panel-default">
-             <table width='95%' align="center">
+             <table width='100%' >
                 {{props   adicionales}}
                     <tr>
                         <td class='title'>{{>prop.titulo}}</td>
@@ -98,7 +140,7 @@
         </div>
         
         {{if encabezado.tipo_pedido == '1'}}
-            <table class="table table-bordered detalle" width='95%' align="center" cellspacing="0">
+            <table class="table table-bordered  tablaPrincipal" width='100%'  cellspacing="0">
                 <tr>
                    <th class='title'>Producto</th>      
                    <th class='title valoresClientes' >Cant</th>
@@ -177,7 +219,7 @@
         {{/if}}
         
         {{if encabezado.tipo_pedido == '2'}}
-            <table class="table table-bordered detalle" width='95%' align="center">
+            <table class="table table-bordered  tablaPrincipal" width='100%'>
                 <tr>
                    <th class='title'>Producto</th>      
                    <th class='title' >Cant</th>
@@ -201,7 +243,7 @@
             </table>
         
         {{/if}}
-        <table  width='95%' align="center" style="margin-top:20px" >
+        <table  width='100%'  style="margin-top:20px" >
             <tr align='center'>
                 <td>
                     _______________________________

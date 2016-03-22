@@ -44,7 +44,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 progresoArchivo: 0,
                 btnSolicitarAutorizacionCartera: true
-
+                
             };
             $scope.notificacionPedidoAutorizar = 0;
             that.consultarEstadoPedidoCotizacion = function(tipo, numero) {
@@ -92,9 +92,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             //Cotizacion
             //if (localStorageService.get("cotizacion")) {
             if ($state.is("Cotizaciones") === true) {
-
-              
-                var cotizacion = localStorageService.get("cotizacion");
+                var cotizacion = localStorageService.get("cotizacion");              
                 var numeroCotizacion = 0;
                 if (cotizacion) {
                     numeroCotizacion = cotizacion.numero_cotizacion || 0;
@@ -280,8 +278,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
-                    
-                    console.log("data ", data)
+                     
                     if (data.status === 200) {
                         that.render_productos_cotizacion(data.obj.pedidos_clientes.lista_productos);
                     }
@@ -399,6 +396,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
                 Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function(data) {
                    
+                     
                     if (data.status === 200) {
                         callback(data.obj.listado_clientes);
                     }
@@ -418,7 +416,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     
                 });
                 
-                console.log("$scope.Empresa ", $scope.Empresa);
+              
             };
             // Vendedores
             that.buscar_vendedores = function(callback) {
@@ -825,7 +823,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 //socket.emit("onEnviarNotificacionPedidosClientes", obj);
                   Request.realizarRequest(API.PEDIDOS.CLIENTES.ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES, "POST", obj, function(data) {
 
-                                });
+                  });
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -963,6 +961,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             // Cancelar la cotizacion
             $scope.volver_cotizacion = function() {
+                
+                
+                var cotizacion = localStorageService.get("cotizacion");
+                
+                if(cotizacion){
+                    localStorageService.add("terminoBusqueda", {busqueda: cotizacion.busqueda});
+                }
+                
+                var pedido =  localStorageService.get("pedido");
+                
+                if(pedido){             
+                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.busqueda, activar:true});
+                   
+                }
+                
                 $state.go('ListarPedidosClientes');
             };
             //Aceptar la cotizacion
@@ -1101,7 +1114,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     };
                 }
-
+                
                 // Observacion cartera para pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
 
@@ -1118,9 +1131,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                   
                     if (data.status === 200) {
-                        $scope.volver_cotizacion();
+                        
+                       /*Se valida si es una cotizacion y entonces se procede
+                         a crear el pedido*/
+                       if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                            $scope.gestionar_pedido()
+                       }
+                       
+                       if ($scope.Pedido.get_numero_pedido() > 0) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                             $scope.volver_cotizacion();
+                       }
+                       
                     }
                 });
             };
@@ -1162,11 +1186,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-
-
-
-
-
             $scope.generar_pedido_cliente = function() {
 
 
@@ -1178,6 +1197,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
+             
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
                  
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -1241,38 +1261,36 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
+            
+            
+            
+            
             that.init = function() {
 
-                that.buscar_vendedores(function() {
+                     that.buscar_vendedores(function() {
 
-                });
-                that.cargar_permisos();
-                if ($scope.Pedido.get_numero_pedido() > 0) {
-                    that.gestionar_consultas_pedidos();
-                }
-                if ($scope.Pedido.get_numero_cotizacion() > 0) {
-                    that.gestionar_consultas_cotizaciones();
-                }
+                                    });
+                                    that.cargar_permisos();
+                                    if ($scope.Pedido.get_numero_pedido() > 0) {
+                                        that.gestionar_consultas_pedidos();
+                                    }
+                                    if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                                        that.gestionar_consultas_cotizaciones();
+                                    }     
             };
 
-
-         
             that.init();
+         
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.$$watchers = null;
-
-
                 // set localstorage
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);
                 localStorageService.get("estadoPedido", null);
 
-                //socket.removeAllListeners();
-                // datos view
-                //$scope.datos_view = null;
             });
         }]);
 });

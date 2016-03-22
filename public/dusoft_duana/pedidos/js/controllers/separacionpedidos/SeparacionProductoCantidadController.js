@@ -102,8 +102,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                var url = API.SEPARACION_PEDIDOS.E008_DETALLE;
                var producto = pedido.getProductoSeleccionado();
                var cantidadIngresada = producto.getLote().getCantidadIngresada();
-               
-              
+                             
                var obj = {
                     session: $scope.rootVentanaCantidad.session,
                     data: {
@@ -117,7 +116,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                             fecha_vencimiento : producto.getLote().getFechaVencimiento(),
                             cantidad_ingresada : cantidadIngresada,
                             valor_unitario : producto.getValorUnitario(),
-                            iva : producto.getValorIva(),
+                            iva : producto.getPorcentajeGravament(),
                             total_costo : producto.getValorUnitario() * cantidadIngresada,
                             total_costo_pedido : producto.getValorUnitario()
                         }

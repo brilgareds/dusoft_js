@@ -6,6 +6,7 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosclientes/VendedorPedidoCliente",
     "models/generacionpedidos/pedidosclientes/ProductoPedidoCliente",
     "models/generacionpedidos/pedidosclientes/Laboratorio",
+    "models/generacionpedidos/pedidosclientes/Molecula",
 ], function(angular, controllers) {
 
     controllers.controller('ListarPedidosClientesController', [
@@ -25,18 +26,19 @@ define(["angular", "js/controllers",
         "ClientePedido",
         "VendedorPedidoCliente",
         "Usuario",
-        "webNotification",
+        "webNotification","Laboratorio","Molecula","ProductoPedidoCliente",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Pedido, Cliente, Vendedor, Sesion, webNotification) {
+                Empresa, Pedido, Cliente, Vendedor, Sesion, webNotification,Laboratorio,Molecula,Producto) {
 
             var that = this;
-
+             
             // Definicion Variables de Sesion
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
-
+            
+            
             // Definicion Variables            
             $scope.Empresa = Empresa;
 
@@ -65,6 +67,8 @@ define(["angular", "js/controllers",
                 pagina_actual_pedidos: 1,
                 cantidad_items_pedidos: 0,
                 paginando_pedidos: false,
+                activarTabPedidos: false,
+                termino_busqueda_moleculas: '',
                 // Estados Botones n-grid
                 estados_cotizaciones: [
                     "btn btn-danger btn-xs",
@@ -87,11 +91,14 @@ define(["angular", "js/controllers",
                     "btn btn-primary btn-xs",
                     "btn btn-info btn-xs"
                 ],
+                        
                 // Opciones del Modulo 
-                opciones: Sesion.getUsuarioActual().getModuloActual().opciones
+                opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
+                inactivarTab: false
             };
-
-
+            
+            
+            
             // Validar Seleccion Empresa Centro Bodega
             that.validacion_inicial = function() {
 
@@ -162,27 +169,19 @@ define(["angular", "js/controllers",
             };
 
 
-            // Acciones Botones 
+            //Acciones Botones 
             $scope.gestionar_cotizacion_cliente = function() {
-
                 localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0'});
                 $state.go('Cotizaciones');
             };
-
+            
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
-
-                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0'});
+                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0', busqueda: $scope.datos_view.termino_busqueda_cotizaciones});
                 $state.go('Cotizaciones');
-
-
             };
 
-
-
             $scope.modificar_pedido_cliente = function(pedido) {
-
-                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido()});
-
+                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),busqueda: $scope.datos_view.termino_busqueda_pedidos});
                 $state.go('PedidoCliente');
             };
 
@@ -268,7 +267,13 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
+         
+                var terminoBusqueda = localStorageService.get("terminoBusqueda");
                 
+                if(terminoBusqueda){
+                    $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
+                }
+               
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {
                     $scope.datos_view.pagina_actual_cotizaciones = 1;
                 }
@@ -288,7 +293,7 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_COTIZACIONES, "POST", obj, function(data) {
-
+                        
                     if (data.status === 500) {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         return;
@@ -311,6 +316,8 @@ define(["angular", "js/controllers",
                         that.render_cotizaciones(data.obj.pedidos_clientes.lista_cotizaciones);
                     }
                 });
+                 
+                 localStorageService.add("terminoBusqueda", null);
             };
             
             /**
@@ -326,7 +333,11 @@ define(["angular", "js/controllers",
                 
             };
             
-            
+            /**
+             * @author Cristian Ardila
+             * @fecha 10/03/2016
+             * +Descripcion Metodo encargado de modelar el detallado de una cotizacion
+             */
             that.render_cotizaciones = function(cotizaciones) {
 
                 $scope.Empresa.limpiar_cotizaciones();
@@ -348,7 +359,7 @@ define(["angular", "js/controllers",
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
-
+                    $scope.Empresa.get_cotizaciones();
             };
 
             $scope.lista_cotizaciones_clientes = {
@@ -438,8 +449,8 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_ESTADO_COTIZACION, "POST", obj, function(data) {
-
-
+                    
+                  
                     if (data.status === 200) {
                         that.buscar_cotizaciones('');
                     } else {
@@ -447,7 +458,31 @@ define(["angular", "js/controllers",
                     }
                 });
             };
+            
+            
+          that.buscar_detalle_cotizacion = function(cotizacion, callback) {
 
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: cotizacion,
+                            termino_busqueda: ''
+                        }
+                    }
+                };
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
+                     
+                    if (data.status === 200) {
+                        callback(true,data)
+                        //console.log("data ", data)
+                        //that.render_productos_cotizacion(data.obj.pedidos_clientes.lista_productos);
+                    }
+                });
+            };
+            
+            
+             
             /**
              * +Descripcion: FUncion encargada de actualizar el estado de una cotizacion
              *               estado =6 (Se solicita autorizacion)
@@ -455,26 +490,42 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
             that.cambiarEstadoCotizacionAutorizacion = function(cotizacion) {
-                
                
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            cotizacion: {numeroCotizacion: cotizacion.get_numero_cotizacion(), estado: '6'}
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        that.buscar_cotizaciones('');
+                that.buscar_detalle_cotizacion(cotizacion, function(estado, data){
                         
-                    } else {
-                        AlertService.mostrarMensaje("warning", "Se genero un error");
-                    }
-                });
+                    var productos = data.obj.pedidos_clientes.lista_productos;
+                     $scope.Pedido.limpiar_productos();
+                        productos.forEach(function(data) {
+                          
+                            var _producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
+                           _producto.set_cantidad_inicial(data.cantidad_solicitada);
+                           _producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                           _producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
+                           $scope.Pedido.set_productos(_producto);
+                           
+                       });
+                    cotizacion.set_productos($scope.Pedido.get_productos())
+                       
+                       
+                     var obj = {
+                            session: $scope.session,
+                            data: {
+                                pedidos_clientes: {
+                                    cotizacion: {numeroCotizacion: cotizacion.get_numero_cotizacion(), estado: '6', cotizacion: cotizacion}
+                                }
+                            }
+                     };
+
+                    Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
+                         
+                        if (data.status === 200) {
+                            that.buscar_cotizaciones('');
+
+                        } else {
+                            AlertService.mostrarMensaje("warning", "Se genero un error");
+                        }
+                    });
+                });                            
             };
             
             /**
@@ -484,7 +535,16 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_pedidos = function(estado,estadoSolicitud) {
-
+                //Se obtiene el criterio de busqueda a traves del local storage
+                //con el objetivo de que el usuario al modificar un pedido
+                //y regrese al listado de todos los pedidos, conserve el filtro
+                var terminoBusqueda = localStorageService.get("terminoBusquedaPedido");
+                
+                if(terminoBusqueda){
+                    $scope.datos_view.activarTabPedidos = terminoBusqueda.activar;
+                    $scope.datos_view.termino_busqueda_pedidos = terminoBusqueda.busqueda;
+                }
+             
                 if ($scope.datos_view.ultima_busqueda_pedidos !== $scope.datos_view.termino_busqueda_pedidos) {
                     $scope.datos_view.pagina_actual_pedidos = 1;
                 }
@@ -523,6 +583,8 @@ define(["angular", "js/controllers",
                         that.render_pedidos(data.obj.pedidos_clientes);
                     }
                 });
+                
+                localStorageService.add("terminoBusquedaPedido", null);
             };
 
             that.render_pedidos = function(pedidos) {
@@ -665,20 +727,9 @@ define(["angular", "js/controllers",
 
             };
             
-
-            that.init = function() {
-
-                that.validacion_inicial();
-
-                that.cargar_permisos();
-
-                that.buscar_cotizaciones('');
-
-                that.buscar_pedidos('','');
-
-
-            };
-
+            
+            
+               
 
             /**
              * @author Cristian Ardila
@@ -720,8 +771,6 @@ define(["angular", "js/controllers",
              */          
             socket.on("onListarEstadoCotizacion", function(datos) {
                 
-                console.log("onListarEstadoCotizacion");
-                console.log("datos ", datos)
                 if (datos.status === 200) {
                     var estado = ['Inactivo', 'Activo', 'Anulado', 'Aprobado cartera', 'No autorizado por cartera', 'Tiene un pedido', 'Se solicita autorizacion']
                     $scope.Empresa.get_cotizaciones().forEach(function(data) {
@@ -752,18 +801,18 @@ define(["angular", "js/controllers",
              */
             socket.on("onListarEstadoPedido", function(datos) {
                
-           
-            
                 if (datos.status === 200) {
-
+                    
                     var estado = ['Inactivo', 'No asignado', 'Anulado',
                         'Entregado', 'Debe autorizar cartera']
+                   
                     $scope.Empresa.get_pedidos().forEach(function(data) {
+                        
                         if (datos.obj.numero_pedido === data.get_numero_pedido()) {
                             data.set_descripcion_estado_actual_pedido(estado[datos.obj.pedidos_clientes[0].estado]);
                         }
                     });
-                       
+                      
                      if (datos.obj.pedidos_clientes[0].estado === '4') {
                         
                         $scope.notificacionPedidoAutorizar++;
@@ -773,12 +822,58 @@ define(["angular", "js/controllers",
                     }
                 }
             });
+            
+            
+                that.init= function(callback){
+                
+                    callback();
+                };
+          
+               
+                that.init(function() {            
+                         
+                         if(!Sesion.getUsuarioActual().getEmpresa()){
+                             AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+                         }else {
+                          
+                            if (!Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado()||
+                                Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
 
-            that.init();
+                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
 
+                            }else{
+                               
+                                if (!Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) { 
+                                    
+                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                }else{
+                                
+                                   $scope.Pedido = Pedido.get(
+                                        Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                                        Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                                        Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                                    );
+
+                                    that.validacion_inicial();
+
+                                    that.cargar_permisos();
+
+                                    that.buscar_cotizaciones('');
+
+                                    that.buscar_pedidos('','');  
+                                    
+                                    $scope.datos_view.inactivarTab = true;
+                                }   
+                            }
+                         }                        
+                     });
+           
+
+            
+          
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-               
+                 
                 socket.removeAllListeners();
             });
 

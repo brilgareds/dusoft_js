@@ -380,29 +380,33 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                     COALESCE(b.auditado, '0') as auditado,\
                     c.codigo_barras, \
                    (a.numero_unidades * a.valor_unitario)  as subtotal,\
-                   ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total\
+                   ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\
+                    f.existencia_actual,\
+                    g.existencia as existencia_bodega\
                     from ventas_ordenes_pedidos_d a \
                     inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
                     inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \
                     inner join inv_clases_inventarios e on d.grupo_id = e.grupo_id and d.clase_id = e.clase_id \
                     left join (\
                         select a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
-                        a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado\
+                        a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega\
                         from (\
-                                select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado\
+                                select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado, b.empresa_id, b.centro_utilidad, b.bodega\
                                 from inv_bodegas_movimiento_tmp_despachos_clientes a \
                                 inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
                                 left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                                group by 1,2,3,4,6, 7, 8, 9, 10, 11\
+                                group by 1,2,3,4,6, 7, 8, 9, 10, 11, 12, 13, 14\
                                 union \
-                                select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento, 0 as item_id, '3' as tipo_estado_auditoria, 0 as  cantidad_ingresada, '0' as auditado\
+                                select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento, 0 as item_id, '3' as tipo_estado_auditoria, 0 as  cantidad_ingresada, '0' as auditado, '' as empresa_id, '' as centro_utilidad, '' as bodega \
                                 from inv_bodegas_movimiento_tmp_despachos_clientes a \
                                 left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                                 and b.codigo_producto not in(\
                                       select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
                                 )\
-                        ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11 \
+                        ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11,12,13,14 \
                     ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
+                    left join existencias_bodegas_lote_fv f on f.empresa_id = b.empresa_id and f.centro_utilidad = b.centro_utilidad and f.codigo_producto = b.codigo_producto and f.lote = b.lote and f.fecha_vencimiento = b.fecha_vencimiento :: date\
+                    left join existencias_bodegas g on g.empresa_id = b.empresa_id and g.centro_utilidad = b.centro_utilidad and g.codigo_producto = b.codigo_producto\
                     where a.pedido_cliente_id = ?  order by e.descripcion ;";
 
     G.knex.raw(sql, [numero_pedido]).
@@ -1035,11 +1039,13 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Funciones que usan el model:
  *  (PedidosClienteController.js)-- __validar_datos_productos_archivo_plano
  *  -- PedidosCliente.prototype.listarProductosClientes     
+ *  -- PedidosCliente __validar_datos_productos_archivo_plano     
  * Modificacion: Se migra a KNEX.js 
  * @fecha: 04/12/2015 6:10 pm                       
  */
-PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina,filtros, callback) {
-
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina,filtros,filtroAvanzado, callback) {
+   
+ 
     var filtroProducto ="";
     var sql_aux = "";
     var termino_busqueda = filtro.termino_busqueda;
@@ -1047,34 +1053,52 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1:empresa, 2:centro_utilidad_id, 3:bodega_id, 4:contrato_cliente_id};
     
+    if(filtroAvanzado.tipoBusqueda === 0){
+         
+        if (tipo_producto !== undefined && tipo_producto !== ''){
+            sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
+        }
+        if (laboratorio_id !== undefined && laboratorio_id !== ''){
+            sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
+        }
+        if(filtros.tipo_busqueda === 0){
+            filtroProducto = "AND (fc_descripcion_producto(b.codigo_producto) "+G.constants.db().LIKE+" :5)";
+            parametros["5"]= '%' + termino_busqueda + '%';
+        } 
+
+        if(filtros.tipo_busqueda === 1){
+            filtroProducto = "AND (e.descripcion "+G.constants.db().LIKE+" :5)";
+            parametros["5"]= '%' +termino_busqueda + '%';
+        }
+
+        if(filtros.tipo_busqueda === 2){
+            filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
+            parametros["5"]= '%' +termino_busqueda + '%';
+              
+        }
+
+        if(filtros === ''){
+            filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
+            parametros["5"]= '%' +termino_busqueda + '%';
+
+        }
+     }
     
-    if (tipo_producto !== undefined && tipo_producto !== ''){
-        sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
-    }
-    if (laboratorio_id !== undefined && laboratorio_id !== ''){
-        sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
-    }
-    if(filtros.tipo_busqueda === 0){
-        filtroProducto = "AND (fc_descripcion_producto(b.codigo_producto) "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= '%' + termino_busqueda + '%';
+    if(filtroAvanzado.tipoBusqueda === 1){
+        parametros["5"]= '%' +filtroAvanzado.molecula + '%';
+        parametros["6"]= '%' +filtroAvanzado.descripcionProducto + '%';
+        parametros["7"]= '%' +filtroAvanzado.concentracion + '%';
+        parametros["8"]= '%' +filtroAvanzado.codigoProducto + '%';
+        parametros["9"]= '%' +filtroAvanzado.laboratorio_id + '%';
+      
+        sql_aux = "AND a.codigo_producto "+G.constants.db().LIKE+" :8\
+                   AND b.contenido_unidad_venta "+G.constants.db().LIKE+" :7\
+                   AND fc_descripcion_producto(b.codigo_producto) "+G.constants.db().LIKE+" :6\
+                   AND b.subclase_id "+G.constants.db().LIKE+" :5\
+                   AND f.clase_id "+G.constants.db().LIKE+" :9";
+       
+        //filtroAvanzado.tipoBusqueda
     } 
-    
-    if(filtros.tipo_busqueda === 1){
-        filtroProducto = "AND (e.descripcion "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= '%' +termino_busqueda + '%';
-    }
-    
-    if(filtros.tipo_busqueda === 2){
-        filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= '%' +termino_busqueda + '%';
-    
-    }
-    
-    if(filtros === ''){
-        filtroProducto = "AND (a.codigo_producto "+G.constants.db().LIKE+" :5)";
-        parametros["5"]= '%' +termino_busqueda + '%';
-   
-    }
     
     /***
      * +Descripcion Campos para obtener la fecha actual
@@ -1199,7 +1223,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;
-        
+      
       var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(resultado){
@@ -1340,7 +1364,7 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
         fecha_registro: 'NOW()'
         
     }).then(function(resultado) {
-         callback(false, resultado.rows,resultado);
+         callback(false, resultado);
     }).catch (function(error) {
         callback(error);
     });
@@ -1598,7 +1622,7 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
         sw_aprobado_cartera:  pedido.aprobado_cartera,
         estado: '1'
     }).then(function(resultado) {
-        callback(false, resultado.rows,resultado);
+        callback(false, resultado);
     }).catch (function(error) {
         callback(error);
     });
@@ -1711,7 +1735,8 @@ PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_p
  *  --PedidosCliente.prototype.eliminarProductoPedido  
  */
 PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero_pedido, callback) {
-
+  
+    
     G.knex.select(
             G.knex.raw('sum(ventas_ordenes_pedidos_d_tmp.valor_unitario * ventas_ordenes_pedidos_d_tmp.numero_unidades) as valor_total_cotizacion')
             ).from('ventas_ordenes_pedidos_d_tmp').leftJoin('ventas_ordenes_pedidos',
@@ -1719,6 +1744,7 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
             'ventas_ordenes_pedidos.pedido_cliente_id_tmp').where('ventas_ordenes_pedidos.pedido_cliente_id', numero_pedido).then(function(rows) {
         callback(false, rows);
     }).catch (function(err) {
+        
          callback(err);     
     });
 };
@@ -1951,7 +1977,7 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  * @fecha: 05/12/2015 9:34 pm
  * @Funciones que hacen uso del modelo:
  *  Controller: PedidosClienteController
- *  --PedidosCliente.prototype.insertarCantidadProductoDetallePedido
+ *  --PedidosCliente __productosPedidos
  *  --PedidosCliente.prototype.modificarDetallePedido
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
@@ -1965,9 +1991,11 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
         valor_unitario: producto.precio_venta,
         usuario_id: pedido.usuario_id,
         fecha_registro: 'NOW()'
-    }).then(function(resultado) {          
-        callback(false, resultado.rows,resultado);
+    }).then(function(resultado) { 
+        console.log("resultado ***99");
+        callback(false, resultado);
     }).catch(function(error) {
+    console.log("error ***99");
         callback(error);
     });
 };
@@ -2164,6 +2192,7 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
 
 }
 ;
+
 
 
 PedidosClienteModel.$inject = ["m_productos"];

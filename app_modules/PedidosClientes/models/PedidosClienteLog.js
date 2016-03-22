@@ -166,13 +166,11 @@ PedidosClienteLog.prototype.logConsultarExistenciaNumero = function(parametro, c
        
     }
     
-    console.log("obj ", obj);
     G.knex('ventas_trazabilidad').where(obj).select('pendiente').then(function(rows) {
         
-        console.log("rows ", rows);
         callback(false, rows);
     }).catch (function(error) {
-        console.log("error ", error);
+       
         callback(error);
     });
 };

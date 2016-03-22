@@ -1122,7 +1122,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         session: $scope.session,
                         data: {
                             pedidos_clientes: {
-                                pedido: $scope.Pedido
+                                pedido: $scope.Pedido,
+                                aprobado: aprobado
                             }
                         }
                     };

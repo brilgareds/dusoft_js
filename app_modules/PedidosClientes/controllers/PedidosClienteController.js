@@ -1094,72 +1094,59 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
     }
 
     cotizacion.usuario_id = req.session.user.usuario_id;
-
-    var paramLogCliente = {
-        detalle: {
-            cotizacion: cotizacion.numero_cotizacion,
-            tipo_cotizacion_pedido: 1,
-            producto: producto.codigo_producto,
-            tipo_pedido: 0,
-            descripcion: "descripcion(iva: " + producto.iva +
-                    "| cantidad_nueva: " + producto.cantidad_solicitada +
-                    "| cantidad_inicial: " + producto.cantidad_inicial +
-                    "| precio_venta: " + producto.precio_venta + " )",
-            accion: 0,
-            usuario: cotizacion.usuario_id
-        }
-    };
-
-
-
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
-        /**
-         * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
-         *               satisfactoriamente
-         */
-
-        if (!err) {
-            /**
+    
+    
+   // consultarTotalProductosCotizacion     
+    
+    
+     /**
+     * +Descripcion: Se permitira ejecutar la accion de eliminar_producto_cotizacion
+     *               siempre y cuando la cotizacion tenga el estado (Estado del Pedido ) 1
+     *               estado_pedido (Estado de solicitud ) 4 pero anterior a esto
+     *               se validara de que la cotizacion al menos quede con un solo pro-
+     *               ducto
+     */
+    G.Q.ninvoke(that.m_pedidos_clientes,'consultarTotalProductosCotizacion', cotizacion.numero_cotizacion).then(function(resultado){ 
+       
+        if(resultado.length > 0){
+     
+            if(resultado[0].total === "1"){              
+                throw 'La cotizacion no puede quedar sin productos';
+                return;              
+           }else{              
+               return G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);               
+            }          
+        }       
+        
+    }).then(function(resultado){ 
+        
+           /**
              * +Descripcion: Se valida si el estado de la cotizacion es 
              *               1 activo 
              *               4 activo (desaprobado por cartera)
              */
-            if (rows[0].estado === '1' || rows[0].estado === '4') {
-                /**
-                 * +Descripcion: Se invoca un modelo encargado de insertar los registros
-                 * a una tabla log de seguimiento para cuando se quiera eliminar un producto
-                 * de una cotizacion
-                 * @fecha: 29/09/2015
-                 * @author Cristian Ardila
-                 * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
-                 */
-                that.m_pedidos_clientes_log.logEliminarProductoCotizacion(paramLogCliente, function() {
-
-
-                });
-
-                that.m_pedidos_clientes.eliminar_producto_cotizacion(cotizacion, producto, function(err, rows, result) {
-                   
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error Eliminando el producto', 500, {pedidos_clientes: []}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {pedidos_clientes: []}));
-                        return;
-                    }
-                });
-
-
-            } else {
-                res.send(G.utils.r(req.url, 'Para modificar la cotizacion debe estar activa', 500, {pedidos_clientes: []}));
-                return;
-            }
-
-        } else {
-            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
+          if (resultado[0].estado === '1' || resultado[0].estado === '4') {              
+              return G.Q.ninvoke(that.m_pedidos_clientes,'eliminar_producto_cotizacion', cotizacion, producto);           
+           }else{
+             throw 'Para modificar la cotizacion debe estar activa o desaprobada por cartera';
+             return;
+           }
+  
+    }).then(function(resultado){
+        
+          if(resultado > 0) {          
+              res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {pedidos_clientes: []}));
+              return;
+          }else{
+            throw 'Error al eliminar el producto';
             return;
-        }
-    });
+          }       
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+    
+   
 };
 
 
@@ -2810,6 +2797,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     }
 
     var pedido = args.pedidos_clientes.pedido;
+    var aprobado = args.pedidos_clientes.aprobado;
         pedido.usuario_id = req.session.user.usuario_id;
         
     if (pedido.numero_pedido === undefined || pedido.numero_pedido === '') {
@@ -2832,9 +2820,17 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
         tipo: '1',
         pendiente:0
     };
-
-    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id,pedido.observacion_cartera,pedido.total,1,1);
     
+    var estadoAprobacion;
+    if(aprobado === 4){
+        
+        estadoAprobacion = 2;
+    }else{
+        estadoAprobacion = 1;
+    }
+    
+    var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id,pedido.observacion_cartera,pedido.total,1,estadoAprobacion);
+    console.log("__parametrosLogs__parametrosLogs ", paramLogActualizarAutorizarPedido)
     G.Q.ninvoke(that.m_pedidos_clientes,'actualizarPedidoCarteraEstadoNoAsigando', pedido).then(function(resultado){ 
         
         if(resultado > 0){

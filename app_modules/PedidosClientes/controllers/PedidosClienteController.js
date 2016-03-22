@@ -1481,7 +1481,7 @@ PedidosCliente.prototype.reporteCotizacion = function(req, res) {
             res.send(G.utils.r(req.url, 'emails, subject o message estan vacios', 404, {}));
             return;
         }
-
+        
         var emails = args.pedidos_clientes.emails;
         var subject = args.pedidos_clientes.subject;
         var message = args.pedidos_clientes.message;
@@ -3055,7 +3055,12 @@ function _generar_reporte_pedido(rows, callback) {
  * Descripcion : Enviar correos electronicos
  */
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
-
+    
+    var messageDefect = "<ul><li>1. FAVOR CONFIRMAR COTIZACION AL CORREO ventas@duanaltda.com PARA PODER TRAMITAR SU PEDIDO.</li>\n\
+                             <li>2. USTED TENDRA UN PLAZO DE 8 DIAS CONTADOS AL MOMENTO DE LA CONFIRMACION DEL PEDIDO, PARA RECLAMARLO DE LO CONTRARIO SERA BLOQUEADO EN EL SISTEMA PARA COMPRAR.</li>\n\
+                             <li>"+message+"</li></ul>";
+        
+      
     // var smtpTransport = that.emails.createTransport('direct', {debug: true});
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname
@@ -3071,7 +3076,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
         from: G.settings.email_sender,
         to: to,
         subject: subject,
-        html: message,
+        html: messageDefect,
         attachments: [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}]
     };
 

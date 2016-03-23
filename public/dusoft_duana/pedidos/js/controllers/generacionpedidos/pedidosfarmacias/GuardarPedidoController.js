@@ -278,7 +278,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     console.log("resultado cambiar cantidad ", data);
                     if(data.status !== 200){
-                        AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         
                     }
                     

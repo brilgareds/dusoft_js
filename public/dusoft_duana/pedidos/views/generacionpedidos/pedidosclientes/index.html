@@ -3,15 +3,15 @@
         <div class="row">        
             <div class="col-md-12">
                 <tabset>
-                    <tab  ng-click="cargarListaNotificacionCotizacion('')">
-                        <tab-heading >
+                    <tab  ng-if="datos_view.inactivarTab" ng-click="cargarListaNotificacionCotizacion('')">
+                        <tab-heading>
                             <i class="glyphicon glyphicon-time"></i> Cotizaciones
                         </tab-heading>
                         <br> 
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarcotizacionesclientes.html'"></div>
                     </tab>                        
-                    <tab>
-                        <tab-heading ng-click="cargarListaPedidos('','')">
+                    <tab  ng-if="datos_view.inactivarTab" >
+                        <tab-heading ng-click="cargarListaPedidos('','')" >
                              Pedidos Clientes 
                              <!--<span ng-show="notificacionClientesAutorizar > 0" class="badge badge-warning">{{notificacionClientesAutorizar}}</span>//-->
                          <!--   <i class="glyphicon glyphicon-th"></i> Pedidos Clientes//-->
@@ -20,7 +20,7 @@
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarpedidosclientes.html'"></div>
                     </tab>   
                     
-                    <tab  ng-click="cargarListaNotificacionCotizacion(6)" ng-if="datos_view.opciones.sw_notificar_aprobacion == true">
+                    <tab  ng-click="cargarListaNotificacionCotizacion(6)" ng-if="datos_view.opciones.sw_notificar_aprobacion == true" >
                         <tab-heading>
                             <i class="glyphicon glyphicon-time"></i>Aprobacion cotizaciones
                             

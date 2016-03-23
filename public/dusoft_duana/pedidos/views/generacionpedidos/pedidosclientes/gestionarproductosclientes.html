@@ -69,9 +69,13 @@
                                        ng-model="datos_form.termino_busqueda" placeholder="Buscar Producto" name="" id="">
                                 
                                  <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13})">
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13},0)">
                                         <i class="glyphicon glyphicon-search"></i></button>
                                 </div>
+                                
+                                 <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" ng-click="busquedaAvanzadaProducto();"><i >Avanzado</i></button>
+                                </span>
                               </div><!-- /input-group -->
                             
 
@@ -83,9 +87,7 @@
                             <br>
                             <div class="table-responsive" style="clear:both;">
                                   <div class="defaultGrid grid-responsive" ng-grid="lista_productos" > </div>
-                            </div>
-                            
-
+                            </div>                          
                             </br>
 
                             <div class="row text-center">

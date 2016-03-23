@@ -76,13 +76,13 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
  *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  */
 PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCotizacion) {
-
+  
     var that = this;
   
     this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {
-     
+        
         if (!err) {
-            
+          
             var response = G.utils.r('onListarEstadoCotizacion', 'nuevo estado de cotizacion Actualizado', 200,
                     {
                         numeroCotizacion: numeroCotizacion,

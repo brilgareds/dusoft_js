@@ -2330,13 +2330,22 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
     var cotizacion = args.pedidos_clientes.cotizacion;
     var productos = args.pedidos_clientes.cotizacion.cotizacion.productos;
     cotizacion.usuario_id = req.session.user.usuario_id; 
-    console.log("productos ", productos);
     
-    
+   
+    /*Se recorre el arreglo de los productos y se suma el valor total con iva
+     * de cada producto para almacenarlo en el log de trazabilidad de ventas
+     */
+    var totalValorProductos = 0;
+    productos[0].forEach(function(row) {
+         
+        var valorTotalIva = parseFloat(row.valor_total_con_iva);
+            totalValorProductos += valorTotalIva;
+      
+       });  
+       
     /*Se invoca la funcion encargada de traer los parametros almacenarlos
      * en la tabla de trazabilidad de venta*/
-    var  paramLogCliente = __parametrosLogs(cotizacion.numeroCotizacion,productos[0],cotizacion.usuario_id,"Se solicita aprobacion","",0,0);
-
+    var  paramLogCliente = __parametrosLogs(cotizacion.numeroCotizacion,productos[0],cotizacion.usuario_id,"Se solicita aprobacion",totalValorProductos,0,0); 
     /**
      * +Descripcion: Se invoca un modelo encargado de insertar los registros
      * a una tabla log de seguimiento para cuando realiza la solicitud de autorizar
@@ -2444,34 +2453,8 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     }
   
     pedido.usuario_id = req.session.user.usuario_id;
-
-    var paramLogCliente = {
-        detalle: {
-            cotizacion: pedido.numero_cotizacion,
-            tipo_cotizacion_pedido: 0,
-            producto: producto.codigo_producto,
-            tipo_pedido: 0,
-            descripcion: "descripcion(iva: " + producto.iva +
-                    "| cantidad_nueva: " + producto.cantidad_solicitada +
-                    "| cantidad_inicial: " + producto.cantidad_inicial +
-                    "| precio_venta: " + producto.precio_venta + " )",
-            accion: 1,
-            usuario: pedido.usuario_id
-        }
-    };
-
-    /**
-     * +Descripcion: Se invoca un modelo encargado de insertar los registros
-     * a una tabla log de seguimiento cuando se modifica un pedido
-     * @fecha: 29/09/2015
-     * @author Cristian Ardila
-     * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
-     */
-    that.m_pedidos_clientes_log.logModificarProductoCotizacion(paramLogCliente, function() {
-
-
-    });
-
+    
+    
     /**
      * +Descripcion: Proceso para validar que al modificar las cantidades de los 
      *               productos o añadirle mas productos a un pedido el total es 
@@ -2486,15 +2469,23 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
     var estado_pedido = 0;
-
-    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo,1,0);
-    //var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", pedido.total,1,1);
     
+   /*Se recorre el arreglo de los productos y se suma el valor total de con iva
+    * de cada producto
+    */
+    var totalValorProductos = 0;
+    pedido.productos.forEach(function(row) {
+         
+        var valorTotalIva = parseFloat(row.valor_total_con_iva);
+            totalValorProductos += valorTotalIva;
+      
+    });  
     
+    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorProductos,1,0);
     /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
      *        tipo:   0=cotizacion, 1=pedido
-     *        pendiente: 0=solictado autorizacion
+     *        pendiente: 0=solictado para autoriza
      */
     var paramLogExistencia = {
         numero: pedido.numero_pedido,
@@ -2502,6 +2493,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         pendiente:0
     };
     
+       
      /**
       * +Descripcion Metodo encargado de consultar el estado de un pedido, recibiendo
       *              como parametro el numero del pedido
@@ -2524,7 +2516,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
   
             if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                estado_pedido = 4;
+                estado_pedido = 1;
             }else{
                 estado_pedido = 1;
             }       
@@ -2641,8 +2633,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
         return;
     }
-    pedido.usuario_id = req.session.user.usuario_id;
-    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo,1,0);	 
+    pedido.usuario_id = req.session.user.usuario_id;	 
     /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
     * @param numero: numero del pedido
     *        tipo:   0=cotizacion, 1=pedido
@@ -2671,6 +2662,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     var estado_pedido;
     var estado_pedido;
     var estado_pedido;
+    var  paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo,1,0);
     /**
      * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
      *               siempre y cuando el pedido tenga el 
@@ -2729,6 +2721,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
           
     }).then(function(resultado){
       
+     
         if(resultado > 0) {
 
             pedido.aprobado_cartera = '0';
@@ -2741,7 +2734,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
          }       
              
     }).then(function(resultado){
-        
+         console.log("estado_pedido actualizarEstadoPedido", estado_pedido);
         if(resultado > 0){
 
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
@@ -2756,19 +2749,20 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         }
         
     }).then(function(resultado){
-         
-        console.log("resultado - resultado :::", resultado);
+        
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
          *              se procede a registrarlo, de lo contrario solo lo actualizara
          */
-        /*if(resultado.length === 0){            
-            return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogAutorizarPedido);  
-        }else{  */      
-            // return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogAutorizarPedido);              
-        //}  
-        if(resultado.length === 1){  
-            return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogAutorizarPedido);
+       
+        if(estado_pedido === 4){
+            
+            if(resultado.length === 1){  
+                return G.Q.ninvoke(that.m_pedidos_clientes_log,'logActualizarSolicitudProducto', paramLogAutorizarPedido);
+            }else{
+                return G.Q.ninvoke(that.m_pedidos_clientes_log,'logTrazabilidadVentas', paramLogAutorizarPedido); 
+            }
+            
         }
         
     }).fail(function(err){      

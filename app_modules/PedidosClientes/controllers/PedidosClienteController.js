@@ -2330,6 +2330,9 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
     var cotizacion = args.pedidos_clientes.cotizacion;
     var productos = args.pedidos_clientes.cotizacion.cotizacion.productos;
     cotizacion.usuario_id = req.session.user.usuario_id; 
+    console.log("productos ", productos);
+    
+    
     /*Se invoca la funcion encargada de traer los parametros almacenarlos
      * en la tabla de trazabilidad de venta*/
     var  paramLogCliente = __parametrosLogs(cotizacion.numeroCotizacion,productos[0],cotizacion.usuario_id,"Se solicita aprobacion","",0,0);
@@ -2610,10 +2613,6 @@ function __totalNuevoPrecioVenta(pedido) {
  *                
  */
 PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
-    console.log("************PedidosCliente.prototype.eliminarProductoPedido***************");
-    console.log("************PedidosCliente.prototype.eliminarProductoPedido***************");
-    console.log("************PedidosCliente.prototype.eliminarProductoPedido***************");
-    console.log("************PedidosCliente.prototype.eliminarProductoPedido***************");
     
     var that = this;
     var args = req.body.data;

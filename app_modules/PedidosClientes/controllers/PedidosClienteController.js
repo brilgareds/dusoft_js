@@ -2491,8 +2491,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         numero: pedido.numero_pedido,
         tipo: '1',
         pendiente:0
-    };
-    
+    }; 
        
      /**
       * +Descripcion Metodo encargado de consultar el estado de un pedido, recibiendo
@@ -2524,8 +2523,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             * +Descripcion: la funcion se encargara de modificar el detalle del pedido
             *               en este caso, lo mas relevante sera la cantidad de un
             *               producto
-            */
-         
+            */        
             return G.Q.ninvoke(that.m_pedidos_clientes,'modificar_detalle_pedido', pedido,producto);  
           }else{
               throw ("Error Interno");

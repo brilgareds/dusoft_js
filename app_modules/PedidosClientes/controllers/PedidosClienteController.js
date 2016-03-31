@@ -2732,7 +2732,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
          }       
              
     }).then(function(resultado){
-         console.log("estado_pedido actualizarEstadoPedido", estado_pedido);
+        
         if(resultado > 0){
 
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
@@ -2821,7 +2821,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     }
     
     var  paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido,pedido.productos,pedido.usuario_id,pedido.observacion_cartera,pedido.total,1,estadoAprobacion);
-    console.log("__parametrosLogs__parametrosLogs ", paramLogActualizarAutorizarPedido)
+   
     G.Q.ninvoke(that.m_pedidos_clientes,'actualizarPedidoCarteraEstadoNoAsigando', pedido).then(function(resultado){ 
         
         if(resultado > 0){
@@ -2845,17 +2845,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
-    /*that.m_pedidos_clientes.actualizarPedidoCarteraEstadoNoAsigando(pedido, function(err,resultado) {
-        
-        
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Observacion registrada correctamente', 200, {pedidos_clientes: {}}));
-            return;
-        }
-    });*/
+   
 };
 
 

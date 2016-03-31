@@ -55,18 +55,62 @@ Productos.prototype.listar_productos = function(req, res) {
 };
 
 
+/*
+* @Author: Eduar
+* @param {Object} req
+* @param {Object} res
+* +Descripcion: Permite consumir el servicio para consultar las existencias de un producto
+*/
 Productos.prototype.consultarExistenciasProducto = function(req, res) {
 
     var that = this;
+    var args = req.body.data;
 
+    if (!args.productos || !args.productos.empresa_id || !args.productos.codigo_producto || !args.productos.centro_utilidad_id || 
+        !args.productos.bodega_id) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    var empresaId = args.productos.empresa_id;
+    var codigoProducto = args.productos.codigo_producto;
+    var centroUtilidad = args.productos.centro_utilidad_id;
+    var bodega = args.productos.bodega_id;
 
-    var empresa_id = '03';
-    var centro_utilidad_id = '1';
-    var bodega_id = '03';
-    var codigo_producto = '168D0501607';
+    G.Q.ninvoke(that.m_productos,"consultar_existencias_producto", empresaId, codigoProducto, centroUtilidad, bodega, {}).then(function(existencias){
+        res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {existencias: existencias}));
+    }).fail(function(err){
+       res.send(G.utils.r(req.url, 'Error consultando las existencias', 500, {lista_productos: {}}));
+    });
+};
 
-    that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, function(err, existencias) {
-        console.log(existencias);
+/*
+* @Author: Eduar
+* @param {Object} req
+* @param {Object} res
+* +Descripcion: Permite consumir el servicio para guardar una existencia(lote) de un producto
+*/
+Productos.prototype.guardarExistenciaBodega = function(req, res){
+    var that = this;
+    var args = req.body.data;
+
+    if (!args.productos || !args.productos.empresa_id || !args.productos.codigo_producto || !args.productos.centro_utilidad_id || 
+        !args.productos.bodega_id || !args.productos.fechaVencimiento || !args.productos.codigoLote) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    var params = {};
+    params.empresaId = args.productos.empresa_id;
+    params.codigoProducto = args.productos.codigo_producto;
+    params.centroUtilidad = args.productos.centro_utilidad_id;
+    params.bodega = args.productos.bodega_id;
+    params.fechaVencimiento = args.productos.fechaVencimiento;
+    params.codigoLote = args.productos.codigoLote;
+
+    G.Q.ninvoke(that.m_productos,"guardarExistenciaBodega", params).then(function(existencias){
+        res.send(G.utils.r(req.url, 'Guardar existencia bodega', 200, {existencias: existencias}));
+    }).fail(function(err){
+       res.send(G.utils.r(req.url, 'Error guardando la existencia del producto', 500, {lista_productos: {}}));
     });
 };
 

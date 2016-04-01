@@ -631,10 +631,6 @@ define(["angular", "js/controllers",
                         localStorageService.remove("pedidoSeparacion");
                     });
                     
-                    
-                    $scope.windowFocus = $window.$on("focus", function(){
-                        console.log("window focused ");
-                    });
 
                     self.init(function() {
                         

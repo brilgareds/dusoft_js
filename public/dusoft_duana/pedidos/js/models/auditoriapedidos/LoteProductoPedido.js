@@ -21,6 +21,7 @@ define(["angular", "js/models", "includes/classes/Lote"], function(angular, mode
             
             this.separado = false;
             this.cantidad = 0;
+            this.tieneExistencia = true;
         }
 
         LoteProductoPedido.prototype = Object.create(Lote.getClass().prototype);
@@ -41,7 +42,14 @@ define(["angular", "js/models", "includes/classes/Lote"], function(angular, mode
             return this.seleccionado;
         };
         
+        LoteProductoPedido.prototype.setTieneExistencia = function(tieneExistencia){
+            this.tieneExistencia = tieneExistencia;
+        };
         
+        LoteProductoPedido.prototype.getTieneExistencia = function(){
+            return this.tieneExistencia;
+        };
+
         LoteProductoPedido.prototype.setNumeroCaja = function(numero_caja){
             this.numero_caja = numero_caja;
         };

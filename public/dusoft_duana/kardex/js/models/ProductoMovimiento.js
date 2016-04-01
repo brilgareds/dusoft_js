@@ -23,6 +23,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.precioRegulado = 0;
                 this.descripcionMolecula = "";
                 this.codigoInvima = "";
+                this.existenciaMinima = 0;
+                this.existenciaMaxima = 0;
             }
 
             //herencia
@@ -57,6 +59,24 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 return this.codigoInvima = codigoInvima;
             };
             
+            
+            ProductoMovimiento.prototype.setExistenciaMinima = function(existenciaMinima) {
+                this.existenciaMinima = existenciaMinima;
+            };
+            
+            ProductoMovimiento.prototype.getExistenciaMinima = function(existenciaMinima) {
+                return this.existenciaMinima;
+            };
+            
+            
+            ProductoMovimiento.prototype.setExistenciaMaxima = function(existenciaMaxima) {
+                this.existenciaMaxima = existenciaMaxima;
+            };
+            
+            ProductoMovimiento.prototype.getExistenciaMaxima = function(existenciaMaxima) {
+                return this.existenciaMaxima = existenciaMaxima;
+            };
+ 
             ProductoMovimiento.prototype.setCodigoInvima = function(codigoInvima) {
                 return this.codigoInvima = codigoInvima;
             };

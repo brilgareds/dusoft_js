@@ -65,29 +65,17 @@
                                     </li>
                                   </ul>
                                 </div><!-- /btn-group -->
-                                <input type="text" class="form-control" ng-keypress="buscador_productos($event, 0);" 
+                                <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);" 
                                        ng-model="datos_form.termino_busqueda" placeholder="Buscar Producto" name="" id="">
                                 
-                                
-                                  <div class="input-group-btn" >
-                                <div class="dropdown">
-                                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                      
-                                      <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                      <li><a ng-click="busquedaAvanzadaProducto();">Avanzado</a></li>
-                                      
-                                    </ul>
-                              </div>
-                                </div>
                                  <div class="input-group-btn" >
                                     <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13},0)">
                                         <i class="glyphicon glyphicon-search"></i></button>
                                 </div>
-                               <!--  <span class="input-group-btn">
+                                
+                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="submit" ng-click="busquedaAvanzadaProducto();"><i >Avanzado</i></button>
-                                </span> //-->
+                                </span>
                               </div><!-- /input-group -->
                             
 
@@ -117,3 +105,4 @@
         </div>        
     </div>
 </div>
+    

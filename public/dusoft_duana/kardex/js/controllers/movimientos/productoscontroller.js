@@ -36,7 +36,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.filtroProducto = $scope.filtros[0];
             
            
-            $scope.fechainicial = $filter('date')(new Date("05/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
+            $scope.fechainicial = $filter('date')(new Date("01/01/"  + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
             $scope.abrirfechafinal = false;
 
@@ -149,6 +149,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     producto.setDescripcionMolecula(obj.descripcion_molecula);
                     producto.setCodigoInvima(obj.codigo_invima);
                     producto.setEstado(obj.estado);
+                    producto.setExistenciaMinima(obj.existencia_minima);
+                    producto.setExistenciaMaxima(obj.existencia_maxima);
                     
                     $scope.Empresa.agregarProducto(
                             producto
@@ -181,7 +183,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     {field: 'descripcion', displayName: 'Nombre', 
                      cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>' },
                     {field: 'codigoCum', displayName: 'Cum', width:"90", cellClass :"gridNumber"},
-                    {field: 'existencia', displayName: 'Stock', width:"80", cellClass :"gridNumber"},  
+                    {field: 'existencia', displayName: 'Stock', width:"80", cellClass :"gridNumber",
+                     cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                        <span class="glyphicon glyphicon-arrow-down  pull-left" style="color:red;" \
+                                            ng-if="row.entity.existenciaMinima >= row.entity.existencia && row.entity.existenciaMinima > 0 ">\
+                                        </span>\
+                                         <span class="glyphicon glyphicon-arrow-up pull-left" \
+                                            ng-if="row.entity.existenciaMaxima <= row.entity.existencia && row.entity.existenciaMaxima > 0 ">\
+                                        </span>\
+                                         {{row.entity.existencia}}   \
+                                    </div>'
+                    },  
                     {field: 'precioRegulado', displayName: 'P.Reg', width:"80",  cellClass :"gridNumber"},
                     {field: 'costo', displayName: 'Costo', width:"80", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
                     {field: 'costo_ultima_compra', width:"80", displayName: 'C.U.C', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},

@@ -190,8 +190,46 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
 };
 
 
-// Consultar lotes y fechas vencimientos produto
-ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, codigo_producto, centro_utilidad, bodega, callback) {
+ProductosModel.prototype.validarUnidadMedidaProducto = function(obj, callback) {
+
+    var sql = "select case when ( :1 % coalesce(unidad_medida, 1)) = 0 then '1' else '0' end as valido, unidad_medida from\
+               inventarios_productos where codigo_producto = :2 ";
+    
+   G.knex.raw(sql, {1 : obj.cantidad, 2 : obj.codigo_producto}).
+   then(function(resultado){
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       callback(err);
+   });
+};
+          
+/*
+* @Author: Eduar
+* @param {string} empresaId
+* @param {string} codigoProducto
+* @param {string} centroUtilidad
+* @param {string} bodega
+* @param {object} filtro
+* @param {function} callback
+* +Descripcion: Permite consultar las existencias de lotes de un producto por empresa, bodega y centro de utilidad
+*/
+ProductosModel.prototype.consultar_existencias_producto = function(empresaId, codigoProducto, centroUtilidad, bodega, filtro, callback) {
+    var sqlAux = "";
+    var obj = {1 : empresaId, 2 : codigoProducto, 3 :centroUtilidad, 4 :bodega};
+    
+    if(filtro.activos){
+        sqlAux = "and a.existencia_actual > 0\
+                  and a.estado = '1'\
+                  and d.estado = '1'";
+    }
+    
+    if(filtro.codigoLote && filtro.fechaVencimiento){
+        sqlAux += "and a.lote = :5\
+                   and a.fecha_vencimiento = :6";
+        
+        obj['5'] = filtro.codigoLote;
+        obj['6'] = filtro.fechaVencimiento;
+    }
 
     var sql = " select \
                 a.empresa_id,\
@@ -207,20 +245,68 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, c
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and b.empresa_id = c.empresa_id\
                 inner join inventarios_productos d on c.codigo_producto = d.codigo_producto\
                 where a.empresa_id = :1 \
-                and a.codigo_producto = :2 \
-                and a.existencia_actual > 0\
-                and a.estado = '1'\
-                and d.estado = '1'\
-                order by a.fecha_vencimiento desc ;";
+                and a.codigo_producto = :2 " + sqlAux +
+                "order by a.fecha_vencimiento desc ;";
 
     
-   G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto, 3 :centro_utilidad, 4 :bodega}).
+   G.knex.raw(sql, obj).
    then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
        callback(err);
    });
 };
+
+
+/*
+* @Author: Eduar
+* @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, fechaVencimiento, codigoLote}
+* +Descripcion: Permite gestionar una existencia para determinado producto
+*/
+ProductosModel.prototype.guardarExistenciaBodega = function(params, callback) {
+    var that = this;
+    
+    G.Q.ninvoke(that, "consultar_existencias_producto", params.empresaId, params.codigoProducto, params.centroUtilidad, params.bodega,
+                                                       {fechaVencimiento:params.fechaVencimiento, codigoLote:params.codioLote}).
+                                                       
+    then(function(existencia){
+        if(existencia.length > 0){
+            //temporalmente regresar error
+            callback(true);
+            return;
+        } else {
+            return G.Q.ninvoke(that, 'insertarExistenciaBodega', params);
+        }
+
+    }).then(function(){
+        callback(false);
+        
+    }).fail(function(err){
+        callback(err);
+    });
+};
+
+/*
+* @Author: Eduar
+* @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, fechaVencimiento, codigoLote}
+* +Descripcion: Permite insertar una existencia para determinado producto
+*/
+ProductosModel.prototype.insertarExistenciaBodega = function(params, callback) {
+    var that = this;
+    
+    var sql = "INSERT INTO existencias_bodegas_lote_fv\
+                    (empresa_id, centro_utilidad, codigo_producto, bodega, fecha_vencimiento, lote, existencia_inicial, existencia_actual)\
+                    VALUES (:1, :2, :3, :4, :5, :6, 0, 0)";
+                    
+   G.knex.raw(sql, {1 : params.empresaId, 2 : params.centroUtilidad, 3:params.codigoProducto, 4:params.bodega, 
+                    5:params.fechaVencimiento, 6:params.codigoLote}).
+   then(function(resultado){
+       callback(false, resultado);
+   }).catch(function(err){
+       callback(err);
+   });
+};
+
 
 ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callback) {
     

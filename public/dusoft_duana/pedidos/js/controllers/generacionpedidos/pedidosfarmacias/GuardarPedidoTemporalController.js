@@ -179,10 +179,10 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         pedido.agregarProductoSeleccionado(producto);
-                        callback(true);
+                        callback(true, data);
 
                     } else {
-                        callback(false);
+                        callback(false, data);
                     }
                 });
 
@@ -442,15 +442,20 @@ define(["angular", "js/controllers",
                     self.guardarEncabezadoPedidoTemporal(function(creacionCompleta) {
                         if (creacionCompleta) {
                             pedido.setEsTemporal(true);
-                            self.guardarDetallePedidoTemporal(function(agregado) {
-
+                            self.guardarDetallePedidoTemporal(function(agregado, datos) {
+                                if(!agregado){
+                                    AlertService.mostrarVentanaAlerta("Error", datos.msj);
+                                }
                             });
 
                         }
                     });
                 } else {
-                    self.guardarDetallePedidoTemporal(function(agregado) {
-                        console.log("agregado al temporal ", pedido);
+                    self.guardarDetallePedidoTemporal(function(agregado, datos) {
+                        console.log("agregado al temporal ", pedido); 
+                        if(!agregado){
+                            AlertService.mostrarVentanaAlerta("Error", datos.msj);
+                        }
                     });
                 }
             });

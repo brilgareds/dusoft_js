@@ -1,5 +1,5 @@
-var PedidosFarmaciasModel = function() {
-
+var PedidosFarmaciasModel = function(m_productos) {
+    this.m_productos = m_productos;
 };
 
 PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
@@ -225,17 +225,31 @@ PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(emp
 
 PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  tipo_producto_id, cantidad_pendiente, usuario_id, callback) {
 
-    var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, cantidad_pendiente, usuario_id ) \
-                VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) ;";
 
-    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 
-                     6:cantidad_solicitada,  7:tipo_producto_id, 8:cantidad_pendiente, 9:usuario_id}).then(function(resultado){
+    var that = this;
+    
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solicitada, codigo_producto:codigo_producto}).then(function(resultado){
+        //console.log("producto validcion ", resultado);
+        if(resultado.length > 0 && resultado[0].valido === '1'){
+            
+            var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, cantidad_pendiente, usuario_id ) \
+            VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) ;";
+            
+            return  G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 
+                                     6:cantidad_solicitada,  7:tipo_producto_id, 8:cantidad_pendiente, 9:usuario_id});
+        } else {
+            throw {msj:"La cantidad ingresada del producto no es valida", status:403};
+        }
+        
+    }).then(function(resultado){
         callback(false, resultado.rows, resultado);
-    }).catch(function(err){
+    }).fail(function(err){
         callback(err);
     });
+    
 
 };
+
 
 PedidosFarmaciasModel.prototype.buscar_usuario_bloqueo = function(codigo_temporal, callback) {
 
@@ -347,16 +361,26 @@ PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_
 //insertar_producto_detalle_pedido_farmacia
 
 PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solic, tipo_producto_id, usuario_id, cantidad_pendiente, callback){
+    
+    var that = this;
  
-    var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solic, codigo_producto:codigo_producto}).then(function(resultado){
+        if(resultado.length > 0 && resultado[0].valido === '1'){
+            var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, CURRENT_TIMESTAMP, 0, :9 )";
-
-    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 6:cantidad_solic, 
-                     7:tipo_producto_id, 8:usuario_id, 9:cantidad_pendiente}).then(function(resultado){
+            
+            return G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 6:cantidad_solic, 
+                     7:tipo_producto_id, 8:usuario_id, 9:cantidad_pendiente});
+        } else {
+            throw {msj:"La cantidad ingresada del producto no es valida", status:403};
+        }
+    }).then(function(resultado){
         callback(false, resultado.rows, resultado);
-    }).catch(function(err){
+    }).fail(function(err){
         callback(err);
     });
+       
+    
 };
 
 
@@ -379,11 +403,12 @@ PedidosFarmaciasModel.prototype.anularCantidadPendienteProducto = function(param
 
 PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, callback)
 {    
+    var that = this;
 
      G.knex.transaction(function(transaccion) {  
          G.Q.nfcall(__log_eliminar_producto_detalle_pedido, numero_pedido, codigo_producto, usuario, transaccion).then(function(resultado){
              
-             return G.Q.nfcall(__actualizar_cantidades_detalle_pedido, numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, transaccion);
+             return G.Q.nfcall(__actualizar_cantidades_detalle_pedido, numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, that, transaccion);
              
          }).then(function(){
              transaccion.commit();
@@ -700,29 +725,33 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 b.cantidad_ingresada,\
                 COALESCE(b.auditado, '0') as auditado,\
                 a.tipo_producto as tipo_producto_id,\
-                c.codigo_barras\
+                c.codigo_barras,\
+                h.existencia_actual,\
+                i.existencia as existencia_bodega\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
                 inner join inventarios_productos c on f.codigo_producto = c.codigo_producto \
                 inner join inv_clases_inventarios e on c.grupo_id = e.grupo_id and c.clase_id = e.clase_id \
                 left join (\
-                    SELECT a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada, a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado \
+                    SELECT a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada, a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega \
                     FROM ( \
-                      select a.solicitud_prod_a_bod_ppal_id as numero_pedido, b.codigo_producto, c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado\
+                      select a.solicitud_prod_a_bod_ppal_id as numero_pedido, b.codigo_producto, c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado, b.empresa_id, b.centro_utilidad, b.bodega\
                       from inv_bodegas_movimiento_tmp_despachos_farmacias a\
                       inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                      group by 1,2,3,4,6,7, 8,9, 10, 11\
+                      group by 1,2,3,4,6,7, 8,9, 10, 11,12,13,14\
                       UNION\
-                      select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento,  0 as item_id, '3' as tipo_estado_auditoria, 0 as cantidad_ingresada, '0' as auditado\
+                      select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento,  0 as item_id, '3' as tipo_estado_auditoria, 0 as cantidad_ingresada, '0' as auditado, '' as empresa_id, '' as centro_utilidad, '' as bodega  \
                       from inv_bodegas_movimiento_tmp_despachos_farmacias a \
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                        and b.codigo_producto not in(\
                             select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
                        )\
-                    ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11\
+                    ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11,12,13,14\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
+                left join existencias_bodegas_lote_fv h on h.empresa_id = b.empresa_id and h.centro_utilidad = b.centro_utilidad and h.codigo_producto = b.codigo_producto and h.lote = b.lote and h.fecha_vencimiento = b.fecha_vencimiento :: date\
+                left join existencias_bodegas i on i.empresa_id = b.empresa_id and i.centro_utilidad = b.centro_utilidad and i.codigo_producto = b.codigo_producto\
                 where a.solicitud_prod_a_bod_ppal_id= ? order by e.descripcion ; ";
 
    G.knex.raw(sql, [numero_pedido]).
@@ -1309,7 +1338,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 b.tipo_producto_id,\
                 case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
                         else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
-                coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
+                coalesce(j.existencias_farmacia, 0) as existencias_farmacia,\
+                b.unidad_medida\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
@@ -1423,21 +1453,30 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     
 };
 
-function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, transaccion, callback){
-    
-    var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
-                SET cantidad_solic = :3, cantidad_pendiente = :4 \
-                WHERE solicitud_prod_a_bod_ppal_id = :1 and codigo_producto = :2";
-    
-    var query = G.knex.raw(sql, {1:numero_pedido, 2:codigo_producto, 3:cantidad_solicitada, 4:cantidad_pendiente});
-    
-    if(transaccion) query.transacting(transaccion);
-    
-    query.then(function(resultado){
+function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, that, transaccion, callback){
+
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solicitada, codigo_producto:codigo_producto}).then(function(resultado){
+        if(resultado.length > 0 && resultado[0].valido === '1'){
+            
+            var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
+                        SET cantidad_solic = :3, cantidad_pendiente = :4 \
+                        WHERE solicitud_prod_a_bod_ppal_id = :1 and codigo_producto = :2";
+            
+            var query = G.knex.raw(sql, {1:numero_pedido, 2:codigo_producto, 3:cantidad_solicitada, 4:cantidad_pendiente});
+
+            if(transaccion) query.transacting(transaccion);
+            
+            return query;
+
+        } else {
+            throw {msj:"La cantidad ingresada del producto no es valida", status:403};
+        }
+    }).then(function(resultado){
         callback(false, resultado.rows);
-    }).catch(function(err){
+    }).fail(function(err){
         callback(err);
     });
+    
 };
 
 function __eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, transaccion, callback) {
@@ -1476,5 +1515,8 @@ function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, 
         callback(err);
     });
 };
+
+
+PedidosFarmaciasModel.$inject = ["m_productos"];
 
 module.exports = PedidosFarmaciasModel;

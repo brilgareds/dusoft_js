@@ -77,13 +77,34 @@ define(["angular", "js/controllers",
                     {field: 'lotesSeleccionados[0].fecha_vencimiento', displayName: 'F Vencimiento'},
                     {field: 'cantidad_solicitada', displayName: 'Solicitado'},
                     {field: 'lotesSeleccionados[0].cantidad_ingresada', displayName: 'Ingresado'},
-                    {field: 'cantidad_pendiente', displayName: 'Pendiente'},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente', cellTemplate: '<div class="ngCellText">\
+                                       {{obtenerCantidadPendiente(row.entity)}}\
+                                   </div>'
+                    },
                     {displayName: "", cellClass: "txt-center dropdown-button", width: "50",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="onEliminarLote(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'
                     }
                 ]
+            };
+            
+            $scope.obtenerCantidadPendiente = function(producto){
+                var cantidadSolicitada = producto.getCantidadSolicitada();
+                var cantidadIngresada = 0;
+                var productos = $scope.rootDetalle.pedido.getProductos();
+                var ingresado = 0;
+                
+                for(var i in productos){
+                    var _producto = productos[i];
+                    if(_producto.getCodigoProducto() === producto.getCodigoProducto()){
+                        var lote =  _producto.getLotesSeleccionados()[0];
+                        ingresado += parseInt(lote.getCantidadIngresada());
+                    }
+                }
+                
+                return cantidadSolicitada - ingresado;
+                
             };
 
             /**
@@ -648,26 +669,19 @@ define(["angular", "js/controllers",
              * @returns {Boolean}
              */
             self.validarProductos = function() {
-                var productos = $scope.rootDetalle.pedido.getProductos();
+                var productos = $scope.rootSeparacion.empresa.getPedidoSeleccionado().getProductos();
                 var _productosInvalidos = [];
-                
+              
                 for(var i in  productos){
                     var justificacion = productos[i].getJustificacion(); 
                     var producto = productos[i];
-                    var cantidadIngresada = 0;
-                    
-                    for(var ii in productos){
-                        var _producto = productos[ii];
-                        if(_producto.getCodigoProducto() === producto.getCodigoProducto() ){
-                            cantidadIngresada += _producto.lotesSeleccionados[0].cantidad_ingresada;
-                        }
-                    }
-                   
+
+                    console.log("producto pendiente ",producto.getCantidadPendiente(), " producto des ",producto.getDescripcion());
                     if(justificacion === null || justificacion === undefined || justificacion.length === 0 &&
-                      cantidadIngresada < producto.getCantidadSolicitada()){
+                      producto.getCantidadPendiente() > 0){
                         _productosInvalidos.push(producto);
-                    }                                       
-                }                           
+                    } 
+                } 
                 return _productosInvalidos;
             };
             

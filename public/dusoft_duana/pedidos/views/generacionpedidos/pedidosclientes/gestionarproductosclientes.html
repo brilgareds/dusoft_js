@@ -54,9 +54,12 @@
                                     </p>
                                 </div>
                                     
-                                <div class="col-md-3 pull-right" style="margin-top: 35px;">                                
+                                <div class="col-md-4 pull-right" style="margin-top: 35px;">                                
                                 
                                 <div class="input-group">
+                                <!-- span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" ng-click="busquedaAvanzadaProducto();"><i >Avanzado</i></button>
+                                </span -->
                                 <div class="input-group-btn">
                                   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootSeleccionProducto.filtro.nombre}} <span class="caret"></span></button>
                                   <ul class="dropdown-menu">
@@ -65,7 +68,8 @@
                                     </li>
                                   </ul>
                                 </div><!-- /btn-group -->
-                                <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);" 
+                                
+                                <input type="text" class="form-control" ng-keypress="buscador_productos($event, 0);" 
                                        ng-model="datos_form.termino_busqueda" placeholder="Buscar Producto" name="" id="">
                                 
                                  <div class="input-group-btn" >
@@ -73,9 +77,7 @@
                                         <i class="glyphicon glyphicon-search"></i></button>
                                 </div>
                                 
-                                 <span class="input-group-btn">
-                                    <button class="btn btn-default" type="submit" ng-click="busquedaAvanzadaProducto();"><i >Avanzado</i></button>
-                                </span>
+                                 
                               </div><!-- /input-group -->
                             
 

@@ -1851,15 +1851,16 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
     var estado_pedido = 0; 
     /**
-     * +Descripcion: Promesa encargada de consultar el precio reguladod de un
+     * +Descripcion: Promesa encargada de consultar el precio regulado de un
      *               producto, y validar si este precio esta por debajo del valor
      *               de venta
      * @fecha: 03/12/2015
      * @param {string} pedido.empresa_id
      * @param {string} codigo_producto
      * @returns {function}
-     */
-    var parametros = {empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, contratoId: pedido.cliente.contrato_id}  
+     */ 
+    var parametros = {empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, contratoId: pedido.cliente.contrato_id}
+
     var precioVenta;
     var precioRegulado;
     var precioPactado;

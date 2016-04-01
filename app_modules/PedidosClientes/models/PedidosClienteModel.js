@@ -197,9 +197,14 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     }    
     
     query.limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).
-    orderByRaw("4 DESC").
-    then(function(rows) {
+    offset((pagina - 1) * G.settings.limit);
+    //La base del 170 no responde con un orderby,  por esa razon se condiciona para produccion
+    if(G.program.prod){
+        
+        query.orderByRaw("4 DESC");
+    }
+    
+    query.then(function(rows) {
         callback(false, rows);
     }).catch (function(err) {
         callback(err);

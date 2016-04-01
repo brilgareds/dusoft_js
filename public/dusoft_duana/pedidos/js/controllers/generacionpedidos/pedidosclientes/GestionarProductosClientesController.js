@@ -143,41 +143,41 @@ define(["angular", "js/controllers",
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
                  */
-                if(productoSeleccionado.es_regulado()){
-                    
-                    /**
-                     * +Descripcion: Se valida si el precio de venta es mayor al
-                     *               precio regulado, por lo cual se emitira un
-                     *               mensaje al usuario y se cancelara la operacion
-                     */
-                    if(precioVentaIva > precioRegulado){
-                        
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
-                        
-                        return;
-                    }
-                }
-                
-                
-                 /**
-                 * +Descripcion: Se validara si el producto seleccionado es regulado
-                 *               
-                 */
-                if(!productoSeleccionado.es_regulado()){
-                    
-                    /**
-                     * +Descripcion: Se valida si el precio de venta es mayor al
-                     *               costo de compra, por lo cual se emitira un
-                     *               mensaje al usuario y se cancelara la operacion
-                     */
-                    if(precioVentaIva < costoCompra){
-                        
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo de compra");
-                        
-                        return;
-                    }
-                }
-               
+//                if(productoSeleccionado.es_regulado()){
+//                    
+//                    /**
+//                     * +Descripcion: Se valida si el precio de venta es mayor al
+//                     *               precio regulado, por lo cual se emitira un
+//                     *               mensaje al usuario y se cancelara la operacion
+//                     */
+//                    if(precioVentaIva > precioRegulado){
+//                        
+//                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");
+//                        
+//                        return;
+//                    }
+//                }
+//                
+//                
+//                 /**
+//                 * +Descripcion: Se validara si el producto seleccionado es regulado
+//                 *               
+//                 */
+//                if(!productoSeleccionado.es_regulado()){
+//                    
+//                    /**
+//                     * +Descripcion: Se valida si el precio de venta es mayor al
+//                     *               costo de compra, por lo cual se emitira un
+//                     *               mensaje al usuario y se cancelara la operacion
+//                     */
+//                    if(precioVentaIva < costoCompra){
+//                        
+//                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo de compra");
+//                        
+//                        return;
+//                    }
+//                }
+//               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -220,37 +220,37 @@ define(["angular", "js/controllers",
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
                  */
-                if(productoSeleccionado.es_regulado()){
-                    
-                    /**
-                     * +Descripcion: Se valida si el precio de venta es mayor al
-                     *               precio regulado, por lo cual se emitira un
-                     *               mensaje al usuario y se cancelara la operacion
-                     */
-                    if(precioVentaIva > precioRegulado){                       
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");                       
-                        return;
-                    }
-                }
-                
-               /**
-                 * +Descripcion: Se validara si el producto seleccionado es regulado
-                 *               
-                 */
-                if(!productoSeleccionado.es_regulado()){
-                    
-                    /**
-                     * +Descripcion: Se valida si el precio de venta es mayor al
-                     *               costo de compra, por lo cual se emitira un
-                     *               mensaje al usuario y se cancelara la operacion
-                     */
-                    if(precioVentaIva < costoCompra){
-                        
-                       AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo de compra");
-                        
-                        return;
-                    }
-                }
+//                if(productoSeleccionado.es_regulado()){
+//                    
+//                    /**
+//                     * +Descripcion: Se valida si el precio de venta es mayor al
+//                     *               precio regulado, por lo cual se emitira un
+//                     *               mensaje al usuario y se cancelara la operacion
+//                     */
+//                    if(precioVentaIva > precioRegulado){                       
+//                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por encima del regulado ");                       
+//                        return;
+//                    }
+//                }
+//                
+//               /**
+//                 * +Descripcion: Se validara si el producto seleccionado es regulado
+//                 *               
+//                 */
+//                if(!productoSeleccionado.es_regulado()){
+//                    
+//                    /**
+//                     * +Descripcion: Se valida si el precio de venta es mayor al
+//                     *               costo de compra, por lo cual se emitira un
+//                     *               mensaje al usuario y se cancelara la operacion
+//                     */
+//                    if(precioVentaIva < costoCompra){
+//                        
+//                       AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta esta por debajo del costo de compra");
+//                        
+//                        return;
+//                    }
+//                }
                
                 var obj = {
                     session: $scope.session,

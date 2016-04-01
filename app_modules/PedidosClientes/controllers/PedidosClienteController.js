@@ -597,19 +597,17 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
             }
         }
 
-      if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
-        if(precioVenta < costoCompra){
-              valido = false;
+        if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
+          if(precioVenta < costoCompra){
+                valido = false;
+          }
         }
-      }
         
-
-
-       if(valido ){
-            return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);  
-       }else{
-          throw 'El precio de venta esta por encima del regulado';
-       }
+        if(valido ){
+             return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);  
+        }else{
+           throw 'El precio de venta esta por encima del regulado';
+        }
     }).then(function(rows){
         /**
         * +Descripcion: Se valida si el estado de la cotizacion es 

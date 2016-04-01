@@ -735,6 +735,7 @@ PedidosFarmacias.prototype.buscarProductos = function(req, res) {
     that.m_pedidos_farmacias.listarProductos(empresa_id, centro_utilidad_id, bodega_id, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id,
             pagina_actual, filtro, function(err, productos) {
         if (err) {
+            console.log("error ", err);
             res.send(G.utils.r(req.url, 'Se ha generado un error', 500, {lista_productos: []}));
             return;
         }

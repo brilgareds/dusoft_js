@@ -39,7 +39,7 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
     var bodega = args.pedidos.bodega_id;
 
 
-    that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, centro_utilidad, bodega, function(err, existencias_productos) {
+    that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, centro_utilidad, bodega, {activos:true}, function(err, existencias_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));

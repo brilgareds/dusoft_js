@@ -3234,13 +3234,12 @@ function _generar_reporte_pedido(rows, callback) {
  * Autor : Camilo Orozco
  * Descripcion : Enviar correos electronicos
  */
-function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
-    
-    var messageDefect = "<ul><li>1. FAVOR CONFIRMAR COTIZACION AL CORREO ventas@duanaltda.com PARA PODER TRAMITAR SU PEDIDO.</li>\n\
+
+function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) { 
+
+    var messageDefect = "<ul><li>1. FAVOR CONFIRMAR COTIZACION AL CORREO ventas@duanaltda.com PARA PODER TRAMITAR SU PEDIDO (Aplica solo para empleados).</li>\n\
                              <li>2. USTED TENDRA UN PLAZO DE 8 DIAS CONTADOS AL MOMENTO DE LA CONFIRMACION DEL PEDIDO, PARA RECLAMARLO DE LO CONTRARIO SERA BLOQUEADO EN EL SISTEMA PARA COMPRAR.</li>\n\
                              <li>"+message+"</li></ul>";
-        
-      
     // var smtpTransport = that.emails.createTransport('direct', {debug: true});
     var smtpTransport = that.emails.createTransport("SMTP", {
         host: G.settings.email_host, // hostname

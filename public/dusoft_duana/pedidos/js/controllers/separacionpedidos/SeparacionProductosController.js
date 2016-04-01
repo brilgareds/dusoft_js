@@ -9,10 +9,12 @@ define(["angular", "js/controllers",
                 "socket", "AlertService", "$modal", "localStorageService", "$state",
                 "SeparacionService", "Usuario", "EmpresaPedido", "LoteProductoPedido",
                 "DocumentoTemporal", "PedidoAuditoria", "Cliente", "Farmacia", "ProductoPedido", "$filter",
+                "$window",
                 function($scope, $rootScope, Request,
                         API, socket, AlertService, $modal, localStorageService, $state,
                         SeparacionService, Usuario, EmpresaPedido, LoteProductoPedido,
-                        DocumentoTemporal, PedidoAuditoria, Cliente, Farmacia, ProductoPedido, $filter) {
+                        DocumentoTemporal, PedidoAuditoria, Cliente, Farmacia, ProductoPedido, $filter,
+                       $window) {
 
 
                     var self = this;
@@ -621,13 +623,18 @@ define(["angular", "js/controllers",
 
                     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                         $scope.rootSeparacion = {};
+                        $scope.windowFocus();
                         self.onFinalizar();
                         self.onMostarProductoEnPosicion();
                         self.closeDetallePedidos();
                         $scope.$$watchers = null;
                         localStorageService.remove("pedidoSeparacion");
                     });
-
+                    
+                    
+                    $scope.windowFocus = $window.$on("focus", function(){
+                        console.log("window focused ");
+                    });
 
                     self.init(function() {
                         

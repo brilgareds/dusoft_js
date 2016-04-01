@@ -59,7 +59,22 @@ PedidosClienteLog.prototype.logModificarProductoCotizacion = function(paramLogCl
  */
 PedidosClienteLog.prototype.logEliminarProductoCotizacion = function(paramLogCliente, callback) {
 
-   
+   /* var paramLogCliente = {
+        detalle: {
+            cotizacion: pedido.numero_cotizacion,
+            tipo_cotizacion_pedido: 0,
+            producto: producto.codigo_producto,
+            tipo_pedido: 0,
+            descripcion: "descripcion(iva: " + producto.iva +
+                    "| cantidad_nueva: " + producto.cantidad_solicitada +
+                    "| cantidad_inicial: " + producto.cantidad_inicial +
+                    "| precio_venta: " + producto.precio_venta + " )",
+            accion: 0,
+            usuario: pedido.usuario_id
+        }
+    };
+
+*/
    
    
    callback();
@@ -101,11 +116,6 @@ PedidosClienteLog.prototype.logEliminarProductoCotizacion = function(paramLogCli
  *  --PedidosCliente.prototype.observacionCarteraCotizacion
  */
 PedidosClienteLog.prototype.logAprobacionCotizacion = function(cotizacion, callback) {
-   console.log("**********logAprobacionCotizacion********************");
-   console.log("**********logAprobacionCotizacion********************");
-   console.log("**********logAprobacionCotizacion********************");
-   
-   console.log("cotizacion ", cotizacion);
    
    var parametros = {
             tipo: cotizacion.detalle.tipo,
@@ -152,11 +162,15 @@ PedidosClienteLog.prototype.logConsultarExistenciaNumero = function(parametro, c
            numero: parametro.numero,
            tipo: parametro.tipo                  
        };
+       
+       
     }
-   console.log("obj ", obj)
+    
     G.knex('ventas_trazabilidad').where(obj).select('pendiente').then(function(rows) {
+        
         callback(false, rows);
     }).catch (function(error) {
+       
         callback(error);
     });
 };

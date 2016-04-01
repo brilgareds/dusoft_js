@@ -573,6 +573,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     var precioPactado;
     var valido;
     var costoCompra;
+    var msj;
     G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).then(function(resultado){ 
     
     valido = true;
@@ -594,19 +595,21 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
              */
             if(precioVenta > precioRegulado || precioPactado > precioRegulado){
                   valido = false;
+                  msj = "El precio de venta esta por encima del regulado";
             }
         }
 
         if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
           if(precioVenta < costoCompra){
                 valido = false;
+                msj = "El precio de venta esta por debajo del costo";
           }
         }
         
         if(valido ){
              return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);  
         }else{
-           throw 'El precio de venta esta por encima del regulado';
+           throw msj;
         }
     }).then(function(rows){
         /**
@@ -1863,7 +1866,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     var precioRegulado;
     var precioPactado;
     var valido;
-    var costoCompra; 		 
+    var costoCompra; 		
+    var msj;
     /*+Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
      *        tipo:   0=cotizacion, 1=pedido
@@ -1893,6 +1897,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
              */
             if(precioVenta > precioRegulado || precioPactado > precioRegulado){
                   valido = false;
+                  msj = 'El precio de venta esta por encima del regulado';
             }
         }  
       /**
@@ -1902,6 +1907,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
        if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
          if(precioVenta < costoCompra){
                valido = false;
+                msj = "El precio de venta esta por debajo del costo";
          }
        }     
        if(valido ){

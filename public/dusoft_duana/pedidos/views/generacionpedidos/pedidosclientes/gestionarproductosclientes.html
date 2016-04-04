@@ -5,9 +5,9 @@
                 <div class="panel panel-default">
                     <div class="panel-heading clearfix">
                         <!--                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Imagen</h4>-->
-                         <div class="panel-heading">
-                             <h4 class="h4MarginTopBottom" align="center">Selección de Producto para Clientes</h4>
-                         </div>
+                        <div class="panel-heading">
+                            <h4 class="h4MarginTopBottom" align="center">Selección de Producto para Clientes</h4>
+                        </div>
                         <div class="pull-right">
                             <div>
                                 <button ng-click="cerrar_busqueda_productos()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
@@ -16,7 +16,7 @@
                     </div>
                     <div class="panel-body">
                         <div>
- 
+
                             <div class="row" >
                                 <div class="col-md-3">
                                     <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4> 
@@ -26,67 +26,63 @@
                                     <button ng-click="seleccionar_tipo_producto('3')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-info" style="position: relative;">Controlados</button>
                                     <button ng-click="seleccionar_tipo_producto('4')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-warning" style="position: relative;">Insumos</button>
                                     <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-grey" style="position: relative;">Neveras</button>                                                                           
-                                                                           
+
                                 </div>
-                              <div class="col-md-3">
-                                   <h4>Con convenciones</h4> 
-                                     <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-success" style="position: relative;">Con contrato</button>  
+                                <div class="col-md-3">
+                                    <h4>Con convenciones</h4> 
+                                    <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-success" style="position: relative;">Con contrato</button>  
                                 </div>                              
                             </div>
-                            
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <p class="input-group col-md-12">    
-                                    <h4>Laboratorio</h4>
-                                    <ui-select ng-model="datos_form.laboratorio" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_laboratorio()">
-                                        <ui-select-match  placeholder="Seleccionar laboratorio">{{ $select.selected.get_nombre() }}</ui-select-match>                                        
-                                        <ui-select-choices repeat="laboratorio in  Empresa.get_laboratorios() | filter:$select.search">
-                                            {{ laboratorio.get_nombre() }}
-                                        </ui-select-choices>
-                                    </ui-select>
-                                    </p>
-                                </div>
 
-                                <div ng-if="validar_seleccion_producto()" class="col-md-6 text-center" style="margin-top: 35px;">
-                                    <p class="input-group">
-                                        <h4>No se pueden agregar mas productos, el pedido ya contiene el limite de productos</h4>                                                                            
-                                    </p>
-                                </div>
-                                    
-                                <div class="col-md-3 pull-right" style="margin-top: 35px;">                                
-                                
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <p class="input-group col-md-12">    
+                                <h4>Laboratorio</h4>
+                                <ui-select ng-model="datos_form.laboratorio" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_laboratorio()">
+                                    <ui-select-match  placeholder="Seleccionar laboratorio">{{ $select.selected.get_nombre() }}</ui-select-match>                                        
+                                    <ui-select-choices repeat="laboratorio in  Empresa.get_laboratorios() | filter:$select.search">
+                                        {{ laboratorio.get_nombre() }}
+                                    </ui-select-choices>
+                                </ui-select>
+                                </p>
+                            </div>
+
+                            <div ng-if="validar_seleccion_producto()" class="col-md-6 text-center" style="margin-top: 35px;">
+                                <p class="input-group">
+                                <h4>No se pueden agregar mas productos, el pedido ya contiene el limite de productos</h4>                                                                            
+                                </p>
+                            </div>
+                            
+                            <div class="col-md-3 pull-right" style="margin-top: 35px;">     
+
                                 <div class="input-group">
-                                <div class="input-group-btn">
-                                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootSeleccionProducto.filtro.nombre}} <span class="caret"></span></button>
-                                  <ul class="dropdown-menu">
-                                    <li ng-repeat="filtro in rootSeleccionProducto.filtros">
-                                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
-                                    </li>
-                                  </ul>
-                                </div><!-- /btn-group -->
-                                <input type="text" class="form-control" ng-keypress="buscador_productos($event, 0);" 
-                                       ng-model="datos_form.termino_busqueda" placeholder="Buscar Producto" name="" id="">
-                                
-                                 <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13},0)">
-                                        <i class="glyphicon glyphicon-search"></i></button>
-                                </div>
-                                
-                               <!--  <span class="input-group-btn">
-                                    <button class="btn btn-default" type="submit" ng-click="busquedaAvanzadaProducto();"><i >Avanzado</i></button>
-                                </span> //-->
-                              </div><!-- /input-group -->
-                            
+                                    <div class="input-group-btn">                
+                                        <button type="button" class="btn btn-default dropdown-toggle" 
+                                                data-toggle="dropdown" 
+                                                aria-haspopup="true" 
+                                                aria-expanded="false">{{rootSeleccionProducto.filtro.nombre}} <span class="caret"></span></button>
+                                        <ul class="dropdown-menu">
+                                            <li ng-repeat="filtro in rootSeleccionProducto.filtros">
+                                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
+                                            <li><a ng-click="busquedaAvanzadaProducto();">Avanzado</a></li>
+                                        </ul>    
+                                    </div><!-- /btn-group -->
 
-                            
-                            
-                            </div>
-                               
+                                    <input type="text" class="form-control" ng-keypress="buscador_productos($event, 0);" 
+                                           ng-model="datos_form.termino_busqueda" placeholder="Buscar Producto" name="" id="">
+
+                                    <div class="input-group-btn" >
+                                        <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13},0)">
+                                            <i class="glyphicon glyphicon-search"></i></button>
+                                    </div>
+                                </div><!-- /input-group -->
                             </div>
                             <br>
                             <div class="table-responsive" style="clear:both;">
-                                  <div class="defaultGrid grid-responsive" ng-grid="lista_productos" > </div>
+                                <div class="defaultGrid grid-responsive" ng-grid="lista_productos" > </div>
                             </div>                          
                             </br>
 
@@ -105,4 +101,3 @@
         </div>        
     </div>
 </div>
-    

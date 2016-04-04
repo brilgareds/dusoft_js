@@ -10,7 +10,7 @@
                         <br> 
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarcotizacionesclientes.html'"></div>
                     </tab>                        
-                    <tab  ng-if="datos_view.inactivarTab" >
+                    <tab  ng-if="datos_view.inactivarTab" active="datos_view.activarTabPedidos" >
                         <tab-heading ng-click="cargarListaPedidos('','')" >
                              Pedidos Clientes 
                              <!--<span ng-show="notificacionClientesAutorizar > 0" class="badge badge-warning">{{notificacionClientesAutorizar}}</span>//-->
@@ -42,9 +42,6 @@
                         <br> 
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarnotificacionpedidos.html'"></div>
                     </tab>  
-                    
-                    
-                    
                     
                 </tabset>                                      
             </div>

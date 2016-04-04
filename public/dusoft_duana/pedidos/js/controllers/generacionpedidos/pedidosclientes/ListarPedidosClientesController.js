@@ -535,6 +535,7 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_pedidos = function(estado,estadoSolicitud) {
+                
                 //Se obtiene el criterio de busqueda a traves del local storage
                 //con el objetivo de que el usuario al modificar un pedido
                 //y regrese al listado de todos los pedidos, conserve el filtro
@@ -542,6 +543,8 @@ define(["angular", "js/controllers",
                 
                 if(terminoBusqueda){
                     $scope.datos_view.activarTabPedidos = terminoBusqueda.activar;
+                 
+                    //datos_view.inactivarTab
                     $scope.datos_view.termino_busqueda_pedidos = terminoBusqueda.busqueda;
                 }
              

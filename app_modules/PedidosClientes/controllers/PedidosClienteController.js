@@ -568,48 +568,17 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     
     var parametros = {empresaId:cotizacion.empresa_id, codigoProducto:producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
     
-    var precioVenta;
-    var precioRegulado;
-    var precioPactado;
-    var valido;
-    var costoCompra;
-    var msj;
     G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).then(function(resultado){ 
-    
-    valido = true;
-
-  
-        precioVenta = Number(producto.precioVentaIva);
-        precioRegulado = Number(resultado[0].precio_regulado);
-        precioPactado = Number(resultado[0].precio_pactado);
-        costoCompra  = Number(resultado[0].costo_ultima_compra);
-        
-        /**
-         * +Descripcion: Valida si el producto es regulado
-         */
-        if(resultado[0].sw_regulado ==='1'){
-            /**
-             * +Descripcion:Si precio de venta es mayor al precio regulado
-             *              ó el precio pactado es mayor al regulado
-             *              cancele la accion
-             */
-            if(precioVenta > precioRegulado || precioPactado > precioRegulado){
-                  valido = false;
-                  msj = "El precio de venta esta por encima del regulado";
-            }
-        }
-
-        if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
-          if(precioVenta < costoCompra){
-                valido = false;
-                msj = "El precio de venta esta por debajo del costo";
-          }
-        }
-        
-        if(valido ){
+       
+     /**
+       * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
+       */
+       var precioVenta = __validarPrecioVenta(producto,resultado,0);
+     
+        if( precioVenta.valido ){
              return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);  
         }else{
-           throw msj;
+           throw precioVenta.msj;
         }
     }).then(function(rows){
         /**
@@ -1771,7 +1740,6 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
     });//consultarExistenciaPedidoCotizacion
 };
 
-
 /*
  * @author  Cristian Ardila
  * @fecha 18/03/2016 4:39 pm
@@ -1862,12 +1830,6 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
      */ 
     var parametros = {empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, contratoId: pedido.cliente.contrato_id}
 
-    var precioVenta;
-    var precioRegulado;
-    var precioPactado;
-    var valido;
-    var costoCompra; 		
-    var msj;
     /*+Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
      *        tipo:   0=cotizacion, 1=pedido
@@ -1880,40 +1842,16 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     };
        
     G.Q.ninvoke(that.m_productos,'consultarPrecioReguladoProducto', parametros).then(function(resultado){ 
-    
-        valido = true;
-        precioVenta = Number(producto.precioVentaIva);
-        precioRegulado = Number(resultado[0].precio_regulado);
-        precioPactado = Number(resultado[0].precio_pactado);
-        costoCompra  = Number(resultado[0].costo_ultima_compra);  
-        /**
-         * +Descripcion: Valida si el producto es regulado
-         */
-        if(resultado[0].sw_regulado ==='1'){
-            /**
-             * +Descripcion: Si precio de venta es mayor al precio regulado
-             *              ó el precio pactado es mayor al regulado
-             *              cancele la accion
-             */
-            if(precioVenta > precioRegulado || precioPactado > precioRegulado){
-                  valido = false;
-                  msj = 'El precio de venta esta por encima del regulado';
-            }
-        }  
-      /**
-       * +Descripcion: Valida si el producto no es regulado y su precio pctado
-       *               esta en 0
-       */
-       if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
-         if(precioVenta < costoCompra){
-               valido = false;
-                msj = "El precio de venta esta por debajo del costo";
-         }
-       }     
-       if(valido ){
+       
+       /**
+        * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
+        */
+       var precioVenta = __validarPrecioVenta(producto,resultado,0);
+       
+       if( precioVenta.valido ){
             return  G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoPedidoEstado', numeroPedido);  
        }else{
-          throw 'El precio de venta esta por encima del regulado';
+          throw precioVenta.msj;
        }
     }).then(function(resultado){
         /**
@@ -3102,7 +3040,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             producto.precio_venta = _producto.precio_producto;
             producto.tipo_producto = _producto.tipo_producto_id;
             
-           __validarPrecioRegulado(that, parametros, function(valido, productoValido){
+           __validarPrecioReguladoPlano(that, parametros, function(valido, productoValido){
                
            
                 if(valido){
@@ -3119,7 +3057,67 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
      });  
 };
 
-function __validarPrecioRegulado(contexto,obj, callback){
+/**
+ * @author Cristian Ardila
+ * @fecha  04/04/2016
+ * +Descripcion Metodo encargado de validar si un producto es regulado,
+ *              regulado = 1 (regulado), 2(no regulado)          
+ * @param {type} producto
+ * @param {type} resultado
+ */
+function __validarPrecioVenta(producto, resultado, tipo){
+        
+        var precioVenta;
+        if(tipo === 0){
+              precioVenta = Number(producto.precioVentaIva);
+        }else{
+              precioVenta = Number(resultado[0].precio_producto);
+        }
+       
+        var valido = true;
+       
+        var precioRegulado = Number(resultado[0].precio_regulado);
+        var precioPactado = Number(resultado[0].precio_pactado);
+        var costoCompra  = Number(resultado[0].costo_ultima_compra);  
+        var msj = "";
+        
+        /**
+         * +Descripcion: Valida si el producto es regulado
+         */
+        if(resultado[0].sw_regulado ==='1'){
+            
+            /**
+             * +Descripcion: Si precio de venta es mayor al precio regulado
+             *              ó el precio pactado es mayor al regulado
+             *              cancele la accion
+             */
+            if(precioVenta > precioRegulado || precioPactado > precioRegulado){
+                  valido = false;
+                  msj = 'El precio de venta esta por encima del regulado';
+            }
+        }  
+      /**
+       * +Descripcion: Valida si el producto no es regulado y su precio pctado
+       *               esta en 0
+       */
+       if(resultado[0].sw_regulado !=='1' && precioPactado ===0){
+         if(precioVenta < costoCompra){
+               valido = false;
+                msj = "El precio de venta esta por debajo del costo";
+         }
+       }   
+       
+       return {valido:valido,msj:msj}
+}
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/04/2016
+ * +Descripcion Metodo encargado de consultar el precio regulado de los productos
+ *              que se adicionaran a la cotizacion a traves de un archivo plano
+ * 
+ */
+function __validarPrecioReguladoPlano(contexto,obj, callback){
  
     var that = contexto;    
     var precioVenta;
@@ -3129,8 +3127,9 @@ function __validarPrecioRegulado(contexto,obj, callback){
     var costoCompra; 
 
     that.m_productos.consultarPrecioReguladoProducto(obj, function(err, rows){
-
-        valido = true;
+        
+         var resultado =  __validarPrecioVenta("",rows,1)
+        /*valido = true;
         precioVenta = Number(rows[0].precio_producto);
         precioRegulado = Number(rows[0].precio_regulado);
         precioPactado = Number(rows[0].precio_pactado);
@@ -3145,9 +3144,10 @@ function __validarPrecioRegulado(contexto,obj, callback){
                 if(precioVenta < costoCompra){
                       valido = false;  
                 }
-            }                                                       
+            }        */
+     
            
-            callback(valido, rows);                             
+            callback(resultado.valido, rows);                             
      });
 }
 

@@ -1095,8 +1095,54 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            // Gestiona la aprobacion o no del departamento de cartera
-           $scope.gestion_cartera = function(aprobado) {
+         // Gestiona la aprobacion o no del departamento de cartera
+            $scope.gestion_cartera = function(aprobado) {
+                var obj = {};
+                var url = '';
+                $scope.Pedido.set_aprobado_cartera(aprobado);
+                // Observacion cartera para cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido
+                            }
+                        }
+                    };
+                }               
+                // Observacion cartera para pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                aprobado: aprobado
+                            }
+                        }
+                    };
+                }
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                   
+                    if (data.status === 200) {                       
+                       /*Se valida si es una cotizacion y entonces se procede
+                         a crear el pedido*/
+                       if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                            $scope.gestionar_pedido()
+                       }                     
+                       if ($scope.Pedido.get_numero_pedido() > 0) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                             $scope.volver_cotizacion();
+                       }                      
+                    }
+                });
+            };
+        /*   $scope.gestion_cartera = function(aprobado) {
 
                 var obj = {};
                 var url = '';
@@ -1136,7 +1182,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.volver_cotizacion();
                     }
                 });
-            };
+            };*/
 
 
             // Gestionar la creacion del pedido

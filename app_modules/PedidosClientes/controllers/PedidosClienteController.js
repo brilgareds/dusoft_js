@@ -57,17 +57,15 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     var estadoPedido = args.pedidos_clientes.estado_pedido;
     var estadoSolicitud = args.pedidos_clientes.estado_solicitud;
     
-    if (!args.pedidos_clientes.filtro) {
+    if (!args.pedidos_clientes.filtros) {
         res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
         return;
     }
 
-    var filtros = args.pedidos_clientes.filtro;
-    
+    var filtros = args.pedidos_clientes.filtros;
+  
     this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido, estadoSolicitud,filtros, function(err, lista_pedidos_clientes) {
-        
        
-        
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
         
         

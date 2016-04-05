@@ -27,9 +27,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  * @apiParam {String} termino_busqueda Termino por el cual desea filtrar los pedidos.
  * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion. 
  */
-
 PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
-    
     
     var that = this;
 

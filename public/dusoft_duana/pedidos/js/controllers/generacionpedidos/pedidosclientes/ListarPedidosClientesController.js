@@ -284,10 +284,12 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-         
+              
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
                 
                 if(terminoBusqueda){
+                    $scope.datos_view.filtro = {nombre: "Cliente", tipo_busqueda: 1};
+                    
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
                 }
                
@@ -560,6 +562,7 @@ define(["angular", "js/controllers",
                 var terminoBusqueda = localStorageService.get("terminoBusquedaPedido");
                 
                 if(terminoBusqueda){
+                     $scope.datos_view.filtro_pedido = {nombre: "Cliente", tipo_busqueda: 1};
                     $scope.datos_view.activarTabPedidos = terminoBusqueda.activar;
                  
                     //datos_view.inactivarTab

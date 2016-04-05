@@ -581,7 +581,7 @@ define(["angular", "js/controllers",
                             pagina_actual: $scope.datos_view.pagina_actual_pedidos,
                             estado_pedido: estado,
                             estado_solicitud: estadoSolicitud,
-                            filtro: $scope.datos_view.filtro_pedido
+                            filtros: $scope.datos_view.filtro_pedido
                         }
                     }
                 };

@@ -28,9 +28,9 @@
                       </p>
                 </div>
          
-                 <div class="col-md-2 pull-right">
+                 <div class="col-md-3 pull-right">
                     <p> 
-                     <div class="input-group">
+                   <!--  <div class="input-group">
                     <input type="text" class="form-control"
                            ng-keypress="onKeyPress($event, termino_busqueda)" 
                            ng-model="termino_busqueda" 
@@ -43,9 +43,42 @@
                             ng-click="buscarPedidosCliente(termino_busqueda)">
                     <i class="glyphicon glyphicon-search"></i></button> </div>
                    
-                  </div>
+                  </div> //-->
+                   
+                 <div class="input-group">
+                   <div class="input-group-btn">                
+                       <button type="button" class="btn btn-default dropdown-toggle" 
+                               data-toggle="dropdown" 
+                               aria-haspopup="true" 
+                               aria-expanded="false">{{rootSeleccionPedido.filtro.nombre}} <span class="caret"></span></button>
+                       <ul class="dropdown-menu">
+                           <li ng-repeat="filtro in rootSeleccionPedido.filtros">
+                               <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)">{{filtro.nombre}}</a>
+                           </li>
+                           <li>
+                       </ul>     
+                   </div><!-- /btn-group -->
+                   
+                   <input type="text" class="form-control"
+                           ng-keypress="onKeyPress($event, termino_busqueda)" 
+                           ng-model="termino_busqueda" 
+                           placeholder="Buscar" 
+                           name="srch-term" 
+                           id="srch-term"
+                           ng-model="rootSeleccionPedido.termino_busqueda_pedidos">
+                  
+
+
+                   <div class="input-group-btn" >
+                       <button class="btn btn-default" 
+                            type="submit" 
+                            ng-click="buscarPedidosCliente(termino_busqueda)">
+                    <i class="glyphicon glyphicon-search"></i></button>
+                   </div>
+               </div>
+          
              
-            </div>
+            </div> 
        
            </div>
             <p>

@@ -2490,7 +2490,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
                 //Calculo de totales
                 datos_documento.detalle.forEach(function(detalle){
                     datos_documento.encabezado.subTotal += detalle.valor_unitario * detalle.cantidad;
-                    datos_documento.encabezado.totalIva += detalle.iva;
+                    datos_documento.encabezado.totalIva += (detalle.iva * detalle.cantidad);
                 });
                 
                 datos_documento.encabezado.total = datos_documento.encabezado.subTotal + datos_documento.encabezado.totalIva;

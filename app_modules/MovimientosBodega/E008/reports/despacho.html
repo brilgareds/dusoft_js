@@ -139,7 +139,7 @@
             </table>
         </div>
         
-        {{if encabezado.tipo_pedido == '1'}}
+        {{if encabezado.tipo_pedido == '1' || encabezado.farmacia_id == '01' || encabezado.farmacia_id == '02'}}
             <table class="table table-bordered  tablaPrincipal" width='100%'  cellspacing="0">
                 <tr>
                    <th class='title'>Producto</th>      
@@ -218,7 +218,7 @@
             </table>
         {{/if}}
         
-        {{if encabezado.tipo_pedido == '2'}}
+        {{if encabezado.tipo_pedido == '2' && encabezado.farmacia_id != '01' && encabezado.farmacia_id != '02'}}
             <table class="table table-bordered  tablaPrincipal" width='100%'>
                 <tr>
                    <th class='title'>Producto</th>      

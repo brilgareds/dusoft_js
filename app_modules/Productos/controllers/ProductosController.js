@@ -78,6 +78,7 @@ Productos.prototype.consultarExistenciasProducto = function(req, res) {
     var bodega = args.productos.bodega_id;
 
     G.Q.ninvoke(that.m_productos,"consultar_existencias_producto", empresaId, codigoProducto, centroUtilidad, bodega, {}).then(function(existencias){
+        console.log("existencias encontradas ", existencias);
         res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {existencias: existencias}));
     }).fail(function(err){
        res.send(G.utils.r(req.url, 'Error consultando las existencias', 500, {lista_productos: {}}));

@@ -966,6 +966,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var cotizacion = localStorageService.get("cotizacion");
                 
                 if(cotizacion){
+                    
                     localStorageService.add("terminoBusqueda", {busqueda: cotizacion.busqueda});
                 }
                 

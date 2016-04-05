@@ -199,10 +199,9 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit);
     //La base del 170 no responde con un orderby,  por esa razon se condiciona para produccion
-    if(G.program.prod){
-        
-        query.orderByRaw("4 DESC");
-    }
+  //  if(G.program.prod){
+    query.orderByRaw("4 DESC");
+  //  }
     
     query.then(function(rows) {
         callback(false, rows);
@@ -1122,48 +1121,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     } 
     
     fechaActual = yyyy+'-'+ mm +'-'+ dd;
-     // coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
-   /* var sql = "a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                b.tipo_producto_id,\
-                d.descripcion as descripcion_tipo_producto,\
-                b.codigo_cum,\
-                b.codigo_invima,\
-                b.vencimiento_codigo_invima,\
-                b.porc_iva as iva,\
-                a.existencia::integer as existencia,\
-                (select case when coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) < 0 then 0\
-                    else coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) end as disponibilidad_bodega\
-                from  disponibilidad_productos(b.codigo_producto,'"+fechaActual+"','"+fechaActual+"') as (\
-                        cantidad_total_pendiente integer, total_solicitado INTEGER\
-                 )\
-               )as cantidad_disponible,\
-                case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
-                split_part(coalesce(fc_precio_producto_contrato_cliente( :4, a.codigo_producto, :1 ),'0'), '@', 1) as precio_producto,\
-                b.sw_regulado,\
-                c.precio_regulado,\
-                b.estado,\
-                c.costo_ultima_compra,\
-                CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
-                from existencias_bodegas a \
-                inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
-                inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
-                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
-                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
-                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
-                left join (\
-                    select b.codigo_producto, coalesce(b.precio_pactado,0) as precio_pactado\
-                    from vnts_contratos_clientes a\
-                    inner join vnts_contratos_clientes_productos b on a.contrato_cliente_id = b.contrato_cliente_id\
-                    where a.contrato_cliente_id = :4\
-                ) g on c.codigo_producto = g.codigo_producto\
-                where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
-                 " + filtroProducto;*/
-        
-
-    
-    
-    
+     
     //Se agregar un nuevo campo llamado contrato que retornara FALSE si no tiene
    //contrato con la empresa y TRUE si lo tiene
              var sql = "a.codigo_producto,\
@@ -1248,26 +1206,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
  * @fecha: 04/12/2015 2:43 pm
  */
 PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callback) {
-
-  //var parametros = {1:cotizacion.empresa_id,2:cotizacion.centro_utilidad_id ,3:cotizacion.bodega_id,4:cotizacion.cliente.tipo_id_tercero,5:cotizacion.cliente.id,6:cotizacion.vendedor.tipo_id_tercero,7:cotizacion.vendedor.id,8:cotizacion.observacion,9:cotizacion.tipo_producto,10:cotizacion.usuario_id};
-
-
-  /*var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
-                empresa_id,\
-                centro_destino,\
-                bodega_destino,\
-                tipo_id_tercero,\
-                tercero_id,\
-                tipo_id_vendedor,\
-                vendedor_id,\
-                observaciones,\
-                tipo_producto,\
-                estado,\
-                usuario_id ,\
-                fecha_registro )\
-                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9, '1', :10, NOW()) \
-                RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";*/
-    
+   
      var parametros = {
                    1:cotizacion.empresa_id,
                    2:cotizacion.cliente.tipo_id_tercero,

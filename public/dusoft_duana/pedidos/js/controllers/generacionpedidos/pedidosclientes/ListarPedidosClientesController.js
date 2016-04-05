@@ -36,14 +36,10 @@ define(["angular", "js/controllers",
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
                 auth_token: Sesion.getUsuarioActual().getToken()
-            };
-            
-            
+            };          
             // Definicion Variables            
             $scope.Empresa = Empresa;
-
-            var fecha_actual = new Date();
-            
+            var fecha_actual = new Date();          
             /**
              * +Descripcion: Contador de notificaciones
              */
@@ -91,14 +87,35 @@ define(["angular", "js/controllers",
                     "btn btn-primary btn-xs",
                     "btn btn-info btn-xs"
                 ],
+                filtros : [
+                    {nombre: "Numero", tipo_busqueda: 0},
+                    {nombre: "Cliente", tipo_busqueda: 1},
+                    {nombre: "Vendedor", tipo_busqueda: 2}
+                ],
+                filtro : {nombre: "Numero", tipo_busqueda: 0},
+                filtro_pedido : {nombre: "Numero", tipo_busqueda: 0},
                         
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 inactivarTab: false
-            };
+                };
             
-            
-            
+               /**
+                 * +Descripcion Menu desplegable para filtar en la busqueda de
+                 *              una cotizacion
+                 */
+                $scope.onSeleccionFiltroCotizacion = function(filtro) {
+                    $scope.datos_view.filtro = filtro;     
+                  
+                };
+                /**
+                 * +Descripcion Menu desplegable para filtar en la busqueda de
+                 *              un pedido
+                 */
+                $scope.onSeleccionFiltroPedido = function(filtro) {
+                    $scope.datos_view.filtro_pedido = filtro;     
+                  
+                };
             // Validar Seleccion Empresa Centro Bodega
             that.validacion_inicial = function() {
 
@@ -287,7 +304,8 @@ define(["angular", "js/controllers",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_cotizaciones, "yyyy-MM-dd") + " 23:59:00",
                             termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
                             pagina_actual: $scope.datos_view.pagina_actual_cotizaciones,
-                            estado_cotizacion: estado
+                            estado_cotizacion: estado,
+                            filtro: $scope.datos_view.filtro   
                         }
                     }
                 };
@@ -562,7 +580,8 @@ define(["angular", "js/controllers",
                             termino_busqueda: $scope.datos_view.termino_busqueda_pedidos,
                             pagina_actual: $scope.datos_view.pagina_actual_pedidos,
                             estado_pedido: estado,
-                            estado_solicitud: estadoSolicitud
+                            estado_solicitud: estadoSolicitud,
+                            filtro: $scope.datos_view.filtro_pedido
                         }
                     }
                 };

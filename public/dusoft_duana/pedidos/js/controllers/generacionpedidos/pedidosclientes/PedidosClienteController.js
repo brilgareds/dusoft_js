@@ -43,7 +43,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 progresoArchivo: 0,
-                btnSolicitarAutorizacionCartera: true
+                btnSolicitarAutorizacionCartera: true,
                 
             };
             $scope.notificacionPedidoAutorizar = 0;

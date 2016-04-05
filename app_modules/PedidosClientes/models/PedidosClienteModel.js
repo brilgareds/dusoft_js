@@ -65,24 +65,20 @@ var PedidosClienteModel = function(productos) {
  AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4
  *      
  */
-
-PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina,estadoPedido,estadoSolicitud, callback) {
-    
-    
-    
-    /*=========================================================================*/
-    // Se implementa este filtro, para poder filtrar los pedidos por el estado actual
-    // 0 - No Asignado 
-    // 1 - Asignado
-    // 2 - Auditado
-    // 3 - En Zona Despacho
-    // 4 - Despachado
-    // 5 - Despachado con Pendientes
-    // 6 - separacion finalizada
-    // 7 - En Auditoria
-    // 8 - Auditado con Pdtes
-    // 9 - En Zona con Pdtes
-    /*=========================================================================*/
+/*=========================================================================*/
+// Se implementa este filtro, para poder filtrar los pedidos por el estado actual
+// 0 - No Asignado 
+// 1 - Asignado
+// 2 - Auditado
+// 3 - En Zona Despacho
+// 4 - Despachado
+// 5 - Despachado con Pendientes
+// 6 - separacion finalizada
+// 7 - En Auditoria
+// 8 - Auditado con Pdtes
+// 9 - En Zona con Pdtes
+/*=========================================================================*/
+PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina,estadoPedido,estadoSolicitud,filtros, callback) {
 
     var estado = "";
 
@@ -128,7 +124,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
             estado = '9';
         }
     }
-
+    
     var columns = [
         "a.empresa_id",
         "a.centro_destino as centro_utilidad_id",
@@ -181,11 +177,20 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     }).
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.pedido_cliente_id", "e.pedido_cliente_id").
     andWhere(function() {
-        this.where(G.knex.raw("a.pedido_cliente_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
 
+        if(filtros.tipo_busqueda === 0){
+            this.where(G.knex.raw("a.pedido_cliente_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");        
+        } 
+
+        if(filtros.tipo_busqueda === 1){         
+            this.where("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+         }
+
+        if(filtros.tipo_busqueda === 2){
+           this.where("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+           orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%")  
+        }  
     });
     
     if(estadoPedido){
@@ -206,6 +211,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     query.then(function(rows) {
         callback(false, rows);
     }).catch (function(err) {
+        console.log("err ", err)
         callback(err);
     });
 };
@@ -1317,15 +1323,54 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
 
 /*
  * @author : Camilo Orozco
- * +Descripcion :  SQL Listar Cotizaciones
+ * +Descripcion :  Modelo que consultara las cotizaciones segun el criterio de busqueda,
+ *                 Numero, Nombre ó ID de Cliente, Nombre ó ID de Vendedor
  * @Funciones que hacen uso del modelo:
  *  --PedidosCliente.prototype.listarCotizaciones
  * Modificacion: Se migra a KNEX.js 
  * @fecha: 04/12/2015 5:24 pm
  */
-PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina,estadoCotizacion, callback) {
+PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina,estadoCotizacion,filtros, callback) {
+      
+     var filtroCotizacion ="";
+     var filtroEstadoCotizacion="";
+     var parametros = {1:empresa_id, 2:fecha_inicial, 3:fecha_final};
+      
+     /**
+      * +Descripcion Se valida si se envia el estado de cotizacion=6 cuando se 
+      *              accede desde el cliente al TAB Aprobacion cotizaciones
+      *              para consultar unicamente las cotizaciones que solicitan
+      *              autorizacion añadiendo al vector de parametros el criterio
+      *              de busqueda por estado de cotizacion
+      */  
+     if(estadoCotizacion){
+            filtroEstadoCotizacion = " AND (a.estado "+G.constants.db().LIKE+" :4)";
+            parametros["4"]= '%' +estadoCotizacion + '%';
+        }
+     /**
+      * +Descripcion El criterio de busqueda para una cotizacion sera dependiento
+      *              el tipo de busqueda numero Cotizacion=0, Cliente =1, Vendedor =2
+      *              añadiendo al vector de parametros el criterio de busqueda
+      *              
+      */  
+     if(filtros.tipo_busqueda === 0){
+            filtroCotizacion = " AND (a.pedido_cliente_id_tmp::varchar "+G.constants.db().LIKE+" :5) " ;
+            parametros["5"]= '%' + termino_busqueda + '%';
+        } 
 
-      var sql = "a.empresa_id,\
+        if(filtros.tipo_busqueda === 1){
+            filtroCotizacion = "  AND (b.nombre_tercero "+G.constants.db().LIKE+" :5 OR a.tercero_id "+G.constants.db().LIKE+" :5)" ;
+            parametros["5"]= '%' +termino_busqueda + '%';
+        }
+
+        if(filtros.tipo_busqueda === 2){
+            filtroCotizacion = " AND (f.nombre "+G.constants.db().LIKE+" :5 OR f.vendedor_id "+G.constants.db().LIKE+" :5)" ;
+            parametros["5"]= '%' +termino_busqueda + '%';
+              
+        }
+        
+      
+     var sql = "a.empresa_id,\
      a.centro_destino as centro_utilidad_id,\
      a.bodega_destino as bodega_id,\
      a.pedido_cliente_id_tmp as numero_cotizacion,\
@@ -1363,26 +1408,13 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
      inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
      left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
-     where a.empresa_id= :1 and a.fecha_registro between :2 and :3 and\
-     (\
-     a.pedido_cliente_id_tmp::varchar "+G.constants.db().LIKE+" :4 or\
-     a.tercero_id "+G.constants.db().LIKE+" :4 or	\
-     b.nombre_tercero "+G.constants.db().LIKE+" :4 or\
-     f.vendedor_id "+G.constants.db().LIKE+" :4 or	\
-     f.nombre "+G.constants.db().LIKE+" :4 \
-     )\
-     AND a.estado "+G.constants.db().LIKE+" :5";
+     where a.empresa_id= :1 and a.fecha_registro between :2 and :3 \
+     " +filtroCotizacion + " "+ filtroEstadoCotizacion; 
      
-    var parametros = {1:empresa_id, 
-                      2: fecha_inicial, 
-                      3: fecha_final,
-                      4: "%" + termino_busqueda + "%", 
-                      5: "%" + estadoCotizacion + "%"};
-          
+     
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").then(function(resultado){
-
         callback(false, resultado);
     }).catch(function(err){
         callback(err);

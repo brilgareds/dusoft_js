@@ -25,7 +25,10 @@ define(["angular", "js/controllers",
 
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
-
+                /**
+                 * +Descripcion Menu desplegable para filtar en la busqueda de
+                 *              un producto
+                 */
                 $scope.rootSeleccionProducto = {};
                 $scope.rootSeleccionProducto.filtros = [
                     {nombre: "Descripcion", tipo_busqueda: 0},

@@ -56,8 +56,15 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     var filtro = args.pedidos_clientes.filtro;
     var estadoPedido = args.pedidos_clientes.estado_pedido;
     var estadoSolicitud = args.pedidos_clientes.estado_solicitud;
+    
+    if (!args.pedidos_clientes.filtro) {
+        res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
+        return;
+    }
 
-    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido, estadoSolicitud, function(err, lista_pedidos_clientes) {
+    var filtros = args.pedidos_clientes.filtro;
+    
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido, estadoSolicitud,filtros, function(err, lista_pedidos_clientes) {
         
        
         
@@ -800,7 +807,7 @@ PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
  * Descripcion : Listar Cotizaciones
  */
 PedidosCliente.prototype.listarCotizaciones = function(req, res) {
-
+    
     var that = this;
 
     var args = req.body.data;
@@ -835,7 +842,13 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
         return;
     }
 
+    if (!args.pedidos_clientes.filtro) {
+        res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
+        return;
+    }
 
+    var filtros = args.pedidos_clientes.filtro;
+    
     var empresa_id = args.pedidos_clientes.empresa_id;
     var fecha_inicial = args.pedidos_clientes.fecha_inicial;
     var fecha_final = args.pedidos_clientes.fecha_final;
@@ -844,7 +857,13 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
 
     var estadoCotizacion = args.pedidos_clientes.estado_cotizacion;
 
-    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina_actual, estadoCotizacion, function(err, lista_cotizaciones) {
+    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, 
+                                                fecha_inicial, 
+                                                fecha_final, 
+                                                termino_busqueda, 
+                                                pagina_actual, 
+                                                estadoCotizacion,
+                                                filtros, function(err, lista_cotizaciones) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));

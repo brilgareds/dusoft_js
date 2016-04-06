@@ -17,9 +17,9 @@ define(["angular", "js/controllers",
         "$state",
         "Laboratorio",
         "ProductoPedidoCliente",
-        "Usuario","Molecula",
+        "Usuario","Molecula","$sce",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,
-                Laboratorio, Producto, Sesion,Molecula) {
+                Laboratorio, Producto, Sesion,Molecula,$sce) {
 
             var that = this;
 
@@ -535,20 +535,33 @@ define(["angular", "js/controllers",
                 }*/
             };
 
-          
+             $scope.validarHtml = function(html) {
+                var htmlValido = $sce.trustAsHtml(html);
+                return htmlValido;
+            };
             $scope.lista_productos = {
                 data: 'Empresa.get_productos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
                 enableHighlighting: true,
+                rowHeight: 30,
+                 
                 columnDefs: [
-                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "150", enableCellEdit: false,
-                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >{{row.entity.get_abreviacion_tipo_producto()}}</span>\
+                    {field: 'getCodigoProducto()', 
+                     displayName: 'Codigo', 
+                     width: "150", enableCellEdit: false,
+                     cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" >\
+                                            <span ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >\n\
+                                    {{row.entity.get_abreviacion_tipo_producto()}}</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                         </div>'},
-                    {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
+                    {field: 'getDescripcion()', 
+                        displayName: 'Descripcion', 
+                        enableCellEdit: false,
+                    cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"
+                    },
+                
                     {field: 'get_codigo_cum()', displayName: 'CUM', width: "9%"},
                     {field: 'get_codigo_invima()', displayName: 'Cod. Invima', width: "9%"},
                     {field: 'get_iva()', displayName: 'IVA', width: "50"},
@@ -557,7 +570,7 @@ define(["angular", "js/controllers",
                                             <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
                                         </div>'},
-                //    {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
+             
                 {field: 'precio_venta', width: "150", displayName: "$ Venta", cellFilter: "number",
                      cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
                      ng-model="row.entity.precio_venta" \

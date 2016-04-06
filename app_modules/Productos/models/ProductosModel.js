@@ -214,6 +214,7 @@ ProductosModel.prototype.validarUnidadMedidaProducto = function(obj, callback) {
 * +Descripcion: Permite consultar las existencias de lotes de un producto por empresa, bodega y centro de utilidad
 */
 ProductosModel.prototype.consultar_existencias_producto = function(empresaId, codigoProducto, centroUtilidad, bodega, filtro, callback) {
+    console.log("arguments ", arguments);
     var sqlAux = "";
     var obj = {1 : empresaId, 2 : codigoProducto, 3 :centroUtilidad, 4 :bodega};
     
@@ -225,7 +226,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
     
     if(filtro.codigoLote && filtro.fechaVencimiento){
         sqlAux += "and a.lote = :5\
-                   and a.fecha_vencimiento = :6";
+                   and a.fecha_vencimiento = :6 ";
         
         obj['5'] = filtro.codigoLote;
         obj['6'] = filtro.fechaVencimiento;
@@ -267,10 +268,11 @@ ProductosModel.prototype.guardarExistenciaBodega = function(params, callback) {
     var that = this;
     
     G.Q.ninvoke(that, "consultar_existencias_producto", params.empresaId, params.codigoProducto, params.centroUtilidad, params.bodega,
-                                                       {fechaVencimiento:params.fechaVencimiento, codigoLote:params.codioLote}).
+                                                       {fechaVencimiento:params.fechaVencimiento, codigoLote:params.codigoLote}).
                                                        
     then(function(existencia){
         if(existencia.length > 0){
+           /// console.log("existencias ", existencia);
             //temporalmente regresar error
             callback(true);
             return;
@@ -296,7 +298,7 @@ ProductosModel.prototype.insertarExistenciaBodega = function(params, callback) {
     
     var sql = "INSERT INTO existencias_bodegas_lote_fv\
                     (empresa_id, centro_utilidad, codigo_producto, bodega, fecha_vencimiento, lote, existencia_inicial, existencia_actual)\
-                    VALUES (:1, :2, :3, :4, :5, :6, 0, 0)";
+                    VALUES ( :1, :2, :3, :4, :5, :6, 0, 0 )";
                     
    G.knex.raw(sql, {1 : params.empresaId, 2 : params.centroUtilidad, 3:params.codigoProducto, 4:params.bodega, 
                     5:params.fechaVencimiento, 6:params.codigoLote}).

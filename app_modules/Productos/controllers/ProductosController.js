@@ -96,7 +96,7 @@ Productos.prototype.guardarExistenciaBodega = function(req, res){
     var args = req.body.data;
 
     if (!args.productos || !args.productos.empresa_id || !args.productos.codigo_producto || !args.productos.centro_utilidad_id || 
-        !args.productos.bodega_id || !args.productos.fechaVencimiento || !args.productos.codigoLote) {
+        !args.productos.bodega_id || !args.productos.fecha_vencimiento || !args.productos.codigo_lote) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -105,12 +105,13 @@ Productos.prototype.guardarExistenciaBodega = function(req, res){
     params.codigoProducto = args.productos.codigo_producto;
     params.centroUtilidad = args.productos.centro_utilidad_id;
     params.bodega = args.productos.bodega_id;
-    params.fechaVencimiento = args.productos.fechaVencimiento;
-    params.codigoLote = args.productos.codigoLote;
+    params.fechaVencimiento = args.productos.fecha_vencimiento;
+    params.codigoLote = args.productos.codigo_lote;
 
     G.Q.ninvoke(that.m_productos,"guardarExistenciaBodega", params).then(function(existencias){
         res.send(G.utils.r(req.url, 'Guardar existencia bodega', 200, {existencias: existencias}));
     }).fail(function(err){
+       console.log("error generado ", err);
        res.send(G.utils.r(req.url, 'Error guardando la existencia del producto', 500, {lista_productos: {}}));
     });
 };

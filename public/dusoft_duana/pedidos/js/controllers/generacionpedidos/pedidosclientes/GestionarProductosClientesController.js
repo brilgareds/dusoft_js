@@ -550,7 +550,7 @@ define(["angular", "js/controllers",
                                         </div>'},
                     {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
                     {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},
-                    {field: 'get_codigo_invima()', displayName: 'Cod. Invima', width: "7%"},
+                    {field: 'get_codigo_invima()', displayName: 'Cod. Invima', width: "10%"},
                     {field: 'get_iva()', displayName: 'IVA', width: "50"},
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\

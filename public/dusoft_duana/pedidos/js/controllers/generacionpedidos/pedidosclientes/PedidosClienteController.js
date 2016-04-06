@@ -1085,7 +1085,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                    
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     if (data.status === 200) {
 
                     }
@@ -1132,6 +1132,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                        /*Se valida si es una cotizacion y entonces se procede
                          a crear el pedido*/
                        if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                          
+                            var parametros = {busqueda: cotizacion.busqueda,
+                                              pedido_creado :1,   filtro_actual_cotizacion:{nombre: "Numero", tipo_busqueda: 0},
+                                             }
+                                    
+                            localStorageService.add("terminoBusqueda", parametros);
                             $scope.gestionar_pedido()
                        }                     
                        if ($scope.Pedido.get_numero_pedido() > 0) {
@@ -1197,7 +1203,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     <h4 class="modal-title">Desea Generar el Pedido ?</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h4>Desea Generar el Pedido para el Cliente.</h4>\
+                                    <h4>Desea autorizar la cotizacion.</h4>\
                                     <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
                                 </div>\
                                 <div class="modal-footer">\
@@ -1221,8 +1227,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             $scope.generar_pedido_cliente = function() {
-
-
+                    
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -1233,9 +1238,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
              
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
+                    
                  
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    AlertService.mostrarMensaje("Mensaje del sistema", "Se autoriza la cotizacion satisfactoriamente");
                     if (data.status === 200) {
+                        
                         $scope.volver_cotizacion();
                     }
                 });

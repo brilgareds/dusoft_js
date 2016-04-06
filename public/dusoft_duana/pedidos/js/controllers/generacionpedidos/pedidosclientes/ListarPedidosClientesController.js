@@ -94,7 +94,9 @@ define(["angular", "js/controllers",
                 ],
                 filtro : {nombre: "Numero", tipo_busqueda: 0},
                 filtro_pedido : {nombre: "Numero", tipo_busqueda: 0},
-                        
+                filtro_actual_cotizacion:{},
+                filtro_actual_pedido:{},
+                       
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 inactivarTab: false
@@ -188,17 +190,26 @@ define(["angular", "js/controllers",
 
             //Acciones Botones 
             $scope.gestionar_cotizacion_cliente = function() {
+                
                 localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0'});
                 $state.go('Cotizaciones');
             };
-            
+          
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
-                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0', busqueda: $scope.datos_view.termino_busqueda_cotizaciones});
+                $scope.datos_view.filtro_actual_cotizacion = $scope.datos_view.filtro;              
+                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), 
+                                                       cartera: '0', 
+                                                       busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
+                                                       filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion});
                 $state.go('Cotizaciones');
             };
 
             $scope.modificar_pedido_cliente = function(pedido) {
-                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),busqueda: $scope.datos_view.termino_busqueda_pedidos});
+                $scope.datos_view.filtro_actual_pedido = $scope.datos_view.filtro_pedido;
+             
+                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),
+                                                   busqueda: $scope.datos_view.termino_busqueda_pedidos,
+                                                   filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido});
                 $state.go('PedidoCliente');
             };
 
@@ -223,7 +234,7 @@ define(["angular", "js/controllers",
 
 
             $scope.generar_observacion_cartera = function(obj) {
-
+               
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1'});
@@ -238,6 +249,7 @@ define(["angular", "js/controllers",
             };
 
             $scope.visualizar = function(obj) {
+               
                 // Visualizar cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), visualizar: '1'});
@@ -284,12 +296,11 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-              
+                 
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
-                
-                if(terminoBusqueda){
-                    $scope.datos_view.filtro = {nombre: "Cliente", tipo_busqueda: 1};
-                    
+           
+                if(terminoBusqueda){               
+                    $scope.datos_view.filtro = terminoBusqueda.filtro_actual_cotizacion;  
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
                 }
                
@@ -495,7 +506,7 @@ define(["angular", "js/controllers",
                      
                     if (data.status === 200) {
                         callback(true,data)
-                        //console.log("data ", data)
+                        
                         //that.render_productos_cotizacion(data.obj.pedidos_clientes.lista_productos);
                     }
                 });
@@ -562,7 +573,7 @@ define(["angular", "js/controllers",
                 var terminoBusqueda = localStorageService.get("terminoBusquedaPedido");
                 
                 if(terminoBusqueda){
-                     $scope.datos_view.filtro_pedido = {nombre: "Cliente", tipo_busqueda: 1};
+                    $scope.datos_view.filtro_pedido = terminoBusqueda.filtro_actual_pedido;  
                     $scope.datos_view.activarTabPedidos = terminoBusqueda.activar;
                  
                     //datos_view.inactivarTab

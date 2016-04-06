@@ -1200,7 +1200,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea Generar el Pedido ?</h4>\
+                                    <h4 class="modal-title">Desea autorizar la cotizacion ?</h4>\
                                 </div>\
                                 <div class="modal-body">\
                                     <h4>Desea autorizar la cotizacion.</h4>\

@@ -28,10 +28,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion. 
  */
 PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
-    console.log("*************PedidosCliente.prototype.listarPedidosClientes *****************");
-    console.log("*************PedidosCliente.prototype.listarPedidosClientes *****************");
-    console.log("*************PedidosCliente.prototype.listarPedidosClientes *****************");
-    
+  
     var that = this;
 
     var args = req.body.data;

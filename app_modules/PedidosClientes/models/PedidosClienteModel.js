@@ -213,7 +213,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     query.then(function(rows) {
         callback(false, rows);
     }).catch (function(err) {
-        console.log("err ", err)
+      
         callback(err);
     });
 };
@@ -1970,10 +1970,10 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
         usuario_id: pedido.usuario_id,
         fecha_registro: 'NOW()'
     }).then(function(resultado) { 
-        console.log("resultado ***99");
+      
         callback(false, resultado);
     }).catch(function(error) {
-    console.log("error ***99");
+  
         callback(error);
     });
 };

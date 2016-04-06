@@ -559,6 +559,55 @@ define(["angular", "js/controllers",
                     {field: 'getDescripcion()', 
                         displayName: 'Descripcion', 
                         enableCellEdit: false,
+                       
+                   cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"
+                   },
+                
+                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "100"},
+                    {field: 'get_codigo_invima()', displayName: 'Cod. Invima', width: "100"},
+                    {field: 'get_iva()', displayName: 'IVA', width: "100"},
+                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "100", cellFilter: "currency:'$ '",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
+                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
+                                        </div>'},
+                    {field: 'precio_venta', width: "100", displayName: "$ Venta", cellFilter: "number",
+                     cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
+                     ng-model="row.entity.precio_venta" \
+                     validacion-numero-entero\
+                     ng-disabled = "row.entity.sw_pactado"\n\
+                     class="form-control grid-inline-input" name="" id="" /> \n\
+                     <div ng-if="row.entity.sw_pactado" class="ngCellText" >\n\
+                        <span  ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" class="pull-left" >\n\
+                                                    PP\n\
+                                                </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
+                        </div></div>'
+                    },
+                    {field: 'get_existencia()', displayName: 'Stock', width: "100"},
+                    {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "100"},
+                    {field: 'cantidad_solicitada', width: "100", displayName: "Cantidad", cellFilter: "number",
+                        cellTemplate: '<div class="col-xs-12"> \
+                                      <input type="text" \
+                                       ng-model="row.entity.cantidad_solicitada" \
+                                       validacion-numero-entero \
+                                       class="form-control grid-inline-input" \n\
+                                       name="" id="" /> </div>'},
+                     {width: "100", displayName: "Opcion", cellClass: "txt-center",
+                        cellTemplate: '<div class="btn-toolbar">\
+                                            <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
+                                            <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                        </div>'}
+                   /* {field: 'getCodigoProducto()', 
+                     displayName: 'Codigo', 
+                     width: "130", enableCellEdit: false,
+                     cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()" >\
+                                            <span ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >\n\
+                                    {{row.entity.get_abreviacion_tipo_producto()}}</span>\
+                                            <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                        </div>'},
+                    {field: 'getDescripcion()', 
+                        displayName: 'Descripcion', 
+                        enableCellEdit: false,
                        width: "23%",
                    cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"
                    },
@@ -598,7 +647,7 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-toolbar">\
                                             <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
                                             <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        </div>'}
+                                        </div>'}*/
 
                 ]
             };

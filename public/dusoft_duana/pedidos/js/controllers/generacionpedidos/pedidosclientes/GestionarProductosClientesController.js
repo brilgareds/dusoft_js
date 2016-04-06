@@ -549,8 +549,8 @@ define(["angular", "js/controllers",
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                         </div>'},
                     {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},
-                    {field: 'get_codigo_invima()', displayName: 'Cod. Invima', width: "7%"},
+                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "9%"},
+                    {field: 'get_codigo_invima()', displayName: 'Cod. Invima', width: "9%"},
                     {field: 'get_iva()', displayName: 'IVA', width: "50"},
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\

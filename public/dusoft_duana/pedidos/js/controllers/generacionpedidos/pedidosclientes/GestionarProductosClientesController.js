@@ -559,8 +559,8 @@ define(["angular", "js/controllers",
                     {field: 'getDescripcion()', 
                         displayName: 'Descripcion', 
                         enableCellEdit: false,
-                       
-                   cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"
+                        
+                 //  cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"
                    },
                 
                     {field: 'get_codigo_cum()', displayName: 'CUM', width: "100"},
@@ -741,6 +741,7 @@ define(["angular", "js/controllers",
                     keyboard: true,
                     templateUrl: 'views/generacionpedidos/pedidosclientes/formularioBusquedaAvanzadaProducto.html',
                     scope: $scope,
+                    height: 300,
                     controller: function($scope, $modalInstance) {
 
                       

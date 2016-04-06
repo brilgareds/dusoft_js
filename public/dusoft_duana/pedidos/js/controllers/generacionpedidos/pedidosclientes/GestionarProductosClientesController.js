@@ -493,17 +493,23 @@ define(["angular", "js/controllers",
                     return true;
 
             };
-
+            
+            /**
+             * +Descripcion: Funcion encargada de setear el precio del produco
+             *               en el objeto de Pedido al cual le seran asignados
+             *               dichos productos
+             * @param {type} producto
+             */
             $scope.solicitar_producto = function(producto) {
                 
                
-                var val = producto.precio_venta;
-                var clean = val.replace(/[^0-9\.]/g, '');
-                var decimalCheck = clean.split('');
+              /*  var val = producto.precio_venta;
+                /*   var clean = val.replace(/[^0-9\.]/g, '');
+                var decimalCheck = clean.split('');*/
 
-                if (!angular.isUndefined(decimalCheck[1])) {
-                    decimalCheck[1] = decimalCheck[1].slice(0, 4);
-                    clean = decimalCheck[0] + '.' + decimalCheck[1];
+               // if (!angular.isUndefined(decimalCheck[1])) {
+                   // decimalCheck[1] = decimalCheck[1].slice(0, 4);
+                  //  clean = decimalCheck[0] + '.' + decimalCheck[1];
 
                     $scope.datos_form.producto_seleccionado = producto;
 
@@ -524,9 +530,9 @@ define(["angular", "js/controllers",
                         that.gestionar_cotizaciones();
                     }
 
-                }else{
+                /*}else{
                      AlertService.mostrarMensaje("danger", "El tipo de valor es errado");
-                }
+                }*/
             };
 
           

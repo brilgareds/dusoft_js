@@ -961,19 +961,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             // Cancelar la cotizacion
             $scope.volver_cotizacion = function() {
-                
-                
                 var cotizacion = localStorageService.get("cotizacion");
-                
+             
                 if(cotizacion){
                     
-                    localStorageService.add("terminoBusqueda", {busqueda: cotizacion.busqueda});
+                    localStorageService.add("terminoBusqueda", {busqueda: cotizacion.busqueda,filtro_actual_cotizacion:cotizacion.filtro_actual_cotizacion});
                 }
                 
                 var pedido =  localStorageService.get("pedido");
-                
+               
                 if(pedido){             
-                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.busqueda, activar:true});
+                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.busqueda, activar:true, filtro_actual_pedido:pedido.filtro_actual_pedido});
                    
                 }
                 

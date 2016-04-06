@@ -296,18 +296,16 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-                
+              
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
                 
-                if(terminoBusqueda){               
+                if(terminoBusqueda){
+                  
                     $scope.datos_view.filtro = terminoBusqueda.filtro_actual_cotizacion;  
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
                     
-                    
-                   // $scope.datos_view.filtro
-                    
                 }
-               
+               // $scope.datos_view.filtro = {nombre: "Numero", tipo_busqueda: 0};
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {
                     $scope.datos_view.pagina_actual_cotizaciones = 1;
                 }

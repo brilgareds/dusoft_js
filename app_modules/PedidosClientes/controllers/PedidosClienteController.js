@@ -28,6 +28,9 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion. 
  */
 PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
+    console.log("*************PedidosCliente.prototype.listarPedidosClientes *****************");
+    console.log("*************PedidosCliente.prototype.listarPedidosClientes *****************");
+    console.log("*************PedidosCliente.prototype.listarPedidosClientes *****************");
     
     var that = this;
 
@@ -51,7 +54,7 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     var empresa_id = args.pedidos_clientes.empresa_id;
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
-    var filtro = args.pedidos_clientes.filtro;
+   
     var estadoPedido = args.pedidos_clientes.estado_pedido;
     var estadoSolicitud = args.pedidos_clientes.estado_solicitud;
     
@@ -59,10 +62,14 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
         res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
         return;
     }
-
-    var filtros = args.pedidos_clientes.filtros;
-  
-    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido, estadoSolicitud,filtros, function(err, lista_pedidos_clientes) {
+    
+    if(args.pedidos_clientes.filtros){
+        
+        args.pedidos_clientes.filtro = args.pedidos_clientes.filtros;
+    }
+    var filtro = args.pedidos_clientes.filtro;
+   
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido, estadoSolicitud, function(err, lista_pedidos_clientes) {
        
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
         

@@ -78,8 +78,8 @@ var PedidosClienteModel = function(productos) {
 // 8 - Auditado con Pdtes
 // 9 - En Zona con Pdtes
 /*=========================================================================*/
-PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina,estadoPedido,estadoSolicitud,filtros, callback) {
-
+PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina,estadoPedido,estadoSolicitud, callback) {
+   
     var estado = "";
 
     
@@ -177,20 +177,22 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     }).
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.pedido_cliente_id", "e.pedido_cliente_id").
     andWhere(function() {
+        
+        if(filtro){
+            if(filtro.tipo_busqueda === 0){
+                this.where(G.knex.raw("a.pedido_cliente_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");        
+            } 
 
-        if(filtros.tipo_busqueda === 0){
-            this.where(G.knex.raw("a.pedido_cliente_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");        
-        } 
+            if(filtro.tipo_busqueda === 1){         
+                this.where("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+             }
 
-        if(filtros.tipo_busqueda === 1){         
-            this.where("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-            orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%");
-         }
-
-        if(filtros.tipo_busqueda === 2){
-           this.where("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-           orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%")  
-        }  
+            if(filtro.tipo_busqueda === 2){
+               this.where("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+               orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%")  
+            } 
+        }
     });
     
     if(estadoPedido){

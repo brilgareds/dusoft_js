@@ -296,7 +296,8 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-              
+               
+               
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
                 
                 if(terminoBusqueda){

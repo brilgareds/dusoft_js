@@ -59,6 +59,7 @@ Productos.prototype.listar_productos = function(req, res) {
 * @Author: Eduar
 * @param {Object} req
 * @param {Object} res
+* @Uso tablet, modulo de existencias
 * +Descripcion: Permite consumir el servicio para consultar las existencias de un producto
 */
 Productos.prototype.consultarExistenciasProducto = function(req, res) {
@@ -89,6 +90,7 @@ Productos.prototype.consultarExistenciasProducto = function(req, res) {
 * @Author: Eduar
 * @param {Object} req
 * @param {Object} res
+* @Uso tablet, modulo de existencias
 * +Descripcion: Permite consumir el servicio para guardar una existencia(lote) de un producto
 */
 Productos.prototype.guardarExistenciaBodega = function(req, res){
@@ -120,6 +122,7 @@ Productos.prototype.guardarExistenciaBodega = function(req, res){
 * @Author: Eduar
 * @param {Object} req
 * @param {Object} res
+* @Uso tablet, modulo de existencias
 * +Descripcion: Permite actualizar las existencias de un producto
 */
 Productos.prototype.actualizarExistenciasProducto = function(req, res){

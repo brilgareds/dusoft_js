@@ -291,6 +291,7 @@ ProductosModel.prototype.guardarExistenciaBodega = function(params, callback) {
 /*
 * @Author: Eduar
 * @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, existencias}
+* @Uso ProductosController
 * +Descripcion: Permite actualziar las existencias para determinado producto
 */
 ProductosModel.prototype.actualizarExistenciasProducto = function(params, callback){
@@ -319,67 +320,6 @@ ProductosModel.prototype.actualizarExistenciasProducto = function(params, callba
     done();    
     
 };
-
-/*
-* @Author: Eduar
-* @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, existencias}
-* +Descripcion: Valida que la cantidad de existencias en bodega sea igual a la existencia de lotes
-*/
-function __validarExistenciasProducto(params, callback){
-    var existencias = params.existencias;
-    
-    var totalExistencias = 0;
-    //Lotes enviados por la app del cliente
-    for(var i in existencias){
-        totalExistencias += parseInt(existencias[i].cantidadNueva);
-    }
-    
-    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto).
-    then(function(resultado){
-        console.log("existencia ",parseInt(resultado[0].existencia), " total ", totalExistencias);
-        
-        //Se valida que las cantidades sean numericas y sean iguales
-        if(parseInt(resultado[0].existencia) !== totalExistencias || isNaN(totalExistencias) || isNaN(resultado[0].existencia)){
-             throw {msj:"La cantidad total no es valida", status:403};
-        } else {
-            callback(false);
-        }
-        
-    }).fail(function(err){
-        callback(err);
-    });
-}
-
-function __actualizarExistenciasProducto(params, callback){
-    var existencia = params.existencias[0];
-    
-    if(!existencia){
-        callback(false);
-        return;
-    }
-
-    var sql = "UPDATE existencias_bodegas_lote_fv SET\
-                    lote = :1, existencia_actual = :2 \
-                    WHERE empresa_id = :3 AND centro_utilidad = :4 AND codigo_producto = :5 AND bodega = :6 AND\
-                    lote = :7 AND fecha_vencimiento = :8";
-    
-   var query = G.knex.raw(sql, {1 : existencia.codigoLoteNuevo, 2 : existencia.cantidadNueva, 3:params.empresaId, 4:params.centroUtilidad, 
-                                5:params.codigoProducto, 6:params.bodega, 7:existencia.codigoLote, 8:existencia.fechaVencimiento});
-   
-   if(params.transaccion) query.transacting(params.transaccion);                   
-   
-    query.then(function(resultado){
-       
-       setTimeout(function(){
-           params.existencias.splice(0, 1);
-           __actualizarExistenciasProducto(params, callback);
-       },0);
-       
-   }).catch(function(err){
-       callback(err);
-   });
-    
-}
 
 /*
 * @Author: Eduar
@@ -429,6 +369,74 @@ ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callbac
     });
 
 };
+
+
+/*
+* @Author: Eduar
+* @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, existencias}
+* +Descripcion: Valida que la cantidad de existencias en bodega sea igual a la existencia de lotes
+*/
+function __validarExistenciasProducto(params, callback){
+    var existencias = params.existencias;
+    
+    var totalExistencias = 0;
+    //Lotes enviados por la app del cliente
+    for(var i in existencias){
+        totalExistencias += parseInt(existencias[i].cantidadNueva);
+    }
+    
+    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto).
+    then(function(resultado){
+        console.log("existencia ",parseInt(resultado[0].existencia), " total ", totalExistencias);
+        
+        //Se valida que las cantidades sean numericas y sean iguales
+        if(parseInt(resultado[0].existencia) !== totalExistencias || isNaN(totalExistencias) || isNaN(resultado[0].existencia)){
+             throw {msj:"La cantidad total no es valida", status:403};
+        } else {
+            callback(false);
+        }
+        
+    }).fail(function(err){
+        callback(err);
+    });
+}
+
+/*
+* @Author: Eduar
+* @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, existencias}
+* +Descripcion: Funcion recursiva que ejecua el query para actualizar existencias
+*/
+function __actualizarExistenciasProducto(params, callback){
+    var existencia = params.existencias[0];
+    
+    if(!existencia){
+        callback(false);
+        return;
+    }
+
+    var sql = "UPDATE existencias_bodegas_lote_fv SET\
+                    lote = :1, existencia_actual = :2 \
+                    WHERE empresa_id = :3 AND centro_utilidad = :4 AND codigo_producto = :5 AND bodega = :6 AND\
+                    lote = :7 AND fecha_vencimiento = :8";
+    
+   var query = G.knex.raw(sql, {1 : existencia.codigoLoteNuevo, 2 : existencia.cantidadNueva, 3:params.empresaId, 4:params.centroUtilidad, 
+                                5:params.codigoProducto, 6:params.bodega, 7:existencia.codigoLote, 8:existencia.fechaVencimiento});
+   
+   if(params.transaccion) query.transacting(params.transaccion);                   
+   
+    query.then(function(resultado){
+       
+       setTimeout(function(){
+           params.existencias.splice(0, 1);
+           __actualizarExistenciasProducto(params, callback);
+       },0);
+       
+   }).catch(function(err){
+       callback(err);
+   });
+    
+}
+
 
 
 module.exports = ProductosModel;

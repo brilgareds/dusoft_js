@@ -24,6 +24,19 @@ define(["angular",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
+            
+            $scope.rootSeleccionPedido = {};
+            $scope.rootSeleccionPedido.filtros = [
+                {nombre: "Numero", tipo_busqueda: 0},
+                {nombre: "Cliente", tipo_busqueda: 1},
+                {nombre: "Vendedor", tipo_busqueda: 2}
+            ];
+            $scope.rootSeleccionPedido.filtro = $scope.rootSeleccionPedido.filtros[0];
+            
+             $scope.onSeleccionFiltroPedido = function(filtro) {
+                $scope.rootSeleccionPedido.filtro = filtro;
+            }; 
+           
             var that = this;
 
             //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
@@ -42,7 +55,8 @@ define(["angular",
                             termino_busqueda: termino,
                             pagina_actual: $scope.paginaactual,
                             empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
-                            filtro: {}
+                            filtro: {},
+                            filtros: $scope.rootSeleccionPedido.filtro
                         }
                     }
                 };

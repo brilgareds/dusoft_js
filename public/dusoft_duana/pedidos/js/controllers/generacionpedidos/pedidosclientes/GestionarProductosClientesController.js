@@ -1,7 +1,7 @@
 
 define(["angular", "js/controllers",
-        "models/generacionpedidos/pedidosclientes/Laboratorio",
-        "models/generacionpedidos/pedidosclientes/Molecula"
+    "models/generacionpedidos/pedidosclientes/Laboratorio",
+    "models/generacionpedidos/pedidosclientes/Molecula"
 ], function(angular, controllers) {
 
     controllers.controller('GestionarProductosClientesController', [
@@ -17,15 +17,18 @@ define(["angular", "js/controllers",
         "$state",
         "Laboratorio",
         "ProductoPedidoCliente",
-        "Usuario","Molecula",
+        "Usuario", "Molecula", "$sce",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,
-                Laboratorio, Producto, Sesion,Molecula) {
+                Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
 
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
-
+                /**
+                 * +Descripcion Menu desplegable para filtar en la busqueda de
+                 *              un producto
+                 */
                 $scope.rootSeleccionProducto = {};
                 $scope.rootSeleccionProducto.filtros = [
                     {nombre: "Descripcion", tipo_busqueda: 0},
@@ -50,15 +53,15 @@ define(["angular", "js/controllers",
                     producto_seleccionado: Producto.get(),
                     molecula: '', //Molecula.get('', ''),
                     laboratorioAvanzado: Laboratorio.get('', ''),
-                    codigoProductoAvanzado:'',
+                    codigoProductoAvanzado: '',
                     nombreProductoAvanzado: '',
                     concentracionProductoAvanzado: '',
-                    tipoBusqueda:0
+                    tipoBusqueda: 0
                 };
 
                 $scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
                 that.buscar_laboratorios();
-               
+
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
@@ -127,18 +130,18 @@ define(["angular", "js/controllers",
 
             // Insertar Productos a la Cotizacion
             that.insertar_detalle_cotizacion = function(callback) {
-                
+
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
                 var costoCompra = Number(productoSeleccionado.getPrecioVentaAnterior());
-                
+
                 var valorIva = Number(productoSeleccionado.get_iva())
-                var valorTotalIva = (precioVenta*valorIva)/100;
+                var valorTotalIva = (precioVenta * valorIva) / 100;
                 var precioVentaIva = precioVenta + valorTotalIva;
-               
+
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
-                
+
                 /**
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
@@ -187,8 +190,8 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-              
-            
+
+
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
@@ -206,17 +209,17 @@ define(["angular", "js/controllers",
 
             // Insertar Productos al pedido
             that.insertar_detalle_pedido = function(callback) {
-                
+
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
                 var costoCompra = Number(productoSeleccionado.getPrecioVentaAnterior());
                 var valorIva = Number(productoSeleccionado.get_iva())
-                var valorTotalIva = (precioVenta*valorIva)/100;
+                var valorTotalIva = (precioVenta * valorIva) / 100;
                 var precioVentaIva = precioVenta + valorTotalIva;
-                
+
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
-               /**
+                /**
                  * +Descripcion: Se validara si el producto seleccionado es regulado
                  *               
                  */
@@ -251,7 +254,7 @@ define(["angular", "js/controllers",
 //                        return;
 //                    }
 //                }
-               
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -275,7 +278,7 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-            
+
             /*
              * @author Cristian Ardila
              * @fecha  04/03/2016
@@ -342,7 +345,7 @@ define(["angular", "js/controllers",
                     $scope.datos_form.seleccion_tipo_producto = "- Neveras -";
             };
 
-            $scope.buscador_productos = function(ev,tipo) {
+            $scope.buscador_productos = function(ev, tipo) {
                 $scope.datos_form.tipoBusqueda = tipo;
                 if (ev.which === 13) {
                     that.buscar_productos_clientes();
@@ -355,73 +358,73 @@ define(["angular", "js/controllers",
             };
 
             that.buscar_productos_clientes = function() {
-               
-               var obj ={};
-               
-               if($scope.datos_form.tipoBusqueda === 1){
-                
-                 obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            empresa_id: $scope.Pedido.get_empresa_id(),
-                            centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
-                            bodega_id: $scope.Pedido.get_bodega_id(),
-                            contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(),//894
-                            pagina_actual: $scope.datos_form.pagina_actual,
-                            termino_busqueda: $scope.datos_form.termino_busqueda,
-                            tipo_producto: $scope.datos_form.tipo_producto,                            
-                            numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
-                            numero_pedido: $scope.Pedido.get_numero_pedido(),
-                            filtro: $scope.rootSeleccionProducto.filtro,
-                            //nuevo campos
-                            molecula: $scope.datos_form.molecula,
-                            laboratorio_id: $scope.datos_form.laboratorioAvanzado.id,
-                            codigoProducto: $scope.datos_form.codigoProductoAvanzado,
-                            descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
-                            concentracion: $scope.datos_form.concentracionProductoAvanzado,
-                            tipoBusqueda: $scope.datos_form.tipoBusqueda
-                       }
-                    }
-                 };        
-               }
-                  
-                
-                
+
+                var obj = {};
+
+                if ($scope.datos_form.tipoBusqueda === 1) {
+
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
+                                pagina_actual: $scope.datos_form.pagina_actual,
+                                termino_busqueda: $scope.datos_form.termino_busqueda,
+                                tipo_producto: $scope.datos_form.tipo_producto,
+                                numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                                numero_pedido: $scope.Pedido.get_numero_pedido(),
+                                filtro: $scope.rootSeleccionProducto.filtro,
+                                //nuevo campos
+                                molecula: $scope.datos_form.molecula,
+                                laboratorio_id: $scope.datos_form.laboratorioAvanzado.id,
+                                codigoProducto: $scope.datos_form.codigoProductoAvanzado,
+                                descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
+                                concentracion: $scope.datos_form.concentracionProductoAvanzado,
+                                tipoBusqueda: $scope.datos_form.tipoBusqueda
+                            }
+                        }
+                    };
+                }
+
+
+
                 if ($scope.datos_form.ultima_busqueda !== $scope.datos_form.termino_busqueda) {
                     $scope.datos_form.pagina_actual = 1;
                 }
-                
-               if($scope.datos_form.tipoBusqueda === 0){
-                 obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            empresa_id: $scope.Pedido.get_empresa_id(),
-                            centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
-                            bodega_id: $scope.Pedido.get_bodega_id(),
-                            contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(),//894
-                            pagina_actual: $scope.datos_form.pagina_actual,
-                            termino_busqueda: $scope.datos_form.termino_busqueda,
-                            tipo_producto: $scope.datos_form.tipo_producto,
-                            numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
-                            numero_pedido: $scope.Pedido.get_numero_pedido(),
-                            filtro: $scope.rootSeleccionProducto.filtro,
-                            //nuevo campos
-                            molecula: '',
-                            laboratorio_id: $scope.datos_form.laboratorio.get_id(),
-                            codigoProducto: '',
-                            descripcionProducto: '',
-                            concentracion: '',
-                            tipoBusqueda: $scope.datos_form.tipoBusqueda
+
+                if ($scope.datos_form.tipoBusqueda === 0) {
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
+                                pagina_actual: $scope.datos_form.pagina_actual,
+                                termino_busqueda: $scope.datos_form.termino_busqueda,
+                                tipo_producto: $scope.datos_form.tipo_producto,
+                                numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                                numero_pedido: $scope.Pedido.get_numero_pedido(),
+                                filtro: $scope.rootSeleccionProducto.filtro,
+                                //nuevo campos
+                                molecula: '',
+                                laboratorio_id: $scope.datos_form.laboratorio.get_id(),
+                                codigoProducto: '',
+                                descripcionProducto: '',
+                                concentracion: '',
+                                tipoBusqueda: $scope.datos_form.tipoBusqueda
+                            }
                         }
-                    }
-                 };
-              }
-              
+                    };
+                }
+
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
-                    
-                   // console.log("data ", data);
+
+                    // console.log("data ", data);
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
 
                     if (data.status === 200) {
@@ -440,11 +443,11 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-            
-            
+
+
             that.render_productos = function(productos) {
-                
-                  
+
+
                 $scope.Empresa.limpiar_productos();
 
                 productos.forEach(function(data) {
@@ -454,16 +457,16 @@ define(["angular", "js/controllers",
                     producto.set_codigo_cum(data.codigo_cum).set_codigo_invima(data.codigo_invima).set_fecha_vencimiento_invima(data.vencimiento_codigo_invima);
                     producto.set_regulado(data.sw_regulado).set_precio_regulado(data.precio_regulado);
                     producto.set_pactado(data.tiene_precio_pactado).set_precio_venta(data.precio_producto);
-                    
+
                     producto.setPrecioVentaAnterior(data.costo_ultima_compra);
-                  //setPrecioVentaAnterior 1101E0740001
-                    producto.setContrato(data.contrato); 
+                    //setPrecioVentaAnterior 1101E0740001
+                    producto.setContrato(data.contrato);
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
-                    
-                     
+
+
                 });
-               
+
             };
 
 
@@ -491,66 +494,83 @@ define(["angular", "js/controllers",
 
             };
 
+            /**
+             * +Descripcion: Funcion encargada de setear el precio del produco
+             *               en el objeto de Pedido al cual le seran asignados
+             *               dichos productos
+             * @param {type} producto
+             */
             $scope.solicitar_producto = function(producto) {
-                
-               
-                var val = producto.precio_venta;
-                var clean = val.replace(/[^0-9\.]/g, '');
-                var decimalCheck = clean.split('');
 
-                if (!angular.isUndefined(decimalCheck[1])) {
-                    decimalCheck[1] = decimalCheck[1].slice(0, 4);
-                    clean = decimalCheck[0] + '.' + decimalCheck[1];
 
-                    $scope.datos_form.producto_seleccionado = producto;
+                /*  var val = producto.precio_venta;
+                 /*   var clean = val.replace(/[^0-9\.]/g, '');
+                 var decimalCheck = clean.split('');*/
 
-                    $scope.Pedido.set_productos(producto);
+                // if (!angular.isUndefined(decimalCheck[1])) {
+                // decimalCheck[1] = decimalCheck[1].slice(0, 4);
+                //  clean = decimalCheck[0] + '.' + decimalCheck[1];
 
-                    $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+                $scope.datos_form.producto_seleccionado = producto;
 
-                    if ($scope.datos_form.tipo_producto === '') {
-                        $scope.datos_form.tipo_producto = producto.get_tipo_producto();
-                        $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
-                    }
+                $scope.Pedido.set_productos(producto);
 
-                    if ($scope.Pedido.get_numero_pedido() > 0) {
+                $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
 
-                        that.gestionar_pedidos();
-                    } else {
-
-                        that.gestionar_cotizaciones();
-                    }
-
-                }else{
-                     AlertService.mostrarMensaje("danger", "El tipo de valor es errado");
+                if ($scope.datos_form.tipo_producto === '') {
+                    $scope.datos_form.tipo_producto = producto.get_tipo_producto();
+                    $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
                 }
+
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    that.gestionar_pedidos();
+                } else {
+
+                    that.gestionar_cotizaciones();
+                }
+
+                /*}else{
+                 AlertService.mostrarMensaje("danger", "El tipo de valor es errado");
+                 }*/
             };
 
-          
+            $scope.validarHtml = function(html) {
+                var htmlValido = $sce.trustAsHtml(html);
+                return htmlValido;
+            };
+
             $scope.lista_productos = {
                 data: 'Empresa.get_productos()',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                enableCellSelection: true,
+                multiSelect: false,
                 enableHighlighting: true,
+                showFilter: true,
+                enableRowSelection: false,
+                enableColumnResize: true,
                 columnDefs: [
-                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "150", enableCellEdit: false,
+                    {field: 'codigo_producto', displayName: 'Código', width: "150",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-class="agregar_clase_tipo_producto(row.entity.tipo_producto)" >{{row.entity.get_abreviacion_tipo_producto()}}</span>\
-                                            <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
-                                        </div>'},
-                    {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},
-                    {field: 'get_codigo_invima()', displayName: 'Cod. Invima', width: "7%"},
-                    {field: 'get_iva()', displayName: 'IVA', width: "50"},
-                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
+                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
+                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
+                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
+                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span ng-cell-text >{{COL_FIELD}}</span>\
+                                                <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
+                                            </div>'
+                    },
+                    {field: 'descripcion', displayName: 'Nombre',
+                       // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
+                   cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
+                    {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
+                    {field: 'codigo_invima', displayName: 'Reg.Invima', width: "80", cellClass: "gridNumber"},
+                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "100", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
-                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
-                                        </div>'},
-                //    {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
-                {field: 'precio_venta', width: "150", displayName: "$ Venta", cellFilter: "number",
-                     cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
+                                           <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
+                                           <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
+                                       </div>'},
+                    {field: 'precio_venta', width: "100", displayName: "$ Venta", cellFilter: "number",
+                        cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
                      ng-model="row.entity.precio_venta" \
                      validacion-numero-entero\
                      ng-disabled = "row.entity.sw_pactado"\n\
@@ -561,24 +581,25 @@ define(["angular", "js/controllers",
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
                         </div></div>'
                     },
-                   
-                    {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
-                    {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
-                    {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",
+                    {field: 'existencia', displayName: 'Stock', width: "80", cellClass: "gridNumber"},
+                    {field: 'cantidad_disponible', displayName: 'Dispo.', width: "80", cellClass: "gridNumber"},
+                    {field: 'cantidad_solicitada', width: "80", displayName: 'Cantidad',
                         cellTemplate: '<div class="col-xs-12"> \
                                       <input type="text" \
                                        ng-model="row.entity.cantidad_solicitada" \
                                        validacion-numero-entero \
                                        class="form-control grid-inline-input" \n\
                                        name="" id="" /> </div>'},
-                    {width: "60", displayName: "Opcion", cellClass: "txt-center",
+                    {width: "50", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
                                             <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
                                             <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
 
+
                 ]
             };
+
 
             $scope.agregar_clase_tipo_producto = function(tipo_producto) {
                 return $scope.datos_form.clases_tipo_producto[tipo_producto];
@@ -596,15 +617,15 @@ define(["angular", "js/controllers",
                 that.buscar_productos_clientes();
             };
 
-            
-             /*
+
+            /*
              * @author Cristian Ardila
              * @fecha  04/03/2016
              * +Descripcion Funcion encargada de invocar el servicio que consulta
              *              las moleculas
              */
             that.buscar_moleculas = function(callback) {
-               
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -615,22 +636,22 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_MOLECULA, "POST", obj, function(data) {
-                    
+
                     if (data.status === 200) {
                         callback(data.obj.moleculas);
                     }
                 });
-            };    
+            };
             that.render_moleculas = function(moleculas) {
 
-                $scope.Empresa.limpiar_moleculas();  
+                $scope.Empresa.limpiar_moleculas();
                 var molecula = Molecula.get("", "-- TODOS --");
                 $scope.Empresa.set_moleculas(moleculas);
                 moleculas.forEach(function(data) {
                     molecula = Molecula.get(data.subclase_id, data.descripcion_molecula);
                     $scope.Empresa.set_moleculas(molecula);
                 });
-               
+
             };
 
             $scope.listar_moleculas = function(termino_busqueda) {
@@ -640,25 +661,25 @@ define(["angular", "js/controllers",
                 }
 
                 $scope.datos_view.termino_busqueda_moleculas = termino_busqueda;
-            
+
                 that.buscar_moleculas(function(moleculas) {
-                   // console.log("moleculas ", moleculas)
+                    // console.log("moleculas ", moleculas)
                     that.render_moleculas(moleculas);
                 });
-             };
-            
-            
-         
-            
-             /**
-            * @author Cristian Manuel Ardila Troches
-            * @fecha  04/03/2016
-            * +Descripcion: Se desplegara una ventana modal con un formulario
-            *               el cual permitira hacer una busqueda avanzada por
-            *               producto
-            * @param {type} cotizacion_pedido
-            */
-           $scope.busquedaAvanzadaProducto = function(cotizacion_pedido) {
+            };
+
+
+
+
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * @fecha  04/03/2016
+             * +Descripcion: Se desplegara una ventana modal con un formulario
+             *               el cual permitira hacer una busqueda avanzada por
+             *               producto
+             * @param {type} cotizacion_pedido
+             */
+            $scope.busquedaAvanzadaProducto = function(cotizacion_pedido) {
 
                 $scope.datos_view.pedido_seleccionado = cotizacion_pedido;
 
@@ -669,22 +690,23 @@ define(["angular", "js/controllers",
                     keyboard: true,
                     templateUrl: 'views/generacionpedidos/pedidosclientes/formularioBusquedaAvanzadaProducto.html',
                     scope: $scope,
+                    height: 300,
                     controller: function($scope, $modalInstance) {
 
-                      
+
 
                         $scope.cerrarVentanaBusquedaAvanzada = function() {
-                           
+
                             $modalInstance.close();
                         };
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-            
-            
+
+
             that.buscar_laboratorios();
-            
+
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 //$scope.datos_form = null;

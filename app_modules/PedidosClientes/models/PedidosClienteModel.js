@@ -65,25 +65,21 @@ var PedidosClienteModel = function(productos) {
  AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4
  *      
  */
-
+/*=========================================================================*/
+// Se implementa este filtro, para poder filtrar los pedidos por el estado actual
+// 0 - No Asignado 
+// 1 - Asignado
+// 2 - Auditado
+// 3 - En Zona Despacho
+// 4 - Despachado
+// 5 - Despachado con Pendientes
+// 6 - separacion finalizada
+// 7 - En Auditoria
+// 8 - Auditado con Pdtes
+// 9 - En Zona con Pdtes
+/*=========================================================================*/
 PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina,estadoPedido,estadoSolicitud, callback) {
-    
-    
-    
-    /*=========================================================================*/
-    // Se implementa este filtro, para poder filtrar los pedidos por el estado actual
-    // 0 - No Asignado 
-    // 1 - Asignado
-    // 2 - Auditado
-    // 3 - En Zona Despacho
-    // 4 - Despachado
-    // 5 - Despachado con Pendientes
-    // 6 - separacion finalizada
-    // 7 - En Auditoria
-    // 8 - Auditado con Pdtes
-    // 9 - En Zona con Pdtes
-    /*=========================================================================*/
-
+   
     var estado = "";
 
     
@@ -128,7 +124,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
             estado = '9';
         }
     }
-
+    
     var columns = [
         "a.empresa_id",
         "a.centro_destino as centro_utilidad_id",
@@ -181,11 +177,22 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     }).
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.pedido_cliente_id", "e.pedido_cliente_id").
     andWhere(function() {
-        this.where(G.knex.raw("a.pedido_cliente_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-                orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        
+        if(filtro){
+            if(filtro.tipo_busqueda === 0){
+                this.where(G.knex.raw("a.pedido_cliente_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");        
+            } 
 
+            if(filtro.tipo_busqueda === 1){         
+                this.where("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+             }
+
+            if(filtro.tipo_busqueda === 2){
+               this.where("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+               orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%")  
+            } 
+        }
     });
     
     if(estadoPedido){
@@ -199,14 +206,14 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit);
     //La base del 170 no responde con un orderby,  por esa razon se condiciona para produccion
-    if(G.program.prod){
-        
-        query.orderByRaw("4 DESC");
-    }
+  //  if(G.program.prod){
+    query.orderByRaw("4 DESC");
+  //  }
     
     query.then(function(rows) {
         callback(false, rows);
     }).catch (function(err) {
+      
         callback(err);
     });
 };
@@ -1099,7 +1106,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         sql_aux = "AND a.codigo_producto "+G.constants.db().LIKE+" :8\
                    AND b.contenido_unidad_venta "+G.constants.db().LIKE+" :7\
                    AND fc_descripcion_producto(b.codigo_producto) "+G.constants.db().LIKE+" :6\
-                   AND b.subclase_id "+G.constants.db().LIKE+" :5\
+                   AND e.descripcion "+G.constants.db().LIKE+" :5\
                    AND f.clase_id "+G.constants.db().LIKE+" :9";
        
         //filtroAvanzado.tipoBusqueda
@@ -1122,48 +1129,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     } 
     
     fechaActual = yyyy+'-'+ mm +'-'+ dd;
-     // coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
-   /* var sql = "a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                b.tipo_producto_id,\
-                d.descripcion as descripcion_tipo_producto,\
-                b.codigo_cum,\
-                b.codigo_invima,\
-                b.vencimiento_codigo_invima,\
-                b.porc_iva as iva,\
-                a.existencia::integer as existencia,\
-                (select case when coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) < 0 then 0\
-                    else coalesce((a.existencia - coalesce(cantidad_total_pendiente, 0) - coalesce(total_solicitado, 0))::integer, 0) end as disponibilidad_bodega\
-                from  disponibilidad_productos(b.codigo_producto,'"+fechaActual+"','"+fechaActual+"') as (\
-                        cantidad_total_pendiente integer, total_solicitado INTEGER\
-                 )\
-               )as cantidad_disponible,\
-                case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
-                split_part(coalesce(fc_precio_producto_contrato_cliente( :4, a.codigo_producto, :1 ),'0'), '@', 1) as precio_producto,\
-                b.sw_regulado,\
-                c.precio_regulado,\
-                b.estado,\
-                c.costo_ultima_compra,\
-                CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
-                from existencias_bodegas a \
-                inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
-                inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
-                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
-                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
-                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
-                left join (\
-                    select b.codigo_producto, coalesce(b.precio_pactado,0) as precio_pactado\
-                    from vnts_contratos_clientes a\
-                    inner join vnts_contratos_clientes_productos b on a.contrato_cliente_id = b.contrato_cliente_id\
-                    where a.contrato_cliente_id = :4\
-                ) g on c.codigo_producto = g.codigo_producto\
-                where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
-                 " + filtroProducto;*/
-        
-
-    
-    
-    
+     
     //Se agregar un nuevo campo llamado contrato que retornara FALSE si no tiene
    //contrato con la empresa y TRUE si lo tiene
              var sql = "a.codigo_producto,\
@@ -1248,26 +1214,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
  * @fecha: 04/12/2015 2:43 pm
  */
 PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callback) {
-
-  //var parametros = {1:cotizacion.empresa_id,2:cotizacion.centro_utilidad_id ,3:cotizacion.bodega_id,4:cotizacion.cliente.tipo_id_tercero,5:cotizacion.cliente.id,6:cotizacion.vendedor.tipo_id_tercero,7:cotizacion.vendedor.id,8:cotizacion.observacion,9:cotizacion.tipo_producto,10:cotizacion.usuario_id};
-
-
-  /*var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
-                empresa_id,\
-                centro_destino,\
-                bodega_destino,\
-                tipo_id_tercero,\
-                tercero_id,\
-                tipo_id_vendedor,\
-                vendedor_id,\
-                observaciones,\
-                tipo_producto,\
-                estado,\
-                usuario_id ,\
-                fecha_registro )\
-                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9, '1', :10, NOW()) \
-                RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";*/
-    
+   
      var parametros = {
                    1:cotizacion.empresa_id,
                    2:cotizacion.cliente.tipo_id_tercero,
@@ -1378,15 +1325,54 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
 
 /*
  * @author : Camilo Orozco
- * +Descripcion :  SQL Listar Cotizaciones
+ * +Descripcion :  Modelo que consultara las cotizaciones segun el criterio de busqueda,
+ *                 Numero, Nombre ó ID de Cliente, Nombre ó ID de Vendedor
  * @Funciones que hacen uso del modelo:
  *  --PedidosCliente.prototype.listarCotizaciones
  * Modificacion: Se migra a KNEX.js 
  * @fecha: 04/12/2015 5:24 pm
  */
-PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina,estadoCotizacion, callback) {
+PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina,estadoCotizacion,filtros, callback) {
+      
+     var filtroCotizacion ="";
+     var filtroEstadoCotizacion="";
+     var parametros = {1:empresa_id, 2:fecha_inicial, 3:fecha_final};
+      
+     /**
+      * +Descripcion Se valida si se envia el estado de cotizacion=6 cuando se 
+      *              accede desde el cliente al TAB Aprobacion cotizaciones
+      *              para consultar unicamente las cotizaciones que solicitan
+      *              autorizacion añadiendo al vector de parametros el criterio
+      *              de busqueda por estado de cotizacion
+      */  
+     if(estadoCotizacion){
+            filtroEstadoCotizacion = " AND (a.estado "+G.constants.db().LIKE+" :4)";
+            parametros["4"]= '%' +estadoCotizacion + '%';
+        }
+     /**
+      * +Descripcion El criterio de busqueda para una cotizacion sera dependiento
+      *              el tipo de busqueda numero Cotizacion=0, Cliente =1, Vendedor =2
+      *              añadiendo al vector de parametros el criterio de busqueda
+      *              
+      */  
+     if(filtros.tipo_busqueda === 0){
+            filtroCotizacion = " AND (a.pedido_cliente_id_tmp::varchar "+G.constants.db().LIKE+" :5) " ;
+            parametros["5"]= '%' + termino_busqueda + '%';
+        } 
 
-      var sql = "a.empresa_id,\
+        if(filtros.tipo_busqueda === 1){
+            filtroCotizacion = "  AND (b.nombre_tercero "+G.constants.db().LIKE+" :5 OR a.tercero_id "+G.constants.db().LIKE+" :5)" ;
+            parametros["5"]= '%' +termino_busqueda + '%';
+        }
+
+        if(filtros.tipo_busqueda === 2){
+            filtroCotizacion = " AND (f.nombre "+G.constants.db().LIKE+" :5 OR f.vendedor_id "+G.constants.db().LIKE+" :5)" ;
+            parametros["5"]= '%' +termino_busqueda + '%';
+              
+        }
+        
+      
+     var sql = "a.empresa_id,\
      a.centro_destino as centro_utilidad_id,\
      a.bodega_destino as bodega_id,\
      a.pedido_cliente_id_tmp as numero_cotizacion,\
@@ -1424,26 +1410,13 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
      inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
      left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
-     where a.empresa_id= :1 and a.fecha_registro between :2 and :3 and\
-     (\
-     a.pedido_cliente_id_tmp::varchar "+G.constants.db().LIKE+" :4 or\
-     a.tercero_id "+G.constants.db().LIKE+" :4 or	\
-     b.nombre_tercero "+G.constants.db().LIKE+" :4 or\
-     f.vendedor_id "+G.constants.db().LIKE+" :4 or	\
-     f.nombre "+G.constants.db().LIKE+" :4 \
-     )\
-     AND a.estado "+G.constants.db().LIKE+" :5";
+     where a.empresa_id= :1 and a.fecha_registro between :2 and :3 \
+     " +filtroCotizacion + " "+ filtroEstadoCotizacion; 
      
-    var parametros = {1:empresa_id, 
-                      2: fecha_inicial, 
-                      3: fecha_final,
-                      4: "%" + termino_busqueda + "%", 
-                      5: "%" + estadoCotizacion + "%"};
-          
+     
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").then(function(resultado){
-
         callback(false, resultado);
     }).catch(function(err){
         callback(err);
@@ -1997,10 +1970,10 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
         usuario_id: pedido.usuario_id,
         fecha_registro: 'NOW()'
     }).then(function(resultado) { 
-        console.log("resultado ***99");
+      
         callback(false, resultado);
     }).catch(function(error) {
-    console.log("error ***99");
+  
         callback(error);
     });
 };

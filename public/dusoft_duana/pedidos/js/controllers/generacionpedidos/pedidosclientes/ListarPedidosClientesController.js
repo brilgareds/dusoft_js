@@ -36,14 +36,10 @@ define(["angular", "js/controllers",
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
                 auth_token: Sesion.getUsuarioActual().getToken()
-            };
-            
-            
+            };          
             // Definicion Variables            
             $scope.Empresa = Empresa;
-
-            var fecha_actual = new Date();
-            
+            var fecha_actual = new Date();          
             /**
              * +Descripcion: Contador de notificaciones
              */
@@ -91,14 +87,37 @@ define(["angular", "js/controllers",
                     "btn btn-primary btn-xs",
                     "btn btn-info btn-xs"
                 ],
-                        
+                filtros : [
+                    {nombre: "Numero", tipo_busqueda: 0},
+                    {nombre: "Cliente", tipo_busqueda: 1},
+                    {nombre: "Vendedor", tipo_busqueda: 2}
+                ],
+                filtro : {nombre: "Numero", tipo_busqueda: 0},
+                filtro_pedido : {nombre: "Numero", tipo_busqueda: 0},
+                filtro_actual_cotizacion:{},
+                filtro_actual_pedido:{},
+                       
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 inactivarTab: false
-            };
+                };
             
-            
-            
+               /**
+                 * +Descripcion Menu desplegable para filtar en la busqueda de
+                 *              una cotizacion
+                 */
+                $scope.onSeleccionFiltroCotizacion = function(filtro) {
+                    $scope.datos_view.filtro = filtro;     
+                  
+                };
+                /**
+                 * +Descripcion Menu desplegable para filtar en la busqueda de
+                 *              un pedido
+                 */
+                $scope.onSeleccionFiltroPedido = function(filtro) {
+                    $scope.datos_view.filtro_pedido = filtro;     
+                  
+                };
             // Validar Seleccion Empresa Centro Bodega
             that.validacion_inicial = function() {
 
@@ -171,17 +190,26 @@ define(["angular", "js/controllers",
 
             //Acciones Botones 
             $scope.gestionar_cotizacion_cliente = function() {
+                
                 localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0'});
                 $state.go('Cotizaciones');
             };
-            
+          
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
-                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0', busqueda: $scope.datos_view.termino_busqueda_cotizaciones});
+                $scope.datos_view.filtro_actual_cotizacion = $scope.datos_view.filtro;              
+                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), 
+                                                       cartera: '0', 
+                                                       busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
+                                                       filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion});
                 $state.go('Cotizaciones');
             };
 
             $scope.modificar_pedido_cliente = function(pedido) {
-                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),busqueda: $scope.datos_view.termino_busqueda_pedidos});
+                $scope.datos_view.filtro_actual_pedido = $scope.datos_view.filtro_pedido;
+             
+                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),
+                                                   busqueda: $scope.datos_view.termino_busqueda_pedidos,
+                                                   filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido});
                 $state.go('PedidoCliente');
             };
 
@@ -206,7 +234,7 @@ define(["angular", "js/controllers",
 
 
             $scope.generar_observacion_cartera = function(obj) {
-
+               
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1'});
@@ -221,6 +249,7 @@ define(["angular", "js/controllers",
             };
 
             $scope.visualizar = function(obj) {
+               
                 // Visualizar cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), visualizar: '1'});
@@ -267,13 +296,17 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-         
+               
+               
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
                 
                 if(terminoBusqueda){
+                  
+                    $scope.datos_view.filtro = terminoBusqueda.filtro_actual_cotizacion;  
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
+                    
                 }
-               
+               // $scope.datos_view.filtro = {nombre: "Numero", tipo_busqueda: 0};
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {
                     $scope.datos_view.pagina_actual_cotizaciones = 1;
                 }
@@ -287,7 +320,8 @@ define(["angular", "js/controllers",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_cotizaciones, "yyyy-MM-dd") + " 23:59:00",
                             termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
                             pagina_actual: $scope.datos_view.pagina_actual_cotizaciones,
-                            estado_cotizacion: estado
+                            estado_cotizacion: estado,
+                            filtro: $scope.datos_view.filtro   
                         }
                     }
                 };
@@ -475,7 +509,7 @@ define(["angular", "js/controllers",
                      
                     if (data.status === 200) {
                         callback(true,data)
-                        //console.log("data ", data)
+                        
                         //that.render_productos_cotizacion(data.obj.pedidos_clientes.lista_productos);
                     }
                 });
@@ -535,13 +569,17 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_pedidos = function(estado,estadoSolicitud) {
+                
                 //Se obtiene el criterio de busqueda a traves del local storage
                 //con el objetivo de que el usuario al modificar un pedido
                 //y regrese al listado de todos los pedidos, conserve el filtro
                 var terminoBusqueda = localStorageService.get("terminoBusquedaPedido");
                 
                 if(terminoBusqueda){
+                    $scope.datos_view.filtro_pedido = terminoBusqueda.filtro_actual_pedido;  
                     $scope.datos_view.activarTabPedidos = terminoBusqueda.activar;
+                 
+                    //datos_view.inactivarTab
                     $scope.datos_view.termino_busqueda_pedidos = terminoBusqueda.busqueda;
                 }
              
@@ -559,7 +597,8 @@ define(["angular", "js/controllers",
                             termino_busqueda: $scope.datos_view.termino_busqueda_pedidos,
                             pagina_actual: $scope.datos_view.pagina_actual_pedidos,
                             estado_pedido: estado,
-                            estado_solicitud: estadoSolicitud
+                            estado_solicitud: estadoSolicitud,
+                            filtros: $scope.datos_view.filtro_pedido
                         }
                     }
                 };

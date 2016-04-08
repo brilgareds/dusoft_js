@@ -2,7 +2,7 @@
     <div class="row">
          <div class="col-md-2 col-lg-1">
             <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_crear_cotizaciones }}" ng-click="gestionar_cotizacion_cliente()">
-                <span class="glyphicon glyphicon-plus"></span> Crear Cotización
+                <span class="glyphicon glyphicon-plus"></span> Crear 
             </button>
              </p>
         </div>
@@ -30,15 +30,41 @@
             </p>
         </div>
 
+        <div class="col-md-3 pull-right">  
+           <div class="input-group">
+                   <div class="input-group-btn">                
+                       <button type="button" class="btn btn-default dropdown-toggle" 
+                               data-toggle="dropdown" 
+                               aria-haspopup="true" 
+                               aria-expanded="false">{{datos_view.filtro_pedido.nombre}} <span class="caret"></span></button>
+                       <ul class="dropdown-menu">
+                           <li ng-repeat="filtro in datos_view.filtros">
+                               <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)">{{filtro.nombre}}</a>
+                           </li>
+                           <li>
+                       </ul>     
+                   </div><!-- /btn-group -->
+ 
+                   <input type="text" class="form-control" ng-keypress="buscador_pedidos($event);"
+                          ng-model="datos_view.termino_busqueda_pedidos" placeholder="Buscar" name="" id="" />
+
+
+                   <div class="input-group-btn" >
+                       <button class="btn btn-default" type="submit" ng-click="buscador_pedidos({which : 13});"><i class="glyphicon glyphicon-search"></i></button>
+
+                   </div>
+               </div>
+           </div>
+        <!--
         <div class="col-md-2 pull-right">
             <p class="input-group">
 
-                <input type="text" class="form-control" ng-keypress="buscador_pedidos($event);" ng-model="datos_view.termino_busqueda_pedidos" placeholder="Buscar" name="" id="" />
+                
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="submit" ng-click="buscar_planillas_despacho(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
+                    
                 </span>
             </p>
-        </div>
+        </div> //-->
 
     </div>
 

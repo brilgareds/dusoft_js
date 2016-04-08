@@ -43,7 +43,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 // Opciones del Modulo 
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 progresoArchivo: 0,
-                btnSolicitarAutorizacionCartera: true
+                btnSolicitarAutorizacionCartera: true,
                 
             };
             $scope.notificacionPedidoAutorizar = 0;
@@ -961,18 +961,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             // Cancelar la cotizacion
             $scope.volver_cotizacion = function() {
-                
-                
                 var cotizacion = localStorageService.get("cotizacion");
-                
+             
                 if(cotizacion){
-                    localStorageService.add("terminoBusqueda", {busqueda: cotizacion.busqueda});
+                    
+                    localStorageService.add("terminoBusqueda", {busqueda: cotizacion.busqueda,filtro_actual_cotizacion:cotizacion.filtro_actual_cotizacion});
                 }
                 
                 var pedido =  localStorageService.get("pedido");
-                
+               
                 if(pedido){             
-                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.busqueda, activar:true});
+                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.busqueda, activar:true, filtro_actual_pedido:pedido.filtro_actual_pedido});
                    
                 }
                 
@@ -1086,7 +1085,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                    
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     if (data.status === 200) {
 
                     }
@@ -1095,8 +1094,60 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            // Gestiona la aprobacion o no del departamento de cartera
-           $scope.gestion_cartera = function(aprobado) {
+         // Gestiona la aprobacion o no del departamento de cartera
+            $scope.gestion_cartera = function(aprobado) {
+                var obj = {};
+                var url = '';
+                $scope.Pedido.set_aprobado_cartera(aprobado);
+                // Observacion cartera para cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido
+                            }
+                        }
+                    };
+                }               
+                // Observacion cartera para pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                aprobado: aprobado
+                            }
+                        }
+                    };
+                }
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                   
+                    if (data.status === 200) {                       
+                       /*Se valida si es una cotizacion y entonces se procede
+                         a crear el pedido*/
+                       if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                          
+                            var parametros = {busqueda: cotizacion.busqueda,
+                                              pedido_creado :1,   filtro_actual_cotizacion:{nombre: "Numero", tipo_busqueda: 0},
+                                             }
+                                    
+                            localStorageService.add("terminoBusqueda", parametros);
+                            $scope.gestionar_pedido()
+                       }                     
+                       if ($scope.Pedido.get_numero_pedido() > 0) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                             $scope.volver_cotizacion();
+                       }                      
+                    }
+                });
+            };
+        /*   $scope.gestion_cartera = function(aprobado) {
 
                 var obj = {};
                 var url = '';
@@ -1136,7 +1187,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.volver_cotizacion();
                     }
                 });
-            };
+            };*/
 
 
             // Gestionar la creacion del pedido
@@ -1149,10 +1200,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea Generar el Pedido ?</h4>\
+                                    <h4 class="modal-title">Desea autorizar la cotizacion ?</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h4>Desea Generar el Pedido para el Cliente.</h4>\
+                                    <h4>Desea autorizar la cotizacion.</h4>\
                                     <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
                                 </div>\
                                 <div class="modal-footer">\
@@ -1176,8 +1227,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             $scope.generar_pedido_cliente = function() {
-
-
+                    
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -1188,9 +1238,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
              
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
+                    
                  
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    AlertService.mostrarMensaje("Mensaje del sistema", "Se autoriza la cotizacion satisfactoriamente");
                     if (data.status === 200) {
+                        
                         $scope.volver_cotizacion();
                     }
                 });

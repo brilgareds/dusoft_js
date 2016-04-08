@@ -116,6 +116,43 @@ Productos.prototype.guardarExistenciaBodega = function(req, res){
     });
 };
 
+/*
+* @Author: Eduar
+* @param {Object} req
+* @param {Object} res
+* +Descripcion: Permite actualizar las existencias de un producto
+*/
+Productos.prototype.actualizarExistenciasProducto = function(req, res){
+    var that = this;
+    var args = req.body.data;
+
+    if (!args.productos || !args.productos.empresa_id || !args.productos.codigo_producto || !args.productos.centro_utilidad_id || 
+        !args.productos.bodega_id || !args.productos.existencias || args.productos.existencias.length === 0) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    var params = {};
+    params.empresaId = args.productos.empresa_id;
+    params.codigoProducto = args.productos.codigo_producto;
+    params.centroUtilidad = args.productos.centro_utilidad_id;
+    params.bodega = args.productos.bodega_id;
+    params.existencias = args.productos.existencias;
+
+    G.Q.ninvoke(that.m_productos,"actualizarExistenciasProducto", params).then(function(existencias){
+        res.send(G.utils.r(req.url, 'Guardar existencia bodega', 200, {existencias: existencias}));
+    }).fail(function(err){
+       var msj = "Error interno";
+       var status = 500;
+       if(err.status){
+           msj = err.msj;
+           status = err.status;
+       }
+       
+       res.send(G.utils.r(req.url, msj, status, {}));
+    });
+};
+
+
 Productos.prototype.listarTipoProductos = function(req, res) {
     
     var that = this;

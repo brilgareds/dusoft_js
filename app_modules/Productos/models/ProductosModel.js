@@ -214,6 +214,7 @@ ProductosModel.prototype.validarUnidadMedidaProducto = function(obj, callback) {
 * +Descripcion: Permite consultar las existencias de lotes de un producto por empresa, bodega y centro de utilidad
 */
 ProductosModel.prototype.consultar_existencias_producto = function(empresaId, codigoProducto, centroUtilidad, bodega, filtro, callback) {
+    console.log("arguments ", arguments);
     var sqlAux = "";
     var obj = {1 : empresaId, 2 : codigoProducto, 3 :centroUtilidad, 4 :bodega};
     
@@ -225,7 +226,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
     
     if(filtro.codigoLote && filtro.fechaVencimiento){
         sqlAux += "and a.lote = :5\
-                   and a.fecha_vencimiento = :6";
+                   and a.fecha_vencimiento = :6 ";
         
         obj['5'] = filtro.codigoLote;
         obj['6'] = filtro.fechaVencimiento;
@@ -267,10 +268,11 @@ ProductosModel.prototype.guardarExistenciaBodega = function(params, callback) {
     var that = this;
     
     G.Q.ninvoke(that, "consultar_existencias_producto", params.empresaId, params.codigoProducto, params.centroUtilidad, params.bodega,
-                                                       {fechaVencimiento:params.fechaVencimiento, codigoLote:params.codioLote}).
+                                                       {fechaVencimiento:params.fechaVencimiento, codigoLote:params.codigoLote}).
                                                        
     then(function(existencia){
         if(existencia.length > 0){
+           /// console.log("existencias ", existencia);
             //temporalmente regresar error
             callback(true);
             return;
@@ -288,6 +290,39 @@ ProductosModel.prototype.guardarExistenciaBodega = function(params, callback) {
 
 /*
 * @Author: Eduar
+* @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, existencias}
+* @Uso ProductosController
+* +Descripcion: Permite actualziar las existencias para determinado producto
+*/
+ProductosModel.prototype.actualizarExistenciasProducto = function(params, callback){
+    
+    var that = this;
+    params.contexto = that;
+    
+    G.knex.transaction(function(transaccion) {  
+        params.transaccion = transaccion;
+        G.Q.nfcall(__validarExistenciasProducto, params).then(function(){
+           return G.Q.nfcall(__actualizarExistenciasProducto, params);  
+        }).then(function(){
+            //callback(false);
+            transaccion.commit();
+        }).fail(function(err){
+           console.log("error al actualizar existencias ", err);
+           transaccion.rollback(err);
+        });
+
+    }).
+    then(function(){
+        callback(false);
+    }).catch(function(err){
+        callback(err);
+    }).
+    done();    
+    
+};
+
+/*
+* @Author: Eduar
 * @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, fechaVencimiento, codigoLote}
 * +Descripcion: Permite insertar una existencia para determinado producto
 */
@@ -296,7 +331,7 @@ ProductosModel.prototype.insertarExistenciaBodega = function(params, callback) {
     
     var sql = "INSERT INTO existencias_bodegas_lote_fv\
                     (empresa_id, centro_utilidad, codigo_producto, bodega, fecha_vencimiento, lote, existencia_inicial, existencia_actual)\
-                    VALUES (:1, :2, :3, :4, :5, :6, 0, 0)";
+                    VALUES ( :1, :2, :3, :4, :5, :6, 0, 0 )";
                     
    G.knex.raw(sql, {1 : params.empresaId, 2 : params.centroUtilidad, 3:params.codigoProducto, 4:params.bodega, 
                     5:params.fechaVencimiento, 6:params.codigoLote}).
@@ -334,6 +369,74 @@ ProductosModel.prototype.consultarPrecioReguladoProducto = function(obj, callbac
     });
 
 };
+
+
+/*
+* @Author: Eduar
+* @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, existencias}
+* +Descripcion: Valida que la cantidad de existencias en bodega sea igual a la existencia de lotes
+*/
+function __validarExistenciasProducto(params, callback){
+    var existencias = params.existencias;
+    
+    var totalExistencias = 0;
+    //Lotes enviados por la app del cliente
+    for(var i in existencias){
+        totalExistencias += parseInt(existencias[i].cantidadNueva);
+    }
+    
+    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto).
+    then(function(resultado){
+        console.log("existencia ",parseInt(resultado[0].existencia), " total ", totalExistencias);
+        
+        //Se valida que las cantidades sean numericas y sean iguales
+        if(parseInt(resultado[0].existencia) !== totalExistencias || isNaN(totalExistencias) || isNaN(resultado[0].existencia)){
+             throw {msj:"La cantidad total no es valida", status:403};
+        } else {
+            callback(false);
+        }
+        
+    }).fail(function(err){
+        callback(err);
+    });
+}
+
+/*
+* @Author: Eduar
+* @param {obj} params {empresaId, codigoProducto, centroUtilidad, bodega, existencias}
+* +Descripcion: Funcion recursiva que ejecua el query para actualizar existencias
+*/
+function __actualizarExistenciasProducto(params, callback){
+    var existencia = params.existencias[0];
+    
+    if(!existencia){
+        callback(false);
+        return;
+    }
+
+    var sql = "UPDATE existencias_bodegas_lote_fv SET\
+                    lote = :1, existencia_actual = :2 \
+                    WHERE empresa_id = :3 AND centro_utilidad = :4 AND codigo_producto = :5 AND bodega = :6 AND\
+                    lote = :7 AND fecha_vencimiento = :8";
+    
+   var query = G.knex.raw(sql, {1 : existencia.codigoLoteNuevo, 2 : existencia.cantidadNueva, 3:params.empresaId, 4:params.centroUtilidad, 
+                                5:params.codigoProducto, 6:params.bodega, 7:existencia.codigoLote, 8:existencia.fechaVencimiento});
+   
+   if(params.transaccion) query.transacting(params.transaccion);                   
+   
+    query.then(function(resultado){
+       
+       setTimeout(function(){
+           params.existencias.splice(0, 1);
+           __actualizarExistenciasProducto(params, callback);
+       },0);
+       
+   }).catch(function(err){
+       callback(err);
+   });
+    
+}
+
 
 
 module.exports = ProductosModel;

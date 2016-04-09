@@ -29,4 +29,14 @@ module.exports = function(app, di_container) {
         c_productos.listarProductosClientes(req, res);
     });
     
+    
+    app.post('/api/Productos/guardarExistenciaBodega', function(req, res) {
+        c_productos.guardarExistenciaBodega(req, res);
+    });
+    
+    app.post('/api/Productos/actualizarExistenciasProducto', function(req, res) {
+        c_productos.actualizarExistenciasProducto(req, res);
+    });
+    
+    
 };

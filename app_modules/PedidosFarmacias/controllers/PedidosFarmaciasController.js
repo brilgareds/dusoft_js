@@ -900,6 +900,7 @@ PedidosFarmacias.prototype.guardarPedidoTemporal = function(req, res) {
             empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, observacion, usuario_id, function(err, rows) {
 
         if (err) {
+            console.log("error generado ", err);
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la actualización', 500, {error: err}));
             return;
         } else {

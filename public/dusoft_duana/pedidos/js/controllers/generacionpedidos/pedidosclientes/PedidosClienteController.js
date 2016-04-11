@@ -1127,7 +1127,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
                 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                   
+                    
+                  
                     if (data.status === 200) {                       
                        /*Se valida si es una cotizacion y entonces se procede
                          a crear el pedido*/
@@ -1138,12 +1139,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                              }
                                     
                             localStorageService.add("terminoBusqueda", parametros);
+                           
                             $scope.gestionar_pedido()
                        }                     
                        if ($scope.Pedido.get_numero_pedido() > 0) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                              $scope.volver_cotizacion();
                        }                      
+                    }else{
+                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
                 });
             };
@@ -1192,7 +1196,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             // Gestionar la creacion del pedido
             $scope.gestionar_pedido = function() {
-
+               
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -1239,7 +1243,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
                     
-                 
+                   
                     AlertService.mostrarMensaje("Mensaje del sistema", "Se atendio la solicitud satisfactoriamente");
                     if (data.status === 200) {
                         

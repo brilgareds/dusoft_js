@@ -1240,7 +1240,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
                     
                  
-                    AlertService.mostrarMensaje("Mensaje del sistema", "Se atendi la solicitud satisfactoriamente");
+                    AlertService.mostrarMensaje("Mensaje del sistema", "Se atendio la solicitud satisfactoriamente");
                     if (data.status === 200) {
                         
                         $scope.volver_cotizacion();

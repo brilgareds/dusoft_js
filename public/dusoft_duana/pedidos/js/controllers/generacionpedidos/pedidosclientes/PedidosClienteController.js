@@ -469,8 +469,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
                     disabled = true;
 
-                /* if ($scope.Pedido.getEstado() === undefined || $scope.Pedido.getEstado() <= 0)
-                 disabled = true;*/
+               
                 // Cartera
                 if ($scope.datos_view.cartera)
                     disabled = true;
@@ -510,8 +509,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     return $scope.datos_view.permisos_cotizaciones.btn_modificar_cotizaciones;
             };
             $scope.habilitar_eliminacion_producto = function() {
-
+                
+                
                 var disabled = false;
+                
                 // Validaciones Cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
 
@@ -520,13 +521,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
 
                 // Validaciones Pedido
-                if ($scope.Pedido.get_numero_pedido() > 0) {
-
+                if ($scope.datos_view.cartera) {
+                     disabled = true;
+                    //console.log("scope.datos_view.cartera ", $scope.datos_view.cartera)
                 }
 
                 // Solo visualizar
                 if ($scope.datos_view.visualizar)
                     disabled = true;
+                
                 return disabled;
             };
 
@@ -791,8 +794,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-toolbar">\
-                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || disabledCheckModificarProducto(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"  ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" || disabledCheckModificarProducto(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"  ><span class="glyphicon glyphicon-ok"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
@@ -1151,48 +1154,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
-        /*   $scope.gestion_cartera = function(aprobado) {
-
-                var obj = {};
-                var url = '';
-                $scope.Pedido.set_aprobado_cartera(aprobado);
-                // Observacion cartera para cotizacion
-                if ($scope.Pedido.get_numero_cotizacion() > 0) {
-
-                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
-                    obj = {
-                        session: $scope.session,
-                        data: {
-                            pedidos_clientes: {
-                                cotizacion: $scope.Pedido
-                            }
-                        }
-                    };
-                }
-
-                // Observacion cartera para pedido
-                if ($scope.Pedido.get_numero_pedido() > 0) {
-
-                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
-                    obj = {
-                        session: $scope.session,
-                        data: {
-                            pedidos_clientes: {
-                                pedido: $scope.Pedido
-                            }
-                        }
-                    };
-                }
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    if (data.status === 200) {
-                        $scope.volver_cotizacion();
-                    }
-                });
-            };*/
-
+       
 
             // Gestionar la creacion del pedido
             $scope.gestionar_pedido = function() {

@@ -1203,7 +1203,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     <h4 class="modal-title">Desea autorizar la cotizacion ?</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h4>Desea autorizar la cotizacion.</h4>\
+                                     \
                                     <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
                                 </div>\
                                 <div class="modal-footer">\
@@ -1240,7 +1240,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
                     
                  
-                    AlertService.mostrarMensaje("Mensaje del sistema", "Se autoriza la cotizacion satisfactoriamente");
+                    AlertService.mostrarMensaje("Mensaje del sistema", "Se atendi la solicitud satisfactoriamente");
                     if (data.status === 200) {
                         
                         $scope.volver_cotizacion();

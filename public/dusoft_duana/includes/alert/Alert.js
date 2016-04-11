@@ -6,7 +6,7 @@ define(["angular","js/services"], function(angular, services){
       this.colaEjecucion = [];
       this.timer;
       this.mostrandoMensaje = false;
-      this.intervalo = 2000;
+      this.intervalo = 4000;
 
       this.mostrarMensaje = function(tipo, msg){
 

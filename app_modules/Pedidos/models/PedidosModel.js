@@ -74,6 +74,12 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                     // Se aplica la Formula de Disponibilidad producto
+                                    //Se agrega validacion para casos especiales donde el stock es igual a la cantidad despachada de un pedido con pendientes
+                                    //12-04-2016
+                                    if(parseInt(cantidad_despachada) === parseInt(stock) ){
+                                        cantidad_despachada = 0;
+                                    }
+                                    
                                     disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
 
                                     console.log('============ Here =================');
@@ -152,6 +158,12 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                     // Se aplica la Formula de Disponibilidad producto
+                                    //Se agrega validacion para casos especiales donde el stock es igual a la cantidad despachada de un pedido con pendientes
+                                    // //12-04-2016
+                                    if(parseInt(cantidad_despachada) === parseInt(stock) ){
+                                        cantidad_despachada = 0;
+                                    }
+                                    
                                     disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
 
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;

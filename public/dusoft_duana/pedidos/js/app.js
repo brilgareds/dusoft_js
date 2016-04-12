@@ -48,6 +48,7 @@ define([
     "controllers/separacionpedidos/ContenedorSeparacionController",
     "controllers/separacionpedidos/SeparacionProductosController",
     "controllers/separacionpedidos/SeparacionDetalleController",
+    "controllers/trasladoexistencias/TrasladoExistenciasController",
     "services/separacionpedidos/SeparacionService",
     "controllers/separacionpedidos/SeparacionProductosPendientesController",
     
@@ -183,7 +184,13 @@ define([
                     templateUrl: "views/separacionpedidos/separacionProducto.html",
                     controller: "SeparacionProductosController"
                     
-                });
+                }).state('TrasladoExistencias', {
+                    url: "/TrasladoExistencias",
+                    text: "Traslado Existencias", 
+                    templateUrl: "views/trasladoexistencias/listaproductos.html",
+                    controller: "TrasladoExistenciasController"
+                    
+                })
                 
                 
                 

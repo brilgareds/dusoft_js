@@ -421,3 +421,18 @@ button.btnTipo{
     
     margin-right: 10px
 }
+
+
+.cabeceraPanelLotes{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: normal;
+    width: 100%;
+    padding-top: 8px;
+}
+
+.btnExistencias{
+    position:absolute;
+    rigth:0px;
+}

@@ -28,7 +28,9 @@
 
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h5 class="panel-title">Lotes Del Producto</h5>
+            <h5 class="panel-title pull-left">Lotes Del Producto</h5>
+            <button class="btn btn-default ng-binding  btn-sm btnExistencias"  ng-click="onTrearExistencias()">Modificar existencias</button>
+            <div class="clearfix"></div>
         </div>
         <div class="panel-body">
             <div class="auditarGrid" ng-grid="lotes_producto" validar-evento-fila></div>

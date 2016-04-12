@@ -1406,7 +1406,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
     }
 
     if (cotizacion.observacion_cartera === undefined || cotizacion.observacion_cartera === '') {
-        res.send(G.utils.r(req.url, 'observacion_cartera no esta definido o esta vacio', 404, {}));
+        res.send(G.utils.r(req.url, 'Debe diligenciar el campo de observacion cartera', 404, {}));
         return;
     }
     

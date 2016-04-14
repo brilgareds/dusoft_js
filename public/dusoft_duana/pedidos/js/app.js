@@ -48,7 +48,6 @@ define([
     "controllers/separacionpedidos/ContenedorSeparacionController",
     "controllers/separacionpedidos/SeparacionProductosController",
     "controllers/separacionpedidos/SeparacionDetalleController",
-    "controllers/trasladoexistencias/TrasladoExistenciasController",
     "services/separacionpedidos/SeparacionService",
     "controllers/separacionpedidos/SeparacionProductosPendientesController",
     

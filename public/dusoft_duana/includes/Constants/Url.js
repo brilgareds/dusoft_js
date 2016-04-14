@@ -25,6 +25,9 @@
                 },
                 'MODULOS':{
                     'ES_MODULO_PADRE':BASE_URL+"/Modulos/esModuloPadre"
+                },
+                'PRODUCTOS':{
+                    'CONSULTAR_EXISTENCIAS' : BASE_URL+"/Productos/consultarExistencias"
                 }
               },
               'STATIC' :{

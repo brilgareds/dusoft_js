@@ -5,6 +5,7 @@ define(["angular", "js/controllers",
     'models/auditoriapedidos/DocumentoTemporal',
     'models/auditoriapedidos/ProductoPedido',
     'models/auditoriapedidos/LoteProductoPedido',
+    'includes/components/trasladoexistencias/TrasladoExistenciasController',
     "directive/auditoriapedidos/ValidarEventoFila"], function(angular, controllers) {
 
     var fo = controllers.controller('EditarProductoController', [
@@ -31,6 +32,7 @@ define(["angular", "js/controllers",
 
             $scope.justificaciones = [
                 {descripcion: "No hay fisico"},
+                {descripcion: "No hay disponible"},
                 {descripcion: "Averiado"},
                 {descripcion: "Proximo A Vencer"},
                 {descripcion: "Trocado"},
@@ -850,6 +852,39 @@ define(["angular", "js/controllers",
                         $scope.rootEditarProducto.caja.getTipo()
                         );
 
+            };
+            
+            
+            $scope.onTrearExistencias = function(){
+                console.log("onTrearExistencias");
+                
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                var centro  = empresa.getCentroUtilidadSeleccionado();
+                
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: '../includes/components/trasladoexistencias/listadoexistencias.html',
+                    controller: "TrasladoExistenciasController",
+                    resolve: {
+                        codigoProducto: function() {
+                            return $scope.rootEditarProducto.producto.codigo_producto;
+                        },
+                        centroUtilidad: function() {
+                            return  centro.getCodigo();
+                        },
+                        bodega: function() {
+                            return centro.getBodegaSeleccionada().getCodigo();
+                        },
+                        empresaId:function(){
+                            return empresa.getCodigo();
+                        }
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);
+                
             };
 
             $scope.cerrarModal = function() {

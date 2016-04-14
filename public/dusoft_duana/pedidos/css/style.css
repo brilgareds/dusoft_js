@@ -423,16 +423,11 @@ button.btnTipo{
 }
 
 
-.cabeceraPanelLotes{
+.cabeceraPanelLotes h5{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: normal;
-    width: 100%;
+    width: 75%;
     padding-top: 8px;
-}
-
-.btnExistencias{
-    position:absolute;
-    rigth:0px;
 }

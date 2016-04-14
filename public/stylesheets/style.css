@@ -574,3 +574,7 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
         outline:none!important;
     }
 }
+
+.gridExistencias{
+    height:400px;
+}

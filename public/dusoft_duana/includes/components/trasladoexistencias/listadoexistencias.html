@@ -6,18 +6,35 @@
 <div ng-grid="rootExistencias.listadoExistencias"  class="gridExistencias">
 </div>
     
+    </br>
     
 <div class="row">
-    <div class= "">
-        
+
+    <h4 class="col-md-12">Crear lote:</h4>
+    <div class="col-md-12">
+            <span class="input-group">
+                
+                <input type="text" role="group" name="codigoLote" placeholder="Código Lote" 
+                  ng-model="rootExistencias.loteNuevo.codigo_lote" class="form-control" style=" width: 150px;"  />
+                
+                <input type="text" style=" width: 150px;" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="rootExistencias.loteNuevo.fecha_vencimiento" is-open="rootExistencias.abrirFecha" min-date="$parent.rootExistencias.minFecha"  readonly  close-text="Cerrar"
+                       clear-text="Borrar"  placeholder="Fecha Vencimiento" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                <span class="input-group-btn" style="display:inline;">
+
+                    <button class="btn btn-default"  ng-click="abrirFecha($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    <button type="button" ng-click="onGuardarExistenciaBodega()"  class="btn btn-default" >
+                        Guardar
+                    </button>
+                </span>
+            </span>
+ 
     </div>
 </div>
  <div class="modal-footer">
-      <button class="btn btn-primary" ng-click="onCerrar()" >Aceptar</button>
+      <button class="btn btn-primary" ng-click="onActualizarExistenciasProducto()" >Actualizar Existencias</button>
       <button class="btn btn-warning" ng-click="onCerrar()">Cancelar</button>
        
   </div>
 
 </div>
-
 

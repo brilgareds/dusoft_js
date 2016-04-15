@@ -11,23 +11,28 @@ define(["angular",
         'Empresa', 'CentroUtilidad', 'Bodega',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal", "$modalInstance", 'URL','Lote',
-        'codigoProducto', 'centroUtilidad', 'bodega', 'empresaId',
+        'codigoProducto', 'centroUtilidad', 'bodega', 'empresaId','$filter',
         function($scope, $rootScope, Request,
                 Empresa, CentroUtilidad, Bodega,
                 API, socket, AlertService, $state, Usuario,
                 localStorageService, $modal, $modalInstance, URL, Lote, codigoProducto, centroUtilidad,
-                bodega, empresaId) {
+                bodega, empresaId,  $filter) {
 
             var self = this;
-            
+            var fechaActual = new Date();
             console.log(" codigoProducto ", codigoProducto, " centroUtilidad ", centroUtilidad, " bodega ", bodega, " empresaId ", empresaId);
             
-            $scope.rootExistencias = {};
+            $scope.rootExistencias = {
+                loteNuevo: Lote.get(),
+                fechaLote : $filter('date')(new Date("01/01/"  + fechaActual.getFullYear()), "yyyy-MM-dd"),
+                minFecha : $filter('date')(new Date("01/01/"  + fechaActual.getFullYear()), "yyyy-MM-dd"),
+                abrirFecha : false,
+                lotes : []
+            };
             $scope.rootExistencias.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-            $scope.rootExistencias.lotes = [];
             
             $scope.rootExistencias.listadoExistencias = {
                 data: 'rootExistencias.lotes',
@@ -41,12 +46,19 @@ define(["angular",
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                     {field: 'nuevaCantidad', displayName: 'Nueva Cantidad', 
                         cellTemplate: ' <div class="col-xs-12">\
-                                                <input  type="text" ng-model="row.entity.nuevaCantidad" validacion-numero-entero class="form-control grid-inline-input" />\
-                                            </div>'
+                                            <input  type="text" ng-model="row.entity.nuevaCantidad" validacion-numero-entero class="form-control grid-inline-input" />\
+                                        </div>'
                     }
 
                 ]
 
+            };
+            
+            $scope.abrirFecha = function($event){
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.rootExistencias.abrirFecha = true;
+                console.log("abrir fecha ", $scope.rootExistencias.abrirFecha);
             };
             
             self.traerExistencias = function(callback) {
@@ -82,16 +94,62 @@ define(["angular",
                     }
                     
                     if (callback)
-                         callback(true);
+                         callback(valido);
 
                 });
 
+            };
+            
+            self.guardarExistenciasBodega = function(callback){
+                var obj = {
+                    session: $scope.rootExistencias.session,
+                    data: {
+                        productos:{
+                            empresa_id:empresaId,
+                            codigo_producto:codigoProducto,
+                            centro_utilidad_id :centroUtilidad,
+                            bodega_id : bodega,
+                            codigo_lote: $scope.rootExistencias.loteNuevo.getCodigo(),
+                            fecha_vencimiento: $filter('date')($scope.rootExistencias.loteNuevo.getFechaVencimiento(), "yyyy-MM-dd")
+                        }
+                    }
+                };
+                Request.realizarRequest(URL.CONSTANTS.API.PRODUCTOS.GUARDAR_EXISTENCIA_BODEGA, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                       self.traerExistencias();
+                        
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error guardando el lote");
+                    }
+
+                });
+            };
+            
+            self.actualizarExistenciasProducto = function(){
+                var lotes = $scope.rootExistencias.lotes;
+                
+                
+                
             };
             
             $scope.onCerrar = function(){
                 $modalInstance.close();
             };
             
+            $scope.onGuardarExistenciaBodega = function(){
+                var lote = $scope.rootExistencias.loteNuevo;
+                if(!lote.getFechaVencimiento() || !lote.getCodigo() || lote.getCodigo().length === 0){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La fecha de vencimiento y el código son requeridos");
+                    return;
+                }
+                self.guardarExistenciasBodega(function(){
+                    
+                });
+            };
+            
+            $scope.onActualizarExistenciasProducto = function(){
+                
+            };
             
             $modalInstance.opened.then(function() {
                             

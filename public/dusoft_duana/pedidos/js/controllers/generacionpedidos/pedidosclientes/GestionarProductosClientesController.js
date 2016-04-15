@@ -352,7 +352,7 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
-                    // console.log("data ", data);
+                   
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
 
                     if (data.status === 200) {
@@ -390,11 +390,12 @@ define(["angular", "js/controllers",
                     //setPrecioVentaAnterior 1101E0740001
                     producto.setContrato(data.contrato);
                     producto.set_cantidad_disponible(data.cantidad_disponible);
+                    
                     $scope.Empresa.set_productos(producto);
 
 
                 });
-
+                
             };
 
 
@@ -509,6 +510,7 @@ define(["angular", "js/controllers",
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
                         </div></div>'
                     },
+                    {field: 'iva', displayName: 'Iva', width: "90", cellClass: "gridNumber"},
                     {field: 'existencia', displayName: 'Stock', width: "80", cellClass: "gridNumber"},
                     {field: 'cantidad_disponible', displayName: 'Dispo.', width: "80", cellClass: "gridNumber"},
                     {field: 'cantidad_solicitada', width: "80", displayName: 'Cantidad',

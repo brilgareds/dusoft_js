@@ -2156,7 +2156,7 @@ function __sincronizarDetalleDocumento(obj, callback){
         lote:producto.lote,
         localizacionProducto:"N/A",
         totalcostoPedido:producto.total_costo_pedido,
-        valorUnitario:producto.valor_unitario,
+        valorUnitario:producto.valor_unitario_iva,
         descuento:0
     };
     

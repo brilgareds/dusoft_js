@@ -241,7 +241,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
                 a.lote,\
                 to_char(a.fecha_vencimiento, 'dd-mm-yyyy') AS fecha_vencimiento,\
                 a.existencia_actual,\
-                c.estado\
+                d.estado\
                 from existencias_bodegas_lote_fv a \
                 inner join existencias_bodegas b on a.empresa_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.codigo_producto = b.codigo_producto and a.centro_utilidad = :3 and a.bodega= :4\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and b.empresa_id = c.empresa_id\

@@ -215,7 +215,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <a href="javascript:void(0);" ng-click="onRowClick(row)">Ver movimiento</a>\
                                             </li>\
                                             <li>\
-                                                <a href="javascript:void(0);" ng-click="onTrearExistencias(row.entity)">Modificar existencias</a>\
+                                                <a href="javascript:void(0);" ng-click="onTrearExistencias(row.entity)">Modificar lotes</a>\
                                             </li>\
                                         </ul>\
                                     </div>'

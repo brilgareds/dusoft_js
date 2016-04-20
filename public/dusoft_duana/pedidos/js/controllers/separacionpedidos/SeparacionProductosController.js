@@ -35,7 +35,7 @@ define(["angular", "js/controllers",
                             {nombre: "Justificar", id: 1},
                             {nombre: "Listar productos", id: 2},
                             {nombre: "Refrescar", id: 3},
-                            {nombre: "Modificar Existencias", id:4}
+                            {nombre: "Modificar lotes", id:4}
                         ];
 
 

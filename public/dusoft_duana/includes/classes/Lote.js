@@ -7,9 +7,11 @@ define(["angular", "js/models"], function(angular, models) {
 
 
         //declare usermodel class
-        function Lote(codigo_lote, fecha_vencimiento) {
+        function Lote(codigo_lote, fecha_vencimiento, cantidad) {
             this.codigo_lote = codigo_lote;
             this.fecha_vencimiento = fecha_vencimiento;
+            this.cantidad = cantidad;
+            this.cantidadNueva = cantidad;
         }
         
         
@@ -27,6 +29,26 @@ define(["angular", "js/models"], function(angular, models) {
         
         Lote.prototype.setFechaVencimiento = function(fechaVencimiento){
             this.fecha_vencimiento = fechaVencimiento;
+        };
+        
+        Lote.prototype.getCantidad = function(){
+            return this.cantidad;
+        };
+        
+        Lote.prototype.setCantidad = function(cantidad){
+            this.cantidad = cantidad;
+        };
+        
+        Lote.prototype.getNuevaCantidad = function(){
+            return this.cantidadNueva;
+        };
+        
+        Lote.prototype.setNuevaCantidad = function(cantidadNueva){
+            this.cantidadNueva = cantidadNueva;
+        };
+        
+        this.get = function(codigo_lote, fecha_vencimiento, cantidad){
+            return new Lote(codigo_lote, fecha_vencimiento, cantidad);
         };
         
         this.getClass = function(){

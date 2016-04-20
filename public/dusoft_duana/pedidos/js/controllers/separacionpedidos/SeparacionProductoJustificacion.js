@@ -22,6 +22,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 
                 $scope.rootJustificacion.justificaciones = [
                    {descripcion: "No hay fisico"},
+                   {descripcion: "No hay disponible"},
                    {descripcion: "Averiado"},
                    {descripcion: "Proximo A Vencer"},
                    {descripcion: "Trocado"},

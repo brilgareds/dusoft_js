@@ -2151,11 +2151,13 @@ function __sincronizarDetalleDocumento(obj, callback){
         codigoProducto:producto.codigo_producto,
         cantidad:producto.cantidad,
         porcentajeGravamen:producto.porcentaje_gravamen,
-        totalCosto:producto.total_costo,
+       // totalCosto:producto.total_costo,
+        totalCosto:producto.valor_total_iva,
         fechaVencimiento:producto.fecha_vencimiento_producto,
         lote:producto.lote,
         localizacionProducto:"N/A",
-        totalcostoPedido:producto.total_costo_pedido,
+        totalcostoPedido:producto.valor_unitario_iva,
+        //totalcostoPedido:producto.total_costo_pedido,
         valorUnitario:producto.valor_unitario_iva,
         descuento:0
     };

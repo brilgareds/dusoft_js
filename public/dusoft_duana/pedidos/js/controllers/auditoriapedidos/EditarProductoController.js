@@ -5,6 +5,7 @@ define(["angular", "js/controllers",
     'models/auditoriapedidos/DocumentoTemporal',
     'models/auditoriapedidos/ProductoPedido',
     'models/auditoriapedidos/LoteProductoPedido',
+    'includes/components/trasladoexistencias/TrasladoExistenciasController',
     "directive/auditoriapedidos/ValidarEventoFila"], function(angular, controllers) {
 
     var fo = controllers.controller('EditarProductoController', [
@@ -31,6 +32,7 @@ define(["angular", "js/controllers",
 
             $scope.justificaciones = [
                 {descripcion: "No hay fisico"},
+                {descripcion: "No hay disponible"},
                 {descripcion: "Averiado"},
                 {descripcion: "Proximo A Vencer"},
                 {descripcion: "Trocado"},
@@ -56,6 +58,21 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.itemValido = true;
 
             $modalInstance.opened.then(function() {
+                that.refrescarProducto();
+
+            });
+
+            $modalInstance.result.then(function() {
+                $scope.rootEditarProducto.producto.cantidad_separada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                $scope.rootEditarProducto.producto.cantidad_solicitada = $scope.rootEditarProducto.producto.cantidad_pendiente;
+                $scope.rootEditarProducto.producto.lotesSeleccionados = [];
+
+            }, function() {
+            });
+
+            
+            that.refrescarProducto = function(callback){
+                $scope.rootEditarProducto.producto.lotesSeleccionados = [];
                 that.traerItemsAuditados(function() {
                     that.traerDisponibles(function(data) {
 
@@ -74,22 +91,14 @@ define(["angular", "js/controllers",
                             that.agregarDisponibles(lotesDisponibles);
 
                         }
+                        if(callback)
+                            callback();
 
                     });
 
                 });
-
-            });
-
-            $modalInstance.result.then(function() {
-                $scope.rootEditarProducto.producto.cantidad_separada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
-                $scope.rootEditarProducto.producto.cantidad_solicitada = $scope.rootEditarProducto.producto.cantidad_pendiente;
-                $scope.rootEditarProducto.producto.lotesSeleccionados = [];
-
-            }, function() {
-            });
-
-
+            };
+            
             that.traerItemsAuditados = function(callback) {
 
                 var filtro = {};
@@ -850,6 +859,46 @@ define(["angular", "js/controllers",
                         $scope.rootEditarProducto.caja.getTipo()
                         );
 
+            };
+            
+            
+            $scope.onTrearExistencias = function(){
+                
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                var centro  = empresa.getCentroUtilidadSeleccionado();
+                
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: '../includes/components/trasladoexistencias/listadoexistencias.html',
+                    controller: "TrasladoExistenciasController",
+                    resolve: {
+                        producto: function() {
+                            return $scope.rootEditarProducto.producto;
+                        },
+                        centroUtilidad: function() {
+                            return  centro.getCodigo();
+                        },
+                        bodega: function() {
+                            return centro.getBodegaSeleccionada().getCodigo();
+                        },
+                        empresaId:function(){
+                            return empresa.getCodigo();
+                        }
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log("refrescar producto");
+                    that.refrescarProducto();
+
+                }, function() {
+                    that.refrescarProducto();
+                });
+                
             };
 
             $scope.cerrarModal = function() {

@@ -2,7 +2,6 @@
 
 define(["angular",
     "js/controllers",
-    'models/generacionpedidos/pedidosfarmacias/PedidoFarmacia',
     'includes/Constants/Url', 'includes/classes/Lote'], function(angular, controllers) {
 
     controllers.controller('TrasladoExistenciasController', [
@@ -10,16 +9,16 @@ define(["angular",
         'Empresa', 'CentroUtilidad', 'Bodega',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal", "$modalInstance", 'URL','Lote',
-        'codigoProducto', 'centroUtilidad', 'bodega', 'empresaId','$filter',
+        'producto', 'centroUtilidad', 'bodega', 'empresaId','$filter',
         function($scope, $rootScope, Request,
                 Empresa, CentroUtilidad, Bodega,
                 API, socket, AlertService, $state, Usuario,
-                localStorageService, $modal, $modalInstance, URL, Lote, codigoProducto, centroUtilidad,
+                localStorageService, $modal, $modalInstance, URL, Lote, producto, centroUtilidad,
                 bodega, empresaId,  $filter) {
 
             var self = this;
             var fechaActual = new Date();
-            console.log(" codigoProducto ", codigoProducto, " centroUtilidad ", centroUtilidad, " bodega ", bodega, " empresaId ", empresaId);
+            console.log(" producto ", producto, " centroUtilidad ", centroUtilidad, " bodega ", bodega, " empresaId ", empresaId);
             
             /*
              * @Author: Eduar
@@ -35,7 +34,8 @@ define(["angular",
                 session: {
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
-                }
+                },
+                producto:producto
             };
             
             
@@ -87,7 +87,7 @@ define(["angular",
                     data: {
                         productos:{
                             empresa_id:empresaId,
-                            codigo_producto:codigoProducto,
+                            codigo_producto:producto.getCodigoProducto(),
                             centro_utilidad_id :centroUtilidad,
                             bodega_id : bodega 
                         }
@@ -128,7 +128,7 @@ define(["angular",
                     data: {
                         productos:{
                             empresa_id:empresaId,
-                            codigo_producto:codigoProducto,
+                            codigo_producto:producto.getCodigoProducto(),
                             centro_utilidad_id :centroUtilidad,
                             bodega_id : bodega,
                             codigo_lote: $scope.rootExistencias.loteNuevo.getCodigo(),
@@ -164,7 +164,7 @@ define(["angular",
                     data: {
                         productos:{
                             empresa_id:empresaId,
-                            codigo_producto:codigoProducto,
+                            codigo_producto:producto.getCodigoProducto(),
                             centro_utilidad_id :centroUtilidad,
                             bodega_id : bodega,
                             existencias : lotes
@@ -174,9 +174,11 @@ define(["angular",
                 Request.realizarRequest(URL.CONSTANTS.API.PRODUCTOS.ACTUALIZAR_EXISTENCIAS, "POST", obj, function(data) {
                     if (data.status !== 200)  {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    }
-                    //self.traerExistencias();
-                    $scope.onCerrar();
+                    } else {
+                        //$scope.onCerrar();
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Se actualizaron las existencias correctamente");
+                        self.traerExistencias();
+                    }                   
 
                 });
                 

@@ -1,5 +1,6 @@
 
-define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers/movimientos/MovimientoController"], function(angular, controllers) {
+define(["angular", "js/controllers", 'includes/slide/slideContent', 
+        "controllers/movimientos/MovimientoController", "includes/components/trasladoexistencias/TrasladoExistenciasController"], function(angular, controllers) {
 
     var fo = controllers.controller('productoscontroller', [
         '$scope', '$rootScope', "Request",
@@ -47,7 +48,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             
             that.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             //permisos kardex
-            that.opcionesModulo = {
+            $scope.opcionesModulo = {
                 columnaCosto: {
                     'visible': that.opciones.sw_ver_costo
                 },
@@ -59,7 +60,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 },
                 columnaPrecioVenta: {
                     'visible': that.opciones.sw_precio_venta_clinica
-                }        
+                },
+                modificarExistencias:that.opciones.sw_modificar_existencias
             };
             
           
@@ -195,19 +197,73 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                     </div>'
                     },  
                     {field: 'precioRegulado', displayName: 'P.Reg', width:"80",  cellClass :"gridNumber"},
-                    {field: 'costo', displayName: 'Costo', width:"80", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
-                    {field: 'costo_ultima_compra', width:"80", displayName: 'C.U.C', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
+                    {field: 'costo', displayName: 'Costo', width:"80", visible:$scope.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
+                    {field: 'costo_ultima_compra', width:"80", displayName: 'C.U.C', visible:$scope.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
                     {field: 'codigoInvima', width:"100", displayName: 'Invima', cellClass :"gridNumber"},
                    // {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
-                    {field: 'precioContratacion', displayName: 'CP',  width: "80",visible:that.opcionesModulo.columnaCP.visible, cellClass :"gridNumber" },
+                    {field: 'precioContratacion', displayName: 'CP',  width: "80",visible:$scope.opcionesModulo.columnaCP.visible, cellClass :"gridNumber" },
                     {field: 'porc_iva', displayName: 'Iva', width: "50", cellClass :"gridNumber"},
-                    {field: 'movimiento', displayName: "", cellClass: "txt-center", width: "50", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
+                    {field: 'movimiento', displayName: "", cellClass: "txt-center dropdown-button", width: "70", 
+                        cellTemplate: '\
+                                        <div ng-if="!opcionesModulo.modificarExistencias">\
+                                            <button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button>\
+                                        </div>\
+                                        <div class="btn-group" ng-if="opcionesModulo.modificarExistencias">\
+                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
+                                        <ul class="dropdown-menu dropdown-options">\
+                                            <li>\
+                                                <a href="javascript:void(0);" ng-click="onRowClick(row)">Ver movimiento</a>\
+                                            </li>\
+                                            <li>\
+                                                <a href="javascript:void(0);" ng-click="onTrearExistencias(row.entity)">Modificar existencias</a>\
+                                            </li>\
+                                        </ul>\
+                                    </div>'
+                    }]
 
             };
             
 
             $scope.onSeleccionFiltro = function(filtro){
                 $scope.filtroProducto = filtro;
+            };
+            
+            $scope.onTrearExistencias = function(producto){ 
+                
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                var centro  = empresa.getCentroUtilidadSeleccionado();
+                
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: '../includes/components/trasladoexistencias/listadoexistencias.html',
+                    controller: "TrasladoExistenciasController",
+                    resolve: {
+                        producto: function() {
+                            return producto;
+                        },
+                        centroUtilidad: function() {
+                            return  centro.getCodigo();
+                        },
+                        bodega: function() {
+                            return centro.getBodegaSeleccionada().getCodigo();
+                        },
+                        empresaId:function(){
+                            return empresa.getCodigo();
+                        }
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log("refrescar producto");
+
+                }, function() {
+                    
+                });
+                
             };
 
 
@@ -451,9 +507,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             //eventos del sistema
             $rootScope.$on("cerrarSesion", $scope.cerrarSesion);
-
-
-
+          
             that.traerEmpresas(function() {
                 $timeout(function() {
                     $scope.filtro.empresa_seleccion = '03';

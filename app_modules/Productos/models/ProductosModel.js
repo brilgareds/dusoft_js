@@ -383,7 +383,13 @@ function __validarExistenciasProducto(params, callback){
     var totalExistencias = 0;
     //Lotes enviados por la app del cliente
     for(var i in existencias){
-        totalExistencias += parseInt(existencias[i].cantidadNueva);
+        var cantidadNueva = parseInt(existencias[i].cantidadNueva);
+        
+        if(isNaN(cantidadNueva)){
+           existencias[i].cantidadNueva = 0;
+           cantidadNueva = 0;
+        }
+        totalExistencias += cantidadNueva;
     }
     
     G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto).

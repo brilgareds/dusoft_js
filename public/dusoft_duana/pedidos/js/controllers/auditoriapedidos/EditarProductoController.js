@@ -874,8 +874,8 @@ define(["angular", "js/controllers",
                     templateUrl: '../includes/components/trasladoexistencias/listadoexistencias.html',
                     controller: "TrasladoExistenciasController",
                     resolve: {
-                        codigoProducto: function() {
-                            return $scope.rootEditarProducto.producto.codigo_producto;
+                        producto: function() {
+                            return $scope.rootEditarProducto.producto;
                         },
                         centroUtilidad: function() {
                             return  centro.getCodigo();
@@ -896,7 +896,7 @@ define(["angular", "js/controllers",
                     that.refrescarProducto();
 
                 }, function() {
-                    
+                    that.refrescarProducto();
                 });
                 
             };

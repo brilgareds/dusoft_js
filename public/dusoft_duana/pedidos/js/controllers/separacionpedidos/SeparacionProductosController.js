@@ -1,7 +1,8 @@
 //Este controlador sirve como parent para los controladores DetallepedidoSeparadoCliente y DetallepedidoSeparadoFarmacia, encapsula logica en comun por estos dos ultimos
 define(["angular", "js/controllers",
     "includes/slide/slideContent", "controllers/separacionpedidos/SeparacionProductoCantidadController",
-    "controllers/separacionpedidos/SeparacionProductoJustificacion", "controllers/separacionpedidos/SeparacionProductosPendientesController"],
+    "controllers/separacionpedidos/SeparacionProductoJustificacion", "controllers/separacionpedidos/SeparacionProductosPendientesController",
+    "includes/components/trasladoexistencias/TrasladoExistenciasController"],
         function(angular, controllers) {
 
             var fo = controllers.controller('SeparacionProductosController', [
@@ -33,7 +34,8 @@ define(["angular", "js/controllers",
                             {nombre: "Seleccionar", id: 0},
                             {nombre: "Justificar", id: 1},
                             {nombre: "Listar productos", id: 2},
-                            {nombre: "Refrescar", id: 3}
+                            {nombre: "Refrescar", id: 3},
+                            {nombre: "Modificar Existencias", id:4}
                         ];
 
 
@@ -615,7 +617,55 @@ define(["angular", "js/controllers",
                             self.refrescarProducto(function() {
 
                             });
+                        } else if(filtro.id === 4){
+                            $scope.onTrearExistencias()
                         }
+                    };
+                    
+                    /*
+                     * @author Eduar Garcia
+                     * +Descripcion: Handler del boton de modificar existencias del dropdown
+                     */
+                    $scope.onTrearExistencias = function(){ 
+                        var producto = $scope.rootSeparacion.empresa.getPedidoSeleccionado().getProductoSeleccionado();
+                        var empresa = Usuario.getUsuarioActual().getEmpresa();
+                        var centro  = empresa.getCentroUtilidadSeleccionado();
+
+                        $scope.opts = {
+                            size: 'lg',
+                            backdrop: 'static',
+                            dialogClass: "editarproductomodal",
+                            templateUrl: '../includes/components/trasladoexistencias/listadoexistencias.html',
+                            controller: "TrasladoExistenciasController",
+                            resolve: {
+                                producto: function() {
+                                    return producto;
+                                },
+                                centroUtilidad: function() {
+                                    return  centro.getCodigo();
+                                },
+                                bodega: function() {
+                                    return centro.getBodegaSeleccionada().getCodigo();
+                                },
+                                empresaId:function(){
+                                    return empresa.getCodigo();
+                                }
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts);
+
+                        modalInstance.result.then(function() {
+                            self.refrescarProducto(function() {
+
+                            });
+
+                        }, function() {
+                            self.refrescarProducto(function() {
+
+                            });
+                        });
+
                     };
 
 

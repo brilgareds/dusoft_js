@@ -55,7 +55,12 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                 console.log("modulos del sistema >>>>>>>>>>>>>",Usuario.getUsuarioActual().getModulos());
                 $scope.Usuario = Usuario.getUsuarioActual();
                 $scope.treedata = $scope.Usuario.getModulos();
-                $rootScope.$emit("inicializarDatosArbol");
+                
+                var timer = setTimeout(function(){
+                    
+                    $rootScope.$emit("inicializarDatosArbol");
+                    clearTimeout(timer);
+                }, 500);
             });
             
             

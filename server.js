@@ -31,6 +31,8 @@ G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
 G.XlsParser =  require("./lib/XlsParser");
+G.moment = require("moment");
+//G.moment = G.moment().format();
 
 G.soap = require('soap');
 G.program = require('commander');

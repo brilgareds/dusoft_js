@@ -11,7 +11,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.codigo_lote = codigo_lote;
             this.fecha_vencimiento = fecha_vencimiento;
             this.cantidad = cantidad;
-            this.nuevaCantidad = cantidad;
+            this.cantidadNueva = cantidad;
         }
         
         
@@ -40,11 +40,11 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         Lote.prototype.getNuevaCantidad = function(){
-            return this.nuevaCantidad;
+            return this.cantidadNueva;
         };
         
-        Lote.prototype.setNuevaCantidad = function(nuevaCantidad){
-            this.nuevaCantidad = nuevaCantidad;
+        Lote.prototype.setNuevaCantidad = function(cantidadNueva){
+            this.cantidadNueva = cantidadNueva;
         };
         
         this.get = function(codigo_lote, fecha_vencimiento, cantidad){

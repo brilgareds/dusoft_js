@@ -102,6 +102,12 @@ Productos.prototype.guardarExistenciaBodega = function(req, res){
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
+    
+    if(G.moment().isAfter(args.productos.fecha_vencimiento)){
+        res.send(G.utils.r(req.url, 'La fecha de vencimiento no es válida', 403, {}));
+        return;
+    }
+    
     var params = {};
     params.empresaId = args.productos.empresa_id;
     params.codigoProducto = args.productos.codigo_producto;

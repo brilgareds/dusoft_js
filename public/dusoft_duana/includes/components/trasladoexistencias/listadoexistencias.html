@@ -5,8 +5,11 @@
 <div class="modal-body">
 <div ng-grid="rootExistencias.listadoExistencias"  class="gridExistencias">
 </div>
-    
-    </br>
+<div class="row">
+    <h4 class="col-md-12">
+        <span class="pull-right">Total : {{ rootExistencias.cantidadLotes }}</span>
+    </h4>
+</div>
     
 <div class="row">
 
@@ -30,7 +33,7 @@
  
     </div>
 </div>
- <div class="modal-footer">
+    <div class="modal-footer" style="padding-left: 0px; padding-right: 0px;">
       <button class="btn btn-primary" ng-click="onActualizarExistenciasProducto()" >Actualizar Existencias</button>
       <button class="btn btn-warning" ng-click="onCerrar()">Cancelar</button>
        

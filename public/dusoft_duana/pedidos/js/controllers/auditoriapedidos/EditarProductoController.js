@@ -58,6 +58,21 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.itemValido = true;
 
             $modalInstance.opened.then(function() {
+                that.refrescarProducto();
+
+            });
+
+            $modalInstance.result.then(function() {
+                $scope.rootEditarProducto.producto.cantidad_separada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                $scope.rootEditarProducto.producto.cantidad_solicitada = $scope.rootEditarProducto.producto.cantidad_pendiente;
+                $scope.rootEditarProducto.producto.lotesSeleccionados = [];
+
+            }, function() {
+            });
+
+            
+            that.refrescarProducto = function(callback){
+                $scope.rootEditarProducto.producto.lotesSeleccionados = [];
                 that.traerItemsAuditados(function() {
                     that.traerDisponibles(function(data) {
 
@@ -76,22 +91,14 @@ define(["angular", "js/controllers",
                             that.agregarDisponibles(lotesDisponibles);
 
                         }
+                        if(callback)
+                            callback();
 
                     });
 
                 });
-
-            });
-
-            $modalInstance.result.then(function() {
-                $scope.rootEditarProducto.producto.cantidad_separada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
-                $scope.rootEditarProducto.producto.cantidad_solicitada = $scope.rootEditarProducto.producto.cantidad_pendiente;
-                $scope.rootEditarProducto.producto.lotesSeleccionados = [];
-
-            }, function() {
-            });
-
-
+            };
+            
             that.traerItemsAuditados = function(callback) {
 
                 var filtro = {};
@@ -856,7 +863,6 @@ define(["angular", "js/controllers",
             
             
             $scope.onTrearExistencias = function(){
-                console.log("onTrearExistencias");
                 
                 var empresa = Usuario.getUsuarioActual().getEmpresa();
                 var centro  = empresa.getCentroUtilidadSeleccionado();
@@ -884,6 +890,14 @@ define(["angular", "js/controllers",
                 };
                 
                 var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log("refrescar producto");
+                    that.refrescarProducto();
+
+                }, function() {
+                    
+                });
                 
             };
 

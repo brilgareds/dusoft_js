@@ -240,7 +240,8 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.lote,\
                 to_char(a.fecha_vencimiento, 'dd-mm-yyyy') AS fecha_vencimiento,\
-                a.existencia_actual\
+                a.existencia_actual,\
+                c.estado\
                 from existencias_bodegas_lote_fv a \
                 inner join existencias_bodegas b on a.empresa_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.codigo_producto = b.codigo_producto and a.centro_utilidad = :3 and a.bodega= :4\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and b.empresa_id = c.empresa_id\
@@ -419,8 +420,8 @@ function __actualizarExistenciasProducto(params, callback){
                     WHERE empresa_id = :3 AND centro_utilidad = :4 AND codigo_producto = :5 AND bodega = :6 AND\
                     lote = :7 AND fecha_vencimiento = :8";
     
-   var query = G.knex.raw(sql, {1 : existencia.codigoLoteNuevo, 2 : existencia.cantidadNueva, 3:params.empresaId, 4:params.centroUtilidad, 
-                                5:params.codigoProducto, 6:params.bodega, 7:existencia.codigoLote, 8:existencia.fechaVencimiento});
+   var query = G.knex.raw(sql, {1 : existencia.codigoLoteNuevo || existencia.codigo_lote, 2 : existencia.cantidadNueva, 3:params.empresaId, 4:params.centroUtilidad, 
+                                5:params.codigoProducto, 6:params.bodega, 7:existencia.codigoLote || existencia.codigo_lote, 8:existencia.fechaVencimiento || existencia.fecha_vencimiento});
    
    if(params.transaccion) query.transacting(params.transaccion);                   
    

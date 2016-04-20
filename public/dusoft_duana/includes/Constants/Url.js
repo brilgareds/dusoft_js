@@ -28,7 +28,8 @@
                 },
                 'PRODUCTOS':{
                     'CONSULTAR_EXISTENCIAS' : BASE_URL+"/Productos/consultarExistencias",
-                    'GUARDAR_EXISTENCIA_BODEGA' : BASE_URL+"/Productos/guardarExistenciaBodega"
+                    'GUARDAR_EXISTENCIA_BODEGA' : BASE_URL+"/Productos/guardarExistenciaBodega",
+                    'ACTUALIZAR_EXISTENCIAS' : BASE_URL+"/Productos/actualizarExistenciasProducto"
                 }
               },
               'STATIC' :{

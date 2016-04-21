@@ -54,7 +54,8 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
             res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {
                 existencias_producto: existencias_productos, 
                 disponibilidad_bodega: disponibilidad.disponible_bodega,
-                estado:(existencias_productos.length > 0) ? existencias_productos[0].estado : undefined
+                estado:disponibilidad.estado,
+                stock:disponibilidad.stock
             }));
         });
     });

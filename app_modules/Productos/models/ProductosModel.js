@@ -174,12 +174,18 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
 // Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
 //               PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 
-ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_producto, callback) {
-
-    var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia from existencias_bodegas a\
+ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_producto, filtro, callback) {
+    
+    var sqlAux = "";
+    
+    if(filtro.activo){
+        sqlAux = " and c.estado = '1'";
+    }
+    
+    var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia, c.estado from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
-                where a.empresa_id = :1 and a.codigo_producto = :2 and a.estado = '1' and c.estado = '1'";
+                where a.empresa_id = :1 and a.codigo_producto = :2 and a.estado = '1'" +sqlAux +" group by 2";
     
    G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto}).
    then(function(resultado){
@@ -392,7 +398,7 @@ function __validarExistenciasProducto(params, callback){
         totalExistencias += cantidadNueva;
     }
     
-    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto).
+    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto, {activo:true}).
     then(function(resultado){
         console.log("existencia ",parseInt(resultado[0].existencia), " total ", totalExistencias);
         

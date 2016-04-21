@@ -29,7 +29,7 @@ define(["angular", "js/controllers",
                         $scope.rootSeparacion.paginaactual = 0;
                         $scope.rootSeparacion.nombreCliente = "";
                         $scope.rootSeparacion.documento;
-
+                        $scope.rootSeparacion.existenciaTotal;
                         $scope.filtros = [
                             {nombre: "Seleccionar", id: 0},
                             {nombre: "Justificar", id: 1},
@@ -296,16 +296,20 @@ define(["angular", "js/controllers",
                         var pedido = EmpresaPedido.getPedidoSeleccionado();
                         var producto = pedido.getProductoSeleccionado();
                         var lotes = datos.existencias_producto;
-
                         producto.vaciarLotes();
+                        
+                        producto.setEstado(datos.estado);
 
                         var disponible = (datos.disponibilidad_bodega) ? parseInt(datos.disponibilidad_bodega) : 0;
+                        $scope.rootSeparacion.existenciaTotal = 0;
                         for (var i in lotes) {
                             var _lote = lotes[i];
                             var lote = LoteProductoPedido.get(_lote.lote, _lote.fecha_vencimiento);
                             lote.setDisponible(disponible).setExistenciaActual(_lote.existencia_actual);
                             producto.agregarLote(lote);
+                            $scope.rootSeparacion.existenciaTotal +=  parseInt(_lote.existencia_actual);
                         }
+                        console.log("datos del producto ", datos, " existencias ", $scope.rootSeparacion.existenciaTotal);
 
                     };
 

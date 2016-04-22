@@ -19,6 +19,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado_actual_pedido;
             this.estado;
             this.estado_separacion;
+            this.descripcionTipoPedido = "";
         }
 
         // Pedidos
@@ -31,8 +32,18 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado_actual_pedido = datos.estado_actual_pedido || null;
             this.estado = datos.estado || null;
             this.estado_separacion = datos.estado_separacion || null;
+            this.descripcionTipoPedido = datos.descripcion_tipo_producto || "";
         };
-
+        
+        
+        Pedido.prototype.setDescripcionTipoPedido = function(descripcionTipoPedido){
+            this.descripcionTipoPedido = descripcionTipoPedido;
+            return this;
+        };
+        
+        Pedido.prototype.getDescripcionTipoPedido = function(){
+            return this.descripcionTipoPedido;
+        };
 
         Pedido.prototype.setNumeroPedido = function(numero_pedido){
             this.numero_pedido = numero_pedido;

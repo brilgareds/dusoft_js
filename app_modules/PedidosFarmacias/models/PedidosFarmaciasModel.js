@@ -537,11 +537,16 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "g.empresa_id as despacho_empresa_id",
         "g.prefijo as despacho_prefijo", 
         "g.numero as despacho_numero", 
-        G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")
+        G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
+        G.knex.raw("(\
+                        SELECT bb.descripcion FROM solicitud_productos_a_bodega_principal_detalle AS aa \
+                        INNER JOIN inv_tipo_producto AS bb ON bb.tipo_producto_id = aa.tipo_producto\
+                        WHERE aa.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id limit 1\
+                  ) as descripcion_tipo_producto")
         
     ];
     
-    G.knex.column(columns).
+    var query = G.knex.column(columns).
     from("solicitud_productos_a_bodega_principal as a").
     innerJoin("centros_utilidad as b", function(){
          this.on("a.farmacia_id", "b.empresa_id" ).
@@ -584,9 +589,13 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
        
     }).
     limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).
-    orderByRaw("1 DESC").
-    then(function(rows){
+    offset((pagina - 1) * G.settings.limit);
+    
+    if(G.program.prod){
+        query.orderByRaw("1 DESC");
+    }
+    
+    query.then(function(rows){
         callback(false, rows);
     }).
     catch(function(err){

@@ -82,12 +82,13 @@ define(["angular",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='habilitar_asignacion_pedidos(row.entity)'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         cellTemplate: "<button  ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>", width: "10%"},
-                    {field: 'numero_pedido', displayName: 'Pedido', width: "5%"},
-                    {field: 'farmacia.nombre_farmacia', displayName: 'Zona', width: "30%"},
-                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia', width: "25%"},
+                    {field: 'numero_pedido', displayName: 'Pedido', width: "80"},
+                    {field: 'descripcionTipoPedido', displayName: 'Tipo Productos', width: "110"},
+                    {field: 'farmacia.nombre_farmacia', displayName: 'Zona', width: "27%"},
+                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega', width: "10%"},
                     {field: 'fecha_registro', displayName: "Fecha Registro", width: "10%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width:100,
                         cellTemplate: '<div class="btn-group">\
                                             <button ng-disabled="habilitar_opciones(row.entity)" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
@@ -248,7 +249,7 @@ define(["angular",
 
             $scope.crearPedido = function(obj) {
                 var pedido = PedidoAuditoria.get();
-                pedido.setDatos(obj);
+                pedido.setDatos(obj); 
 
                 var cliente = Farmacia.get(obj.farmacia_id, obj.bodega_id, obj.nombre_farmacia, obj.nombre_bodega);
 

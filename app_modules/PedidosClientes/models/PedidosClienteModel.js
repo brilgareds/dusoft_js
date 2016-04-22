@@ -161,7 +161,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         "e.empresa_id as despacho_empresa_id",
         "e.prefijo as despacho_prefijo", 
         "e.numero as despacho_numero", 
-        G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")
+        G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
+        "f.descripcion as descripcion_tipo_producto"
     ];
 
     var query = G.knex.column(columns). from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {
@@ -176,6 +177,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         }
     }).
     leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.pedido_cliente_id", "e.pedido_cliente_id").
+    innerJoin("inv_tipo_producto as f", "a.tipo_producto", "f.tipo_producto_id").
     andWhere(function() {
         
         if(filtro){
@@ -208,7 +210,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     //La base del 170 no responde con un orderby,  por esa razon se condiciona para produccion
     if(G.program.prod){
     query.orderByRaw("4 DESC");
-   }
+    }
     
     query.then(function(rows) {
         callback(false, rows);

@@ -532,7 +532,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     }).innerJoin("vnts_vendedores as c", function() {
         this.on("a.tipo_id_vendedor", "c.tipo_id_vendedor").
              on("a.vendedor_id", "c.vendedor_id");
-    }).innerJoin("ventas_ordenes_pedidos_estado as d", function() {
+    }).innerJoin("ventas_ordenes_pedidos_estado as d", function() { 
         this.on("a.pedido_cliente_id", "d.pedido_cliente_id").
              on("a.estado_pedido", "d.estado").
              on(G.knex.raw("(d.sw_terminado is null or d.sw_terminado = ?)", ['0']));
@@ -541,6 +541,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
        leftJoin("inv_bodegas_movimiento_tmp as g", function() {
         this.on("f.usuario_id", "g.usuario_id").
              on("f.doc_tmp_id", "g.doc_tmp_id");
+             
     }).where(function() {
 
         /*=========================================================================*/
@@ -568,11 +569,15 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         this.where("a.estado_pedido", estado_pedido);
 
     });
-
-        if (filtro.numeroPedido) {
-            query.where(G.knex.raw("a.pedido_cliente_id :: varchar"), "=", termino_busqueda);
-         }else{
-
+    
+    query.andWhere(function(){
+        this.where(G.knex.raw("a.fecha_registro >= ?",[new Date().getFullYear()+"-01-01 00:00:00"]));
+    });
+    
+    if (filtro.numeroPedido) {
+        query.where(G.knex.raw("a.pedido_cliente_id :: varchar"), "=", termino_busqueda);
+    } else {
+        
         query.andWhere(function() {
             this.where(G.knex.raw("a.pedido_cliente_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
                     orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
@@ -594,6 +599,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     }).then(function(rows) {
         callback(false, rows, query.totalRegistros);
     }).catch(function(err) {
+        console.log("error generado ", err);
         callback(err);
     }).done();
 };

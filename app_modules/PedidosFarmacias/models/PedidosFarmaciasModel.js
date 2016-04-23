@@ -837,6 +837,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         on("h.usuario_id", "i.usuario_id");
     }).
     where(function(){
+        
+        this.where(G.knex.raw("a.fecha_registro >= ?",[new Date().getFullYear()+"-01-01 00:00:00"]));
+
         /*=========================================================================*/
         // Se implementa este filtro, para poder filtrar los pedidos del clientes 
         // asignados al operario de bodega y saber si el pedido tiene temporales o 

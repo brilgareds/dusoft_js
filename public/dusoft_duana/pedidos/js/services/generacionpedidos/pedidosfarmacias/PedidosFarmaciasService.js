@@ -124,6 +124,7 @@ define(["angular", "js/services"], function(angular, services) {
                 var centroUtilidad = CentroUtilidadPedidoFarmacia.get(obj.nombre_farmacia, obj.centro_utilidad);
                 var bodega = BodegaPedidoFarmacia.get(obj.nombre_bodega, obj.bodega_id || obj.bodega);
                 farmacia.setCentroUtilidadSeleccionado(centroUtilidad).getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega);
+                farmacia.setZona(obj.zona);
                 
                 pedido.setFarmaciaDestino(farmacia);
 

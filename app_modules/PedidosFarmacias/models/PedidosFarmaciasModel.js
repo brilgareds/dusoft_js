@@ -542,7 +542,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                         SELECT bb.descripcion FROM solicitud_productos_a_bodega_principal_detalle AS aa \
                         INNER JOIN inv_tipo_producto AS bb ON bb.tipo_producto_id = aa.tipo_producto\
                         WHERE aa.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id limit 1\
-                  ) as descripcion_tipo_producto")
+                  ) as descripcion_tipo_producto"),
+        "h.descripcion as zona"
         
     ];
     
@@ -565,6 +566,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     }).
     leftJoin("inv_bodegas_movimiento_tmp_despachos_farmacias as f", "a.solicitud_prod_a_bod_ppal_id", "f.solicitud_prod_a_bod_ppal_id").
     leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.solicitud_prod_a_bod_ppal_id", "g.solicitud_prod_a_bod_ppal_id ").
+    leftJoin("zonas_bodegas as h", "c.zona_id", "h.id").
     where(function(){
         this.where("a.farmacia_id", empresa_id);
         
@@ -777,7 +779,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
 PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {    
     var columnas = [
         "h.doc_tmp_id as documento_temporal_id",
-        "h.usuario_id",
+        "h.usuario_id", 
         "a.solicitud_prod_a_bod_ppal_id as numero_pedido", 
         "a.farmacia_id", 
         "d.empresa_id", 
@@ -809,7 +811,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         "f.responsable_id",
         "g.nombre as responsable_pedido",
         "f.fecha as fecha_asignacion_pedido", 
-        "i.fecha_registro as fecha_separacion_pedido"
+        "i.fecha_registro as fecha_separacion_pedido",
+        "j.descripcion as zona"
     ];
     
     var query = G.knex("solicitud_productos_a_bodega_principal as a").
@@ -836,6 +839,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         this.on("h.doc_tmp_id", "i.doc_tmp_id").
         on("h.usuario_id", "i.usuario_id");
     }).
+    leftJoin("zonas_bodegas as j", "b.zona_id", "j.id").
     where(function(){
         
         this.where(G.knex.raw("a.fecha_registro >= ?",[new Date().getFullYear()+"-01-01 00:00:00"]));

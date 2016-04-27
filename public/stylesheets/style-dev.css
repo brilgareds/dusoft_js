@@ -1,0 +1,16 @@
+@import url("style.css?prod=true");
+
+nav.navbar-fixed-top{
+    background-color: #f5f5f5;
+    border-color: #f5f5f5;
+    color:black;
+}
+
+div.contenedormenu .navbar{
+    background-color: #f5f5f5;
+}
+
+
+nav.navbar-default .navbar-nav>li>a, nav.navbar-default .navbar-brand{
+    color:black;
+}

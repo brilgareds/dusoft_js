@@ -2,6 +2,7 @@ var TemporalesCronjob = function() {
    var that = this;
    //Cronjob solo corren en modo produccion
    if(G.program.prod){
+       console.log("iniciando cronjob de temporales");
         that.iniciar();
    }
 

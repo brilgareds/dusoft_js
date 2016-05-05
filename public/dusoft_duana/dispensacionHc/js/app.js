@@ -24,7 +24,7 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "chart",
-    "models/EmpresaAprobacionDespacho",
+    "models/EmpresaDispensacionHc",
     "models/CentroUtilidadInduccion",
     "models/BodegaInduccion",
     "models/ProductoInduccion",

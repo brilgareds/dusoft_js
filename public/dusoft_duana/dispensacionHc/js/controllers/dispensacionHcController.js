@@ -2,10 +2,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
     controllers.controller('dispensacionHcController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-                'EmpresaAprobacionDespacho', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion','AprobacionDespacho',
+                'EmpresaDispensacionHc', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion','AprobacionDespacho',
                 "$timeout", "$filter","localStorageService","$state","dispensacionHcService",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
-                        EmpresaAprobacionDespacho, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
+                        EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
                         $timeout, $filter,localStorageService,$state,dispensacionHcService) {
 
                 var that = this;
@@ -34,7 +34,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                 that.init = function(empresa, callback) {
                     $scope.root = {};
-                    $scope.root.empresaSeleccionada = EmpresaAprobacionDespacho.get("TODAS LAS EMPRESAS", -1);
+                    $scope.root.empresaSeleccionada = EmpresaDispensacionHc.get("TODAS LAS EMPRESAS", -1);
                     $scope.root.empresaNombre;
                     $scope.session = {
                         usuario_id: Usuario.getUsuarioActual().getId(),
@@ -46,14 +46,37 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
 
                     $scope.filtros = [
-                    {nombre: "Prefijo", filtroPrefijo: true},
-                    {nombre: "Numero", filtroNombre: true}
-
+                   // {nombre: "Documento", filtroPrefijo: true},
+                    {nombre: "Nombres", filtroNombre: true},
+                    {nombre: "Apellidos", filtroApellidos: true},
+                    {nombre: "Formula", filtroFormula: true},
+                    {nombre: "Evolucion", filtroEvolucion: true}
                     ];
+                    
                     $scope.filtro = $scope.filtros[0];
                    //Deja en estado visible el buscador
                     $scope.visibleBuscador = true;
                     $scope.visibleBotonBuscador = true;
+                    
+                    
+                    
+                    
+                    
+                    /**
+                    * +Descripcion Filtros para tipo de documento
+                    * 
+                    */
+                    $scope.filtrosTipoDocumento = [                   
+                        {nombre: "Adulto sin identificacion", filtroIdenficacion: true},
+                        {nombre: "Cedula de Ciudadania", filtroCiudadania: true},
+                        {nombre: "Cedula de extranjeria", filtroExtranjeria: true}
+
+
+                        ];
+                    $scope.tipoDocumento = $scope.filtrosTipoDocumento[0];   
+                    
+                    
+                    
                     
                     callback();
                 };
@@ -69,7 +92,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
 
                 };
+                
+                
+                $scope.onSeleccionTipoDocumento = function(filtrosTipoDocumento) {
 
+                    $scope.tipoDocumento = filtrosTipoDocumento;
+                    $scope.datos_view.termino_busqueda = '';
+
+                    $scope.visibleBuscador = true;
+                    $scope.visibleListaEstados = false;
+                    $scope.visibleBotonBuscador = true;
+
+
+                };
                
                 /*
                  * @author Cristian Ardila
@@ -97,7 +132,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 that.render_empresas = function(empresas) {
                     for (var i in empresas) {
-                         var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
+                         var _empresa = EmpresaDispensacionHc.get(empresas[i].razon_social, empresas[i].empresa_id);
                          $scope.empresas.push(_empresa);
                     }
                 };

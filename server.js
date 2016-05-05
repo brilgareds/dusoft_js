@@ -242,6 +242,26 @@ if (cluster.isMaster) {
     app.all('/dusoft_duana', function(req, res) {
         res.redirect('/dusoft_duana/login');
     });
+    
+    
+    //Permite hacer render de reglas especificas de css para el entorno de pruebas
+    app.all('/stylesheets/style.css', function(req, res, next){
+        console.log("params for query ", req.query);
+        
+        //Si es produccion se hace render del css normal
+        if(G.program.prod || req.query.prod) {
+           next();
+           return;
+        } else {
+           var path = "public/stylesheets/style-dev.css";
+           var file = G.fs.readFileSync(path);
+           res.writeHeader(200, {"Content-Type": "text/css"});  
+           res.write(file);
+           res.end(); 
+        }
+        
+                
+    });
 
     process.on('SIGINT', function() {
         io.sockets.emit('onDisconnect');

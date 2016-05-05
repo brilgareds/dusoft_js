@@ -1,6 +1,6 @@
 
 <div class="modal-view" id="editarproductomodal">
-    <alert ng-show="rootEditarProducto.validacionproducto.valido == false" type="danger">{{rootEditarProducto.validacionproducto.mensaje}}</alert>
+    <alert ng-show="rootEditarProducto.validacionproducto.valido == false" type="danger"><span ng-bind="rootEditarProducto.validacionproducto.mensaje"></span></alert>
     <div class="panel panel-info">
         <div class="panel-heading">
             <h5 class="panel-title">Información General</h5>
@@ -8,19 +8,19 @@
         </div>
         <div class="panel-body">
             <div class="row" >
-                <div class ="col-md-3"><div class="lbl_editar_producto">Codigo</div>{{::rootEditarProducto.producto.codigo_producto}}</div>
-                <div class ="col-md-9"><div class="lbl_editar_producto">Descripcion</div>{{::rootEditarProducto.producto.descripcion}}</div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Codigo</div><span ng-bind="rootEditarProducto.producto.codigo_producto"></span></div>
+                <div class ="col-md-9"><div class="lbl_editar_producto">Descripcion</div><span ng-bind="rootEditarProducto.producto.descripcion"></span></div>
             </div>
            
             <div class="row">
-                <div class="col-md-3"><div class="lbl_editar_producto">Solicitado</div>{{::rootEditarProducto.producto.cantidad_solicitada_real}}</div>
-                <div class ="col-md-3"><div class="lbl_editar_producto">Disponible</div>{{rootEditarProducto.producto.disponible}}</div>
+                <div class="col-md-3"><div class="lbl_editar_producto">Solicitado</div><span ng-bind="rootEditarProducto.producto.cantidad_solicitada_real"></span></div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Disponible</div><span ng-bind="rootEditarProducto.producto.disponible"></span></div>
 
             </div>
 
             <div class="row">
-                <div class ="col-md-3"><div class="lbl_editar_producto">Ingresado / Pendiente</div> {{rootEditarProducto.producto.obtenerCantidadSeleccionada()}} / {{rootEditarProducto.producto.cantidad_pendiente}}</div>
-                <div class ="col-md-3"><div class="lbl_editar_producto">Justificación  Separador</div><div>{{rootEditarProducto.producto.lote.justificacion_separador}}</div></div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Ingresado / Pendiente</div><span ng-bind="rootEditarProducto.producto.obtenerCantidadSeleccionada()"></span> / <span ng-bind="rootEditarProducto.producto.cantidad_pendiente"></span></div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Justificación  Separador</div><div><span ng-bind="rootEditarProducto.producto.lote.justificacion_separador"></span></div></div>
             </div>
         </div>
     </div>
@@ -48,9 +48,9 @@
                 <div class="span6" style="width:250px;">
                     
                     <ui-select  ng-model="rootEditarProducto.justificacionAuditor" theme="select2" class="form-control selectgeneral pull-left" ng-change="justificacionSeleccionada()">
-                        <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.descripcion}}</ui-select-match>
+                        <ui-select-match  placeholder="Seleccionar Documento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                         <ui-select-choices repeat="justificacion in  justificaciones| filter:$select.search">
-                            {{justificacion.descripcion}}
+                            <span ng-bind="justificacion.descripcion"></span>
                         </ui-select-choices>
                     </ui-select>
                 </div>

@@ -17,9 +17,9 @@
                     
                     
                     <ui-select  ng-model="$parent.$parent.seleccion" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado(true)">
-                        <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.prefijo}}-{{$select.selected.descripcion}}</ui-select-match>
+                        <ui-select-match  placeholder="Seleccionar Documento"><span ng-bind="$select.selected.prefijo"></span>-<span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                         <ui-select-choices repeat="documento_usuario in  documentos_usuarios| filter:$select.search">
-                            {{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}
+                            <span ng-bind="documento_usuario.prefijo"></span>-<span ng-bind="documento_usuario.descripcion"></span>
                         </ui-select-choices>
                     </ui-select>
 
@@ -35,7 +35,7 @@
 
                 <div class="row" align="center">  
                     </br></br>
-                    <h2>Pedido N°: {{numero_pedido }}</h2>
+                    <h2>Pedido N°: <span ng-bind="numero_pedido"></span></h2>
                 </div>
             </div>
         </div>
@@ -67,14 +67,14 @@
         <div class="col-sm-12 col-md-6 paddingLeftZero">
             <div class="panel panel-default marginBottom5">
                 <div class="panel-heading">
-                    <h4 class="h4MarginTopBottom">Hacia : <a href="#">{{::cliente.nombre_tercero}}</a></h4>
+                    <h4 class="h4MarginTopBottom">Hacia : <a href="#"><span ng-bind="cliente.nombre_tercero"></span></a></h4>
                 </div>
                 <div class="panel-body">
 
                     <table>
-                        <tr><th>{{cliente.tipo_id_tercero}}: </th><td>{{::cliente.id}}</td></tr>
-                        <tr><th>Dirección: &nbsp;</th><td>{{::cliente.direccion_cliente}}</td></tr>
-                        <tr><th>Teléfono: </th><td>{{::cliente.telefono_cliente}}</td></tr>
+                        <tr><th><span ng-bind="cliente.tipo_id_tercero"></span>: </th><td><span ng-bind="cliente.id"></span></td></tr>
+                        <tr><th>Dirección: &nbsp;</th><td><span ng-bind="cliente.direccion_cliente"></span></td></tr>
+                        <tr><th>Teléfono: </th><td><span ng-bind="cliente.telefono_cliente"></span></td></tr>
                     </table>
 
                 </div>

@@ -14,7 +14,7 @@
                     </div>
 
                     <div class="col-sm-6 col-md-6 col-lg-6">
-                        <h3 class="h4MarginTopBottom">Pedido N°: {{root.pedido.get_numero_pedido()}}</h3>
+                        <h3 class="h4MarginTopBottom">Pedido N°: <span ng-bind="root.pedido.get_numero_pedido()"></span></h3>
                     </div>
                 </div>
 
@@ -35,9 +35,9 @@
                                         <h4 class="h4MarginTopBottom">Empresa: </h4>
 
                                         <ui-select ng-change="onEmpresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
-                                            <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.getNombre()}}</ui-select-match>
+                                            <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                                             <ui-select-choices repeat="empresa in root.empresasOrigen | filter:$select.search">
-                                                {{empresa.getNombre()}}
+                                                <span ng-bind="empresa.getNombre()"></span>
                                             </ui-select-choices>
                                         </ui-select>
                                     </div>
@@ -50,9 +50,9 @@
 
 
                                         <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
-                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
+                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                                             <ui-select-choices repeat="centro in root.pedido.getFarmaciaOrigen().getCentrosUtilidad() | filter:$select.search">
-                                                {{centro.getNombre()}}
+                                                <span ng-bind="centro.getNombre()"></span>
                                             </ui-select-choices>
                                         </ui-select>
                                     </div>
@@ -64,9 +64,9 @@
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
                                         <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
-                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
+                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
-                                                {{bodega.getNombre()}}
+                                                <span ng-bind="bodega.getNombre()"></span>
                                             </ui-select-choices>
                                         </ui-select>
                                     </div>
@@ -97,9 +97,9 @@
 
 
                                         <ui-select  ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" ng-model="root.pedido.farmaciaDestino" theme="select2" class="form-control selectgeneral pull-left" ng-change="onEmpresaDestinoSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
-                                            <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.getNombre()}}</ui-select-match>
+                                            <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                                             <ui-select-choices repeat="empresa in root.empresasDestino | filter:$select.search">
-                                                {{empresa.getNombre()}}
+                                                <span ng-bind="empresa.getNombre()"></span>
                                             </ui-select-choices>
                                         </ui-select>
 
@@ -112,9 +112,9 @@
                                         <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
                                         <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
-                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
+                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                                             <ui-select-choices repeat="centro in root.pedido.getFarmaciaDestino().getCentrosUtilidad() | filter:{nombre: $select.search}">
-                                                {{centro.getNombre()}} 
+                                                <span ng-bind="centro.getNombre()"></span>
                                             </ui-select-choices>
                                         </ui-select>
 
@@ -127,9 +127,9 @@
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
                                         <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="(deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3') || (!root.pedido.farmaciaOrigen.centroUtilidad.bodega)">
-                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
+                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
-                                                {{bodega.getNombre()}}
+                                                <span ng-bind="bodega.getNombre()"></span>
                                             </ui-select-choices>
                                         </ui-select>
 
@@ -229,14 +229,14 @@
                                          Arrastrar y Soltar el archivo AQUI!!                                                   
                                     </div>
                                     <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
-                                        Nombre Archivo : <label>{{file.name}}</label>    
+                                        Nombre Archivo : <label><span ng-bind="file.name"></span></label>    
 
                                         <!-- Barra de Progreso - Inicio -->
                                         <div class="progress progress-striped" ng-class="{active: file.isUploading()}">
                                             <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
                                                  aria-valuemax="100" ng-style="{width: rootPedidoFarmaciaTemporal.progresoArchivo + '%'}">
                                             </div>
-                                            <span class="sr-only ng-binding">{{rootPedidoFarmaciaTemporal.progresoArchivo}}% Completado</span>
+                                            <span class="sr-only ng-binding"><span ng-bind="rootPedidoFarmaciaTemporal.progresoArchivo"></span>% Completado</span>
                                         </div>
                                         <!-- Barra de Progreso - Fin -->
 

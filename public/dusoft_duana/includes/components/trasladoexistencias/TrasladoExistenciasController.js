@@ -9,12 +9,12 @@ define(["angular",
         'Empresa', 'CentroUtilidad', 'Bodega',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal", "$modalInstance", 'URL','Lote',
-        'producto', 'centroUtilidad', 'bodega', 'empresaId','$filter',
+        'producto', 'centroUtilidad', 'bodega', 'empresaId','$filter', '$timeout',
         function($scope, $rootScope, Request,
                 Empresa, CentroUtilidad, Bodega,
                 API, socket, AlertService, $state, Usuario,
                 localStorageService, $modal, $modalInstance, URL, Lote, producto, centroUtilidad,
-                bodega, empresaId,  $filter) {
+                bodega, empresaId,  $filter, $timeout) {
 
             var self = this;
             var fechaActual = new Date();
@@ -191,8 +191,12 @@ define(["angular",
              */
             self.finalizar = function(){
                console.log("finalizando ventana");
-               $scope.rootExistencias = {};
-               $scope.$$watchers = null;
+               //Timer para no impedir la animacion de la ventana
+               $timeout(function(){
+                    $scope.rootExistencias = {};
+                    $scope.$$watchers = null;
+                   
+               }, 500);
             };
             
             /*
@@ -237,14 +241,17 @@ define(["angular",
              * +Descripcion: Listeners de la ventana al abrir y cerrar
              */
             $modalInstance.opened.then(function() {
-                            
-                self.traerExistencias(function(valido){
-                    if(valido){
+                //Timer para permitir que la animacion termine
+                $timeout(function(){
+                    
+                    self.traerExistencias(function(valido){
+                        if(valido){
 
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error consultando las existencias");
-                    }
-                });
+                        } else {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error consultando las existencias");
+                        }
+                    });
+                }, 500);
 
             });
             

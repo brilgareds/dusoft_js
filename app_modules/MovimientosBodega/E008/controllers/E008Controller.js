@@ -1710,7 +1710,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function(resultado){
         pedido = resultado[0];
         return G.Q.ninvoke(that.m_pedidos_clientes,'obtener_responsables_del_pedido', numero_pedido);
-    }).then(function(responsables){ 
+    }).then(function(responsables){  
         var existe_estado_auditoria = false;
         var _responsables = [];
 

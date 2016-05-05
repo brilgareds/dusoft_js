@@ -1,14 +1,14 @@
 <div class="modal-header">
   <button type="button" class="close" ng-click="onCerrar()">&times;</button>
     <h4 class="modal-title">Modificar lotes del  producto: </h4>
-    <h5>{{rootExistencias.producto.getDescripcion()}}</h5>
+    <h5><span ng-bind="rootExistencias.producto.getDescripcion()"></span></h5>
 </div>
 <div class="modal-body">
 <div ng-grid="rootExistencias.listadoExistencias"  class="gridExistencias">
 </div>
 <div class="row">
     <h4 class="col-md-12">
-        <span class="pull-right">Total : {{ rootExistencias.cantidadLotes }}</span>
+        <span class="pull-right">Total : <span ng-bind="rootExistencias.cantidadLotes"></span></span>
     </h4>
 </div>
     

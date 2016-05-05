@@ -383,7 +383,8 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                      when a.estado = '1' then 'Separacion Finalizada' \
                      when a.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion,   \
                 c.fecha_registro,\
-                b.fecha_registro as fecha_separacion_pedido\
+                b.fecha_registro as fecha_separacion_pedido,\
+                h.descripcion as zona\
                 from inv_bodegas_movimiento_tmp_despachos_farmacias a\
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
@@ -391,6 +392,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                 inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad \
                 inner join empresas f ON e.empresa_id = f.empresa_id \
                 inner join system_usuarios g ON c.usuario_id = g.usuario_id \
+                left join zonas_bodegas as h ON h.id = d.zona_id\
                 where a.solicitud_prod_a_bod_ppal_id = ? ";
     
     G.knex.raw(sql, [numero_pedido]).

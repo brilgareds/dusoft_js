@@ -152,7 +152,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
         callback(false, resultado.rows);
         
     }).catch(function(err) {
-     
+        console.log("error en planillas clientes ", err);
         callback(err);
     });
 };

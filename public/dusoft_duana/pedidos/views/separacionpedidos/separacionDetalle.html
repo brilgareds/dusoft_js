@@ -24,9 +24,9 @@
                         <div class="row">
                             <div class ="col-md-1">
                                 <div class="lbl_editar_producto">Pedido</div>
-                                 {{rootDetalle.pedido.get_numero_pedido()}}
+                                <span ng-bind="rootDetalle.pedido.get_numero_pedido()"></span>
                             </div>
-                            <div class="col-md-3"><div class="lbl_editar_producto">Cliente</div>{{rootDetalle.nombreCliente}}</div>
+                            <div class="col-md-3"><div class="lbl_editar_producto">Cliente</div><span ng-bind="rootDetalle.nombreCliente"></span></div>
                         </div>
                     </div>
 

@@ -45,10 +45,10 @@
 
             <div class="input-group">
                 <div class="input-group-btn">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtroProducto.nombre}} <span class="caret"></span></button>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span ng-bind="filtroProducto.nombre"></span> <span class="caret"></span></button>
                     <ul class="dropdown-menu">
                         <li ng-repeat="filtro in filtros">
-                            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)"><span ng-bind="filtro.nombre"></span></a>
                         </li>
                     </ul>
                 </div><!-- /btn-group -->

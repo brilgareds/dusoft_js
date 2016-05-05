@@ -1,11 +1,11 @@
 <div class="modal-header">
   <button type="button" class="close" ng-click="cancel()">&times;</button>
-    <h4 class="modal-title">Producto: {{row.nombre}}</h4>
+  <h4 class="modal-title">Producto: <span ng-bind="row.nombre"></span></h4>
 </div>
 <div class="modal-body">
-        <div>Codigo: {{row.codigo}}</div>
-        <div>Precio: {{row.precio}}</div>
-        <div>Existencia: {{row.existencia}}</div></br>
+    <div>Codigo: <span ng-bind="row.codigo"></span></div>
+    <div>Precio: <span ng-bind="row.precio"></span></div>
+    <div>Existencia: <span ng-bind="row.existencia"></span></div></br>
 
 
   <h4 >Seleccionar fecha de movimiento</h4>

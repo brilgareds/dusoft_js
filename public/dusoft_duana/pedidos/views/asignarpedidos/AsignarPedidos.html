@@ -19,9 +19,9 @@
                     <p >
                         <fieldset>                           
                            <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
-                                <ui-select-match  placeholder="Seleccionar Estado Pedido">{{$select.selected.nombre}}</ui-select-match>
+                               <ui-select-match  placeholder="Seleccionar Estado Pedido"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
                                 <ui-select-choices repeat="estado_pedido in estados_pedido| filter:$select.search">
-                                    {{estado_pedido.nombre}}
+                                    <span ng-bind="estado_pedido.nombre"></span>
                                 </ui-select-choices>
                            </ui-select>
                         </fieldset>  
@@ -50,10 +50,10 @@
                        <button type="button" class="btn btn-default dropdown-toggle" 
                                data-toggle="dropdown" 
                                aria-haspopup="true" 
-                               aria-expanded="false">{{rootSeleccionPedido.filtro.nombre}} <span class="caret"></span></button>
+                               aria-expanded="false"><span ng-bind="rootSeleccionPedido.filtro.nombre"></span> <span class="caret"></span></button>
                        <ul class="dropdown-menu">
                            <li ng-repeat="filtro in rootSeleccionPedido.filtros">
-                               <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)">{{filtro.nombre}}</a>
+                               <a href="javascript:void(0)" ng-click="onSeleccionFiltroPedido(filtro)"><span ng-bind="filtro.nombre"></span></a>
                            </li>
                            <li>
                        </ul>     
@@ -121,9 +121,9 @@
                   <p>
                     <fieldset>                           
                        <ui-select  ng-model="$parent.seleccion" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
-                            <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.nombre}}</ui-select-match>
+                           <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
                             <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
-                                {{empresa.nombre}}
+                                <span ng-bind="empresa.nombre"></span>
                             </ui-select-choices>
                         </ui-select> 
                     </fieldset>  
@@ -134,9 +134,9 @@
                     <p >
                         <fieldset>                           
                            <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
-                                <ui-select-match  placeholder="Seleccionar Estado Pedido">{{$select.selected.nombre}}</ui-select-match>
+                               <ui-select-match  placeholder="Seleccionar Estado Pedido"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
                                 <ui-select-choices repeat="estado_pedido in estados_pedido| filter:$select.search">
-                                    {{estado_pedido.nombre}}
+                                    <span ng-bind="estado_pedido.nombre"></span>
                                 </ui-select-choices>
                            </ui-select>
                         </fieldset>  

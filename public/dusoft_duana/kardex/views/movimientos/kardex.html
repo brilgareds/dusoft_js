@@ -1,6 +1,6 @@
 <div style="padding:10px;">
 
-    <center><h5>{{titulo}} {{nombreProducto}}</h5></center>
+    <center><h5><span ng-bind="titulo"></span> <span ng-bind="nombreProducto"></span></h5></center>
     <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="position:absolute; right: 0px; top: 8px; margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>
 
     <tabset  class="tabkardex">
@@ -11,7 +11,7 @@
                 <div class="list-group col-md-4 grupodefault" style="width:113px">
                     <a href="#" class="list-group-item">
                         <h5 class="list-group-item-heading">Entradas:</h5>
-                        <p class="list-group-item-text">{{cantidad_entradas}}</p>
+                        <p class="list-group-item-text"><span ng-bind="cantidad_entradas"></span></p>
                     </a>
 
                 </div>
@@ -19,19 +19,19 @@
                 <div class="list-group col-md-4 grupodefault" style="width:113px">
                     <a href="#" class="list-group-item">
                         <h5 class="list-group-item-heading">Salidas:</h5>
-                        <p class="list-group-item-text">{{cantidad_salidas}}</p>
+                        <p class="list-group-item-text"><span ng-bind="cantidad_salidas"></span></p>
                     </a>
                 </div>
                 <div class="list-group col-md-4 grupodefault" style="width:113px">
                     <a href="#" class="list-group-item">
                         <h5 class="list-group-item-heading">Existencia:</h5>
-                        <p class="list-group-item-text">{{existencia}}</p>
+                        <p class="list-group-item-text"><span ng-bind="existencia"></span></p>
                     </a>
                 </div>
                 <div class="list-group col-md-4 grupodefault" style="width:113px">
                     <a href="#" class="list-group-item">
                         <h5 class="list-group-item-heading">Descuadre:</h5>
-                        <p class="list-group-item-text">{{descuadre}}</p>
+                        <p class="list-group-item-text"><span ng-bind="descuadre"></span></p>
                     </a>
                 </div>
 

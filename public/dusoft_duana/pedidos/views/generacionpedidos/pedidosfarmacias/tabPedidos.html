@@ -16,9 +16,9 @@
                        theme="select2" 
                        class="form-control selectgeneral pull-left" 
                        ng-change="onBuscarPedidos()">
-                <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.getNombre() }}</ui-select-match>
+                <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                 <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="empresa in root.empresasFarmacias | filter:$select.search">
-                    {{ empresa.getNombre() }}
+                    <span ng-bind="empresa.getNombre()"></span>
                 </ui-select-choices>
             </ui-select>  
             <!--  </p>//-->
@@ -30,10 +30,10 @@
             <div class="input-group">
 
                 <div class="input-group-btn">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootPedidosFarmacias.filtro.nombre}} <span class="caret"></span></button>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span ng-bind="rootPedidosFarmacias.filtro.nombre"></span> <span class="caret"></span></button>
                     <ul class="dropdown-menu">
                         <li ng-repeat="filtro in rootPedidosFarmacias.filtros">
-                            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                            <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)"><span ng-bind="filtro.nombre"></span></a>
                         </li>
                     </ul>
                 </div>

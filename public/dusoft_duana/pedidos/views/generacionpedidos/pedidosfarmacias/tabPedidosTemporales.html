@@ -9,9 +9,9 @@
     <div class="col-md-2">
 
         <ui-select ng-model="rootPedidosTempFarmacias.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onBuscarPedidos()">
-            <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.getNombre() }}</ui-select-match>
+            <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
             <ui-select-choices  refresh-delay="0" repeat="empresa in root.empresasFarmacias | filter:$select.search">
-                {{ empresa.getNombre() }}
+                <span ng-bind="empresa.getNombre()"></span>
             </ui-select-choices>
         </ui-select>  
     </div>

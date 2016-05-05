@@ -18,10 +18,10 @@
                             <td> 
                                 <div class="btn-group  navbar-left ">
                                     <button type="button" class="btn btn-default dropdown-toggle" 
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{justificacion.nombre}} <span class="caret"></span></button>
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><span ng-bind="justificacion.nombre"></span> <span class="caret"></span></button>
                                     <ul class="dropdown-menu">
                                         <li ng-repeat="justificacion in justificaciones">
-                                            <a href="javascript:void(0)" ng-click="onSeleccionJustificacion(justificacion)">{{justificacion.nombre}}</a>
+                                            <a href="javascript:void(0)" ng-click="onSeleccionJustificacion(justificacion)"><span ng-bind="justificacion.nombre"></span></a>
                                         </li>
                                     </ul>
                                 </div>                           
@@ -46,10 +46,10 @@
 
             <div class="btn-group   navbar-right accionSeparacion ">
                 <button type="button" class="btn btn-default dropdown-toggle" 
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><span ng-bind="filtro.nombre"></span> <span class="caret"></span></button>
                 <ul class="dropdown-menu">
                     <li ng-repeat="filtro in filtros">
-                        <a href="javascript:void(0)" ng-click="onSeleccionFiltros(filtro)">{{filtro.nombre}}</a>
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltros(filtro)"><span ng-bind="filtro.nombre"></span></a>
                     </li>
                 </ul>
             </div>                                      

@@ -5,7 +5,7 @@
 
         <tab ng-controller="AuditoriaPedidosClientesController">
             <tab-heading>
-                Clientes <span ng-show="notificacionclientes > 0" class="badge badge-warning">{{notificacionclientes}}</span>
+                Clientes <span ng-show="notificacionclientes > 0" class="badge badge-warning"><span ng-bind="notificacionclientes"></span></span>
             </tab-heading>
 
 
@@ -61,7 +61,7 @@
  <tab ng-controller="AuditoriaPedidosFarmaciasController" active="activarTabFarmacias">
 
     <tab-heading>
-        Farmacias <span ng-show="notificacionfarmacias > 0" class="badge badge-warning">{{notificacionfarmacias}}</span>
+        Farmacias <span ng-show="notificacionfarmacias > 0" class="badge badge-warning"><span ng-bind="notificacionfarmacias"></span></span>
     </tab-heading>
      
        <div class ="row">
@@ -69,10 +69,10 @@
              
                 <fieldset>                                        
                     <ui-select  ng-model="$parent.seleccion"  theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
-                             <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.nombre}}</ui-select-match>
+                        <ui-select-match  placeholder="Seleccionar Empresa"><span ng-bind="$select.selected.nombre"></span></ui-select-match>
                              <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
-                                {{empresa.nombre}}
-                             </ui-select-choices>
+                                 <span ng-bind="empresa.nombre"></span>
+                        </ui-select-choices>
                     </ui-select>              
                 </fieldset>  
               
@@ -128,11 +128,11 @@
              
             <fieldset>                           
                 <ui-select ng-model="datos_view.empresaSeleccionada"  ng-change="seleccionar_Empresas(datos_view.empresaSeleccionada)"  theme="select2" class="form-control selectgeneral pull-left" >
-                            <ui-select-match   placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
+                    <ui-select-match   placeholder="Seleccionar empresa" ><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                             <ui-select-choices  refresh="onSeleccionarEmpresa($select.search)" refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
-                                {{ empresa.getNombre()}}
+                                <span ng-bind="empresa.getNombre()"></span>
                             </ui-select-choices>
-                </ui-select>  
+                    </ui-select>  
              </fieldset>  
            </div>
     
@@ -182,10 +182,10 @@
                <div class="input-group">
                     <div class="input-group-btn">
                         <button type="button" class="btn btn-default dropdown-toggle" 
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><span ng-bind="filtro.nombre"></span> <span class="caret"></span></button>
                         <ul class="dropdown-menu">
                             <li ng-repeat="filtro in filtros">
-                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)"><span ng-bind="filtro.nombre"></span></a>
                             </li>
                         </ul>
                     </div>

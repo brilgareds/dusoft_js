@@ -1,33 +1,38 @@
-var TemporalesCronjob = function(m_cronjob) {
+var TemporalesCronjob = function() {
    var that = this;
-   this.m_cronjob = m_cronjob;
-          
-  // that.iniciar();
+   that.iniciar();
 
 };
-
-TemporalesCronjob.prototype.nombre = "temporales";
-
 
 TemporalesCronjob.prototype.iniciar = function(req, res){
-  // console.log("iniciando cronjob");
     var that = this;
     
-     G.Q.ninvoke(that.m_cronjob,'obtenerEstadoCronjob', {nombre : that.nombre}).then(function(resultado){
-         var def = G.Q.defer();
-        if(resultado){
-            console.log("processo listo para ejecutar cronjob ===================================");
-        } else {
-            console.log("el proceso no puede ejecutar cronjob =================================");
-            def.resolve();
-        }
-         
-     }).fail(function(err){
-         console.log("error generado ", err);
-     });
+    var job = new G.cronJob('*/59 */59 */23 * * *', function () {
+        console.log("corriendo crontab para borrar temporales");
+        that.limpiarDirectorio(G.dirname + "/public/reports/");
+        that.limpiarDirectorio(G.dirname + "/files/tmp/");
+        
+    });
+    job.start();
+    
+};
+
+TemporalesCronjob.prototype.limpiarDirectorio = function(path) {
+  var that = this;
+  if( G.fs.existsSync(path) ) {
+    G.fs.readdirSync(path).forEach(function(file,index){
+        
+      var curPath = path + "/" + file;
+      if(G.fs.lstatSync(curPath).isDirectory()) { // recurse
+        that.limpiarDirectorio(path);
+      } else { // delete file
+        G.fs.unlinkSync(curPath);
+      }
+    });
+   //G.fs.rmdirSync(path);
+  }
 };
 
 
-TemporalesCronjob.$inject = ["m_cronjob"];
 
 module.exports = TemporalesCronjob;

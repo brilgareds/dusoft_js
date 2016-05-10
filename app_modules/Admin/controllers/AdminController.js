@@ -1,7 +1,7 @@
-var Admin = function(m_admin, j_temporales) {
+var Admin = function(m_admin, job_temporales) {
     
     this.m_admin = m_admin;
-    //this.j_temporales = j_temporales;
+    this.job_temporales = job_temporales;
 
 };
 
@@ -30,6 +30,6 @@ Admin.prototype.inicializarAplicacion = function(req, res){
 };
 
 
-Admin.$inject = ["m_admin"/*, "j_temporales"*/];
+Admin.$inject = ["m_admin", "job_temporales"];
 
 module.exports = Admin;

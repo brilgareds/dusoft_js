@@ -36,6 +36,12 @@
                 }
             }],
         "events": [],
-        "cronJobs": []
+        "cronJobs": [{
+            "temporales_cronjob": {
+                "module": "Admin",
+                "cronjob": "TemporalesCronjob",
+                "alias": "job_temporales"
+            }
+        }]
     }
 }

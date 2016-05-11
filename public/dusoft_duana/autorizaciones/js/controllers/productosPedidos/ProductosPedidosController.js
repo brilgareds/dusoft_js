@@ -14,17 +14,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 Pedido, Empresa) {
 
             var that = this;
-
-            $scope.hola = "q";
             $scope.Empresa = Empresa.get();
 
-            that.buscarPedidosCliente = function(termino, paginando) {
+
+            /**
+             * +Descripcion: funcion que realiza la busqueda de los pedidos
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @params terminoBusqueda
+             */
+            that.buscarPedidos = function(termino, paginando) {
                 $scope.hola = termino;
             };
 
-            $scope.onBuscarPedido = function(ev, termino_busqueda) {
+            /**
+             * +Descripcion: evento busca pedido
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @params terminoBusqueda
+             */
+            $scope.onBuscarPedido = function(ev, terminoBusqueda) {
                 if (ev.which === 13) {
-                    that.buscarPedidosCliente(termino_busqueda);
+                    that.buscarPedidos(terminoBusqueda);
                 }
             };
 
@@ -39,7 +50,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 }
             };
 
-
+            /**
+             * +Descripcion: objeto ng-grid
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {objeto}
+             */
             $scope.lista_pedidos_clientes = {
                 data: 'Empresa.getPedidos()',
                 enableColumnResize: true,
@@ -47,41 +63,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'clinte', displayName: 'Cliente / Farmacia', width: "60%"},
+                    {field: 'cliente', displayName: 'Cliente / Farmacia', width: "60%"},
                     {field: 'numero_pedido', displayName: 'Pedido', width: "10%"},
                     {field: 'estado', displayName: 'Estado', width: "15%"},
                     {field: 'fecha', displayName: 'Fecha', width: "10%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.separado"  ng-click="onAbrirVentana(row.entity)">\n\
                                              <span class="glyphicon glyphicon-search"></span>\
                                          </button>\
-                                     </div>'
+                                       </div>'
                     }
                 ]
 
             };
 
             /**
-             * +Descripcion: metodo para pasar a la ventana detalle
+             * +Descripcion: metodo para navegar a la ventana detalle
              * @author Andres M Gonzalez
              * @fecha: 11/05/2016
+             * @params pedido : numero del pedido
              * @returns {ventana}
              */
             that.mostrarDetalle = function(pedido) {
                 localStorageService.add("pedidoCabecera",
                         {
                             numeroPedido: pedido.get_numero_pedido(),
-//                            pedidoClinteFarmacia: documentoAprobado.getPrefijo()
                         });
                 $state.go("AutorizacionesDetalle");
             };
 
+            /**
+             * +Descripcion: evento de la vista para pasar a la ventana detalle
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @params pedido : numero del pedido
+             * @returns {ventana}
+             */
             $scope.onAbrirVentana = function(pedido) {
                 that.mostrarDetalle(pedido);
             };
-           
-           
+
             that.traerPedidos();
 
         }]);

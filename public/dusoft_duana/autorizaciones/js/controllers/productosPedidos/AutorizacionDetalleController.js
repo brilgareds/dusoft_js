@@ -20,14 +20,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
             $scope.Empresa = Empresa.get();
             $scope.pedido=filtroPedido.numeroPedido;
 
-            that.buscarPedidosCliente = function(termino, paginando) {
-                $scope.hola = termino;
+            /**
+             * +Descripcion: funcion para cambiar estado al producto
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {}
+             */
+            that.denegarPedidos = function(estado) {
+                $scope.hola = estado;
             };
-
-            $scope.onBuscarPedido = function(ev, termino_busqueda) {
-                if (ev.which === 13) {
-                    that.buscarPedidosCliente(termino_busqueda);
-                }
+            
+            /**
+             * +Descripcion: evento para cambiar estado al producto
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {}
+             */
+            $scope.onEstdoPedido = function(ev, estado) {
+               that.denegarPedidos(estado);                
             };
 
 
@@ -44,7 +54,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
            
          
            
-           
+             /**
+             * +Descripcion: objeto ng-grid
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             */
            $scope.lista_detalle_pedidos = {
                 data: 'Empresa.getPedidos()',
                 enableColumnResize: true,
@@ -52,18 +66,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'esado', displayName: 'Estado', width: "10%"},
-                    {field: 'producto', displayName: 'Pruducto', width: "45%"},
+                    {field: 'estado', displayName: 'Estado', width: "10%"},
+                    {field: 'producto', displayName: 'Pruducto', width: "40%"},
                     {field: 'cantidad', displayName: 'Cantidad', width: "10%"},
                     {field: 'fecha', displayName: 'Fecha', width: "10%"},
                     {field: 'responsable', displayName: 'Responsable', width: "20%"},
                     {
-                        displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
+                        displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Estado<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_cotizaciones }}" ng-click="modificar_cotizacion_cliente(row.entity)" >Aprobar</a></li>\
-                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);"  ng-click="solicitarAutorizacion(row.entity)" >Denegar</a></li>\
+                                                <li><a  ng-click="onEstdoPedido(1)" >Aprobar</a></li>\
+                                                <li><a  ng-click="onEstdoPedido(0)" >Denegar</a></li>\
                                             </ul>\
                                        </div>'
                     }
@@ -73,7 +87,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
             
             
              /**
-             * +Descripcion: metodo para volver a la ventana inicial
+             * +Descripcion: funcion para volver a la pagina principal
              * @author Andres M Gonzalez
              * @fecha: 11/05/2016
              * @returns {ventana}
@@ -81,13 +95,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
             that.volverAPedido = function() {
                 $state.go("AutorizacionesProductos");
             };
-
+            
+            /**
+             * +Descripcion: evento de la vista para volver a la pagina principal 
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             */
             $scope.onVolver = function() {
-                console.log("WERTY");
                 that.volverAPedido();
             };
-           
-           
            
             that.traerPedidos();
 

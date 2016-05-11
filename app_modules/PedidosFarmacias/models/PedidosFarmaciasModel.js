@@ -606,9 +606,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit);
     
-    if(G.program.prod){
+   // if(G.program.prod){
         query.orderByRaw("1 DESC");
-    }
+    //}
     
     query.then(function(rows){
         callback(false, rows);

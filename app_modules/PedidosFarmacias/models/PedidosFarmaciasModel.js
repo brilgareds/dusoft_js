@@ -543,7 +543,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                         INNER JOIN inv_tipo_producto AS bb ON bb.tipo_producto_id = aa.tipo_producto\
                         WHERE aa.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id limit 1\
                   ) as descripcion_tipo_producto"),*/
-        G.knex.raw("'' as descripcion_tipo_producto"),
+        "i.descripcion_tipo_producto",
         "h.descripcion as zona"
         
     ];
@@ -568,6 +568,18 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     leftJoin("inv_bodegas_movimiento_tmp_despachos_farmacias as f", "a.solicitud_prod_a_bod_ppal_id", "f.solicitud_prod_a_bod_ppal_id").
     leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.solicitud_prod_a_bod_ppal_id", "g.solicitud_prod_a_bod_ppal_id ").
     leftJoin("zonas_bodegas as h", "c.zona_id", "h.id").
+    leftJoin(
+        G.knex.raw("(\
+                        SELECT bb.descripcion as descripcion_tipo_producto, aa.solicitud_prod_a_bod_ppal_id FROM\
+                        solicitud_productos_a_bodega_principal_detalle AS aa \
+                        INNER JOIN inv_tipo_producto AS bb ON bb.tipo_producto_id = aa.tipo_producto\
+                        GROUP BY 1,2\
+                  ) as i"
+        ),
+        "i.solicitud_prod_a_bod_ppal_id",
+        "=",
+        "a.solicitud_prod_a_bod_ppal_id"
+    ).
     where(function(){
         this.where("a.farmacia_id", empresa_id);
         

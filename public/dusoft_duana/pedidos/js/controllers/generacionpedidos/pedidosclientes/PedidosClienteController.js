@@ -87,8 +87,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
                     Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                     );
+          
             $scope.Pedido.set_vendedor(Vendedor.get()).setCliente(Cliente.get());
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
+           
             //Cotizacion
             //if (localStorageService.get("cotizacion")) {
             if ($state.is("Cotizaciones") === true) {
@@ -523,7 +525,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 // Validaciones Pedido
                 if ($scope.datos_view.cartera) {
                      disabled = true;
-                    //console.log("scope.datos_view.cartera ", $scope.datos_view.cartera)
+                   
                 }
 
                 // Solo visualizar
@@ -1295,7 +1297,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.$$watchers = null;
                 // set localstorage
                 localStorageService.add("cotizacion", null);
-                localStorageService.add("pedido", null);
+                //Se comento para no borrar el localstorage en modificar producto
+               // localStorageService.add("pedido", null);
                 localStorageService.get("estadoPedido", null);
 
             });

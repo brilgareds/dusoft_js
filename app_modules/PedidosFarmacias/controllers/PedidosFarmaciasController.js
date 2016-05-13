@@ -1111,10 +1111,30 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
                                 if (err) {
                                     res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
                                     return;
-                                }
+                                }  
+                               
+                                G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_detalle_pedido", numero_pedido ).then(function(productos){
+                                 var farmacia=1;   
+                                 var autorizacion = { };
+                                 autorizacion.productos=productos;
+                                 autorizacion.farmacia=farmacia;
+                                 autorizacion.empresa_id=empresa_id;
+                                 autorizacion.numero_pedido=numero_pedido;
+                                  return G.Q.ninvoke(that.m_pedidos, "guardarAutorizacion",autorizacion);  
+                                }).then(function(){
+                                  
+                                    res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido}));
 
-                                res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido}));
-                                return;
+                                }).fail(function(err){
+                                    var msj = "Se ha generado un error";
+
+                                    if(err.status){
+                                        msj = err.msj;
+                                    }
+
+                                    res.send(G.utils.r(req.url, msj, err.status, err.obj));
+                                });
+                              
                             });
                         });
 

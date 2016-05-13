@@ -678,7 +678,7 @@ define(["angular", "js/controllers",
                                                 <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
                                             </li>\
-                                             <li>\
+                                             <li ng-if="datos_view.opciones.sw_consultar_logs">\
                                                 <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
                                             </li>\
                                             </ul>\

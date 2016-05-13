@@ -104,7 +104,7 @@ define(["angular",
                                             <li ng-if="false">\
                                                 <a href="javascript:void(0);" ng-click="ventanaEnviarEmail(row.entity)">Enviar Email</a>\
                                             </li>\
-                                            <li>\
+                                            <li ng-if="rootPedidosFarmacias.opciones.sw_consultar_logs">\
                                                 <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
                                             </li>\
                                         </ul>\n\

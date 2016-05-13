@@ -685,7 +685,7 @@ define(["angular", "js/controllers",
                                        </div>'
                     }
                 ]
-            };
+            }; 
             
             
             $scope.onTraerLogsPedidos = function(pedido){ 

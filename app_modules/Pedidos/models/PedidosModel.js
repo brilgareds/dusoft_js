@@ -338,14 +338,15 @@ function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto
  * +Descripcion: Funcion publica donde inicializa la funcion recursiva para almacenar la autorizacion
  */
 PedidosModel.prototype.guardarAutorizacion = function(parametros, callback) {
+
     __guardarAutorizacionesProductosPedidos(parametros, function(err, resultado) {
         if (err) {
-            callback(false, resultado);
+            callback(err, resultado);
         } else {
-            callback(true)
+            callback(false);
         }
-    })
-}
+    });
+};
 
 /*
  * @Author: Andres M. Gonzalez
@@ -365,9 +366,8 @@ function __insertarAutorizacionesProductosPedido(params, callback) {
     var query = G.knex.raw(sql, {1: params.farmacia, 2: params.numero_pedido, 3: params.productos[0].codigo_producto, 5: params.empresa_id});
 
     query.then(function(resultado) {
-        callback(false, resultado.rows, resultado);
+        callback(false, resultado.rows);
     }). catch (function(err) {
-        console.log("error", err);
         callback(err);
     });
 }
@@ -380,6 +380,7 @@ function __insertarAutorizacionesProductosPedido(params, callback) {
  * +Descripcion: Funcion recursiva que permite crear los poductos por autorizar
  */
 function __guardarAutorizacionesProductosPedidos(params, callback) {
+
     var producto = params.productos[0];
     var def = G.Q.defer();
     if (!producto) {
@@ -398,7 +399,7 @@ function __guardarAutorizacionesProductosPedidos(params, callback) {
             callback(err);
         });
     } else {
-        params.splice(0, 1);
+        params.productos.splice(0, 1);
         callback(false);
     }
 }

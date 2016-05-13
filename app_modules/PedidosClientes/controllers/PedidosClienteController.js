@@ -1667,15 +1667,13 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         return;
     }
 
-    cotizacion.usuario_id = req.session.user.usuario_id;
+    //cotizacion.usuario_id = req.session.user.usuario_id;
     
     that.pedidoGenerado;
     
      G.Q.ninvoke(that.m_pedidos_clientes,'consultarExistenciaPedidoCotizacion', cotizacion.numero_cotizacion).then(function(resultado){ 
-       
       
-        if(resultado.length > 0){
-           
+        if(resultado.length > 0){      
               throw 'La cotizacion ya se encuentra con un pedido asignado';
               return;
         }else{      
@@ -1687,25 +1685,24 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         }        
         
     }).then(function(resultado){
-        
-      
+
         if(resultado.length > 0){
-            console.log("resultado ", resultado)
+         
+            cotizacion.usuario_id = resultado[0].usuario_id;
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
              **/ 
             if (resultado[0].estado === '3') {
                 
-                console.log("Generar el pedido ")
                   return G.Q.ninvoke(that.m_pedidos_clientes,'generar_pedido_cliente', cotizacion);  
-                           // Generar pedido
-                        //that.m_pedidos_clientes.generar_pedido_cliente(cotizacion, function(err,pedido) {
-           }else {
+                 
+            }else{
                 throw 'La cotizacion no se encuentra aprobada por cartera';
                 return;                                                                                    
             }
+            
         }else{
-                throw 'Ha ocurrido un error';
+           throw 'Ha ocurrido un error';
         }
         
     }).then(function(resultado){
@@ -1713,32 +1710,9 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
          that.pedidoGenerado = resultado;
          return G.Q.ninvoke(that.m_pedidos_clientes,'asignar_responsables_pedidos', resultado.numero_pedido, resultado.estado, null, cotizacion.usuario_id);
 
-         
-         //that.m_pedidos_clientes.asignar_responsables_pedidos(pedido.numero_pedido, pedido.estado, null, cotizacion.usuario_id, function(err, rows, responsable_estado_pedido) {
-//
-//                                        if (err) {
-//                                            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Responsables', 500, {pedidos_clientes: []}));
-//                                            return;
-//                                        }
-//
-//                                        // Actualizar estado del nuevo pedido
-//                                        that.m_pedidos_clientes.terminar_estado_pedido(pedido.numero_pedido, [pedido.estado], '1', function(err, rows, results) {
-//
-//                                            if (err) {
-//                                                res.send(G.utils.r(req.url, 'Error finalizando el estado del pedido', 500, {pedidos_clientes: []}));
-//                                                return;
-//                                            }
-//
-//                                            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-//                                            res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + pedido.numero_pedido, 200, {pedidos_clientes: pedido}));
-//                                            return;
-//                                        });
-//                                    });
         
     }).then(function(resultado){
-        
-        console.log("resultado (terminar_estado_pedido )------>", resultado);
-        console.log("that.pedidoGenerado ", that.pedidoGenerado);
+       
          if(resultado.length > 0){
              
            return G.Q.ninvoke(that.m_pedidos_clientes,'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado],'1');
@@ -1750,7 +1724,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         
         
     }).then(function(resultado){
-        console.log("resultado LLGA A QUI OK (onNotificarEstadoCotizacion )------>", resultado);
+       
          if(resultado.length > 0){
              
               that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
@@ -1761,10 +1735,10 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
              
              throw 'Error finalizando el estado del pedido';
          }
-        console.log("resultado (asignar_responsables_pedidos)------>", resultado);
+        
         
     }).fail(function(err){  
-       console.log("err ", err)    
+       
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
     /**

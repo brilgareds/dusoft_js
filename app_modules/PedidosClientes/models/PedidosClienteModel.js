@@ -625,12 +625,14 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
 
 PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
     var that = this;
-
+    console.log("*********PedidosClienteModel.prototype.asignar_responsables_pedidos*************");
     G.knex.column("*").
             from("ventas_ordenes_pedidos_estado as a").
             where("a.pedido_cliente_id", numero_pedido).
             andWhere("a.estado", estado_pedido).
             whereRaw("(a.sw_terminado is null or a.sw_terminado = '0')").then(function(responsable_estado_pedido) {
+        
+        console.log("responsable_estado_pedido ", responsable_estado_pedido);
         if (responsable_estado_pedido.length > 0) {
             //Actualizar
             that.actualizar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
@@ -683,14 +685,16 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
 // Callbacks :  * Modulo :  PedidosClientes 
 //                          Modelo - asignar_responsables_pedidos();
 PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
+    
+    console.log("********************PedidosClienteModel.prototype.insertar_responsables_pedidos******************");
     G.knex("ventas_ordenes_pedidos_estado").
             returning("venta_orden_pedido_estado_id").
             insert({pedido_cliente_id: numero_pedido, estado: estado_pedido, responsable_id: responsable, fecha: 'now()', usuario_id: usuario}).
             then(function(resultado) {
-
+         console.log("resultado ", resultado);
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("err ", err);
         callback(err);
     }).done();
 
@@ -717,15 +721,20 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
  */
 
 PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
+    
+    console.log("***********PedidosClienteModel.prototype.actualizar_responsables_pedidos************");
     G.knex("ventas_ordenes_pedidos_estado").
             where("pedido_cliente_id", numero_pedido).
             andWhere("estado", estado_pedido).
             whereRaw("(sw_terminado is null or sw_terminado = '0')").
             returning('venta_orden_pedido_estado_id').
             update({responsable_id: responsable, fecha: 'NOW()', usuario_id: usuario}).then(function(resultado) {
+        
+        console.log("resultado ", resultado);
+        
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("err ", err);
         callback(err);
     });
 
@@ -789,13 +798,14 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pe
  */
 
 PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_pedido, estado_pedido, callback) {
-
+    console.log("***********PedidosClienteModel.prototype.actualizar_estado_actual_pedido***********");
     G.knex("ventas_ordenes_pedidos").
             where("pedido_cliente_id", numero_pedido).
             update({estado_pedido: estado_pedido}).then(function(resultado) {
-
+        console.log("resultado ", resultado)
         callback(false, resultado);
     }). catch (function(err) {
+        onsole.log("err ", err)
         callback(err);
     });
 
@@ -1841,12 +1851,15 @@ PedidosClienteModel.prototype.consultarExistenciaPedidoCotizacion = function(num
  *  --PedidosCliente.prototype.eliminarCotizacion
  */
 PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizacion, callback) {
-
+    
+    console.log("*******PedidosClienteModel.prototype.consultarEstadoCotizacion***************");
     G.knex('ventas_ordenes_pedidos_tmp').where({
         pedido_cliente_id_tmp: numeroCotizacion
     }).select('estado').then(function(rows) {
+        console.log("rows ", rows)
         callback(false, rows);
     }).catch (function(error) {
+        console.log("error ", error)
         callback(error);
     });
 };

@@ -1668,9 +1668,12 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
     }
 
     //cotizacion.usuario_id = req.session.user.usuario_id;
-    
     that.pedidoGenerado;
-    
+     
+     /**
+     * +Descripcion: Funcion encargada de verificar si el numero de cotizacion
+     *               ya tiene un pedido asignado
+     */
      G.Q.ninvoke(that.m_pedidos_clientes,'consultarExistenciaPedidoCotizacion', cotizacion.numero_cotizacion).then(function(resultado){ 
       
         if(resultado.length > 0){      

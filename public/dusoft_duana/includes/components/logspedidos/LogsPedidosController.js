@@ -110,7 +110,7 @@ define(["angular",
                     $scope.rootLogsPedidos = {};
                     $scope.$$watchers = null;
                    
-               }, 500);
+               }, 1000);
             };
             
             /*

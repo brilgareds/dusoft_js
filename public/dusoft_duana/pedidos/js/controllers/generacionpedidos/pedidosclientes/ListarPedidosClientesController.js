@@ -7,6 +7,7 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosclientes/ProductoPedidoCliente",
     "models/generacionpedidos/pedidosclientes/Laboratorio",
     "models/generacionpedidos/pedidosclientes/Molecula",
+    "includes/components/logspedidos/LogsPedidosController"
 ], function(angular, controllers) {
 
     controllers.controller('ListarPedidosClientesController', [
@@ -677,11 +678,50 @@ define(["angular", "js/controllers",
                                                 <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
                                             </li>\
+                                             <li>\
+                                                <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
+                                            </li>\
                                             </ul>\
                                        </div>'
                     }
                 ]
             };
+            
+            
+            $scope.onTraerLogsPedidos = function(pedido){ 
+                
+                var empresa = Sesion.getUsuarioActual().getEmpresa();
+                
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: '../includes/components/logspedidos/logspedidos.html',
+                    controller: "LogsPedidosController",
+                    windowClass: 'app-modal-window-xlg',
+                    resolve: {
+                        pedido: function() {
+                            return pedido;
+                        },
+                        tipoPedido: function() {
+                            return  '0';
+                        },
+                        empresaId:function(){
+                            return empresa.getCodigo();
+                        }
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log("refrescar producto");
+
+                }, function() {
+                    
+                });
+                
+            }; 
             
             /**
              * +Descripcion: Metodo encargado de listar todos los pedidos   

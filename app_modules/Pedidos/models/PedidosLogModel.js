@@ -1,4 +1,4 @@
-var PedidosLogModel = function(m_productos) {
+var PedidosLogModel = function() {
 
 };
 
@@ -18,7 +18,33 @@ PedidosLogModel.prototype.guardarLog = function(parametros, callback) {
     if(parametros.transaccion) query.transacting(parametros.transaccion);
     
     query.then(function(resultado){
-        callback(false, resultado.rows, resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+
+};
+
+
+
+/*
+ * @Author: Eduar
+ * @param {Object} parametros {}
+ * +Descripcion:Permite consultar las modificaciones o eliminaciones realizadas en los productos de determinaod pedido de clientes o farmacias
+ */
+PedidosLogModel.prototype.consultarLogs = function(parametros, callback) {
+    
+    var sql = " SELECT a.*, b.nombre, fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                CASE  WHEN a.accion = '0' THEN 'Modificado' WHEN a.accion = '1' THEN 'Eliminado' END as descripcion_accion, \
+                to_char(a.fecha, 'yyyy-mm-dd hh:mi:ss AM') as fecha_registro\
+                FROM logs_pedidos as a\
+                INNER JOIN system_usuarios b ON a.usuario_responsable = b.usuario_id\
+                WHERE a.pedido = :1\
+                AND a.tipo_pedido = :2\
+                AND a.empresa_id = :3 ORDER BY a.codigo_producto, a.fecha ASC ";
+    
+    G.knex.raw(sql, {1:parametros.numeroPedido, 2:parametros.tipoPedido, 3:parametros.empresaId}).then(function(resultado){
+        callback(false, resultado.rows);
     }).catch(function(err){
         callback(err);
     });

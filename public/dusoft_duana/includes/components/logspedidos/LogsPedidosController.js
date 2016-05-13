@@ -40,16 +40,13 @@ define(["angular",
                 enableHighlighting:true,
                 size:'lg',
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Producto',
-                        cellTemplate: ' <div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-bind="row.entity.codigo_producto"></span> <span ng-bind="row.entity.descripcion"></span>\
-                                        </div>'
-                    },
+                    {field: 'codigo_producto', displayName: 'Codigo', width:'100'},
+                    {field: 'descripcion', displayName: 'Nombre'},
                     {field: 'cantidadSolicitada', displayName: 'Solicitado', width:'100'},
                     {field: 'cantidadActual', displayName: 'Modificado', width:'100'},
                     {field: 'descripcionAccion', displayName: 'Acción', width:'200'},
                     {field: 'responsable', displayName: 'Usuario', width:'200'},
-                    {field: 'fechaModificacion', displayName: 'Fecha', width:'200'},
+                    {field: 'fechaModificacion', displayName: 'Fecha', width:'200'}
 
                 ]
 

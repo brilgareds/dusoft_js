@@ -478,12 +478,13 @@ define(["angular", "js/controllers",
             $scope.onModificarCantidad = function(ev, row) {
                 if (ev.which === 13) {
                     var cantidad = parseInt(row.entity.getCantidadIngresada());
-                    if (cantidad > 0) {
+                    //Se comenta validacion por solicitud de guardar registro de logs cuando se modifique las cantidades
+                    //if (cantidad > 0) {
                         //Emite el evento al controlador GuardarPedidoController
                         $scope.$broadcast("onEditarCantidad", row.entity);
-                    } else if(cantidad === 0 && $scope.root.pedido.getProductosSeleccionados().length === 1 ){
-                        $scope.$broadcast("onAnularPendiente", row.entity);
-                    }
+                    //} else if(cantidad === 0 && $scope.root.pedido.getProductosSeleccionados().length === 1 ){
+                      //  $scope.$broadcast("onAnularPendiente", row.entity);
+                    //}
                 }
             };
             

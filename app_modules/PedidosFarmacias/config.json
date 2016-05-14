@@ -33,6 +33,11 @@
                     "module": "Pedidos",
                     "model": "PedidosModel",
                     "alias": "m_pedidos"
+                },
+                "pedidos_log_model": {
+                    "module": "Pedidos",
+                    "model": "PedidosLogModel",
+                    "alias": "m_pedidos_logs"
                 }
             }],
         "events": [{

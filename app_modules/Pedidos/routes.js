@@ -9,5 +9,9 @@ module.exports = function(app, di_container) {
         c_pedidos.consultarDisponibilidadProducto(req, res);
     });
     
+    app.post('/api/Pedidos/consultarLogs', function(req, res) {
+        c_pedidos.consultarLogs(req, res);
+    });
+    
     j_pedidos.liberarReservas();
 };

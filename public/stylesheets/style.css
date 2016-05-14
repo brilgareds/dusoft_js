@@ -578,3 +578,8 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 .gridExistencias{
     height:400px;
 }
+
+
+.app-modal-window-xlg .modal-dialog{
+    width:98%;
+}

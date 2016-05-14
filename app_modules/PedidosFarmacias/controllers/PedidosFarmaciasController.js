@@ -320,7 +320,7 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
 
             if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
 
-                that.m_pedidos_farmacias.eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, function(err, rows) {
+                that.m_pedidos_farmacias.eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, cabecera_pedido[0].empresa_destino, function(err, rows) {
 
                     if (err) {
                         res.send(G.utils.r(req.url, 'No se pudo eliminar el producto', 500, {error: err}));
@@ -1517,7 +1517,7 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
         if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
 
             return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_cantidades_detalle_pedido", numero_pedido, codigo_producto, cantidad_solicitada,
-                    cantidad_pendiente, usuario);
+                    cantidad_pendiente, usuario, cabecera_pedido[0].empresa_destino);
         } else {
             throw {msj: "El estado actual del pedido no permite modificarlo", status: 403};
         }

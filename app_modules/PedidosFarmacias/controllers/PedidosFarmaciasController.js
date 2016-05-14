@@ -1156,7 +1156,7 @@ PedidosFarmacias.prototype.anularPendienteProducto = function(req, res){
     G.Q.ninvoke(that.m_pedidos_farmacias,'consultar_pedido', numeroPedido).
     then(function(cabeceraPedido) {
 
-        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null) {
+        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null || cabeceraPedido[0].estado_actual_pedido === '8' ) {
             return G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_detalle_pedido', numeroPedido);
         } else {
             throw {msj:"El estado actual del pedido no permite modificarlo", codigo:403};
@@ -1560,7 +1560,7 @@ PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
         } else {
             cabecera_pedido = cabecera_pedido[0];
 
-            if (cabecera_pedido.estado_actual_pedido === '0' || cabecera_pedido.estado_actual_pedido === null) {
+            if (cabecera_pedido.estado_actual_pedido === '0' || cabecera_pedido.estado_actual_pedido === null || cabecera_pedido.estado_actual_pedido === '8' ) {
                 // se valida si la empresa destino del request es diferente a la almacenada en el pedido
                 if (cabecera_pedido.empresa_id !== farmacia_id || cabecera_pedido.centro_utilidad !== centro_utilidad || cabecera_pedido.bodega_id !== bodega) {
 
@@ -1806,7 +1806,7 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
 
     
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido",numero_pedido).then(function(cabecera_pedido){
-        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
+        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8' ) {
             
             return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia",numero_pedido, empresa_id, centro_utilidad_id,
                                                                                                      bodega_id, codigo_producto,cantidad_solic, 

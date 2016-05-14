@@ -1293,6 +1293,28 @@ PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_p
     
 };
 
+/**
+ * @author Eduar Garcia
+ * +Descripcion: Metodo usado por el crontab de pedidos para borrar temporales todas las noches
+ * @param {type} callback
+ * @returns {void}
+ */
+PedidosFarmaciasModel.prototype.eliminarTemporalesFarmacias = function(callback){
+        var sql = "DELETE FROM  solicitud_pro_a_bod_prpal_tmp";  
+        
+        G.knex.raw(sql).then(function(resultado){
+            
+            sql = "DELETE FROM solicitud_bodega_principal_aux";
+            
+            return G.knex.raw(sql);
+            
+        }).then(function(resultado){
+            callback(false, resultado);
+        }).catch(function(err){
+            callback(err);
+        });
+};
+
 PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino,
                                                            pagina, filtro, callback) {
     

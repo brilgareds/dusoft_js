@@ -318,7 +318,7 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
             res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
         } else {
 
-            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
+            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8') {
 
                 that.m_pedidos_farmacias.eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, cabecera_pedido[0].empresa_destino, function(err, rows) {
 
@@ -1489,7 +1489,7 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
     var usuario = req.session.user.usuario_id;
 
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido ).then(function(cabecera_pedido){
-        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null) {
+        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8' ) {
             
             return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_cantidades_detalle_pedido", numero_pedido, codigo_producto, cantidad_solicitada,
                                                                                                  cantidad_pendiente, usuario, cabecera_pedido[0].empresa_destino);

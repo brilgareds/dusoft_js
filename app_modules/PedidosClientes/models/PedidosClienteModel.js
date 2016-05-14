@@ -221,6 +221,23 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     });
 };
 
+
+/**
+ * @author Eduar Garcia
+ * +Descripcion: Metodo usado por el crontab de pedidos para borrar temporales todas las noches
+ * @param {type} callback
+ * @returns {void}
+ */
+PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback){
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp  set estado = '0'";  
+
+    G.knex.raw(sql).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
 /**
  * @api {sql} consultar_pedido Consultar Pedido
  * @apiName Consultar Pedido

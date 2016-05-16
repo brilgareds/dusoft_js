@@ -39,7 +39,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     {field: 'disponibilidadBodega', displayName: 'Disponible'},
                     {field: 'cantidadSolicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                         cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input" ng-disabled="row.entity.getEstado() != \'1\'"\
+                                                <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input"\
                                 ng-keyup="onIngresarProducto($event, row.entity)" ng-disabled="!row.entity.getEnFarmaciaSeleccionada()"/>\
                                             </div>'
                     },
@@ -67,17 +67,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
                 $scope.rootSeleccionProductoFarmacia.tipoProducto = "0";
                 $scope.root.pedido;
-                
+
                 $scope.rootSeleccionProductoFarmacia.filtros = [
-                    {nombre : "Descripcion", tipo_busqueda:0}, 
-                    {nombre : "Molecula", tipo_busqueda:1},
-                    {nombre : "Codigo", tipo_busqueda:2}
+                    {nombre: "Descripcion", tipo_busqueda: 0},
+                    {nombre: "Molecula", tipo_busqueda: 1},
+                    {nombre: "Codigo", tipo_busqueda: 2}
                 ];
-                
-                $scope.rootSeleccionProductoFarmacia.filtro  = $scope.rootSeleccionProductoFarmacia.filtros[0];
+
+                $scope.rootSeleccionProductoFarmacia.filtro = $scope.rootSeleccionProductoFarmacia.filtros[0];
 
             };
-            
+
             /*
              * @Author: Eduar
              * @param {object} _productos
@@ -107,10 +107,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              * +Descripcion: metodo que hace la peticion para traer los productos de la empresa seleccionada en el pedido
              */
             self.buscarProductos = function(callback) {
-                
+
                 $scope.rootSeleccionProductoFarmacia.filtro.termino_busqueda = $scope.rootSeleccionProductoFarmacia.termino_busqueda;
-                $scope.rootSeleccionProductoFarmacia.filtro.tipo_producto  = $scope.rootSeleccionProductoFarmacia.tipoProducto;
-                
+                $scope.rootSeleccionProductoFarmacia.filtro.tipo_producto = $scope.rootSeleccionProductoFarmacia.tipoProducto;
+
                 var obj = {
                     session: $scope.root.session,
                     data: {
@@ -132,8 +132,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         if (data.obj.lista_productos.length) {
-                            
-                            if(callback){
+
+                            if (callback) {
                                 callback();
                             }
                             $scope.root.pedido.vaciarProductos();
@@ -146,8 +146,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 });
 
             };
-            
-            
+
+
             /*
              * @Author: Eduar
              * @param {String} titulo
@@ -162,111 +162,111 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">'+titulo+'</h4>\
+                                    <h4 class="modal-title">' + titulo + '</h4>\
                                     </div>\
                                     <div class="modal-body row">\
                                     <div class="col-md-12">\
-                                    <h4>'+mensaje+'</h4>\
+                                    <h4>' + mensaje + '</h4>\
                                     </div>\
                                     </div>\
                                     <div class="modal-footer">\
                                     <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                     </div>',
-                                           scope: $scope,
-                                           controller: function($scope, $modalInstance) {
-                                               $scope.close = function() {
-                                                   $modalInstance.close();
-                                               };
-                                           }
-                                       };
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
 
-                  var modalInstance = $modal.open($scope.opts);
+                var modalInstance = $modal.open($scope.opts);
             };
-            
-            
+
+
             /*
              * @Author: Eduar
              * @param {ProductoPedidoFarmacia} producto
              * @return Object
              * +Descripcion: Function que valida el ingreso del producto (maximo de 25, un producto por codigo, solo un tipo por pedido  y que no este bloqueado)
              */
-            
-            self.validarIngresoProducto = function(producto, callback){
+
+            self.validarIngresoProducto = function(producto, callback) {
                 var pedido = $scope.root.pedido;
-                
-                if(pedido.esProductoSeleccionado(producto)){
-                    
-                    callback({msj:"El producto "+producto.getCodigoProducto()+ " ya esta seleccionado", valido:false});
+
+                if (pedido.esProductoSeleccionado(producto)) {
+
+                    callback({msj: "El producto " + producto.getCodigoProducto() + " ya esta seleccionado", valido: false});
                     return;
                 }
-                
-                if(pedido.getProductosSeleccionados().length === 25){
-                    
-                    callback({msj:"El pedido tiene 25 productos agregados", valido:false});
+
+                if (pedido.getProductosSeleccionados().length === 25) {
+
+                    callback({msj: "El pedido tiene 25 productos agregados", valido: false});
                     return;
                 }
-                
-                if(!pedido.validarTipoProductoAIngresar(producto)){
+
+                if (!pedido.validarTipoProductoAIngresar(producto)) {
                     //var tipo = self.obtenerTipoProducto(producto);
-                    
-                    callback({msj:"El pedido solo puede contener productos del mismo tipo.", valido:false});
+
+                    callback({msj: "El pedido solo puede contener productos del mismo tipo.", valido: false});
                     return;
                 }
-                
-                self.verificarBloqueoProducto(function(validacion){
+
+                self.verificarBloqueoProducto(function(validacion) {
                     callback(validacion);
                 });
 
-                
+
             };
-            
+
             /*
              * @Author: Eduar
              * @param {function} callback
              * +Descripcion: Verifica si el producto no esta bloqueado por otro usuario
              */
-            
-            self.verificarBloqueoProducto = function(callback){
+
+            self.verificarBloqueoProducto = function(callback) {
                 var obj = {
                     session: $scope.root.session,
                     data: {
-                        usuario_bloqueo: {                            
+                        usuario_bloqueo: {
                             farmacia_id: $scope.root.pedido.getFarmaciaDestino().getCodigo(),
                             centro_utilidad_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
                             codigo_producto: $scope.root.pedido.getProductoSeleccionado().getCodigoProducto()
                         }
                     }
-                 };
-             
+                };
+
                 var url = API.PEDIDOS.FARMACIAS.BUSCAR_USUARIO_BLOQUEO;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                    if(data.status === 200){
-                        
-                        if(data.obj.datos_usuario.length > 0){
-                            callback({msj:"El producto se encuentra bloqueado por el usuario "+ data.obj.datos_usuario[0].nombre, valido:false});
+                    if (data.status === 200) {
+
+                        if (data.obj.datos_usuario.length > 0) {
+                            callback({msj: "El producto se encuentra bloqueado por el usuario " + data.obj.datos_usuario[0].nombre, valido: false});
                         } else {
-                            callback({msj:"", valido:true});
+                            callback({msj: "", valido: true});
                         }
                     }
 
                 });
             };
-            
+
             /*
              * @Author: Eduar
              * @param {Object} filtro
              * +Descripcion: Handler del dropdown de filtros
              */
-            $scope.onSeleccionFiltro = function(filtro){
+            $scope.onSeleccionFiltro = function(filtro) {
                 $scope.rootSeleccionProductoFarmacia.filtro = filtro;
             };
-            
-            $scope.mostrarAlertaProducto = function(){
-                self.mostrarAlertaSeleccionProducto("Error agregando producto","El producto esta bloqueado o no se encuentra en la farmacia destino");
+
+            $scope.mostrarAlertaProducto = function() {
+                self.mostrarAlertaSeleccionProducto("Error agregando producto", "El producto esta bloqueado o no se encuentra en la farmacia destino");
             };
-            
+
             /*
              * @Author: Eduar
              * @param {$event} e
@@ -297,9 +297,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
             $scope.onBuscarProductos = function(event) {
 
                 if (event.which === 13) {
-                    
+
                     $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
-                    self.buscarProductos(function(){
+                    self.buscarProductos(function() {
                     });
                 }
             };
@@ -336,24 +336,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 if (event.which === 13) {
                     if (parseInt(producto.getCantidadSolicitada()) > 0) {
                         var pedido = $scope.root.pedido;
-                        
+
                         pedido.setProductoSeleccionado(angular.copy(producto));
-                        
-                        self.validarIngresoProducto(producto, function(validacion){
-                            
-                            if(validacion.valido){
-                                if(pedido.get_numero_pedido()){
+
+                        self.validarIngresoProducto(producto, function(validacion) {
+
+                            if (validacion.valido) {
+                                if (pedido.get_numero_pedido()) {
                                     $scope.$emit("insertarProductoPedido", pedido);
-                                } else  {
-                                     $scope.$emit("insertarProductoPedidoTemporal", pedido);
+                                } else {
+                                    $scope.$emit("insertarProductoPedidoTemporal", pedido);
                                 }
-                               
+
                             } else {
-                                self.mostrarAlertaSeleccionProducto("Error agregando producto",validacion.msj);
+                                self.mostrarAlertaSeleccionProducto("Error agregando producto", validacion.msj);
                             }
                         });
-                        
- 
+
+
                     }
                 }
             };

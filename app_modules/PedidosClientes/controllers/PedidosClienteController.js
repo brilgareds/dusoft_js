@@ -1667,96 +1667,171 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         return;
     }
 
-    cotizacion.usuario_id = req.session.user.usuario_id;
+    //cotizacion.usuario_id = req.session.user.usuario_id;
+    that.pedidoGenerado;
+     
+     /**
+     * +Descripcion: Funcion encargada de verificar si el numero de cotizacion
+     *               ya tiene un pedido asignado
+     */
+     G.Q.ninvoke(that.m_pedidos_clientes,'consultarExistenciaPedidoCotizacion', cotizacion.numero_cotizacion).then(function(resultado){ 
+      
+        if(resultado.length > 0){      
+              throw 'La cotizacion ya se encuentra con un pedido asignado';
+              return;
+        }else{      
+            /**
+             * +Descripcion: FUncion encargada de verificar el estado de una cotizacion
+             **/
+            return G.Q.ninvoke(that.m_pedidos_clientes,'consultarEstadoCotizacion', cotizacion.numero_cotizacion);               
+                   
+        }        
+        
+    }).then(function(resultado){
 
+        if(resultado.length > 0){
+         
+            cotizacion.usuario_id = resultado[0].usuario_id;
+            /**
+             * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
+             **/ 
+            if (resultado[0].estado === '3') {
+                
+                  return G.Q.ninvoke(that.m_pedidos_clientes,'generar_pedido_cliente', cotizacion);  
+                 
+            }else{
+                throw 'La cotizacion no se encuentra aprobada por cartera';
+                return;                                                                                    
+            }
+            
+        }else{
+           throw 'Ha ocurrido un error';
+        }
+        
+    }).then(function(resultado){
+         
+         that.pedidoGenerado = resultado;
+         return G.Q.ninvoke(that.m_pedidos_clientes,'asignar_responsables_pedidos', resultado.numero_pedido, resultado.estado, null, cotizacion.usuario_id);
+
+        
+    }).then(function(resultado){
+       
+         if(resultado.length > 0){
+             
+           return G.Q.ninvoke(that.m_pedidos_clientes,'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado],'1');
+             
+         }else{
+             
+             throw 'Se ha Generado un Error en la Asignacion de Responsables';
+         }
+        
+        
+    }).then(function(resultado){
+       
+         if(resultado.length > 0){
+             
+              that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
+              res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + that.pedidoGenerado.numero_pedido, 200, {pedidos_clientes: that.pedidoGenerado}));  
+              return;
+             
+         }else{
+             
+             throw 'Error finalizando el estado del pedido';
+         }
+        
+        
+    }).fail(function(err){  
+       
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
     /**
      * +Descripcion: Funcion encargada de verificar si el numero de cotizacion
      *               ya tiene un pedido asignado
      */
-    that.m_pedidos_clientes.consultarExistenciaPedidoCotizacion(cotizacion.numero_cotizacion, function(estadoExistenciaPedido, rowsExistenciaPedido) {
-        /**
-         * +Descripcion: Se valida que la consulta se ejecute satisfactoriamente 
-         */
+//    that.m_pedidos_clientes.consultarExistenciaPedidoCotizacion(cotizacion.numero_cotizacion, function(estadoExistenciaPedido, rowsExistenciaPedido) {
+//        /**
+//         * +Descripcion: Se valida que la consulta se ejecute satisfactoriamente 
+//         */
+//
+//        if (!estadoExistenciaPedido) {
+//          
+//            /**
+//             * +Descripcion: Se valida si el numero de cotizacion se encuentra
+//             *               en la tabla de pedidos
+//             */
+//
+//            if (rowsExistenciaPedido.length === 0) {
+//
+//                /**
+//                 * +Descripcion: FUncion encargada de verificar el estado de una cotizacion
+//                 */
+//                that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
+//                    /**
+//                     * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
+//                     *               satisfactoriamente
+//                     */
+//                    if (!err) {
+//                        /**
+//                         * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
+//                         */
+//                       if (rows[0].estado === '3') {
+//
+//                            // Generar pedido
+//                            that.m_pedidos_clientes.generar_pedido_cliente(cotizacion, function(err,pedido) {
+//                                
+//                                if (err) {
+//                                    res.send(G.utils.r(req.url, 'Error Interno al generar el pedido', 500, {pedidos_clientes: []}));
+//                                    return;
+//                                } else {
+//
+//                                    // Asignar responsables
+//                                    that.m_pedidos_clientes.asignar_responsables_pedidos(pedido.numero_pedido, pedido.estado, null, cotizacion.usuario_id, function(err, rows, responsable_estado_pedido) {
+//
+//                                        if (err) {
+//                                            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Responsables', 500, {pedidos_clientes: []}));
+//                                            return;
+//                                        }
+//
+//                                        // Actualizar estado del nuevo pedido
+//                                        that.m_pedidos_clientes.terminar_estado_pedido(pedido.numero_pedido, [pedido.estado], '1', function(err, rows, results) {
+//
+//                                            if (err) {
+//                                                res.send(G.utils.r(req.url, 'Error finalizando el estado del pedido', 500, {pedidos_clientes: []}));
+//                                                return;
+//                                            }
+//
+//                                            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
+//                                            res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + pedido.numero_pedido, 200, {pedidos_clientes: pedido}));
+//                                            return;
+//                                        });
+//                                    });
+//                                }
+//                           });
 
-        if (!estadoExistenciaPedido) {
-          
-            /**
-             * +Descripcion: Se valida si el numero de cotizacion se encuentra
-             *               en la tabla de pedidos
-             */
-
-            if (rowsExistenciaPedido.length === 0) {
-
-                /**
-                 * +Descripcion: FUncion encargada de verificar el estado de una cotizacion
-                 */
-                that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
-                    /**
-                     * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
-                     *               satisfactoriamente
-                     */
-                    if (!err) {
-                        /**
-                         * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
-                         */
-                        if (rows[0].estado === '3') {
-
-                            // Generar pedido
-                            that.m_pedidos_clientes.generar_pedido_cliente(cotizacion, function(err,pedido) {
-                                
-                                if (err) {
-                                    res.send(G.utils.r(req.url, 'Error Interno al generar el pedido', 500, {pedidos_clientes: []}));
-                                    return;
-                                } else {
-
-                                    // Asignar responsables
-                                    that.m_pedidos_clientes.asignar_responsables_pedidos(pedido.numero_pedido, pedido.estado, null, cotizacion.usuario_id, function(err, rows, responsable_estado_pedido) {
-
-                                        if (err) {
-                                            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Responsables', 500, {pedidos_clientes: []}));
-                                            return;
-                                        }
-
-                                        // Actualizar estado del nuevo pedido
-                                        that.m_pedidos_clientes.terminar_estado_pedido(pedido.numero_pedido, [pedido.estado], '1', function(err, rows, results) {
-
-                                            if (err) {
-                                                res.send(G.utils.r(req.url, 'Error finalizando el estado del pedido', 500, {pedidos_clientes: []}));
-                                                return;
-                                            }
-
-                                            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-                                            res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + pedido.numero_pedido, 200, {pedidos_clientes: pedido}));
-                                            return;
-                                        });
-                                    });
-                                }
-                            });
-
-                        } else {
-                            res.send(G.utils.r(req.url, 'La cotizacion no se encuentra aprobada por cartera', 500, {pedidos_clientes: []}));
-                            return;
-                        }
-
-                    } else {
-                        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
-                        return;
-                    }//estado consultarEstadoCotizacion
-
-                });
-
-            } else {
-                res.send(G.utils.r(req.url, 'La cotizacion ya se encuentra con un pedido asignado', 500, {pedidos_clientes: []}));
-                return;
-            }//rowsExistenciaPedido*/
-
-        } else {
-            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
-            return;
-        }//estadoExistenciaPedido
-
-
-    });//consultarExistenciaPedidoCotizacion
+//                        } else {
+//                            res.send(G.utils.r(req.url, 'La cotizacion no se encuentra aprobada por cartera', 500, {pedidos_clientes: []}));
+//                            return;
+//                        }
+//
+//                    } else {
+//                        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
+//                        return;
+//                    }//estado consultarEstadoCotizacion
+//
+//                });
+//
+//            } else {
+//                res.send(G.utils.r(req.url, 'La cotizacion ya se encuentra con un pedido asignado', 500, {pedidos_clientes: []}));
+//                return;
+//            }//rowsExistenciaPedido*/
+//
+//        } else {
+//            res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {pedidos_clientes: []}));
+//            return;
+//        }//estadoExistenciaPedido
+//
+//
+//    });//consultarExistenciaPedidoCotizacion
 };
 
 /*

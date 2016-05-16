@@ -752,7 +752,8 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 a.tipo_producto as tipo_producto_id,\
                 c.codigo_barras,\
                 h.existencia_actual,\
-                i.existencia as existencia_bodega\
+                i.existencia as existencia_bodega,\
+                c.estado as bloqueado\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\

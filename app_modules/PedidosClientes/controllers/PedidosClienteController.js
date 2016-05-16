@@ -1954,7 +1954,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
          *               estado (Estado del Pedido ) 1
          *               estado_pedido (Estado de solicitud ) 0
          */
-        if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
+        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
 
             return G.Q.ninvoke(that.m_pedidos_clientes,'consultarTotalValorPedidoCliente', numeroPedido);
 
@@ -2541,7 +2541,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
           *               estado (Estado del Pedido ) 1
           *               estado_pedido (Estado de solicitud ) 0
           */
-           if(resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {              
+           if(resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {              
                   return G.Q.ninvoke(that.m_pedidos_clientes,'consultarTotalValorPedidoCliente', numeroPedido);                      
            }else{
                throw ("El pedido debe estar activo o para autorizar nuevamente por cartera");
@@ -2722,7 +2722,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         
         if(resultado.length>0){
 
-            if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
+            if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
 
                  return G.Q.ninvoke(that.m_pedidos_clientes,'consultarTotalValorPedidoCliente', numeroPedido);   
                

@@ -1326,7 +1326,7 @@ PedidosFarmaciasModel.prototype.eliminarTemporalesFarmacias = function(callback)
 PedidosFarmaciasModel.prototype.borrarReservas = function(callback){
     var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle SET cantidad_pendiente = 0 WHERE solicitud_prod_a_bod_ppal_id  IN(\
                     SELECT a.solicitud_prod_a_bod_ppal_id FROM solicitud_productos_a_bodega_principal AS a\
-                    WHERE date_part('month', age(now()::timestamp, a.fecha_registro::timestamp) ) > 1\
+                    WHERE date_part('month', age(now()::timestamp, a.fecha_registro::timestamp) ) > 0\
                 )   and cantidad_pendiente > 0";
     
     G.knex.raw(sql).then(function(resultado){

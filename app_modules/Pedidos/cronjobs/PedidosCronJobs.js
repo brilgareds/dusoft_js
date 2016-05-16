@@ -3,9 +3,9 @@ var PedidosCronJobs = function(m_pedidos_farmacias, m_pedidos_clientes) {
     var that = this;
     that.m_pedidos_farmacias = m_pedidos_farmacias;
     that.m_pedidos_clientes = m_pedidos_clientes;
-    //if(G.program.prod){
+    if(G.program.prod){
         that.iniciar();
-   // }
+    }
 };
 
 
@@ -20,9 +20,9 @@ PedidosCronJobs.prototype.iniciar = function() {
     
     var that = this;
     
-    var job = new G.cronJob('*/59 */58 */23 * * *', function () {
+    var job = new G.cronJob('*/59 */59 */23 * * *', function () {
     //var job = new G.cronJob('*/10 * * * * *', function () {
-        console.log("iniciando crontab de pedidos >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        console.log("iniciando crontab de pedidos >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         G.Q.ninvoke(that, "borrarTemporalesPedidos").then(function(){
             return G.Q.ninvoke(that, "borrarReservasPedido");
         }).then(function(){

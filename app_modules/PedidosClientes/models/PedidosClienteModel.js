@@ -1,7 +1,8 @@
-var PedidosClienteModel = function(productos) {
+var PedidosClienteModel = function(productos, m_pedidos_logs) {
 
     // Temporalmente
     this.m_productos = productos;
+    this.m_pedidos_logs = m_pedidos_logs;
 };
 
 /**
@@ -1967,23 +1968,34 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
  *  --PedidosCliente.prototype.modificarDetallePedido
  */
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
- 
-    G.knex('ventas_ordenes_pedidos_d')
-    .where('pedido_cliente_id', pedido.numero_pedido)
-    .andWhere('codigo_producto', producto.codigo_producto)
-    .update({
-        porc_iva: producto.iva,
-        numero_unidades: producto.cantidad_solicitada,
-        valor_unitario: producto.precio_venta,
-        usuario_id: pedido.usuario_id,
-        fecha_registro: 'NOW()'
-    }).then(function(resultado) { 
-      
+    var that = this;
+     
+    var sql = "UPDATE ventas_ordenes_pedidos_d SET porc_iva= :1, numero_unidades = :2, valor_unitario = :3, usuario_id = :4, fecha_registro = :5 \
+               WHERE  pedido_cliente_id = :6 AND codigo_producto = :7\
+                returning( select numero_unidades  from ventas_ordenes_pedidos_d where\
+                            pedido_cliente_id = :6 and codigo_producto = :7 \
+                ) as cantidad_solicitada_anterior";
+    
+    G.knex.raw(sql, {
+                        1: producto.iva, 2:producto.cantidad_solicitada, 3:producto.precio_venta, 
+                        4:pedido.usuario_id, 5:'NOW()', 6:pedido.numero_pedido, 7:producto.codigo_producto
+                    }
+    ).then(function(resultado){
+        
+        var obj = {
+            usuarioId:pedido.usuario_id, accion:'0', tipoPedido:'0', numeroPedido:pedido.numero_pedido, 
+            empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, 
+            cantidadSolicitada:resultado.rows[0]['cantidad_solicitada_anterior'], cantidadActual:producto.cantidad_solicitada
+        };
+        
+        return G.Q.ninvoke(that.m_pedidos_logs, "guardarLog", obj);
+        //callback(false, resultado.rows);
+    }).then(function(resultado){
         callback(false, resultado);
-    }).catch(function(error) {
-  
-        callback(error);
-    });
+    }).catch(function(err){
+        callback(err);
+    }).done();
+    
 };
 
 
@@ -1998,17 +2010,25 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
  */
 PedidosClienteModel.prototype.eliminar_producto_pedido = function(pedido, producto, callback)
 {
-  
+    var that = this;
     G.knex('ventas_ordenes_pedidos_d')
-     .where('pedido_cliente_id', pedido.numero_pedido)
-     .andWhere('codigo_producto',producto.codigo_producto)
-     .del().then(function(resultado){
-      
+    .where('pedido_cliente_id', pedido.numero_pedido)
+    .andWhere('codigo_producto',producto.codigo_producto)
+    .del().then(function(resultado){
+        var obj = {
+            usuarioId:pedido.usuario_id, accion:'1', tipoPedido:'0', numeroPedido:pedido.numero_pedido, 
+            empresaId:pedido.empresa_id, codigoProducto:producto.codigo_producto, 
+            cantidadSolicitada:'0', cantidadActual:'0'
+        };
+        
+        return G.Q.ninvoke(that.m_pedidos_logs, "guardarLog", obj);
+        
+    }).then(function(resultado){
         callback(false,resultado);
-       }).catch (function(error) {  
-          
-           callback(error);
-       });
+    }).catch (function(error) {  
+
+       callback(error);
+    });
 };
 
 
@@ -2229,7 +2249,7 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
 
 
 
-PedidosClienteModel.$inject = ["m_productos"];
+PedidosClienteModel.$inject = ["m_productos", "m_pedidos_logs"];
 
 
 module.exports = PedidosClienteModel;

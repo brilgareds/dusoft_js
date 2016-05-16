@@ -360,6 +360,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                      that.init(empresa, function() {            
                          
+                         console.log("HOLA MUNDO")
+                         
+                         
                          if(!Usuario.getUsuarioActual().getEmpresa()){
                              AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
                          }else {

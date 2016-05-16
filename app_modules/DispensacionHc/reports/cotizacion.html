@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <style>
+            body {
+                font-family: 'Open Sans', sans-serif;
+                font-size:10px;
+                line-height:15px;
+            }
+            .pad-top-botm {
+                padding-bottom:0px;
+                padding-top:10px;
+            }
+            h4 {
+                text-transform:uppercase;
+            }
+
+            .contact-info span {
+                /*font-size:10px;*/
+                padding:0px 50px 0px 50px;
+            }
+
+            .contact-info hr {
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
+
+            .client-info {
+                /*font-size:10px;*/
+            }
+
+            .footer-info {
+                font-size:8px;
+            }
+
+            .ttl-amts {
+                text-align:right;
+                padding-right:50px;
+            }
+            .box {
+                float: left;
+                width: 300px;
+                height: 50px;
+                /*margin: 1em;*/
+            }
+            table, th, td {
+                border: 1px solid black;                
+                border-collapse: collapse;
+            }
+            td {
+                /*font-size: 8px;*/
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+
+            <div class="row pad-top-botm ">
+                <!--div class="col-lg-6 col-md-6 col-sm-6 "-->
+                <div class="box">
+                    <img src="{{:serverUrl}}images/logo.png" style="padding-bottom:20px;"  width="200px" height="50px"/> 
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">                   
+
+                    <strong> NIT - 900786223-3  Duana LTDA & CIA. </strong>
+                    <br />
+                    Calle 9A No. 42 - 115 Valle del Cauca, Cali, Colombia. 
+                </div>                
+            </div> 
+
+            <hr/>
+            <div  class="row  pad-top-botm client-info">
+                <h1>Cotizaci&oacute;n No {{:cotizacion.numero_cotizacion}}</h1>
+
+                <table class="table table-striped" width='100%'>
+                    <tr>
+                        <th></th>
+                        <th>Empresa</th>
+                    </tr>
+                    <tr>
+                        <th style='border-style:solid'>Origen</th>
+                        <td><center>{{:cotizacion.razon_social}}</center></td>
+                    </tr>
+
+                </table>
+                <br>
+                    <table class="table table-striped" width='100%'>
+                        <tr>
+                            <th></th>
+                            <th>Nombre</th>
+                            <th>Nit</th>
+                            <th>Ciudad</th>
+                            <th>Direcci&oacute;n</th>
+                        </tr>
+                        <tr>
+                            <th style='border-style:solid'>Cliente</th>
+                            <td><center>{{:cotizacion.nombre_tercero}}</center></td>
+                            <td><center>{{:cotizacion.tercero_id}}</center></td>
+                            <td><center>{{:cotizacion.municipio}}</center></td>
+                            <td><center>{{:cotizacion.direccion}}</center></td>
+                        </tr>
+                    </table>
+
+            </div>
+            </br>
+
+            <div  class="row  pad-top-botm client-info">
+                <table class="table table-striped" width='100%'>
+                    <tr>
+                        <th width='14%'>Observaci&oacute;n:</th>
+                        <td width='86%'>{{:cotizacion.observaciones}}</td>
+                    </tr>
+                </table>
+            </div>
+
+            </br>
+            <div class="row pad-top-botm">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <table class="table table-striped" width='100%'>
+                        <thead>
+                            <tr>
+                                <th width='14%'>C&oacute;digo Producto</th>
+                                <th>Descripci&oacute;n</th>
+                                <th>Cantidad</th>
+                                <th>Iva</th>
+                                <th>Precio</th>
+                                <th>Tot-Sin-Iva</th>
+                                <th>Tot-Con-Iva</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{for lista_productos}}
+                            <tr>
+                                <td>{{:codigo_producto}}</td>
+                                <td>{{:descripcion_producto}}</td>
+                                <td>{{:cantidad_solicitada}}</td>
+                                <td>{{:iva}}%</td>
+                                <td>{{:~formatMoney(valor_unitario)}}</td>
+                                <td>{{:~formatMoney(subtotal)}}</td>
+                                <td>{{:~formatMoney(total)}}</td>
+                            </tr>
+                            {{/for}}
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>TOTAL</th>
+                                <td>{{:~formatMoney(total_sin_iva)}}</td>
+                                <td>{{:~formatMoney(total_con_iva)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="">
+                <br/>
+                <br/>
+                ______________________________________<br/>
+                FIRMA Y SELLO AUTORIZADO
+            </div>                         
+            <div  class="row contact-info pad-top-botm footer-info">
+                <div class="col-md-12">
+                    <hr />
+                    <span>
+                        <strong>Realiza : </strong> {{:cotizacion.usuario_cotizacion}}
+                    </span>
+                    <span>
+                        <strong>Imprime : </strong>  {{:usuario_imprime}}
+                    </span>                    
+                    <span>
+                        <strong>Fecha Impresi&oacuten : </strong>{{:fecha_actual}}                        
+                    </span>
+                    <span>
+                        <strong>Fecha Cotizaci&oacuten : </strong> {{:cotizacion.fecha_registro}}                     
+                    </span>
+                </div>
+            </div> 
+        </div>
+    </body>
+</html>

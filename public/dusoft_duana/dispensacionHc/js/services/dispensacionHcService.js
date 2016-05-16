@@ -61,7 +61,26 @@ define(["angular", "js/services"], function(angular, services) {
                            callback(data);                 
                    });
                };
-
+               
+             /**
+              * +Descripcion Consulta todas las formulas
+              */
+             self.listarFormulas = function(session, terminoBusqueda, callback){
+                 
+                 var obj = {
+                     session: session,
+                     data: {
+                        listar_formulas:{
+                            pagina: 1,
+                            empresa:terminoBusqueda
+                        }
+                     }
+                 };
+                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
+                     
+                        callback(data);
+                 })
+             };
                  return this;
         }]);
 });

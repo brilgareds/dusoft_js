@@ -15,6 +15,11 @@ define(["angular"], function (angular) {
                 'OBTENER_DOCUMENTO': BASE_URL + '/movBodegas/E008/obtenerDocumento',
                 'CONSULTAR_DOCUMENTOS_USUARIOS': BASE_URL + '/movBodegas/consultarDocumentosUsuario',
                 'CONSULTAR_DOCUMENTO_APROBADO': BASE_URL + '/ValidacionDespachos/validarExistenciaDocumento'
+            },
+            
+            'DISPENSACIONHC':{
+                
+                "LISTAR_FORMULAS": BASE_URL + "/DispensacionHc/listarFormulas",
             }
         }
 

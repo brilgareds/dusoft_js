@@ -29,10 +29,12 @@ define([
     "models/BodegaInduccion",
     "models/ProductoInduccion",
     "models/AprobacionDespacho",
+    "models/FormulaHc",
+    "models/PacienteHc",
     "controllers/dispensacionHcController",
     "controllers/dispensacionHcDetalleController",
     "services/dispensacionHcService"
-], function(angular) {
+], function(angular) { 
 
         /* App Module and its dependencies */
     var dispensacionHc = angular.module('dispensacionHc', [

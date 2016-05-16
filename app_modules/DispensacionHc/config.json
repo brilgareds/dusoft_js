@@ -15,6 +15,9 @@
                     "alias": "m_dispensacion_hc"
                 }
             }],
+        "events": [{
+                
+            }],
         "cronJobs": []
     }
 }

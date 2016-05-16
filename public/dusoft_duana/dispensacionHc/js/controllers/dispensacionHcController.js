@@ -3,10 +3,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('dispensacionHcController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
                 'EmpresaDispensacionHc', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion','AprobacionDespacho',
-                "$timeout", "$filter","localStorageService","$state","dispensacionHcService",
+                "$timeout", "$filter","localStorageService","$state","dispensacionHcService","FormulaHc","PacienteHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
                         EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
-                        $timeout, $filter,localStorageService,$state,dispensacionHcService) {
+                        $timeout, $filter,localStorageService,$state,dispensacionHcService,FormulaHc,PacienteHc) {
 
                 var that = this;
                 $scope.paginaactual = 1;
@@ -137,7 +137,66 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 };
 
-                   
+                
+                /**
+                 * @author Cristian Ardila
+                 * @fecha 16/05/2016
+                 * +Descripcion Metodo encargado de invocar el servicio que
+                 *              listara todas las formulas medicas
+                 */
+                that.listarFormulasMedicas = function(){
+                    
+                     var obj = {
+                        
+                       session: $scope.session,
+                       prefijo:$scope.datos_view.prefijo,
+                       numero: $scope.datos_view.numero,//$scope.datos_view.numero,
+                       empresa_id:$scope.datos_view.empresaSeleccionada,
+                       fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                       fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                       paginaactual:$scope.paginaactual,
+                       registroUnico: false
+                        
+                    };
+                    
+                    dispensacionHcService.listarFormulas($scope.session,$scope.datos_view.termino_busqueda_empresa, function(data){
+                            
+                           if(data.status === 200) {       
+                               $scope.datos_view.items = data.obj.listar_formulas.length;                              
+                               that.renderListarFormulasMedicas(data.obj);
+                                
+                           }else{
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                           }
+                    });
+                };
+                
+                 that.renderListarFormulasMedicas = function(formulas){
+                     
+                      $scope.formulasMedicas = [];
+                      
+                          for (var i in formulas.listar_formulas) {
+                            var _formula = formulas.listar_formulas[i];
+                           
+                         var paciente = PacienteHc.get(_formula.tipo_id_paciente,
+                                                        _formula.paciente_id,_formula.apellidos,_formula.nombres)
+                                                        
+                         var documento = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
+                                                         _formula.transcripcion_medica,
+                                                         _formula.descripcion_tipo_formula,
+                                                        _formula.fecha_registro,
+                                                       _formula.fecha_finalizacion,
+                                                      _formula.fecha_formulacion);
+                           
+                         paciente.agregarFormulas(documento);
+                       
+                         $scope.formulasMedicas.push(paciente);
+                       
+                        }
+                     // console.log("PacienteHc ", $scope.formulasMedicas);
+                      console.log("PacienteHc ", $scope.formulasMedicas[0].formulasHc[0]);
+                      //$scope.formulasMedicas[0].formulasHc
+                 };
                 /**
                  * @author Cristian Ardila
                  * @fecha 04/02/2016
@@ -145,7 +204,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  *              listara todos los despachos aprobados por parte
                  *              de la persona de seguridad
                  */
-                
                 that.listarDespachosAprobados = function(){
                    
                     var obj = {
@@ -301,22 +359,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       *              por parte del personal de seguridad
                       */
                      $scope.listaFormulas = {
-                        data: 'documentosAprobados',
+                        data: 'formulasMedicas',
                          enableColumnResize: true,
                          enableRowSelection: false,
                          enableCellSelection: true,
                          enableHighlighting: true,
                         columnDefs: [
-                            {field: 'getPrefijo()', displayName: 'Evolucion', width:"9%"},
-                            {field: 'getNumero()', displayName: 'Formula', width:"9%"},
-                            {field: 'fecha_registro', displayName: 'Identificacion', width:"9%"},    
-                            {field: 'getPrefijo()', displayName: 'Paciente', width:"12%"},
-                            {field: 'getNumero()', displayName: 'Refrendado', width:"9%"},
-                            {field: 'fecha_registro', displayName: 'E', width:"9%"}, 
-                            {field: 'fecha_registro', displayName: 'F. Formulacion', width:"9%"}, 
-                            {field: 'fecha_registro', displayName: 'F. Finalizacion', width:"9%"}, 
-                            {field: 'fecha_registro', displayName: 'Plan', width:"10%"}, 
-                            {field: 'fecha_registro', displayName: 'Tipo', width:"10%"}, 
+                            {field: 'getApellidos()', displayName: 'Apellidos', width:"9%"},
+                            {field: 'getNombres()', displayName: 'Nombres', width:"9%"},
+                            {field: 'getTipoIdPaciente()', displayName: 'Tipo', width:"9%"},
+                            {field: 'getPacienteId()', displayName: 'Cedula', width:"9%"},    
+                            //{field: 'formulasMedicas[0].formulasHc[0]', displayName: 'Evolucion', width:"9%"},    
+                           
                             {field: 'detalle', width: "6%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
@@ -360,8 +414,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                      that.init(empresa, function() {            
                          
-                         console.log("HOLA MUNDO")
-                         
+                        
                          
                          if(!Usuario.getUsuarioActual().getEmpresa()){
                              AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
@@ -381,6 +434,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                  $scope.datos_view.estadoSesion = false;
                                  that.listarEmpresas(function(estado) {
                                     that.listarDespachosAprobados();
+                                    that.listarFormulasMedicas();
                                 });                                  
                                 }   
                             }

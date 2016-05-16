@@ -3,7 +3,7 @@ module.exports = function(app, di_container) {
     var c_dispensacion_hc = di_container.get("c_dispensacion_hc");
     
 
-    var io = di_container.get("socket");
+    //var io = di_container.get("socket");
 
     
 
@@ -11,6 +11,14 @@ module.exports = function(app, di_container) {
 
     // Listar todos los pedidos de los Clientes
     app.post('/api/DispensacionHc/listarFormulas', function(req, res) {
+        
+        console.log("LISTAR FORMULAS --------------------------->");
+        console.log("LISTAR FORMULAS --------------------------->");
+        console.log("LISTAR FORMULAS --------------------------->");
+        console.log("LISTAR FORMULAS --------------------------->");
+        console.log("LISTAR FORMULAS --------------------------->");
+        console.log("LISTAR FORMULAS --------------------------->");
+        console.log("LISTAR FORMULAS --------------------------->");
         c_dispensacion_hc.listarFormulas(req, res);
     });
 

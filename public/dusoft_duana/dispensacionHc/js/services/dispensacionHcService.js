@@ -77,9 +77,9 @@ define(["angular", "js/services"], function(angular, services) {
                      }
                  };
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
-                     
+                      
                         callback(data);
-                 })
+                 });
              };
                  return this;
         }]);

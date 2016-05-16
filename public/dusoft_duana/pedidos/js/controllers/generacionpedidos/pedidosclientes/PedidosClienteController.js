@@ -1207,11 +1207,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
                     
-                   
-                    AlertService.mostrarMensaje("warning", "Se atendio la solicitud satisfactoriamente");
+                   console.log("data ", data)
+                    
                     if (data.status === 200) {
-                        
+                        AlertService.mostrarMensaje("warning", "Se atendio la solicitud satisfactoriamente");
                         $scope.volver_cotizacion();
+                    }
+                    
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        //$scope.volver_cotizacion();
                     }
                 });
             };

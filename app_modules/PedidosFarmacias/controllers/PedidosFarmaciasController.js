@@ -1983,7 +1983,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
 
                 var _producto = (productos.length > 0) ? productos[0] : null;
 
-                if (!_producto || _producto.estado !== '1') {
+                if (!_producto) {
                     productoAgrupado.mensajeError = "No esta habilitado en la farmacia origen";
                     productoAgrupado.enFarmaciaOrigen = false;
                     productosInvalidosArchivo.push(productoAgrupado);
@@ -2062,7 +2062,8 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
 function __agruparProductosPorTipo(that, productos, callback) {
 
     var productosAgrupados = {};
-
+    console.log("agrupar::::", productos);
+    console.log("::::agrupar::::");
     if (productos.length === 0) {
         callback(productosAgrupados);
         return;
@@ -2094,6 +2095,9 @@ function __validar_productos_archivo_plano(contexto, filas, index, productos_val
 
     var fila = filas[index];
     var that = contexto;
+
+    console.log("validos", productos_validos);
+    console.log("invalidos", productos_invalidos);
 
     if (!fila) {
         callback(productos_validos, productos_invalidos);
@@ -2186,7 +2190,7 @@ function _generarDocumentoPedido(obj, callback) {
  * +Descripcion: Funcion helper que consulta el stock de un producto en la farmacia destino
  */
 function __consultarStockProducto(that, empresa_destino_id, producto, callback) {
-    that.m_productos.consultar_stock_producto(empresa_destino_id, producto.codigo_producto, {activo: true}, function(err, total_existencias_farmacias) {
+    that.m_productos.consultar_stock_producto(empresa_destino_id, producto.codigo_producto, {activo: false}, function(err, total_existencias_farmacias) {
 
         producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
         producto.en_farmacia_seleccionada = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? true : false;

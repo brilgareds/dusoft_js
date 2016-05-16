@@ -34,11 +34,18 @@
                     "model": "PedidosFarmaciasModel",
                     "alias": "m_pedidos_farmacias"
                 },
-                 "pedidos_log_model": {
+                 "pedidos_cliente_log_model": {
                     "module": "PedidosClientes",
                     "model": "PedidosClienteLog",
                     "alias": "m_pedidos_clientes_log"
+                },
+                "pedidos_log_model": {
+                    "module": "Pedidos",
+                    "model": "PedidosLogModel",
+                    "alias": "m_pedidos_logs"
                 }
+                
+                
             }],
         "events": [{
                 "pedidos_clientes_events": {

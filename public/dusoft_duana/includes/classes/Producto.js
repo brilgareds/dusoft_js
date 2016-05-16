@@ -17,6 +17,11 @@ define(["angular", "js/models"], function(angular, models) {
             this.precioMaximo = 0;
             this.contrato;
             this.estado;
+            this.responsable = "";
+            this.descripcionAccion = "";
+            this.cantidadSolicitada = 0;
+            this.cantidadActual = 0;
+            this.fechaModificacion = "";
         }
 
         Producto.prototype.setCodigoProducto = function(codigo) {
@@ -127,7 +132,51 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         
+        Producto.prototype.setResponsable= function(responsable) {
+            this.responsable = responsable;
+            return this;
+        };
         
+        Producto.prototype.getResponsable = function() {
+            return this.responsable;
+        };
+        
+        Producto.prototype.setDescripcionAccion= function(descripcionAccion) {
+            this.descripcionAccion = descripcionAccion;
+            return this;
+        };
+        
+        Producto.prototype.getDescripcionAccion = function() {
+            return this.descripcionAccion;
+        };
+
+        Producto.prototype.setCantidadSolicitada= function(cantidadSolicitada) {
+            this.cantidadSolicitada = cantidadSolicitada;
+            return this;
+        };
+        
+        Producto.prototype.getCantidadSolicitada = function() {
+            return this.cantidadSolicitada;
+        };
+        
+        
+        Producto.prototype.setCantidadActual= function(cantidadActual) {
+            this.cantidadActual = cantidadActual;
+            return this;
+        };
+        
+        Producto.prototype.getCantidadActual = function() {
+            return this.cantidadActual;
+        };
+        
+        Producto.prototype.setFechaModificacion= function(fechaModificacion) {
+            this.fechaModificacion = fechaModificacion;
+            return this;
+        };
+        
+        Producto.prototype.getFechaModificacion = function() {
+            return this.fechaModificacion;
+        };
         
         Producto.prototype.setContrato= function(contrato) {
             this.contrato = contrato;
@@ -138,6 +187,9 @@ define(["angular", "js/models"], function(angular, models) {
             return this.contrato;
         };
         
+        this.get = function(codigo_producto, descripcion, existencia) {
+            return new Producto(codigo_producto, descripcion, existencia);
+        };
         
         this.getClass = function() {
             return Producto;

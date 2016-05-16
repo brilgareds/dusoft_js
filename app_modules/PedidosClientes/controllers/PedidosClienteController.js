@@ -2480,7 +2480,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         return;
     }
 
-    if (producto.cantidad_solicitada === undefined || producto.cantidad_solicitada === '' || producto.cantidad_solicitada <= '0') {
+    if (producto.cantidad_solicitada === undefined || producto.cantidad_solicitada === '' /*|| producto.cantidad_solicitada <= '0'*/) {
         res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
         return;
     }
@@ -2568,7 +2568,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
            
      }).then(function(resultado){ 
          
-         if (resultado > 0) {
+         if (resultado.rowCount > 0) {
                pedido.aprobado_cartera = '0';
                pedido.observacion_cartera = '';                 
                 /**
@@ -2757,7 +2757,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     }).then(function(resultado){
       
      
-        if(resultado > 0) {
+        if(resultado.rowCount > 0) {
 
             pedido.aprobado_cartera = '0';
             pedido.observacion_cartera = '';      

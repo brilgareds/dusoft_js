@@ -16,15 +16,6 @@ define(["angular", "js/models"], function(angular, models) {
            
         };
         
-        
-       
-        
-      
-        
-       
-        
-        
-        
         Paciente.prototype.getTipoIdPaciente = function(){
             return this.tipoIdPaciente;
         };

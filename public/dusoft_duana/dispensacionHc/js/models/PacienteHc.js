@@ -45,7 +45,7 @@ define(["angular", "js/models", "includes/classes/Paciente"], function (angular,
              };
              
              PacienteHc.prototype.mostrarFormulas = function(){
-                this.formulasHc;
+                return this.formulasHc;
              };
              
              PacienteHc.prototype.vaciarFormulasHc = function () {

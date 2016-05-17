@@ -178,15 +178,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                           for (var i in formulas.listar_formulas) {
                             var _formula = formulas.listar_formulas[i];
                            
-                         var paciente = PacienteHc.get(_formula.tipo_id_paciente,
+                            var paciente = PacienteHc.get(_formula.tipo_id_paciente,
                                                         _formula.paciente_id,_formula.apellidos,_formula.nombres)
-                                                        
-                         var documento = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
+                                paciente.setMedico(_formula.nombre);
+                                paciente.setTipoBloqueoId(_formula.tipo_bloqueo_id);  
+                                paciente.setBloqueo(_formula.bloqueo);  
+                                
+                            var documento = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
                                                          _formula.transcripcion_medica,
                                                          _formula.descripcion_tipo_formula,
                                                         _formula.fecha_registro,
                                                        _formula.fecha_finalizacion,
                                                       _formula.fecha_formulacion);
+                                                      
+                              
                            
                          paciente.agregarFormulas(documento);
                        
@@ -194,7 +199,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        
                         }
                      // console.log("PacienteHc ", $scope.formulasMedicas);
-                      console.log("PacienteHc ", $scope.formulasMedicas[0].formulasHc[0]);
+                      console.log("PacienteHc ", $scope.formulasMedicas);
+                      console.log("PacienteHc ----->", $scope.formulasMedicas[0].mostrarFormulas()[0].getEvolucionId());
                       //$scope.formulasMedicas[0].formulasHc
                  };
                 /**
@@ -365,11 +371,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          enableCellSelection: true,
                          enableHighlighting: true,
                         columnDefs: [
-                            {field: 'getApellidos()', displayName: 'Apellidos', width:"9%"},
-                            {field: 'getNombres()', displayName: 'Nombres', width:"9%"},
+                            {field: 'mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
+                            {field: 'mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
                             {field: 'getTipoIdPaciente()', displayName: 'Tipo', width:"9%"},
-                            {field: 'getPacienteId()', displayName: 'Cedula', width:"9%"},    
-                            //{field: 'formulasMedicas[0].formulasHc[0]', displayName: 'Evolucion', width:"9%"},    
+                            {field: 'getPacienteId()', displayName: 'Cedula', width:"9%"}, 
+                            {field: 'getNombres()', displayName: 'Nombres', width:"9%"},
+                            {field: 'getApellidos()', displayName: 'Apellidos', width:"9%"},   
+                            {field: 'mostrarFormulas()[0].getFechaFormulacion()', displayName: 'F. Formulacion', width:"9%"}, 
+                            {field: 'mostrarFormulas()[0].getFechaFinalizacion()', displayName: 'F. Finalizacion', width:"9%"},                              
+                            {field: 'getMedico()', displayName: 'Medico', width:"9%"},    
+                               
                            
                             {field: 'detalle', width: "6%",
                                 displayName: "Opciones",

@@ -521,8 +521,7 @@ define(["angular", "js/controllers",
                                        class="form-control grid-inline-input" \n\
                                        name="" id="" /> </div>'},
                     {width: "50", displayName: "Opcion", cellClass: "txt-center",
-                        cellTemplate: '<div class="btn-toolbar">\\n\
-                                            <button  ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                        cellTemplate: '     <button  ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
 
 

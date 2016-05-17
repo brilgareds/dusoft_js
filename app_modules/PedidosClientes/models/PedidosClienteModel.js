@@ -246,9 +246,14 @@ PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback){
  */
 PedidosClienteModel.prototype.borrarReservas = function(callback){
     var sql = "UPDATE ventas_ordenes_pedidos_d SET cantidad_despachada = numero_unidades WHERE pedido_cliente_id IN(\
-                    SELECT a.pedido_cliente_id  FROM ventas_ordenes_pedidos AS a\
-                    WHERE date_part('month', age(now()::timestamp, a.fecha_registro::timestamp) ) > 0\
-               ) and cantidad_despachada < numero_unidades";
+                SELECT a.pedido_cliente_id FROM ventas_ordenes_pedidos AS a\
+                  inner join (\
+                  	select  EXTRACT(DAY FROM MAX(now())-MIN(b.fecha_registro)) as dias, b.pedido_cliente_id, b.empresa_id\
+                        from ventas_ordenes_pedidos as b\
+                        GROUP BY 2,3\
+                  ) as t on t.pedido_cliente_id = a.pedido_cliente_id  and t.empresa_id = a.empresa_id\
+                  WHERE t.dias  >= 30\
+          ) and cantidad_despachada < numero_unidades";
     
     G.knex.raw(sql).then(function(resultado){
         callback(false, resultado);

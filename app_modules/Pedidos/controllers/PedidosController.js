@@ -1,9 +1,10 @@
-var Pedidos = function(pedidos, productos) {
+var Pedidos = function(pedidos, productos, m_pedidos_logs, j_pedidos) {
 
     console.log("Modulo Pedidos Cargado ");
 
     this.m_pedidos = pedidos;
     this.m_productos = productos;
+    this.m_pedidos_logs = m_pedidos_logs;
 };
 
 
@@ -61,6 +62,31 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
     });
 };
 
-Pedidos.$inject = ["m_pedidos", "m_productos"];
+Pedidos.prototype.consultarLogs = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    args.pedidos = args.pedidos || {};
+    var empresaId = args.pedidos.empresa_id || null;
+    var numeroPedido = args.pedidos.numero_pedido || null;
+    var tipoPedido = args.pedidos.tipo_pedido || null; // FM o CL
+
+
+    if (!empresaId || !numeroPedido || !tipoPedido) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    
+    G.Q.ninvoke(that.m_pedidos_logs, "consultarLogs", {empresaId:empresaId, numeroPedido:numeroPedido, tipoPedido:tipoPedido}).then(function(productos){
+        res.send(G.utils.r(req.url, 'Listado de logs', 200, {productos:productos}));
+    }).fail(function(err){
+        console.log("ha ocurriod un error ",err);
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error', 500, {}));
+    });
+    
+};
+
+Pedidos.$inject = ["m_pedidos", "m_productos", "m_pedidos_logs", "j_pedidos"];
 
 module.exports = Pedidos;

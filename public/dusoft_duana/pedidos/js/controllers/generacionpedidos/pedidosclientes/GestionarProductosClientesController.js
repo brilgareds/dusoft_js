@@ -477,7 +477,7 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 enableColumnResize: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "150",
+                    {field: 'codigo_producto', displayName: 'Código', width: "120",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
@@ -493,12 +493,12 @@ define(["angular", "js/controllers",
                    cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
                     {field: 'codigo_invima', displayName: 'Reg.Invima', width: "80", cellClass: "gridNumber"},
-                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "100", cellFilter: "currency:'$ '",
+                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
                                        </div>'},
-                    {field: 'precio_venta', width: "100", displayName: "$ Venta", cellFilter: "number",
+                    {field: 'precio_venta', width: "150", displayName: "$ Venta", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
                      ng-model="row.entity.precio_venta" \
                      validacion-numero-entero\
@@ -510,9 +510,9 @@ define(["angular", "js/controllers",
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
                         </div></div>'
                     },
-                    {field: 'iva', displayName: 'Iva', width: "90", cellClass: "gridNumber"},
-                    {field: 'existencia', displayName: 'Stock', width: "80", cellClass: "gridNumber"},
-                    {field: 'cantidad_disponible', displayName: 'Dispo.', width: "80", cellClass: "gridNumber"},
+                    {field: 'iva', displayName: 'Iva', width: "80", cellClass: "gridNumber"},
+                    {field: 'existencia', displayName: 'Stock', width: "60", cellClass: "gridNumber"},
+                    {field: 'cantidad_disponible', displayName: 'Dispo.', width: "60", cellClass: "gridNumber"},
                     {field: 'cantidad_solicitada', width: "80", displayName: 'Cantidad',
                         cellTemplate: '<div class="col-xs-12"> \
                                       <input type="text" \

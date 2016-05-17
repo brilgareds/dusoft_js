@@ -20,6 +20,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado;
             this.estado_separacion;
             this.descripcionTipoPedido = "";
+            this.tipoPedido = "";
         }
 
         // Pedidos
@@ -43,6 +44,15 @@ define(["angular", "js/models"], function(angular, models) {
         
         Pedido.prototype.getDescripcionTipoPedido = function(){
             return this.descripcionTipoPedido;
+        };
+        
+        Pedido.prototype.setTipoPedido = function(tipoPedido){
+            this.tipoPedido = tipoPedido;
+            return this;
+        };
+        
+        Pedido.prototype.getTipoPedido = function(){
+            return this.tipoPedido;
         };
 
         Pedido.prototype.setNumeroPedido = function(numero_pedido){

@@ -7,6 +7,7 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosclientes/ProductoPedidoCliente",
     "models/generacionpedidos/pedidosclientes/Laboratorio",
     "models/generacionpedidos/pedidosclientes/Molecula",
+    "includes/components/logspedidos/LogsPedidosController"
 ], function(angular, controllers) {
 
     controllers.controller('ListarPedidosClientesController', [
@@ -670,18 +671,57 @@ define(["angular", "js/controllers",
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li ng-if="row.entity.getEstadoActualPedido() != \'0\' "  ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
-                                                <li ng-if="row.entity.getEstadoActualPedido() == \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.getEstadoActualPedido() == \'0\' || row.entity.getEstadoActualPedido() == \'8\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_email_pedidos }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                                 <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
                                             </li>\
+                                             <li ng-if="datos_view.opciones.sw_consultar_logs">\
+                                                <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
+                                            </li>\
                                             </ul>\
                                        </div>'
                     }
                 ]
-            };
+            }; 
+            
+            
+            $scope.onTraerLogsPedidos = function(pedido){ 
+                
+                var empresa = Sesion.getUsuarioActual().getEmpresa();
+                
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: '../includes/components/logspedidos/logspedidos.html',
+                    controller: "LogsPedidosController",
+                    windowClass: 'app-modal-window-xlg',
+                    resolve: {
+                        pedido: function() {
+                            return pedido;
+                        },
+                        tipoPedido: function() {
+                            return  '0';
+                        },
+                        empresaId:function(){
+                            return empresa.getCodigo();
+                        }
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log("refrescar producto");
+
+                }, function() {
+                    
+                });
+                
+            }; 
             
             /**
              * +Descripcion: Metodo encargado de listar todos los pedidos   

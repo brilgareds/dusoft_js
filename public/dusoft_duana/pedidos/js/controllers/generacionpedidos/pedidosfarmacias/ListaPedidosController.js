@@ -3,7 +3,8 @@
 define(["angular",
     "js/controllers",
     'includes/slide/slideContent',
-    'models/generacionpedidos/pedidosfarmacias/PedidoFarmacia'], function(angular, controllers) {
+    'models/generacionpedidos/pedidosfarmacias/PedidoFarmacia',
+    "includes/components/logspedidos/LogsPedidosController"], function(angular, controllers) {
 
     controllers.controller('ListaPedidosController', [
         '$scope', '$rootScope', 'Request',
@@ -94,7 +95,7 @@ define(["angular",
                                                 <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'1\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}" >Modificar</a>\
                                             </li>\
                                             <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnVerPedido}}">Ver</a></li>\
-                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)">\
+                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null) ||  row.entity.estado_actual_pedido == 8">\
                                                 <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'3\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificacionEspecial}}" >Modificación Especial</a>\
                                             </li>\
                                             <li ng-if="row.entity.getTieneDespacho()">\
@@ -102,6 +103,9 @@ define(["angular",
                                             </li>\
                                             <li ng-if="false">\
                                                 <a href="javascript:void(0);" ng-click="ventanaEnviarEmail(row.entity)">Enviar Email</a>\
+                                            </li>\
+                                            <li ng-if="rootPedidosFarmacias.opciones.sw_consultar_logs">\
+                                                <a href="javascript:void(0);" ng-click="onTraerLogsPedidos(row.entity)">Ver logs</a>\
                                             </li>\
                                         </ul>\n\
                                     </div>'
@@ -228,6 +232,42 @@ define(["angular",
                 
             };
             
+            $scope.onTraerLogsPedidos = function(pedido){ 
+                
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                var centro  = empresa.getCentroUtilidadSeleccionado();
+                
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: '../includes/components/logspedidos/logspedidos.html',
+                    controller: "LogsPedidosController",
+                    windowClass: 'app-modal-window-xlg',
+                    resolve: {
+                        pedido: function() {
+                            return pedido;
+                        },
+                        tipoPedido: function() {
+                            return  '1';
+                        },
+                        empresaId:function(){
+                            return empresa.getCodigo();
+                        }
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log("refrescar producto");
+
+                }, function() {
+                    
+                });
+                
+            }; 
+           
           /*
            * @Author: Eduar
            * @param {Object} filtro

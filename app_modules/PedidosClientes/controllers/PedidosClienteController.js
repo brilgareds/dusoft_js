@@ -1762,7 +1762,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 };
 
 /**
- * +Descripcion: funcion que guarda el pdido de productos bloqueados
+ * +Descripcion: funcion que guarda el pedido de productos bloqueados
  * @author Andres M Gonzalez
  * @fecha: 16/05/2016
  * @params el arreglo autorizacion y this de generarPedidoFarmacia

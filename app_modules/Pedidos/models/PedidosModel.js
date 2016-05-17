@@ -361,9 +361,10 @@ function __insertarAutorizacionesProductosPedido(params, callback) {
                     pedido_id,\n\
                     codigo_producto,\n\
                     fecha_solicitud,\n\
-                    empresa_id)\n\
-                VALUES( :1, :2, :3, CURRENT_TIMESTAMP, :5)";
-    var query = G.knex.raw(sql, {1: params.farmacia, 2: params.numero_pedido, 3: params.productos[0].codigo_producto, 5: params.empresa_id});
+                    empresa_id,\n\
+                    estado)\n\
+                VALUES( :1, :2, :3, CURRENT_TIMESTAMP, :5,:6)";
+    var query = G.knex.raw(sql, {1: params.farmacia, 2: params.numero_pedido, 3: params.productos[0].codigo_producto, 5: params.empresa_id, 6: '0'});
 
     query.then(function(resultado) {
         callback(false, resultado.rows);

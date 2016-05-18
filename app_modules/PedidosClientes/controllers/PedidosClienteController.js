@@ -2480,13 +2480,12 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
      */
     G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoPedidoEstado', numeroPedido).then(function(resultado) {
         /**
-<<<<<<< HEAD
          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
          *               siempre y cuando el pedido tenga el
          *               estado (Estado del Pedido ) 1
          *               estado_pedido (Estado de solicitud ) 0
          */
-        if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
+        if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
         } else {
             throw ("El pedido debe estar activo o para autorizar nuevamente por cartera");
@@ -2494,21 +2493,6 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     }).then(function(resultado) {
 
         if (resultado.length > 0) {
-=======
-          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
-          *               siempre y cuando el pedido tenga el 
-          *               estado (Estado del Pedido ) 1
-          *               estado_pedido (Estado de solicitud ) 0
-          */
-           if(resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {              
-                  return G.Q.ninvoke(that.m_pedidos_clientes,'consultarTotalValorPedidoCliente', numeroPedido);                      
-           }else{
-               throw ("El pedido debe estar activo o para autorizar nuevamente por cartera");
-           }
-     }).then(function(resultado){ 
-         
-          if(resultado.length >0){
->>>>>>> 0a87b55c502c457f412ed807b232b3475b4bb8e6
             var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
 
             if (totalValorPedidoNuevo > totalValorPedidoActual) {

@@ -1,4 +1,4 @@
-var Pedidos = function(pedidos, productos, m_pedidos_logs) {
+var Pedidos = function(pedidos, productos, m_pedidos_logs, j_pedidos) {
 
     console.log("Modulo Pedidos Cargado ");
 
@@ -87,6 +87,6 @@ Pedidos.prototype.consultarLogs = function(req, res) {
     
 };
 
-Pedidos.$inject = ["m_pedidos", "m_productos", "m_pedidos_logs"];
+Pedidos.$inject = ["m_pedidos", "m_productos", "m_pedidos_logs", "j_pedidos"];
 
 module.exports = Pedidos;

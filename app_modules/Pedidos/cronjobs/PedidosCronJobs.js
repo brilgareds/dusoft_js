@@ -1,24 +1,85 @@
 
-var PedidosCronJobs = function() {
-
-    console.log("Modulo Cron Jobs Pedidos Cargado ");
-};
-
-
-
-PedidosCronJobs.prototype.liberarReservas = function() {
-
+var PedidosCronJobs = function(m_pedidos_farmacias, m_pedidos_clientes) {
     var that = this;
-    
-    var job = new G.cronJob('*/5 * * * * *', function () {
-        // Do some stuff here 
-        //console.log(">>>>>>>>>>>>>>>>>>>>>>>>>> liberar Reservas");
-    });
-    job.start()
+    that.m_pedidos_farmacias = m_pedidos_farmacias;
+    that.m_pedidos_clientes = m_pedidos_clientes;
+    if(G.program.prod){
+        that.iniciar();
+    }
 };
 
 
 
-//PedidosCronJobs.$inject = ["e_auth"];
+/**
+ * @author Eduar Garcia
+ * +Descripcion: Metodo que da inicio al crontab
+ * @param {type} callback
+ * @returns {void}
+ */
+PedidosCronJobs.prototype.iniciar = function() {
+    
+    var that = this;
+    console.log("iniciando crontab de pedidos code 1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    var job = new G.cronJob('*/02 */02 */08 * * *', function () {
+    //var job = new G.cronJob('*/59 */59 */23 * * *', function () {
+        console.log("iniciando crontab de pedidos code 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        G.Q.ninvoke(that, "borrarTemporalesPedidos").then(function(){
+            return G.Q.ninvoke(that, "borrarReservasPedido");
+        }).then(function(){
+            console.log("finaliza eliminacion de temporales y liberacion de reservas ---------------");
+        }).fail(function(err){
+            console.log("error borrando temporales ", err);
+        });
+    });
+    
+    job.start();
+};
+
+
+/**
+ * @author Eduar Garcia
+ * +Descripcion: Invoca metodos de los modelos correspondients a clientes y farmacias para liberar reservas de los temporales
+ * @param {type} callback
+ * @returns {void}
+ */
+PedidosCronJobs.prototype.borrarTemporalesPedidos = function(callback) {
+    var that = this;
+   
+
+    G.Q.ninvoke(that.m_pedidos_farmacias, "eliminarTemporalesFarmacias").then(function(){
+        return G.Q.ninvoke(that.m_pedidos_clientes, "eliminarTemporalesClientes");
+    }).then(function(){
+         console.log("finaliza borrando temporales  ---------------");
+        callback(false);
+    }).fail(function(err){
+
+        callback(err);
+    }).done();
+        
+
+};
+
+/**
+ * @author Eduar Garcia
+ * +Descripcion: Invoca metodos de los modelos correspondients a clientes y farmacias para liberar reservas
+ * @param {type} callback
+ * @returns {void}
+ */
+PedidosCronJobs.prototype.borrarReservasPedido = function(callback) {
+    var that = this;
+   
+    G.Q.ninvoke(that.m_pedidos_farmacias, "borrarReservas").then(function(){
+        return G.Q.ninvoke(that.m_pedidos_clientes, "borrarReservas");
+    }).then(function(){
+         console.log("finaliza reservas pedidos  ---------------");
+        callback(false);
+    }).fail(function(err){
+
+        callback(err);
+    }).done();
+        
+};
+
+PedidosCronJobs.$inject = ["m_pedidos_farmacias", "m_pedidos_clientes"];
 
 module.exports = PedidosCronJobs;

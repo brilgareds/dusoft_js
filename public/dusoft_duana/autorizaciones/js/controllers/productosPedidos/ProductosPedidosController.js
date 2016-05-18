@@ -103,8 +103,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 function(data) {
                     if (data.status === 200) {
                         $scope.ultima_busqueda = $scope.termino_busqueda;
-                        console.log(">>>>>>>>>>>>>>>>AAAAAAAAAAA", data.obj);
-                        console.log(">>>>>>>>>>>>>>>>BBBBBBB", paginando);
                         $scope.renderProductos(data.obj, paginando);
                     }
                 }
@@ -118,40 +116,40 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 console.log("$scope.itemssssssssssssssssssssssssss", $scope.items);
 
 //                se valida que hayan registros en una siguiente pagina
-//                if (paginando && $scope.items === 0) {
-//                    if ($scope.paginaactual > 1) {
-//                        $scope.paginaactual--;
-//                    }
-//                    AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
-//                    return;
-//                }
-//
-//                $scope.EmpresasProductos = [];
-//                $scope.paginas = (data.listarProductosBloqueados.length / 10);
-//                $scope.items = data.listarProductosBloqueados.length;
-//
-//                for (var i in data.listarProductosBloqueados) {
-//                    var obj = data.listarProductosBloqueados[i];
-//
-//                    var producto = ProductoMovimiento.get(
-//                            obj.codigo_producto,
-//                            obj.descripcion_producto,
-//                            obj.existencia
-//                            );
-//
-//                    var centro = CentroUtilidad.get(obj.centro);
-//                    var bodega = Bodega.get(obj.bodega);
-//                    centro.agregarBodega(bodega);
-//                    producto.setTipoProductoId(obj.tipo_producto_id);
-//
-//                    var empresa = Empresa.get(obj.razon_social, obj.empresa_id);
-//                    empresa.setCentroUtilidadSeleccionado(centro);
-//
-//                    $scope.EmpresasProductos.push({
-//                        empresa: empresa,
-//                        producto: producto
-//                    });
-//                }
+                if (paginando && $scope.items === 0) {
+                    if ($scope.paginaactual > 1) {
+                        $scope.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                    return;
+                }
+
+                $scope.EmpresasProductos = [];
+                $scope.paginas = (data.listarProductosBloqueados.length / 10);
+                $scope.items = data.listarProductosBloqueados.length;
+
+                for (var i in data.listarProductosBloqueados) {
+                    var obj = data.listarProductosBloqueados[i];
+
+                    var producto = ProductoMovimiento.get(
+                            obj.codigo_producto,
+                            obj.descripcion_producto,
+                            obj.existencia
+                            );
+
+                    var centro = CentroUtilidad.get(obj.centro);
+                    var bodega = Bodega.get(obj.bodega);
+                    centro.agregarBodega(bodega);
+                    producto.setTipoProductoId(obj.tipo_producto_id);
+
+                    var empresa = Empresa.get(obj.razon_social, obj.empresa_id);
+                    empresa.setCentroUtilidadSeleccionado(centro);
+
+                    $scope.EmpresasProductos.push({
+                        empresa: empresa,
+                        producto: producto
+                    });
+                }
 
             };
             /**

@@ -2042,7 +2042,7 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
                         4:pedido.usuario_id, 5:'NOW()', 6:pedido.numero_pedido, 7:producto.codigo_producto
                     };
           
-    //console.log("parametros ", parametros);
+  
                     
     G.knex.raw(sql, parametros
     ).then(function(resultado){
@@ -2058,7 +2058,7 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
     }).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err  -----> ", err)
+       
         callback(err);
     }).done();
     

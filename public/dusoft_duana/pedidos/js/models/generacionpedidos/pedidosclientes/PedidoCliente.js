@@ -26,10 +26,24 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.despachoEmpresaId = "";
                 this.despachoPrefijo = "";
                 this.despachoNumero = 0;
+                this.estadoSolicitud;
             };
 
             PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);
 
+            
+            //Escribiendo el estado de solicitud del pedido
+            PedidoCliente.prototype.setEstadoSolicitud = function(estadoSolicitud) {
+                this.estadoSolicitud = estadoSolicitud;
+                return this;
+            };
+            
+            //Obteniendo estado de solicitud del pedido
+            PedidoCliente.prototype.getEstadoSolicitud = function() {
+                
+                return this.estadoSolicitud;
+                
+            };
             
             //estado
             PedidoCliente.prototype.setEstado = function(estado) {

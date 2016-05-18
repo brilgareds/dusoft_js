@@ -117,7 +117,7 @@
                                                     <div class="">
                                                         <div class="col-md-3">
                                                             <p class="input-group">
-                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos() || Pedido.get_aprobado_cartera() ==5" ng-click="buscar_productos()" > 
+                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos() || Pedido.get_aprobado_cartera() ==5 || Pedido.getEstadoSolicitud () ==8" ng-click="buscar_productos()" > 
                                                                     <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                                 </button>
                                                             </p>

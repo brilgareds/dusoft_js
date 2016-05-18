@@ -20,7 +20,7 @@ PedidosCronJobs.prototype.iniciar = function() {
     
     var that = this;
     console.log("iniciando crontab de pedidos code 1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    var job = new G.cronJob('*/02 */02 */08 * * *', function () {
+    var job = new G.cronJob('*/08 */08 */08 * * *', function () {
     //var job = new G.cronJob('*/59 */59 */23 * * *', function () {
         console.log("iniciando crontab de pedidos code 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         G.Q.ninvoke(that, "borrarTemporalesPedidos").then(function(){

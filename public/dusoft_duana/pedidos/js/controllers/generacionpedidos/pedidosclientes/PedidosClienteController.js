@@ -334,6 +334,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
+                $scope.Pedido.setEstadoSolicitud(data.estado_actual_pedido);
             };
 
             that.buscar_detalle_pedido = function() {
@@ -360,14 +361,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
-                  
+                  console.log("data productos  ", data)
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.porcentaje_iva);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     producto.set_cantidad_inicial(data.cantidad_solicitada);
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.valor_unitario * data.cantidad_solicitada);
                     producto.set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.valor_unitario_con_iva * data.cantidad_solicitada);
+                    producto.setCantidadPendiente(data.cantidad_pendiente);
+                    producto.setCantidadPendienteDespachar(data.cantidad_pendiente);
                     $scope.Pedido.set_productos(producto);
                 });
+                
+             
 
 
             };
@@ -688,8 +693,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
+            
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de modificar cada producto
+             *              en el detalle del pedido
+             * @fecha 18/05/2016
+             * @returns {unresolved}
+             */
             $scope.modificar_producto = function() {
-
+                
+                var producto =  $scope.datos_view.producto_seleccionado;
+               
+                if(producto.getCantidadPendienteDespachar() > producto.getCantidadPendiente() || producto.getCantidadPendienteDespachar() < 0){
+                        
+                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cantidad ingresada no debe ser mayor a la cantidad pendiente");                      
+                     return;
+                }
+               
 
                 var obj = {};
                 var url = '';
@@ -726,10 +747,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
                 }
-
+                
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
 
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     $scope.datos_view.producto_seleccionado = Producto.get();
@@ -743,7 +763,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 });
             };
-
+                
             $scope.filtroGrid = {filterText: '', useExternalFilter: false};
             // Lista Productos Seleccionados
             $scope.lista_productos = {
@@ -784,16 +804,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> \n\
-                                        <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 " \n\
+                                       <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || Pedido.getEstadoSolicitud() == 8" \n\
                                         ng-model="row.entity.cantidad_solicitada" \n\
                                         validacion-numero-entero \n\
                                         ng-keyup="validarCantidadInicialCantidadNueva(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"\
                                         class="form-control grid-inline-input" \n\
+                                        name="" id="" /> </div>'},      
+                    
+                    
+                    {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad pendiente", cellFilter: "number",
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                                       <input type="text" ng-disabled="Pedido.getEstadoSolicitud() != 8 " \n\
+                                        ng-model="row.entity.cantidadPendienteDespachar" \n\
+                                        validacion-numero-entero \n\
+                                        ng-keyup="validarCantidadInicialCantidadNueva(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"\
+                                        class="form-control grid-inline-input" \n\
                                         name="" id="" /> </div>'},
+                    
+                  /* {field: 'getCantidadPendienteDespachar()', width: "8%", displayName: "Cantidad pendiente", cellFilter: "number",
+                        cellTemplate: '<div class="col-xs-12"> \n\
+                                       <input type="text" ng-disabled="Pedido.getEstadoSolicitud() != 8 " \n\
+                                        ng-model="row.entity.cantidadPendienteDespachar" \n\
+                                        validacion-numero-entero \n\
+                                        ng-keyup="validarCantidadInicialCantidadNueva(row.entity.cantidad_inicial,row.entity.cantidadPendiente)"\
+                                        class="form-control grid-inline-input" \n\
+                                        name="" id="" /> </div>'},*/
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
                     {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
-                    {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
+                    {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "8%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-toolbar">\
                                         <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" || disabledCheckModificarProducto(row.entity.cantidad_inicial,row.entity.cantidad_solicitada)"  ><span class="glyphicon glyphicon-ok"></span></button>\

@@ -11,19 +11,19 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
         //  where = " a.pedido_id = " + termino_busqueda.termino + " and ";
     }
 
+    var select = "";
     if (termino_busqueda.tipo_pedido === '0') {
-        inner = " INNER JOIN  ON (" + termino_busqueda.termino + ") ";
+        select = "DISTINCT  on (a.pedido_id) a.pedido_id,";
     }
 
-    var sql = "SELECT\n\
-               DISTINCT  on (a.pedido_id) a.pedido_id,\n\
+    var sql = "SELECT " + select + " \n\
                     a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\n\
                     a.pedido_id,a.codigo_producto,\n\
                     a.estado, case when a.estado='0' \n\
                     then 'Por Verificar' when (a.estado='1') \n\
                     then 'Aprobado' \n\
                     else 'Denegado' end as estado_verificado,\n\
-                    a.fecha_solicitud,\n\
+                    a.fecha_solicitud,a.usuario_id as usuario_verifica,\n\
                     a.fecha_verificacion,a.usuario_id,\n\
                     a.empresa_id,fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\n\
                     c.nombre_tercero,\n\
@@ -42,11 +42,12 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                     LEFT JOIN system_usuarios as e ON (a.usuario_id=e.usuario_id)\n\
                  WHERE true and " + where + "\n\
                     a.empresa_id = :1 and a.tipo_pedido = :2 \n\
-                  ";//  limit :3 offset :4
-
+                 --order by b.tipo_id_tercero,b.tercero_id,a.tipo_pedido \n\
+                    ";//  limit :3 offset :4
+    console.log("--------------", sql);
     G.knex.raw(sql, {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido}).//, 3: G.settings.limit, 4: offset
             then(function(resultado) {
-        callback(false, resultado.rows, resultado);
+        callback(false, resultado.rows);
     }). catch (function(err) {
         callback(err);
     });

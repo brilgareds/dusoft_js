@@ -1,30 +1,56 @@
 
-define(["angular", "js/controllers", 'includes/slide/slideContent'], function(angular, controllers) {
+define(["angular", "js/controllers", 'includes/slide/slideContent',
+    "includes/classes/Empresa",
+    "models/TerceroAutorizacion",
+    "models/PedidoAutorizacion",
+    "models/ProductoAutorizacion",
+    "models/Autorizacion",
+], function(angular, controllers) {
 
     controllers.controller('ProductosPedidosController', [
         '$scope', '$rootScope', "Request",
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
         "Usuario", "socket", "$timeout",
-        "Pedido", "EmpresaAutorizacion",
+        "Pedido", "Empresa",
+        "PedidoAutorizacion", "ProductoAutorizacion",
+        "TerceroAutorizacion", "Autorizacion",
         function($scope, $rootScope, Request,
                 $filter, $state, $modal,
                 API, AlertService, localStorageService,
                 Usuario, socket, $timeout,
-                Pedido, Empresa) {
+                Pedido, Empresa,
+                PedidoAutorizacion, Producto,
+                TerceroAutorizacion, Autorizacion) {
 
             var that = this;
-            $scope.root = {};
-            $scope.Empresa = Empresa.get();
 
-            $scope.EmpresasProductos = [];
-            $scope.paginas = 0;
-            $scope.items = 0;
-            $scope.paginaactual = 1;
-            $scope.termino_busqueda = "";
-            $scope.ultima_busqueda = "";
-            $scope.listaEmpresas = [];
-            $scope.empresa_seleccion = '';
+            $scope.session = {
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
+            };
+
+            that.init = function(callback) {
+                $scope.root = {};
+                $scope.listarPedido = [];
+                $scope.tipoPedido = '0';
+                $scope.Empresa = Empresa.get();
+                $scope.EmpresasProductos = [];
+                $scope.paginas = 0;
+                $scope.items = 0;
+                $scope.paginaactual = 1;
+                $scope.termino_busqueda = "";
+                $scope.ultima_busqueda = "";
+                $scope.listaEmpresas = [];
+                $scope.empresa_seleccion = '';
+
+                callback();
+
+            };
+
+
+
+            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
 
             /**
              * +Descripcion: funcion que realiza la busqueda de los pedidos
@@ -32,13 +58,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              * @fecha: 11/05/2016
              * @params terminoBusqueda
              */
-            that.buscarPedidos = function(termino, paginando) {
-                $scope.hola = termino;
-            };
-
-            $scope.root.session = {
-                usuario_id: Usuario.getUsuarioActual().getId(),
-                auth_token: Usuario.getUsuarioActual().getToken()
+            $scope.onAutorizacionTab = function(termino) {
+                $scope.tipoPedido = termino;
+                $scope.empresa_seleccion = $scope.seleccion.codigo;
+                $scope.buscarProductosBloqueados('51163', 1);
             };
 
             /**
@@ -53,14 +76,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 }
             };
 
-
             that.traerPedidos = function() {
                 for (var i = 1; i < 11; i++) {
                     var datos = {};
                     datos.numero_pedido = i;
                     var pedido = Pedido.get();
                     pedido.setDatos(datos);
-                    $scope.Empresa.agregarPedido(pedido);
+                    //   $scope.Empresa.agregarPedido(pedido);//estaba bien
                 }
             };
 
@@ -69,7 +91,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 $scope.empresa_seleccion = '03';
                 $scope.tipo_pedido = '0';
                 $scope.buscarProductosBloqueados('51163', 1);
-
             };
 
             $scope.buscarProductosBloqueados = function(termino_busqueda, paginando) {
@@ -85,18 +106,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
 
                 $scope.paginaactual = paginando;
                 $scope.termino = termino_busqueda;
-
                 Request.realizarRequest(
                         API.AUTORIZACIONES.LISTAR_PRODUCTOS_BLOQUEADOS,
                         "POST",
                         {
-                            session: $scope.root.session,
+                            session: $scope.session,
                             data: {
                                 autorizaciones: {
                                     termino_busqueda: $scope.termino,
                                     pagina_actual: $scope.paginaactual,
                                     empresa_id: $scope.empresa_seleccion,
-                                    tipo_pedido: $scope.tipo_pedido
+                                    tipo_pedido: $scope.tipoPedido
                                 }
                             }
                         },
@@ -109,11 +129,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 );
             };
 
+
+            var listaTerceros = [];
             $scope.renderProductos = function(data, paginando) {
 
                 $scope.items = data.listarProductosBloqueados.length;
-                console.log("dataaaaaaaaaaaaaaaaaa", data.listarProductosBloqueados);
-                console.log("$scope.itemssssssssssssssssssssssssss", $scope.items);
 
 //                se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
@@ -129,27 +149,38 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 $scope.items = data.listarProductosBloqueados.length;
 
                 for (var i in data.listarProductosBloqueados) {
-                    var obj = data.listarProductosBloqueados[i];
 
-                    var producto = ProductoMovimiento.get(
-                            obj.codigo_producto,
-                            obj.descripcion_producto,
-                            obj.existencia
-                            );
+                    var objt = data.listarProductosBloqueados[i];
+                    console.log("->>>>>>", objt);
+                    var autorizacion = Autorizacion.get(objt.autorizaciones_productos_pedidos_id);
+                    autorizacion.setFechaVerificacion(objt.fecha_verificacion);
+                    autorizacion.setResponsable(objt.usuario_verifica);
+                    autorizacion.setEstado(objt.estado);
+                    autorizacion.setNombreEstado(objt.estado_verificado);
 
-                    var centro = CentroUtilidad.get(obj.centro);
-                    var bodega = Bodega.get(obj.bodega);
-                    centro.agregarBodega(bodega);
-                    producto.setTipoProductoId(obj.tipo_producto_id);
+                    var producto = Producto.get(objt.codigo_producto, objt.descripcion_producto, objt.numero_unidades);
+                    producto.setAutorizacion(autorizacion);
 
-                    var empresa = Empresa.get(obj.razon_social, obj.empresa_id);
-                    empresa.setCentroUtilidadSeleccionado(centro);
+                    var pedidoAutorizacion = PedidoAutorizacion.get();
+                    var datos = {};
+                    datos.numero_pedido = objt.pedido_id;
+                    datos.fecha_registro = objt.fecha_solicitud;
+                    pedidoAutorizacion.setDatos(datos);
+                    pedidoAutorizacion.setTipoPedido(objt.tipo_pedido);
+                    pedidoAutorizacion.setFechaSolicitud(objt.fecha_solicitud);
+                    pedidoAutorizacion.setPorAprobar(objt.poraprobacion);
+                    pedidoAutorizacion.setProductos(producto);
 
-                    $scope.EmpresasProductos.push({
-                        empresa: empresa,
-                        producto: producto
-                    });
+
+
+
+
+                    var terceros = TerceroAutorizacion.get(objt.nombre_tercero, objt.tipo_id_tercero, objt.tercero_id);
+                    terceros.agregarPedido(pedidoAutorizacion);
+                    listaTerceros.push(terceros);
                 }
+                $scope.listarPedido = listaTerceros;
+                console.log("TerceroAutorizacion->>>>>>", $scope.listarPedido);
 
             };
             /**
@@ -159,15 +190,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              * @returns {objeto}
              */
             $scope.lista_pedidos_clientes = {
-                data: 'Empresa.getPedidos()',
+                data: 'listarPedido',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'cliente', displayName: 'Cliente / Farmacia', width: "60%"},
-                    {field: 'numero_pedido', displayName: 'Pedido', width: "10%"},
-                    {field: 'estado', displayName: 'Estado', width: "15%"},
+                    {field: 'getNombre()', displayName: 'Cliente / Farmacia', width: "60%"},
+                    {field: 'obtenerPedidoPorPosiscion(0).get_numero_pedido()', displayName: 'Pedido', width: "10%"},
+                    {field: 'obtenerPedidoPorPosiscion(0).getPorAprobar()', displayName: 'Estado', width: "15%"},
                     {field: 'fecha', displayName: 'Fecha', width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: ' <div class="row">\n\
@@ -179,7 +210,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 ]
 
             };
-
             /**
              * +Descripcion: metodo para navegar a la ventana detalle
              * @author Andres M Gonzalez
@@ -194,7 +224,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                         });
                 $state.go("AutorizacionesDetalle");
             };
-
             /**
              * +Descripcion: evento de la vista para pasar a la ventana detalle
              * @author Andres M Gonzalez
@@ -206,8 +235,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 that.mostrarDetalle(pedido);
             };
 
+            that.init(function() {
+
+
+            });
             that.traerPedidos();
             that.prueba();
-
         }]);
 });

@@ -3,10 +3,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('dispensacionHcController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
                 'EmpresaDispensacionHc', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion','AprobacionDespacho',
-                "$timeout", "$filter","localStorageService","$state","dispensacionHcService","FormulaHc","PacienteHc",
+                "$timeout", "$filter","localStorageService","$state","dispensacionHcService","FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
                         EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
-                        $timeout, $filter,localStorageService,$state,dispensacionHcService,FormulaHc,PacienteHc) {
+                        $timeout, $filter,localStorageService,$state,dispensacionHcService,FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc) {
 
                 var that = this;
                 $scope.paginaactual = 1;
@@ -46,9 +46,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
 
                     $scope.filtros = [
-                   // {nombre: "Documento", filtroPrefijo: true},
-                    {nombre: "Nombres", filtroNombre: true},
-                    {nombre: "Apellidos", filtroApellidos: true},
+                    {nombre: "Documento", filtroPrefijo: true},
                     {nombre: "Formula", filtroFormula: true},
                     {nombre: "Evolucion", filtroEvolucion: true}
                     ];
@@ -173,34 +171,54 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
                  that.renderListarFormulasMedicas = function(formulas){
                      
-                      $scope.formulasMedicas = [];
+                     
+                      $scope.afiliados = [];
                       
                           for (var i in formulas.listar_formulas) {
                             var _formula = formulas.listar_formulas[i];
-                           
+                            
+                            //Se crea el objeto afiliados
+                            var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
+                            
+                            var plan = PlanesHc.get(_formula.plan_id,_formula.plan_descripcion);
+                            var planesAtencion  = PlanesRangosHc.get('','');
+                                planesAtencion.agregarPlanes(plan);
+                               
+                            //Se crea el objeto paciente
                             var paciente = PacienteHc.get(_formula.tipo_id_paciente,
                                                         _formula.paciente_id,_formula.apellidos,_formula.nombres)
                                 paciente.setMedico(_formula.nombre);
                                 paciente.setTipoBloqueoId(_formula.tipo_bloqueo_id);  
                                 paciente.setBloqueo(_formula.bloqueo);  
-                                
-                            var documento = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
-                                                         _formula.transcripcion_medica,
-                                                         _formula.descripcion_tipo_formula,
-                                                        _formula.fecha_registro,
-                                                       _formula.fecha_finalizacion,
-                                                      _formula.fecha_formulacion);
+                                paciente.agregarPlanAtencion(planesAtencion);
+                            //Se crea el objeto formula
+                            var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
+                                                      _formula.transcripcion_medica,
+                                                     _formula.descripcion_tipo_formula,
+                                                   _formula.fecha_registro,
+                                                  _formula.fecha_finalizacion,
+                                                _formula.fecha_formulacion);
                                                       
                               
-                           
-                         paciente.agregarFormulas(documento);
-                       
-                         $scope.formulasMedicas.push(paciente);
-                       
+                         //El paciente tiene su formula
+                         paciente.agregarFormulas(formula);
+                         
+                         //debe ser afiliado el paciente
+                         afiliados.agregarPacientes(paciente);
+                         
+                         //Se almacenan los afiliados
+                         $scope.afiliados.push(afiliados);
                         }
-                     // console.log("PacienteHc ", $scope.formulasMedicas);
-                      console.log("PacienteHc ", $scope.formulasMedicas);
-                      console.log("PacienteHc ----->", $scope.formulasMedicas[0].mostrarFormulas()[0].getEvolucionId());
+                      console.log("Todo -->", JSON.stringify($scope.afiliados));
+                      //console.log("Afiliados -->", $scope.afiliados[0].mostrarPacientes());
+                     // console.log("Afiliados -->",                       $scope.afiliados[0].mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion());
+                      //console.log("afiliados[0].mostrarPlanAtencion() -->", $scope.afiliados[0]);
+                      //console.log("afiliados[0].mostrarPacientes() -->",    $scope.afiliados[0].mostrarPacientes()[0].mostrarFormulas());
+                     // console.log("afiliados[0].mostrarPacientes() -->",    $scope.afiliados[0].mostrarPacientes()[0].mostrarPlanAtencion());
+                    /*  console.log("PacienteHc ", $scope.formulasMedicas);
+                      console.log("PacienteHc ----->", $scope.formulasMedicas[0].mostrarFormulas()[0].getEvolucionId());*/
+                      //console.log("EpsAfiliadosHc 1 ", $scope.afiliados[0].mostrarPacientes());
+                      //console.log("EpsAfiliadosHc 2 ", $scope.afiliados[0]);
                       //$scope.formulasMedicas[0].formulasHc
                  };
                 /**
@@ -365,7 +383,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       *              por parte del personal de seguridad
                       */
                      $scope.listaFormulas = {
-                        data: 'formulasMedicas',
+                        data: 'afiliados[0].mostrarPacientes()',
                          enableColumnResize: true,
                          enableRowSelection: false,
                          enableCellSelection: true,
@@ -373,13 +391,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         columnDefs: [
                             {field: 'mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
                             {field: 'mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
-                            {field: 'getTipoIdPaciente()', displayName: 'Tipo', width:"9%"},
-                            {field: 'getPacienteId()', displayName: 'Cedula', width:"9%"}, 
-                            {field: 'getNombres()', displayName: 'Nombres', width:"9%"},
-                            {field: 'getApellidos()', displayName: 'Apellidos', width:"9%"},   
+                            {displayName: 'Identificacion', width:"9%",
+                             cellTemplate: "<div\n\
+                                            <span ng-class=''></span>{{ row.entity.getTipoIdPaciente() }} {{ row.entity.getPacienteId() }} </div>"}, 
+                           
+                            {displayName: 'Paciente', width:"9%",
+                             cellTemplate: "<div\n\
+                                            <span ng-class=''></span>{{ row.entity.getNombres() }} {{ row.entity.getApellidos() }} </div>"},   
                             {field: 'mostrarFormulas()[0].getFechaFormulacion()', displayName: 'F. Formulacion', width:"9%"}, 
                             {field: 'mostrarFormulas()[0].getFechaFinalizacion()', displayName: 'F. Finalizacion', width:"9%"},                              
                             {field: 'getMedico()', displayName: 'Medico', width:"9%"},    
+                            {field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
+                            {field: 'mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"}, 
                                
                            
                             {field: 'detalle', width: "6%",

@@ -10,9 +10,6 @@ define(["angular", "js/models"], function(angular, models) {
             this.afiliadoTipoId = afiliadoTipoId || "";
             this.afiliadoId = afiliadoId || "";
             this.planAtencion = planAtencion || "";
-
-           
-           
            
         };
         
@@ -23,8 +20,6 @@ define(["angular", "js/models"], function(angular, models) {
         EpsAfiliados.prototype.getAfiliadoId = function(){
             return this.afiliadoId;
         };
-        
-       
         
         EpsAfiliados.prototype.getPlanAtencion = function(){
             return this.planAtencion;

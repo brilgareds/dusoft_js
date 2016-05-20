@@ -1,103 +1,38 @@
-<style>
- 
-.dropdown-submenu {
-    position: relative;
-}
 
-.dropdown-submenu>.dropdown-menu {
-    top: 0;
-    left: 100%;
-    margin-top: -6px;
-    margin-left: -1px;
-    -webkit-border-radius: 0 6px 6px 6px;
-    -moz-border-radius: 0 6px 6px;
-    border-radius: 0 6px 6px 6px;
-}
+<div class="input-group col-sm-12 col-md-12 col-lg-12">                       
+                    <div class="row" >
+                        <div class="col-md-4">
+                            <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4> 
 
-.dropdown-submenu:hover>.dropdown-menu {
-    display: block;
-}
+                            <div class="btn-group">
+                                <label class="btn btn-default">
+                                    <input type="radio" name="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="0" />
+                                    <span class="label label-default">Pendientes</span>
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="1" />
+                                    <span class="label label-success">Sin dispensar</span>
+                                </label>
+                                <label class="btn btn-default">
+                                    <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="2" />
+                                    <span class="label label-danger">Todos</span>
+                                </label>
 
-.dropdown-submenu>a:after {
-    display: block;
-    content: " ";
-    float: right;
-    width: 0;
-    height: 0;
-    border-color: transparent;
-    border-style: solid;
-    border-width: 5px 0 5px 5px;
-    border-left-color: #ccc;
-    margin-top: 5px;
-    margin-right: -10px;
-}
-
-.dropdown-submenu:hover>a:after {
-    border-left-color: #fff;
-}
-
-.dropdown-submenu.pull-left {
-    float: none;
-}
-
-.dropdown-submenu.pull-left>.dropdown-menu {
-    left: -100%;
-    margin-left: 10px;
-    -webkit-border-radius: 6px 0 6px 6px;
-    -moz-border-radius: 6px 0 6px 6px;
-    border-radius: 6px 0 6px 6px;
-}
-</style>
+                            </div> 
+                              <span class="label label-default" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 0" >Pendientes</span>
+                                <span class="label label-success" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 1" >Sin dispensar</span>
+                                <span class="label label-danger" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 2">Todos</span>
+                              
+                     
+                        </div>    
+                        
+                    </div>
+</div>
 
 
-
-           <div class="container">
-	<div class="row">
-        <h2>Multi level dropdown menu in Bootstrap 3</h2>
-        <hr>
-        <div class="dropdown">
-            <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#" href="/page.html">
-                Dropdown <span class="caret"></span>
-            </a>
-    		<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-              <li><a href="#">Some action</a></li>
-              <li><a href="#">Some other action</a></li>
-              <li class="divider"></li>
-              <li class="dropdown-submenu">
-                <a tabindex="-1" href="#">Hover me for more options</a>
-                <ul class="dropdown-menu">
-                  <li><a tabindex="-1" href="#">Second level</a></li>
-                  <li class="dropdown-submenu">
-                    <a href="#">Even More..</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">3rd level</a></li>
-                    	<li><a href="#">3rd level</a></li>
-                    </ul>
-                  </li>
-                  <li><a href="#">Second level</a></li>
-                  <li><a href="#">Second level</a></li>
-                </ul>
-              </li>
-            </ul>
-        </div>
-	</div>
-</div>    
-
-
+<br>
 
 <div class ="row">
-   
-    
-    <div class="col-md-2" style="padding-left:15px; padding-right: 15px;">
-
-                <button type="button" ng-disabled="datos_view.estadoSesion"
-                        class="btn btn-default btn-medium ng-scope" 
-                        ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_crear_cotizaciones }}" 
-                        ng-click="formularioAprobarDespacho()">
-                    <span class="glyphicon glyphicon-plus"></span> Aprobar despacho
-                </button>
-    </div>
-    
     
   <div class="col-md-2">
      <fieldset>                           
@@ -150,11 +85,15 @@
         </div>
     
     
-    
-         <div class="col-md-3">                                
+        
+         <div class="col-md-3 pull-right">                                                                
+                                                     
             
                 <div class="input-group">
                     <div class="input-group-btn">
+                        
+                        
+                        
                         <button type="button" class="btn btn-default dropdown-toggle" 
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
                         <ul class="dropdown-menu">
@@ -162,19 +101,8 @@
                                 <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
                             </li>
                         </ul>
-                   
-                   
-                     <!--   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                          {{tipoDocumento.nombre}} <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li ng-repeat="tipoDocumento in filtrosTipoDocumento">
-                                <a href="javascript:void(0)" ng-click="onSeleccionTipoDocumento(tipoDocumento)">
-                                    {{tipoDocumento.nombre}}
-                                </a>
-                            </li>
-                        </ul> //-->
-                     
+                        
+                  
                     </div> 
                     
                             
@@ -186,35 +114,17 @@
                            placeholder="Buscar" name="" id="" />
                     <div class="input-group-btn" ng-show="visibleBotonBuscador" >
                        
-                       <button class="btn btn-default pull-right" type="submit" ng-click ="cargarListarDespachosAprobados($event)"><i class="glyphicon glyphicon-search"></i></button>
-                    
-                   
-                    </div> 
-                    
-                    
-                   <!--
-                   
-                     <div class="input-group-btn" ng-show="visibleBotonBuscador" >
-                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                          {{tipoDocumento.nombre}} <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li ng-repeat="tipoDocumento in filtrosTipoDocumento">
-                                <a href="javascript:void(0)" ng-click="onSeleccionTipoDocumento(tipoDocumento)">
-                                    {{tipoDocumento.nombre}}
-                                </a>
-                            </li>
-                        </ul>
+                       <button class="btn btn-default pull-right" type="submit" ng-click ="cargarListarDespachosAprobados($event)">
+                           <i class="glyphicon glyphicon-search"></i></button>
+                       
                     </div>
-                   //-->
-                    
-                    
+                   
+                   
                 </div>
-             
-             
+     
             </div>
           
-    </div>
+        </div>
      <br>
      
    <div class="table-responsive" style="clear:both;">

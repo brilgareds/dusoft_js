@@ -31,6 +31,9 @@ define([
     "models/AprobacionDespacho",
     "models/FormulaHc",
     "models/PacienteHc",
+    "models/EpsAfiliadosHc",
+    "models/PlanesRangosHc",
+    "models/PlanesHc",
     "controllers/dispensacionHcController",
     "controllers/dispensacionHcDetalleController",
     "services/dispensacionHcService"

@@ -4,13 +4,12 @@ define(["angular", "js/models", "includes/classes/Paciente"], function (angular,
     models.factory('PacienteHc', ["Paciente", function (Paciente) {
 
 
-            function PacienteHc(tipoIdPaciente,
-                        pacienteId,apellidos,nombres) {
+            function PacienteHc(tipoIdPaciente,pacienteId,apellidos,nombres) {
                             
-                Paciente.getClass().call(this,tipoIdPaciente,
-                        pacienteId,apellidos,nombres);
+                Paciente.getClass().call(this,tipoIdPaciente,pacienteId,apellidos,nombres);
                 
                 this.formulasHc = [];
+                this.planAtencion = [];
             }
             
             PacienteHc.prototype = Object.create(Paciente.getClass().prototype);
@@ -51,6 +50,22 @@ define(["angular", "js/models", "includes/classes/Paciente"], function (angular,
              PacienteHc.prototype.vaciarFormulasHc = function () {
                 this.formulasHc = [];
              };
+             
+             
+             
+             PacienteHc.prototype.agregarPlanAtencion = function(planAtencion){
+                this.planAtencion.push(planAtencion);
+             };
+             
+             PacienteHc.prototype.mostrarPlanAtencion = function(){
+                return this.planAtencion;
+             };
+             
+             PacienteHc.prototype.vaciarPlanAtencion = function () {
+                this.planAtencion = [];
+             };
+             
+             
             
             this.get = function (tipoIdPaciente,
                         pacienteId,apellidos,nombres) {

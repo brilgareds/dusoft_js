@@ -306,7 +306,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                 modulo.parent,
                                 modulo.nombre,
                                 modulo.state,
-                                "usuario_modulo_"
+                                "usuario_modulo_",
+                                modulo.alias
                         );
 
 
@@ -353,7 +354,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                 icon: modulo.icon,
                                 opciones: _modulo.getOpciones(true),
                                 variables:_modulo.getVariables(true),
-                                esPadre:_modulo.esModuloPadre()
+                                esPadre:_modulo.esModuloPadre(),
+                                alias:_modulo.getAlias()
                             };
                         }
                         

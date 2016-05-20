@@ -458,6 +458,8 @@ CREATE TABLE "public"."modulos" (
   "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
   "estado" CHAR(1), 
   "carpeta_raiz" VARCHAR(255), 
+  "alias" VARCHAR(50), 
+  CONSTRAINT "modulos_alias_key" UNIQUE("alias"),
   CONSTRAINT "modulos_pkey" PRIMARY KEY("id")
 ) WITH OIDS;
 
@@ -1811,3 +1813,6 @@ IS 'accion = 0 => ''modifico_cantidad'', 1 => ''elimino_producto''';
 
 COMMENT ON COLUMN "public"."logs_pedidos"."tipo_pedido"
 IS '0 => ''cliente'', 1 => ''farmacia''';
+
+
+

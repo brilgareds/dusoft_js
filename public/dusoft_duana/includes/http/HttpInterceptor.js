@@ -1,5 +1,5 @@
 define(["angular","js/services"], function(angular, services){
-    services.factory('HttpInterceptor', ["$q", function ($q) {
+    services.factory('HttpInterceptor', ["$q","Usuario", function ($q, Usuario) {
         return {
             'response':function(response){
                 var auth = true;
@@ -15,6 +15,16 @@ define(["angular","js/services"], function(angular, services){
                 }
 
                 return response;
+            },
+            'request':function(config){
+                
+                if(config.data && config.data.session){
+                    var usuario = Usuario.getUsuarioActual() || null;
+                    var modulo = (usuario) ? usuario.getModuloActual() : null;
+                    config.data.session.moduloActual = (modulo && modulo.alias) ? modulo.alias : "";
+                }
+                
+                return config;
             }
         };
     }]);

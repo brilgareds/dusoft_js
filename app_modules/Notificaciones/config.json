@@ -1,0 +1,21 @@
+{
+    "module": "Notificaciones",
+    "dependency": {
+        "controllers": [{
+                "notificaciones_controller": {
+                    "module": "Notificaciones",
+                    "controller": "NotificacionesController",
+                    "alias": "c_notificaciones"
+                }
+            }],
+        "models": [{
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

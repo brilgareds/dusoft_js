@@ -34,6 +34,7 @@ define([
     "models/EpsAfiliadosHc",
     "models/PlanesRangosHc",
     "models/PlanesHc",
+    "models/TipoDocumentoHc",
     "controllers/dispensacionHcController",
     "controllers/dispensacionHcDetalleController",
     "services/dispensacionHcService"

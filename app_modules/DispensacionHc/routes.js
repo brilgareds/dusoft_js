@@ -11,16 +11,16 @@ module.exports = function(app, di_container) {
 
     // Listar todos los pedidos de los Clientes
     app.post('/api/DispensacionHc/listarFormulas', function(req, res) {
-        
-        console.log("LISTAR FORMULAS --------------------------->");
-        console.log("LISTAR FORMULAS --------------------------->");
-        console.log("LISTAR FORMULAS --------------------------->");
-        console.log("LISTAR FORMULAS --------------------------->");
-        console.log("LISTAR FORMULAS --------------------------->");
-        console.log("LISTAR FORMULAS --------------------------->");
-        console.log("LISTAR FORMULAS --------------------------->");
+     
         c_dispensacion_hc.listarFormulas(req, res);
     });
+    
+    app.post("/api/DispensacionHc/listarTipoDocumento", function(req, res){
+        console.log("ROOROROROPROOROROOROORO")
+        c_dispensacion_hc.listarTipoDocumento(req, res);
+    });
+    
+    
 
     
     

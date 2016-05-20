@@ -1,8 +1,12 @@
 
-    <div ng-controller="ValidacionDespachoDetalleController">
+    <div ng-controller="dispensacionHcDetalleController">
       
             
-                <div class="panel panel-default">                  
+        <button class="btn btn-default" ng-click="regresarListaDespachosAprobados()">
+                                    <span class="glyphicon glyphicon-ok" ></span> Regresar
+                                </button>  
+                                
+         <!--       <div class="panel panel-default">                  
                     <div class="panel-body">
                         <div class="row" ng-switch on="datos_view.opcion_predeterminada" >                            
                             <div class="col-md-6" ng-switch on="(datos_view.opcion_predeterminada == '0') || (datos_view.opcion_predeterminada == '1')" >
@@ -20,7 +24,7 @@
                                 </div>                            
                             </div>                                              
                           <div class="col-md-12" style="margin-top: 50px;"><!--ng-switch-when="2"//-->
-                                <div class="row">
+                              <!--  <div class="row">
                                         
                                        <div class="col-md-4">
                                      <fieldset>
@@ -107,7 +111,7 @@
                                 </div>                              
                             </div>                             
                             <div class="col-md-12" style="margin-top: 50px;"><!--ng-switch-when="2"//-->
-                                <div class="row">                                                                      
+                             <!--   <div class="row">                                                                      
                                     <div class="col-md-4">
                                         <fieldset>
                                             <legend>Cantidad Cajas</legend>      
@@ -156,6 +160,6 @@
                             </div>  
                         </div>
                     </div>
-                </div>         
+                </div>         //-->
          </div>
 

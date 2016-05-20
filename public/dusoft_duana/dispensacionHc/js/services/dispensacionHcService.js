@@ -81,6 +81,29 @@ define(["angular", "js/services"], function(angular, services) {
                         callback(data);
                  });
              };
+             
+             /**
+              * @author Cristian Ardila
+              * @fecha  20/05/2016
+              * +Descripcion Servicio que lista los tipos de documentos
+              */
+             self.listarTipoDocumentos = function(session, callback){
+                 
+                var obj = {
+                     session: session,
+                              data: {
+                        listar_formulas:{
+                           
+                        }
+                     }
+                };
+                
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TIPO_DOCUMENTO,"POST", obj, function(data){
+                      
+                        callback(data);
+                });
+             };
+             
                  return this;
         }]);
 });

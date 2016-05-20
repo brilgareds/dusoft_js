@@ -14,9 +14,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "localStorageService",
         "$state",
         "$filter",
-        "Usuario","AprobacionDespacho","EmpresaAprobacionDespacho","dispensacionHcService",
+        "Usuario","AprobacionDespacho","EmpresaDispensacionHc","dispensacionHcService",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                 Sesion,AprobacionDespacho,EmpresaAprobacionDespacho,dispensacionHcService) {
+                 Sesion,AprobacionDespacho,EmpresaDispensacionHc,dispensacionHcService) {
 
             var that = this;
             // Definicion Variables de Sesion
@@ -49,7 +49,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                 if($scope.datos_view.seleccionarOtros){
                 var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
-                var empresa = EmpresaAprobacionDespacho.get(session.nombre, session.codigo);          
+                var empresa = EmpresaDispensacionHc.get(session.nombre, session.codigo);          
                     $scope.datos_view.empresaSeleccionada = empresa;
                     
                 }else{
@@ -349,7 +349,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                           
                            if (data.status === 200) {
                                 var resultado = data.obj.validacionDespachos[0];                             
-                                var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
+                                var empresa = EmpresaDispensacionHc.get(resultado.razon_social, resultado.empresa_id);
                              
                                  $scope.datos_view.empresaSeleccionada = empresa;
                              
@@ -364,10 +364,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                      });
                   }
                 }              
-                if(documento.estado === 2){  
+               // if(documento.estado === 2){  
                    // $scope.datos_view.seleccionarOtros = false;
-                    $scope.datos_view.estadoRegistro = 2;                   
-                } 
+                   // $scope.datos_view.estadoRegistro = 2;                   
+               // } 
             };
             
                /*
@@ -396,7 +396,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 that.render_empresas = function(empresas) {
                     for (var i in empresas) {
-                        var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
+                        var _empresa = EmpresaDispensacionHc.get(empresas[i].razon_social, empresas[i].empresa_id);
                         $scope.empresas.push(_empresa);
                     }
                 };
@@ -420,7 +420,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             *              inicial
             */
            $scope.regresarListaDespachosAprobados = function() {
-                $state.go('ValidacionEgresos');
+                $state.go('DispensacionHc');
             };
 
             that.init = function() {

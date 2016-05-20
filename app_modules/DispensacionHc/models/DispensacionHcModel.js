@@ -4,7 +4,13 @@ var DispensacionHcModel = function() {
     //this.m_productos = productos;
 };
 
-
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de obtener todas las formulas segun el criterio
+ *              de busqueda
+ * @controller DispensacionHc.prototype.listarFormulas
+ */
 DispensacionHcModel.prototype.listarFormulas = function(parametros, callback){
     
 
@@ -68,6 +74,31 @@ DispensacionHcModel.prototype.listarFormulas = function(parametros, callback){
     
 };
 
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de obtener los tipos de documentos
+ * @controller DispensacionHc.prototype.listarFormulas
+ */
+DispensacionHcModel.prototype.listarTipoDocumento = function(callback){
+    
+      var sql = "SELECT tipo_id_tercero, descripcion\
+                 FROM tipo_id_terceros\
+                 ORDER BY  tipo_id_tercero ";
+  
+  
+  G.knex.raw(sql).then(function(resultado){  
+    
+      callback(false, resultado.rows)
+  }).catch(function(err){     
+        console.log("err ", err)
+      callback(err)
+  });
+          
+    
+};
 //DispensacionHcModel.$inject = ["m_productos"];
 
 

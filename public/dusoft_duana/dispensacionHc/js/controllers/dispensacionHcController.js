@@ -3,10 +3,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('dispensacionHcController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
                 'EmpresaDispensacionHc', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion','AprobacionDespacho',
-                "$timeout", "$filter","localStorageService","$state","dispensacionHcService","FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc",
+                "$timeout", "$filter","localStorageService","$state",
+                "dispensacionHcService","FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
                         EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
-                        $timeout, $filter,localStorageService,$state,dispensacionHcService,FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc) {
+                        $timeout, $filter,localStorageService,$state,dispensacionHcService,
+                        FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc) {
 
                 var that = this;
                 $scope.paginaactual = 1;
@@ -44,37 +46,37 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     that.centroUtilidad = [];
                     
                     $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
-
-                    $scope.filtros = [
-                    {nombre: "Documento", filtroPrefijo: true},
+                    
+                  /**
+                    * +Descripcion Filtros para tipo de documento
+                    * 
+                    **/
+                    $scope.filtros = [                
                     {nombre: "Formula", filtroFormula: true},
                     {nombre: "Evolucion", filtroEvolucion: true}
                     ];
                     
+                  /**
+                    * +Descripcion Filtros para tipo de documento
+                    * 
+                    **/
+                    $scope.filtrosTipoDocumento = [                   
+                    {nombre: "Adulto sin identificacion", filtroFormula: true},
+                    {nombre: "Cedula de ciudadania", filtroFormula: true},
+                    {nombre: "Cedula de extranjeria", filtroFormula: true},
+                    {nombre: "Menor sin identificacion", filtroFormula: true},
+                    {nombre: "Farmacia medmfen", filtroFormula: true},
+                    {nombre: "N. Identificacion tributario", filtroFormula: true},
+                    {nombre: "Pasaporte", filtroFormula: true},
+                    {nombre: "Registro civil", filtroFormula: true},
+                    {nombre: "Tarjeta identidad", filtroFormula: true},
+                    ];
+                    
                     $scope.filtro = $scope.filtros[0];
+                    
                    //Deja en estado visible el buscador
                     $scope.visibleBuscador = true;
                     $scope.visibleBotonBuscador = true;
-                    
-                    
-                    
-                    
-                    
-                    /**
-                    * +Descripcion Filtros para tipo de documento
-                    * 
-                    */
-                    $scope.filtrosTipoDocumento = [                   
-                        {nombre: "Adulto sin identificacion", filtroIdenficacion: true},
-                        {nombre: "Cedula de Ciudadania", filtroCiudadania: true},
-                        {nombre: "Cedula de extranjeria", filtroExtranjeria: true}
-
-
-                        ];
-                    $scope.tipoDocumento = $scope.filtrosTipoDocumento[0];   
-                    
-                    
-                    
                     
                     callback();
                 };
@@ -92,17 +94,41 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
                 
                 
-                $scope.onSeleccionTipoDocumento = function(filtrosTipoDocumento) {
-
-                    $scope.tipoDocumento = filtrosTipoDocumento;
-                    $scope.datos_view.termino_busqueda = '';
-
-                    $scope.visibleBuscador = true;
-                    $scope.visibleListaEstados = false;
-                    $scope.visibleBotonBuscador = true;
-
-
-                };
+               /**
+                * @author Cristian Ardila
+                * @fecha 20/05/2016
+                * +Descripcion Metodo el cual invocara el servicio que consulta
+                *              todos los tipos de documentos
+                * */
+               that.listarTipoDocumentos = function(callback){
+                    
+                   dispensacionHcService.listarTipoDocumentos($scope.session,function (data){
+                       
+                      $scope.tipoDocumentos = []; 
+                    
+                      if(data.status === 200){
+                          
+                          that.renderListarTipoDocumento(data.obj.listar_tipo_documento);
+                          callback(true);
+                      }else{
+                          
+                          callback(false);
+                      }
+                   });
+                   
+               };
+               
+               that.renderListarTipoDocumento = function(tipoDocumento){
+                   
+                   for(var i in tipoDocumento){
+                        
+                        var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].tipo, tipoDocumento[i].descripcion);
+                         $scope.tipoDocumentos.push(_tipoDocumento);
+                   }
+                   console.log("TIpos de coumentos ", $scope.tipoDocumentos)
+               };
+                
+                
                
                 /*
                  * @author Cristian Ardila
@@ -356,13 +382,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *              se presiona el boton de detalle de la tabla
                      *              de datos
                      */
-                    $scope.detalleDespachoAprobado = function(documentoAprobado) {
+                    $scope.detalleDespachoAprobado = function(dispensar) {
                           
-                          localStorageService.add("validacionEgresosDetalle", 
+                          console.log("dispensar ", dispensar)
+                         /* localStorageService.add("validacionEgresosDetalle", 
                             {empresa: documentoAprobado.getEmpresaId(),
                              prefijo: documentoAprobado.getPrefijo(),
                              numero:  documentoAprobado.getNumero(),
-                             estado:  1});
+                             estado:  1});*/
                           $state.go('ValidacionEgresosDetalle');
                      };
                     
@@ -466,6 +493,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                                 }else{
                                  $scope.datos_view.estadoSesion = false;
+                                 that.listarTipoDocumentos(function(estado){
+                   
+                                 });
                                  that.listarEmpresas(function(estado) {
                                     that.listarDespachosAprobados();
                                     that.listarFormulasMedicas();

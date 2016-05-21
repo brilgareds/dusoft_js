@@ -63,6 +63,8 @@ define(["angular", "js/services"], function(angular, services) {
                };
                
              /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
               * +Descripcion Consulta todas las formulas
               */
              self.listarFormulas = function(session, terminoBusqueda, callback){
@@ -102,6 +104,31 @@ define(["angular", "js/services"], function(angular, services) {
                       
                         callback(data);
                 });
+             };
+             
+             
+             /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
+              * +Descripcion Consulta todas las formulas
+              */
+             self.listarFormulasPendientes = function(session, terminoBusqueda, callback){
+                 console.log("**********listarFormulasPendientes")
+                 var obj = {
+                     session: session,
+                     data: {
+                           listar_empresas: {
+                               pagina: 1,
+                               empresaName: terminoBusqueda
+                           }
+                       }
+                     
+                 };
+                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){
+                      
+                      console.log("data ", data)
+                        callback(data);
+                 });
              };
              
                  return this;

@@ -52,8 +52,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     * 
                     **/
                     $scope.filtros = [                
-                    {nombre: "Formula", filtroFormula: true},
-                    {nombre: "Evolucion", filtroEvolucion: true}
+                    {descripcion: "Formula", tipo_id_tercero: 'FO'},
+                    {descripcion: "Evolucion", tipo_id_tercero: 'EV'}
                     ];
                     
                   /**
@@ -197,7 +197,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
                  that.renderListarFormulasMedicas = function(formulas){
                      
-                     
+                     console.log("TODO ", formulas)
                       $scope.afiliados = [];
                       
                           for (var i in formulas.listar_formulas) {
@@ -235,7 +235,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          //Se almacenan los afiliados
                          $scope.afiliados.push(afiliados);
                         }
-                      console.log("Todo -->", JSON.stringify($scope.afiliados));
+                      //console.log("Todo -->", ($scope.afiliados));
                       //console.log("Afiliados -->", $scope.afiliados[0].mostrarPacientes());
                      // console.log("Afiliados -->",                       $scope.afiliados[0].mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion());
                       //console.log("afiliados[0].mostrarPlanAtencion() -->", $scope.afiliados[0]);
@@ -247,6 +247,36 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       //console.log("EpsAfiliadosHc 2 ", $scope.afiliados[0]);
                       //$scope.formulasMedicas[0].formulasHc
                  };
+                 
+                 
+                 
+                 
+                  /**
+                 * @author Cristian Ardila
+                 * @fecha 16/05/2016
+                 * +Descripcion Metodo encargado de invocar el servicio que
+                 *              listara todas las formulas medicas pendientes
+                 */
+                /*that.listarFormulasMedicasPendientes = function(){
+                   
+                   var obj = {
+                        
+                       session: $scope.session,
+                       prefijo:$scope.datos_view.prefijo,
+                       numero: $scope.datos_view.numero,//$scope.datos_view.numero,
+                       empresa_id:$scope.datos_view.empresaSeleccionada,
+                       fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                       fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                       paginaactual:$scope.paginaactual,
+                       registroUnico: false
+                        
+                    };
+                    dispensacionHcService.listarFormulasPendientes($scope.session,$scope.datos_view.termino_busqueda_empresa, function(data){
+                            
+                    });
+                };*/
+                
+               
                 /**
                  * @author Cristian Ardila
                  * @fecha 04/02/2016
@@ -410,26 +440,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       *              por parte del personal de seguridad
                       */
                      $scope.listaFormulas = {
-                        data: 'afiliados[0].mostrarPacientes()',
+                        data: 'afiliados',
                          enableColumnResize: true,
                          enableRowSelection: false,
                          enableCellSelection: true,
                          enableHighlighting: true,
                         columnDefs: [
-                            {field: 'mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
-                            {field: 'mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
+                        {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
                             {displayName: 'Identificacion', width:"9%",
                              cellTemplate: "<div\n\
-                                            <span ng-class=''></span>{{ row.entity.getTipoIdPaciente() }} {{ row.entity.getPacienteId() }} </div>"}, 
+                                            <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente() }} {{ row.entity.mostrarPacientes()[0].getPacienteId() }} </div>"}, 
                            
                             {displayName: 'Paciente', width:"9%",
                              cellTemplate: "<div\n\
-                                            <span ng-class=''></span>{{ row.entity.getNombres() }} {{ row.entity.getApellidos() }} </div>"},   
-                            {field: 'mostrarFormulas()[0].getFechaFormulacion()', displayName: 'F. Formulacion', width:"9%"}, 
-                            {field: 'mostrarFormulas()[0].getFechaFinalizacion()', displayName: 'F. Finalizacion', width:"9%"},                              
-                            {field: 'getMedico()', displayName: 'Medico', width:"9%"},    
-                            {field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
-                            {field: 'mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"}, 
+                                            <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }} </div>"},   
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()', displayName: 'F. Formulacion', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()', displayName: 'F. Finalizacion', width:"9%"},                              
+                            {field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
+                            {field: 'mostrarPacientes()[0].mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"}, 
                                
                            
                             {field: 'detalle', width: "6%",
@@ -499,6 +529,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                  that.listarEmpresas(function(estado) {
                                     that.listarDespachosAprobados();
                                     that.listarFormulasMedicas();
+                                    that.listarFormulasMedicasPendientes();
                                 });                                  
                                 }   
                             }

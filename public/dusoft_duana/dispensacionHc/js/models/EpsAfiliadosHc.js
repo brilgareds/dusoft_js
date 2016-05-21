@@ -25,10 +25,6 @@ define(["angular", "js/models", "includes/classes/EpsAfiliados"], function (angu
                 this.pacientes = [];
              };
              
-             
-             
-           
-            
             
             this.get = function (afiliadoTipoId,afiliadoId,planAtencion) {
                 return new EpsAfiliadosHc(afiliadoTipoId,afiliadoId,planAtencion);

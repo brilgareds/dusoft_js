@@ -22,6 +22,7 @@ define(["angular"], function (angular) {
                 
                 "LISTAR_FORMULAS": BASE_URL + "/DispensacionHc/listarFormulas",
                 "LISTAR_TIPO_DOCUMENTO": BASE_URL + "/DispensacionHc/listarTipoDocumento",
+                "LISTAR_FORMULAS_PENDIENTES": BASE_URL + "/DispensacionHc/listarFormulasPendientes",
             }
         }
 

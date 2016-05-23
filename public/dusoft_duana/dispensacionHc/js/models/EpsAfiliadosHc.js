@@ -7,6 +7,7 @@ define(["angular", "js/models", "includes/classes/EpsAfiliados"], function (angu
             function EpsAfiliadosHc(afiliadoTipoId,afiliadoId,planAtencion) {                          
                 EpsAfiliados.getClass().call(this,afiliadoTipoId,afiliadoId,planAtencion); 
                 this.pacientes = [];
+                this.planAtencion = [];
                 
             }
             
@@ -23,6 +24,20 @@ define(["angular", "js/models", "includes/classes/EpsAfiliados"], function (angu
              
              EpsAfiliadosHc.prototype.vaciarPacientes = function () {
                 this.pacientes = [];
+             };
+             
+             
+                
+             EpsAfiliadosHc.prototype.agregarPlanAtencion = function(planAtencion){
+                this.planAtencion.push(planAtencion);
+             };
+             
+             EpsAfiliadosHc.prototype.mostrarPlanAtencion = function(){
+                return this.planAtencion;
+             };
+             
+             EpsAfiliadosHc.prototype.vaciarPlanAtencion = function () {
+                this.planAtencion = [];
              };
              
             

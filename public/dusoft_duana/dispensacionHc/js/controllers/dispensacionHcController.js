@@ -4,11 +4,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
                 'EmpresaDispensacionHc', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion','AprobacionDespacho',
                 "$timeout", "$filter","localStorageService","$state",
-                "dispensacionHcService","FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc",
+                "dispensacionHcService","FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
                         EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
                         $timeout, $filter,localStorageService,$state,dispensacionHcService,
-                        FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc) {
+                        FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosHc) {
 
                 var that = this;
                 $scope.paginaactual = 1;
@@ -38,6 +38,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.root = {};
                     $scope.root.empresaSeleccionada = EmpresaDispensacionHc.get("TODAS LAS EMPRESAS", -1);
                     $scope.root.empresaNombre;
+                    $scope.root.estadoFormula = 1;
                     $scope.session = {
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
@@ -125,7 +126,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].tipo, tipoDocumento[i].descripcion);
                          $scope.tipoDocumentos.push(_tipoDocumento);
                    }
-                   console.log("TIpos de coumentos ", $scope.tipoDocumentos)
+                   console.log("TIpos de coumentos ", $scope.tipoDocumentos);
                };
                 
                 
@@ -170,20 +171,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  */
                 that.listarFormulasMedicas = function(){
                     
-                     var obj = {
-                        
-                       session: $scope.session,
-                       prefijo:$scope.datos_view.prefijo,
-                       numero: $scope.datos_view.numero,//$scope.datos_view.numero,
-                       empresa_id:$scope.datos_view.empresaSeleccionada,
-                       fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                       fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                       paginaactual:$scope.paginaactual,
-                       registroUnico: false
-                        
+                     var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_empresas: {
+                                prefijo:$scope.datos_view.prefijo,
+                                numero: $scope.datos_view.numero,//$scope.datos_view.numero,
+                                empresa_id:$scope.datos_view.empresaSeleccionada,
+                                fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                                fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                                paginaActual:$scope.paginaactual
+                                
+                           }
+                       }    
                     };
                     
-                    dispensacionHcService.listarFormulas($scope.session,$scope.datos_view.termino_busqueda_empresa, function(data){
+                    dispensacionHcService.listarFormulas(obj, function(data){
                             
                            if(data.status === 200) {       
                                $scope.datos_view.items = data.obj.listar_formulas.length;                              
@@ -194,10 +197,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                            }
                     });
                 };
-                
+                 /**
+                  * +Descripcion Metodo encargado de mapear la formula
+                  */
                  that.renderListarFormulasMedicas = function(formulas){
-                     
-                     console.log("TODO ", formulas)
+
                       $scope.afiliados = [];
                       
                           for (var i in formulas.listar_formulas) {
@@ -216,7 +220,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 paciente.setMedico(_formula.nombre);
                                 paciente.setTipoBloqueoId(_formula.tipo_bloqueo_id);  
                                 paciente.setBloqueo(_formula.bloqueo);  
-                                paciente.agregarPlanAtencion(planesAtencion);
+                              
                             //Se crea el objeto formula
                             var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
                                                       _formula.transcripcion_medica,
@@ -231,11 +235,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          
                          //debe ser afiliado el paciente
                          afiliados.agregarPacientes(paciente);
+                         afiliados.agregarPlanAtencion(planesAtencion);
                          
                          //Se almacenan los afiliados
                          $scope.afiliados.push(afiliados);
                         }
-                      //console.log("Todo -->", ($scope.afiliados));
+                    //  console.log("Todo -->", ($scope.afiliados));
                       //console.log("Afiliados -->", $scope.afiliados[0].mostrarPacientes());
                      // console.log("Afiliados -->",                       $scope.afiliados[0].mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion());
                       //console.log("afiliados[0].mostrarPlanAtencion() -->", $scope.afiliados[0]);
@@ -257,7 +262,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  * +Descripcion Metodo encargado de invocar el servicio que
                  *              listara todas las formulas medicas pendientes
                  */
-                /*that.listarFormulasMedicasPendientes = function(){
+                that.listarFormulasMedicasPendientes = function(){
                    
                    var obj = {
                         
@@ -273,8 +278,58 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
                     dispensacionHcService.listarFormulasPendientes($scope.session,$scope.datos_view.termino_busqueda_empresa, function(data){
                             
+                           if(data.status === 200) {       
+                               $scope.datos_view.items = data.obj.listar_formulas_pendientes.length;                              
+                               that.renderListarFormulasMedicasPendientes(data.obj);
+                                
+                           }else{
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                           }
                     });
-                };*/
+                };
+                
+                 /**
+                  * +Descripcion Metodo encargado de mapear las formula pendientes
+                  */
+                 that.renderListarFormulasMedicasPendientes = function(formulas){
+
+                      $scope.afiliadosFormulasPendientes = [];
+                      
+                          for (var i in formulas.listar_formulas_pendientes) {
+                           var _formula = formulas.listar_formulas_pendientes[i];
+                            
+                           //Se crea el objeto afiliados
+                            var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
+                           
+                            //Se crea el objeto paciente
+                            var paciente = PacienteHc.get(_formula.tipo_id_paciente,
+                                                        _formula.paciente_id,_formula.apellidos,_formula.nombres);
+                                paciente.setEdad(_formula.edad);
+                                paciente.setResidenciaDireccion(_formula.residencia_direccion);
+                                paciente.setResidenciaTelefono(_formula.residencia_telefono);
+                                paciente.setSexo(_formula.sexo);
+                           
+                              
+                            //Se crea el objeto formula
+                            var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');
+                                                      
+                            var Productos  = ProductosHc.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);            
+                                                  
+                                formula.agregarProductos(Productos);                 
+                              
+                         //El paciente tiene su formula
+                         paciente.agregarFormulas(formula);
+                         
+                         //debe ser afiliado el paciente
+                         afiliados.agregarPacientes(paciente);
+                         /*afiliados.agregarPlanAtencion(planesAtencion);*/
+                         
+                         //Se almacenan los afiliados
+                         $scope.afiliadosFormulasPendientes.push(afiliados);
+                        }
+                        
+                //   console.log("$scope.afiliadosFormulasPendientes ", JSON.stringify($scope.afiliadosFormulasPendientes))     
+                 };
                 
                
                 /**
@@ -354,9 +409,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      };
                    
                      
-                     $scope.buscarDespachosAprobados = function(event){
+                     $scope.buscarFormulas = function(event){
                          
-                         if (event.which === 13) {
+                        /* 
                               if($scope.filtro.nombre === "Prefijo"){
                                  $scope.datos_view.numero = ""; 
                                  $scope.datos_view.prefijo = $scope.datos_view.termino_busqueda;
@@ -367,7 +422,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                  $scope.datos_view.numero = $scope.datos_view.termino_busqueda;
                                }
                              that.listarDespachosAprobados()
-                         }
+                         }*/
+                        if (event.which === 13) {      
+                              if($scope.root.estadoFormula === '0'){
+                                  that.listarFormulasMedicasPendientes();
+                              }
+
+                              if($scope.root.estadoFormula === '1'){
+                                  that.listarFormulasMedicas();
+                              }
+                        }
                      };
                      
                     /*
@@ -458,7 +522,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()', displayName: 'F. Formulacion', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()', displayName: 'F. Finalizacion', width:"9%"},                              
                             {field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
-                            {field: 'mostrarPacientes()[0].mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
+                            {field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"}, 
                                
                            
@@ -471,7 +535,38 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         ]
                     };
 
-                   
+                   /**
+                      * +Descripcion Se visualiza la tabla con todas las aprobaciones
+                      *              por parte del personal de seguridad
+                      */
+                     $scope.listaFormulasPendientes = {
+                        data: 'afiliadosFormulasPendientes',
+                         enableColumnResize: true,
+                         enableRowSelection: false,
+                         enableCellSelection: true,
+                         enableHighlighting: true,
+                        columnDefs: [
+                        {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
+                            {displayName: 'Identificacion', width:"9%",
+                             cellTemplate: "<div\n\
+                                            <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente() }} {{ row.entity.mostrarPacientes()[0].getPacienteId() }} </div>"}, 
+                           
+                            {displayName: 'Paciente', width:"9%",
+                             cellTemplate: "<div\n\
+                                            <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }} </div>"},   
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getCodigoProducto()', displayName: 'Codigo', width:"9%"},
+                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getDescripcion()', displayName: 'Descripcion', width:"9%"},
+                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getExistencia()', displayName: 'Cantidad', width:"9%"},
+                            {field: 'detalle', width: "6%",
+                                displayName: "Opciones",
+                                cellClass: "txt-center",
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
+
+                            }
+                        ]
+                    };
                     /**
                      * @author Cristian Ardila
                      * @fecha 04/02/2016

@@ -13,10 +13,22 @@ var DispensacionHc = function(m_dispensacion_hc) {
  *              
  */
 DispensacionHc.prototype.listarFormulas = function(req, res){
+   
+    console.log("******************DispensacionHc.prototype.listarFormulas *********************");
+    console.log("******************DispensacionHc.prototype.listarFormulas *********************");
+    console.log("******************DispensacionHc.prototype.listarFormulas *********************");
     
     var that = this;
     var args = req.body.data;
-    console.log("AQOI LISTA FORMULAS")
+   
+   console.log("args ", args)
+   
+   if (args.listar_empresas === undefined || args.listar_empresas.paginaActual === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_empresas: []}));
+        return;
+    }
+    
+   
    var parametros = {};
    
    

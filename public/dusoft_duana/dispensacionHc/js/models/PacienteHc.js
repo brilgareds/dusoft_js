@@ -9,7 +9,7 @@ define(["angular", "js/models", "includes/classes/Paciente"], function (angular,
                 Paciente.getClass().call(this,tipoIdPaciente,pacienteId,apellidos,nombres);
                 
                 this.formulasHc = [];
-                this.planAtencion = [];
+              
             }
             
             PacienteHc.prototype = Object.create(Paciente.getClass().prototype);
@@ -34,7 +34,7 @@ define(["angular", "js/models", "includes/classes/Paciente"], function (angular,
              PacienteHc.prototype.getTipoBloqueoId = function(){
                  return this.tipoBloqueoId;
              };
-        
+             
              PacienteHc.prototype.getBloqueo = function(){
                 return this.bloqueo;
              };
@@ -52,19 +52,7 @@ define(["angular", "js/models", "includes/classes/Paciente"], function (angular,
              };
              
              
-             
-             PacienteHc.prototype.agregarPlanAtencion = function(planAtencion){
-                this.planAtencion.push(planAtencion);
-             };
-             
-             PacienteHc.prototype.mostrarPlanAtencion = function(){
-                return this.planAtencion;
-             };
-             
-             PacienteHc.prototype.vaciarPlanAtencion = function () {
-                this.planAtencion = [];
-             };
-             
+            
              
             
             this.get = function (tipoIdPaciente,

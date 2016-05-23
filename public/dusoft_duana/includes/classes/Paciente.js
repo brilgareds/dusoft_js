@@ -11,8 +11,10 @@ define(["angular", "js/models"], function(angular, models) {
             this.pacienteId = pacienteId || "";
             this.apellidos = apellidos || "";
             this.nombres = nombres || "";
-           
-           
+            this.edad;
+            this.residenciaDireccion;
+            this.residenciaTelefono;
+            this.sexo;
            
         };
         
@@ -32,8 +34,38 @@ define(["angular", "js/models"], function(angular, models) {
             return this.apellidos;
         };
         
-        
+        Paciente.prototype.setEdad = function(edad){
+            return this.edad=edad;
+        };
        
+        Paciente.prototype.getEdad = function(){
+            return this.edad;
+        };
+        
+        Paciente.prototype.setResidenciaDireccion = function(residenciaDireccion){
+            return this.residenciaDireccion=residenciaDireccion;
+        };
+       
+        Paciente.prototype.getResidenciaDireccion = function(){
+            return this.residenciaDireccion;
+        };
+        
+        Paciente.prototype.setResidenciaTelefono = function(residenciaTelefono){
+            return this.residenciaTelefono=residenciaTelefono;
+        };
+       
+        Paciente.prototype.getResidenciaTelefono = function(){
+            return this.residenciaTelefono;
+        };
+        
+        Paciente.prototype.setSexo = function(sexo){
+            return this.sexo=sexo;
+        };
+       
+        Paciente.prototype.getSexo = function(){
+            return this.sexo;
+        };
+        
         this.get = function(tipoIdPaciente,
                         pacienteId,apellidos,nombres) {
             return new Paciente(tipoIdPaciente,

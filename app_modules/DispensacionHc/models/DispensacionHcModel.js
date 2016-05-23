@@ -13,31 +13,12 @@ var DispensacionHcModel = function() {
  */
 DispensacionHcModel.prototype.listarFormulas = function(parametros, callback){
     
-/*"SELECT DISTINCT HP.CODIGO_MEDICAMENTO,\
-                    HF.NUMERO_FORMULA,\
-                    HP.EVOLUCION_ID,\
-                    (P.PRIMER_NOMBRE||' '||P.SEGUNDO_NOMBRE||' '||P.PRIMER_APELLIDO||' '||P.SEGUNDO_APELLIDO)  NOMBREPACIENTES,\
-                    P.TIPO_ID_PACIENTE,\
-                    P.PACIENTE_ID,\
-                    edad(P.FECHA_NACIMIENTO)  EDAD,\
-                    (CASE WHEN P.SEXO_ID='F' THEN 'FEMENINO' WHEN P.SEXO_ID='M' THEN 'MASCULINO' END)  SEXO,\
-                    P.RESIDENCIA_DIRECCION,\
-                    P.RESIDENCIA_TELEFONO,\
-                    HP.CODIGO_MEDICAMENTO,\
-                    FC_DESCRIPCION_PRODUCTO_ALTERNO(HP.CODIGO_MEDICAMENTO)  DESCRIPCION_PROD,\
-                    HP.CANTIDAD,\
-                    HP.hc_pendiente_dispensacion_id\
-                 FROM\
-                    HC_PENDIENTES_POR_DISPENSAR HP\
-                    INNER JOIN HC_FORMULACION_ANTECEDENTES HF  ON (HF.EVOLUCION_ID=HP.EVOLUCION_ID AND HP.SW_ESTADO='0')\
-                    INNER JOIN PACIENTES P ON (P.TIPO_ID_PACIENTE=HF.TIPO_ID_PACIENTE AND P.PACIENTE_ID=HF.PACIENTE_ID)\
-                 WHERE\
-                    HP.SW_ESTADO='0' AND HP.EVOLUCION_ID = '91671' "*/
-    var sqlpendientes = "LEFT JOIN HC_PENDIENTES_POR_DISPENSAR j ON (j.evolucion_id = a.evolucion_id AND a.codigo_medicamento = j.codigo_medicamento)";
-      //j.sw_estado\ 
-      //a.codigo_medicamento,\
-  // a.cantidad,\
-     // fc_descripcion_producto_alterno(a.codigo_medicamento) descripcion_producto\
+    console.log("***DispensacionHcModel.prototype.listarFormulas**********");
+    console.log("***DispensacionHcModel.prototype.listarFormulas**********");
+    console.log("***DispensacionHcModel.prototype.listarFormulas**********");
+    
+   
+
     var sql = "SELECT * FROM (\
                         SELECT DISTINCT\
                         '0' AS tipo_formula,\
@@ -85,7 +66,7 @@ DispensacionHcModel.prototype.listarFormulas = function(parametros, callback){
                         AND (g.tipo_afiliado_atencion=h.tipo_afiliado_id)\
                         AND (g.rango_afiliado_atencion=h.rango)\
                         inner join planes as i ON (h.plan_id=i.plan_id)\
-                        "+sqlpendientes+" WHERE a.codigo_medicamento IS NOT NULL\
+                        WHERE a.codigo_medicamento IS NOT NULL\
                     ) AS a  WHERE a.evolucion_id = '91671' ";
   
   
@@ -141,7 +122,8 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
       var sql = "SELECT DISTINCT HP.CODIGO_MEDICAMENTO,\
                     HF.NUMERO_FORMULA,\
                     HP.EVOLUCION_ID,\
-                    (P.PRIMER_NOMBRE||' '||P.SEGUNDO_NOMBRE||' '||P.PRIMER_APELLIDO||' '||P.SEGUNDO_APELLIDO)  NOMBREPACIENTES,\
+                    (P.PRIMER_APELLIDO||' '||P.SEGUNDO_APELLIDO)  NOMBRES,\
+                    (P.PRIMER_NOMBRE||' '||P.SEGUNDO_NOMBRE)  APELLIDOS,\
                     P.TIPO_ID_PACIENTE,\
                     P.PACIENTE_ID,\
                     edad(P.FECHA_NACIMIENTO)  EDAD,\
@@ -149,7 +131,7 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
                     P.RESIDENCIA_DIRECCION,\
                     P.RESIDENCIA_TELEFONO,\
                     HP.CODIGO_MEDICAMENTO,\
-                    FC_DESCRIPCION_PRODUCTO_ALTERNO(HP.CODIGO_MEDICAMENTO)  DESCRIPCION_PROD,\
+                    FC_DESCRIPCION_PRODUCTO_ALTERNO(HP.CODIGO_MEDICAMENTO)  DESCRIPCION,\
                     HP.CANTIDAD,\
                     HP.hc_pendiente_dispensacion_id\
                  FROM\

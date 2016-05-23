@@ -67,19 +67,10 @@ define(["angular", "js/services"], function(angular, services) {
               * @fecha  21/05/2016
               * +Descripcion Consulta todas las formulas
               */
-             self.listarFormulas = function(session, terminoBusqueda, callback){
+             self.listarFormulas = function(obj, callback){
                  
-                 var obj = {
-                     session: session,
-                     data: {
-                        listar_formulas:{
-                            pagina: 1,
-                            empresa:terminoBusqueda
-                        }
-                     }
-                 };
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
-                      
+                        console.log("data ", data)
                         callback(data);
                  });
              };
@@ -113,7 +104,7 @@ define(["angular", "js/services"], function(angular, services) {
               * +Descripcion Consulta todas las formulas
               */
              self.listarFormulasPendientes = function(session, terminoBusqueda, callback){
-                 console.log("**********listarFormulasPendientes")
+               
                  var obj = {
                      session: session,
                      data: {

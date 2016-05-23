@@ -12,19 +12,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
         "Usuario", "socket", "$timeout",
-        "Pedido", "Empresa",
+        "Pedido", "Empresa", "AutorizacionPedidosService",
         "PedidoAutorizacion", "ProductoAutorizacion",
         "TerceroAutorizacion", "Autorizacion",
         function($scope, $rootScope, Request,
                 $filter, $state, $modal,
                 API, AlertService, localStorageService,
                 Usuario, socket, $timeout,
-                Pedido, Empresa,
+                Pedido, Empresa, AutorizacionPedidosService,
                 PedidoAutorizacion, Producto,
                 TerceroAutorizacion, Autorizacion) {
 
             var that = this;
-
+            var listaTerceros = [];
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -43,7 +43,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.ultima_busqueda = "";
                 $scope.listaEmpresas = [];
                 $scope.empresa_seleccion = '';
-
+                $scope.termino = "";
                 callback();
 
             };
@@ -60,8 +60,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             $scope.onAutorizacionTab = function(termino) {
                 $scope.tipoPedido = termino;
+                $scope.listarPedido = [];
+                listaTerceros = [];
                 $scope.empresa_seleccion = $scope.seleccion.codigo;
-                $scope.buscarProductosBloqueados('51163', 1);
+                $scope.buscarProductosBloqueados();
             };
 
             /**
@@ -72,7 +74,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             $scope.onBuscarPedido = function(ev, terminoBusqueda) {
                 if (ev.which === 13) {
-                    that.buscarPedidos(terminoBusqueda);
+                    console.log("buscar_pedido termino: ", terminoBusqueda);
+                    $scope.termino = terminoBusqueda;
+                    $scope.buscarProductosBloqueados();
+                    listaTerceros = [];
+                    // that.buscarPedidos(terminoBusqueda);
                 }
             };
 
@@ -90,50 +96,43 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.empresa_seleccion = '03';
                 $scope.tipo_pedido = '0';
-                $scope.buscarProductosBloqueados('51163', 1);
+                $scope.buscarProductosBloqueados();
             };
 
-            $scope.buscarProductosBloqueados = function(termino_busqueda, paginando) {
 
-                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
-                    $scope.paginaactual = 1;
-                }
+            /**
+             * @author Andres M. Gonzalez
+             * @fecha 04/02/2016
+             * +Descripcion Metodo encargado de invocar el servicio que
+             *              listar todos las autorizaciones de productos en pedido
+             */
+            $scope.buscarProductosBloqueados = function() {
 
-                if ($scope.empresa_seleccion === "") {
-                    AlertService.mostrarMensaje("warning", "Debe seleccionar una empresa");
-                    return;
-                }
+                var obj = {
+                    termino_busqueda: $scope.termino,
+                    pagina_actual: $scope.paginaactual,
+                    empresa_id: $scope.empresa_seleccion,
+                    session: $scope.session,
+                    tipo_pedido: $scope.tipoPedido,
+                    detalle: '0'
+                };
 
-                $scope.paginaactual = paginando;
-                $scope.termino = termino_busqueda;
-                Request.realizarRequest(
-                        API.AUTORIZACIONES.LISTAR_PRODUCTOS_BLOQUEADOS,
-                        "POST",
-                        {
-                            session: $scope.session,
-                            data: {
-                                autorizaciones: {
-                                    termino_busqueda: $scope.termino,
-                                    pagina_actual: $scope.paginaactual,
-                                    empresa_id: $scope.empresa_seleccion,
-                                    tipo_pedido: $scope.tipoPedido
-                                }
-                            }
-                        },
-                function(data) {
+                AutorizacionPedidosService.buscarProductosBloqueados(obj, function(data) {
                     if (data.status === 200) {
-                        $scope.ultima_busqueda = $scope.termino_busqueda;
-                        $scope.renderProductos(data.obj, paginando);
+                        that.renderProductos(data, 1);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
-                }
-                );
+                });
             };
 
 
-            var listaTerceros = [];
-            $scope.renderProductos = function(data, paginando) {
 
-                $scope.items = data.listarProductosBloqueados.length;
+
+            that.renderProductos = function(data, paginando) {
+                console.log("AAAAAA1>>>>", data.obj.listarProductosBloqueados);
+                console.log("AAAAAA2>>>>", paginando);
+                $scope.items = data.obj.listarProductosBloqueados.length;
 
 //                se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
@@ -145,21 +144,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
 
                 $scope.EmpresasProductos = [];
-                $scope.paginas = (data.listarProductosBloqueados.length / 10);
-                $scope.items = data.listarProductosBloqueados.length;
+                $scope.paginas = (data.obj.listarProductosBloqueados.length / 10);
+                $scope.items = data.obj.listarProductosBloqueados.length;
 
-                for (var i in data.listarProductosBloqueados) {
+                for (var i in data.obj.listarProductosBloqueados) {
 
-                    var objt = data.listarProductosBloqueados[i];
+                    var objt = data.obj.listarProductosBloqueados[i];
                     console.log("->>>>>>", objt);
-                    var autorizacion = Autorizacion.get(objt.autorizaciones_productos_pedidos_id);
-                    autorizacion.setFechaVerificacion(objt.fecha_verificacion);
-                    autorizacion.setResponsable(objt.usuario_verifica);
-                    autorizacion.setEstado(objt.estado);
-                    autorizacion.setNombreEstado(objt.estado_verificado);
-
-                    var producto = Producto.get(objt.codigo_producto, objt.descripcion_producto, objt.numero_unidades);
-                    producto.setAutorizacion(autorizacion);
+//                    var autorizacion = Autorizacion.get(objt.autorizaciones_productos_pedidos_id);
+//                    autorizacion.setFechaVerificacion(objt.fecha_verificacion);
+//                    autorizacion.setResponsable(objt.usuario_verifica);
+//                    autorizacion.setEstado(objt.estado);
+//                    autorizacion.setNombreEstado(objt.estado_verificado);
+//
+//                    var producto = Producto.get(objt.codigo_producto, objt.descripcion_producto, objt.numero_unidades);
+//                    producto.setAutorizacion(autorizacion);
 
                     var pedidoAutorizacion = PedidoAutorizacion.get();
                     var datos = {};
@@ -169,11 +168,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     pedidoAutorizacion.setTipoPedido(objt.tipo_pedido);
                     pedidoAutorizacion.setFechaSolicitud(objt.fecha_solicitud);
                     pedidoAutorizacion.setPorAprobar(objt.poraprobacion);
-                    pedidoAutorizacion.setProductos(producto);
-
-
-
-
+                    pedidoAutorizacion.setBoolPorAprobar(objt.poraprobacion);
+                    //  pedidoAutorizacion.setProductos(producto);
 
                     var terceros = TerceroAutorizacion.get(objt.nombre_tercero, objt.tipo_id_tercero, objt.tercero_id);
                     terceros.agregarPedido(pedidoAutorizacion);
@@ -193,13 +189,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 data: 'listarPedido',
                 enableColumnResize: true,
                 enableRowSelection: false,
-                enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
+                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "8%",
+                        cellTemplate: ' <div class="row">\
+                                                <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).getBoolPorAprobar()" class="btn btn-warning btn-xs" >\
+                                                    <i class="glyphicon glyphicon-warning-sign"></i>\n\
+                                                        <span>Pendiente</span>\
+                                                </button>\
+                                                <button ng-if="!row.entity.obtenerPedidoPorPosiscion(0).getBoolPorAprobar()" class="btn btn-primary btn-xs" >\
+                                                    <i class="glyphicon glyphicon-ok"></i>\
+                                                    <span> Revisado</span>\
+                                                </button>\
+                                            </div>'
+                    },
                     {field: 'getNombre()', displayName: 'Cliente / Farmacia', width: "60%"},
                     {field: 'obtenerPedidoPorPosiscion(0).get_numero_pedido()', displayName: 'Pedido', width: "10%"},
-                    {field: 'obtenerPedidoPorPosiscion(0).getPorAprobar()', displayName: 'Estado', width: "15%"},
-                    {field: 'fecha', displayName: 'Fecha', width: "10%"},
+                    {field: 'obtenerPedidoPorPosiscion(0).getFechasolicitud()', displayName: 'Fecha', width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.separado"  ng-click="onAbrirVentana(row.entity)">\n\
@@ -220,7 +226,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             that.mostrarDetalle = function(pedido) {
                 localStorageService.add("pedidoCabecera",
                         {
-                            numeroPedido: pedido.get_numero_pedido(),
+                            numeroPedido: pedido,
                         });
                 $state.go("AutorizacionesDetalle");
             };

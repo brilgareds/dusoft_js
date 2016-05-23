@@ -33,6 +33,19 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.porAprobar = porAprobar;
             };
 
+            PedidoAutorizacion.prototype.setBoolPorAprobar = function(porAprobar) {
+                this.porAprobar = porAprobar;
+                if (this.porAprobar > 0) {
+                    this.porAprobarBool = true;
+                } else {
+                    this.porAprobarBool = false;
+                }
+            };
+
+            PedidoAutorizacion.prototype.getBoolPorAprobar = function() {
+                return this.porAprobarBool;
+            };
+
             PedidoAutorizacion.prototype.getTercero = function() {
                 return this.tercero;
             };

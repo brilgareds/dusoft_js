@@ -9,6 +9,10 @@ define(["angular"], function(angular) {
             'BASE_URL': BASE_URL,
             'AUTORIZACIONES': {
                 "LISTAR_PRODUCTOS_BLOQUEADOS": BASE_URL + "/Autorizaciones/listarProductosBloqueados",
+                "MODIFICAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/Autorizaciones/modificarAutorizacionProductos",
+                "INSERTAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/Autorizaciones/insertarAutorizacionProductos",
+                "VERIFICAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/Autorizaciones/verificarAutorizacionProductos",
+                "LISTAR_VERIFICACION_PRODUCTOS": BASE_URL + "/Autorizaciones/listarVerificacionProductos",
             }
         }
     };

@@ -39,6 +39,14 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado = estado;
         };
 
+        Autorizacion.prototype.getNombreVerifica = function() {
+            return this.nombreVerifica;
+        };
+
+        Autorizacion.prototype.setNombreVerifica = function(nombreVerifica) {
+            this.nombreVerifica = nombreVerifica;
+        };
+
         Autorizacion.prototype.getNombreEstado = function() {
             return this.estado_verificado;
         };

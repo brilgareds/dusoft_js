@@ -4,7 +4,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             function ProductoAutorizacion(codigo, nombre, cantidad) {
                 Producto.getClass().call(this, codigo, nombre, null);
-                this.cantida = cantidad || "";
+                this.cantidad = cantidad || "";
                 this.autorizacion = [];
             }
 

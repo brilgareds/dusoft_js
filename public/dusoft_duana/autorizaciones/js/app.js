@@ -1,14 +1,34 @@
 //main app module
-define(["angular", "route", "bootstrap", "js/controllers",
-    "js/services", "js/models", "nggrid",
-    "js/directive", "controllers/productosPedidos/ProductosPedidosController",
-    "includes/menu/menucontroller", "url", "includes/header/HeaderController",
-    "loader", "includes/alert/Alert", "i18n", "httpinterceptor", "storage",
-    "includes/classes/Pedido", "models/Autorizacion", "models/PedidoAutorizacion",
-    "models/ProductoAutorizacion", "models/TerceroAutorizacion",
+define(["angular",
+    "route",
+    "bootstrap",
+    "js/controllers",
+    "js/services",
+    "js/models",
+    "nggrid",
+    "js/directive",
+    "controllers/productosPedidos/ProductosPedidosController",
+    "includes/menu/menucontroller",
+    "url",
+    "includes/header/HeaderController",
+    "loader",
+    "includes/alert/Alert",
+    "i18n",
+    "httpinterceptor",
+    "storage",
+    "includes/classes/Pedido",
+    "includes/classes/Bodega",
+    "models/Autorizacion",
+    "models/PedidoAutorizacion",
+    "models/ProductoAutorizacion",
+    "models/TerceroAutorizacion",
     "controllers/productosPedidos/AutorizacionDetalleController",
-    "includes/classes/Usuario", "socketservice", "includes/http/Request", "uiselect2",
-    "includes/classes/CentroUtilidad", "includes/classes/Bodega"
+    "includes/classes/Usuario",
+    "socketservice",
+    "includes/http/Request",
+    "uiselect2",
+    "includes/classes/CentroUtilidad",
+    "services/AutorizacionPedidosService"
 ], function(angular, Agencia) {
     /* App Module and its dependencies */
     var autorizaciones = angular.module('autorizaciones', [
@@ -19,9 +39,9 @@ define(["angular", "route", "bootstrap", "js/controllers",
         'ui.bootstrap',
         'ngGrid',
         'Url',
-        "services",
+        'services',
         'LocalStorageModule',
-        'ui.select2'
+        'ui.select2',
     ]);
 
     autorizaciones.urlRouterProvider;
@@ -58,6 +78,13 @@ define(["angular", "route", "bootstrap", "js/controllers",
                     url: "/AutorizacionesDetalle",
                     text: "Autorizaciones Detalle",
                     templateUrl: "views/productosPedidos/listarPedidoDetalle.html",
+                    parent_name: "AutorizacionesProductos",
+                    controller: "AutorizacionDetalleController"
+                }).
+                        state('DetalleVerificacion', {
+                    url: "/DetalleVerificacion",
+                    text: "Detalle de Verificacion",
+                    templateUrl: "views/productosPedidos/listarDetalleVerificacion.html",
                     parent_name: "AutorizacionesProductos",
                     controller: "AutorizacionDetalleController"
                 });

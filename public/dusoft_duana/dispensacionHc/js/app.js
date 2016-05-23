@@ -80,10 +80,10 @@ define([
                     text: "DispensacionHc", 
                     templateUrl: "views/dispensacionHc/index.html",
                     controller: "dispensacionHcController"
-                }).state('ValidacionEgresosDetalle', {
-                    url: "/ValidacionEgresosDetalle",
+                }).state('DispensarFormulaDetalle', {
+                    url: "/DispensarFormulaDetalle",
                     text: "Detalle de despacho aprobado",
-                    templateUrl: "views/dispensacionHc/validaciondespachos.html",
+                    templateUrl: "views/dispensacionHc/dispensarFormulaDetalle.html",
                     parent_name : "DispensacionHc"
                 });
                     

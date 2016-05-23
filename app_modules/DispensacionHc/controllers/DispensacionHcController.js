@@ -27,9 +27,39 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_empresas: []}));
         return;
     }
+   
+    
+    
+    if (args.listar_empresas.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
+        return;
+    }
+
+    if (args.listar_empresas.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (!args.listar_empresas.filtro) {
+        res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
+        return;
+    }
+    
+    var empresaId = args.listar_empresas.empresaId;
+    var terminoBusqueda = args.listar_empresas.terminoBusqueda;
+    var paginaActual = args.listar_empresas.paginaActual;
+    var filtro = args.listar_empresas.filtro;
+    var fechaInicial = args.listar_empresas.fechaInicial;
+    var fechaFinal = args.listar_empresas.fechaFinal;
     
    
-   var parametros = {};
+   
+   var parametros = {empresaId:empresaId,
+                    terminoBusqueda: terminoBusqueda,
+                    paginaActual:paginaActual,
+                    fechaInicial: fechaInicial,
+                    fechaFinal: fechaFinal,
+                    filtro: filtro};
    
    
    G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametros).then(function(resultado){

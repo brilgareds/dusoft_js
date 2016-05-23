@@ -70,7 +70,7 @@ define(["angular", "js/services"], function(angular, services) {
              self.listarFormulas = function(obj, callback){
                  
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
-                        console.log("data ", data)
+                       
                         callback(data);
                  });
              };

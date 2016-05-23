@@ -11,14 +11,31 @@ var DispensacionHcModel = function() {
  *              de busqueda
  * @controller DispensacionHc.prototype.listarFormulas
  */
-DispensacionHcModel.prototype.listarFormulas = function(parametros, callback){
+DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     
-    console.log("***DispensacionHcModel.prototype.listarFormulas**********");
-    console.log("***DispensacionHcModel.prototype.listarFormulas**********");
-    console.log("***DispensacionHcModel.prototype.listarFormulas**********");
-    
+   var parametros = {1: obj.fechaInicial, 2: obj.fechaFinal};
+   var sqlCondicion = "";
+   var sqlCondicion2 = "";
+   if(obj.filtro.tipo === 'FO'){
+       sqlCondicion = " AND a.numero_formula::varchar = :3";
+       sqlCondicion2  =" WHERE numero_formula::varchar = :3";
+       parametros["3"]= obj.terminoBusqueda;
+       
+   }
+    if(obj.filtro.tipo === 'EV'){
+       
+      sqlCondicion = " AND a.evolucion_id::varchar = :3";
+      //sqlCondicion2  =" WHERE numero_formula::varchar = :3";
+       parametros["3"]= obj.terminoBusqueda;
+   }
+   /*else{
+       
+        sqlCondicion = " AND a.tipo_id_paciente = :1";
+       parametros["3"]= obj.terminoBusqueda;
+   }*/
    
-
+   console.log("parametros ****", parametros);
+   console.log("sqlCondicion ****", sqlCondicion);
     var sql = "SELECT * FROM (\
                         SELECT DISTINCT\
                         '0' AS tipo_formula,\
@@ -51,11 +68,11 @@ DispensacionHcModel.prototype.listarFormulas = function(parametros, callback){
                         left join inv_tipos_bloqueos as f ON (b.tipo_bloqueo_id=f.tipo_bloqueo_id) AND (f.estado='1')\
                         inner join (\
                             SELECT tipo_id_paciente,paciente_id, evolucion_id,MAX(TO_CHAR(fecha_finalizacion,'YYYY-MM-DD')) AS fecha_finalizacion\
-                            FROM hc_formulacion_antecedentes  GROUP BY 1,2,3\
+                            FROM hc_formulacion_antecedentes "+sqlCondicion2+" GROUP BY 1,2,3\
                         ) AS c ON (a.tipo_id_paciente = c.tipo_id_paciente) AND (a.paciente_id = c.paciente_id) AND (a.evolucion_id = c.evolucion_id)\
                         join (\
                             SELECT tipo_id_paciente,paciente_id,evolucion_id,MIN(TO_CHAR(fecha_formulacion,'YYYY-MM-DD')) AS fecha_formulacion\
-                            FROM hc_formulacion_antecedentes  GROUP BY 1,2,3\
+                            FROM hc_formulacion_antecedentes "+sqlCondicion2+" GROUP BY 1,2,3\
                         ) AS d ON (a.tipo_id_paciente = d.tipo_id_paciente)\
                         AND (a.paciente_id = d.paciente_id)\
                         AND (a.evolucion_id = d.evolucion_id)\
@@ -66,13 +83,15 @@ DispensacionHcModel.prototype.listarFormulas = function(parametros, callback){
                         AND (g.tipo_afiliado_atencion=h.tipo_afiliado_id)\
                         AND (g.rango_afiliado_atencion=h.rango)\
                         inner join planes as i ON (h.plan_id=i.plan_id)\
-                        WHERE a.codigo_medicamento IS NOT NULL\
-                    ) AS a  WHERE a.evolucion_id = '91671' ";
+                        WHERE a.codigo_medicamento IS NOT NULL \
+                    ) AS a WHERE a.fecha_registro between :1 and :2 " + sqlCondicion; 
+                         //and j.sw_estado ='0' AND  LEFT JOIN HC_PENDIENTES_POR_DISPENSAR j ON (a.evolucion_id=j.evolucion_id)
   
-  
-  G.knex.raw(sql).then(function(resultado){  
+
+  G.knex.raw(sql,parametros).then(function(resultado){  
     
       callback(false, resultado.rows)
+      console.log("resultado ", resultado.rows)
   }).catch(function(err){     
         console.log("err ", err)
       callback(err)

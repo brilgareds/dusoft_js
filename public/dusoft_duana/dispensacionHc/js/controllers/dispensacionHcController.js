@@ -12,11 +12,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 var that = this;
                 $scope.paginaactual = 1;
-                var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                
+                var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
                 var fecha_actual = new Date();
-
-                $scope.datos_view = {
+                var justificacion = ['Error de formulacion', 'Error de digitacion', 'Confrontado'];
+               
+                $scope.root = {
                     termino_busqueda_proveedores: "",
                     fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
                     fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
@@ -25,9 +25,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     items:0,
                     empresaSeleccionada: '',
                     termino_busqueda:'',
-                    estadoSesion: true
-
+                    estadoSesion: true,
+                    justificacion : justificacion[0]
                 }; 
+                $scope.root.estadoFormula = 0;
                     /*
                      * Inicializacion de variables
                      * @param {type} empresa
@@ -35,10 +36,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @returns {void}
                      */
                 that.init = function(empresa, callback) {
-                    $scope.root = {};
+                   
                     $scope.root.empresaSeleccionada = EmpresaDispensacionHc.get("TODAS LAS EMPRESAS", -1);
                     $scope.root.empresaNombre;
-                    $scope.root.estadoFormula = 1;
+                    
                     $scope.session = {
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
@@ -46,51 +47,33 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.documentosAprobados = [];
                     that.centroUtilidad = [];
                     
-                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";
-                    
+                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";                  
                   /**
                     * +Descripcion Filtros para tipo de documento
                     * 
                     **/
-                    $scope.filtros = [                
-                    {descripcion: "Formula", tipo_id_tercero: 'FO'},
-                    {descripcion: "Evolucion", tipo_id_tercero: 'EV'}
+                    $scope.root.filtros = [                
+                    {tipo: 'FO',descripcion: "Formula"},
+                    {tipo: 'EV',descripcion: "Evolucion"}
                     ];
-                    
-                  /**
-                    * +Descripcion Filtros para tipo de documento
-                    * 
-                    **/
-                    $scope.filtrosTipoDocumento = [                   
-                    {nombre: "Adulto sin identificacion", filtroFormula: true},
-                    {nombre: "Cedula de ciudadania", filtroFormula: true},
-                    {nombre: "Cedula de extranjeria", filtroFormula: true},
-                    {nombre: "Menor sin identificacion", filtroFormula: true},
-                    {nombre: "Farmacia medmfen", filtroFormula: true},
-                    {nombre: "N. Identificacion tributario", filtroFormula: true},
-                    {nombre: "Pasaporte", filtroFormula: true},
-                    {nombre: "Registro civil", filtroFormula: true},
-                    {nombre: "Tarjeta identidad", filtroFormula: true},
-                    ];
-                    
-                    $scope.filtro = $scope.filtros[0];
+                 
+                    $scope.root.filtro = $scope.root.filtros[0];
                     
                    //Deja en estado visible el buscador
-                    $scope.visibleBuscador = true;
-                    $scope.visibleBotonBuscador = true;
+                    $scope.root.visibleBuscador = true;
+                    $scope.root.visibleBotonBuscador = true;
                     
                     callback();
                 };
                    
-                    $scope.onSeleccionFiltro = function(filtro) {
+                  $scope.onSeleccionFiltro = function(filtro) {
 
-                    $scope.filtro = filtro;
-                    $scope.datos_view.termino_busqueda = '';
+                    $scope.root.filtro = filtro;
+                    $scope.root.termino_busqueda = '';
 
-                    $scope.visibleBuscador = true;
-                    $scope.visibleListaEstados = false;
-                    $scope.visibleBotonBuscador = true;
-
+                    $scope.root.visibleBuscador = true;
+                    $scope.root.visibleListaEstados = false;
+                    $scope.root.visibleBotonBuscador = true;
 
                 };
                 
@@ -104,7 +87,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                that.listarTipoDocumentos = function(callback){
                     
                    dispensacionHcService.listarTipoDocumentos($scope.session,function (data){
-                       
+                      
                       $scope.tipoDocumentos = []; 
                     
                       if(data.status === 200){
@@ -122,8 +105,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                that.renderListarTipoDocumento = function(tipoDocumento){
                    
                    for(var i in tipoDocumento){
-                        
-                        var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].tipo, tipoDocumento[i].descripcion);
+                     
+                        var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].tipo_id_tercero, tipoDocumento[i].descripcion);
                          $scope.tipoDocumentos.push(_tipoDocumento);
                    }
                    console.log("TIpos de coumentos ", $scope.tipoDocumentos);
@@ -141,7 +124,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  */
                 that.listarEmpresas = function(callback) {
 
-                   dispensacionHcService.listarEmpresas($scope.session,$scope.datos_view.termino_busqueda_empresa, function(data){
+                   dispensacionHcService.listarEmpresas($scope.session,$scope.root.termino_busqueda_empresa, function(data){
                          
                       $scope.empresas = [];      
                       if (data.status === 200) {
@@ -175,21 +158,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         session: $scope.session,
                         data: {
                            listar_empresas: {
-                                prefijo:$scope.datos_view.prefijo,
-                                numero: $scope.datos_view.numero,//$scope.datos_view.numero,
-                                empresa_id:$scope.datos_view.empresaSeleccionada,
-                                fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                                fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                                filtro:$scope.root.filtro,
+                                terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
+                                empresaId:$scope.root.empresaSeleccionada,
+                                fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                                fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
                                 paginaActual:$scope.paginaactual
                                 
                            }
                        }    
                     };
                     
+                   console.log("obj ", obj)
                     dispensacionHcService.listarFormulas(obj, function(data){
                             
                            if(data.status === 200) {       
-                               $scope.datos_view.items = data.obj.listar_formulas.length;                              
+                               $scope.root.items = data.obj.listar_formulas.length;                              
                                that.renderListarFormulasMedicas(data.obj);
                                 
                            }else{
@@ -240,17 +224,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          //Se almacenan los afiliados
                          $scope.afiliados.push(afiliados);
                         }
-                    //  console.log("Todo -->", ($scope.afiliados));
-                      //console.log("Afiliados -->", $scope.afiliados[0].mostrarPacientes());
-                     // console.log("Afiliados -->",                       $scope.afiliados[0].mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion());
-                      //console.log("afiliados[0].mostrarPlanAtencion() -->", $scope.afiliados[0]);
-                      //console.log("afiliados[0].mostrarPacientes() -->",    $scope.afiliados[0].mostrarPacientes()[0].mostrarFormulas());
-                     // console.log("afiliados[0].mostrarPacientes() -->",    $scope.afiliados[0].mostrarPacientes()[0].mostrarPlanAtencion());
-                    /*  console.log("PacienteHc ", $scope.formulasMedicas);
-                      console.log("PacienteHc ----->", $scope.formulasMedicas[0].mostrarFormulas()[0].getEvolucionId());*/
-                      //console.log("EpsAfiliadosHc 1 ", $scope.afiliados[0].mostrarPacientes());
-                      //console.log("EpsAfiliadosHc 2 ", $scope.afiliados[0]);
-                      //$scope.formulasMedicas[0].formulasHc
+                  
                  };
                  
                  
@@ -267,19 +241,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    var obj = {
                         
                        session: $scope.session,
-                       prefijo:$scope.datos_view.prefijo,
-                       numero: $scope.datos_view.numero,//$scope.datos_view.numero,
-                       empresa_id:$scope.datos_view.empresaSeleccionada,
-                       fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                       fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                       prefijo:$scope.root.prefijo,
+                       numero: $scope.root.numero,//$scope.root.numero,
+                       empresa_id:$scope.root.empresaSeleccionada,
+                       fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                       fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
                        paginaactual:$scope.paginaactual,
                        registroUnico: false
                         
                     };
-                    dispensacionHcService.listarFormulasPendientes($scope.session,$scope.datos_view.termino_busqueda_empresa, function(data){
+                    dispensacionHcService.listarFormulasPendientes($scope.session,$scope.root.termino_busqueda_empresa, function(data){
                             
                            if(data.status === 200) {       
-                               $scope.datos_view.items = data.obj.listar_formulas_pendientes.length;                              
+                               $scope.root.items = data.obj.listar_formulas_pendientes.length;                              
                                that.renderListarFormulasMedicasPendientes(data.obj);
                                 
                            }else{
@@ -344,11 +318,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     var obj = {
                         
                        session: $scope.session,
-                       prefijo:$scope.datos_view.prefijo,
-                       numero: $scope.datos_view.numero,//$scope.datos_view.numero,
-                       empresa_id:$scope.datos_view.empresaSeleccionada,
-                       fechaInicial: $filter('date')($scope.datos_view.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                       fechaFinal:$filter('date')($scope.datos_view.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                       prefijo:$scope.root.prefijo,
+                       numero: $scope.root.numero,//$scope.root.numero,
+                       empresa_id:$scope.root.empresaSeleccionada,
+                       fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                       fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
                        paginaactual:$scope.paginaactual,
                        registroUnico: false
                         
@@ -357,7 +331,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     dispensacionHcService.listarDespachosAprobados(obj,function(data){
                            if (data.status === 200) {
                                
-                                $scope.datos_view.items = data.obj.validacionDespachos.length;
+                                $scope.root.items = data.obj.validacionDespachos.length;
                                 
                                 that.renderListarDespachosAprobados(data);
                                 
@@ -395,14 +369,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       */
                     $scope.cargarListarDespachosAprobados = function(event){
                        
-                        if($scope.filtro.nombre === "Prefijo"){
-                           $scope.datos_view.numero = ""; 
-                           $scope.datos_view.prefijo = $scope.datos_view.termino_busqueda;
+                        if($scope.root.filtro.nombre === "Prefijo"){
+                           $scope.root.numero = ""; 
+                           $scope.root.prefijo = $scope.root.termino_busqueda;
                         }
                         
-                        if($scope.filtro.nombre === "Numero"){
-                           $scope.datos_view.prefijo = "";
-                           $scope.datos_view.numero = $scope.datos_view.termino_busqueda;
+                        if($scope.root.filtro.nombre === "Numero"){
+                           $scope.root.prefijo = "";
+                           $scope.root.numero = $scope.root.termino_busqueda;
                         }
                              that.listarDespachosAprobados()
                       
@@ -412,25 +386,27 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      $scope.buscarFormulas = function(event){
                          
                         /* 
-                              if($scope.filtro.nombre === "Prefijo"){
-                                 $scope.datos_view.numero = ""; 
-                                 $scope.datos_view.prefijo = $scope.datos_view.termino_busqueda;
+                              if($scope.root.filtro.nombre === "Prefijo"){
+                                 $scope.root.numero = ""; 
+                                 $scope.root.prefijo = $scope.root.termino_busqueda;
                                }
                         
-                              if($scope.filtro.nombre === "Numero"){
-                                 $scope.datos_view.prefijo = "";
-                                 $scope.datos_view.numero = $scope.datos_view.termino_busqueda;
+                              if($scope.root.filtro.nombre === "Numero"){
+                                 $scope.root.prefijo = "";
+                                 $scope.root.numero = $scope.root.termino_busqueda;
                                }
                              that.listarDespachosAprobados()
                          }*/
                         if (event.which === 13) {      
+                             console.log("$scope.root.estadoFormula ", $scope.root.estadoFormula)
                               if($scope.root.estadoFormula === '0'){
-                                  that.listarFormulasMedicasPendientes();
-                              }
-
-                              if($scope.root.estadoFormula === '1'){
                                   that.listarFormulasMedicas();
                               }
+                              
+                              /* if($scope.root.estadoFormula === '1'){
+                                  that.listarFormulasMedicasPendientes();
+                              }
+                            */
                         }
                      };
                      
@@ -442,7 +418,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         if (empresa_Nombre.length < 3) {
                             return;
                         }
-                        $scope.datos_view.termino_busqueda_empresa = empresa_Nombre;
+                        $scope.root.termino_busqueda_empresa = empresa_Nombre;
                         that.listarEmpresas(function() {
                         });
                     };
@@ -484,7 +460,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              prefijo: documentoAprobado.getPrefijo(),
                              numero:  documentoAprobado.getNumero(),
                              estado:  1});*/
-                          $state.go('ValidacionEgresosDetalle');
+                          $state.go('DispensarFormulaDetalle');
                      };
                     
                     /*
@@ -495,7 +471,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.formularioAprobarDespacho = function(){
                           localStorageService.add("validacionEgresosDetalle",{estado: 2});
-                          $state.go('ValidacionEgresosDetalle');
+                          $state.go('DispensarFormulaDetalle');
                     };
                     
                    
@@ -555,18 +531,36 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {displayName: 'Paciente', width:"9%",
                              cellTemplate: "<div\n\
                                             <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }} </div>"},   
-                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].getEdad()', displayName: 'Edad', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].getSexo()', displayName: 'Sexo', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getCodigoProducto()', displayName: 'Codigo', width:"9%"},
-                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getDescripcion()', displayName: 'Descripcion', width:"9%"},
-                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getExistencia()', displayName: 'Cantidad', width:"9%"},
-                            {field: 'detalle', width: "6%",
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getDescripcion()', displayName: 'Descripcion', width:"9%"},
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getExistencia()', displayName: 'Cantidad', width:"9%"},        
+                            {displayName: "Justificacion", cellClass: "txt-center dropdown-button",
+                             cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">{{root.justificacion}}<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                            <li><a href="javascript:void(0);" ng-click="seleccionarJustificacion(0)" >Error Formulaci&oacute;n</a></li>\
+                                            <li><a href="javascript:void(0);" ng-click="seleccionarJustificacion(1)" >Error de Digitaci&oacute;n</a></li>\
+                                            <li><a href="javascript:void(0);" ng-click="seleccionarJustificacion(2)" >Confrontado</a></li>\
+                                           </ul>\
+                                       </div>'
+                             },
+                             {field: 'detalle', width: "6%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
 
                             }
                         ]
                     };
+                    
+                   
+                    $scope.seleccionarJustificacion = function(index){
+                        
+                        $scope.root.justificacion = justificacion[index];
+                    };
+                    
                     /**
                      * @author Cristian Ardila
                      * @fecha 04/02/2016
@@ -578,8 +572,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                          $event.preventDefault();
                          $event.stopPropagation();
-                         $scope.datos_view.datepicker_fecha_inicial = true;
-                         $scope.datos_view.datepicker_fecha_final = false;
+                         $scope.root.datepicker_fecha_inicial = true;
+                         $scope.root.datepicker_fecha_final = false;
 
                      };
                 
@@ -593,8 +587,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.abrir_fecha_final = function($event) {
                         $event.preventDefault();
                         $event.stopPropagation();
-                        $scope.datos_view.datepicker_fecha_inicial = false;
-                        $scope.datos_view.datepicker_fecha_final = true;
+                        $scope.root.datepicker_fecha_inicial = false;
+                        $scope.root.datepicker_fecha_final = true;
 
                     };
 
@@ -617,14 +611,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     
                                     AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                                 }else{
-                                 $scope.datos_view.estadoSesion = false;
+                                 $scope.root.estadoSesion = false;
                                  that.listarTipoDocumentos(function(estado){
                    
                                  });
                                  that.listarEmpresas(function(estado) {
                                     that.listarDespachosAprobados();
-                                    that.listarFormulasMedicas();
-                                    that.listarFormulasMedicasPendientes();
+                                   // that.listarFormulasMedicas();
+                                   // that.listarFormulasMedicasPendientes();
                                 });                                  
                                 }   
                             }
@@ -637,7 +631,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      $scope.$$watchers = null;
                     // set localstorage
                     
-                     $scope.datos_view=null;
+                     $scope.root=null;
                    
                 });
 

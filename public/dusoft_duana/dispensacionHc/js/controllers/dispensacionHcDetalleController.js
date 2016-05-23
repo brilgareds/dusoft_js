@@ -324,7 +324,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * +Descripcion: Se activa el cambo de interfaz, cuando se selecciona
              *               el detalle de una aprobacion o se creara una aprobacion
              */
-            if ($state.is("ValidacionEgresosDetalle") === true) {
+            if ($state.is("DispensarFormulaDetalle") === true) {
                
                var documento = localStorageService.get("validacionEgresosDetalle");
              

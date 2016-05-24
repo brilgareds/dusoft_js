@@ -14,13 +14,9 @@ define(["angular", "js/models"], function(angular, models) {
             this.fechaRegistro = fechaRegistro || "";
             this.fechaFinalizacion = fechaFinalizacion || "";
             this.fechaFormulacion = fechaFormulacion || "";
-            
+            this.estado;
         };
         
-        
-       
-        
-      
         
         //Operaciones Get de parámetros iniciales de creación de Formula
         Formula.prototype.getEvolucionId = function(){
@@ -57,7 +53,13 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         
+        Formula.prototype.setEstado = function(estado){
+             this.estado = estado;
+        };
        
+        Formula.prototype.getEstado = function(){
+            return this.estado;
+        };
         
         this.get = function(evolucionId,numeroFormula,tipoFormula, transcripcionMedica,descripcionTipoFormula,
                         fechaRegistro,fechaFinalizacion,fechaFormulacion) {

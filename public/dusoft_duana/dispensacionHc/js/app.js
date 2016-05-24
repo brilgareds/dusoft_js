@@ -82,8 +82,13 @@ define([
                     controller: "dispensacionHcController"
                 }).state('DispensarFormulaDetalle', {
                     url: "/DispensarFormulaDetalle",
-                    text: "Detalle de despacho aprobado",
+                    text: "Detalle de formula para dispensar",
                     templateUrl: "views/dispensacionHc/dispensarFormulaDetalle.html",
+                    parent_name : "DispensacionHc"
+                }).state('DispensarFormulaPendientes',{
+                    url: "/DispensarFormulaPendientes",
+                    text: "Productos pendientes para dispensar",
+                    templateUrl: "views/dispensacionHc/dispensarFormulaPendiente.html",
                     parent_name : "DispensacionHc"
                 });
                     

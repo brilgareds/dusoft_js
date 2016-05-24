@@ -326,9 +326,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              */
             if ($state.is("DispensarFormulaDetalle") === true) {
                
-               var documento = localStorageService.get("validacionEgresosDetalle");
-             
-               $scope.datos_view.estadoRegistro = 1;
+               var documento = localStorageService.get("dispensarFormulaDetalle");
+               
+               console.log("documento ", documento)
+            /*   $scope.datos_view.estadoRegistro = 1;
                if (documento) {
               
                 if(documento.estado === 1){
@@ -363,7 +364,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         
                      });
                   }
-                }              
+                }  */            
                // if(documento.estado === 2){  
                    // $scope.datos_view.seleccionarOtros = false;
                    // $scope.datos_view.estadoRegistro = 2;                   
@@ -431,7 +432,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.$$watchers = null;
                 // set localstorage
-                localStorageService.add("validacionEgresosDetalle", null);
+                localStorageService.add("dispensarFormulaDetalle", null);
                 localStorageService.add("pedido", null);
                 $scope.datos_view=null;
                 $scope.documentoDespachoAprobado=null;

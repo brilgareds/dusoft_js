@@ -62,6 +62,8 @@ define(["angular", "js/services"], function(angular, services) {
                    });
                };
                
+               
+              
              /**
               * @author Cristian Ardila
               * @fecha  21/05/2016
@@ -70,7 +72,7 @@ define(["angular", "js/services"], function(angular, services) {
              self.listarFormulas = function(obj, callback){
                  
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
-                       
+                       // console.log("data ", data)
                         callback(data);
                  });
              };

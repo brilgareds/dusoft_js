@@ -13,30 +13,51 @@ var DispensacionHcModel = function() {
  */
 DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     
+   /**Campos exclusivos para cuando se envie la peticion 
+   *solo para consultar las formulas pendientes
+   **/
+   var pendienteCampoEstado = "";
+   var pendienteTabla = "";
+   var pendienteCondicion = "";
+   
+   if(obj.estadoFormula === '1'){
+       
+       pendienteCampoEstado = ",j.sw_estado";
+       pendienteTabla = "INNER JOIN HC_PENDIENTES_POR_DISPENSAR j ON (a.evolucion_id=j.evolucion_id)";
+       pendienteCondicion = "AND a.sw_estado = '0'";
+   }
+  
    var parametros = {1: obj.fechaInicial, 2: obj.fechaFinal};
    var sqlCondicion = "";
    var sqlCondicion2 = "";
-   if(obj.filtro.tipo === 'FO'){
+   
+   
+   
+   if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
        sqlCondicion = " AND a.numero_formula::varchar = :3";
        sqlCondicion2  =" WHERE numero_formula::varchar = :3";
        parametros["3"]= obj.terminoBusqueda;
        
    }
-    if(obj.filtro.tipo === 'EV'){
+   if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
        
-      sqlCondicion = " AND a.evolucion_id::varchar = :3";
-      //sqlCondicion2  =" WHERE numero_formula::varchar = :3";
-       parametros["3"]= obj.terminoBusqueda;
+      sqlCondicion = " AND a.evolucion_id = :3";
+      parametros["3"]= obj.terminoBusqueda;
    }
-   /*else{
+   if(obj.filtro.tipo !== 'EV' && obj.filtro.tipo !== 'FO'){
        
-        sqlCondicion = " AND a.tipo_id_paciente = :1";
-       parametros["3"]= obj.terminoBusqueda;
-   }*/
+      sqlCondicion = " AND a.tipo_id_paciente = :3 AND a.paciente_id::varchar = :4 ";
+      parametros["3"]= obj.filtro.tipo;
+      parametros["4"]= obj.terminoBusqueda;
+     
+   }
    
-   console.log("parametros ****", parametros);
-   console.log("sqlCondicion ****", sqlCondicion);
-    var sql = "SELECT * FROM (\
+  /* console.log("obj parametros ==== ", obj);
+   console.log("parametros ==== ", parametros);
+   console.log("sqlCondicion ==== ", sqlCondicion);
+   console.log("Termino de busqueda ==== ", obj.terminoBusqueda);*/
+   
+    var sql = "* FROM (\
                         SELECT DISTINCT\
                         '0' AS tipo_formula,\
                         a.transcripcion_medica,\
@@ -63,7 +84,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         f.descripcion AS bloqueo,\
                         COALESCE(i.plan_id,0) as plan_id,\
                         i.plan_descripcion\
-                        FROM hc_formulacion_antecedentes AS a\
+                        "+pendienteCampoEstado+" FROM hc_formulacion_antecedentes AS a\
                         inner join pacientes as b ON (a.tipo_id_paciente = b.tipo_id_paciente) AND (a.paciente_id = b.paciente_id)\
                         left join inv_tipos_bloqueos as f ON (b.tipo_bloqueo_id=f.tipo_bloqueo_id) AND (f.estado='1')\
                         inner join (\
@@ -83,19 +104,34 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         AND (g.tipo_afiliado_atencion=h.tipo_afiliado_id)\
                         AND (g.rango_afiliado_atencion=h.rango)\
                         inner join planes as i ON (h.plan_id=i.plan_id)\
-                        WHERE a.codigo_medicamento IS NOT NULL \
-                    ) AS a WHERE a.fecha_registro between :1 and :2 " + sqlCondicion; 
-                         //and j.sw_estado ='0' AND  LEFT JOIN HC_PENDIENTES_POR_DISPENSAR j ON (a.evolucion_id=j.evolucion_id)
+                        "+pendienteTabla+" WHERE a.codigo_medicamento IS NOT NULL \
+                    ) AS a WHERE a.fecha_registro between :1 and :2 " + sqlCondicion + " " + pendienteCondicion; 
+                         
   
 
-  G.knex.raw(sql,parametros).then(function(resultado){  
+   /*console.log(" -------------------------------------- ");
+   console.log(" sql ", sql);
+   console.log(" -------------------------------------- ");*/
+     
+    var query = G.knex.select(G.knex.raw(sql, parametros)).
+    limit(G.settings.limit).
+    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){
+        console.log("resultado ==== ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err ", err)
+        callback(err);
+       
+    });
+
+ /* G.knex.raw(sql,parametros).then(function(resultado){  
     
       callback(false, resultado.rows)
       console.log("resultado ", resultado.rows)
   }).catch(function(err){     
         console.log("err ", err)
       callback(err)
-  });
+  });*/
           
     
 };

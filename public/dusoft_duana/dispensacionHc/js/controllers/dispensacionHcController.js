@@ -145,7 +145,104 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 };
 
+            /*      $scope.filterOptions = {
+                        filterText: "",
+                        useExternalFilter: true
+                    };
+                 $scope.totalServerItems = 0;
+                 $scope.pagingOptions = {
+                    pageSizes: [5, 10, 20],
+                    pageSize: 5,
+                    currentPage: 1
+                 };
                 
+                   $scope.setPagingData = function(data, page, pageSize){
+                        
+                        console.log("data ", data)
+                       
+                        var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
+                        // console.log("pagedData ",pagedData )
+                      
+                        $scope.myData = pagedData;
+                        $scope.totalServerItems = data.length;
+                        if (!$scope.$$phase) {
+                            $scope.$apply();
+                        }
+                    };
+                   $scope.getPagedDataAsync = function (pageSize, page, searchText) {
+                        var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_empresas: {
+                                filtro:$scope.root.filtro,
+                                terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
+                                empresaId:$scope.root.empresaSeleccionada,
+                                fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                                fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                                paginaActual:$scope.paginaactual,
+                                estadoFormula : $scope.root.estadoFormula
+                           }
+                       }    
+                    };
+                        setTimeout(function () {
+                            var data;
+                            if (searchText) {
+                                var ft = searchText.toLowerCase();
+                               // $http.get('largeLoad.json').success(function (largeLoad) {		
+                                    /*data = largeLoad.filter(function(item) {
+                                        return JSON.stringify(item).toLowerCase().indexOf(ft) != -1;
+                                    });
+                                  dispensacionHcService.listarFormulas(obj, function(result){
+                            
+                                        if(result.status === 200) {       
+                                           data = result.obj.listar_formulas.filter(function(item) {
+                                                return JSON.stringify(item).toLowerCase().indexOf(ft) != -1;
+                                            });
+                                            $scope.setPagingData(data,page,pageSize);
+                                        }
+                                 });
+                                    
+                               // });            
+                            } else {
+                                 dispensacionHcService.listarFormulas(obj, function(result){
+                            
+                                        if(result.status === 200) {       
+                                          $scope.setPagingData(result.obj.listar_formulas,page,pageSize);
+
+                                        }
+                                 });
+                               // $http.get('largeLoad.json').success(function (largeLoad) {
+                                   // $scope.setPagingData(largeLoad,page,pageSize);
+                                //});
+                            }
+                        }, 100);
+                    };
+                    
+                   
+	
+    $scope.gridOptions = {
+        data: 'myData',
+        enablePaging: true,
+        showFooter: true,
+        totalServerItems:'totalServerItems',
+        pagingOptions: $scope.pagingOptions,
+        filterOptions: $scope.filterOptions
+    };
+        $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+                     
+                                $scope.$watch('pagingOptions', function (newVal, oldVal) {
+                                  if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
+                                    $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText);
+                                       }
+                                  }, true);
+                                  $scope.$watch('filterOptions', function (newVal, oldVal) {
+                                      if (newVal !== oldVal) {
+                                        $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText);
+                                      }
+                        }, true);          
+                 
+                */
+
                 /**
                  * @author Cristian Ardila
                  * @fecha 16/05/2016
@@ -163,15 +260,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 empresaId:$scope.root.empresaSeleccionada,
                                 fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
                                 fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                                paginaActual:$scope.paginaactual
-                                
+                                paginaActual:$scope.paginaactual,
+                                estadoFormula : $scope.root.estadoFormula
                            }
                        }    
                     };
                     
-                   console.log("obj ", obj)
                     dispensacionHcService.listarFormulas(obj, function(data){
-                            
+                            console.log("data ", data)
                            if(data.status === 200) {       
                                $scope.root.items = data.obj.listar_formulas.length;                              
                                that.renderListarFormulasMedicas(data.obj);
@@ -185,12 +281,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                   * +Descripcion Metodo encargado de mapear la formula
                   */
                  that.renderListarFormulasMedicas = function(formulas){
-
+                     console.log("*******************Listar formulas medicas*********************");
+                   //  console.log("formulas ", formulas)
                       $scope.afiliados = [];
                       
                           for (var i in formulas.listar_formulas) {
                             var _formula = formulas.listar_formulas[i];
                             
+                          //  console.log("_formula _formula ", _formula.sw_estado)
                             //Se crea el objeto afiliados
                             var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
                             
@@ -212,7 +310,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                    _formula.fecha_registro,
                                                   _formula.fecha_finalizacion,
                                                 _formula.fecha_formulacion);
-                                                      
+                                                
+                                formula.setEstado( _formula.sw_estado)                      
                               
                          //El paciente tiene su formula
                          paciente.agregarFormulas(formula);
@@ -313,7 +412,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  *              listara todos los despachos aprobados por parte
                  *              de la persona de seguridad
                  */
-                that.listarDespachosAprobados = function(){
+              /*  that.listarDespachosAprobados = function(){
                    
                     var obj = {
                         
@@ -359,7 +458,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                            $scope.documentosAprobados.push(documento);
                         }
                        
-                    };
+                    };*/
                     
                      /**
                       * @author Cristian Ardila
@@ -397,11 +496,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                }
                              that.listarDespachosAprobados()
                          }*/
-                        if (event.which === 13) {      
-                             console.log("$scope.root.estadoFormula ", $scope.root.estadoFormula)
-                              if($scope.root.estadoFormula === '0'){
+                        if (event.which === 13) {  
+                            
+                             
+                             //console.log("$scope.root.estadoFormula ", $scope.root.estadoFormula)
+                              //if($scope.root.estadoFormula === '0'){
                                   that.listarFormulasMedicas();
-                              }
+                              //}
                               
                               /* if($scope.root.estadoFormula === '1'){
                                   that.listarFormulasMedicasPendientes();
@@ -432,7 +533,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         if ($scope.paginaactual === 1)
                             return;
                         $scope.paginaactual--;
-                        that.listarDespachosAprobados();
+                        that.listarFormulasMedicas();
                     };
                     
                     
@@ -442,27 +543,43 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.paginaSiguiente = function() {
                         $scope.paginaactual++;
-                       that.listarDespachosAprobados();
+                       that.listarFormulasMedicas();
                     };
                     
                     /*
                      * @author Cristian Ardila
-                     * @fecha 04/02/2016
-                     * +Descripcion Funcion encargada de cambiar de GUI cuando 
-                     *              se presiona el boton de detalle de la tabla
-                     *              de datos
+                     * @fecha 24/05/2016
+                     * +Descripcion Funcion encargada de cambiar de VIEW cuando 
+                     *              se seleccione la opcion dispensacion
                      */
-                    $scope.detalleDespachoAprobado = function(dispensar) {
+                    $scope.dispensacionFormula = function(dispensar) {
                           
-                          console.log("dispensar ", dispensar)
+                          console.log("dispensar ", dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId())
+                          localStorageService.add("dispensarFormulaDetalle",{
+                              evolucion_id: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),
+                              formula:dispensar
+                          });
+                             
+                          $state.go('DispensarFormulaDetalle');
+                     };
+                    
+                    /*
+                     * @author Cristian Ardila
+                     * @fecha 24/05/2016
+                     * +Descripcion Funcion encargada de cambiar de VIEW cuando 
+                     *              se seleccione la opcion dispensacion
+                     */
+                    $scope.dispensacionFormulaPendientes = function(dispensar) {
+                          console.log("dispensar ", dispensar) 
+                        //  console.log("dispensar ", dispensar[0].mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId())
                          /* localStorageService.add("validacionEgresosDetalle", 
                             {empresa: documentoAprobado.getEmpresaId(),
                              prefijo: documentoAprobado.getPrefijo(),
                              numero:  documentoAprobado.getNumero(),
                              estado:  1});*/
-                          $state.go('DispensarFormulaDetalle');
+                         // $state.go('DispensarFormulaPendientes');
                      };
-                    
+                     
                     /*
                      * @author Cristian Ardila
                      * @fecha 04/02/2016
@@ -486,7 +603,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          enableCellSelection: true,
                          enableHighlighting: true,
                         columnDefs: [
-                        {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
                             {displayName: 'Identificacion', width:"9%",
                              cellTemplate: "<div\n\
@@ -501,13 +618,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"}, 
                                
-                           
-                            {field: 'detalle', width: "6%",
+                            
+                            {displayName: "Opcion", cellClass: "txt-center dropdown-button",
+                             cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                 <li><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity)" >Dispensaci&oacute;n</a></li>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 0"><a href="javascript:void(0);" ng-click="dispensacionFormulaPendientes(row.entity)" >Pendientes</a></li>\
+                                             </ul>\
+                                       </div>'
+                             },
+                            /*{field: 'detalle', width: "6%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="dispensacionFormula(row.entity)"><span class="glyphicon glyphicon-zoom-in">Dispensar</span></button></div>'
 
-                            }
+                            }*/
                         ]
                     };
 
@@ -549,7 +675,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              {field: 'detalle', width: "6%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleDespachoAprobado(row.entity)"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="dispensacionFormula(row.entity)"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
 
                             }
                         ]
@@ -616,7 +742,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    
                                  });
                                  that.listarEmpresas(function(estado) {
-                                    that.listarDespachosAprobados();
+                                 //   that.listarDespachosAprobados();
                                    // that.listarFormulasMedicas();
                                    // that.listarFormulasMedicasPendientes();
                                 });                                  

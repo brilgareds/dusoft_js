@@ -51,6 +51,7 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
     var filtro = args.listar_empresas.filtro;
     var fechaInicial = args.listar_empresas.fechaInicial;
     var fechaFinal = args.listar_empresas.fechaFinal;
+    var estadoFormula = args.listar_empresas.estadoFormula;
     
    
    
@@ -59,7 +60,8 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
                     paginaActual:paginaActual,
                     fechaInicial: fechaInicial,
                     fechaFinal: fechaFinal,
-                    filtro: filtro};
+                    filtro: filtro,
+                    estadoFormula: estadoFormula};
    
    
    G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametros).then(function(resultado){

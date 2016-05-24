@@ -23,7 +23,8 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "chart",
-    "controllers/HomeController"
+    "controllers/HomeController",
+    "webNotification"
 ], function(angular) {
 
     /* App Module and its dependencies */
@@ -39,7 +40,8 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'nvd3ChartDirectives'
+        'nvd3ChartDirectives',
+        'angular-web-notification'
     ]);
 
     home.urlRouterProvider;

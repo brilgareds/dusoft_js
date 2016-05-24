@@ -2,7 +2,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
     "includes/header/lockscreen", "includes/content/rutamodulo",
     "includes/classes/Empresa", "includes/classes/Modulo",
     "includes/classes/Rol", "includes/classes/OpcionModulo",
-    "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo"], function(angular, controllers) {
+    "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo",
+    "includes/components/notificaciones/NotificacionesController"], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
@@ -513,6 +514,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                 socket.emit("onActualizarSesion", socket_session);
             });
+            
 
             self.traerUsuarioPorId(obj_session.usuario_id, function() {
                 var empresa_id = obj_session.empresa_id;

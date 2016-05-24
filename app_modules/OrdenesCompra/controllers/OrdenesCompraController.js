@@ -1,11 +1,12 @@
 
-var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails) {
+var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails, m_usuarios) {
 
 
     this.m_ordenes_compra = ordenes_compras;
     this.m_productos = productos;
     this.e_ordenes_compra = eventos_ordenes_compras;
     this.emails = emails;
+    this.m_usuarios = m_usuarios;
 };
 
 
@@ -41,17 +42,29 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
     var termino_busqueda = args.ordenes_compras.termino_busqueda;
     var pagina_actual = args.ordenes_compras.pagina_actual;
     var filtro = args.ordenes_compras.filtro || undefined;
+    
+    var parametros = { usuario_id:req.session.user.usuario_id, empresa_id:req.session.user.empresa, modulos:[req.session.user.moduloActual], convertirJSON:true };
+    
+    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametros).
+    then(function(parametrizacion){
+        
+        console.log("parametrizacion ", parametrizacion.modulos);
+                
+        that.m_ordenes_compra.listar_ordenes_compra(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, filtro, function(err, lista_ordenes_compras) {
 
-    that.m_ordenes_compra.listar_ordenes_compra(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, filtro, function(err, lista_ordenes_compras) {
+            if (err) {
+                res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                return;
+            } else {
+                res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras: lista_ordenes_compras}));
+                return;
+            }
+        }); 
+    }).fail(function(err){
+        
+        console.log("eror generando >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", err);
+    }).done();
 
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras: lista_ordenes_compras}));
-            return;
-        }
-    });
 };
 
 
@@ -1766,6 +1779,6 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 }
 ;
 
-OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails"];
+OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios"];
 
 module.exports = OrdenesCompra;

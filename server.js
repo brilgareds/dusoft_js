@@ -32,6 +32,10 @@ G.Q = require('q');
 G.accounting = accounting;
 G.XlsParser =  require("./lib/XlsParser");
 G.moment = require("moment");
+
+var events = require('events');
+G.eventEmitter = new events.EventEmitter();
+
 //G.moment = G.moment().format();
 
 G.soap = require('soap');
@@ -275,6 +279,9 @@ if (cluster.isMaster) {
         process.exit(0);
 
     });
+    
+    //Notificaciones 
+    container.get("c_notificaciones");
 
     console.log('Express server listening on port _______________________________ ' + app.get('port') + ' in Dir ' + __dirname);
 

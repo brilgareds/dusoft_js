@@ -21,7 +21,14 @@ define(["angular","js/services"], function(angular, services){
                 if(config.data && config.data.session){
                     var usuario = Usuario.getUsuarioActual() || null;
                     var modulo = (usuario) ? usuario.getModuloActual() : null;
+                    var empresa = (usuario) ? usuario.getEmpresa() : null;
+                    var centro = (empresa) ? empresa.getCentroUtilidadSeleccionado() : null;
+                    var bodega = (centro) ? centro.getBodegaSeleccionada() : null;
+                                        
                     config.data.session.moduloActual = (modulo && modulo.alias) ? modulo.alias : "";
+                    config.data.session.empresaId = (empresa && empresa.getCodigo()) ? empresa.getCodigo() : "";
+                    config.data.session.centroUtilidad = (centro && centro.getCodigo()) ? centro.getCodigo() : "";
+                    config.data.session.bodega = (bodega && bodega.getCodigo()) ? bodega.getCodigo() : ""; 
                 }
                 
                 return config;

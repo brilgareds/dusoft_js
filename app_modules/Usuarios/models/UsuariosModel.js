@@ -365,11 +365,12 @@ UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_i
     });
 };
 
-UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, empresa_id, callback) {
+UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callback) {
     var that = this;
 
     var parametrizacion = {};
-
+    var empresa_id = params.empresa_id;
+    var usuario_id = params.usuario_id;
     //obtiene el rol del usuario
     that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol) {
         //console.log("usuario obtenido ", rol);
@@ -381,7 +382,7 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
         }
 
         //obtiene los modulos del usuario
-        that.m_modulo.listarModulosUsuario(rol.id, empresa_id, usuario_id, function(err, modulos) {
+        that.m_modulo.listarModulosUsuario(rol.id, empresa_id, usuario_id, params.modulos, function(err, modulos) {
             if (err) {
                 callback(err);
                 return;
@@ -416,12 +417,18 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
                         //return;
 
                         if (rows.length === 0) {
+                            if(params.convertirJSON){
+                                parametrizacion.modulos = __serializarJson(parametrizacion.modulos);
+                            }
                             callback(err, parametrizacion);
                             return;
                         }
 
                         //asigna las bodegas del centro de utilidad
                         __obtenerBodegasCentroUtilidadUsuario(that, 0, empresa_id, usuario_id, rows, function(err, centros) {
+                            if(params.convertirJSON){
+                                parametrizacion.modulos =  __serializarJson(parametrizacion.modulos);
+                            }
                             parametrizacion.centros_utilidad = centros;
                             callback(err, parametrizacion);
                         });
@@ -435,6 +442,31 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
 
     });
 };
+
+function __serializarJson(modulos){
+    var _modulos = {};
+    for(var i in modulos){
+        var modulo = modulos[i];
+        _modulos[modulo.alias] = {
+            "modulo_id" : modulo.modulo_id
+        };
+        
+        _modulos[modulo.alias]['opciones'] = {};
+        //console.log("opciones ", modulo.opciones);
+        //Opciones del modulo
+        for(var ii in modulo.opciones){
+            var opcion = modulo.opciones[ii];
+            _modulos[modulo.alias]["opciones"][opcion.alias] = Boolean(parseInt(opcion.estado_opcion_rol));
+
+            
+        }
+        
+    }
+    
+    
+   // console.log("objeto de modulo ", _modulos);
+    return _modulos;
+}
 
 UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, transaccion, callback) {
     var sql = "DELETE FROM login_empresas WHERE  empresa_id = :1 AND login_id = " + usuario_id;

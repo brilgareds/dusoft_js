@@ -9,10 +9,10 @@
                 }
             }],
         "models": [{
-                "pedidos_farmacias_model": {
-                    "module": "PedidosFarmacias",
-                    "model": "PedidosFarmaciasModel",
-                    "alias": "m_pedidos_farmacias"
+                "notificaciones_model": {
+                    "module": "Notificaciones",
+                    "model": "NotificacionesModel",
+                    "alias": "m_notificaciones"
                 }
             }],
         "events": [],

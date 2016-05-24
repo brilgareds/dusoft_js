@@ -450,8 +450,16 @@ ModuloModel.prototype.listarModulosEmpresaPorRol = function(rol_id, callback) {
 };
 
 
-ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_id, callback) {
+ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_id, aliasModulos, callback) {
     //console.log("rol_id ", rol_id, " empresa id ",empresa_id, " login_id ", login_id, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    
+    var sqlAux = "";
+    
+    if(aliasModulos.length > 0){
+        aliasModulos  = "'" + aliasModulos.join("','") + "'";
+        sqlAux = " AND c.alias IN (" + aliasModulos + ")";
+    }
+    
     var sql = " SELECT a.*, c.parent, b.modulo_id, b.estado as estado_modulo_usuario, c.nombre, c.state, c.url, c.icon, c.carpeta_raiz, c.alias,\
                 b.id as login_modulos_empresas_id,\
                 CASE WHEN COALESCE(( SELECT bb.id FROM modulos aa\
@@ -460,7 +468,7 @@ ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_
                 FROM login_empresas a\
 		INNER JOIN login_modulos_empresas b ON b.login_empresas_id = a.id\
                 INNER JOIN modulos c ON b.modulo_id = c.id and c.estado = '1'\
-                WHERE a.rol_id = :1 AND a.empresa_id = :2 AND a.login_id = :3   ORDER BY id";
+                WHERE a.rol_id = :1 AND a.empresa_id = :2 AND a.login_id = :3 "+sqlAux+"  ORDER BY id";
 
     G.knex.raw(sql, {1:rol_id, 2:empresa_id, 3:login_id}).then(function(resultado){
         callback(false, resultado.rows);

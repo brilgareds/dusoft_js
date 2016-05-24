@@ -1,183 +1,165 @@
 module.exports = function(app, di_container) {
 
-    var io = di_container.get("socket");
-    var c_pedidos_farmacias = di_container.get("c_pedidos_farmacias");
 
-    // ================= POST =======================
+    var c_ordenes_compra = di_container.get('c_ordenes_compra');
 
-    // Listar Empresas a las que tiene acceso el usuario
-    // NOTA: Este tipo de accesos es temporal ya que se implementara
-    //       Un sistema de Roles y Permisos en el futuro. 2014    
-    app.post('/api/PedidosFarmacias/obtenerEmpresas', function(req, res) {
-        c_pedidos_farmacias.obtenerEmpresas(req, res);
+    // Listar Ordenes de Compras
+    app.post('/api/OrdenesCompra/listarOrdenesCompra', function(req, res) {
+        c_ordenes_compra.listarOrdenesCompra(req, res);
     });
     
-    // Listar las farmacias a las que tiene acceso el usuario
-    app.post('/api/PedidosFarmacias/listarFarmacias', function(req, res) {
-        c_pedidos_farmacias.listarFarmaciasUsuarios(req, res);
+    // Listar Ordenes de Compras Proveedor
+    app.post('/api/OrdenesCompra/listarOrdenesCompraProveedor', function(req, res) {
+        c_ordenes_compra.listarOrdenesCompraProveedor(req, res);
+    });
+
+    // Listar Productos para Ordenes de Compras
+    app.post('/api/OrdenesCompra/listarProductos', function(req, res) {
+        c_ordenes_compra.listarProductos(req, res);
+    });
+
+    // Ingresar Ordenes de Compras
+    app.post('/api/OrdenesCompra/insertarOrdenCompra', function(req, res) {
+        c_ordenes_compra.insertarOrdenCompra(req, res);
+    });
+
+    // Modificar la unidad de negocio de una orden de compra 
+    app.post('/api/OrdenesCompra/modificarUnidadNegocio', function(req, res) {
+        c_ordenes_compra.modificarUnidadNegocio(req, res);
+    });
+
+    // Modificar Observacion de una orden de compra 
+    app.post('/api/OrdenesCompra/modificarObservacion', function(req, res) {
+        c_ordenes_compra.modificarObservacion(req, res);
+    });
+
+    // Insertar Detalle Ordene de Compras
+    app.post('/api/OrdenesCompra/insertarDetalleOrdenCompra', function(req, res) {
+        c_ordenes_compra.insertarDetalleOrdenCompra(req, res);
+    });
+
+    // Eliminar Orden de Compras
+    app.post('/api/OrdenesCompra/cambiarEstado', function(req, res) {
+        c_ordenes_compra.cambiarEstado(req, res);
+    });
+
+    // Eliminar Producto de una Orden de Compra
+    app.post('/api/OrdenesCompra/eliminarProductoOrdenCompra', function(req, res) {
+        c_ordenes_compra.eliminarProductoOrdenCompra(req, res);
+    });
+
+    // Consultar Orden de Compra por numero de orden
+    app.post('/api/OrdenesCompra/consultarOrdenCompra', function(req, res) {
+        c_ordenes_compra.consultarOrdenCompra(req, res);
+    });
+
+    // Consultar Detalle Orden de Compra por numero de orden
+    app.post('/api/OrdenesCompra/consultarDetalleOrdenCompra', function(req, res) {
+        c_ordenes_compra.consultarDetalleOrdenCompra(req, res);
     });
     
-    // Listar las Centros Utilidad a las que tiene acceso el usuario
-    app.post('/api/PedidosFarmacias/listarCentrosUtilidad', function(req, res) {
-        c_pedidos_farmacias.listarCentrosUtilidadUsuarios(req, res);
+    app.post('/api/OrdenesCompra/consultarDetalleOrdenCompraConNovedades', function(req, res) {
+        c_ordenes_compra.consultarDetalleOrdenCompraConNovedades(req, res);
+    });
+
+    // Generar Orden de Compra
+    app.post('/api/OrdenesCompra/finalizarOrdenCompra', function(req, res) {
+        c_ordenes_compra.finalizarOrdenCompra(req, res);
+    });
+
+    // Orden de Compra a traves de un archivo plano
+    app.post('/api/OrdenesCompra/subirPlano', function(req, res) {
+        c_ordenes_compra.ordenCompraArchivoPlano(req, res);
+    });
+
+    // Generar Novedades Orden de Compra
+    app.post('/api/OrdenesCompra/gestionarNovedades', function(req, res) {
+        c_ordenes_compra.gestionarNovedades(req, res);
+    });
+
+
+    // Consultar Archivos Novedad Orden de Compra
+    app.post('/api/OrdenesCompra/consultarArchivosNovedades', function(req, res) {
+        c_ordenes_compra.consultarArchivosNovedades(req, res);
+    });
+
+    // Subir Archivos Novedades Orden de Compra
+    app.post('/api/OrdenesCompra/subirArchivoNovedades', function(req, res) {
+        c_ordenes_compra.subirArchivoNovedades(req, res);
+    });
+    
+    app.post('/api/OrdenesCompra/eliminarNovedad', function(req, res) {
+        c_ordenes_compra.eliminarNovedad(req, res);
+    });
+
+    // Generar Reporte Orden Compra
+    app.post('/api/OrdenesCompra/reporteOrdenCompra', function(req, res) {
+        c_ordenes_compra.reporteOrdenCompra(req, res);
     });    
     
-    // Listar las Boedgas a las que tiene acceso el usuario
-    app.post('/api/PedidosFarmacias/listarBodegas', function(req, res) {
-        c_pedidos_farmacias.listarBodegasUsuarios(req, res);
+    
+    /* =========== Routes para Recepcion de Mercancia ==================*/
+    
+    // Listar recepciones mercancia
+    app.post('/api/OrdenesCompra/listarRecepcionesMercancia', function(req, res) {
+        c_ordenes_compra.listarRecepcionesMercancia(req, res);
     });
     
-    // depreciado Crear Pre-orden o Pedido Temporal
-    app.post('/api/PedidosFarmacias/crearPedidoTemporal', function(req, res) {
-        c_pedidos_farmacias.crearPedidoTemporal(req, res);
+    // consultar recepcion mercancia
+    app.post('/api/OrdenesCompra/consultarRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.consultarRecepcionMercancia(req, res);
     });
     
-    app.post('/api/PedidosFarmacias/guardarPedidoTemporal', function(req, res) {
-        c_pedidos_farmacias.guardarPedidoTemporal(req, res);
+    // insertar recepcion mercancia
+    app.post('/api/OrdenesCompra/insertarRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.insertarRecepcionMercancia(req, res);
     });
     
-    // Insertar productos en Pre-orden o Pedido Temporal
-    app.post('/api/PedidosFarmacias/ingresarDetallePedidoTemporal', function(req, res) {
-        c_pedidos_farmacias.ingresarDetallePedidoTemporal(req, res);
-    });  
-
-    // Listar Todos los pedidos de farmacia
-    app.post('/api/PedidosFarmacias/listarPedidos', function(req, res) {
-        c_pedidos_farmacias.listarPedidosFarmacias(req, res);
-    });
-
-    // Asignar o seleccionar responsables del pedido
-    app.post('/api/PedidosFarmacias/asignarResponsable', function(req, res) {
-        c_pedidos_farmacias.asignarResponsablesPedido(req, res);
+    // modificar recepcion mercancia
+    app.post('/api/OrdenesCompra/modificarRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.modificarRecepcionMercancia(req, res);
     });
     
-    // Eliminar responsables del pedido
-    app.post('/api/PedidosFarmacias/eliminarResponsablesPedido', function(req, res) {
-        c_pedidos_farmacias.eliminarResponsablesPedido(req, res);
+    // Listar productos recepcion mercancia
+    app.post('/api/OrdenesCompra/listarProductosRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.listarProductosRecepcionMercancia(req, res);
     });
     
-    // Seleccionar los pedidos de un operario de bodega
-    app.post('/api/PedidosFarmacias/listaPedidosOperarioBodega', function(req, res) {
-        c_pedidos_farmacias.listaPedidosOperariosBodega(req, res);
+    // insertar productos recepcion mercancia
+    app.post('/api/OrdenesCompra/insertarProductosRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.insertarProductosRecepcionMercancia(req, res);
     });
     
-    app.post('/api/PedidosFarmacias/obtenerDetallePedido', function(req, res) {
-        c_pedidos_farmacias.obtenerDetallePedido(req, res);
+    // modificar productos recepcion mercancia
+    app.post('/api/OrdenesCompra/modificarProductosRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.modificarProductosRecepcionMercancia(req, res);
     });
     
-    app.post('/api/PedidosFarmacias/buscarProductos', function(req, res) {
-        c_pedidos_farmacias.buscarProductos(req, res);
+    // Finalizar recepcion mercancia
+    app.post('/api/OrdenesCompra/finalizarRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.finalizarRecepcionMercancia(req, res);
     });
     
-    app.post('/api/PedidosFarmacias/generarPedidoFarmacia', function(req, res) {
-        c_pedidos_farmacias.generarPedidoFarmacia(req, res);
-    });
-    
-    app.post('/api/PedidosFarmacias/eliminarPedidoTemporal', function(req, res) {
-        c_pedidos_farmacias.eliminarPedidoTemporal(req, res);
-    }); 
-    
-    app.post('/api/PedidosFarmacias/subirArchivoPlano', function(req, res) {
-        c_pedidos_farmacias.subirArchivoPlano(req, res);
-    }); 
-    
-    app.post('/api/PedidosFarmacias/enviarEmailPedido', function(req, res) {
-        c_pedidos_farmacias.enviarEmailPedido(req, res);
-    }); 
-
-    // Consulta Encabezado de Pedido Temporal
-    app.post('/api/PedidosFarmacias/consultarPedidoFarmaciaTemporal', function(req, res) {
-        c_pedidos_farmacias.consultarPedidoFarmaciaTemporal(req, res);
-    });
-    
-    // Trae listado de productos de pedido temporal
-    app.post('/api/PedidosFarmacias/listarProductosDetalleTemporal', function(req, res) {
-        c_pedidos_farmacias.listarProductosDetalleTemporal(req, res);
+    // Listar Autorizaciones Compras
+    app.post('/api/OrdenesCompra/listarAutorizacionCompras', function(req, res) {
+        c_ordenes_compra.listarAutorizacionCompras(req, res);
     });
 
-    // Elimina el registro del encabezado del pedido por empresa, centro de utilidad, bodega y usuario
-    app.post('/api/PedidosFarmacias/eliminarRegistroEncabezadoTemporal', function(req, res) {
-        c_pedidos_farmacias.eliminarRegistroEncabezadoTemporal(req, res);
-    });
-    
-    // Elimina el registro del detalle del pedido por empresa, centro de utilidad, bodega, codigo de producto y usuario
-    app.post('/api/PedidosFarmacias/eliminarRegistroDetalleTemporal', function(req, res) {
-        c_pedidos_farmacias.eliminarRegistroDetalleTemporal(req, res);
-    }); 
-    
-    //Inserta el detalle del pedido definitivo
-    app.post('/api/PedidosFarmacias/insertarDetallePedidoFarmacia', function(req, res) {
-        c_pedidos_farmacias.insertarDetallePedidoFarmacia(req, res);
-    });    
-    
-    //Consultar Encabezado del Pedido
-    app.post('/api/PedidosFarmacias/consultarEncabezadoPedido', function(req, res) {
-        c_pedidos_farmacias.consultarEncabezadoPedido(req, res);
-    });
-    
-    //Consultar Detalle del Pedido
-    app.post('/api/PedidosFarmacias/consultarDetallePedido', function(req, res) {
-        c_pedidos_farmacias.consultarDetallePedido(req, res);
-    });  
-    
-    //Actualizar Cantidades Detalle Pedido Final
-    app.post('/api/PedidosFarmacias/actualizarCantidadesDetallePedido', function(req, res) {
-        c_pedidos_farmacias.actualizarCantidadesDetallePedido(req, res);
-    });
-    
-    //Eliminar Producto Detalle Pedido Final
-    app.post('/api/PedidosFarmacias/eliminarProductoDetallePedido', function(req, res) {
-        c_pedidos_farmacias.eliminarProductoDetallePedido(req, res);
-    });
-    
-    // Pedido Farmacia por archivo plano
-    app.post('/api/PedidosFarmacias/pedidoFarmaciaArchivoPlano', function(req, res) {
-        c_pedidos_farmacias.pedidoFarmaciaArchivoPlano(req, res);
-    });    
-    
-    app.post('/api/PedidosFarmacias/generarPdfPedido', function(req, res) {
-        c_pedidos_farmacias.generarPdfPedido(req, res);
-    }); 
-    
-    //Actualizar Estado Pedido
-    app.post('/api/PedidosFarmacias/actualizarEstadoActualPedido', function(req, res) {
-        c_pedidos_farmacias.actualizarEstadoActualPedido(req, res);
-    });
-    
-    //Listar Pedidos Temporales Farmacia
-    app.post('/api/PedidosFarmacias/listarPedidosTemporalesFarmacias', function(req, res) {
-        c_pedidos_farmacias.listarPedidosTemporalesFarmacias(req, res);
-    });
-    
-    //Buscar Usuario Bloqueo
-    app.post('/api/PedidosFarmacias/buscarUsuarioBloqueo', function(req, res) {
-        c_pedidos_farmacias.buscarUsuarioBloqueo(req, res);
-    });
-    
-    //consultarProductoEnFarmacia
-    app.post('/api/PedidosFarmacias/consultarProductoEnFarmacia', function(req, res) {
-        c_pedidos_farmacias.consultarProductoEnFarmacia(req, res);
-    });
-    
-    //actualizarEncabezadoPedidoDefinitivo
-    app.post('/api/PedidosFarmacias/actualizarPedido', function(req, res) {
-        c_pedidos_farmacias.actualizarPedido(req, res);
-    });
-    
-    //existeRegistroDetallePedido
-    app.post('/api/PedidosFarmacias/existeRegistroDetallePedido', function(req, res) {
-        c_pedidos_farmacias.existeRegistroDetallePedido(req, res);
-    });
-    
-    //insertarProductoDetallePedidoFarmacia
-    app.post('/api/PedidosFarmacias/insertarProductoDetallePedidoFarmacia', function(req, res) {
-        c_pedidos_farmacias.insertarProductoDetallePedidoFarmacia(req, res);
-    });
-    
-    app.post('/api/PedidosFarmacias/anularPendienteProducto', function(req, res) {
-        c_pedidos_farmacias.anularPendienteProducto(req, res);
+    // modificar Autorizaciones Compras
+    app.post('/api/OrdenesCompra/modificarAutorizacionCompras', function(req, res) {
+        c_ordenes_compra.modificarAutorizacionCompras(req, res);
     });
 
-    // ================= GET =======================
+    // Insertar tmp movimiento bodega
+    app.post('/api/OrdenesCompra/ingresarBodegaMovimientoTmpOrden', function(req, res) {
+        c_ordenes_compra.ingresarBodegaMovimientoTmpOrden(req, res);
+    });
+    
+    app.post('/api/OrdenesCompra/guardarBodega', function(req, res) {
+        c_ordenes_compra.guardarBodega(req, res);
+    });
 
+    app.post('/api/OrdenesCompra/subirArchivoOrdenes', function(req, res) {
+        c_ordenes_compra.subirArchivoOrdenes(req, res);
+    });
 };

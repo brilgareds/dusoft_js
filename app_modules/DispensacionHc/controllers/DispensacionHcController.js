@@ -14,14 +14,8 @@ var DispensacionHc = function(m_dispensacion_hc) {
  */
 DispensacionHc.prototype.listarFormulas = function(req, res){
    
-    console.log("******************DispensacionHc.prototype.listarFormulas *********************");
-    console.log("******************DispensacionHc.prototype.listarFormulas *********************");
-    console.log("******************DispensacionHc.prototype.listarFormulas *********************");
-    
     var that = this;
     var args = req.body.data;
-   
-   console.log("args ", args)
    
    if (args.listar_empresas === undefined || args.listar_empresas.paginaActual === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_empresas: []}));
@@ -81,14 +75,14 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
  *              
  */
 DispensacionHc.prototype.listarTipoDocumento = function(req, res){
-        console.log("AQOI LISTA TIPO DOCUMENTOS")
+       
     var that = this;
     var args = req.body.data;
 
    
    
    G.Q.ninvoke(that.m_dispensacion_hc,'listarTipoDocumento').then(function(resultado){
-     console.log("resultado --- ", resultado)
+    
        res.send(G.utils.r(req.url, 'Consulta tipo documento', 200, {listar_tipo_documento:resultado}));
         
    }).fail(function(err){      
@@ -106,11 +100,6 @@ DispensacionHc.prototype.listarTipoDocumento = function(req, res){
  */
 DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
       
-      console.log("***********************DispensacionHc.prototype.listarFormulasPendientes ***************************");
-      console.log("***********************DispensacionHc.prototype.listarFormulasPendientes ***************************");
-      console.log("***********************DispensacionHc.prototype.listarFormulasPendientes ***************************");
-      console.log("***********************DispensacionHc.prototype.listarFormulasPendientes ***************************");
-      
     var that = this;
     var args = req.body.data;
 
@@ -124,6 +113,83 @@ DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 24/05/2016
+ * +Descripcion Controlador encargado de consultar la lista de los medicamentos
+ *              formulados
+ *              
+ */
+DispensacionHc.prototype.listarLotesMedicamentosFormulados = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;
+   
+   if (args.listar_lotes_medicamentos_formulados === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_empresas: []}));
+        return;
+    }
+   
+    
+    
+    if (args.listar_medicamentos_formulados.evolucionId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {pedidos_clientes: []}));
+        return;
+    }
+
+   var parametros = {evolucionId:args.listar_lotes_medicamentos_formulados.evolucionId};
+   
+   
+   G.Q.ninvoke(that.m_dispensacion_hc,'listarLotesMedicamentosFormulados',parametros).then(function(resultado){
+     
+       res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_lotes_medicamentos_formulados:resultado}));
+        
+   }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 24/05/2016
+ * +Descripcion Controlador encargado de consultar la lista de los medicamentos
+ *              formulados
+ *              
+ */
+DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;
+   
+   if (args.listar_medicamentos_formulados === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_empresas: []}));
+        return;
+    }
+   
+    
+    
+    if (args.listar_medicamentos_formulados.evolucionId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {pedidos_clientes: []}));
+        return;
+    }
+
+   var parametros = {evolucionId:args.listar_medicamentos_formulados.evolucionId};
+   
+   
+   G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosFormulados',parametros).then(function(resultado){
+     
+       res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado}));
+        
+   }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
 DispensacionHc.$inject = ["m_dispensacion_hc"];
 
 module.exports = DispensacionHc;

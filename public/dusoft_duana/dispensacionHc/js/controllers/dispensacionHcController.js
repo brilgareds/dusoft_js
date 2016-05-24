@@ -2,9 +2,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
     controllers.controller('dispensacionHcController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-                'EmpresaDispensacionHc', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion','AprobacionDespacho',
-                "$timeout", "$filter","localStorageService","$state",
-                "dispensacionHcService","FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosHc",
+                'EmpresaDispensacionHc', 
+                'CentroUtilidadInduccion', 
+                'BodegaInduccion', 
+                'ProductoInduccion',
+                'AprobacionDespacho',
+                "$timeout", 
+                "$filter",
+                "localStorageService",
+                "$state",
+                "dispensacionHcService",
+                "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
                         EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
                         $timeout, $filter,localStorageService,$state,dispensacionHcService,
@@ -20,8 +28,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     termino_busqueda_proveedores: "",
                     fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
                     fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
-                    prefijo: "",
-                    numero: "",
+                    afiliados:[],
                     items:0,
                     empresaSeleccionada: '',
                     termino_busqueda:'',
@@ -145,110 +152,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 };
 
-            /*      $scope.filterOptions = {
-                        filterText: "",
-                        useExternalFilter: true
-                    };
-                 $scope.totalServerItems = 0;
-                 $scope.pagingOptions = {
-                    pageSizes: [5, 10, 20],
-                    pageSize: 5,
-                    currentPage: 1
-                 };
-                
-                   $scope.setPagingData = function(data, page, pageSize){
-                        
-                        console.log("data ", data)
-                       
-                        var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
-                        // console.log("pagedData ",pagedData )
-                      
-                        $scope.myData = pagedData;
-                        $scope.totalServerItems = data.length;
-                        if (!$scope.$$phase) {
-                            $scope.$apply();
-                        }
-                    };
-                   $scope.getPagedDataAsync = function (pageSize, page, searchText) {
-                        var obj = {                   
-                        session: $scope.session,
-                        data: {
-                           listar_empresas: {
-                                filtro:$scope.root.filtro,
-                                terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
-                                empresaId:$scope.root.empresaSeleccionada,
-                                fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                                fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                                paginaActual:$scope.paginaactual,
-                                estadoFormula : $scope.root.estadoFormula
-                           }
-                       }    
-                    };
-                        setTimeout(function () {
-                            var data;
-                            if (searchText) {
-                                var ft = searchText.toLowerCase();
-                               // $http.get('largeLoad.json').success(function (largeLoad) {		
-                                    /*data = largeLoad.filter(function(item) {
-                                        return JSON.stringify(item).toLowerCase().indexOf(ft) != -1;
-                                    });
-                                  dispensacionHcService.listarFormulas(obj, function(result){
-                            
-                                        if(result.status === 200) {       
-                                           data = result.obj.listar_formulas.filter(function(item) {
-                                                return JSON.stringify(item).toLowerCase().indexOf(ft) != -1;
-                                            });
-                                            $scope.setPagingData(data,page,pageSize);
-                                        }
-                                 });
-                                    
-                               // });            
-                            } else {
-                                 dispensacionHcService.listarFormulas(obj, function(result){
-                            
-                                        if(result.status === 200) {       
-                                          $scope.setPagingData(result.obj.listar_formulas,page,pageSize);
-
-                                        }
-                                 });
-                               // $http.get('largeLoad.json').success(function (largeLoad) {
-                                   // $scope.setPagingData(largeLoad,page,pageSize);
-                                //});
-                            }
-                        }, 100);
-                    };
-                    
-                   
-	
-    $scope.gridOptions = {
-        data: 'myData',
-        enablePaging: true,
-        showFooter: true,
-        totalServerItems:'totalServerItems',
-        pagingOptions: $scope.pagingOptions,
-        filterOptions: $scope.filterOptions
-    };
-        $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
-                     
-                                $scope.$watch('pagingOptions', function (newVal, oldVal) {
-                                  if (newVal !== oldVal && newVal.currentPage !== oldVal.currentPage) {
-                                    $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText);
-                                       }
-                                  }, true);
-                                  $scope.$watch('filterOptions', function (newVal, oldVal) {
-                                      if (newVal !== oldVal) {
-                                        $scope.getPagedDataAsync($scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.filterOptions.filterText);
-                                      }
-                        }, true);          
-                 
-                */
-
                 /**
                  * @author Cristian Ardila
                  * @fecha 16/05/2016
                  * +Descripcion Metodo encargado de invocar el servicio que
                  *              listara todas las formulas medicas
                  */
+                
                 that.listarFormulasMedicas = function(){
                     
                      var obj = {                   
@@ -267,67 +177,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
                     
                     dispensacionHcService.listarFormulas(obj, function(data){
-                            console.log("data ", data)
+                      
                            if(data.status === 200) {       
                                $scope.root.items = data.obj.listar_formulas.length;                              
-                               that.renderListarFormulasMedicas(data.obj);
-                                
+                               $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj);
                            }else{
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                            }
+                          
                     });
                 };
-                 /**
-                  * +Descripcion Metodo encargado de mapear la formula
-                  */
-                 that.renderListarFormulasMedicas = function(formulas){
-                     console.log("*******************Listar formulas medicas*********************");
-                   //  console.log("formulas ", formulas)
-                      $scope.afiliados = [];
-                      
-                          for (var i in formulas.listar_formulas) {
-                            var _formula = formulas.listar_formulas[i];
-                            
-                          //  console.log("_formula _formula ", _formula.sw_estado)
-                            //Se crea el objeto afiliados
-                            var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
-                            
-                            var plan = PlanesHc.get(_formula.plan_id,_formula.plan_descripcion);
-                            var planesAtencion  = PlanesRangosHc.get('','');
-                                planesAtencion.agregarPlanes(plan);
-                               
-                            //Se crea el objeto paciente
-                            var paciente = PacienteHc.get(_formula.tipo_id_paciente,
-                                                        _formula.paciente_id,_formula.apellidos,_formula.nombres)
-                                paciente.setMedico(_formula.nombre);
-                                paciente.setTipoBloqueoId(_formula.tipo_bloqueo_id);  
-                                paciente.setBloqueo(_formula.bloqueo);  
-                              
-                            //Se crea el objeto formula
-                            var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
-                                                      _formula.transcripcion_medica,
-                                                     _formula.descripcion_tipo_formula,
-                                                   _formula.fecha_registro,
-                                                  _formula.fecha_finalizacion,
-                                                _formula.fecha_formulacion);
-                                                
-                                formula.setEstado( _formula.sw_estado)                      
-                              
-                         //El paciente tiene su formula
-                         paciente.agregarFormulas(formula);
-                         
-                         //debe ser afiliado el paciente
-                         afiliados.agregarPacientes(paciente);
-                         afiliados.agregarPlanAtencion(planesAtencion);
-                         
-                         //Se almacenan los afiliados
-                         $scope.afiliados.push(afiliados);
-                        }
-                  
-                 };
-                 
-                 
-                 
+                
                  
                   /**
                  * @author Cristian Ardila
@@ -336,7 +196,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  *              listara todas las formulas medicas pendientes
                  */
                 that.listarFormulasMedicasPendientes = function(){
-                   
+                    $scope.afiliadosFormulasPendientes;
                    var obj = {
                         
                        session: $scope.session,
@@ -353,7 +213,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             
                            if(data.status === 200) {       
                                $scope.root.items = data.obj.listar_formulas_pendientes.length;                              
-                               that.renderListarFormulasMedicasPendientes(data.obj);
+                              $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicasPendientes(data.obj);
                                 
                            }else{
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -361,48 +221,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     });
                 };
                 
-                 /**
-                  * +Descripcion Metodo encargado de mapear las formula pendientes
-                  */
-                 that.renderListarFormulasMedicasPendientes = function(formulas){
-
-                      $scope.afiliadosFormulasPendientes = [];
-                      
-                          for (var i in formulas.listar_formulas_pendientes) {
-                           var _formula = formulas.listar_formulas_pendientes[i];
-                            
-                           //Se crea el objeto afiliados
-                            var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
-                           
-                            //Se crea el objeto paciente
-                            var paciente = PacienteHc.get(_formula.tipo_id_paciente,
-                                                        _formula.paciente_id,_formula.apellidos,_formula.nombres);
-                                paciente.setEdad(_formula.edad);
-                                paciente.setResidenciaDireccion(_formula.residencia_direccion);
-                                paciente.setResidenciaTelefono(_formula.residencia_telefono);
-                                paciente.setSexo(_formula.sexo);
-                           
-                              
-                            //Se crea el objeto formula
-                            var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');
-                                                      
-                            var Productos  = ProductosHc.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);            
-                                                  
-                                formula.agregarProductos(Productos);                 
-                              
-                         //El paciente tiene su formula
-                         paciente.agregarFormulas(formula);
-                         
-                         //debe ser afiliado el paciente
-                         afiliados.agregarPacientes(paciente);
-                         /*afiliados.agregarPlanAtencion(planesAtencion);*/
-                         
-                         //Se almacenan los afiliados
-                         $scope.afiliadosFormulasPendientes.push(afiliados);
-                        }
-                        
-                //   console.log("$scope.afiliadosFormulasPendientes ", JSON.stringify($scope.afiliadosFormulasPendientes))     
-                 };
+                
                 
                
                 /**
@@ -411,105 +230,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  * +Descripcion Metodo encargado de invocar el servicio que
                  *              listara todos los despachos aprobados por parte
                  *              de la persona de seguridad
-                 */
-              /*  that.listarDespachosAprobados = function(){
-                   
-                    var obj = {
-                        
-                       session: $scope.session,
-                       prefijo:$scope.root.prefijo,
-                       numero: $scope.root.numero,//$scope.root.numero,
-                       empresa_id:$scope.root.empresaSeleccionada,
-                       fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                       fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                       paginaactual:$scope.paginaactual,
-                       registroUnico: false
-                        
-                    };
-                   
-                    dispensacionHcService.listarDespachosAprobados(obj,function(data){
-                           if (data.status === 200) {
-                               
-                                $scope.root.items = data.obj.validacionDespachos.length;
-                                
-                                that.renderListarDespachosAprobados(data);
-                                
-                           }else{
-                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                           }
-                     });
-                  };
-                   
-                
-                   
-                  that.renderListarDespachosAprobados = function(data){
-                        
-                        $scope.documentosAprobados = [];
-                          for (var i in data.obj.validacionDespachos) {
-                            var _documento = data.obj.validacionDespachos[i];
-                            var documento = AprobacionDespacho.get(1, _documento.prefijo, _documento.numero, _documento.fecha_registro);
-                            documento.setCantidadCajas(_documento.cantidad_cajas);
-                            documento.setCantidadNeveras(_documento.cantidad_neveras);
-                            documento.setCantidadNeveras(_documento.cantidad_neveras);
-                            documento.setObservacion(_documento.observacion);
-                            documento.setRazonSocial(_documento.razon_social);
-                            documento.setEmpresaId(_documento.empresa_id);
-                            documento.setUsuario(_documento.nombre);
-                           $scope.documentosAprobados.push(documento);
-                        }
-                       
-                    };*/
-                    
-                     /**
-                      * @author Cristian Ardila
-                      * @fecha 04/02/2016
-                      * +Descripcion Metodo invocado desde los texfield de EFC y numero
-                      * @param {type} event
-                      */
-                    $scope.cargarListarDespachosAprobados = function(event){
-                       
-                        if($scope.root.filtro.nombre === "Prefijo"){
-                           $scope.root.numero = ""; 
-                           $scope.root.prefijo = $scope.root.termino_busqueda;
-                        }
-                        
-                        if($scope.root.filtro.nombre === "Numero"){
-                           $scope.root.prefijo = "";
-                           $scope.root.numero = $scope.root.termino_busqueda;
-                        }
-                             that.listarDespachosAprobados()
-                      
-                     };
-                   
-                     
-                     $scope.buscarFormulas = function(event){
-                         
-                        /* 
-                              if($scope.root.filtro.nombre === "Prefijo"){
-                                 $scope.root.numero = ""; 
-                                 $scope.root.prefijo = $scope.root.termino_busqueda;
-                               }
-                        
-                              if($scope.root.filtro.nombre === "Numero"){
-                                 $scope.root.prefijo = "";
-                                 $scope.root.numero = $scope.root.termino_busqueda;
-                               }
-                             that.listarDespachosAprobados()
-                         }*/
-                        if (event.which === 13) {  
-                            
-                             
-                             //console.log("$scope.root.estadoFormula ", $scope.root.estadoFormula)
-                              //if($scope.root.estadoFormula === '0'){
-                                  that.listarFormulasMedicas();
-                              //}
-                              
-                              /* if($scope.root.estadoFormula === '1'){
-                                  that.listarFormulasMedicasPendientes();
-                              }
-                            */
-                        }
-                     };
+                 */ 
+                $scope.buscarFormulas = function(event){
+
+                   if (event.which === 13) {  
+
+                         //if($scope.root.estadoFormula === '0'){
+                             that.listarFormulasMedicas();
+                         //}
+
+                         /* if($scope.root.estadoFormula === '1'){
+                             that.listarFormulasMedicasPendientes();
+                         }
+                       */
+                   }
+                };
                      
                     /*
                      * funcion ejecuta listarCentroUtilidad
@@ -554,10 +289,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.dispensacionFormula = function(dispensar) {
                           
-                          console.log("dispensar ", dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId())
+                         
                           localStorageService.add("dispensarFormulaDetalle",{
                               evolucion_id: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),
-                              formula:dispensar
+                              formula: dispensar
                           });
                              
                           $state.go('DispensarFormulaDetalle');
@@ -571,13 +306,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.dispensacionFormulaPendientes = function(dispensar) {
                           console.log("dispensar ", dispensar) 
-                        //  console.log("dispensar ", dispensar[0].mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId())
-                         /* localStorageService.add("validacionEgresosDetalle", 
-                            {empresa: documentoAprobado.getEmpresaId(),
-                             prefijo: documentoAprobado.getPrefijo(),
-                             numero:  documentoAprobado.getNumero(),
-                             estado:  1});*/
-                         // $state.go('DispensarFormulaPendientes');
+                       
                      };
                      
                     /*
@@ -597,7 +326,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       *              por parte del personal de seguridad
                       */
                      $scope.listaFormulas = {
-                        data: 'afiliados',
+                        data: 'root.afiliados',
                          enableColumnResize: true,
                          enableRowSelection: false,
                          enableCellSelection: true,
@@ -628,12 +357,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                              </ul>\
                                        </div>'
                              },
-                            /*{field: 'detalle', width: "6%",
-                                displayName: "Opciones",
-                                cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="dispensacionFormula(row.entity)"><span class="glyphicon glyphicon-zoom-in">Dispensar</span></button></div>'
-
-                            }*/
+                            
                         ]
                     };
 
@@ -742,7 +466,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    
                                  });
                                  that.listarEmpresas(function(estado) {
-                                 //   that.listarDespachosAprobados();
+                                
                                    // that.listarFormulasMedicas();
                                    // that.listarFormulasMedicasPendientes();
                                 });                                  

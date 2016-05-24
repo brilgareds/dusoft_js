@@ -326,9 +326,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              */
             if ($state.is("DispensarFormulaDetalle") === true) {
                
-               var documento = localStorageService.get("dispensarFormulaDetalle");
-               
-               console.log("documento ", documento)
+               var detalleFormula = localStorageService.get("dispensarFormulaDetalle");
+               //var obj = JSON.parse(detalleFormula.formula);
+               //console.log("detalleFormula ", detalleFormula.formula.pacientes[0].formulasHc[0]);
+               console.log(" ---- obj ---- ", detalleFormula);
+              //$scope.detalleFormulaDispensar = detalleFormula.formula.pacientes[0].formulasHc[0]
+              // $scope.detalleFormulaDispensar = detalleFormula.formula.mostrarPacientes()[0].mostrarFormulas();
             /*   $scope.datos_view.estadoRegistro = 1;
                if (documento) {
               

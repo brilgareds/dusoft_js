@@ -23,10 +23,19 @@ module.exports = function(app, di_container) {
     
      // Listar las formulas medicas con pendientes
     app.post("/api/DispensacionHc/listarFormulasPendientes", function(req, res){
-        console.log("ÑÑÑÑLLLLLEGO AL ROUTE")
         c_dispensacion_hc.listarFormulasPendientes(req, res);
     });
-
+    
+    // Listar los medicamentos formulados
+    app.post("/api/DispensacionHc/listarMedicamentosFormulados", function(req, res){
+        c_dispensacion_hc.listarMedicamentosFormulados(req, res);
+    });
+    
+     // Listar los lotes de los medicamentos formulados
+    app.post("/api/DispensacionHc/listarLotesMedicamentosFormulados", function(req, res){
+        c_dispensacion_hc.listarLotesMedicamentosFormulados(req, res);
+    });
+    
     
     
 };

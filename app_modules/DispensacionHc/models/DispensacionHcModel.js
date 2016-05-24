@@ -13,7 +13,7 @@ var DispensacionHcModel = function() {
  */
 DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     
-   /**Campos exclusivos para cuando se envie la peticion 
+ /**Campos exclusivos para cuando se envie la peticion 
    *solo para consultar las formulas pendientes
    **/
    var pendienteCampoEstado = "";
@@ -51,12 +51,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
       parametros["4"]= obj.terminoBusqueda;
      
    }
-   
-  /* console.log("obj parametros ==== ", obj);
-   console.log("parametros ==== ", parametros);
-   console.log("sqlCondicion ==== ", sqlCondicion);
-   console.log("Termino de busqueda ==== ", obj.terminoBusqueda);*/
-   
+    
     var sql = "* FROM (\
                         SELECT DISTINCT\
                         '0' AS tipo_formula,\
@@ -106,34 +101,18 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         inner join planes as i ON (h.plan_id=i.plan_id)\
                         "+pendienteTabla+" WHERE a.codigo_medicamento IS NOT NULL \
                     ) AS a WHERE a.fecha_registro between :1 and :2 " + sqlCondicion + " " + pendienteCondicion; 
-                         
-  
-
-   /*console.log(" -------------------------------------- ");
-   console.log(" sql ", sql);
-   console.log(" -------------------------------------- ");*/
-     
+               
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){
-        console.log("resultado ==== ", resultado);
+        
         callback(false, resultado);
     }).catch(function(err){
-        console.log("err ", err)
+       
         callback(err);
        
     });
-
- /* G.knex.raw(sql,parametros).then(function(resultado){  
-    
-      callback(false, resultado.rows)
-      console.log("resultado ", resultado.rows)
-  }).catch(function(err){     
-        console.log("err ", err)
-      callback(err)
-  });*/
-          
-    
+ 
 };
 
 
@@ -154,7 +133,7 @@ DispensacionHcModel.prototype.listarTipoDocumento = function(callback){
     
       callback(false, resultado.rows)
   }).catch(function(err){     
-        console.log("err ", err)
+        
       callback(err)
   });
           
@@ -207,6 +186,109 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
           
     
 };
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de listar los lotes de los medicamentos formulados
+ * @controller DispensacionHc.prototype.listarMedicamentosFormulados
+ */
+DispensacionHcModel.prototype.listarLotesMedicamentosFormulados = function(obj,callback){
+
+      var parametros = {1: obj.evolucionId};
+       
+      var sql = "SELECT  hc.codigo_medicamento as codigo_producto,\
+                   ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30)  as numero_entregas,\
+               (hc.fecha_finalizacion - hc.fecha_registro)  as diferencia_final_inicio,\
+                hc.fecha_registro,\
+                hc.fecha_finalizacion,\
+                hc.dosis,\
+                hc.unidad_dosificacion,\
+                hc.frecuencia,\
+                hc.tiempo_total,\
+                hc.perioricidad_entrega,\
+                hc.descripcion,\
+                hc.tiempo_perioricidad_entrega,\
+                hc.unidad_perioricidad_entrega,\
+                hc.cantidad,\
+                a.cantidad as  cantidad_entrega,\
+                hc.fecha_modificacion,\
+                pric.descripcion as principio_activo,\
+                pric.cod_principio_activo,\
+                fc_descripcion_producto_alterno(hc.codigo_medicamento) as descripcion_prod,\
+                hc.sw_autorizado,\
+                hc.tipo_id_paciente,\
+                hc.paciente_id,\
+                TO_CHAR(hc.fecha_formulacion,'YYYY-MM-DD') AS fecha_formulacion,\
+                refrendar,\
+                hc.numero_formula\
+                FROM   hc_formulacion_antecedentes hc\
+                LEFT JOIN  medicamentos med ON(hc.codigo_medicamento=med.codigo_medicamento)\
+                LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
+                LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)\
+                JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
+                WHERE    hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";
+  
+  
+  G.knex.raw(sql,parametros).then(function(resultado){  
+     console.log("OK lotes medicamentos formulados", resultado)
+      callback(false, resultado.rows)
+  }).catch(function(err){     
+        console.log("err lotes medicamentos formulados", err)
+      callback(err)
+  });
+          
+    
+};
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de listar los productos formulados
+ * @controller DispensacionHc.prototype.listarMedicamentosFormulados
+ */
+DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callback){
+
+      var parametros = {1: obj.evolucionId};
+       
+      var sql = "SELECT  hc.codigo_medicamento,\
+                hc.fecha_finalizacion,\
+                hc.dosis,\
+                hc.unidad_dosificacion,\
+                hc.frecuencia,\
+                hc.tiempo_total,\
+                hc.perioricidad_entrega,\
+                hc.descripcion,\
+                hc.tiempo_perioricidad_entrega,\
+                hc.unidad_perioricidad_entrega,\
+                hc.cantidad,\
+                a.cantidad as cantidad_entrega,\
+                hc.fecha_modificacion,\
+                pric.descripcion as principio_activo,\
+                fc_descripcion_producto_alterno(hc.codigo_medicamento) as descripcion_prod\
+                FROM hc_formulacion_antecedentes  hc LEFT JOIN medicamentos med ON (hc.codigo_medicamento=med.codigo_medicamento)\
+                LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
+                INNER JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
+                WHERE hc.evolucion_id =:1 ";
+  
+  
+  G.knex.raw(sql,parametros).then(function(resultado){  
+     console.log("OK medicamentos formulados", resultado)
+      callback(false, resultado.rows)
+  }).catch(function(err){     
+        console.log("err medicamentos formulados", err)
+      callback(err)
+  });
+          
+    
+};
+
+
+
 //DispensacionHcModel.$inject = ["m_productos"];
 
 

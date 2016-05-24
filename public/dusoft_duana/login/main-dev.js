@@ -17,7 +17,8 @@ requirejs.config({
         treemenu:"../includes/myTree",
         tree:"../../../../javascripts/jstree",
         loader:"../includes/loader/loader",
-        storage:"../../javascripts/angular/storage"
+        storage:"../../javascripts/angular/storage",
+        httpinterceptor:"../includes/http/HttpInterceptor"
     },
     shim: {
         "angular": {

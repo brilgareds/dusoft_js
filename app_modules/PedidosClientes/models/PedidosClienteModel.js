@@ -228,12 +228,12 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
  * @param {type} callback
  * @returns {void}
  */
-PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback){
-    var sql = "UPDATE ventas_ordenes_pedidos_tmp  set estado = '0'";  
+PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback) {
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp  set estado = '0'";
 
-    G.knex.raw(sql).then(function(resultado){
+    G.knex.raw(sql).then(function(resultado) {
         callback(false, resultado);
-    }).catch(function(err){
+    }). catch (function(err) {
         callback(err);
     });
 };
@@ -244,15 +244,20 @@ PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback){
  * @param {type} callback
  * @returns {void}
  */
-PedidosClienteModel.prototype.borrarReservas = function(callback){
+PedidosClienteModel.prototype.borrarReservas = function(callback) {
     var sql = "UPDATE ventas_ordenes_pedidos_d SET cantidad_despachada = numero_unidades WHERE pedido_cliente_id IN(\
-                    SELECT a.pedido_cliente_id  FROM ventas_ordenes_pedidos AS a\
-                    WHERE date_part('month', age(now()::timestamp, a.fecha_registro::timestamp) ) > 0\
-               ) and cantidad_despachada < numero_unidades";
-    
-    G.knex.raw(sql).then(function(resultado){
+                SELECT a.pedido_cliente_id FROM ventas_ordenes_pedidos AS a\
+                  inner join (\
+                  	select  EXTRACT(DAY FROM MAX(now())-MIN(b.fecha_registro)) as dias, b.pedido_cliente_id, b.empresa_id\
+                        from ventas_ordenes_pedidos as b\
+                        GROUP BY 2,3\
+                  ) as t on t.pedido_cliente_id = a.pedido_cliente_id  and t.empresa_id = a.empresa_id\
+                  WHERE t.dias  >= 30\
+          ) and cantidad_despachada < numero_unidades";
+
+    G.knex.raw(sql).then(function(resultado) {
         callback(false, resultado);
-    }).catch(function(err){
+    }). catch (function(err) {
         callback(err);
     });
 };
@@ -2021,22 +2026,37 @@ PedidosClienteModel.prototype.modificarEstadoCotizacion = function(cotizacion, c
 PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
     var that = this;
 
-    var sql = "UPDATE ventas_ordenes_pedidos_d SET porc_iva= :1, numero_unidades = :2, valor_unitario = :3, usuario_id = :4, fecha_registro = :5 \
+    var cantidadDespachar;
+    var campoDespacho = "";
+    if (pedido.estadoSolicitud == '8') {
+        cantidadDespachar = producto.cantidadPendienteDespachar;
+        campoDespacho = "cantidad_despachada = '0' , numero_unidades = :2,";
+
+
+    } else {
+        cantidadDespachar = producto.cantidad_solicitada;
+        campoDespacho = "numero_unidades";
+    }
+
+    var sql = "UPDATE ventas_ordenes_pedidos_d SET porc_iva= :1," + campoDespacho + " valor_unitario = :3, usuario_id = :4, fecha_registro = :5 \
                WHERE  pedido_cliente_id = :6 AND codigo_producto = :7\
                 returning( select numero_unidades  from ventas_ordenes_pedidos_d where\
                             pedido_cliente_id = :6 and codigo_producto = :7 \
                 ) as cantidad_solicitada_anterior";
-
-    G.knex.raw(sql, {
-        1: producto.iva, 2: producto.cantidad_solicitada, 3: producto.precio_venta,
+    var parametros = {
+        1: producto.iva, 2: cantidadDespachar, 3: producto.precio_venta,
         4: pedido.usuario_id, 5: 'NOW()', 6: pedido.numero_pedido, 7: producto.codigo_producto
-    }
-    ).then(function(resultado) {
+    };
+
+
+
+    G.knex.raw(sql, parametros
+            ).then(function(resultado) {
 
         var obj = {
             usuarioId: pedido.usuario_id, accion: '0', tipoPedido: '0', numeroPedido: pedido.numero_pedido,
             empresaId: pedido.empresa_id, codigoProducto: producto.codigo_producto,
-            cantidadSolicitada: resultado.rows[0]['cantidad_solicitada_anterior'], cantidadActual: producto.cantidad_solicitada
+            cantidadSolicitada: resultado.rows[0]['cantidad_solicitada_anterior'], cantidadActual: cantidadDespachar
         };
 
         return G.Q.ninvoke(that.m_pedidos_logs, "guardarLog", obj);
@@ -2044,6 +2064,7 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
     }).then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+
         callback(err);
     }).done();
 

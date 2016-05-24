@@ -33,7 +33,8 @@ define([
     "models/Modulo/Empresa_Modulo",
     "models/Modulo/EmpresaParametrizacion",
     "services/ParametrizacionService",
-    "dragndropfile"
+    "dragndropfile",
+    "webNotification"
 ], function(angular) {
     /* App Module and its dependencies */
 
@@ -48,7 +49,8 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'flow'
+        'flow',
+        'angular-web-notification'
     ]);
 
     Parametrizacion.urlRouterProvider;

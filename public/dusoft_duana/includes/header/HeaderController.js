@@ -2,7 +2,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
     "includes/header/lockscreen", "includes/content/rutamodulo",
     "includes/classes/Empresa", "includes/classes/Modulo",
     "includes/classes/Rol", "includes/classes/OpcionModulo",
-    "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo"], function(angular, controllers) {
+    "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo",
+    "includes/components/notificaciones/NotificacionesController"], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
@@ -306,7 +307,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                 modulo.parent,
                                 modulo.nombre,
                                 modulo.state,
-                                "usuario_modulo_"
+                                "usuario_modulo_",
+                                modulo.alias
                         );
 
 
@@ -353,7 +355,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                 icon: modulo.icon,
                                 opciones: _modulo.getOpciones(true),
                                 variables:_modulo.getVariables(true),
-                                esPadre:_modulo.esModuloPadre()
+                                esPadre:_modulo.esModuloPadre(),
+                                alias:_modulo.getAlias()
                             };
                         }
                         
@@ -511,6 +514,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                 socket.emit("onActualizarSesion", socket_session);
             });
+            
 
             self.traerUsuarioPorId(obj_session.usuario_id, function() {
                 var empresa_id = obj_session.empresa_id;

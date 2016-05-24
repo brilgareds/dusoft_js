@@ -25,6 +25,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             var that = this;
             var listaTerceros = [];
+
+            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -33,7 +35,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             that.init = function(callback) {
                 $scope.root = {};
                 $scope.listarPedido = [];
-                $scope.tipoPedido = '0';
+                $scope.tipoPedido = 0;
                 $scope.Empresa = Empresa.get();
                 $scope.EmpresasProductos = [];
                 $scope.paginas = 0;
@@ -44,13 +46,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.listaEmpresas = [];
                 $scope.empresa_seleccion = '';
                 $scope.termino = "";
+                $scope.empresa_seleccion = $scope.seleccion.codigo;
+                $scope.buscarProductosBloqueados();
                 callback();
 
             };
-
-
-
-            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
 
             /**
              * +Descripcion: funcion que realiza la busqueda de los pedidos
@@ -82,24 +82,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
             };
 
-            that.traerPedidos = function() {
-                for (var i = 1; i < 11; i++) {
-                    var datos = {};
-                    datos.numero_pedido = i;
-                    var pedido = Pedido.get();
-                    pedido.setDatos(datos);
-                    //   $scope.Empresa.agregarPedido(pedido);//estaba bien
-                }
-            };
-
-            that.prueba = function() {
-
-                $scope.empresa_seleccion = '03';
-                $scope.tipo_pedido = '0';
-                $scope.buscarProductosBloqueados();
-            };
-
-
             /**
              * @author Andres M. Gonzalez
              * @fecha 04/02/2016
@@ -126,9 +108,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
 
-
-
-
+            /**
+             * +Descripcion:renderizar la consulta al modelo
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {objeto}
+             */
             that.renderProductos = function(data, paginando) {
                 console.log("AAAAAA1>>>>", data.obj.listarProductosBloqueados);
                 console.log("AAAAAA2>>>>", paginando);
@@ -150,15 +135,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 for (var i in data.obj.listarProductosBloqueados) {
 
                     var objt = data.obj.listarProductosBloqueados[i];
-                    console.log("->>>>>>", objt);
-//                    var autorizacion = Autorizacion.get(objt.autorizaciones_productos_pedidos_id);
-//                    autorizacion.setFechaVerificacion(objt.fecha_verificacion);
-//                    autorizacion.setResponsable(objt.usuario_verifica);
-//                    autorizacion.setEstado(objt.estado);
-//                    autorizacion.setNombreEstado(objt.estado_verificado);
-//
-//                    var producto = Producto.get(objt.codigo_producto, objt.descripcion_producto, objt.numero_unidades);
-//                    producto.setAutorizacion(autorizacion);
 
                     var pedidoAutorizacion = PedidoAutorizacion.get();
                     var datos = {};
@@ -179,6 +155,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 console.log("TerceroAutorizacion->>>>>>", $scope.listarPedido);
 
             };
+
             /**
              * +Descripcion: objeto ng-grid
              * @author Andres M Gonzalez
@@ -195,11 +172,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).getBoolPorAprobar()" class="btn btn-warning btn-xs" >\
                                                     <i class="glyphicon glyphicon-warning-sign"></i>\n\
-                                                        <span>Pendiente</span>\
+                                                        <span> Pendiente </span>\
                                                 </button>\
                                                 <button ng-if="!row.entity.obtenerPedidoPorPosiscion(0).getBoolPorAprobar()" class="btn btn-primary btn-xs" >\
                                                     <i class="glyphicon glyphicon-ok"></i>\
-                                                    <span> Revisado</span>\
+                                                    <span> Revisado </span>\
                                                 </button>\
                                             </div>'
                     },
@@ -216,6 +193,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ]
 
             };
+
             /**
              * +Descripcion: metodo para navegar a la ventana detalle
              * @author Andres M Gonzalez
@@ -227,9 +205,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 localStorageService.add("pedidoCabecera",
                         {
                             numeroPedido: pedido,
+                            tipoPedido: $scope.tipoPedido,
                         });
                 $state.go("AutorizacionesDetalle");
             };
+
             /**
              * +Descripcion: evento de la vista para pasar a la ventana detalle
              * @author Andres M Gonzalez
@@ -242,10 +222,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             that.init(function() {
-
-
             });
-            that.traerPedidos();
-            that.prueba();
+
         }]);
 });

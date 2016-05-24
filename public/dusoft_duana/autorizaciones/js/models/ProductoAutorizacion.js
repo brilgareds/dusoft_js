@@ -31,6 +31,10 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.autorizacion.push(autorizacion);
             };
 
+            ProductoAutorizacion.prototype.obtenerProductoPorPosiscion = function(posicion) {
+                return this.autorizacion[posicion];
+            };
+
             return this;
         }]);
 });

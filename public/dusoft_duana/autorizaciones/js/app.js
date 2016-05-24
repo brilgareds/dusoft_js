@@ -23,6 +23,7 @@ define(["angular",
     "models/ProductoAutorizacion",
     "models/TerceroAutorizacion",
     "controllers/productosPedidos/AutorizacionDetalleController",
+    "controllers/productosPedidos/DetalleVerificacionController",
     "includes/classes/Usuario",
     "socketservice",
     "includes/http/Request",
@@ -86,7 +87,7 @@ define(["angular",
                     text: "Detalle de Verificacion",
                     templateUrl: "views/productosPedidos/listarDetalleVerificacion.html",
                     parent_name: "AutorizacionesProductos",
-                    controller: "AutorizacionDetalleController"
+                    controller: "DetalleVerificacionController"
                 });
 
                 if ($location.path() === "") {

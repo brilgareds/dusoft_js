@@ -7,7 +7,7 @@ module.exports = function(app, di_container) {
         c_Autorizaciones.listarProductosBloqueados(req, res);
     });
 
-    app.post('/api/Autorizaciones/VerificarAutorizacionProductos', function(req, res) {
+    app.post('/api/Autorizaciones/verificarAutorizacionProductos', function(req, res) {
         c_Autorizaciones.verificarAutorizacionProductos(req, res);
     });
 

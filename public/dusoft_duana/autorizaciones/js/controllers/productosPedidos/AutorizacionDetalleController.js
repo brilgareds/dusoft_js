@@ -25,6 +25,7 @@ define(["angular", "js/controllers",
 
             var that = this;
             var filtroPedido = localStorageService.get("pedidoCabecera");
+            var listaTerceros = [];
             $scope.hola = "";
             $scope.Empresa = Empresa.get();
             $scope.pedido = "";
@@ -36,7 +37,7 @@ define(["angular", "js/controllers",
             that.init = function(callback) {
                 $scope.root = {};
                 $scope.listarPedido = [];
-                $scope.tipoPedido = '0';
+                $scope.tipoPedido = filtroPedido.tipoPedido;
                 $scope.EmpresasProductos = [];
                 $scope.paginas = 0;
                 $scope.items = 0;
@@ -84,18 +85,6 @@ define(["angular", "js/controllers",
                 that.denegarPedidos(estado, autorizacionId);
             };
 
-
-            that.traerPedidos = function() {
-                for (var i = 1; i < 11; i++) {
-                    var datos = {};
-                    datos.numero_pedido = i;
-                    var pedido = Pedido.get();
-                    pedido.setDatos(datos);
-                    $scope.Empresa.agregarPedido(pedido);
-                }
-            };
-
-
             /**
              * @author Andres M. Gonzalez
              * @fecha 04/02/2016
@@ -122,9 +111,13 @@ define(["angular", "js/controllers",
                 });
             };
 
-
+            /**
+             * +Descripcion: obtener los datos enviados por el servidor
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {objeto}
+             */
             $scope.verificarAutorizacion = function(objs) {
-                console.log("verificarAutorizacionverificarAutorizacionverificarAutorizacionverificarAutorizacion");
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -141,7 +134,6 @@ define(["angular", "js/controllers",
                         obj,
                         function(data) {
                             if (data.status === 200) {
-                                console.log("GGGGGGGGGGGGGGGGGGGG", data.obj.verificarAutorizacionProductos.length);
                                 if (data.obj.verificarAutorizacionProductos.length > 0) {
                                     $scope.modificarAutorizacion(objs);
                                 } else {
@@ -152,6 +144,12 @@ define(["angular", "js/controllers",
                 );
             };
 
+            /**
+             * +Descripcion: modificar la autorizacion
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {objeto}
+             */
             $scope.modificarAutorizacion = function(objs) {
                 console.log("");
                 var obj = {
@@ -177,6 +175,12 @@ define(["angular", "js/controllers",
                 );
             };
 
+            /**
+             * +Descripcion: insertar la autorizacion
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {objeto}
+             */
             $scope.insertarAutorizacion = function(objs) {
                 console.log("insertarAutorizacion");
                 var obj = {
@@ -204,7 +208,13 @@ define(["angular", "js/controllers",
 
 
 
-            var listaTerceros = [];
+
+            /**
+             * +Descripcion:renderizar la consulta al modelo
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {objeto}
+             */
             that.renderProductos = function(data, paginando) {
                 $scope.items = data.obj.listarProductosBloqueados.length;
 
@@ -224,7 +234,6 @@ define(["angular", "js/controllers",
                 for (var i in data.obj.listarProductosBloqueados) {
 
                     var objt = data.obj.listarProductosBloqueados[i];
-                    console.log("->>>>>>", objt);
                     var autorizacion = Autorizacion.get(objt.autorizaciones_productos_pedidos_id);
                     autorizacion.setFechaVerificacion(objt.fecha_verificacion);
                     autorizacion.setResponsable(objt.usuario_verifica);
@@ -267,14 +276,31 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado_verificado', displayName: 'Estado', width: "10%"},
+                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "10%",
+                        cellTemplate: ' <div class="row">\
+                                                <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==2" class="btn btn-danger btn-xs" >\
+                                                    <i class="glyphicon glyphicon-remove"></i>\n\
+                                                        <span> Denegado</span>\
+                                                </button>\
+                                                <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==1" class="btn btn-primary btn-xs" >\
+                                                    <i class="glyphicon glyphicon-ok"></i>\
+                                                    <span> Aprobado</span>\
+                                                </button>\
+                                                <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0" class="btn btn-warning btn-xs" >\
+                                                    <i class="glyphicon glyphicon-warning-sign"></i>\
+                                                    <span> Pendiente </span>\
+                                                </button>\
+                                            </div>'
+                    },
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].descripcion', displayName: 'Producto', width: "40%"},
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].cantidad', displayName: 'Cantidad', width: "10%"},
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].fechaVerificacion', displayName: 'Fecha', width: "10%"},
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].nombreVerifica', displayName: 'Responsable', width: "20%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Pendiente<span class="caret"></span></button>\
+                                            <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Pendiente <span class="caret"></span></button>\
+                                            <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==1" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Aprobado <span class="caret"></span></button>\
+                                            <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==2" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Denegado <span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="onEstdoPedido(1,row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].autorizacionId)" >Aprobar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="onEstdoPedido(2,row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].autorizacionId)" >Denegar</a></li>\
@@ -283,7 +309,7 @@ define(["angular", "js/controllers",
                     },
                     {displayName: "Detalle", cellClass: "txt-center dropdown-button",
                         cellTemplate: ' <div class="row">\n\
-                                         <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.separado"  ng-click="onAbrirVentana(row.entity)">\n\
+                                         <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0"  ng-click="onAbrirVentana(row.entity.obtenerPedidoPorPosiscion(0).productos[0].codigo_producto)">\n\
                                              <span class="glyphicon glyphicon-search"></span>\
                                          </button>\
                                        </div>'
@@ -310,11 +336,15 @@ define(["angular", "js/controllers",
              * @params pedido : numero del pedido
              * @returns {ventana}
              */
-            that.mostrarDetalle = function(pedido) {
-                localStorageService.add("verificacionCabecera",
+            that.mostrarDetalle = function(codigoProducto) {
+                localStorageService.add("verificacionDetalle",
                         {
-                            pedidoId: pedido,
-                            empresaId: $scope.empresa_seleccion
+                            pedidoId: $scope.pedido,
+                            empresaId: $scope.empresa_seleccion,
+                            codigoProducto: codigoProducto,
+                            tipoPedido: $scope.tipoPedido,
+                            fechaPedido: $scope.fechaSolicitud,
+                            nombreTercero: $scope.nombreTercero
                         });
                 $state.go("DetalleVerificacion");
             };
@@ -326,8 +356,8 @@ define(["angular", "js/controllers",
              * @params pedido : numero del pedido
              * @returns {ventana}
              */
-            $scope.onAbrirVentana = function(pedido) {
-                that.mostrarDetalle(pedido);
+            $scope.onAbrirVentana = function(codigoProducto) {
+                that.mostrarDetalle(codigoProducto);
             };
 
             /**
@@ -341,7 +371,6 @@ define(["angular", "js/controllers",
 
             that.init(function() {
             });
-            //  that.buscarProductosBloqueados(filtroPedido, 1);
 
         }]);
 });

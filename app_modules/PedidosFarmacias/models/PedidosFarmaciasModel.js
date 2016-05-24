@@ -1316,6 +1316,26 @@ PedidosFarmaciasModel.prototype.eliminarTemporalesFarmacias = function(callback)
         });
 };
 
+
+/**
+ * @author Eduar Garcia
+ * +Descripcion: Metodo usado por el crontab de pedidos para borrar reservas de farmacias, siempre y cuando la fecha sea igual o mayor a un mes
+ * @param {type} callback
+ * @returns {void}
+ */
+PedidosFarmaciasModel.prototype.borrarReservas = function(callback){
+    var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle SET cantidad_pendiente = 0 WHERE solicitud_prod_a_bod_ppal_id  IN(\
+                    SELECT a.solicitud_prod_a_bod_ppal_id FROM solicitud_productos_a_bodega_principal AS a\
+                    WHERE date_part('month', age(now()::timestamp, a.fecha_registro::timestamp) ) > 1\
+                )   and cantidad_pendiente > 0";
+    
+    G.knex.raw(sql).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
 PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino,
                                                            pagina, filtro, callback) {
     

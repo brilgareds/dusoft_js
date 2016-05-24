@@ -239,6 +239,25 @@ PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback){
 };
 
 /**
+ * @author Eduar Garcia
+ * +Descripcion: Metodo usado por el crontab de pedidos para borrar reservas de clientes, siempre y cuando la fecha sea igual o mayor a un mes
+ * @param {type} callback
+ * @returns {void}
+ */
+PedidosClienteModel.prototype.borrarReservas = function(callback){
+    var sql = "UPDATE ventas_ordenes_pedidos_d SET cantidad_despachada = numero_unidades WHERE pedido_cliente_id IN(\
+                    SELECT a.pedido_cliente_id  FROM ventas_ordenes_pedidos AS a\
+                    WHERE date_part('month', age(now()::timestamp, a.fecha_registro::timestamp) ) > 1\
+               ) and cantidad_despachada < numero_unidades";
+    
+    G.knex.raw(sql).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
+/**
  * @api {sql} consultar_pedido Consultar Pedido
  * @apiName Consultar Pedido
  * @apiGroup PedidosClientes (sql)

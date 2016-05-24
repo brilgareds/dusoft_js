@@ -1118,9 +1118,16 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
                                 autorizacion.farmacia = farmacia;
                                 autorizacion.empresa_id = empresa_id;
                                 autorizacion.numero_pedido = numero_pedido;
+                                var notific = {
+                                    aliasModulo: 'productos_en_pedidos',
+                                    opcionModulo: "sw_ver_notificaciones",
+                                    titulo: "Autorizaciones Pedidos Farmacia",
+                                    mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
+                                };
 
                                 G.Q.nfcall(__guardarAutorizacion, that, autorizacion)
                                         .then(function(resultado) {
+                                    G.eventEmitter.emit("onRealizarNotificacionWeb", notific);
                                     res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
 
                                 }).fail(function(err) {
@@ -1185,7 +1192,7 @@ PedidosFarmacias.prototype.anularPendienteProducto = function(req, res) {
     G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_pedido', numeroPedido).
             then(function(cabeceraPedido) {
 
-        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null || cabeceraPedido[0].estado_actual_pedido === '8' ) {
+        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null || cabeceraPedido[0].estado_actual_pedido === '8') {
             return G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_detalle_pedido', numeroPedido);
         } else {
             throw {msj: "El estado actual del pedido no permite modificarlo", codigo: 403};
@@ -1517,9 +1524,9 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
     var cantidad_pendiente = args.pedidos_farmacias.cantidad_pendiente;
     var usuario = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido ).then(function(cabecera_pedido){
-        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8' ) {
-            
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
+        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8') {
+
 
             return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_cantidades_detalle_pedido", numero_pedido, codigo_producto, cantidad_solicitada,
                     cantidad_pendiente, usuario, cabecera_pedido[0].empresa_destino);
@@ -1590,7 +1597,7 @@ PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
         } else {
             cabecera_pedido = cabecera_pedido[0];
 
-            if (cabecera_pedido.estado_actual_pedido === '0' || cabecera_pedido.estado_actual_pedido === null || cabecera_pedido.estado_actual_pedido === '8' ) {
+            if (cabecera_pedido.estado_actual_pedido === '0' || cabecera_pedido.estado_actual_pedido === null || cabecera_pedido.estado_actual_pedido === '8') {
                 // se valida si la empresa destino del request es diferente a la almacenada en el pedido
                 if (cabecera_pedido.empresa_id !== farmacia_id || cabecera_pedido.centro_utilidad !== centro_utilidad || cabecera_pedido.bodega_id !== bodega) {
 
@@ -1834,12 +1841,12 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
 
     var usuario_id = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido",numero_pedido).then(function(cabecera_pedido){
-        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8' ) {
-            
-            return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia",numero_pedido, empresa_id, centro_utilidad_id,
-                                                                                                     bodega_id, codigo_producto,cantidad_solic, 
-                                                                                                     tipo_producto_id, usuario_id, cantidad_pendiente );
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
+        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8') {
+
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia", numero_pedido, empresa_id, centro_utilidad_id,
+                    bodega_id, codigo_producto, cantidad_solic,
+                    tipo_producto_id, usuario_id, cantidad_pendiente);
         } else {
             throw {msj: "El estado actual del pedido no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
         }

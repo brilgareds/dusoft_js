@@ -1735,8 +1735,19 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
             autorizacion.empresa_id = cotizacion.empresa_id;
             autorizacion.numero_pedido = that.pedidoGenerado.numero_pedido;
 
+
+
+            var notific = {
+                aliasModulo: 'productos_en_pedidos',
+                opcionModulo: "sw_ver_notificaciones",
+                titulo: "Autorizaciones Pedidos Clintes",
+                mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
+            };
+
             G.Q.nfcall(__guardarAutorizacion, that, autorizacion)
                     .then(function(resultado) {
+
+                G.eventEmitter.emit("onRealizarNotificacionWeb", notific);
                 res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
 
             }).fail(function(err) {

@@ -372,8 +372,7 @@ function __insertarAutorizacionesProductosPedido(params, callback) {
     }). catch (function(err) {
         callback(err);
     });
-}
-;
+};
 
 /*
  * @Author: Andres M. Gonzalez

@@ -1,10 +1,11 @@
 
-var Autorizaciones = function(autorizaciones, pedidos_farmacias, pedidos_clientes, ordenes_compra, m_productos) {
+var Autorizaciones = function(autorizaciones, pedidos_farmacias, pedidos_clientes, ordenes_compra, m_productos,eventos_pedidos_clientes) {
     this.m_autorizaciones = autorizaciones;
     this.m_pedidos_farmacias = pedidos_farmacias;
     this.m_pedidos_clientes = pedidos_clientes;
     this.m_ordenes_compra = ordenes_compra;
     this.m_productos = m_productos;
+    this.e_pedidos_clientes = eventos_pedidos_clientes;
 };
 
 
@@ -134,9 +135,17 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
     termino.autorizacionId = args.autorizarProductos.autorizacionId;
     termino.usuarioId = req.body.session.usuario_id;    
     var numero_pedido = args.autorizarProductos.numeroPedido;
+    var tipoPedido = args.autorizarProductos.tipoPedido;
     
+    var modelo;
     
-    G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_pedido', numero_pedido).then(function(resultado) {
+    if(tipoPedido===1){
+        modelo=that.m_pedidos_farmacias;
+    }else{
+        modelo=that.m_pedidos_clientes;
+    }
+    
+    G.Q.ninvoke(modelo, 'consultar_pedido', numero_pedido).then(function(resultado) {
         
        /**
          * +Descripcion: Se valida si el estado del pedido es 
@@ -146,12 +155,13 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
          *               1 aprovado 
          *               1 denegado 
          */
-         if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '1') 
+         if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0') 
                  && args.autorizarProductos.estado === 2) ||  args.autorizarProductos.estado === 1) {
-
             return  G.Q.ninvoke(that.m_autorizaciones, 'modificarAutorizacionProductos', termino);
+  
         } else {
             throw 'Error al Actualizar Productos Bloqueados';
+            
         }
 
     }).then(function(resultado){
@@ -159,7 +169,7 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
         if(resultado.rowCount > 0){
             res.send(G.utils.r(req.url, 'Actualizo Autorizacion de Productos Bloqueados!!!!', 200, {modificarAutorizacionProductos: resultado}));
         }else{
-             throw 'La cotizacion debe encontrarse activa o desaprobada por cartera';
+             throw 'El Producto Debe Estar En Estado -Auditado con pdtes o en  - Asignado';
         }
     }).fail(function(err){
         
@@ -192,8 +202,16 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
     termino.autorizacionId = args.autorizarProductos.autorizacionId;
     termino.usuarioId = req.body.session.usuario_id;
     var numero_pedido = args.autorizarProductos.numeroPedido;
+    var tipoPedido = args.autorizarProductos.tipoPedido;
     
-    G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_pedido', numero_pedido).then(function(resultado) {
+    var modelo;
+    if(tipoPedido===1){
+        modelo=that.m_pedidos_farmacias;
+    }else{
+        modelo=that.m_pedidos_clientes;
+    }
+    
+    G.Q.ninvoke(modelo, 'consultar_pedido', numero_pedido).then(function(resultado) {
         /**
          * +Descripcion: Se valida si el estado del pedido es 
          *               1 activo
@@ -202,8 +220,10 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
          *               1 aprovado 
          *               1 denegado 
          */
-         if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '1') 
-                 && args.autorizarProductos.estado === 0) ||  args.autorizarProductos.estado === 1) {
+        console.log("resultado[0].estado_actual_pedido: ",resultado[0].estado_actual_pedido);
+        console.log("args.autorizarProductos.estado: ",args.autorizarProductos.estado);
+         if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0') 
+                 && args.autorizarProductos.estado === 2) ||  args.autorizarProductos.estado === 1) {
 
             return  G.Q.ninvoke(that.m_autorizaciones, 'insertarAutorizacionProductos', termino);
         } else {
@@ -217,9 +237,7 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
              throw 'El Producto Debe Estar En Estado -Auditado con pdtes o en  - Asignado';
         }
     }).fail(function(err){
-        
-         res.send(G.utils.r(req.url, err, 500, {}));
-         
+       res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
 };
@@ -242,14 +260,19 @@ Autorizaciones.prototype.listarVerificacionProductos = function(req, res) {
             then(function(listarVerificacionProductos) {
         res.send(G.utils.r(req.url, 'Listar Productos Verificados ok!!!!', 200, {listarVerificacionProductos: listarVerificacionProductos}));
 
-    }).
-            fail(function(err) {
+    }).fail(function(err) {
         res.send(G.utils.r(req.url, 'Error al Consultar Productos Verificados', 500, {listarVerificacionProductos: {}}));
-    }).
-            done();
+    }).done();
 
 };
 
-Autorizaciones.$inject = ["m_autorizaciones", "m_pedidos_farmacias", "m_pedidos_clientes", "m_ordenes_compra", "m_productos"];
+Autorizaciones.$inject = [
+                          "m_autorizaciones", 
+                          "m_pedidos_farmacias", 
+                          "m_pedidos_clientes", 
+                          "m_ordenes_compra", 
+                          "m_productos",
+                          "e_pedidos_clientes"
+                         ];
 
 module.exports = Autorizaciones;

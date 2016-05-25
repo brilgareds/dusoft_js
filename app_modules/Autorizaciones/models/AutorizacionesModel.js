@@ -13,7 +13,6 @@ AutorizacionesModel.prototype.insertarAutorizacionProductos = function(obj, call
                 FROM\
                     autorizaciones_productos_pedidos\
                 WHERE autorizaciones_productos_pedidos_id = :1; ";
-console.log("inserttttttttttttttttttt", sql);
     var query = G.knex.raw(sql, {1: obj.autorizacionId});
     query.then(function(resultado) {
         callback(false, resultado.rows);
@@ -28,14 +27,12 @@ AutorizacionesModel.prototype.modificarAutorizacionProductos = function(obj, cal
                 autorizaciones_productos_pedidos SET \n\
 		estado = :1 ,fecha_verificacion=NOW(),usuario_id = :2	\
                 WHERE autorizaciones_productos_pedidos_id = :3 ; ";
-    console.log("modificarrrrrrrrrrrrrrrrrrr", sql);
+    
     var query = G.knex.raw(sql, {1: obj.estado, 2: obj.usuarioId, 3: obj.autorizacionId});
 
     query.then(function(resultado) {
-        console.log("modificarAutorizacionProductos>>>>resultado>>>>>>>>>", resultado);
         callback(false, resultado.rows);
     }). catch (function(err) {
-        console.log("modificarAutorizacionProductos>>>>err>>>>>>>>>", err);
         callback(err);
     });
 };

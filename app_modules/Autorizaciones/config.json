@@ -35,7 +35,13 @@
                     "alias": "m_productos"
                 }
             }],
-        "events": [],
+        "events": [{
+                "pedidos_clientes_events": {
+                    "module": "PedidosClientes",
+                    "event": "PedidosClientesEvents",
+                    "alias": "e_pedidos_clientes"
+                }
+            }],
         "cronJobs": []
     }
 }

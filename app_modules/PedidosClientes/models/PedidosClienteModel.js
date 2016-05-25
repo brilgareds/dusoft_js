@@ -847,8 +847,9 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_
             update({estado_pedido: estado_pedido}).then(function(resultado) {
 
         callback(false, resultado);
+        console.log("callbackcallbackcallbackcallback>>>>>>>>>>>>>>",resultado);
     }). catch (function(err) {
-
+           console.log(">>>>>>>>>>>>>>",err);
         callback(err);
     });
 

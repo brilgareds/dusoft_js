@@ -134,9 +134,13 @@ define(["angular", "js/controllers",
                         obj,
                         function(data) {
                             if (data.status === 200) {
+                                console.log("verificarAutorizacionProductos",data.obj.verificarAutorizacionProductos);
                                 if (data.obj.verificarAutorizacionProductos.length > 0) {
+                                    console.log("modificarAutorizacion");
                                     $scope.modificarAutorizacion(objs);
+                                    
                                 } else {
+                                    console.log("insertarAutorizacion");
                                     $scope.insertarAutorizacion(objs);
                                 }
                             }
@@ -158,7 +162,8 @@ define(["angular", "js/controllers",
                         autorizarProductos: {
                             estado: objs.estado,
                             autorizacionId: objs.autorizacionId,
-                            numeroPedido: $scope.pedido
+                            numeroPedido: $scope.pedido,
+                            tipoPedido: $scope.tipoPedido
                         }
                     }
                 };
@@ -190,7 +195,8 @@ define(["angular", "js/controllers",
                         autorizarProductos: {
                             estado: objs.estado,
                             autorizacionId: objs.autorizacionId,
-                            numeroPedido: $scope.pedido
+                            numeroPedido: $scope.pedido,
+                            tipoPedido: $scope.tipoPedido
                         }
                     }
                 };

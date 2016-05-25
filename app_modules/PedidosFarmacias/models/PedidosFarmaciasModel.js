@@ -943,7 +943,7 @@ PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_p
             //Actualizar
             that.actualizar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
                 // Actualizar Estado Actual del Pedido
-                that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() {
+                that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() { 
                     callback(_err, _rows, responsable_estado_pedido);
                     return;
                 });

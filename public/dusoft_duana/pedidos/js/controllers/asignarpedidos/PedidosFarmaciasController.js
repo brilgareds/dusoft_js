@@ -119,7 +119,11 @@ define(["angular",
                 if (pedido.estado_actual_pedido === '8') {
                     disabled = false;
                 }
-
+                
+                if (pedido.estado_actual_pedido === '10') {
+                    disabled = true;
+                }
+                
                 if (pedido.estado_separacion) {
                     disabled = true;
                 }
@@ -152,10 +156,9 @@ define(["angular",
 
             $scope.agregarClase = function(estado) {
                 estado = parseInt(estado);
-                if (estado === 6) {
+                if (estado === 6 || estado === 10) {
                     return estados[1];
                 }
-
 
                 return estados[estado];
             };

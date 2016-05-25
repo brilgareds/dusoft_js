@@ -29,7 +29,8 @@ define(["angular",
     "includes/http/Request",
     "uiselect2",
     "includes/classes/CentroUtilidad",
-    "services/AutorizacionPedidosService"
+    "services/AutorizacionPedidosService",
+    "webNotification"
 ], function(angular, Agencia) {
     /* App Module and its dependencies */
     var autorizaciones = angular.module('autorizaciones', [
@@ -43,6 +44,7 @@ define(["angular",
         'services',
         'LocalStorageModule',
         'ui.select2',
+        'angular-web-notification'
     ]);
 
     autorizaciones.urlRouterProvider;

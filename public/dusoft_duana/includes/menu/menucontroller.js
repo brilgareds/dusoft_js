@@ -46,7 +46,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
 
             $scope.changelocation = function(url) {
                 //el window location no deja setear el estado del menu por eso se debe cambiar con una milesima despues de hacer click
-                socket.removeAllListeners();
+                socket.forceRemoveListener();
                 var timer = setTimeout(function() {
                     window.location = url;
                     clearTimeout(timer);

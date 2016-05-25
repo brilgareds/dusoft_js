@@ -1118,16 +1118,15 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
                                 autorizacion.farmacia = farmacia;
                                 autorizacion.empresa_id = empresa_id;
                                 autorizacion.numero_pedido = numero_pedido;
-                                var notific = {
+                                var notificacion = {
                                     aliasModulo: 'productos_en_pedidos',
                                     opcionModulo: "sw_ver_notificaciones",
                                     titulo: "Autorizaciones Pedidos Farmacia",
                                     mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
                                 };
 
-                                G.Q.nfcall(__guardarAutorizacion, that, autorizacion)
-                                        .then(function(resultado) {
-                                    G.eventEmitter.emit("onRealizarNotificacionWeb", notific);
+                                G.Q.nfcall(__guardarAutorizacion, that, autorizacion).then(function(resultado) {
+                                    G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);
                                     res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
 
                                 }).fail(function(err) {

@@ -164,7 +164,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      var obj = {                   
                         session: $scope.session,
                         data: {
-                           listar_empresas: {
+                           listar_formulas: {
                                 filtro:$scope.root.filtro,
                                 terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
                                 empresaId:$scope.root.empresaSeleccionada,
@@ -180,7 +180,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       
                            if(data.status === 200) {       
                                $scope.root.items = data.obj.listar_formulas.length;                              
-                               $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj);
+                               $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
                            }else{
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                            }
@@ -211,9 +211,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
                     dispensacionHcService.listarFormulasPendientes($scope.session,$scope.root.termino_busqueda_empresa, function(data){
                             
+                            console.log("data ", data)
                            if(data.status === 200) {       
-                               $scope.root.items = data.obj.listar_formulas_pendientes.length;                              
-                              $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicasPendientes(data.obj);
+                               $scope.root.items = data.obj.listar_formulas.length;                               
+                              $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicas(data.obj,0);
                                 
                            }else{
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -236,7 +237,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    if (event.which === 13) {  
 
                          //if($scope.root.estadoFormula === '0'){
-                             that.listarFormulasMedicas();
+                         that.listarFormulasMedicas();
+                            // that.listarFormulasMedicasPendientes();
                          //}
 
                          /* if($scope.root.estadoFormula === '1'){
@@ -291,8 +293,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                           
                          
                           localStorageService.add("dispensarFormulaDetalle",{
-                              evolucion_id: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),
-                              formula: dispensar
+                                evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
+                                filtro:$scope.root.filtro,
+                                terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
+                                empresaId:$scope.root.empresaSeleccionada,
+                                fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                                fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                                paginaActual:$scope.paginaactual,
+                                estadoFormula : $scope.root.estadoFormula
+                           
+                    
                           });
                              
                           $state.go('DispensarFormulaDetalle');

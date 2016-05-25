@@ -16,36 +16,40 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
    
     var that = this;
     var args = req.body.data;
+   console.log("**************************************args******************");
+   console.log("**************************************args******************");
+   console.log("**************************************args******************");
    
-   if (args.listar_empresas === undefined || args.listar_empresas.paginaActual === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_empresas: []}));
+   console.log("args ", args)
+   if (args.listar_formulas === undefined || args.listar_formulas.paginaActual === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_formulas: []}));
         return;
     }
    
     
     
-    if (args.listar_empresas.empresaId === undefined) {
+    if (args.listar_formulas.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
         return;
     }
 
-    if (args.listar_empresas.paginaActual === '') {
+    if (args.listar_formulas.paginaActual === '') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
         return;
     }
     
-    if (!args.listar_empresas.filtro) {
+    if (!args.listar_formulas.filtro) {
         res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
         return;
     }
     
-    var empresaId = args.listar_empresas.empresaId;
-    var terminoBusqueda = args.listar_empresas.terminoBusqueda;
-    var paginaActual = args.listar_empresas.paginaActual;
-    var filtro = args.listar_empresas.filtro;
-    var fechaInicial = args.listar_empresas.fechaInicial;
-    var fechaFinal = args.listar_empresas.fechaFinal;
-    var estadoFormula = args.listar_empresas.estadoFormula;
+    var empresaId = args.listar_formulas.empresaId;
+    var terminoBusqueda = args.listar_formulas.terminoBusqueda;
+    var paginaActual = args.listar_formulas.paginaActual;
+    var filtro = args.listar_formulas.filtro;
+    var fechaInicial = args.listar_formulas.fechaInicial;
+    var fechaFinal = args.listar_formulas.fechaFinal;
+    var estadoFormula = args.listar_formulas.estadoFormula;
     
    
    
@@ -107,7 +111,7 @@ DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
    
    G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulasPendientes').then(function(resultado){
   
-       res.send(G.utils.r(req.url, 'Consulta formulas pendientes', 200, {listar_formulas_pendientes:resultado}));
+       res.send(G.utils.r(req.url, 'Consulta formulas pendientes', 200, {listar_formulas:resultado}));
         
    }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
@@ -129,7 +133,7 @@ DispensacionHc.prototype.listarLotesMedicamentosFormulados = function(req, res){
     var args = req.body.data;
    
    if (args.listar_lotes_medicamentos_formulados === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_empresas: []}));
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_formulas: []}));
         return;
     }
    
@@ -166,7 +170,7 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
     var args = req.body.data;
    
    if (args.listar_medicamentos_formulados === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_empresas: []}));
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_formulas: []}));
         return;
     }
    

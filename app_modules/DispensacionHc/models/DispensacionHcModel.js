@@ -108,7 +108,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
         
         callback(false, resultado);
     }).catch(function(err){
-       
+       console.log("err ", err)
         callback(err);
        
     });
@@ -230,8 +230,9 @@ DispensacionHcModel.prototype.listarLotesMedicamentosFormulados = function(obj,c
                 LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
                 LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)\
                 JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
-                WHERE    hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";
+                WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";
   
+
   
   G.knex.raw(sql,parametros).then(function(resultado){  
      console.log("OK lotes medicamentos formulados", resultado)
@@ -273,9 +274,9 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                 FROM hc_formulacion_antecedentes  hc LEFT JOIN medicamentos med ON (hc.codigo_medicamento=med.codigo_medicamento)\
                 LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
                 INNER JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
-                WHERE hc.evolucion_id =:1 ";
+                WHERE hc.evolucion_id = :1 ";
   
-  
+    console.log("parametros ", parametros)
   G.knex.raw(sql,parametros).then(function(resultado){  
      console.log("OK medicamentos formulados", resultado)
       callback(false, resultado.rows)

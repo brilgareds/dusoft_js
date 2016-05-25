@@ -9,7 +9,15 @@
                         </tab-heading>
                         <br> 
                         <div ng-include="'views/dispensacionHc/listarFormulas.html'"></div>
-                    </tab>                        
+                    </tab>  
+                    
+                     <tab  ng-click="cargarListaNotificacionCotizacion('')">
+                        <tab-heading >
+                            <i class=""></i>  Formulas pendientes
+                        </tab-heading>
+                        <br> 
+                        <div ng-include="'views/dispensacionHc/listarFormulasPendientes.html'"></div>
+                    </tab>  
                    <!-- <tab>
                         <tab-heading ng-click="cargarListaPedidos('','')">
                              Validacion despachos 

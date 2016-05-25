@@ -45,44 +45,57 @@ define(["angular", "js/services"], function(angular, services) {
              self.listarFormulas = function(obj, callback){
                  
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
-                       // console.log("data ", data)
+                       console.log("data -----> ", data)
                         callback(data);
                         
                  });
              };
-             
-              self.renderListarFormulasMedicas = function(formulas){
+              /**
+               * @author Cristian Ardila
+               * +Descripcion Funcion encargada de serializar los datos de la
+               *              formula medica contra los modelos
+               * @fecha 25/05/2016
+               */
+              self.renderListarFormulasMedicas = function(formulas, estadoFormula){
                     
                       var resultado = [];
                      
                           for (var i in formulas.listar_formulas) {
                             var _formula = formulas.listar_formulas[i];
-                            
-                          //  console.log("_formula _formula ", _formula.sw_estado)
                             //Se crea el objeto afiliados
                             var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
-                            
-                            var plan = PlanesHc.get(_formula.plan_id,_formula.plan_descripcion);
-                            var planesAtencion  = PlanesRangosHc.get('','');
-                                planesAtencion.agregarPlanes(plan);
-                               
                             //Se crea el objeto paciente
-                            var paciente = PacienteHc.get(_formula.tipo_id_paciente,
-                                                        _formula.paciente_id,_formula.apellidos,_formula.nombres)
-                                paciente.setMedico(_formula.nombre);
-                                paciente.setTipoBloqueoId(_formula.tipo_bloqueo_id);  
-                                paciente.setBloqueo(_formula.bloqueo);  
-                              
+                            var paciente = PacienteHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.apellidos,_formula.nombres)
+                            
                             //Se crea el objeto formula
-                            var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
+                         if(estadoFormula === 1){
+                           
+                           var plan = PlanesHc.get(_formula.plan_id,_formula.plan_descripcion);
+                           var planesAtencion  = PlanesRangosHc.get('','');
+                               planesAtencion.agregarPlanes(plan);
+                               paciente.setMedico(_formula.nombre);
+                               paciente.setTipoBloqueoId(_formula.tipo_bloqueo_id);  
+                               paciente.setBloqueo(_formula.bloqueo);  
+                           var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
                                                       _formula.transcripcion_medica,
                                                      _formula.descripcion_tipo_formula,
                                                    _formula.fecha_registro,
                                                   _formula.fecha_finalizacion,
                                                 _formula.fecha_formulacion);
                                                 
-                                formula.setEstado( _formula.sw_estado)                      
-                              
+                               formula.setEstado( _formula.sw_estado);
+                                
+                          }
+                          
+                          if(estadoFormula === 0){
+                               paciente.setEdad(_formula.edad);
+                               paciente.setResidenciaDireccion(_formula.residencia_direccion);
+                               paciente.setResidenciaTelefono(_formula.residencia_telefono);
+                               paciente.setSexo(_formula.sexo);  
+                           var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');                             
+                           var Productos  = ProductosHc.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);                               
+                               formula.agregarProductos(Productos);           
+                          }
                          //El paciente tiene su formula
                          paciente.agregarFormulas(formula);
                          
@@ -119,9 +132,6 @@ define(["angular", "js/services"], function(angular, services) {
              };
              
              
-             
-             
-             
              /**
               * @author Cristian Ardila
               * @fecha  21/05/2016
@@ -132,7 +142,7 @@ define(["angular", "js/services"], function(angular, services) {
                  var obj = {
                      session: session,
                      data: {
-                           listar_empresas: {
+                           listar_formulas: {
                                pagina: 1,
                                empresaName: terminoBusqueda
                            }
@@ -146,48 +156,34 @@ define(["angular", "js/services"], function(angular, services) {
              };
              
              
-                /**
-                  * +Descripcion Metodo encargado de mapear las formula pendientes
-                  */
-                 self.renderListarFormulasMedicasPendientes = function(formulas){
-
-                      var afiliadosFormulasPendientes = [];
-                      
-                          for (var i in formulas.listar_formulas_pendientes) {
-                           var _formula = formulas.listar_formulas_pendientes[i];
-                            
-                           //Se crea el objeto afiliados
-                            var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
-                           
-                            //Se crea el objeto paciente
-                            var paciente = PacienteHc.get(_formula.tipo_id_paciente,
-                                                        _formula.paciente_id,_formula.apellidos,_formula.nombres);
-                                paciente.setEdad(_formula.edad);
-                                paciente.setResidenciaDireccion(_formula.residencia_direccion);
-                                paciente.setResidenciaTelefono(_formula.residencia_telefono);
-                                paciente.setSexo(_formula.sexo);
-                           
-                              
-                            //Se crea el objeto formula
-                            var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');
-                                                      
-                            var Productos  = ProductosHc.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);            
-                                                  
-                                formula.agregarProductos(Productos);                 
-                              
-                         //El paciente tiene su formula
-                         paciente.agregarFormulas(formula);
-                         
-                         //debe ser afiliado el paciente
-                         afiliados.agregarPacientes(paciente);
-                         /*afiliados.agregarPlanAtencion(planesAtencion);*/
-                         
-                         //Se almacenan los afiliados
-                         afiliadosFormulasPendientes.push(afiliados);
-                        }
-                        return afiliadosFormulasPendientes;
-                //   console.log("$scope.afiliadosFormulasPendientes ", JSON.stringify($scope.afiliadosFormulasPendientes))     
-                 };
+            /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
+              * +Descripcion Consulta todas las formulas
+              */
+             self.listarMedicamentosFormulados = function(obj,callback){
+               
+                 
+                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
+                     
+                        callback(data);
+                 });
+             };
+                 
+            self.renderListarMedicamentosFormulados = function(producto){
+                
+                var productos = [];
+                for(var i in producto.listar_medicamentos_formulados){
+                    
+                    var _productos = producto.listar_medicamentos_formulados[i];
+                    
+                    var Productos  = ProductosHc.get(_productos.codigo_medicamento,_productos.descripcion, _productos.cantidad);  
+                    
+                    productos.push(Productos);
+                }
+                       
+                  return productos;
+            };
              
                  return this;
         }]);

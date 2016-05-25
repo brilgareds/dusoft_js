@@ -187,11 +187,6 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
     
 };
 
-
-
-
-
-
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
@@ -233,6 +228,47 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                 LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)\
                 JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
                 WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";
+   
+  G.knex.raw(sql,parametros).then(function(resultado){  
+     
+      callback(false, resultado.rows)
+  }).catch(function(err){     
+      
+      callback(err)
+  });
+          
+    
+};
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de obtener la cantidad total que dispensara el
+ *              producto
+ * @controller DispensacionHc.prototype.cantidadProductoTemporal
+ */
+DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
+
+      var parametros = {1: obj.evolucionId};
+       
+        var sql =  "SELECT j.total,j.codigo_formulado\
+                    FROM\
+                    (SELECT COALESCE(sum(tmp.cantidad_despachada),0) as total,tmp.codigo_formulado\
+                            from   hc_dispensacion_medicamentos_tmp tmp\
+                                       LEFT JOIN medicamentos med ON(tmp.codigo_formulado=med.codigo_medicamento)\
+                                     LEFT JOIN inventarios_productos invp ON(tmp.codigo_formulado=invp.codigo_producto)\
+                            where  tmp.codigo_formulado = :1\
+                            and    tmp.evolucion_id = :2\
+                    GROUP BY 2\
+                    UNION\
+                    SELECT COALESCE(sum(tmp.cantidad_despachada),0) as total,tmp.codigo_formulado\
+                            from   hc_dispensacion_insumos_tmp tmp\
+                                       LEFT JOIN medicamentos med ON(tmp.codigo_formulado=med.codigo_medicamento)\
+                                     LEFT JOIN inventarios_productos invp ON(tmp.codigo_formulado=invp.codigo_producto)\
+                            where  tmp.codigo_formulado= :1\
+                            and    tmp.evolucion_id = :2\
+                    GROUP BY 2) as j";
   
     
   
@@ -247,7 +283,6 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
           
     
 };
-
 
 
 //DispensacionHcModel.$inject = ["m_productos"];

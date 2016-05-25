@@ -127,29 +127,36 @@ DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
  *              formulados
  *              
  */
-DispensacionHc.prototype.listarDetalleMedicamentosFormulados = function(req, res){
+DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
    
     var that = this;
     var args = req.body.data;
    
-   if (args.listar_detalle_medicamentos_formulados === undefined) {
+   if (args.cantidadProducto === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_detalle_medicamentos_formulados: []}));
         return;
     }
    
     
     
-    if (args.listar_detalle_medicamentos_formulados.evolucionId === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {pedidos_clientes: []}));
+    if (args.cantidadProducto.codigoProducto === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo de producto', 404, {cantidadProducto: []}));
         return;
     }
-
-   var parametros = {evolucionId:args.listar_detalle_medicamentos_formulados.evolucionId};
+    
+    if (args.cantidadProducto.evolucionId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {cantidadProducto: []}));
+        return;
+    }
+    
+   var parametros = {codigoProducto:args.cantidadProducto.codigoProducto,
+                     evolucionId:args.cantidadProducto.evolucionId
+                    };
    
    
-   G.Q.ninvoke(that.m_dispensacion_hc,'listarDetalleMedicamentosFormulados',parametros).then(function(resultado){
+   G.Q.ninvoke(that.m_dispensacion_hc,'cantidadProductoTemporal',parametros).then(function(resultado){
      
-       res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_detalle_medicamentos_formulados:resultado}));
+       res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {cantidadProducto:resultado}));
         
    }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));

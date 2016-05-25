@@ -6,7 +6,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 'CentroUtilidadInduccion', 
                 'BodegaInduccion', 
                 'ProductoInduccion',
-                'AprobacionDespacho',
                 "$timeout", 
                 "$filter",
                 "localStorageService",
@@ -14,7 +13,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 "dispensacionHcService",
                 "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
-                        EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, AprobacionDespacho,
+                        EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, 
                         $timeout, $filter,localStorageService,$state,dispensacionHcService,
                         FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosHc) {
 
@@ -318,18 +317,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                           console.log("dispensar ", dispensar) 
                        
                      };
-                     
-                    /*
-                     * @author Cristian Ardila
-                     * @fecha 04/02/2016
-                     * +Descripcion Funcion encarhada de cambiar de GUI cuando 
-                     *              se presiona el boton Aprobar despacho
-                     */
-                    $scope.formularioAprobarDespacho = function(){
-                          localStorageService.add("validacionEgresosDetalle",{estado: 2});
-                          $state.go('DispensarFormulaDetalle');
-                    };
-                    
+                   
                    
                      /**
                       * +Descripcion Se visualiza la tabla con todas las aprobaciones

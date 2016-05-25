@@ -165,7 +165,7 @@ define(["angular", "js/services"], function(angular, services) {
                
                  
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
-                     
+                        //console.log("LOS MEDICAMENTOS FORMULADOS ", data)
                         callback(data);
                  });
              };
@@ -176,9 +176,10 @@ define(["angular", "js/services"], function(angular, services) {
                 for(var i in producto.listar_medicamentos_formulados){
                     
                     var _productos = producto.listar_medicamentos_formulados[i];
-                    
-                    var Productos  = ProductosHc.get(_productos.codigo_medicamento,_productos.descripcion, _productos.cantidad);  
-                    
+                    //console.log("_productos ", _productos)
+                    var Productos  = ProductosHc.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
+                        Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
+                        Productos.setTiempoTotal(_productos.tiempo_total);
                     productos.push(Productos);
                 }
                        

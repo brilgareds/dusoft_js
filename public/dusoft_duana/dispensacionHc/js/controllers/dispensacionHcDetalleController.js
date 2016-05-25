@@ -14,9 +14,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "localStorageService",
         "$state",
         "$filter",
-        "Usuario","AprobacionDespacho","EmpresaDispensacionHc","dispensacionHcService",
+        "Usuario","EmpresaDispensacionHc","dispensacionHcService",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                 Sesion,AprobacionDespacho,EmpresaDispensacionHc,dispensacionHcService) {
+                 Sesion,EmpresaDispensacionHc,dispensacionHcService) {
 
             var that = this;
             // Definicion Variables de Sesion
@@ -62,15 +62,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 			 
 	
             /**
-             * +Descripcion: Se activa el cambo de interfaz, cuando se selecciona
-             *               el detalle de una aprobacion o se creara una aprobacion
+             * +Descripcion: Se activa el cambio de interfaz, cuando se selecciona
+             *               el detalle de una formula para dispensar
              */
             if ($state.is("DispensarFormulaDetalle") === true) {
                
               
              var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
-             console.log(" ---- obj ---- ", resultadoStorage);
-              
+            
               var obj = {                   
                         session: $scope.session,
                         data: {
@@ -89,7 +88,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                   
                     dispensacionHcService.listarFormulas(obj, function(data){
                         
-                        console.log("De nuevo data ", data)
                            if(data.status === 200) {       
                                //$scope.root.items = data.obj.listar_formulas.length;                              
                                $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
@@ -97,16 +95,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                            }else{
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                            }
-                           
-                         //  console.log("$scope.root.detalleFormula ", $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos({productoDes: 'Hola mundo'}));
-                           
+                         
                     });
                
             };
             
-               
+           /**
+            * @author Cristian Ardila
+            * +Descripcion Metodo encargado de ejecutar el servicio que consultara
+            *              los medicamentos formulados
+            * @fecha 25/05/2016
+            */    
            that.listarMedicamentosFormulados = function(resultadoStorage){
-               
+                var productos
                  var obj = {                   
                         session: $scope.session,
                         data: {
@@ -118,16 +119,80 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                        }    
                     };
                dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
-                  
-                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(dispensacionHcService.renderListarMedicamentosFormulados(data.obj));
-                  /*   console.log(" *************** Lista medicamentos formulados ", data.obj.listar_medicamentos_formulados) */
-                   //console.log("$scope.root.detalleFormula ", $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos());
-                     console.log("Detalle de la formula ", $scope.root.detalleFormula[0])    
-                  
+                
+                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
+                
+                   $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
                });
-           }
+              
+           };
            
-           $scope.regresarListaDespachosAprobados = function() {
+           
+           
+          /**
+           * @author Cristian Ardila
+           * +Descripcion Se visualiza la tabla con los medicamentos listos
+           *              para dispensar
+           * @fecha 25/05/2016
+           */
+            $scope.listaMedicamentosFormulados = {
+               data: 'root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0]',//mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0]
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+               columnDefs: [
+
+
+            {field: 'getCodigoProducto()', displayName: 'Codigo', width:"15%"},
+            {field: 'getDescripcion()', displayName: 'Medicamento'},
+            {field: 'getExistencia()', displayName: 'Cant. entregar', width:"10%"},
+            {field: 'getPerioricidadEntrega()', displayName: 'Perioricidad entrega', width:"25%"},
+            {field: 'getTiempoTotal()', displayName: 'Dias tratamiento', width:"15%"},
+            {field: 'Dispensar', width: "10%",
+                       displayName: "Dispensar",
+                       cellClass: "txt-center",
+                       cellTemplate: '<button class="btn btn-default btn-xs" ng-click="ventanaDispensacionFormula(row.entity)">Dispensar</button>'
+
+                 }
+               ]
+           };
+                    
+           
+           /**
+             * @author Cristian Manuel Ardila Troches
+             * @fecha  04/03/2016
+             * +Descripcion: Se desplegara una ventana modal con un formulario
+             *               el cual permitira hacer una busqueda avanzada por
+             *               producto
+             * @param {type} cotizacion_pedido
+             */
+            $scope.ventanaDispensacionFormula = function(obj) {
+
+               // $scope.datos_view.pedido_seleccionado = obj;       
+                $scope.opts = {
+                    backdrop: 'static',
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/dispensacionHc/lotesMedicamentosFormulados.html',
+                    scope: $scope,
+                    size: 'lg',
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cerrarVentanaDispensacionFormula = function() {
+
+                            $modalInstance.close();
+                        };
+                    }
+                            
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+           
+           
+           
+           $scope.regresarListaFormulas = function() {
                 $state.go('DispensacionHc');
             };
 

@@ -28,7 +28,6 @@ define([
     "models/CentroUtilidadInduccion",
     "models/BodegaInduccion",
     "models/ProductoInduccion",
-    "models/AprobacionDespacho",
     "models/FormulaHc",
     "models/PacienteHc",
     "models/EpsAfiliadosHc",

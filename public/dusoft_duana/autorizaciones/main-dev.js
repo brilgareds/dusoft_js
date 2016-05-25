@@ -23,7 +23,9 @@ requirejs.config({
         socket: "../includes/socket/socket.io/socket.io",
         socketservice: "../includes/socket/socket",
         uiselect2: "../../javascripts/uiselect2",
-        select: "../../javascripts/select2"
+        select: "../../javascripts/select2",
+        desktopNotify:"../../javascripts/notifications/desktop-notify-min",
+        webNotification:"../../javascripts/notifications/angular-web-notification"
     },
     shim: {
         "angular": {
@@ -65,6 +67,12 @@ requirejs.config({
         },
         "uiselect2": {
             deps: ["angular", "select"]
+        },
+        "desktopNotify":{
+            deps:["angular"]
+        },
+        "webNotification":{
+            deps:["desktopNotify"]
         }
     }
 });

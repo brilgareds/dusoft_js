@@ -86,7 +86,8 @@ define(["angular", "js/controllers",
                     "btn btn-warning btn-xs",
                     "btn btn-primary btn-xs",
                     "btn btn-primary btn-xs",
-                    "btn btn-info btn-xs"
+                    "btn btn-info btn-xs",
+                    "btn btn-warning btn-xs"
                 ],
                 filtros: [
                     {nombre: "Numero", tipo_busqueda: 0},

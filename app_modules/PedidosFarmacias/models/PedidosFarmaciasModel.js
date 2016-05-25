@@ -507,6 +507,10 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         if (filtro.en_zona_despacho_pdtes) {
             estado = '9';
         }
+        
+        if (filtro.por_autorizar) {
+            estado = '10';
+        }
     }
 
     var columns = [
@@ -529,7 +533,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                      when a.estado = '6' then 'Separacion Finalizada' \
                      when a.estado = '7' then 'En Auditoria'  \
                      when a.estado = '8' then 'Auditado con pdtes' \
-                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
+                     when a.estado = '9' then 'En zona con pdtes'\
+                     when a.estado = '10' then 'Por Autorizar' end as descripcion_estado_actual_pedido"),
         "f.estado as estado_separacion", 
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
         "b.descripcion as nombre_centro_utilidad",
@@ -695,7 +700,8 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
              when a.estado = '6' then 'Separacion Finalizada'\
              when a.estado = '7' then 'En auditoria'\
              when a.estado = '8' then 'Auditado con pdtes'\
-             when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"), 
+             when a.estado = '9' then 'En zona con pdtes'\
+             when a.estado = '10' then 'Por Autorizar' end as descripcion_estado_actual_pedido"), 
         "f.estado as estado_separacion", 
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro"), 
         "a.fecha_registro as fecha_registro_pedido",

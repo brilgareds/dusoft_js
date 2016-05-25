@@ -124,6 +124,10 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         if (filtro.en_zona_despacho_pdtes) {
             estado = '9';
         }
+        
+        if (filtro.por_autorizar) {
+            estado = '10';
+        }
     }
 
     var columns = [
@@ -156,7 +160,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                     when a.estado_pedido = '7' then 'En Auditoria'\
                     when a.estado_pedido = '8' then 'Auditado con pdtes'\
                     when a.estado_pedido = '9' then 'En zona con pdtes'\
-                    when a.estado = '4' then 'Debe autorizar cartera' end as descripcion_estado_actual_pedido"),
+                    when a.estado = '4' then 'Debe autorizar cartera'\
+                    when a.estado_pedido = '10' then 'Por Autorizar' end as descripcion_estado_actual_pedido"),
         "d.estado as estado_separacion",
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
         "e.empresa_id as despacho_empresa_id",
@@ -337,7 +342,8 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
              when a.estado_pedido = '6' then 'Separacion Finalizada'\
              when a.estado_pedido = '7' then 'En Auditoria'\
              when a.estado_pedido = '8' then 'Auditado con pdtes'\
-             when a.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
+             when a.estado_pedido = '9' then 'En zona con pdtes'\
+             when a.estado_pedido = '10' then 'Por Autorizar' end as descripcion_estado_actual_pedido"),
         "d.estado as estado_separacion",
         "a.observacion",
         "a.observacion_cartera",

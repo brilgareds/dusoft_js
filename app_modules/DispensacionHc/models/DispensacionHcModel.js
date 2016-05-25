@@ -190,17 +190,19 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
 
 
 
+
+
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
- * +Descripcion Modelo encargado de listar los lotes de los medicamentos formulados
+ * +Descripcion Modelo encargado de listar los productos formulados
  * @controller DispensacionHc.prototype.listarMedicamentosFormulados
  */
-DispensacionHcModel.prototype.listarLotesMedicamentosFormulados = function(obj,callback){
+DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callback){
 
       var parametros = {1: obj.evolucionId};
        
-      var sql = "SELECT  hc.codigo_medicamento as codigo_producto,\
+        var sql = "SELECT  hc.codigo_medicamento,\
                    ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30)  as numero_entregas,\
                (hc.fecha_finalizacion - hc.fecha_registro)  as diferencia_final_inicio,\
                 hc.fecha_registro,\
@@ -232,49 +234,7 @@ DispensacionHcModel.prototype.listarLotesMedicamentosFormulados = function(obj,c
                 JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
                 WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";
   
-
-  
-  G.knex.raw(sql,parametros).then(function(resultado){  
-     console.log("OK lotes medicamentos formulados", resultado)
-      callback(false, resultado.rows)
-  }).catch(function(err){     
-        console.log("err lotes medicamentos formulados", err)
-      callback(err)
-  });
-          
     
-};
-
-
-/**
- * @author Cristian Ardila
- * @fecha 20/05/2016
- * +Descripcion Modelo encargado de listar los productos formulados
- * @controller DispensacionHc.prototype.listarMedicamentosFormulados
- */
-DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callback){
-
-      var parametros = {1: obj.evolucionId};
-       
-      var sql = "SELECT  hc.codigo_medicamento,\
-                hc.fecha_finalizacion,\
-                hc.dosis,\
-                hc.unidad_dosificacion,\
-                hc.frecuencia,\
-                hc.tiempo_total,\
-                hc.perioricidad_entrega,\
-                hc.descripcion,\
-                hc.tiempo_perioricidad_entrega,\
-                hc.unidad_perioricidad_entrega,\
-                hc.cantidad,\
-                a.cantidad as cantidad_entrega,\
-                hc.fecha_modificacion,\
-                pric.descripcion as principio_activo,\
-                fc_descripcion_producto_alterno(hc.codigo_medicamento) as descripcion_prod\
-                FROM hc_formulacion_antecedentes  hc LEFT JOIN medicamentos med ON (hc.codigo_medicamento=med.codigo_medicamento)\
-                LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
-                INNER JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
-                WHERE hc.evolucion_id = :1 ";
   
     console.log("parametros ", parametros)
   G.knex.raw(sql,parametros).then(function(resultado){  

@@ -107,7 +107,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             * @fecha 25/05/2016
             */    
            that.listarMedicamentosFormulados = function(resultadoStorage){
-                var productos
+                var productos;
                  var obj = {                   
                         session: $scope.session,
                         data: {
@@ -119,10 +119,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                        }    
                     };
                dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
-                
-                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
-                
-                   $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
+                   
+                    if(data.status === 200) {       
+
+                       productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
+                        $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
+                     }else{
+                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                     }
+
+                  
                });
               
            };
@@ -136,7 +142,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            * @fecha 25/05/2016
            */
             $scope.listaMedicamentosFormulados = {
-               data: 'root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0]',//mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0]
+               data: 'root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0]',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
@@ -168,9 +174,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @param {type} cotizacion_pedido
              */
             $scope.ventanaDispensacionFormula = function(obj) {
-
+                
                // $scope.datos_view.pedido_seleccionado = obj;       
-                $scope.opts = {
+             /*   $scope.opts = {
                     backdrop: 'static',
                     backdropClick: true,
                     dialogFade: false,
@@ -193,7 +199,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
            
            $scope.regresarListaFormulas = function() {
-                $state.go('DispensacionHc');
+                $state.go('DispensacionHc');*/
             };
 
             that.init = function() {

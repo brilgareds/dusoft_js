@@ -45,7 +45,7 @@ define(["angular", "js/services"], function(angular, services) {
              self.listarFormulas = function(obj, callback){
                  
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
-                       console.log("data -----> ", data)
+                      
                         callback(data);
                         
                  });
@@ -165,11 +165,17 @@ define(["angular", "js/services"], function(angular, services) {
                
                  
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
-                        //console.log("LOS MEDICAMENTOS FORMULADOS ", data)
+
                         callback(data);
                  });
              };
-                 
+             
+             /**
+               * @author Cristian Ardila
+               * +Descripcion Funcion encargada de serializar los datos de los
+               *              medicamentos formulados contra los modelos
+               * @fecha 25/05/2016
+               */
             self.renderListarMedicamentosFormulados = function(producto){
                 
                 var productos = [];
@@ -185,6 +191,9 @@ define(["angular", "js/services"], function(angular, services) {
                        
                   return productos;
             };
+            
+            
+           
              
                  return this;
         }]);

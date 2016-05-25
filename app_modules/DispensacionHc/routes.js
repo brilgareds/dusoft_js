@@ -30,12 +30,6 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/listarMedicamentosFormulados", function(req, res){
         c_dispensacion_hc.listarMedicamentosFormulados(req, res);
     });
-    
-     // Listar los lotes de los medicamentos formulados
-    app.post("/api/DispensacionHc/listarLotesMedicamentosFormulados", function(req, res){
-        c_dispensacion_hc.listarLotesMedicamentosFormulados(req, res);
-    });
-    
-    
+  
     
 };

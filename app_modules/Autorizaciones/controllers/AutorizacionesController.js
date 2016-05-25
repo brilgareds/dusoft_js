@@ -109,6 +109,12 @@ Autorizaciones.prototype.verificarAutorizacionProductos = function(req, res) {
 
 };
 
+    /**
+     * @author Andres M Gonzalez
+     * +Descripcion modifica el estado de la autorizacion de productos
+     * @fecha 2016-05-25
+     */
+
 Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
     var that = this;
     var args = req.body.data;
@@ -126,21 +132,47 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
     var termino = {};
     termino.estado = args.autorizarProductos.estado;
     termino.autorizacionId = args.autorizarProductos.autorizacionId;
-    termino.usuarioId = req.body.session.usuario_id;
+    termino.usuarioId = req.body.session.usuario_id;    
+    var numero_pedido = args.autorizarProductos.numeroPedido;
+    
+    
+    G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_pedido', numero_pedido).then(function(resultado) {
+        
+       /**
+         * +Descripcion: Se valida si el estado del pedido es 
+         *               1 activo
+         *               8 activo (desaprobado por cartera)
+         *               y el estado de la autorizacion del producto
+         *               1 aprovado 
+         *               1 denegado 
+         */
+         if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '1') 
+                 && args.autorizarProductos.estado === 2) ||  args.autorizarProductos.estado === 1) {
 
+            return  G.Q.ninvoke(that.m_autorizaciones, 'modificarAutorizacionProductos', termino);
+        } else {
+            throw 'Error al Actualizar Productos Bloqueados';
+        }
 
+    }).then(function(resultado){
+        
+        if(resultado.rowCount > 0){
+            res.send(G.utils.r(req.url, 'Actualizo Autorizacion de Productos Bloqueados!!!!', 200, {modificarAutorizacionProductos: resultado}));
+        }else{
+             throw 'La cotizacion debe encontrarse activa o desaprobada por cartera';
+        }
+    }).fail(function(err){
+        
+         res.send(G.utils.r(req.url, err, 500, {}));
+         
+    }).done();
+ };
 
-    G.Q.nfcall(this.m_autorizaciones.modificarAutorizacionProductos, termino).
-            then(function(modificarAutorizacionProductos) {
-        res.send(G.utils.r(req.url, 'Actualizo Autorizacion de Productos Bloqueados!!!!', 200, {modificarAutorizacionProductos: modificarAutorizacionProductos}));
-    }).
-            fail(function(err) {
-        res.send(G.utils.r(req.url, 'Error al Actualizar Productos Bloqueados', 500, {modificarAutorizacionProductos: {}}));
-    }).
-            done();
-
-};
-
+/**
+* @author Andres M Gonzalez
+* +Descripcion inserta el estado de la autorizacion de productos
+* @fecha 2016-05-25
+*/
 Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
     var that = this;
     var args = req.body.data;
@@ -159,15 +191,36 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
     termino.estado = args.autorizarProductos.estado;
     termino.autorizacionId = args.autorizarProductos.autorizacionId;
     termino.usuarioId = req.body.session.usuario_id;
+    var numero_pedido = args.autorizarProductos.numeroPedido;
+    
+    G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_pedido', numero_pedido).then(function(resultado) {
+        /**
+         * +Descripcion: Se valida si el estado del pedido es 
+         *               1 activo
+         *               8 activo (desaprobado por cartera)
+         *               y el estado de la autorizacion del producto
+         *               1 aprovado 
+         *               1 denegado 
+         */
+         if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '1') 
+                 && args.autorizarProductos.estado === 0) ||  args.autorizarProductos.estado === 1) {
 
-    G.Q.nfcall(this.m_autorizaciones.insertarAutorizacionProductos, termino).
-            then(function(insertarAutorizacionProductos) {
-        res.send(G.utils.r(req.url, 'Inserto Autorizacion de Productos Bloqueados!!!!', 200, {insertarAutorizacionProductos: insertarAutorizacionProductos}));
-    }).
-            fail(function(err) {
-        res.send(G.utils.r(req.url, 'Error Insertar Productos Bloqueados', 500, {insertarAutorizacionProductos: {}}));
-    }).
-            done();
+            return  G.Q.ninvoke(that.m_autorizaciones, 'insertarAutorizacionProductos', termino);
+        } else {
+            throw 'Error Insertar Productos Bloqueados';
+        }
+     }).then(function(resultado){
+        
+        if(resultado.rowCount > 0){
+            res.send(G.utils.r(req.url, 'Inserto Autorizacion de Productos Bloqueados!!!!', 200, {insertarAutorizacionProductos: resultado}));
+        }else{
+             throw 'El Producto Debe Estar En Estado -Auditado con pdtes o en  - Asignado';
+        }
+    }).fail(function(err){
+        
+         res.send(G.utils.r(req.url, err, 500, {}));
+         
+    }).done();
 
 };
 

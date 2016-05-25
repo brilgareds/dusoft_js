@@ -157,7 +157,8 @@ define(["angular", "js/controllers",
                     data: {
                         autorizarProductos: {
                             estado: objs.estado,
-                            autorizacionId: objs.autorizacionId
+                            autorizacionId: objs.autorizacionId,
+                            numeroPedido: $scope.pedido
                         }
                     }
                 };
@@ -188,7 +189,8 @@ define(["angular", "js/controllers",
                     data: {
                         autorizarProductos: {
                             estado: objs.estado,
-                            autorizacionId: objs.autorizacionId
+                            autorizacionId: objs.autorizacionId,
+                            numeroPedido: $scope.pedido
                         }
                     }
                 };

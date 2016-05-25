@@ -342,7 +342,7 @@ PedidosModel.prototype.guardarAutorizacion = function(parametros, callback) {
     __guardarAutorizacionesProductosPedidos(parametros, function(err, resultado) {
         if (err) {
             callback(err, resultado);
-        } else {
+        } else { 
             callback(false);
         }
     });

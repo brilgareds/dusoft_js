@@ -665,8 +665,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
     
 };
 
-
-// Seleccionar Pedido Por un numero de pedido
+/**
+ * 
+ * @author Eduar Garcia
+ * +Descripcion Seleccionar Pedido Por un numero de pedido
+ * @fecha 0000-00-00
+ *  Controller: 
+ *  Autorizaciones.prototype.modificarAutorizacionProductos
+ */
 PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callback) {
   
     var columnas = [

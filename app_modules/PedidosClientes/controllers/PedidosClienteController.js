@@ -1737,17 +1737,17 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
 
 
-            var notific = {
+            var notificacion = {
                 aliasModulo: 'productos_en_pedidos',
                 opcionModulo: "sw_ver_notificaciones",
-                titulo: "Autorizaciones Pedidos Clintes",
+                titulo: "Autorizaciones Pedidos Clientes",
                 mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
             };
 
             G.Q.nfcall(__guardarAutorizacion, that, autorizacion)
                     .then(function(resultado) {
 
-                G.eventEmitter.emit("onRealizarNotificacionWeb", notific);
+                G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);
                 res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
 
             }).fail(function(err) {

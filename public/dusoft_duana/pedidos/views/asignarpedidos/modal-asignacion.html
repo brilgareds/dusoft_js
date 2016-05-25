@@ -4,14 +4,14 @@
 </div>
 <div class="modal-body">
 
-    <alert  type="danger" close="dialog = false" ng-show="dialog">{{msg}}</alert>
+    <alert  type="danger" close="dialog = false" ng-show="dialog"><span ng-bind="msg"></span></alert>
 
     <h4 >Pedidos Seleccionados:</h4>
 
     <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">
         <div class="list-group">
             <a ng-repeat="pedido in pedidosSeleccionados" class="list-group-item defaultcursor" href="javascript:void(0)">
-                Pedido No. {{pedido.numero_pedido}}-{{pedido.cliente.nombre_tercero || pedido.farmacia.nombre_farmacia}}
+                Pedido No. <span ng-bind="pedido.numero_pedido"></span>-<span ng-bind="pedido.cliente.nombre_tercero || pedido.farmacia.nombre_farmacia"></span>
 
             </a>
         </div>
@@ -22,9 +22,9 @@
     <div class="row">
         
         <ui-select  ng-model="$parent.operario" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
-                   <ui-select-match  placeholder="Seleccionar Estado Pedido">{{$select.selected.nombre_operario}}</ui-select-match>
+            <ui-select-match  placeholder="Seleccionar Estado Pedido"><span ng-bind="$select.selected.nombre_operario"></span></ui-select-match>
                    <ui-select-choices repeat="separador in  Empresa.getSeparadores()| filter:$select.search">
-                       {{separador.nombre_operario}}  ({{separador.total_pedidos_asignados}})
+                       <span ng-bind="separador.nombre_operario"></span>  (<span ng-bind="separador.total_pedidos_asignados"></span>)
                    </ui-select-choices>
         </ui-select>
     </div>

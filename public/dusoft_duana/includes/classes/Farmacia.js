@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.nombre_bodega = nombre_bodega || "";
             this.centro_utilidad_id = centro_utilidad_id || "";
             this.nombre_centro_utilidad = nombre_centro_utilidad || "";
+            this.zona = "";
         }
         
         
@@ -43,6 +44,14 @@ define(["angular", "js/models"], function(angular, models) {
         
         Farmacia.prototype.getNombreBodega = function() {
             return this.nombre_bodega;
+        };
+        
+        Farmacia.prototype.getZona = function() {
+            return this.zona;
+        };
+
+        Farmacia.prototype.setZona = function(zona) {
+            this.zona = zona;
         };
         
         this.get = function(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega, centro_utilidad_id, nombre_centro_utilidad) {

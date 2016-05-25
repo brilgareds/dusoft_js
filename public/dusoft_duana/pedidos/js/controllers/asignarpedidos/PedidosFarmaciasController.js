@@ -84,7 +84,7 @@ define(["angular",
                         cellTemplate: "<button  ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>", width: "10%"},
                     {field: 'numero_pedido', displayName: 'Pedido', width: "80"},
                     {field: 'descripcionTipoPedido', displayName: 'Tipo Productos', width: "110"},
-                    {field: 'farmacia.nombre_farmacia', displayName: 'Zona', width: "27%"},
+                    {field: 'farmacia.zona', displayName: 'Zona', width: "27%"},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega', width: "10%"},
                     {field: 'fecha_registro', displayName: "Fecha Registro", width: "10%"},
@@ -252,7 +252,7 @@ define(["angular",
                 pedido.setDatos(obj); 
 
                 var cliente = Farmacia.get(obj.farmacia_id, obj.bodega_id, obj.nombre_farmacia, obj.nombre_bodega);
-
+                cliente.setZona(obj.zona);
                 pedido.setFarmacia(cliente);
 
                 return pedido;

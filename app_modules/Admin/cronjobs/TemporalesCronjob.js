@@ -1,33 +1,26 @@
-var TemporalesCronjob = function(m_cronjob) {
+var TemporalesCronjob = function() {
    var that = this;
-   this.m_cronjob = m_cronjob;
-          
-  // that.iniciar();
+   //Cronjob solo corren en modo produccion
+    if(G.program.prod){
+       
+        that.iniciar();
+    }
 
 };
-
-TemporalesCronjob.prototype.nombre = "temporales";
-
 
 TemporalesCronjob.prototype.iniciar = function(req, res){
-  // console.log("iniciando cronjob");
     var that = this;
+    //El cronjob correra todos los dias a media noche
+    //var job = new G.cronJob('*/59 */59 */23 * * *', function () {
+    var job = new G.cronJob('*/02 */02 */08 * * *', function () {
+        console.log("corriendo crontab para borrar temporales >>>>>>>>>>>>>>>>>>>>>>");
+        G.utils.limpiarDirectorio(G.dirname + "/public/reports/");
+        G.utils.limpiarDirectorio(G.dirname + "/files/tmp/");
+        
+    });
+    job.start();
     
-     G.Q.ninvoke(that.m_cronjob,'obtenerEstadoCronjob', {nombre : that.nombre}).then(function(resultado){
-         var def = G.Q.defer();
-        if(resultado){
-            console.log("processo listo para ejecutar cronjob ===================================");
-        } else {
-            console.log("el proceso no puede ejecutar cronjob =================================");
-            def.resolve();
-        }
-         
-     }).fail(function(err){
-         console.log("error generado ", err);
-     });
 };
 
-
-TemporalesCronjob.$inject = ["m_cronjob"];
 
 module.exports = TemporalesCronjob;

@@ -12,7 +12,7 @@
                     <div class="input-group col-sm-12 col-md-12 col-lg-12">                       
                          <div class="row" >
                                 <div class="col-md-4">
-                                    <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4> 
+                                    <h4>Busqueda por <span ng-bind="datos_form.seleccion_tipo_producto"></span> </h4> 
                                     
                                   <div class="btn-group">
                                         <label class="btn btn-default">
@@ -50,10 +50,10 @@
                             </div>                              
                            <div class="input-group">
                                 <div class="input-group-btn">
-                                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootSeleccionProductoFarmacia.filtro.nombre}} <span class="caret"></span></button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span ng-bind="rootSeleccionProductoFarmacia.filtro.nombre"></span> <span class="caret"></span></button>
                                   <ul class="dropdown-menu">
                                     <li ng-repeat="filtro in rootSeleccionProductoFarmacia.filtros">
-                                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)"><span ng-bind="filtro.nombre"></span></a>
                                     </li>
                                   </ul>
                                 </div>

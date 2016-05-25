@@ -6,21 +6,21 @@
         </div>
         <div class="panel-body">
             <div class="row" >
-                <div class ="col-md-12"><div class="lbl_editar_producto">Producto</div>{{rootVentanaCantidad.pedido.getProductoSeleccionado().getDescripcion()}}</div>
+                <div class ="col-md-12"><div class="lbl_editar_producto">Producto</div><span ng-bind="rootVentanaCantidad.pedido.getProductoSeleccionado().getDescripcion()"></span></div>
             </div>
             <div class="row">
                 <div class="col-md-4"><div class="lbl_editar_producto">Lote</div>
-                    {{rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getCodigo()}}
+                    <span ng-bind="rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getCodigo()"></span>
                 </div>
                 <div class ="col-md-4"><div class="lbl_editar_producto">Fecha vencimiento</div>
-                    {{rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getFechaVencimiento()}}
+                    <span ng-bind="rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getFechaVencimiento()"></span>
                 </div>
             </div>
             <div class="row">
                 <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad solicitada</div> 
-                    {{rootVentanaCantidad.pedido.getProductoSeleccionado().getCantidadSolicitada()}}</div>
+                    <span ng-bind="rootVentanaCantidad.pedido.getProductoSeleccionado().getCantidadSolicitada()"></span></div>
                 <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad disponible</div><div>
-                        {{rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getDisponible()}}
+                    <span ng-bind="rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getDisponible()"></span>
                     </div></div>
             </div>
 
@@ -58,12 +58,12 @@
                         <input type="text" role="group" ng-model="rootVentanaCantidad.numero_caja" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero  />
                         <div class="input-group-btn" role="group">
                             <button type="button"  class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> 
-                                {{rootVentanaCantidad.tipoCaja.nombre}} 
+                                <span ng-bind="rootVentanaCantidad.tipoCaja.nombre"></span>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li ng-repeat="tipo in rootVentanaCantidad.tiposCaja">
-                                    <a href="javascript:void(0)" ng-click="onSeleccionTipoCaja(tipo)">{{tipo.nombre}}</a>
+                                    <a href="javascript:void(0)" ng-click="onSeleccionTipoCaja(tipo)"><span ng-bind="tipo.nombre"></span></a>
                                 </li>
                             </ul>    
                         </div>                                              

@@ -17,9 +17,9 @@
                     
                     
                     <ui-select  ng-model="$parent.$parent.seleccion" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
-                        <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.prefijo}}-{{$select.selected.descripcion}}</ui-select-match>
+                        <ui-select-match  placeholder="Seleccionar Documento"><span ng-bind="$select.selected.prefijo"></span>-<span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                         <ui-select-choices repeat="documento_usuario in  documentos_usuarios| filter:$select.search">
-                            {{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}
+                            <span ng-bind="documento_usuario.prefijo"></span>-<span ng-bind="documento_usuario.descripcion"></span>
                         </ui-select-choices>
                     </ui-select>
                 </div>
@@ -33,7 +33,7 @@
 
                 <div class="row" align="center">  
                     </br></br>
-                    <h2>Pedido N°: {{ numero_pedido }}</h2>
+                    <h2>Pedido N°: <span ng-bind="numero_pedido"></span></h2>
                 </div>
             </div>
         </div>
@@ -63,13 +63,13 @@
         <div class="col-sm-12 col-md-6 paddingLeftZero">
             <div class="panel panel-default marginBottom5">
                 <div class="panel-heading">
-                    <h4 class="h4MarginTopBottom">Hacia : <a href="#">{{farmacia.nombre_farmacia}}</a></h4>
+                    <h4 class="h4MarginTopBottom">Hacia : <a href="#"><span ng-bind="farmacia.nombre_farmacia"></span></a></h4>
                 </div>
                 <div class="panel-body">
                     <table>
-                        <tr><th>ID Farmacia: &nbsp;</th><td>{{farmacia.farmacia_id}}</td></tr>
-                        <tr><th>Bodega: </th><td>{{farmacia.nombre_bodega}}</td></tr>
-                        <tr><th>ID Bodega: </th><td>{{farmacia.bodega_id}}</td></tr>
+                        <tr><th>ID Farmacia: &nbsp;</th><td><span ng-bind="farmacia.farmacia_id"></span></td></tr>
+                        <tr><th>Bodega: </th><td><span ng-bind="farmacia.nombre_bodega"></span></td></tr>
+                        <tr><th>ID Bodega: </th><td><span ng-bind="farmacia.bodega_id"></span></td></tr>
                     </table>
 
                 </div>

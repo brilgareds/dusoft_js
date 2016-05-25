@@ -13,7 +13,47 @@
                        
                     </div>
                     <div class="panel-body">                    
-              
+                                 <div class="row">
+                            
+                               
+                                                  
+                              <div class="col-md-8">
+
+                                 <fieldset>
+                                    <legend>Paciente</legend> 
+                                    <div class="row">  
+                                        <div class="col-md-7" style="margin-top: -14px">                                        
+                                             <h4><strong>{{root.detalleFormula[0].mostrarPacientes()[0].getNombres() }} {{root.detalleFormula[0].mostrarPacientes()[0].getApellidos()}}</strong></h4>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>  
+                                          
+                             <div class="col-md-2">
+
+                                 <fieldset>
+                                    <legend>Fecha formula</legend> 
+                                    <div class="row">  
+                                        <div class="col-md-7" style="margin-top: -14px">                                          
+                                            <h4><strong>{{root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()}}</strong></h4>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>                       
+                            <div class="col-md-2">
+                                <fieldset>
+                                    <legend>Evolution</legend> 
+                                    <div class="row">
+                                        <div class="col-md-7" style="margin-top: -14px">  
+                                            <h4><strong>{{root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()}}</strong></h4>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                         
+                            
+                            
+                        </div>
                                      
                         
                         

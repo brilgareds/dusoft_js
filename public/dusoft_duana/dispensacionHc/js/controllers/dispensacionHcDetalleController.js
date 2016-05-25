@@ -177,7 +177,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     keyboard: true,
                     templateUrl: 'views/dispensacionHc/lotesMedicamentosFormulados.html',
                     scope: $scope,
-                    size: 'lg',
+                    windowClass: 'app-modal-window-xlg',
                     controller: function($scope, $modalInstance) {
 
                         $scope.cerrarVentanaDispensacionFormula = function() {

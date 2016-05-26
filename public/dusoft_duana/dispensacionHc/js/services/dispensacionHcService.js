@@ -4,10 +4,10 @@ define(["angular", "js/services"], function(angular, services) {
     services.factory('dispensacionHcService', 
                     ['$rootScope', 'Request', 'API',
                      "Usuario","$modal","localStorageService",
-                     "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosHc",
+                     "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosHc","LoteHc",
         function($rootScope, Request, API,
                  $modal, Usuario,localStorageService,
-             FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosHc) {
+             FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosHc,LoteHc) {
 
             var self = this;
             
@@ -164,7 +164,7 @@ define(["angular", "js/services"], function(angular, services) {
              self.listarMedicamentosFormulados = function(obj,callback){
                
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
-                        console.log("data ", data)
+                       console.log("AAAAA ", data)
                         callback(data);
                  });
              };
@@ -207,7 +207,45 @@ define(["angular", "js/services"], function(angular, services) {
                  });
              };
             
-           
+            
+             /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
+              * +Descripcion Consulta los lotes disponibles para el FOFO
+              */
+             self.existenciasBodegas = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.EXISTENCIAS_BODEGAS,"POST", obj, function(data){
+                        
+                        callback(data);
+                 });
+             };
+            
+           /**
+               * @author Cristian Ardila
+               * +Descripcion Funcion encargada de serializar los datos de los
+               *              lotes formulados contra los modelos
+               * @fecha 25/05/2016
+               */
+            self.renderListarLotes = function(lote){
+                
+              
+                var lotes = [];
+                for(var i in lote.existenciasBodegas){
+                    
+                    var _lote = lote.existenciasBodegas[i];
+                    
+                    var Lote  = LoteHc.get(_lote.lote,_lote.fecha_vencimiento, _lote.existencia_actual);  
+                       /* Lote.setPerioricidadEntrega(_lote.perioricidad_entrega);
+                        Lote.setTiempoTotal(_lote.tiempo_total);
+                        Lote.setPrincipioActivo(_lote.cod_principio_activo);
+                        Lote.setCantidadEntrega(_lote.cantidad_entrega);*/
+                    lotes.push(Lote);
+                }
+                       
+                  return lotes;
+            };
+            
              
                  return this;
         }]);

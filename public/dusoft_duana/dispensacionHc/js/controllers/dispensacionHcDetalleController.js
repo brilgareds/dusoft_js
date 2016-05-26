@@ -180,7 +180,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           */  
         $scope.detalleLotesProductoFormula = function(entity) {
        
-                console.log(" entity ", entity);
+               
                 $scope.producto= entity.codigo_producto;
                 $scope.descripcion= entity.descripcion;
                 $scope.cantidadEntrega = entity.cantidadEntrega;
@@ -199,16 +199,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     
                 dispensacionHcService.cantidadProductoTemporal(obj,function(data){
                     
+                  
                     if(data.status === 200) {       
                        
                         if (entity.codigo_producto === data.obj.cantidadProducto[0].codigo_formulado) {
                            
                                $scope.cantidadPendiente= entity.cantidadEntrega - data.obj.cantidadProducto[0].total;
                          }
-                      
-                      that.ventanaDispensacionFormula();
+                                that.consultarExistenciasBodegas(entity);
+                        //that.ventanaDispensacionFormula();
                         
                      }else{
+                         
                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                      }
 
@@ -217,6 +219,74 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                
             };
            
+         /**
+          * @author Cristian ardila
+          * +Descripcion Metodo encargado de invocar el servicio que consultara
+          *              los lotes disponibles para el producto
+          * @fecha 26/05/2016
+          */
+         that.consultarExistenciasBodegas = function(entity){
+             var lotes;
+             var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           existenciasBodegas: {
+                                codigoProducto: entity.codigo_producto,
+                                principioActivo: entity.principioActivo
+                           }
+                       }    
+                    };
+             
+            dispensacionHcService.existenciasBodegas(obj, function(data){
+                 entity.vaciarLotes();
+                 if(data.status === 200) {                      
+                 
+                    entity.agregarLotes(dispensacionHcService.renderListarLotes(data.obj))   
+                    $scope.lotes = entity.mostrarLotes();
+                    that.ventanaDispensacionFormula();
+                 }else{
+                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                 }
+              
+                console.log("entity ", $scope.lotes)
+            });
+            
+            
+         };
+         
+           
+         /**
+           * @author Cristian Ardila
+           * +Descripcion Se visualiza la tabla con los medicamentos listos
+           *              para dispensar
+           * @fecha 25/05/2016
+           */
+           $scope.listaLotes = {
+               data: 'lotes[0]',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+               columnDefs: [
+
+
+            {field: 'getCodigo()', displayName: 'Codigo', width:"15%"},
+            {field: 'getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"15%"},
+            {field: 'getCantidad()', displayName: 'Cantidad', width:"15%"},
+            /*{field: 'getDescripcion()', displayName: 'Medicamento'},
+            {field: 'getExistencia()', displayName: 'Cant. entregar', width:"10%"},
+            {field: 'getPerioricidadEntrega()', displayName: 'Perioricidad entrega', width:"25%"},
+            {field: 'getTiempoTotal()', displayName: 'Dias tratamiento', width:"15%"},
+            {field: 'Dispensar', width: "10%",
+                       displayName: "Dispensar",
+                       cellClass: "txt-center",
+                       cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)">Dispensar</button>'
+
+                 }*/
+               ]
+           };
+         
+         
          that.ventanaDispensacionFormula = function() {
                
             $scope.opts = {

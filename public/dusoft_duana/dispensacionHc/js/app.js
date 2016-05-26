@@ -35,6 +35,7 @@ define([
     "models/PlanesHc",
     "models/TipoDocumentoHc",
     "models/ProductosHc",
+    "models/LoteHc",
     "controllers/dispensacionHcController",
     "controllers/dispensacionHcDetalleController",
     "services/dispensacionHcService"

@@ -10,6 +10,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 this.tiempoTotal;
                 this.principioActivo;
                 this.cantidadEntrega;
+                this.lotes = [];
             }
             
             ProductosHc.prototype = Object.create(Producto.getClass().prototype);
@@ -46,6 +47,20 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 this.cantidadEntrega;              
             };
             
+            
+            
+             ProductosHc.prototype.agregarLotes = function(lote){
+                this.lotes.push(lote);
+             };
+             
+             ProductosHc.prototype.mostrarLotes = function(){
+                return this.lotes;
+             };
+             
+             ProductosHc.prototype.vaciarLotes = function () {
+                this.lotes = [];
+             };
+             
             
             this.get = function(codigo_producto, descripcion, existencia) {
                 return new ProductosHc(codigo_producto, descripcion, existencia);

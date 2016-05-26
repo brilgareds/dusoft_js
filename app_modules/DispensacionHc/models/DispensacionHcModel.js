@@ -131,7 +131,7 @@ DispensacionHcModel.prototype.listarTipoDocumento = function(callback){
   
   G.knex.raw(sql).then(function(resultado){  
     
-      callback(false, resultado.rows)
+      callback(false, resultado)
   }).catch(function(err){     
         
       callback(err)
@@ -178,7 +178,7 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
   
   G.knex.raw(sql).then(function(resultado){  
     
-      callback(false, resultado.rows)
+      callback(false, resultado)
   }).catch(function(err){     
         console.log("err ", err)
       callback(err)
@@ -231,7 +231,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
    
   G.knex.raw(sql,parametros).then(function(resultado){  
      
-      callback(false, resultado.rows)
+      callback(false, resultado)
   }).catch(function(err){     
       
       callback(err)
@@ -251,7 +251,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
 DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
 
       var parametros = {1: obj.codigoProducto, 2: obj.evolucionId, 3: obj.principioActivo};
-      console.log("parametros ", parametros)
+    
       var condicion = "";
        if (obj.principioActivo !== "") {
            condicion =" and med.cod_principio_activo = :3 ";
@@ -266,14 +266,14 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
                     where tmp.codigo_formulado= :1\
                     and tmp.evolucion_id = :2 "+condicion+" GROUP BY codigo_formulado";
   
-       console.log("sql ", sql)
+      
   
     
   G.knex.raw(sql,parametros).then(function(resultado){  
-     console.log("cantidadProductoTemporal resultado = ", resultado)
-      callback(false, resultado.rows)
+     
+      callback(false, resultado)
   }).catch(function(err){     
-        console.log("err cantidadProductoTemporal = ", err)
+     
       callback(err)
   });
           

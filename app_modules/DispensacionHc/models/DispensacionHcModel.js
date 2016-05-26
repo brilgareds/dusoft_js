@@ -250,34 +250,30 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
  */
 DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
 
-      var parametros = {1: obj.evolucionId};
+      var parametros = {1: obj.codigoProducto, 2: obj.evolucionId, 3: obj.principioActivo};
+      console.log("parametros ", parametros)
+      var condicion = "";
+       if (obj.principioActivo !== "") {
+           condicion =" and med.cod_principio_activo = :3 ";
+        } else {
+           condicion=" and invp.codigo_producto = :1 ";
+        } 
        
-        var sql =  "SELECT j.total,j.codigo_formulado\
-                    FROM\
-                    (SELECT COALESCE(sum(tmp.cantidad_despachada),0) as total,tmp.codigo_formulado\
-                            from   hc_dispensacion_medicamentos_tmp tmp\
-                                       LEFT JOIN medicamentos med ON(tmp.codigo_formulado=med.codigo_medicamento)\
-                                     LEFT JOIN inventarios_productos invp ON(tmp.codigo_formulado=invp.codigo_producto)\
-                            where  tmp.codigo_formulado = :1\
-                            and    tmp.evolucion_id = :2\
-                    GROUP BY 2\
-                    UNION\
-                    SELECT COALESCE(sum(tmp.cantidad_despachada),0) as total,tmp.codigo_formulado\
-                            from   hc_dispensacion_insumos_tmp tmp\
-                                       LEFT JOIN medicamentos med ON(tmp.codigo_formulado=med.codigo_medicamento)\
-                                     LEFT JOIN inventarios_productos invp ON(tmp.codigo_formulado=invp.codigo_producto)\
-                            where  tmp.codigo_formulado= :1\
-                            and    tmp.evolucion_id = :2\
-                    GROUP BY 2) as j";
+        var sql =  "SELECT COALESCE(sum(tmp.cantidad_despachada),0) as total,tmp.codigo_formulado\
+                    FROM hc_dispensacion_medicamentos_tmp tmp\
+                         LEFT JOIN medicamentos med ON(tmp.codigo_formulado=med.codigo_medicamento)\
+                         LEFT JOIN inventarios_productos invp ON(tmp.codigo_formulado=invp.codigo_producto)\
+                    where tmp.codigo_formulado= :1\
+                    and tmp.evolucion_id = :2 "+condicion+" GROUP BY codigo_formulado";
+  
+       console.log("sql ", sql)
   
     
-  
-    console.log("parametros ", parametros)
   G.knex.raw(sql,parametros).then(function(resultado){  
-     console.log("OK medicamentos formulados", resultado)
+     console.log("cantidadProductoTemporal resultado = ", resultado)
       callback(false, resultado.rows)
   }).catch(function(err){     
-        console.log("err medicamentos formulados", err)
+        console.log("err cantidadProductoTemporal = ", err)
       callback(err)
   });
           
@@ -285,6 +281,52 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
 };
 
 
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de obtener los lotes relacionados con los productos    
+ *              de los FOFO
+ * @controller DispensacionHc.prototype.existenciasBodegas
+ */
+DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
+
+      var parametros = {1: obj.empresa, 2: obj.centroUtilidad, 3: obj.bodega, 4: obj.principioActivo, 5: obj.codigoProducto};
+      console.log("parametros ", parametros)
+      var condicion = "";
+       if (obj.principioActivo !== "") {
+
+           condicion =" and med.cod_principio_activo =  :4 ";
+        } else {
+
+           condicion=" and fv.codigo_producto = :5 ";
+        } 
+       
+        var sql =  " SELECT\
+                    fc_descripcion_producto_alterno(fv.codigo_producto) as producto,\
+                    fv.*\
+                    FROM existencias_bodegas_lote_fv AS fv\
+                    JOIN existencias_bodegas as ext ON (fv.empresa_id = ext.empresa_id) and (fv.centro_utilidad = ext.centro_utilidad) and (fv.bodega = ext.bodega) and (fv.codigo_producto = ext.codigo_producto)\
+                    JOIN inventarios as inv ON (ext.empresa_id = inv.empresa_id) and (ext.codigo_producto = inv.codigo_producto)\
+                    JOIN inventarios_productos as invp ON (inv.codigo_producto = invp.codigo_producto)\
+                    LEFT JOIN medicamentos med ON (fv.codigo_producto=med.codigo_medicamento)\
+                    where fv.empresa_id = :1 and fv.centro_utilidad = :2\
+                    and fv.bodega = :3 and fv.existencia_actual > 0 "+condicion+" ORDER BY invp.descripcion ASC,fv.fecha_vencimiento ASC";
+  
+       console.log("sql ", sql)
+  
+    
+  G.knex.raw(sql,parametros).then(function(resultado){  
+     console.log("cantidadProductoTemporal resultado = ", resultado)
+      callback(false, resultado.rows)
+  }).catch(function(err){     
+        console.log("err cantidadProductoTemporal = ", err)
+      callback(err)
+  });
+          
+    
+};
 //DispensacionHcModel.$inject = ["m_productos"];
 
 

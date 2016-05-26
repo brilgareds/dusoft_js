@@ -27,7 +27,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          
             // Definicion variables del View
            
-            $scope.root = {
+           that.init = function() {
+               
+               $scope.root = {
                 seleccionarOtros: '',
                 empresaSeleccionada: '',
                 activar_tab: {tab_productos: true, tab_cargar_archivo: false},
@@ -40,9 +42,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 prefijoList: '',
                 existenciaDocumento:true,
                 detalleFormula: []
-               
-
-            };
+                
+              
+                 };
+    
+            };  
+            
             
             $scope.documentoDespachoAprobado;
             
@@ -141,7 +146,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            *              para dispensar
            * @fecha 25/05/2016
            */
-            $scope.listaMedicamentosFormulados = {
+           $scope.listaMedicamentosFormulados = {
                data: 'root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0]',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -158,25 +163,63 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             {field: 'Dispensar', width: "10%",
                        displayName: "Dispensar",
                        cellClass: "txt-center",
-                       cellTemplate: '<button class="btn btn-default btn-xs" ng-click="ventanaDispensacionFormula(row.entity)">Dispensar</button>'
+                       cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)">Dispensar</button>'
 
                  }
                ]
            };
                     
-           
-           /**
-             * @author Cristian Manuel Ardila Troches
-             * @fecha  04/03/2016
-             * +Descripcion: Se desplegara una ventana modal con un formulario
-             *               el cual permitira hacer una busqueda avanzada por
-             *               producto
-             * @param {type} cotizacion_pedido
-             */
-            $scope.ventanaDispensacionFormula = function(obj) {
-                
+
+        /**
+          * @author Cristian Manuel Ardila Troches
+          * @fecha  04/03/2016
+          * +Descripcion: Se desplegara una ventana modal con un formulario
+          *               el cual permitira hacer una busqueda avanzada por
+          *               producto
+          * @param {type} cotizacion_pedido
+          */  
+        $scope.detalleLotesProductoFormula = function(entity) {
+       
+                console.log(" entity ", entity);
+                $scope.producto= entity.codigo_producto;
+                $scope.descripcion= entity.descripcion;
+                $scope.cantidadEntrega = entity.cantidadEntrega;
+                $scope.cantidadPendiente = 44885;
+              
+                var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           cantidadProducto: {
+                                codigoProducto: entity.codigo_producto,
+                                evolucionId: resultadoStorage.evolucionId,
+                                principioActivo: entity.principioActivo
+                           }
+                       }    
+                    };
+                    
+                dispensacionHcService.cantidadProductoTemporal(obj,function(data){
+                    
+                    if(data.status === 200) {       
+                       
+                        if (entity.codigo_producto === data.obj.cantidadProducto[0].codigo_formulado) {
+                           
+                               $scope.cantidadPendiente= entity.cantidadEntrega - data.obj.cantidadProducto[0].total;
+                         }
+                      
+                      that.ventanaDispensacionFormula();
+                        
+                     }else{
+                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                     }
+
+                });
                // $scope.datos_view.pedido_seleccionado = obj;       
-             /*   $scope.opts = {
+               
+            };
+           
+         that.ventanaDispensacionFormula = function() {
+               
+            $scope.opts = {
                     backdrop: 'static',
                     backdropClick: true,
                     dialogFade: false,
@@ -194,16 +237,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             
                 };
                 var modalInstance = $modal.open($scope.opts);
-            };
-           
-           
+                
+           };
            
            $scope.regresarListaFormulas = function() {
-                $state.go('DispensacionHc');*/
+                $state.go('DispensacionHc');
             };
 
-            that.init = function() {
-            };       
+                 
             that.init();
             
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

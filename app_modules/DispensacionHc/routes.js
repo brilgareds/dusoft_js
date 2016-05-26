@@ -35,6 +35,12 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/cantidadProductoTemporal", function(req, res){
         c_dispensacion_hc.cantidadProductoTemporal(req, res);
     });
+    
+    // lotes de los productos de cada FOFO
+    app.post("/api/DispensacionHc/existenciasBodegas", function(req, res){
+        c_dispensacion_hc.existenciasBodegas(req, res);
+    });
+    
   
     
 };

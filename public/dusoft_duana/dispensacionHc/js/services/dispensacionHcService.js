@@ -163,9 +163,8 @@ define(["angular", "js/services"], function(angular, services) {
               */
              self.listarMedicamentosFormulados = function(obj,callback){
                
-                 
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
-
+                        console.log("data ", data)
                         callback(data);
                  });
              };
@@ -186,12 +185,27 @@ define(["angular", "js/services"], function(angular, services) {
                     var Productos  = ProductosHc.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
                         Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
                         Productos.setTiempoTotal(_productos.tiempo_total);
+                        Productos.setPrincipioActivo(_productos.cod_principio_activo);
+                        Productos.setCantidadEntrega(_productos.cantidad_entrega);
                     productos.push(Productos);
                 }
                        
                   return productos;
             };
             
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
+              * +Descripcion Consulta todas las formulas
+              */
+             self.cantidadProductoTemporal = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.CANTIDAD_PRODUCTO_TEMPORAL,"POST", obj, function(data){
+
+                        callback(data);
+                 });
+             };
             
            
              

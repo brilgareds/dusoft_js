@@ -139,18 +139,24 @@ DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
    
     
     
-    if (args.cantidadProducto.codigoProducto === undefined) {
+    if (!args.cantidadProducto.codigoProducto) {
         res.send(G.utils.r(req.url, 'Se requiere el codigo de producto', 404, {cantidadProducto: []}));
         return;
     }
     
-    if (args.cantidadProducto.evolucionId === undefined) {
+    if (!args.cantidadProducto.evolucionId) {
         res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {cantidadProducto: []}));
         return;
     }
     
+    if (!args.cantidadProducto.principioActivo) {
+        res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {cantidadProducto: []}));
+        return;
+    }
+    
    var parametros = {codigoProducto:args.cantidadProducto.codigoProducto,
-                     evolucionId:args.cantidadProducto.evolucionId
+                     evolucionId:args.cantidadProducto.evolucionId,
+                     principioActivo:args.cantidadProducto.principioActivo
                     };
    
    
@@ -200,6 +206,56 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
     }).done();
 };
 
+
+
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 24/05/2016
+ * +Descripcion Controlador encargado de consultar la lista los lotes de cada 
+ *              codigo del producto del FOFO
+ *              
+ */
+DispensacionHc.prototype.existenciasBodegas = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;
+   
+   if (args.existenciasBodegas === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_detalle_medicamentos_formulados: []}));
+        return;
+    }
+   
+    
+    
+    if (!args.existenciasBodegas.codigoProducto) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo de producto', 404, {cantidadProducto: []}));
+        return;
+    }
+    
+    
+    if (!args.existenciasBodegas.principioActivo) {
+        res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {cantidadProducto: []}));
+        return;
+    }
+    
+   var parametros = {empresa: 'FD',
+                     centroUtilidad:'06', 
+                     bodega:'06',
+                     codigoProducto:args.existenciasBodegas.codigoProducto,
+                     principioActivo:args.existenciasBodegas.principioActivo
+                    };
+   
+   
+   G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros).then(function(resultado){
+     
+       res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado}));
+        
+   }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 
 DispensacionHc.$inject = ["m_dispensacion_hc"];
 

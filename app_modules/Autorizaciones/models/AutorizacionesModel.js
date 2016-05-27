@@ -235,7 +235,7 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
 */
 AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina, callback) {
     var sql = "";
-    var limit="";
+    var limite="";
     var offsett="";
     if(obj.estadoActual===true){
         limite=1;

@@ -261,14 +261,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.tipoPedido=0;
                 that.buscarProductosBloqueados("");
             });
-            
-//            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-//                $scope.$$watchers = null;
-//                // set localstorage
-//                localStorageService.add("AutorizacionesProductos", null);
-//
-//            });
-            
+                       
 
         }]);
 });

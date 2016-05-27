@@ -139,6 +139,7 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
          * +Descripcion: Se valida si el estado del pedido es 
          *               1 activo
          *               8 (desaprobado por cartera)
+         *               10 (por autorizar)
          *               y el estado de la autorizacion del producto
          *               1 aprobado 
          *               2 denegado 
@@ -146,7 +147,7 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
         
         console.log("estado_actual",resultado[0].estado_actual_pedido,typeof(resultado[0].estado_actual_pedido));
         console.log("estado",args.autorizarProductos.estado,typeof(args.autorizarProductos.estado) );
-         if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0') 
+         if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0' || resultado[0].estado_actual_pedido === '10') 
                  && args.autorizarProductos.estado === 2) ||  args.autorizarProductos.estado === 1) {
             return  G.Q.ninvoke(that.m_autorizaciones, 'modificarAutorizacionProductos', termino);
   
@@ -220,6 +221,7 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
          * +Descripcion: Se valida si el estado del pedido es 
          *               1 activo
          *               8 activo (desaprobado por cartera)
+         *               10 (por autorizar)
          *               y el estado de la autorizacion del producto
          *               1 aprovado 
          *               1 denegado 
@@ -227,7 +229,7 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
         
          console.log("estado_actual",resultado[0].estado_actual_pedido,typeof(resultado[0].estado_actual_pedido));
         console.log("estado",args.autorizarProductos.estado,typeof(args.autorizarProductos.estado) );
-       if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0') 
+       if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0' || resultado[0].estado_actual_pedido === '10') 
                  && args.autorizarProductos.estado === 2) ||  args.autorizarProductos.estado === 1) {
 
             return  G.Q.ninvoke(that.m_autorizaciones, 'insertarAutorizacionProductos', termino);

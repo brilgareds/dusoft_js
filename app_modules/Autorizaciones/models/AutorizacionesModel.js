@@ -146,7 +146,9 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                 LEFT  JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id) \n\
                 WHERE true  " + WHERE2 + "\n\
                       AND a.empresa_id = :1 AND a.tipo_pedido = :2 \n\
-                      ";
+                      ) as p \n\
+               order by p.estado_verificado desc";
+    
      console.log("listarProductosBloqueados >>",sql);
      console.log("params >>",termino_busqueda);
    var query = G.knex.select(G.knex.raw(sql, parametros))
@@ -183,9 +185,9 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
 
     
     if (termino_busqueda.detalles === '0') {
-        SELECT = "DISTINCT  ON (a.pedido_id) a.pedido_id,";
+        SELECT = " * from ( select DISTINCT  ON (a.pedido_id) a.pedido_id,";
     } else {
-        SELECT = "DISTINCT a.autorizaciones_productos_pedidos_id AS autorizaciones_productos_pedidos_id,";
+        SELECT = " * from ( select DISTINCT a.autorizaciones_productos_pedidos_id AS autorizaciones_productos_pedidos_id,";
     }
 
    var sql =  SELECT + " \n\
@@ -212,7 +214,8 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                    INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)\n\
                    INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\n\
                    LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\n\
-                   WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2 ";
+                   WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2  ) as p \n\
+               order by p.estado_verificado desc";
     console.log("listarProductosBloqueadosfarmacia >>",sql);
      console.log("params >>",termino_busqueda);
    var parametros =  {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido}; 

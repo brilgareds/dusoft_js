@@ -138,7 +138,7 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
        /**
          * +Descripcion: Se valida si el estado del pedido es 
          *               1 activo
-         *               8 activo (desaprobado por cartera)
+         *               8 (desaprobado por cartera)
          *               y el estado de la autorizacion del producto
          *               1 aprobado 
          *               2 denegado 
@@ -268,7 +268,7 @@ Autorizaciones.prototype.listarVerificacionProductos = function(req, res) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-
+    
     termino.codigoProducto = args.verificacion.codigoProducto;
     termino.empresaId = args.verificacion.empresaId;
     termino.pedidoId = args.verificacion.pedidoId;

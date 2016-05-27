@@ -234,7 +234,12 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
 * @fecha 2016-05-25
 */
 AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina, callback) {
-    var sql = "";    
+    var sql = "";
+    var limit="";
+    if(obj.estadoActual===true){
+        limit=" limit 1";
+    }
+    
     if (obj.tipoPedido === 0) {
         sql = " a.pedido_id,a.codigo_producto,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\n\
                 a.estado,a.autorizaciones_productos_pedidos_id,\n\
@@ -251,8 +256,9 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                 LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\n\
                 WHERE \n\
                  a.pedido_id = :1 AND a.tipo_pedido = :2 AND \n\
-                 a.empresa_id = :3 AND a.codigo_producto = :4 \n\
-                 ORDER BY fecha_verificacion ASC";
+                  a.codigo_producto = :3 \n\
+                 ORDER BY fecha_verificacion ASC \n\
+                 "+limit;
     } else {
         sql = " a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\n\
                 a.pedido_id,a.codigo_producto,\n\
@@ -279,11 +285,13 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                 LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\n\
                 WHERE \n\
                     a.pedido_id = :1 AND a.tipo_pedido = :2  \n\
-                    AND a.codigo_producto = :4 \n\
-                    ORDER BY fecha_verificacion ASC";
+                    AND a.codigo_producto = :3 \n\
+                    ORDER BY fecha_verificacion ASC \n\
+                    "+limit;
     }
-    
-   var parametros =  {1: obj.pedidoId, 2: obj.tipoPedido, 3: obj.empresaId, 4: obj.codigoProducto}; 
+    console.log(">>>>>>>>>>>>>>>>>>>>",sql);
+    console.log("params>>>>>>>>>>>>>>>>>>>>",obj);
+   var parametros =  {1: obj.pedidoId, 2: obj.tipoPedido, 3: obj.codigoProducto}; 
    var query = G.knex.select(G.knex.raw(sql, parametros))
     .limit(G.settings.limit)
     .offset((pagina - 1) * G.settings.limit)

@@ -33,17 +33,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
              
-             if($state.is("AutorizacionesProductos") === true){
-                var estado = localStorageService.get("tabActivo");
-                if(estado){
-                    if(estado.estadoTab === 1 ){
-                      $scope.activarTabFarmacia = "true";                   
-                    }else{
-                      $scope.activarTabCliente = "true";  
-                    }
-                    $scope.tipoPedido=estado.estadoTab;
-                }
-             };
+//             if($state.is("AutorizacionesProductos") === true){
+//                var estado = localStorageService.get("tabActivo");
+//                if(estado){
+//                    if(estado.estadoTab === 1 ){
+//                      $scope.activarTabFarmacia = "true";                   
+//                    }else{
+//                      $scope.activarTabCliente = "true";  
+//                    }
+//                    $scope.tipoPedido=estado.estadoTab;
+//                }
+//             };
 
             that.init = function(callback) {
                 $scope.root = {};
@@ -258,16 +258,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             that.init(function() {
-                
+                $scope.tipoPedido=0;
                 that.buscarProductosBloqueados("");
             });
             
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-                $scope.$$watchers = null;
-                // set localstorage
-                localStorageService.add("AutorizacionesProductos", null);
-
-            });
+//            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+//                $scope.$$watchers = null;
+//                // set localstorage
+//                localStorageService.add("AutorizacionesProductos", null);
+//
+//            });
             
 
         }]);

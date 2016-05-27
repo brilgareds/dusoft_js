@@ -1160,7 +1160,6 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
 
     G.Q.ninvoke(thats.m_pedidos_farmacias, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(productos) {
         var estado_pedido='10';
-        console.log("qqqqqqqqqqqqqqqqqqqqqqqqqqq");
         thats.m_pedidos_farmacias.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function(_err) { 
             if (_err){
             res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
@@ -1170,10 +1169,8 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
         autorizacion.productos = productos;
         return G.Q.ninvoke(thats.m_pedidos, "guardarAutorizacion", autorizacion);
     }).then(function() {
-        console.log("qqqqqokk");
         callback(false);
     }).fail(function(err) {
-        console.log("qqqqqqqeroorrr",err);
         callback(err);
     });
 }

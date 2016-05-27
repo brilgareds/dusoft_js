@@ -10,10 +10,10 @@ var AutorizacionesModel = function() {
 */
 AutorizacionesModel.prototype.insertarAutorizacionProductos = function(obj, callback) {
 
-    var sql = "INSERT INTO \n\
-                 autorizaciones_productos_pedidos \n\
+    var sql = "INSERT INTO \
+                 autorizaciones_productos_pedidos \
                  (tipo_pedido,pedido_id,codigo_producto,estado,fecha_solicitud,fecha_verificacion,usuario_id,empresa_id)\
-                SELECT 	\n\
+                SELECT 	\
                  tipo_pedido,pedido_id,codigo_producto," + obj.estado + ",fecha_solicitud,now()," + obj.usuarioId + ",empresa_id\
                 FROM\
                   autorizaciones_productos_pedidos\
@@ -35,8 +35,8 @@ AutorizacionesModel.prototype.insertarAutorizacionProductos = function(obj, call
 */
 AutorizacionesModel.prototype.modificarAutorizacionProductos = function(obj, callback) {
 
-    var sql = " UPDATE \n\
-                autorizaciones_productos_pedidos SET \n\
+    var sql = " UPDATE \
+                autorizaciones_productos_pedidos SET \
 		estado = :1 ,fecha_verificacion=NOW(),usuario_id = :2	\
                 WHERE autorizaciones_productos_pedidos_id = :3 ; ";
     
@@ -58,7 +58,7 @@ AutorizacionesModel.prototype.modificarAutorizacionProductos = function(obj, cal
 */
 AutorizacionesModel.prototype.verificarAutorizacionProducto = function(obj, callback) {
 
-    var sql = "SELECT * \n\
+    var sql = "SELECT * \
                 FROM\n\
                 autorizaciones_productos_pedidos\n\
                 WHERE  usuario_id is null AND autorizaciones_productos_pedidos_id = :1 ;";
@@ -79,7 +79,7 @@ AutorizacionesModel.prototype.verificarAutorizacionProducto = function(obj, call
 */
 AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback) {
 
-    var sql = "SELECT * \n\
+    var sql = "SELECT * \
                 FROM\n\
                 autorizaciones_productos_pedidos\n\
                 WHERE  estado = '0' AND pedido_id = :1 ;";
@@ -105,11 +105,11 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
     
     if (termino_busqueda.termino !== '') {
         WHERE2 = " AND a.pedido_id =" + termino_busqueda.termino + " ";
-        WHERE1 = " INNER JOIN (\n\
-                              SELECT max(fecha_verificacion) AS fecha_verificacion,codigo_producto \n\
-                               FROM  autorizaciones_productos_pedidos AS a \n\
-                              WHERE true AND tipo_pedido= :2 AND a.pedido_id =" + termino_busqueda.termino + "  \n\
-                                GROUP BY 2) AS t \n\
+        WHERE1 = " INNER JOIN (\
+                              SELECT max(fecha_verificacion) AS fecha_verificacion,codigo_producto \
+                               FROM  autorizaciones_productos_pedidos AS a \
+                              WHERE true AND tipo_pedido= :2 AND a.pedido_id =" + termino_busqueda.termino + "  \
+                                GROUP BY 2) AS t \
                            ON ((t.fecha_verificacion=a.fecha_verificacion AND t.codigo_producto=a.codigo_producto) or a.fecha_verificacion is null) ";
     }
 
@@ -117,36 +117,36 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
     if (termino_busqueda.detalles === '0') {
         SELECT = " * from ( select DISTINCT  ON (a.pedido_id) a.pedido_id,";
     } else {
-        SELECT = " * from ( selectDISTINCT a.autorizaciones_productos_pedidos_id AS autorizaciones_productos_pedidos_id,";
+        SELECT = " * from ( select DISTINCT a.autorizaciones_productos_pedidos_id AS autorizaciones_productos_pedidos_id,";
     }
 
-    var sql =  SELECT + " \n\
-                a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\n\
-                a.pedido_id,a.codigo_producto,\n\
-                a.estado, case when a.estado='0' \n\
-                then 'Por Verificar' when (a.estado='1') \n\
-                then 'Aprobado' \n\
-                else 'Denegado' end AS estado_verificado, \n\
-                to_char(a.fecha_solicitud, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_solicitud,a.usuario_id AS usuario_verifica, \n\
-                to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion, \n\
-                a.usuario_id, \n\
-                a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto, \n\
-                c.nombre_tercero, \n\
-                b.tipo_id_tercero,b.tercero_id, \n\
-                    (SELECT count(pedido_id) \n\
-                     FROM autorizaciones_productos_pedidos \n\
-                     WHERE pedido_id = a.pedido_id AND \n\
-                           empresa_id=a.empresa_id AND \n\
-                           tipo_pedido=a.tipo_pedido AND estado = '0' ) AS poraprobacion \n\
-                FROM autorizaciones_productos_pedidos AS a \n\
+    var sql =  SELECT + " \
+                a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\
+                a.pedido_id,a.codigo_producto,\
+                a.estado, case when a.estado='0' \
+                then 'Por Verificar' when (a.estado='1') \
+                then 'Aprobado' \
+                else 'Denegado' end AS estado_verificado, \
+                to_char(a.fecha_solicitud, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_solicitud,a.usuario_id AS usuario_verifica, \
+                to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion, \
+                a.usuario_id, \
+                a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto, \
+                c.nombre_tercero, \
+                b.tipo_id_tercero,b.tercero_id, \
+                    (SELECT count(pedido_id) \
+                     FROM autorizaciones_productos_pedidos \
+                     WHERE pedido_id = a.pedido_id AND \
+                           empresa_id=a.empresa_id AND \
+                           tipo_pedido=a.tipo_pedido AND estado = '0' ) AS poraprobacion \
+                FROM autorizaciones_productos_pedidos AS a \
                 " + WHERE1 + "\
-                INNER JOIN ventas_ordenes_pedidos AS b ON (a.pedido_id=b.pedido_cliente_id AND autorizaciones_productos_pedidos_id=autorizaciones_productos_pedidos_id)  \n\
-                INNER JOIN terceros AS c ON (b.tipo_id_tercero =c.tipo_id_tercero AND b.tercero_id=c.tercero_id) \n\
-                INNER JOIN ventas_ordenes_pedidos_d AS d ON (b.pedido_cliente_id=d.pedido_cliente_id AND a.codigo_producto=d.codigo_producto) \n\
-                LEFT  JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id) \n\
-                WHERE true  " + WHERE2 + "\n\
-                      AND a.empresa_id = :1 AND a.tipo_pedido = :2 \n\
-                      ) as p \n\
+                INNER JOIN ventas_ordenes_pedidos AS b ON (a.pedido_id=b.pedido_cliente_id AND autorizaciones_productos_pedidos_id=autorizaciones_productos_pedidos_id)  \
+                INNER JOIN terceros AS c ON (b.tipo_id_tercero =c.tipo_id_tercero AND b.tercero_id=c.tercero_id) \
+                INNER JOIN ventas_ordenes_pedidos_d AS d ON (b.pedido_cliente_id=d.pedido_cliente_id AND a.codigo_producto=d.codigo_producto) \
+                LEFT  JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id) \
+                WHERE true  " + WHERE2 + "\
+                      AND a.empresa_id = :1 AND a.tipo_pedido = :2 \
+                      ) as p \
                order by p.estado_verificado desc";
     
      console.log("listarProductosBloqueados >>",sql);
@@ -175,11 +175,11 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
     
     if (termino_busqueda.termino !== '') {
         WHERE2 = " AND a.pedido_id =" + termino_busqueda.termino + " ";
-        WHERE1 = " INNER JOIN (\n\
-                              SELECT max(fecha_verificacion) AS fecha_verificacion,codigo_producto \n\
-                              FROM  autorizaciones_productos_pedidos AS a \n\
-                              WHERE true AND tipo_pedido= :2 AND a.pedido_id =" + termino_busqueda.termino + "  \n\
-                                GROUP BY 2) AS t \n\
+        WHERE1 = " INNER JOIN (\
+                              SELECT max(fecha_verificacion) AS fecha_verificacion,codigo_producto \
+                              FROM  autorizaciones_productos_pedidos AS a \
+                              WHERE true AND tipo_pedido= :2 AND a.pedido_id =" + termino_busqueda.termino + "  \
+                                GROUP BY 2) AS t \
                             ON ((t.fecha_verificacion=a.fecha_verificacion AND t.codigo_producto=a.codigo_producto) or a.fecha_verificacion is null) ";
     }
 
@@ -190,31 +190,31 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
         SELECT = " * from ( select DISTINCT a.autorizaciones_productos_pedidos_id AS autorizaciones_productos_pedidos_id,";
     }
 
-   var sql =  SELECT + " \n\
-                    a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\n\
-                    a.pedido_id,a.codigo_producto,\n\
-                    a.estado, case when a.estado='0' \n\
-                    then 'Por Verificar' when (a.estado='1') \n\
-                    then 'Aprobado' \n\
-                    else 'Denegado' end AS estado_verificado, \n\
-                    to_char(a.fecha_solicitud, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_solicitud,a.usuario_id AS usuario_verifica, \n\
-                    to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion, \n\
-                    a.usuario_id, \n\
-                    a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\n\
-                    d.descripcion AS nombre_tercero, '' AS tipo_id_tercero, '' AS tercero_id,\n\
-                        (SELECT count(pedido_id) \n\
-                        FROM autorizaciones_productos_pedidos \n\
-                        WHERE pedido_id = a.pedido_id AND \n\
-                        empresa_id=a.empresa_id AND \n\
-                        tipo_pedido=a.tipo_pedido AND estado = '0' ) AS poraprobacion,\n\
+   var sql =  SELECT + " \
+                    a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\
+                    a.pedido_id,a.codigo_producto,\
+                    a.estado, case when a.estado='0' \
+                    then 'Por Verificar' when (a.estado='1') \
+                    then 'Aprobado' \
+                    else 'Denegado' end AS estado_verificado, \
+                    to_char(a.fecha_solicitud, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_solicitud,a.usuario_id AS usuario_verifica, \
+                    to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion, \
+                    a.usuario_id, \
+                    a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\
+                    d.descripcion AS nombre_tercero, '' AS tipo_id_tercero, '' AS tercero_id,\
+                        (SELECT count(pedido_id) \
+                        FROM autorizaciones_productos_pedidos \
+                        WHERE pedido_id = a.pedido_id AND \
+                        empresa_id=a.empresa_id AND \
+                        tipo_pedido=a.tipo_pedido AND estado = '0' ) AS poraprobacion,\
                    b.fecha_registro AS fechaPedido,c.cantidad_solic AS numero_unidades,e.nombre\n\
-                   FROM autorizaciones_productos_pedidos  AS a \n\
+                   FROM autorizaciones_productos_pedidos  AS a \
                    " + WHERE1 + "\
-                   INNER JOIN solicitud_productos_a_bodega_principal AS b ON (a.pedido_id=b.solicitud_prod_a_bod_ppal_id)\n\
-                   INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)\n\
-                   INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\n\
-                   LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\n\
-                   WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2  ) as p \n\
+                   INNER JOIN solicitud_productos_a_bodega_principal AS b ON (a.pedido_id=b.solicitud_prod_a_bod_ppal_id)\
+                   INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)\
+                   INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\
+                   LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\
+                   WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2  ) as p \
                order by p.estado_verificado desc";
     console.log("listarProductosBloqueadosfarmacia >>",sql);
      console.log("params >>",termino_busqueda);
@@ -249,52 +249,52 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
     }
     
     if (obj.tipoPedido === 0) {
-        sql = " a.pedido_id,a.codigo_producto,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\n\
-                a.estado,a.autorizaciones_productos_pedidos_id,\n\
-                case when a.estado='0'\n\
-                    then 'Por Verificar' when (a.estado='1') \n\
-                    then 'Aprobado'\n\
-                    else 'Denegado' end AS estado_verificado,\n\
-                to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion,\n\
+        sql = " a.pedido_id,a.codigo_producto,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\
+                a.estado,a.autorizaciones_productos_pedidos_id,\
+                case when a.estado='0'\
+                    then 'Por Verificar' when (a.estado='1') \
+                    then 'Aprobado'\
+                    else 'Denegado' end AS estado_verificado,\
+                to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion,\
                 a.usuario_id,e.nombre,d.numero_unidades\n\
                 FROM\n\
                     autorizaciones_productos_pedidos AS a\n\
-                INNER JOIN ventas_ordenes_pedidos AS b ON (a.pedido_id=b.pedido_cliente_id)\n\
-                INNER JOIN ventas_ordenes_pedidos_d AS d ON (b.pedido_cliente_id=d.pedido_cliente_id AND a.codigo_producto=d.codigo_producto)\n\
-                LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\n\
-                WHERE \n\
-                 a.pedido_id = :1 AND a.tipo_pedido = :2 AND \n\
-                  a.codigo_producto = :3 \n\
-                 ORDER BY fecha_verificacion ASC \n\
+                INNER JOIN ventas_ordenes_pedidos AS b ON (a.pedido_id=b.pedido_cliente_id)\
+                INNER JOIN ventas_ordenes_pedidos_d AS d ON (b.pedido_cliente_id=d.pedido_cliente_id AND a.codigo_producto=d.codigo_producto)\
+                LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\
+                WHERE \
+                 a.pedido_id = :1 AND a.tipo_pedido = :2 AND \
+                  a.codigo_producto = :3 \
+                 ORDER BY fecha_verificacion ASC \
                  ";
     } else {
-        sql = " a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\n\
-                a.pedido_id,a.codigo_producto,\n\
-                a.estado, \n\
-                case when a.estado='0' \n\
-                    then 'Por Verificar' when (a.estado='1') \n\
-                    then 'Aprobado' \n\
-                    else 'Denegado' end AS estado_verificado, \n\
-                to_char(a.fecha_solicitud, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_solicitud,a.usuario_id AS usuario_verifica, \n\
-                to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion, \n\
-                a.usuario_id, \n\
-                a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\n\
-                d.descripcion AS nombre_tercero, '' AS tipo_id_tercero, '' AS tercero_id,\n\
-                (SELECT count(pedido_id) \n\
-                    FROM autorizaciones_productos_pedidos \n\
-                    WHERE pedido_id = a.pedido_id AND \n\
-                         empresa_id=a.empresa_id AND \n\
-                    tipo_pedido=a.tipo_pedido AND estado = '0' ) AS poraprobacion,\n\
+        sql = " a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\
+                a.pedido_id,a.codigo_producto,\
+                a.estado, \
+                case when a.estado='0' \
+                    then 'Por Verificar' when (a.estado='1') \
+                    then 'Aprobado' \
+                    else 'Denegado' end AS estado_verificado, \
+                to_char(a.fecha_solicitud, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_solicitud,a.usuario_id AS usuario_verifica, \
+                to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion, \
+                a.usuario_id, \
+                a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\
+                d.descripcion AS nombre_tercero, '' AS tipo_id_tercero, '' AS tercero_id,\
+                (SELECT count(pedido_id) \
+                    FROM autorizaciones_productos_pedidos \
+                    WHERE pedido_id = a.pedido_id AND \
+                         empresa_id=a.empresa_id AND \
+                    tipo_pedido=a.tipo_pedido AND estado = '0' ) AS poraprobacion,\
                 b.fecha_registro AS fechaPedido,c.cantidad_solic AS numero_unidades,e.nombre\n\
-                FROM autorizaciones_productos_pedidos  AS a \n\
-                INNER JOIN solicitud_productos_a_bodega_principal AS b ON (a.pedido_id=b.solicitud_prod_a_bod_ppal_id)\n\
-                INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)\n\
-                INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\n\
-                LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\n\
-                WHERE \n\
-                    a.pedido_id = :1 AND a.tipo_pedido = :2  \n\
-                    AND a.codigo_producto = :3 \n\
-                    ORDER BY fecha_verificacion ASC \n\
+                FROM autorizaciones_productos_pedidos  AS a \
+                INNER JOIN solicitud_productos_a_bodega_principal AS b ON (a.pedido_id=b.solicitud_prod_a_bod_ppal_id)\
+                INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)\
+                INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\
+                LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\
+                WHERE \
+                    a.pedido_id = :1 AND a.tipo_pedido = :2  \
+                    AND a.codigo_producto = :3 \
+                    ORDER BY fecha_verificacion ASC \
                     ";
     }
     console.log(">>>>>>>>>>>>>>>>>>>>",sql);

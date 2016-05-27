@@ -30,6 +30,8 @@ define(["angular", "js/controllers",
             $scope.fechaSolicitud = "";
             $scope.nombreTercero = "";
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
+            $scope.termino = "";
+            $scope.termino = termino;
 
             var termino = {
                 tipoPedido: filtroPedido.tipoPedido,
@@ -37,10 +39,13 @@ define(["angular", "js/controllers",
                 empresaId: filtroPedido.empresaId,
                 codigoProducto: filtroPedido.codigoProducto
             }
-
+            
             that.init = function(callback) {
                 $scope.root = {};
-                $scope.listarVerificacion(termino);
+                $scope.paginaactual = 1;
+                $scope.paginas = 0;
+                $scope.items = 0;
+                that.listarVerificacion(termino);
                 $scope.pedido = filtroPedido.pedidoId;
                 $scope.empresaId = filtroPedido.empresaId;
                 $scope.codigoProducto = filtroPedido.codigoProducto;
@@ -62,7 +67,10 @@ define(["angular", "js/controllers",
              * @fecha: 11/05/2016
              * @returns {objeto}
              */
-            $scope.listarVerificacion = function(objs) {
+            that.listarVerificacion = function(objs,paginado) {
+                if ($scope.ultima_busqueda !== $scope.termino) {
+                    $scope.paginaactual = 1;
+                }
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -70,7 +78,8 @@ define(["angular", "js/controllers",
                             tipoPedido: objs.tipoPedido,
                             pedidoId: objs.pedidoId,
                             empresaId: objs.empresaId,
-                            codigoProducto: objs.codigoProducto
+                            pagina_actual: $scope.paginaactual,
+                            codigoProducto: objs.codigoProducto,
                         }
                     }
                 };
@@ -80,7 +89,8 @@ define(["angular", "js/controllers",
                         obj,
                         function(data) {
                             if (data.status === 200) {
-                                that.renderProductos(data, 1);
+                                $scope.ultima_busqueda = $scope.termino;
+                                that.renderProductos(data,paginado);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
@@ -95,6 +105,7 @@ define(["angular", "js/controllers",
              * @returns {objeto}
              */
             that.renderProductos = function(data, paginando) {
+                listaAutorizacion=[];
                 $scope.items = data.obj.listarVerificacionProductos.length;
 
 //                se valida que hayan registros en una siguiente pagina
@@ -125,7 +136,6 @@ define(["angular", "js/controllers",
                     listaAutorizacion.push(producto);
                 }
                 $scope.listarPedido = listaAutorizacion;
-//
             };
 
             /**
@@ -158,6 +168,29 @@ define(["angular", "js/controllers",
                     {field: 'autorizacion[0].nombreVerifica', displayName: 'Responsable', width: "30%"}
                 ]
 
+            };
+            
+             /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {pagina}
+             */
+             $scope.paginaAnterior = function() {
+                if($scope.paginaactual === 1) return;
+                $scope.paginaactual--;
+                that.listarVerificacion(termino,true);
+            };
+            
+            /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {pagina}
+             */
+            $scope.paginaSiguiente = function() {
+                $scope.paginaactual++;
+                that.listarVerificacion(termino,true);
             };
 
 

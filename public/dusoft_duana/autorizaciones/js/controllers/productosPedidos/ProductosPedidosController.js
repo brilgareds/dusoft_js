@@ -31,25 +31,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
+            
+             
+             if($state.is("AutorizacionesProductos") === true){
+                var estado = localStorageService.get("tabActivo");
+                 if(estado.estadoTab === 1){
+                   $scope.activarTabFarmacia = "true";                   
+                 }else{
+                   $scope.activarTabCliente = "true";  
+                 }
+                 $scope.tipoPedido=estado.estadoTab;
+             };
 
             that.init = function(callback) {
                 $scope.root = {};
-                $scope.listarPedido = [];
+                
                 $scope.tipoPedido = 0;
                 $scope.Empresa = Empresa.get();
                 $scope.EmpresasProductos = [];
+                $scope.paginaactual = 1;
                 $scope.paginas = 0;
                 $scope.items = 0;
-                $scope.paginaactual = 1;
-                $scope.termino_busqueda = "";
+                $scope.listarPedido = [];
                 $scope.ultima_busqueda = "";
                 $scope.listaEmpresas = [];
                 $scope.empresa_seleccion = '';
                 $scope.termino = "";
-                $scope.empresa_seleccion = $scope.seleccion.codigo;
-                $scope.buscarProductosBloqueados();
+                $scope.empresa_seleccion = $scope.seleccion.codigo;                
                 callback();
-
             };
 
             /**
@@ -61,9 +70,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.onAutorizacionTab = function(termino) {
                 $scope.tipoPedido = termino;
                 $scope.listarPedido = [];
-                listaTerceros = [];
+               // listaTerceros = [];
                 $scope.empresa_seleccion = $scope.seleccion.codigo;
-                $scope.buscarProductosBloqueados();
+                that.buscarProductosBloqueados("");
             };
 
             /**
@@ -74,10 +83,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             $scope.onBuscarPedido = function(ev, terminoBusqueda) {
                 if (ev.which === 13) {
-                    console.log("buscar_pedido termino: ", terminoBusqueda);
                     $scope.termino = terminoBusqueda;
-                    $scope.buscarProductosBloqueados();
-                    listaTerceros = [];
+                    $scope.paginaactual = 1;
+                    that.buscarProductosBloqueados(terminoBusqueda,true);
+                    //listaTerceros = [];
                     // that.buscarPedidos(terminoBusqueda);
                 }
             };
@@ -88,20 +97,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * +Descripcion Metodo encargado de invocar el servicio que
              *              listar todos las autorizaciones de productos en pedido
              */
-            $scope.buscarProductosBloqueados = function() {
-
+            that.buscarProductosBloqueados = function(termino,paginando) {
+                    
+                if ($scope.ultima_busqueda !== $scope.termino) {
+                    $scope.paginaactual = 1;
+                }
+                
                 var obj = {
-                    termino_busqueda: $scope.termino,
+                    termino_busqueda: termino,
                     pagina_actual: $scope.paginaactual,
                     empresa_id: $scope.empresa_seleccion,
                     session: $scope.session,
                     tipo_pedido: $scope.tipoPedido,
                     detalle: '0'
                 };
-
                 AutorizacionPedidosService.buscarProductosBloqueados(obj, function(data) {
                     if (data.status === 200) {
-                        that.renderProductos(data, 1);
+                        $scope.ultima_busqueda = $scope.termino;
+                        that.renderProductos(data, paginando);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
@@ -115,10 +128,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {objeto}
              */
             that.renderProductos = function(data, paginando) {
-                console.log("AAAAAA1>>>>", data.obj.listarProductosBloqueados);
-                console.log("AAAAAA2>>>>", paginando);
+                listaTerceros = [];
                 $scope.items = data.obj.listarProductosBloqueados.length;
-
+                
 //                se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
                     if ($scope.paginaactual > 1) {
@@ -135,7 +147,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 for (var i in data.obj.listarProductosBloqueados) {
 
                     var objt = data.obj.listarProductosBloqueados[i];
-
                     var pedidoAutorizacion = PedidoAutorizacion.get();
                     var datos = {};
                     datos.numero_pedido = objt.pedido_id;
@@ -152,8 +163,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     listaTerceros.push(terceros);
                 }
                 $scope.listarPedido = listaTerceros;
-                console.log("TerceroAutorizacion->>>>>>", $scope.listarPedido);
-
             };
 
             /**
@@ -205,10 +214,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 localStorageService.add("pedidoCabecera",
                         {
                             numeroPedido: pedido,
-                            tipoPedido: $scope.tipoPedido,
+                            tipoPedido: $scope.tipoPedido
                         });
                 $state.go("AutorizacionesDetalle");
             };
+            
+             /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {pagina}
+             */
+             $scope.paginaAnterior = function() {
+                if($scope.paginaactual === 1) return;
+                $scope.paginaactual--;
+                that.buscarProductosBloqueados($scope.termino, true);
+            };
+            
+            /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {pagina}
+             */
+            $scope.paginaSiguiente = function() {
+                $scope.paginaactual++;
+                that.buscarProductosBloqueados($scope.termino, true);
+            };
+            
 
             /**
              * +Descripcion: evento de la vista para pasar a la ventana detalle
@@ -218,11 +251,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {ventana}
              */
             $scope.onAbrirVentana = function(pedido) {
+                
                 that.mostrarDetalle(pedido);
             };
 
             that.init(function() {
+                
+                that.buscarProductosBloqueados("");
             });
+            
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.$$watchers = null;
+                // set localstorage
+                localStorageService.add("AutorizacionesProductos", null);
+
+            });
+            
 
         }]);
 });

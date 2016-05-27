@@ -31,6 +31,7 @@ define(["angular", "js/services"], function(angular, services) {
                                     }
                                 },
                         function(data) {
+                           
                             callback(data);
                         }
                         );

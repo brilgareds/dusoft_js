@@ -26,32 +26,29 @@ define(["angular", "js/controllers",
             var that = this;
             var filtroPedido = localStorageService.get("pedidoCabecera");
             var listaTerceros = [];
-            $scope.hola = "";
             $scope.Empresa = Empresa.get();
             $scope.pedido = "";
             $scope.fechaSolicitud = "";
             $scope.nombreTercero = "";
             $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
+            $scope.paginas = 0;
+            $scope.items = 0;
+            $scope.paginaactual = 1;
 
 
             that.init = function(callback) {
                 $scope.root = {};
                 $scope.listarPedido = [];
                 $scope.tipoPedido = filtroPedido.tipoPedido;
-                $scope.EmpresasProductos = [];
-                $scope.paginas = 0;
-                $scope.items = 0;
-                $scope.paginaactual = 1;
+                $scope.EmpresasProductos = [];                
                 $scope.termino_busqueda = "";
                 $scope.ultima_busqueda = "";
                 $scope.listaEmpresas = [];
                 $scope.termino = "";
                 $scope.empresa_seleccion = $scope.seleccion.codigo;
-
-                $scope.pedido = filtroPedido.numeroPedido.pedidos[0].numero_pedido;
+                $scope.termino = filtroPedido.numeroPedido.pedidos[0].numero_pedido;        
                 $scope.fechaSolicitud = filtroPedido.numeroPedido.pedidos[0].fechaSolicitud;
-                $scope.nombreTercero = filtroPedido.numeroPedido.nombre;
-                $scope.buscarProductosBloqueados();
+                $scope.nombreTercero = filtroPedido.numeroPedido.nombre;                
                 callback();
 
             };
@@ -91,10 +88,14 @@ define(["angular", "js/controllers",
              * +Descripcion Metodo encargado de invocar el servicio que
              *              listar todos las autorizaciones de productos en pedido
              */
-            $scope.buscarProductosBloqueados = function() {
-
+            that.buscarProductosBloqueados = function(termino,paginando) {
+                
+                 if ($scope.ultima_busqueda !== $scope.termino) {
+                    $scope.paginaactual = 1;
+                }
+                
                 var obj = {
-                    termino_busqueda: $scope.pedido,
+                    termino_busqueda: $scope.termino,
                     pagina_actual: $scope.paginaactual,
                     empresa_id: $scope.empresa_seleccion,
                     session: $scope.session,
@@ -104,7 +105,8 @@ define(["angular", "js/controllers",
 
                 AutorizacionPedidosService.buscarProductosBloqueados(obj, function(data) {
                     if (data.status === 200) {
-                        that.renderProductos(data, 1);
+                        $scope.ultima_busqueda = $scope.termino;
+                        that.renderProductos(data, paginando);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
@@ -119,14 +121,14 @@ define(["angular", "js/controllers",
              */
             $scope.verificarAutorizacion = function(objs) {
                 var obj = {
-                    session: $scope.session,
-                    data: {
-                        autorizarProductos: {
-                            estado: objs.estado,
-                            autorizacionId: objs.autorizacionId
-                        }
-                    }
-                };
+                        session: $scope.session,
+                        data: {
+                                autorizarProductos: {
+                                  estado: objs.estado,
+                                  autorizacionId: objs.autorizacionId
+                                }
+                              }
+                          };
 
                 Request.realizarRequest(
                         API.AUTORIZACIONES.VERIFICAR_AUTORIZACION_PRODUCTOS,
@@ -134,13 +136,10 @@ define(["angular", "js/controllers",
                         obj,
                         function(data) {
                             if (data.status === 200) {
-                                console.log("verificarAutorizacionProductos",data.obj.verificarAutorizacionProductos);
                                 if (data.obj.verificarAutorizacionProductos.length > 0) {
-                                    console.log("modificarAutorizacion");
                                     $scope.modificarAutorizacion(objs);
                                     
                                 } else {
-                                    console.log("insertarAutorizacion");
                                     $scope.insertarAutorizacion(objs);
                                 }
                             }
@@ -155,7 +154,6 @@ define(["angular", "js/controllers",
              * @returns {objeto}
              */
             $scope.modificarAutorizacion = function(objs) {
-                console.log("");
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -174,8 +172,7 @@ define(["angular", "js/controllers",
                         obj,
                         function(data) {
                             if (data.status === 200) {
-                                console.log("modificarAAAAAAAAAAAA");
-                                return;//refrescar
+                                return;
                             }
                         }
                 );
@@ -188,7 +185,6 @@ define(["angular", "js/controllers",
              * @returns {objeto}
              */
             $scope.insertarAutorizacion = function(objs) {
-                console.log("insertarAutorizacion");
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -207,15 +203,11 @@ define(["angular", "js/controllers",
                         obj,
                         function(data) {
                             if (data.status === 200) {
-                                console.log("insertarAutorizacionAAAAAAAAAAAA");
-                                return;//refrescar
+                                return;
                             }
                         }
                 );
             };
-
-
-
 
             /**
              * +Descripcion:renderizar la consulta al modelo
@@ -224,6 +216,7 @@ define(["angular", "js/controllers",
              * @returns {objeto}
              */
             that.renderProductos = function(data, paginando) {
+                listaTerceros = [];
                 $scope.items = data.obj.listarProductosBloqueados.length;
 
 //                se valida que hayan registros en una siguiente pagina
@@ -242,6 +235,7 @@ define(["angular", "js/controllers",
                 for (var i in data.obj.listarProductosBloqueados) {
 
                     var objt = data.obj.listarProductosBloqueados[i];
+                     console.log("AAAAA>>>>>>> ",data);
                     var autorizacion = Autorizacion.get(objt.autorizaciones_productos_pedidos_id);
                     autorizacion.setFechaVerificacion(objt.fecha_verificacion);
                     autorizacion.setResponsable(objt.usuario_verifica);
@@ -268,8 +262,7 @@ define(["angular", "js/controllers",
                     listaTerceros.push(terceros);
                 }
                 $scope.listarPedido = listaTerceros;
-                console.log("TerceroAutorizacion->>>>>>", $scope.listarPedido);
-
+                console.log("AAAAA>>>>>>> ",$scope.listarPedido);
             };
 
             /**
@@ -310,8 +303,8 @@ define(["angular", "js/controllers",
                                             <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==1" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Aprobado <span class="caret"></span></button>\
                                             <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==2" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Denegado <span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="onEstdoPedido(1,row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].autorizacionId)" >Aprobar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="onEstdoPedido(2,row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].autorizacionId)" >Denegar</a></li>\
+                                                <li ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0 || row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==2" ><a href="javascript:void(0);" ng-click="onEstdoPedido(1,row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].autorizacionId)" >Aprobar</a></li>\
+                                                <li ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0 || row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==1" ><a href="javascript:void(0);" ng-click="onEstdoPedido(2,row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].autorizacionId)" >Denegar</a></li>\
                                              </ul>\
                                        </div>'
                     },
@@ -334,7 +327,9 @@ define(["angular", "js/controllers",
              * @returns {ventana}
              */
             that.volverAPedido = function() {
-                $state.go("AutorizacionesProductos");
+                var activo='';
+                $state.go("AutorizacionesProductos");                
+                localStorageService.add("tabActivo",{estadoTab:$scope.tipoPedido});
             };
 
             /**
@@ -347,7 +342,7 @@ define(["angular", "js/controllers",
             that.mostrarDetalle = function(codigoProducto) {
                 localStorageService.add("verificacionDetalle",
                         {
-                            pedidoId: $scope.pedido,
+                            pedidoId: $scope.termino,
                             empresaId: $scope.empresa_seleccion,
                             codigoProducto: codigoProducto,
                             tipoPedido: $scope.tipoPedido,
@@ -355,6 +350,29 @@ define(["angular", "js/controllers",
                             nombreTercero: $scope.nombreTercero
                         });
                 $state.go("DetalleVerificacion");
+            };
+            
+             /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {pagina}
+             */
+             $scope.paginaAnterior = function() {
+                if($scope.paginaactual === 1) return;
+                $scope.paginaactual--;
+                that.buscarProductosBloqueados($scope.termino, true);
+            };
+            
+            /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 11/05/2016
+             * @returns {pagina}
+             */
+            $scope.paginaSiguiente = function() {
+                $scope.paginaactual++;
+                that.buscarProductosBloqueados($scope.termino, true);
             };
 
             /**
@@ -378,7 +396,8 @@ define(["angular", "js/controllers",
             };
 
             that.init(function() {
+                that.buscarProductosBloqueados($scope.termino);
             });
-
+            
         }]);
 });

@@ -1750,7 +1750,6 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
                 res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
 
             }).fail(function(err) {
-                 console.log("error222222222222222222222222>>>>>>",err);
                 res.send(G.utils.r(req.url, 'Error Finalizando el Registro de la Autorizacion', 500, {documento_temporal: {}}));
             });
 
@@ -1792,7 +1791,6 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
     }).then(function(){
          callback(false);
     }).fail(function(err) {
-        console.log(">>>>>>errorrrr444444444444444>>>>>>",err);
         callback(err);
     }).done();
 }

@@ -36,7 +36,15 @@
 
                                     </div>
                                 </div>
-
+                                <br/>
+                                <div class="row text-center">
+                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+                                        <span class="glyphicon glyphicon-chevron-left" ></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                                        <span class="glyphicon glyphicon-chevron-right" ></span>
+                                    </button>
+                                </div>
                                 <br/>
                             </div>
                         </div>

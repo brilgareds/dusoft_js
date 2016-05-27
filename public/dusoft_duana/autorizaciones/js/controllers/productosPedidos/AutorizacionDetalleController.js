@@ -251,6 +251,7 @@ define(["angular", "js/controllers",
                     autorizacion.setNombreEstado(objt.estado_verificado);
 
                     var producto = Producto.get(objt.codigo_producto, objt.descripcion_producto, objt.numero_unidades);
+                    producto.setEstado(objt.estado_productos);
                     producto.setAutorizacion(autorizacion);
 
                     var pedidoAutorizacion = PedidoAutorizacion.get();
@@ -284,7 +285,7 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "10%",
+                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "5%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==2" class="btn btn-danger btn-xs" >\
                                                     <i class="glyphicon glyphicon-remove"></i>\n\
@@ -301,10 +302,22 @@ define(["angular", "js/controllers",
                                             </div>'
                     },
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].descripcion', displayName: 'Producto', width: "40%"},
+                    {field: 'Estado', displayName: 'Estado Producto', cellClass: "txt-center dropdown-button", width: "8%",
+                        cellTemplate: ' <div class="row">\
+                                                <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].estado==0" class="btn btn-danger btn-xs" >\
+                                                    <i class="glyphicon glyphicon-remove"></i>\n\
+                                                        <span> Inactivo</span>\
+                                                </button>\
+                                                <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].estado==1" class="btn btn-primary btn-xs" >\
+                                                    <i class="glyphicon glyphicon-ok"></i>\
+                                                    <span> Activo</span>\
+                                                </button>\
+                                        </div>'
+                    },                    
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].cantidad', displayName: 'Cantidad', width: "10%"},
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].fechaVerificacion', displayName: 'Fecha', width: "10%"},
-                    {field: 'obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].nombreVerifica', displayName: 'Responsable', width: "20%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {field: 'obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].nombreVerifica', displayName: 'Responsable', width: "10%"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",width: "10%",
                         cellTemplate: '<div class="btn-group">\
                                             <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Pendiente <span class="caret"></span></button>\
                                             <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==1" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Aprobado <span class="caret"></span></button>\
@@ -315,7 +328,7 @@ define(["angular", "js/controllers",
                                              </ul>\
                                        </div>'
                     },
-                    {displayName: "Detalle", cellClass: "txt-center dropdown-button",
+                    {displayName: "Detalle", cellClass: "txt-center dropdown-button",width: "8%",
                         cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0"  ng-click="onAbrirVentana(row.entity.obtenerPedidoPorPosiscion(0).productos[0].codigo_producto)">\n\
                                              <span class="glyphicon glyphicon-search"></span>\

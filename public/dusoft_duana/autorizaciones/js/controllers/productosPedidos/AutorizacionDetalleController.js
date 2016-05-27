@@ -25,6 +25,8 @@ define(["angular", "js/controllers",
 
             var that = this;
             var filtroPedido = localStorageService.get("pedidoCabecera");
+            
+            console.log("filtroPedido>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",filtroPedido);
             var listaTerceros = [];
             $scope.Empresa = Empresa.get();
             $scope.pedido = "";
@@ -46,7 +48,8 @@ define(["angular", "js/controllers",
                 $scope.listaEmpresas = [];
                 $scope.termino = "";
                 $scope.empresa_seleccion = $scope.seleccion.codigo;
-                $scope.termino = filtroPedido.numeroPedido.pedidos[0].numero_pedido;        
+                $scope.termino = filtroPedido.numeroPedido.pedidos[0].numero_pedido;
+                $scope.pedido = filtroPedido.numeroPedido.pedidos[0].numero_pedido;
                 $scope.fechaSolicitud = filtroPedido.numeroPedido.pedidos[0].fechaSolicitud;
                 $scope.nombreTercero = filtroPedido.numeroPedido.nombre;                
                 callback();
@@ -67,9 +70,10 @@ define(["angular", "js/controllers",
             that.denegarPedidos = function(estado, autorizacionId) {
                 var objs = {
                     estado: estado,
-                    autorizacionId: autorizacionId,
+                    autorizacionId: autorizacionId
                 }
                 $scope.verificarAutorizacion(objs);
+                that.buscarProductosBloqueados($scope.termino, true);
             };
 
             /**
@@ -340,15 +344,15 @@ define(["angular", "js/controllers",
              * @returns {ventana}
              */
             that.mostrarDetalle = function(codigoProducto) {
-                localStorageService.add("verificacionDetalle",
-                        {
-                            pedidoId: $scope.termino,
-                            empresaId: $scope.empresa_seleccion,
-                            codigoProducto: codigoProducto,
-                            tipoPedido: $scope.tipoPedido,
-                            fechaPedido: $scope.fechaSolicitud,
-                            nombreTercero: $scope.nombreTercero
-                        });
+//                localStorageService.add("verificacionDetalle",
+//                        {
+//                            pedidoId: $scope.termino,
+//                            empresaId: $scope.empresa_seleccion,
+//                            codigoProducto: codigoProducto,
+//                            tipoPedido: $scope.tipoPedido,
+//                            fechaPedido: $scope.fechaSolicitud,
+//                            nombreTercero: $scope.nombreTercero
+//                        });
                 $state.go("DetalleVerificacion");
             };
             

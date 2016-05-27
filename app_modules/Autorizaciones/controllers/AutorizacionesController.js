@@ -284,11 +284,9 @@ Autorizaciones.prototype.listarVerificacionProductos = function(req, res) {
             then(function(listarVerificacionProductos) {
         res.send(G.utils.r(req.url, 'Listar Productos Verificados ok!!!!', 200, {listarVerificacionProductos: listarVerificacionProductos}));
 
-    }).
-       fail(function(err) {
+    }).fail(function(err) {
        res.send(G.utils.r(req.url, 'Error al Consultar Productos Verificados', 500, {listarVerificacionProductos: {}}));
-    }).
-       done();
+    }).done();
 
 };
 

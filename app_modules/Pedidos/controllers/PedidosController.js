@@ -40,27 +40,42 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
     var centro_utilidad = args.pedidos.centro_utilidad_id;
     var bodega = args.pedidos.bodega_id;
 
+    var params = {
+        tipoPedido:(identificador === 'FM')? 0 : 1,
+        pedidoId: numero_pedido,
+        codigoProducto:codigo_producto,
+        estadoActual:true
+    };
+    
+    G.Q.ninvoke(that.m_autorizaciones,"listarVerificacionProductos", params, 1).then(function(resultado){
+        
+        console.log("resulado ", resultado);
+        that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, centro_utilidad, bodega, {activos:true}, function(err, existencias_productos) {
 
-    that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, centro_utilidad, bodega, {activos:true}, function(err, existencias_productos) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
-            return;
-        }
-
-        that.m_pedidos.calcular_disponibilidad_producto(identificador, empresa_id, numero_pedido, codigo_producto, function(err, disponibilidad) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
                 return;
             }
-            res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {
-                existencias_producto: existencias_productos, 
-                disponibilidad_bodega: disponibilidad.disponible_bodega,
-                estado:disponibilidad.estado,
-                stock:disponibilidad.stock
-            }));
+
+            that.m_pedidos.calcular_disponibilidad_producto(identificador, empresa_id, numero_pedido, codigo_producto, function(err, disponibilidad) {
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
+                    return;
+                }
+                res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {
+                    existencias_producto: existencias_productos, 
+                    disponibilidad_bodega: disponibilidad.disponible_bodega,
+                    estado:disponibilidad.estado,
+                    stock:disponibilidad.stock
+                }));
+            });
         });
-    });
+        
+    }).fail(function(err){
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
+    }).done();
+    
 };
 
 Pedidos.prototype.consultarLogs = function(req, res) {

@@ -160,7 +160,7 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
      }).
        then(function(resultado){
        var def = G.Q.defer();
-        if(resultado.rowCount === 0){
+        if(resultado.rowCount === 0 && args.autorizarProductos.estado === 2){
             evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
 
@@ -236,7 +236,7 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
      }).
         then(function(resultado){
         var def = G.Q.defer();
-        if(resultado.rowCount === 0){
+        if(resultado.rowCount === 0 && args.autorizarProductos.estado === 2){
             evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
 

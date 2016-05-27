@@ -5,6 +5,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             function ProductoAutorizacion(codigo, nombre, cantidad) {
                 Producto.getClass().call(this, codigo, nombre, null);
                 this.cantidad = cantidad || "";
+                this.estado = "";
                 this.autorizacion = [];
             }
 
@@ -20,6 +21,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoAutorizacion.prototype.getCantidad = function() {
                 return this.cantidad;
+            };
+            
+            ProductoAutorizacion.prototype.setEstado = function(estado) {
+                this.estado = estado;
+            };
+
+            ProductoAutorizacion.prototype.getEstado = function() {
+                return this.estado;
             };
 
             // autorizacion array

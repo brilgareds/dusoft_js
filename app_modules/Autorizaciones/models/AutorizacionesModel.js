@@ -200,7 +200,7 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                     else 'Denegado' end AS estado_verificado, \
                     to_char(a.fecha_solicitud, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_solicitud,a.usuario_id AS usuario_verifica, \
                     to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion, \
-                    a.usuario_id, \
+                    a.usuario_id,f.estado as estado_productos, \
                     a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto,\
                     d.descripcion AS nombre_tercero, '' AS tipo_id_tercero, '' AS tercero_id,\
                         (SELECT count(pedido_id) \
@@ -214,6 +214,7 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                    INNER JOIN solicitud_productos_a_bodega_principal AS b ON (a.pedido_id=b.solicitud_prod_a_bod_ppal_id)\
                    INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)\
                    INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\
+                   INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)   \
                    LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\
                    WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2  ) as p \
                order by p.estado_verificado desc";

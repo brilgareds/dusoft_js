@@ -143,22 +143,23 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
          *               1 aprobado 
          *               2 denegado 
          */
+        
+        console.log("estado_actual",resultado[0].estado_actual_pedido,typeof(resultado[0].estado_actual_pedido));
+        console.log("estado",args.autorizarProductos.estado,typeof(args.autorizarProductos.estado) );
          if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0') 
                  && args.autorizarProductos.estado === 2) ||  args.autorizarProductos.estado === 1) {
             return  G.Q.ninvoke(that.m_autorizaciones, 'modificarAutorizacionProductos', termino);
   
         } else {
-            throw 'Error al Actualizar Productos Bloqueados';
+            throw {estado:403, mensaje:"El estado actual del pedido no puede ser modificado"};
             
         }
 
-    }).
-       then(function(resultados){  
+    }). then(function(resultados){  
         
        return G.Q.ninvoke(that.m_autorizaciones, 'verificarPedidoAutorizado', numero_pedido);        
         
-     }).
-       then(function(resultado){
+     }).then(function(resultado){
        var def = G.Q.defer();
         if(resultado.rowCount === 0 && args.autorizarProductos.estado === 2){
             evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
@@ -167,12 +168,13 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
         }else{
             def.resolve();
         }    
-     }).
-        then(function(){
+     }).then(function(){
         res.send(G.utils.r(req.url, 'Actualizo Autorizacion de Productos Bloqueados!!!!', 200, {modificarAutorizacionProductos: ''}));         
-     }).
-        fail(function(err){        
-        res.send(G.utils.r(req.url, err, 500, {}));         
+     }).fail(function(err){        
+        if (!err.estado){
+            err= {estado: 500, mensaje: err};
+         }
+         res.send(G.utils.r(req.url, err.mensaje, err.estado, {}));        
     }).done();
  };
 
@@ -222,19 +224,20 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
          *               1 aprovado 
          *               1 denegado 
          */
+        
+         console.log("estado_actual",resultado[0].estado_actual_pedido,typeof(resultado[0].estado_actual_pedido));
+        console.log("estado",args.autorizarProductos.estado,typeof(args.autorizarProductos.estado) );
        if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0') 
                  && args.autorizarProductos.estado === 2) ||  args.autorizarProductos.estado === 1) {
 
             return  G.Q.ninvoke(that.m_autorizaciones, 'insertarAutorizacionProductos', termino);
-        } else {
-            throw 'Error Insertar Productos Bloqueados';
+        } else {          
+            throw {estado:403, mensaje:"El estado actual del pedido no puede ser modificado"};
         }
-     }).
-        then(function(resultados){         
+     }).then(function(resultados){         
         return G.Q.ninvoke(that.m_autorizaciones, 'verificarPedidoAutorizado', numero_pedido);        
         
-     }).
-        then(function(resultado){
+     }).then(function(resultado){
         var def = G.Q.defer();
         if(resultado.rowCount === 0 && args.autorizarProductos.estado === 2){
             evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
@@ -243,14 +246,15 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
         }else{
            def.resolve();
         }    
-     }).
-        then(function(){
+     }).then(function(){
         res.send(G.utils.r(req.url, 'Inserto Autorizacion de Productos Bloqueados!!!!', 200, {insertarAutorizacionProductos: ''}));
-     }).
-        fail(function(err){     
-        res.send(G.utils.r(req.url, err, 500, {}));         
-     }).
-        done();
+     }).fail(function(err){     
+         if (!err.estado){
+            err= {estado: 500, mensaje: err};
+         }
+         res.send(G.utils.r(req.url, err.mensaje, err.estado, {}));         
+         
+     }).done();
  };
  
 /**

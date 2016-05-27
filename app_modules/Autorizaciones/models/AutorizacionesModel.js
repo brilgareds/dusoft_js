@@ -122,7 +122,7 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
 
     var sql =  SELECT + " \
                 a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\
-                a.pedido_id,a.codigo_producto,\
+                a.pedido_id,a.codigo_producto,d.numero_unidades,\
                 a.estado, case when a.estado='0' \
                 then 'Por Verificar' when (a.estado='1') \
                 then 'Aprobado' \
@@ -131,7 +131,7 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                 to_char(a.fecha_verificacion, 'DD-MM-YYYY HH12:MI:SS AM') AS fecha_verificacion, \
                 a.usuario_id, \
                 a.empresa_id,fc_descripcion_producto(a.codigo_producto) AS descripcion_producto, \
-                c.nombre_tercero, \
+                c.nombre_tercero,e.nombre,f.estado as estado_productos, \
                 b.tipo_id_tercero,b.tercero_id, \
                     (SELECT count(pedido_id) \
                      FROM autorizaciones_productos_pedidos \
@@ -144,6 +144,7 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                 INNER JOIN terceros AS c ON (b.tipo_id_tercero =c.tipo_id_tercero AND b.tercero_id=c.tercero_id) \
                 INNER JOIN ventas_ordenes_pedidos_d AS d ON (b.pedido_cliente_id=d.pedido_cliente_id AND a.codigo_producto=d.codigo_producto) \
                 LEFT  JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id) \
+                INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)   \
                 WHERE true  " + WHERE2 + "\
                       AND a.empresa_id = :1 AND a.tipo_pedido = :2 \
                       ) as p \

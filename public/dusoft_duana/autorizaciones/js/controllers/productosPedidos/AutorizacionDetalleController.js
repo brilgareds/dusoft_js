@@ -176,6 +176,8 @@ define(["angular", "js/controllers",
                         function(data) {
                             if (data.status === 200) {
                                 that.buscarProductosBloqueados($scope.termino, true);
+                            }else{
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         }
                 );
@@ -207,6 +209,8 @@ define(["angular", "js/controllers",
                         function(data) {
                             if (data.status === 200) {
                                 that.buscarProductosBloqueados($scope.termino, true);
+                            }else{
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         }
                 );

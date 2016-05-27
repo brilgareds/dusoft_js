@@ -262,7 +262,7 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                 WHERE \
                  a.pedido_id = :1 AND a.tipo_pedido = :2 AND \
                   a.codigo_producto = :3 \
-                 ORDER BY fecha_verificacion ASC \
+                 ORDER BY fecha_verificacion DESC \
                  ";
     } else {
         sql = " a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\
@@ -291,7 +291,7 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                 WHERE \
                     a.pedido_id = :1 AND a.tipo_pedido = :2  \
                     AND a.codigo_producto = :3 \
-                    ORDER BY fecha_verificacion ASC \
+                    ORDER BY fecha_verificacion DESC \
                     ";
     }
     console.log(">>>>>>>>>>>>>>>>>>>>",sql);

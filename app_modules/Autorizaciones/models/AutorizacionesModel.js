@@ -147,7 +147,8 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                 WHERE true  " + WHERE2 + "\n\
                       AND a.empresa_id = :1 AND a.tipo_pedido = :2 \n\
                       ";
-    
+     console.log("listarProductosBloqueados >>",sql);
+     console.log("params >>",termino_busqueda);
    var query = G.knex.select(G.knex.raw(sql, parametros))
     .limit(G.settings.limit)
     .offset((pagina - 1) * G.settings.limit)
@@ -212,7 +213,8 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                    INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\n\
                    LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\n\
                    WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2 ";
-    
+    console.log("listarProductosBloqueadosfarmacia >>",sql);
+     console.log("params >>",termino_busqueda);
    var parametros =  {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido}; 
    var query = G.knex.select(G.knex.raw(sql, parametros))
     .limit(G.settings.limit)

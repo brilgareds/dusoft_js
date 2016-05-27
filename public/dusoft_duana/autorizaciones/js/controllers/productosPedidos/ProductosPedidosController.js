@@ -35,12 +35,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              
              if($state.is("AutorizacionesProductos") === true){
                 var estado = localStorageService.get("tabActivo");
-                 if(estado.estadoTab === 1){
-                   $scope.activarTabFarmacia = "true";                   
-                 }else{
-                   $scope.activarTabCliente = "true";  
-                 }
-                 $scope.tipoPedido=estado.estadoTab;
+                if(estado){
+                    if(estado.estadoTab === 1 ){
+                      $scope.activarTabFarmacia = "true";                   
+                    }else{
+                      $scope.activarTabCliente = "true";  
+                    }
+                    $scope.tipoPedido=estado.estadoTab;
+                }
              };
 
             that.init = function(callback) {

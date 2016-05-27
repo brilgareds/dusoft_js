@@ -150,7 +150,7 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "8%",
+                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "10%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.autorizacion[0].estado==2" class="btn btn-danger btn-xs" >\
                                                     <i class="glyphicon glyphicon-remove"></i>\n\

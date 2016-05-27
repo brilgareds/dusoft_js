@@ -73,7 +73,6 @@ define(["angular", "js/controllers",
                     autorizacionId: autorizacionId
                 }
                 $scope.verificarAutorizacion(objs);
-                that.buscarProductosBloqueados($scope.termino, true);
             };
 
             /**
@@ -145,7 +144,7 @@ define(["angular", "js/controllers",
                                     
                                 } else {
                                     $scope.insertarAutorizacion(objs);
-                                }
+                                }                                
                             }
                         }
                 );
@@ -176,7 +175,7 @@ define(["angular", "js/controllers",
                         obj,
                         function(data) {
                             if (data.status === 200) {
-                                return;
+                                that.buscarProductosBloqueados($scope.termino, true);
                             }
                         }
                 );
@@ -207,7 +206,7 @@ define(["angular", "js/controllers",
                         obj,
                         function(data) {
                             if (data.status === 200) {
-                                return;
+                                that.buscarProductosBloqueados($scope.termino, true);
                             }
                         }
                 );
@@ -344,15 +343,15 @@ define(["angular", "js/controllers",
              * @returns {ventana}
              */
             that.mostrarDetalle = function(codigoProducto) {
-//                localStorageService.add("verificacionDetalle",
-//                        {
-//                            pedidoId: $scope.termino,
-//                            empresaId: $scope.empresa_seleccion,
-//                            codigoProducto: codigoProducto,
-//                            tipoPedido: $scope.tipoPedido,
-//                            fechaPedido: $scope.fechaSolicitud,
-//                            nombreTercero: $scope.nombreTercero
-//                        });
+                localStorageService.add("verificacionDetalle",
+                        {
+                            pedidoId: $scope.termino,
+                            empresaId: $scope.empresa_seleccion,
+                            codigoProducto: codigoProducto,
+                            tipoPedido: $scope.tipoPedido,
+                            fechaPedido: $scope.fechaSolicitud,
+                            nombreTercero: $scope.nombreTercero
+                        });
                 $state.go("DetalleVerificacion");
             };
             

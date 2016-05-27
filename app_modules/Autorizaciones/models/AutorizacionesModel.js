@@ -115,9 +115,9 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
 
     var SELECT = "";
     if (termino_busqueda.detalles === '0') {
-        SELECT = "DISTINCT  ON (a.pedido_id) a.pedido_id,";
+        SELECT = " * from ( select DISTINCT  ON (a.pedido_id) a.pedido_id,";
     } else {
-        SELECT = "DISTINCT a.autorizaciones_productos_pedidos_id AS autorizaciones_productos_pedidos_id,";
+        SELECT = " * from ( selectDISTINCT a.autorizaciones_productos_pedidos_id AS autorizaciones_productos_pedidos_id,";
     }
 
     var sql =  SELECT + " \n\
@@ -236,8 +236,13 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
 AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina, callback) {
     var sql = "";
     var limit="";
+    var offsett="";
     if(obj.estadoActual===true){
-        limit=" limit 1";
+        limite=1;
+        offsett=0;
+    }else{
+       limite=G.settings.limit;
+       offsett=(pagina - 1) * G.settings.limit;
     }
     
     if (obj.tipoPedido === 0) {
@@ -258,7 +263,7 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                  a.pedido_id = :1 AND a.tipo_pedido = :2 AND \n\
                   a.codigo_producto = :3 \n\
                  ORDER BY fecha_verificacion ASC \n\
-                 "+limit;
+                 ";
     } else {
         sql = " a.autorizaciones_productos_pedidos_id,a.tipo_pedido,\n\
                 a.pedido_id,a.codigo_producto,\n\
@@ -287,14 +292,15 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                     a.pedido_id = :1 AND a.tipo_pedido = :2  \n\
                     AND a.codigo_producto = :3 \n\
                     ORDER BY fecha_verificacion ASC \n\
-                    "+limit;
+                    ";
     }
     console.log(">>>>>>>>>>>>>>>>>>>>",sql);
     console.log("params>>>>>>>>>>>>>>>>>>>>",obj);
+    
    var parametros =  {1: obj.pedidoId, 2: obj.tipoPedido, 3: obj.codigoProducto}; 
    var query = G.knex.select(G.knex.raw(sql, parametros))
-    .limit(G.settings.limit)
-    .offset((pagina - 1) * G.settings.limit)
+    .limit(limite)
+    .offset(offsett)
     .then(function(resultado){  
      callback(false, resultado);
     }).

@@ -41,35 +41,36 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
     var bodega = args.pedidos.bodega_id;
 
     var params = {
-        tipoPedido:(identificador === 'FM')? 0 : 1,
+        tipoPedido:(identificador === 'FM')? 1 : 0,
         pedidoId: numero_pedido,
         codigoProducto:codigo_producto,
         estadoActual:true
     };
+    var existencias_productos;
+    var parametrosExistencias;
     
     G.Q.ninvoke(that.m_autorizaciones,"listarVerificacionProductos", params, 1).then(function(resultado){
         
-        console.log("resulado ", resultado);
-        that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, centro_utilidad, bodega, {activos:true}, function(err, existencias_productos) {
+        parametrosExistencias = {
+            activos:true, 
+            estadoAprobacion: (resultado.length > 0)? resultado[0].estado : '1'
+        };
+        
+        return G.Q.ninvoke(that.m_productos, "consultar_existencias_producto", empresa_id, codigo_producto, centro_utilidad, bodega, params);
+        
+    }).then(function(_existencias_productos){
+        
+        existencias_productos = _existencias_productos;
+        return G.Q.ninvoke(that.m_pedidos, "calcular_disponibilidad_producto", identificador, empresa_id, numero_pedido, codigo_producto, parametrosExistencias.estadoAprobacion);
+        
+    }).then(function(disponibilidad){
 
-            if (err) {
-                res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
-                return;
-            }
-
-            that.m_pedidos.calcular_disponibilidad_producto(identificador, empresa_id, numero_pedido, codigo_producto, function(err, disponibilidad) {
-                if (err) {
-                    res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
-                    return;
-                }
-                res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {
-                    existencias_producto: existencias_productos, 
-                    disponibilidad_bodega: disponibilidad.disponible_bodega,
-                    estado:disponibilidad.estado,
-                    stock:disponibilidad.stock
-                }));
-            });
-        });
+        res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {
+            existencias_producto: existencias_productos, 
+            disponibilidad_bodega: disponibilidad.disponible_bodega,
+            estado:disponibilidad.estado,
+            stock:disponibilidad.stock
+        }));
         
     }).fail(function(err){
         console.log("error generado ", err);

@@ -6,7 +6,7 @@ var PedidosModel = function(productos, pedidos_cliente, pedidos_farmacia) {
 };
 
 // Función para calcular la disponibilidad de un producto, teniendo en cuenta las "reservas"
-PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador, empresa_id, numero_pedido, codigo_producto, callback) {
+PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador, empresa_id, numero_pedido, codigo_producto, estadoAprobacion, callback) {
 
     var that = this;
 
@@ -72,9 +72,9 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 // se consulta el total de existencias del producto seleccionado
                                 that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, {}, function(err, stock_producto) {
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
-
+                                    
                                     //Producto bloqueado por compras, stock se deja en 0 para la formula de disponible
-                                    if (stock_producto[0].estado === '0') {
+                                    if (stock_producto[0].estado === '0' && estadoAprobacion !== '1') {
                                         stock = 0;
                                     }
 
@@ -106,7 +106,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     callback(err, {
                                         codigo_producto: codigo_producto,
                                         disponible_bodega: disponible_bodega,
-                                        estado: stock_producto[0].estado,
+                                        estado: (estadoAprobacion === '1' && stock_producto[0].estado === '0' ) ? "3" : stock_producto[0].estado,
                                         //Se regresa el stock asi el producto este inactivo.
                                         stock: (stock_producto.length === 1) ? stock_producto[0].existencia : 0
                                     }
@@ -170,7 +170,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                     //Producto bloqueado por compras, stock se deja en 0 para la formula de disponible
-                                    if (stock_producto[0].estado === '0') {
+                                    if (stock_producto[0].estado === '0' && estadoAprobacion !== '1') {
                                         stock = 0;
                                     }
                                     // Se aplica la Formula de Disponibilidad producto

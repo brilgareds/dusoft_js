@@ -212,7 +212,7 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                    FROM autorizaciones_productos_pedidos  AS a \
                    " + WHERE1 + "\
                    INNER JOIN solicitud_productos_a_bodega_principal AS b ON (a.pedido_id=b.solicitud_prod_a_bod_ppal_id)\
-                   INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)\
+                   INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id and a.codigo_producto=c.codigo_producto)\
                    INNER JOIN bodegas AS d ON (b.farmacia_id=d.empresa_id AND b.centro_utilidad=d.centro_utilidad AND b.bodega=d.bodega)\
                    INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)   \
                    LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\

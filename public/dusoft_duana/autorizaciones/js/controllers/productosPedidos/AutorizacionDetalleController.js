@@ -300,8 +300,12 @@ define(["angular", "js/controllers",
                                                     <span> Pendiente </span>\
                                                 </button>\
                                             </div>'
+                    },//obtenerPedidoPorPosiscion(0).productos[0].descripcion
+                    {field: 'descripcion', displayName: 'Producto', cellClass: "dropdown-button", width: "40%",
+                      cellTemplate:'<span ng-bind="row.entity.obtenerPedidoPorPosiscion(0).productos[0].codigo_producto"></span> - \
+                                    <span ng-bind="row.entity.obtenerPedidoPorPosiscion(0).productos[0].descripcion"></span>'
+                    
                     },
-                    {field: 'obtenerPedidoPorPosiscion(0).productos[0].descripcion', displayName: 'Producto', width: "40%"},
                     {field: 'Estado', displayName: 'Estado Producto', cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].estado==0" class="btn btn-danger btn-xs" >\

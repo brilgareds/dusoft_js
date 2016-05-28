@@ -338,7 +338,6 @@ function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto
  * +Descripcion: Funcion publica donde inicializa la funcion recursiva para almacenar la autorizacion
  */
 PedidosModel.prototype.guardarAutorizacion = function(parametros, callback) {
-    console.log("guardarAutorizacion1 ", parametros);
     __guardarAutorizacionesProductosPedidos(parametros, function(err, resultado) {
         if (err) {
             callback(err, resultado);
@@ -381,7 +380,6 @@ function __insertarAutorizacionesProductosPedido(params, callback) {
  * +Descripcion: Funcion recursiva que permite crear los poductos por autorizar
  */
 function __guardarAutorizacionesProductosPedidos(params, callback) {
-    console.log("__guardarAutorizacionesProductosPedidos ", params);
     var producto = params.productos[0];
     var def = G.Q.defer();
     if (!producto) {

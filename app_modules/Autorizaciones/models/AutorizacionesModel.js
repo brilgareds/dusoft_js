@@ -77,12 +77,31 @@ AutorizacionesModel.prototype.verificarAutorizacionProducto = function(obj, call
 */
 AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback) {
 
+    var sql = "SELECT * \
+               FROM \
+               autorizaciones_productos_pedidos \
+               WHERE  estado = '0' AND pedido_id = :1 ;";
+    G.knex.raw(sql, {1: obj}).then(function(resultado) {
+        callback(false, resultado);
+    }).catch (function(err) {
+        callback(err);
+    });
+}
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion consulta todas las atorizacioes que esten en estado 0
+* @params obj: pedidoId
+* @fecha 2016-05-25
+*/
+AutorizacionesModel.prototype.verificarProductoAutorizadoFarmacia = function(obj, callback) {
+
     var sql = " select count(*) as numero_productos,sum(verifica) as numero_denegados from ( \
                 select(   select                 \
                 case when (a.estado = '0')  \
-                then 0   \
+                then 1   \
                 when (a.estado='2')      \
-                then 1   end AS estado_verificado   \
+                then 1  else 0 end AS estado_verificado   \
                 FROM autorizaciones_productos_pedidos  AS a   \
                 where a.pedido_id = b.solicitud_prod_a_bod_ppal_id  AND a.codigo_producto = c.codigo_producto \
                 order by fecha_verificacion desc limit 1  ) as verifica  \
@@ -90,9 +109,39 @@ AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback
                 INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)   \
                 where b.solicitud_prod_a_bod_ppal_id = :1 \
                 ) as d; ";
-  
+       console.log("sql          ",sql);
+       console.log("param          ",obj);
     G.knex.raw(sql, {1: obj}).then(function(resultado) {
-        callback(false, resultado);
+        callback(false, resultado.rows);
+    }).catch (function(err) {
+        callback(err);
+    });
+};
+/**
+* @author Andres M Gonzalez
+* +Descripcion consulta todas las atorizacioes que esten en estado 0
+* @params obj: pedidoId
+* @fecha 2016-05-25
+*/
+AutorizacionesModel.prototype.verificarProductoAutorizadoCliente = function(obj, callback) {
+
+    var sql = " select count(*) as numero_productos,sum(verifica) as numero_denegados from ( \
+                select(   select                 \
+                case when (a.estado = '0')  \
+                then 1   \
+                when (a.estado='2')      \
+                then 1  else 0 end AS estado_verificado   \
+                FROM autorizaciones_productos_pedidos  AS a   \
+                where a.pedido_id = b.pedido_cliente_id  AND a.codigo_producto = c.codigo_producto \
+                order by fecha_verificacion desc limit 1  ) as verifica  \
+                from ventas_ordenes_pedidos AS b      \
+                INNER JOIN ventas_ordenes_pedidos_d AS c ON (c.pedido_cliente_id=b.pedido_cliente_id)   \
+                where b.pedido_cliente_id = :1 \
+                ) as d; ";
+       console.log("sql          ",sql);
+       console.log("param          ",obj);
+    G.knex.raw(sql, {1: obj}).then(function(resultado) {
+        callback(false, resultado.rows);
     }).catch (function(err) {
         callback(err);
     });

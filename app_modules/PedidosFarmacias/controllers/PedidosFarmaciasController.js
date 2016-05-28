@@ -1889,10 +1889,7 @@ PedidosFarmacias.prototype.actualizarEstadoActualPedido = function(req, res) {
     var numero_pedido = args.pedido_farmacia.numero_pedido;
     var estado = args.pedido_farmacia.estado;
 
-    console.log(">>>>>>>>>>>>>>>>>>> Actualizando estado del pedido ... desde TABLET ...");
-    console.log("Pedido: ", numero_pedido);
-    console.log("Estado: ", estado);
-    //return;
+        //return;
 
     that.m_pedidos_farmacias.actualizar_en_uso_pedido(numero_pedido, estado, function(err, rows, result) {
 

@@ -238,17 +238,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
              
             dispensacionHcService.existenciasBodegas(obj, function(data){
-                 entity.vaciarLotes();
+                
+                 entity.vaciarProductosHc();
                  if(data.status === 200) {                      
+                     
+                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));
                  
-                    entity.agregarLotes(dispensacionHcService.renderListarLotes(data.obj))   
-                    $scope.lotes = entity.mostrarLotes();
+                     $scope.lotes = entity.mostrarProductosHc();
                     that.ventanaDispensacionFormula();
                  }else{
                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                  }
               
-                console.log("entity ", $scope.lotes)
+                //console.log("entity ", $scope.lotes)
             });
             
             
@@ -269,20 +271,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 enableHighlighting: true,
                columnDefs: [
 
-
-            {field: 'getCodigo()', displayName: 'Codigo', width:"15%"},
-            {field: 'getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"15%"},
-            {field: 'getCantidad()', displayName: 'Cantidad', width:"15%"},
-            /*{field: 'getDescripcion()', displayName: 'Medicamento'},
-            {field: 'getExistencia()', displayName: 'Cant. entregar', width:"10%"},
-            {field: 'getPerioricidadEntrega()', displayName: 'Perioricidad entrega', width:"25%"},
-            {field: 'getTiempoTotal()', displayName: 'Dias tratamiento', width:"15%"},
-            {field: 'Dispensar', width: "10%",
+               {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},
+              // {field: 'getDescripcion()', displayName: 'Producto', width:"15%"},
+               {field: 'getConcentracion()', displayName: 'Concentracion', width:"10%"},
+               {field: 'getMolecula()', displayName: 'Descripcion'},
+               {field: 'getCodigoFormaFarmacologico()', displayName: 'F.Farmacologica', width:"10%"},
+               {field: 'getLaboratorio()', displayName: 'Laboratorio', width:"10%"},
+               
+            {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
+            {field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
+            {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Existencia', width:"10%"},
+           
+            {field: 'Sel', width: "10%",
                        displayName: "Dispensar",
                        cellClass: "txt-center",
-                       cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)">Dispensar</button>'
+                       cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)">Dispensar'
 
-                 }*/
+                 }
                ]
            };
          

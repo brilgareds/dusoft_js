@@ -5,17 +5,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 'EmpresaDispensacionHc', 
                 'CentroUtilidadInduccion', 
                 'BodegaInduccion', 
-                'ProductoInduccion',
                 "$timeout", 
                 "$filter",
                 "localStorageService",
                 "$state",
                 "dispensacionHcService",
-                "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosHc",
+                "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
-                        EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion, 
+                        EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion,
                         $timeout, $filter,localStorageService,$state,dispensacionHcService,
-                        FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosHc) {
+                        FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc) {
 
                 var that = this;
                 $scope.paginaactual = 1;

@@ -304,6 +304,10 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
         } 
        
         var sql =  " SELECT\
+                    invp.contenido_unidad_venta as concentracion,\
+                    invsinv.descripcion as molecula,\
+                    invmcf.descripcion as forma_farmacologica,\
+                    invci.descripcion as laboratorio,\
                     fc_descripcion_producto_alterno(fv.codigo_producto) as producto,\
                     fv.*\
                     FROM existencias_bodegas_lote_fv AS fv\
@@ -311,7 +315,10 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     JOIN inventarios as inv ON (ext.empresa_id = inv.empresa_id) and (ext.codigo_producto = inv.codigo_producto)\
                     JOIN inventarios_productos as invp ON (inv.codigo_producto = invp.codigo_producto)\
                     LEFT JOIN medicamentos med ON (fv.codigo_producto=med.codigo_medicamento)\
-                    where fv.empresa_id = :1 and fv.centro_utilidad = :2\
+                    INNER JOIN inv_subclases_inventarios invsinv ON ( invsinv.grupo_id = invp.grupo_id  ) AND (invsinv.clase_id = invp.clase_id) AND (invsinv.subclase_id = invp.subclase_id)\
+                    INNER JOIN inv_med_cod_forma_farmacologica invmcf ON (invmcf.cod_forma_farmacologica = invp.cod_forma_farmacologica)\
+                    INNER JOIN inv_clases_inventarios invci ON ( invci.grupo_id = invp.grupo_id  ) AND (invci.clase_id = invp.clase_id) \n\
+                    WHERE fv.empresa_id = :1 and fv.centro_utilidad = :2\
                     and fv.bodega = :3 and fv.existencia_actual > 0 "+condicion+" ORDER BY invp.descripcion ASC,fv.fecha_vencimiento ASC";
   
        console.log("sql ", sql)

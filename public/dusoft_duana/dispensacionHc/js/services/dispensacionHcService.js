@@ -4,10 +4,10 @@ define(["angular", "js/services"], function(angular, services) {
     services.factory('dispensacionHcService', 
                     ['$rootScope', 'Request', 'API',
                      "Usuario","$modal","localStorageService",
-                     "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosHc","LoteHc",
+                     "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosFOFO","LoteHc","ProductosHc",
         function($rootScope, Request, API,
                  $modal, Usuario,localStorageService,
-             FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosHc,LoteHc) {
+             FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosFOFO,LoteHc,ProductosHc) {
 
             var self = this;
             
@@ -93,7 +93,7 @@ define(["angular", "js/services"], function(angular, services) {
                                paciente.setResidenciaTelefono(_formula.residencia_telefono);
                                paciente.setSexo(_formula.sexo);  
                            var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');                             
-                           var Productos  = ProductosHc.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);                               
+                           var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);                               
                                formula.agregarProductos(Productos);           
                           }
                          //El paciente tiene su formula
@@ -182,7 +182,7 @@ define(["angular", "js/services"], function(angular, services) {
                     
                     var _productos = producto.listar_medicamentos_formulados[i];
                     //console.log("_productos ", _productos)
-                    var Productos  = ProductosHc.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
+                    var Productos  = ProductosFOFO.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
                         Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
                         Productos.setTiempoTotal(_productos.tiempo_total);
                         Productos.setPrincipioActivo(_productos.cod_principio_activo);
@@ -216,7 +216,7 @@ define(["angular", "js/services"], function(angular, services) {
              self.existenciasBodegas = function(obj,callback){
                
                  Request.realizarRequest(API.DISPENSACIONHC.EXISTENCIAS_BODEGAS,"POST", obj, function(data){
-                        
+                        console.log("Resultado de la consulta ", data)
                         callback(data);
                  });
              };
@@ -227,22 +227,25 @@ define(["angular", "js/services"], function(angular, services) {
                *              lotes formulados contra los modelos
                * @fecha 25/05/2016
                */
-            self.renderListarLotes = function(lote){
+            self.renderListarProductosLotes = function(productoLote){
                 
               
                 var lotes = [];
-                for(var i in lote.existenciasBodegas){
+                for(var i in productoLote.existenciasBodegas){
                     
-                    var _lote = lote.existenciasBodegas[i];
-                    
+                    var _lote = productoLote.existenciasBodegas[i];
+                   
                     var Lote  = LoteHc.get(_lote.lote,_lote.fecha_vencimiento, _lote.existencia_actual);  
-                       /* Lote.setPerioricidadEntrega(_lote.perioricidad_entrega);
-                        Lote.setTiempoTotal(_lote.tiempo_total);
-                        Lote.setPrincipioActivo(_lote.cod_principio_activo);
-                        Lote.setCantidadEntrega(_lote.cantidad_entrega);*/
-                    lotes.push(Lote);
-                }
+                    var Producto = ProductosHc.get(_lote.codigo_producto,_lote.producto, 0);  
+                        Producto.setConcentracion(_lote.concentracion);
+                        Producto.setMolecula(_lote.molecula);
+                        Producto.setCodigoFormaFarmacologico(_lote.forma_farmacologica);
+                        Producto.setLaboratorio(_lote.laboratorio);
+                        Producto.agregarLotes(Lote);
                        
+                    lotes.push(Producto);
+                }
+                     
                   return lotes;
             };
             

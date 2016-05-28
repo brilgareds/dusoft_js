@@ -6,6 +6,7 @@ define(["angular", "js/models", "includes/classes/Lote"], function (angular, mod
 
             function LoteHc(codigo_lote, fecha_vencimiento, cantidad) {                           
                 Lote.getClass().call(this,codigo_lote, fecha_vencimiento, cantidad); 
+                
             }
             
             LoteHc.prototype = Object.create(Lote.getClass().prototype);

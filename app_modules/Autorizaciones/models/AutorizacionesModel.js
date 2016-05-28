@@ -90,7 +90,8 @@ AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback
                 INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)   \
                 where b.solicitud_prod_a_bod_ppal_id = :1 \
                 ) as d; ";
-    G.knex.raw(sql, {1: obj.numero_pedido}).then(function(resultado) {
+  
+    G.knex.raw(sql, {1: obj}).then(function(resultado) {
         callback(false, resultado);
     }).catch (function(err) {
         callback(err);

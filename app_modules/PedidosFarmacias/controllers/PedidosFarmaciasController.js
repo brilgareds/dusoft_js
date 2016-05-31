@@ -418,7 +418,7 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
                 return  G.Q.ninvoke(that.m_pedidos_farmacias,"asignar_responsables_pedidos",numero_pedido, estado_pedido, responsable, usuario);
                 
             } else {
-                throw {msj: "El estado actual del pedido no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
+                throw {msj: "El estado actual del pedido "+numero_pedido+" no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
             }
         }).spread(function(rows, responsable_estado_pedido){
             // Notificando Pedidos Actualizados en Real Time

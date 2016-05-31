@@ -122,11 +122,10 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
         G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
             if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
                 cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '1') {
-                console.log("consultar pedido>>>>>>>>>>>> ", cabecera_pedido);
                 return  G.Q.ninvoke(that.m_pedidos_clientes,"asignar_responsables_pedidos",numero_pedido, estado_pedido, responsable, usuario);
                 
             } else {
-                throw {msj: "El estado actual del pedido no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
+                throw {msj: "El estado actual del pedido "+numero_pedido+" no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
             }
         }).spread(function(rows, responsable_estado_pedido){
             // Notificando Pedidos Actualizados en Real Time
@@ -158,36 +157,6 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
             res.send(G.utils.r(req.url, err.msj, err.status, {}));
         }).done();
         
-        
-
-        /*that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows, responsable_estado_pedido) {
-
-            if (err) {
-                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
-                return;
-            }
-
-            // Notificando Pedidos Actualizados en Real Time
-            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-
-            if (--i === 0) {
-
-                // Notificar que al operario los pedidos  fueron reasignados
-                if (responsable_estado_pedido.length > 0) {
-
-                    responsable_estado_pedido = responsable_estado_pedido[0];
-
-                    if (responsable !== responsable_estado_pedido.responsable_id) {
-
-                        that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: pedidos, responsable: responsable_estado_pedido.responsable_id});
-                    }
-                }
-
-                // Notificacion al operario de los pedidos que le fueron asignados
-                that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
-                res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
-            }
-        });*/
     });
 };
 

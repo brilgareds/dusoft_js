@@ -178,8 +178,12 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
 //        }  
      }).then(function(resultado){         
          if(resultado[0].numero_productos !== resultado[0].numero_denegados ){
+             if(resultado[0].numero_pendientes == 0 ){
             evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
+             }else{
+                def.resolve(); 
+             }
          }else{
              console.log("resolve 2>>>>>>>>>>>>>>>>>>");
             def.resolve();
@@ -275,8 +279,12 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
      }).then(function(resultado){
           console.log("verificarProductoAutorizado resultado>>>>>>>>>>>>>>>>>>".resultado[0].numero_productos);
           if(resultado[0].numero_productos !== resultado[0].numero_denegados){
-            evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-            return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
+            if(resultado[0].numero_pendientes == 0 ){
+                evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+                return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
+            }else{
+                def.resolve();
+            }
          }else{
              console.log("resolve 2 ");
             def.resolve();

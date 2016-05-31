@@ -110,6 +110,7 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
     var estado_pedido='0';
     var evento;
     var termino = {};
+    var envio=false;
 
     if (args.autorizarProductos === undefined || args.autorizarProductos.estado === undefined || args.autorizarProductos.autorizacionId === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -179,8 +180,9 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
      }).then(function(resultado){         
          if(resultado[0].numero_productos !== resultado[0].numero_denegados ){
              if(resultado[0].numero_pendientes === '0' ){
+                  envio=true;
                   console.log("Notifica AProbacion ");
-                  evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+                 // evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
                   return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
              }else{
                 def.resolve(); 
@@ -188,10 +190,14 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
          }else{
               console.log("Notifica Denegacion ");
              estado_pedido=10;
-             evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+             envio=true;
+            // evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
              return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
         } 
      }).then(function(){
+         if(envio){
+           evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});  
+         }
        res.send(G.utils.r(req.url, 'Actualizo Autorizacion de Productos Bloqueados!!!!', 200, {modificarAutorizacionProductos: ''}));         
      }).fail(function(err){  
         if (!err.estado){
@@ -215,6 +221,8 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
     var modelo;
     var evento;
     var termino = {};
+    var envio=false;
+    var estado_actual_pedido;
     
     
     if (args.autorizarProductos === undefined || args.autorizarProductos.estado === undefined || args.autorizarProductos.autorizacionId === undefined) {
@@ -249,7 +257,7 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
          *               1 aprovado 
          *               1 denegado 
          */
-        
+        estado_actual_pedido=resultado[0].estado_actual_pedido;
        if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0' || resultado[0].estado_actual_pedido === '10') 
                  && args.autorizarProductos.estado === 2) ||  args.autorizarProductos.estado === 1) {
 
@@ -270,20 +278,31 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
      }).then(function(resultado){
           if(resultado[0].numero_productos !== resultado[0].numero_denegados){
             if(resultado[0].numero_pendientes === '0' ){
+                envio=true;
                 console.log("Notifica Aprobacion ");
-                evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+               // evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+               if(estado_actual_pedido === '8' || estado_actual_pedido === '0' || estado_actual_pedido === '10'){
                 return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
+               }else{
+                  def.resolve(); 
+               }
             }else{
                 def.resolve();
             }
          }else{
              console.log("Notifica Denegacion ");
              estado_pedido=10;
-            evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+             envio=true;
+            //evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+            if(estado_actual_pedido === '8' || estado_actual_pedido === '0' ){
             return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
+            }
         } 
          
      }).then(function(){
+         if(envio){
+           evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});  
+         }
         res.send(G.utils.r(req.url, 'Inserto Autorizacion de Productos Bloqueados!!!!', 200, {insertarAutorizacionProductos: ''}));
      }).fail(function(err){
          console.log("error insert ",err);

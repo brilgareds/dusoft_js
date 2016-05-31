@@ -104,11 +104,11 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoFarmacia = function(obj
                 then 1  else 0 end AS estado_verificado   \
                 FROM autorizaciones_productos_pedidos  AS a   \
                 where a.pedido_id = b.solicitud_prod_a_bod_ppal_id  AND a.codigo_producto = c.codigo_producto \
-                order by fecha_verificacion desc limit 1  ) as verifica,  \\n\
+                order by fecha_verificacion desc limit 1  ) as verifica,  \
                 (select                 \
                 case when (a.estado = '0')  \
                 then 1   \
-                end AS estado_verificado   \
+                else 0 end AS estado_verificado   \
                 FROM autorizaciones_productos_pedidos  AS a   \
                 where a.pedido_id = b.solicitud_prod_a_bod_ppal_id  AND a.codigo_producto = c.codigo_producto \
                 order by fecha_verificacion desc limit 1  ) as verificaAll  \
@@ -132,7 +132,7 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoFarmacia = function(obj
 */
 AutorizacionesModel.prototype.verificarProductoAutorizadoCliente = function(obj, callback) {
 
-    var sql = " select count(*) as numero_productos,sum(verifica) as numero_denegados,sum(verificaAll) as numero_pendiente \n\
+    var sql = " select count(*) as numero_productos,sum(verifica) as numero_denegados,sum(verificaAll) as numero_pendientes \
                 from ( \
                 select  ( select                 \
                         case when (a.estado = '0')  \
@@ -144,7 +144,7 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoCliente = function(obj,
                         order by fecha_verificacion desc limit 1  \
                       ) as verifica, \
                      ( select case when (a.estado = '0')\
-                        then 1  end AS estado_verificado \
+                        then 1 else 0 end AS estado_verificado \
                         FROM autorizaciones_productos_pedidos  AS a   \
                 	where a.pedido_id = b.pedido_cliente_id  \
                         AND a.codigo_producto = c.codigo_producto \

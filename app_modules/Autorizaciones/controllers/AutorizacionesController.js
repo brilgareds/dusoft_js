@@ -178,21 +178,23 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
 //        }  
      }).then(function(resultado){         
          if(resultado[0].numero_productos !== resultado[0].numero_denegados ){
-             if(resultado[0].numero_pendientes == 0 ){
+             console.log("entrada 11111111111111111",resultado[0]);
+             if(resultado[0].numero_pendientes === '0' ){
+                 console.log("entrada 2222222222222222",resultado[0]);
             evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
              }else{
                 def.resolve(); 
              }
          }else{
-             console.log("resolve 2>>>>>>>>>>>>>>>>>>");
+         //    console.log("resolve 2>>>>>>>>>>>>>>>>>>");
             def.resolve();
         } 
      }).then(function(){
-          console.log("actualiza>>>>>>>>>>>>>>>>>>");
-        res.send(G.utils.r(req.url, 'Actualizo Autorizacion de Productos Bloqueados!!!!', 200, {modificarAutorizacionProductos: ''}));         
+        //  console.log("actualiza>>>>>>>>>>>>>>>>>>");
+       res.send(G.utils.r(req.url, 'Actualizo Autorizacion de Productos Bloqueados!!!!', 200, {modificarAutorizacionProductos: ''}));         
      }).fail(function(err){  
-         console.log("errororor>>>>>>>>>>>>>>>>>>",err);
+       //  console.log("errororor>>>>>>>>>>>>>>>>>>",err);
         if (!err.estado){
             err= {estado: 500, mensaje: err};
          }
@@ -261,15 +263,15 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
      }).then(function(resultado){
         var def = G.Q.defer();
         console.log("resultado 1  ");
-        console.log("resultado.rowCount 1  ".resultado.rowCount);
-        console.log("args.autorizarProductos.estado 1  ".args.autorizarProductos.estado);
+//        console.log("resultado.rowCount 1  ".resultado.rowCount);
+//        console.log("args.autorizarProductos.estado 1  ".args.autorizarProductos.estado);
        // if(resultado.rowCount === 0 && args.autorizarProductos.estado === 2){
             console.log("verificarProductoAutorizado consulta ");
             if(tipoPedido===1){
-                console.log("farmaciaaaaaaaaaaaaaaaaaa");
+          //      console.log("farmaciaaaaaaaaaaaaaaaaaa");
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoFarmacia",numero_pedido);
             }else{
-                console.log("Clienteeeeeeeeeeeeeeee");
+           //     console.log("Clienteeeeeeeeeeeeeeee");
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoCliente",numero_pedido);
             }
 //        }else{
@@ -277,9 +279,11 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
 //           def.resolve();
 //        }    
      }).then(function(resultado){
-          console.log("verificarProductoAutorizado resultado>>>>>>>>>>>>>>>>>>".resultado[0].numero_productos);
+          console.log("verificarProductoAutorizado resultado>>>>>>>>>>>>>>>>>>".resultado[0]);
           if(resultado[0].numero_productos !== resultado[0].numero_denegados){
-            if(resultado[0].numero_pendientes == 0 ){
+              console.log("entro resultado111>>>>>>>>>>>>>>>>>>".resultado[0]);
+            if(resultado[0].numero_pendientes === '0' ){
+                console.log("entro resultado2222>>>>>>>>>>>>>>>>>>".resultado[0]);
                 evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
                 return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
             }else{
@@ -293,7 +297,7 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
      }).then(function(){
         res.send(G.utils.r(req.url, 'Inserto Autorizacion de Productos Bloqueados!!!!', 200, {insertarAutorizacionProductos: ''}));
      }).fail(function(err){
-         console.log("errrrrr",err)
+         console.log("errrrrr",err);
          if (!err.estado){
             err= {estado: 500, mensaje: err};
          }

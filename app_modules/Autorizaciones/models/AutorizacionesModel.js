@@ -96,22 +96,23 @@ AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback
 */
 AutorizacionesModel.prototype.verificarProductoAutorizadoFarmacia = function(obj, callback) {
 
-    var sql = " select count(*) as numero_productos,sum(verifica) as numero_denegados,sum(verificaAll) as numero_pendientes from ( \
-                select(   select                 \
-                case when (a.estado = '0')  \
-                then 0   \
-                when (a.estado='2')      \
-                then 1  else 0 end AS estado_verificado   \
-                FROM autorizaciones_productos_pedidos  AS a   \
-                where a.pedido_id = b.solicitud_prod_a_bod_ppal_id  AND a.codigo_producto = c.codigo_producto \
-                order by fecha_verificacion desc limit 1  ) as verifica,  \
-                (select                 \
-                case when (a.estado = '0')  \
-                then 1   \
-                else 0 end AS estado_verificado   \
-                FROM autorizaciones_productos_pedidos  AS a   \
-                where a.pedido_id = b.solicitud_prod_a_bod_ppal_id  AND a.codigo_producto = c.codigo_producto \
-                order by fecha_verificacion desc limit 1  ) as verificaAll  \
+    var sql = " select count(*) as numero_productos,sum(verifica) as numero_denegados,sum(verificaAll) as numero_pendientes \
+                from ( \
+                select(  select                 \
+                         case when (a.estado = '0')  \
+                         then 0   \
+                         when (a.estado = '2')      \
+                         then 1  else 0 end AS estado_verificado   \
+                         FROM autorizaciones_productos_pedidos  AS a   \
+                        where a.pedido_id = b.solicitud_prod_a_bod_ppal_id  AND a.codigo_producto = c.codigo_producto \
+                        order by fecha_verificacion desc limit 1  ) as verifica,  \
+                    (select                 \
+                        case when (a.estado = '0')  \
+                        then 1   \
+                        else 0 end AS estado_verificado   \
+                        FROM autorizaciones_productos_pedidos  AS a   \
+                        where a.pedido_id = b.solicitud_prod_a_bod_ppal_id  AND a.codigo_producto = c.codigo_producto \
+                        order by fecha_verificacion desc limit 1  ) as verificaAll  \
                 from solicitud_productos_a_bodega_principal AS b      \
                 INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)   \
                 where b.solicitud_prod_a_bod_ppal_id = :1 \
@@ -119,8 +120,10 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoFarmacia = function(obj
        console.log("sql          ",sql);
        console.log("param          ",obj);
     G.knex.raw(sql, {1: obj}).then(function(resultado) {
+        console.log("ok sql",resultado);
         callback(false, resultado.rows);
     }).catch (function(err) {
+        console.log("erro sql",err);
         callback(err);
     });
 };

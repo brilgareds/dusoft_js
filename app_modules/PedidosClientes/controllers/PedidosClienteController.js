@@ -117,17 +117,18 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
     var i = pedidos.length;
 
     pedidos.forEach(function(numero_pedido) {
-
-        that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows, responsable_estado_pedido) {
-
-            if (err) {
-                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
-                return;
+        
+        
+        G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
+            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
+                cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '1') {
+                return  G.Q.ninvoke(that.m_pedidos_clientes,"asignar_responsables_pedidos",numero_pedido, estado_pedido, responsable, usuario);
+                
+            } else {
+                throw {msj: "El estado actual del pedido "+numero_pedido+" no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
             }
-
+        }).spread(function(rows, responsable_estado_pedido){
             // Notificando Pedidos Actualizados en Real Time
-            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-
             if (--i === 0) {
 
                 // Notificar que al operario los pedidos  fueron reasignados
@@ -145,7 +146,17 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
                 that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
             }
-        });
+            
+        }).fail(function(err){
+            if(!err.status){
+                err = {};
+                err.status = 500;
+                err.msj = "Se ha generado un error..";
+            }
+            
+            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+        }).done();
+        
     });
 };
 

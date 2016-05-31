@@ -230,7 +230,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
         
         //El producto no ha sido autorizado
         if(filtro.estadoAprobacion !== '1'){
-            sqlAux += "  and d.estado = '1'" 
+            sqlAux += "  and d.estado = '1'";
         }
     }
     

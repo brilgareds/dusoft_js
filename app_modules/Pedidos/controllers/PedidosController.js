@@ -56,7 +56,9 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
             estadoAprobacion: (resultado.length > 0)? resultado[0].estado : '1'
         };
         
-        return G.Q.ninvoke(that.m_productos, "consultar_existencias_producto", empresa_id, codigo_producto, centro_utilidad, bodega, params);
+        params.estadoAprobacion = parametrosExistencias.estadoAprobacion;
+        
+        return G.Q.ninvoke(that.m_productos, "consultar_existencias_producto", empresa_id, codigo_producto, centro_utilidad, bodega, parametrosExistencias);
         
     }).then(function(_existencias_productos){
         

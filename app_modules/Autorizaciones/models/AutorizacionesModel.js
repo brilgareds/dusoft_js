@@ -117,10 +117,7 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoFarmacia = function(obj
                 INNER JOIN solicitud_productos_a_bodega_principal_detalle AS c ON (c.solicitud_prod_a_bod_ppal_id=b.solicitud_prod_a_bod_ppal_id)   \
                 where b.solicitud_prod_a_bod_ppal_id = :1 \
                 ) as d; ";
-       console.log("sql          ",sql);
-       console.log("param          ",obj);
     G.knex.raw(sql, {1: obj}).then(function(resultado) {
-        console.log("ok sql",resultado);
         callback(false, resultado.rows);
     }).catch (function(err) {
         console.log("erro sql",err);
@@ -157,8 +154,6 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoCliente = function(obj,
                 INNER JOIN ventas_ordenes_pedidos_d AS c ON (c.pedido_cliente_id=b.pedido_cliente_id)   \
                 where b.pedido_cliente_id = :1 \
                 ) as d; ";
-       console.log("sql          ",sql);
-       console.log("param          ",obj);
     G.knex.raw(sql, {1: obj}).then(function(resultado) {
         callback(false, resultado.rows);
     }).catch (function(err) {
@@ -225,8 +220,6 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                               ) as p \
                        order by p.estado_verificado desc";
     
-     console.log("listarProductosBloqueados >>",sql);
-     console.log("params >>",termino_busqueda);
    var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
@@ -292,8 +285,6 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
                    LEFT JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id)\
                    WHERE true  " + WHERE2 + " AND a.tipo_pedido = :2  ) as p \
                order by p.estado_verificado desc";
-    console.log("listarProductosBloqueadosfarmacia >>",sql);
-     console.log("params >>",termino_busqueda);
    var parametros =  {1: termino_busqueda.empresa, 2: termino_busqueda.tipo_pedido}; 
    var query = G.knex.select(G.knex.raw(sql, parametros)).
         limit(G.settings.limit).
@@ -372,8 +363,6 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
                     ORDER BY fecha_verificacion DESC \
                     ";
     }
-    console.log(">>>>>>>>>>>>>>>>>>>>",sql);
-    console.log("params>>>>>>>>>>>>>>>>>>>>",obj);
     
    var parametros =  {1: obj.pedidoId, 2: obj.tipoPedido, 3: obj.codigoProducto}; 
    var query = G.knex.select(G.knex.raw(sql, parametros)).

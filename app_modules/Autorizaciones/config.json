@@ -33,6 +33,11 @@
                     "module": "Productos",
                     "model": "ProductosModel",
                     "alias": "m_productos"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
                 }
             }],
         "events": [{

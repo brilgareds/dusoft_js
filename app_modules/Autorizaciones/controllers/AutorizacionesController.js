@@ -1,5 +1,5 @@
 
-var Autorizaciones = function(autorizaciones, pedidos_farmacias, pedidos_clientes, ordenes_compra, m_productos,eventos_pedidos_clientes,eventos_pedidos_farmacias) {
+var Autorizaciones = function(autorizaciones, pedidos_farmacias, pedidos_clientes, ordenes_compra, m_productos,eventos_pedidos_clientes,eventos_pedidos_farmacias, m_usuarios) {
     this.m_autorizaciones = autorizaciones;
     this.m_pedidos_farmacias = pedidos_farmacias;
     this.m_pedidos_clientes = pedidos_clientes;
@@ -7,6 +7,7 @@ var Autorizaciones = function(autorizaciones, pedidos_farmacias, pedidos_cliente
     this.m_productos = m_productos;
     this.e_pedidos_clientes = eventos_pedidos_clientes;
     this.e_pedidos_farmacias = eventos_pedidos_farmacias;
+    this.m_usuarios = m_usuarios;
 };
 
 /**
@@ -111,6 +112,9 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
     var evento;
     var termino = {};
     var envio=false;
+    var opciones;
+    var def = G.Q.defer();
+    var parametrosPermisos = { usuario_id:req.session.user.usuario_id, empresa_id:req.session.user.empresa, modulos:[req.session.user.moduloActual], convertirJSON:true };
 
     if (args.autorizarProductos === undefined || args.autorizarProductos.estado === undefined || args.autorizarProductos.autorizacionId === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -133,8 +137,17 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
         modelo=that.m_pedidos_clientes;
         evento=that.e_pedidos_clientes;
     }
-    var def = G.Q.defer();
-    G.Q.ninvoke(modelo, 'consultar_pedido', numero_pedido).then(function(resultado) {
+    
+            
+    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){
+      opciones=parametrizacion.modulos.productos_en_pedidos.opciones;
+      if(opciones.sw_cambiar_estado){
+          return G.Q.ninvoke(modelo, 'consultar_pedido', numero_pedido);
+      }else{
+           throw {estado:403, mensaje:"El Usuario no tiene permisos para modificar"};
+      }
+      
+   }).then(function(resultado){
         
        /**
          * +Descripcion: Se valida si el estado del pedido es 
@@ -161,37 +174,22 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
        return G.Q.ninvoke(that.m_autorizaciones, 'verificarPedidoAutorizado', numero_pedido);        
         
      }).then(function(resultado){
-         console.log("resultado.rowCount>>>>>>>>>>>>>>>>>>",resultado.rowCount);
-         console.log("args.autorizarProductos.estado>>>>>>>>>>>>>>>>>>",args.autorizarProductos.estado);
-         
-//        if(resultado.rowCount === 0 && args.autorizarProductos.estado === 2){   
-            console.log("verificarProductoAutorizado>>>>>>>>>>>>>>>>>>");
             if(tipoPedido===1){
-                console.log("farmaciaaaaaaaaaaaaaaaaaa");
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoFarmacia",numero_pedido);
             }else{
-                console.log("Clienteeeeeeeeeeeeeeee");
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoCliente",numero_pedido);
-            }
-//        }else{
-//             console.log("resolve 1>>>>>>>>>>>>>>>>>>");
-//            def.resolve();
-//        }  
+            } 
      }).then(function(resultado){         
          if(resultado[0].numero_productos !== resultado[0].numero_denegados ){
              if(resultado[0].numero_pendientes === '0' ){
                   envio=true;
-                  console.log("Notifica AProbacion ");
-                 // evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
                   return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
              }else{
                 def.resolve(); 
              }
          }else{
-              console.log("Notifica Denegacion ");
              estado_pedido=10;
              envio=true;
-            // evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
              return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
         } 
      }).then(function(){
@@ -223,6 +221,9 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
     var termino = {};
     var envio=false;
     var estado_actual_pedido;
+    var opciones;
+    var def = G.Q.defer();
+    var parametrosPermisos = { usuario_id:req.session.user.usuario_id, empresa_id:req.session.user.empresa, modulos:[req.session.user.moduloActual], convertirJSON:true };
     
     
     if (args.autorizarProductos === undefined || args.autorizarProductos.estado === undefined || args.autorizarProductos.autorizacionId === undefined) {
@@ -246,8 +247,17 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
         modelo=that.m_pedidos_clientes;
         evento=that.e_pedidos_clientes;
     }
-    var def = G.Q.defer();
-    G.Q.ninvoke(modelo, 'consultar_pedido', numero_pedido).then(function(resultado) {
+    
+    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){
+      opciones=parametrizacion.modulos.productos_en_pedidos.opciones;//.sw_cambiar_estado
+      console.log("parametrizacion ",parametrizacion.modulos.productos_en_pedidos.opciones.sw_cambiar_estado);
+      if(opciones.sw_cambiar_estado){
+          return G.Q.ninvoke(modelo, 'consultar_pedido', numero_pedido);
+      }else{
+           throw {estado:403, mensaje:"El Usuario no tiene permisos para modificar"};
+      }
+      
+   }).then(function(resultado){
         /**
          * +Descripcion: Se valida si el estado del pedido es 
          *               1 activo
@@ -279,8 +289,6 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
           if(resultado[0].numero_productos !== resultado[0].numero_denegados){
             if(resultado[0].numero_pendientes === '0' ){
                 envio=true;
-                console.log("Notifica Aprobacion ");
-               // evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
                if(estado_actual_pedido === '8' || estado_actual_pedido === '0' || estado_actual_pedido === '10'){
                 return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
                }else{
@@ -290,10 +298,8 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
                 def.resolve();
             }
          }else{
-             console.log("Notifica Denegacion ");
              estado_pedido=10;
              envio=true;
-            //evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             if(estado_actual_pedido === '8' || estado_actual_pedido === '0' ){
             return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
             }
@@ -352,7 +358,8 @@ Autorizaciones.$inject = [
                           "m_ordenes_compra", 
                           "m_productos",
                           "e_pedidos_clientes", 
-                          "e_pedidos_farmacias"
+                          "e_pedidos_farmacias",
+                          "m_usuarios"
                          ];
 
 module.exports = Autorizaciones;

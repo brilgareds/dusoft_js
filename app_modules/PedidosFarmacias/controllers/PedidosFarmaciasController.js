@@ -1139,12 +1139,13 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
                                     mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
                                 };
 
-                                G.Q.nfcall(__guardarAutorizacion, that, autorizacion).then(function(resultado) {
-                                    
+                                G.Q.nfcall(__guardarAutorizacion, that, autorizacion).then(function(resultado) {                                  
+                                   if(resultado){
                                     that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-                                    G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);
-                                    res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
-
+                                    G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                                    
+                                   }
+                                   res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido})); 
+                                 
                                 }).fail(function(err) {
                                     res.send(G.utils.r(req.url, 'Error Finalizando el Registro de la Autorizacion', 500, {documento_temporal: {}}));
                                 });
@@ -1171,8 +1172,18 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
  * @params el arreglo autorizacion y this de generarPedidoFarmacia
  */
 function __guardarAutorizacion(thats, autorizacion, callback) {
-
-    G.Q.ninvoke(thats.m_pedidos_farmacias, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(productos) {
+  var producto;
+  var def = G.Q.defer();
+  var bloqueo=false;
+    G.Q.ninvoke(thats.m_pedidos_farmacias, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(resultado) {
+        producto=resultado;
+        for(var i=0; i < producto.length;i++){
+            if(producto[i].bloqueado === '0'){
+                bloqueo=true;
+            }    
+        }
+    }).then(function() {
+        if(bloqueo){
         var estado_pedido='10';
         thats.m_pedidos_farmacias.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function(_err) { 
             if (_err){
@@ -1180,11 +1191,15 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
             return;
             }
          });
-        autorizacion.productos = productos;
+        autorizacion.productos = producto;
         return G.Q.ninvoke(thats.m_pedidos, "guardarAutorizacion", autorizacion);
+        }else{
+          def.resolve();
+        }
     }).then(function() {
-        callback(false);
+        callback(false,bloqueo);
     }).fail(function(err) {
+        console.log("AAAAAAAAAAAAAAAAAA",err);
         callback(err);
     });
 }

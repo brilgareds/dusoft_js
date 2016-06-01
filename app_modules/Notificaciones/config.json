@@ -1,0 +1,21 @@
+{
+    "module": "Notificaciones",
+    "dependency": {
+        "controllers": [{
+                "notificaciones_controller": {
+                    "module": "Notificaciones",
+                    "controller": "NotificacionesController",
+                    "alias": "c_notificaciones"
+                }
+            }],
+        "models": [{
+                "notificaciones_model": {
+                    "module": "Notificaciones",
+                    "model": "NotificacionesModel",
+                    "alias": "m_notificaciones"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

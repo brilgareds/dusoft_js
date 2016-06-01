@@ -1,28 +1,26 @@
-   define(["angular"], function(angular){
-	var Url = angular.module('Url', []);
+define(["angular"], function(angular) {
+    var Url = angular.module('Url', []);
 
-	var BASE_URL = "/api"; 
+    var BASE_URL = "/api";
 
 
     var data = {
-	  'API': {
-	    'BASE_URL': BASE_URL,
-         'KARDEX':{
-	    	"LISTAR_PRODUCTOS":BASE_URL+"/Kardex/listarProductos",
-	    	"OBTENER_MOVIMIENTO":BASE_URL+"/Kardex/obtenerMovimientosProducto",
-                'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/listarFarmacias',
-                'CENTROS_UTILIDAD_EMPRESAS':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
-                'BODEGAS_EMPRESA':BASE_URL+'/Bodegas/listarBodegasEmpresas',
-                'CONSULTAR_EXISTENCIAS':BASE_URL+'/Kardex/consultarExistenciasProducto',
-                'LISTAR_EMPRESAS_FARMACIAS':BASE_URL+'/Empresas/listarEmpresasFarmacias'
-	    }
-	  }
-	};
+        'API': {
+            'BASE_URL': BASE_URL,
+            'AUTORIZACIONES': {
+                "LISTAR_PRODUCTOS_BLOQUEADOS": BASE_URL + "/Autorizaciones/listarProductosBloqueados",
+                "MODIFICAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/Autorizaciones/modificarAutorizacionProductos",
+                "INSERTAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/Autorizaciones/insertarAutorizacionProductos",
+                "VERIFICAR_AUTORIZACION_PRODUCTOS": BASE_URL + "/Autorizaciones/verificarAutorizacionProductos",
+                "LISTAR_VERIFICACION_PRODUCTOS": BASE_URL + "/Autorizaciones/listarVerificacionProductos",
+            }
+        }
+    };
 
-	angular.forEach(data,function(key,value) {
-	  Url.constant(value,key);
-	});
+    angular.forEach(data, function(key, value) {
+        Url.constant(value, key);
+    });
 
 
-	return Url;
+    return Url;
 });

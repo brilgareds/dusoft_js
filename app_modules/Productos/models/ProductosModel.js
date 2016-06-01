@@ -226,8 +226,12 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
     
     if(filtro.activos){
         sqlAux = "and a.existencia_actual > 0\
-                  and a.estado = '1'\
-                  and d.estado = '1'";
+                  and a.estado = '1'";
+        
+        //El producto no ha sido autorizado
+        if(filtro.estadoAprobacion !== '1'){
+            sqlAux += "  and d.estado = '1'";
+        }
     }
     
     if(filtro.codigoLote && filtro.fechaVencimiento){

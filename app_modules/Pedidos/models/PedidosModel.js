@@ -6,7 +6,7 @@ var PedidosModel = function(productos, pedidos_cliente, pedidos_farmacia) {
 };
 
 // Función para calcular la disponibilidad de un producto, teniendo en cuenta las "reservas"
-PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador, empresa_id, numero_pedido, codigo_producto, callback) {
+PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador, empresa_id, numero_pedido, codigo_producto, estadoAprobacion, callback) {
 
     var that = this;
 
@@ -72,9 +72,9 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 // se consulta el total de existencias del producto seleccionado
                                 that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, {}, function(err, stock_producto) {
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
-
+                                    
                                     //Producto bloqueado por compras, stock se deja en 0 para la formula de disponible
-                                    if (stock_producto[0].estado === '0') {
+                                    if (stock_producto[0].estado === '0' && estadoAprobacion !== '1') {
                                         stock = 0;
                                     }
 
@@ -85,8 +85,11 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                         cantidad_despachada = 0;
                                     }
 
-                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
-
+                                    //disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
+                                    disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
+                                    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
+                                    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
+                                    
                                     console.log('============ Here =================');
                                     console.log("empresa ", empresa_id);
                                     console.log("stock real ", stock_producto);
@@ -99,14 +102,10 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     console.log('fecha_registro', fecha_registro_pedido);
                                     console.log('===================================');
 
-
-                                    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
-                                    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
-
                                     callback(err, {
                                         codigo_producto: codigo_producto,
                                         disponible_bodega: disponible_bodega,
-                                        estado: stock_producto[0].estado,
+                                        estado: (estadoAprobacion === '1' && stock_producto[0].estado === '0' ) ? "3" : stock_producto[0].estado,
                                         //Se regresa el stock asi el producto este inactivo.
                                         stock: (stock_producto.length === 1) ? stock_producto[0].existencia : 0
                                     }
@@ -170,7 +169,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                     //Producto bloqueado por compras, stock se deja en 0 para la formula de disponible
-                                    if (stock_producto[0].estado === '0') {
+                                    if (stock_producto[0].estado === '0' && estadoAprobacion !== '1') {
                                         stock = 0;
                                     }
                                     // Se aplica la Formula de Disponibilidad producto
@@ -180,8 +179,10 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                         cantidad_despachada = 0;
                                     }
 
-                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
-
+                                    
+                                    ///disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    //Correccion de bug de stock en calculo de disponible
+                                    disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                     disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
 
@@ -338,11 +339,10 @@ function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto
  * +Descripcion: Funcion publica donde inicializa la funcion recursiva para almacenar la autorizacion
  */
 PedidosModel.prototype.guardarAutorizacion = function(parametros, callback) {
-
     __guardarAutorizacionesProductosPedidos(parametros, function(err, resultado) {
         if (err) {
             callback(err, resultado);
-        } else {
+        } else { 
             callback(false);
         }
     });
@@ -356,22 +356,23 @@ PedidosModel.prototype.guardarAutorizacion = function(parametros, callback) {
  *               los productos que se van autorizar
  */
 function __insertarAutorizacionesProductosPedido(params, callback) {
+    console.log("__insertarAutorizacionesProductosPedido ", params);
     var sql = "INSERT INTO autorizaciones_productos_pedidos(\n\
                     tipo_pedido,\n\
                     pedido_id,\n\
                     codigo_producto,\n\
                     fecha_solicitud,\n\
-                    empresa_id)\n\
-                VALUES( :1, :2, :3, CURRENT_TIMESTAMP, :5)";
-    var query = G.knex.raw(sql, {1: params.farmacia, 2: params.numero_pedido, 3: params.productos[0].codigo_producto, 5: params.empresa_id});
+                    empresa_id,\n\
+                    estado)\n\
+                VALUES( :1, :2, :3, CURRENT_TIMESTAMP, :5, :6 )";
+    var query = G.knex.raw(sql, {1: params.farmacia, 2: params.numero_pedido, 3: params.productos[0].codigo_producto, 5: params.empresa_id, 6: '0'});
 
     query.then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
         callback(err);
     });
-}
-;
+};
 
 /*
  * @Author: Andres M. Gonzalez
@@ -380,7 +381,6 @@ function __insertarAutorizacionesProductosPedido(params, callback) {
  * +Descripcion: Funcion recursiva que permite crear los poductos por autorizar
  */
 function __guardarAutorizacionesProductosPedidos(params, callback) {
-
     var producto = params.productos[0];
     var def = G.Q.defer();
     if (!producto) {

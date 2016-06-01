@@ -242,9 +242,6 @@ define(["angular", "js/controllers",
                         }
 
                         SeparacionService[metodo]($scope.rootSeparacion.session, filtro, 1, filtroPedido.numeroPedido, function(pedidos) {
-
-
-
                             EmpresaPedido.setPedidoSeleccionado((pedidos.length > 0) ? pedidos[0] : null);
                             self.renderDescripcionPedido();
                             callback();

@@ -68,7 +68,7 @@ define(["angular", "js/controllers",
                 $scope.$$watchers = null;
             });
 
-            // Gestionar Cotizaciones 
+            // Gestionar Cotizaciones
             that.gestionar_cotizaciones = function(callback) {
 
                 if ($scope.Pedido.get_numero_cotizacion() === 0) {
@@ -90,7 +90,7 @@ define(["angular", "js/controllers",
                 }
             };
 
-            // Gestionar Pedidos 
+            // Gestionar Pedidos
             that.gestionar_pedidos = function(callback) {
 
                 that.insertar_detalle_pedido(function(resultado) {
@@ -142,7 +142,7 @@ define(["angular", "js/controllers",
 
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
 
-              
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -171,7 +171,7 @@ define(["angular", "js/controllers",
 
             // Insertar Productos al pedido
             that.insertar_detalle_pedido = function(callback) {
-
+                
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
@@ -181,7 +181,7 @@ define(["angular", "js/controllers",
                 var precioVentaIva = precioVenta + valorTotalIva;
 
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
-               
+
 
                 var obj = {
                     session: $scope.session,
@@ -246,7 +246,7 @@ define(["angular", "js/controllers",
                 that.buscar_productos_clientes();
             };
 
-            // Productos 
+            // Productos
             $scope.seleccionar_tipo_producto = function(tipo_producto) {
                 $scope.datos_form.tipo_producto = tipo_producto;
                 $scope.datos_form.pagina_actual = 1;
@@ -352,7 +352,7 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
-                   
+
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
 
                     if (data.status === 200) {
@@ -390,12 +390,12 @@ define(["angular", "js/controllers",
                     //setPrecioVentaAnterior 1101E0740001
                     producto.setContrato(data.contrato);
                     producto.set_cantidad_disponible(data.cantidad_disponible);
-                    
+
                     $scope.Empresa.set_productos(producto);
 
 
                 });
-                
+
             };
 
 
@@ -489,8 +489,8 @@ define(["angular", "js/controllers",
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Nombre',
-                       // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
-                   cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
+                        // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
+                        cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
                     {field: 'codigo_invima', displayName: 'Reg.Invima', width: "80", cellClass: "gridNumber"},
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
@@ -521,9 +521,7 @@ define(["angular", "js/controllers",
                                        class="form-control grid-inline-input" \n\
                                        name="" id="" /> </div>'},
                     {width: "50", displayName: "Opcion", cellClass: "txt-center",
-                        cellTemplate: '<div class="btn-toolbar">\
-                                            <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
-                                            <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                        cellTemplate: '     <button  ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
 
 

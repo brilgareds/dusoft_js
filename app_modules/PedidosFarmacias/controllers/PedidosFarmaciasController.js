@@ -411,17 +411,20 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
     var i = pedidos.length;
 
     pedidos.forEach(function(numero_pedido) {
-
-        that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows, responsable_estado_pedido) {
-
-            if (err) {
-                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
-                return;
+        
+         G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
+            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
+                cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '1') {
+                return  G.Q.ninvoke(that.m_pedidos_farmacias,"asignar_responsables_pedidos",numero_pedido, estado_pedido, responsable, usuario);
+                
+            } else {
+                throw {msj: "El estado actual del pedido "+numero_pedido+" no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
             }
-
+        }).spread(function(rows, responsable_estado_pedido){
             // Notificando Pedidos Actualizados en Real Time
+            console.log("rows ", rows);
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-
+            
             if (--i === 0) {
 
                 // Notificar que al operario los pedidos  fueron reasignados
@@ -437,7 +440,18 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
                 that.e_pedidos_farmacias.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
             }
-        });
+            
+        }).fail(function(err){
+            console.log("err ", err);
+            if(!err.status){
+                err = {};
+                err.status = 500;
+                err.msj = "Se ha generado un error..";
+            }
+            
+            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+        }).done();
+       
     });
 };
 
@@ -1118,12 +1132,20 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
                                 autorizacion.farmacia = farmacia;
                                 autorizacion.empresa_id = empresa_id;
                                 autorizacion.numero_pedido = numero_pedido;
+                                var notificacion = {
+                                    aliasModulo: 'productos_en_pedidos',
+                                    opcionModulo: "sw_ver_notificaciones",
+                                    titulo: "Autorizaciones Pedidos Farmacia",
+                                    mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
+                                };
 
-
-                                G.Q.nfcall(__guardarAutorizacion, that, autorizacion)
-                                        .then(function(resultado) {
-                                    res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
-
+                                G.Q.nfcall(__guardarAutorizacion, that, autorizacion).then(function(resultado) {                                  
+                                   if(resultado){
+                                    that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+                                    G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                                    
+                                   }
+                                   res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido})); 
+                                 
                                 }).fail(function(err) {
                                     res.send(G.utils.r(req.url, 'Error Finalizando el Registro de la Autorizacion', 500, {documento_temporal: {}}));
                                 });
@@ -1143,15 +1165,41 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
     });
 };
 
-
+/**
+ * +Descripcion: funcion que guarda el pdido de productos bloqueados
+ * @author Andres M Gonzalez
+ * @fecha: 16/05/2016
+ * @params el arreglo autorizacion y this de generarPedidoFarmacia
+ */
 function __guardarAutorizacion(thats, autorizacion, callback) {
-
-    G.Q.ninvoke(thats.m_pedidos_farmacias, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(productos) {
-        autorizacion.productos = productos;
-        return G.Q.ninvoke(thats.m_pedidos, "guardarAutorizacion", autorizacion);
+  var producto;
+  var def = G.Q.defer();
+  var bloqueo=false;
+    G.Q.ninvoke(thats.m_pedidos_farmacias, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(resultado) {
+        producto=resultado;
+        for(var i=0; i < producto.length;i++){
+            if(producto[i].bloqueado === '0'){
+                bloqueo=true;
+            }    
+        }
     }).then(function() {
-        callback(false);
+        if(bloqueo){
+        var estado_pedido='10';
+        thats.m_pedidos_farmacias.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function(_err) { 
+            if (_err){
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
+            return;
+            }
+         });
+        autorizacion.productos = producto;
+        return G.Q.ninvoke(thats.m_pedidos, "guardarAutorizacion", autorizacion);
+        }else{
+          def.resolve();
+        }
+    }).then(function() {
+        callback(false,bloqueo);
     }).fail(function(err) {
+        console.log("AAAAAAAAAAAAAAAAAA",err);
         callback(err);
     });
 }
@@ -1181,7 +1229,7 @@ PedidosFarmacias.prototype.anularPendienteProducto = function(req, res) {
     G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_pedido', numeroPedido).
             then(function(cabeceraPedido) {
 
-        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null || cabeceraPedido[0].estado_actual_pedido === '8' ) {
+        if (cabeceraPedido[0].estado_actual_pedido === '0' || cabeceraPedido[0].estado_actual_pedido === null || cabeceraPedido[0].estado_actual_pedido === '8') {
             return G.Q.ninvoke(that.m_pedidos_farmacias, 'consultar_detalle_pedido', numeroPedido);
         } else {
             throw {msj: "El estado actual del pedido no permite modificarlo", codigo: 403};
@@ -1513,9 +1561,9 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
     var cantidad_pendiente = args.pedidos_farmacias.cantidad_pendiente;
     var usuario = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido ).then(function(cabecera_pedido){
-        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8' ) {
-            
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
+        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8') {
+
 
             return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_cantidades_detalle_pedido", numero_pedido, codigo_producto, cantidad_solicitada,
                     cantidad_pendiente, usuario, cabecera_pedido[0].empresa_destino);
@@ -1586,7 +1634,7 @@ PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
         } else {
             cabecera_pedido = cabecera_pedido[0];
 
-            if (cabecera_pedido.estado_actual_pedido === '0' || cabecera_pedido.estado_actual_pedido === null || cabecera_pedido.estado_actual_pedido === '8' ) {
+            if (cabecera_pedido.estado_actual_pedido === '0' || cabecera_pedido.estado_actual_pedido === null || cabecera_pedido.estado_actual_pedido === '8') {
                 // se valida si la empresa destino del request es diferente a la almacenada en el pedido
                 if (cabecera_pedido.empresa_id !== farmacia_id || cabecera_pedido.centro_utilidad !== centro_utilidad || cabecera_pedido.bodega_id !== bodega) {
 
@@ -1830,12 +1878,12 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
 
     var usuario_id = req.session.user.usuario_id;
 
-    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido",numero_pedido).then(function(cabecera_pedido){
-        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8' ) {
-            
-            return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia",numero_pedido, empresa_id, centro_utilidad_id,
-                                                                                                     bodega_id, codigo_producto,cantidad_solic, 
-                                                                                                     tipo_producto_id, usuario_id, cantidad_pendiente );
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
+        if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || cabecera_pedido[0].estado_actual_pedido === '8') {
+
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia", numero_pedido, empresa_id, centro_utilidad_id,
+                    bodega_id, codigo_producto, cantidad_solic,
+                    tipo_producto_id, usuario_id, cantidad_pendiente);
         } else {
             throw {msj: "El estado actual del pedido no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
         }
@@ -1870,10 +1918,7 @@ PedidosFarmacias.prototype.actualizarEstadoActualPedido = function(req, res) {
     var numero_pedido = args.pedido_farmacia.numero_pedido;
     var estado = args.pedido_farmacia.estado;
 
-    console.log(">>>>>>>>>>>>>>>>>>> Actualizando estado del pedido ... desde TABLET ...");
-    console.log("Pedido: ", numero_pedido);
-    console.log("Estado: ", estado);
-    //return;
+        //return;
 
     that.m_pedidos_farmacias.actualizar_en_uso_pedido(numero_pedido, estado, function(err, rows, result) {
 
@@ -1983,7 +2028,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
 
                 var _producto = (productos.length > 0) ? productos[0] : null;
 
-                if (!_producto || _producto.estado !== '1') {
+                if (!_producto) {
                     productoAgrupado.mensajeError = "No esta habilitado en la farmacia origen";
                     productoAgrupado.enFarmaciaOrigen = false;
                     productosInvalidosArchivo.push(productoAgrupado);
@@ -2062,7 +2107,8 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
 function __agruparProductosPorTipo(that, productos, callback) {
 
     var productosAgrupados = {};
-
+    console.log("agrupar::::", productos);
+    console.log("::::agrupar::::");
     if (productos.length === 0) {
         callback(productosAgrupados);
         return;
@@ -2094,6 +2140,9 @@ function __validar_productos_archivo_plano(contexto, filas, index, productos_val
 
     var fila = filas[index];
     var that = contexto;
+
+    console.log("validos", productos_validos);
+    console.log("invalidos", productos_invalidos);
 
     if (!fila) {
         callback(productos_validos, productos_invalidos);
@@ -2186,7 +2235,7 @@ function _generarDocumentoPedido(obj, callback) {
  * +Descripcion: Funcion helper que consulta el stock de un producto en la farmacia destino
  */
 function __consultarStockProducto(that, empresa_destino_id, producto, callback) {
-    that.m_productos.consultar_stock_producto(empresa_destino_id, producto.codigo_producto, {activo: true}, function(err, total_existencias_farmacias) {
+    that.m_productos.consultar_stock_producto(empresa_destino_id, producto.codigo_producto, {activo: false}, function(err, total_existencias_farmacias) {
 
         producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
         producto.en_farmacia_seleccionada = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? true : false;

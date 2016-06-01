@@ -1,7 +1,7 @@
 //main app module
  define(["angular", "route", "bootstrap","js/controllers", "js/models", 
   "controllers/Logincontroller", "models/User", "bootstrapjs", "js/directive","directive/focus","js/services",
-   "loader","storage", "includes/http/Request"
+   "loader","storage", "includes/http/Request", "httpinterceptor","includes/classes/Usuario"
   
   ], function(angular){
   /* App Module and its dependencies */
@@ -15,10 +15,10 @@
           'services'
       ]);
 
-      loginapp.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider){
+      loginapp.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider){
 
           // For any unmatched url, send to /route1
-
+          $httpProvider.interceptors.push('HttpInterceptor');
           $urlRouterProvider.otherwise("/autenticar");
           
           $stateProvider

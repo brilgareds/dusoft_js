@@ -2,7 +2,7 @@ define(["angular", "js/models"], function(angular, models) {
 
     models.factory('Modulo', [function() {
 
-            function Modulo(id, parent, text, url, prefijo) {
+            function Modulo(id, parent, text, url, prefijo, alias) {
 
                 //propiedades necesarias para el plugin de jstree
                 this.prefijo = (prefijo) ? prefijo : "modulo_";
@@ -36,6 +36,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.empresasModulos = [];
                 this.rolesModulos = [];
                 this.esPadre;
+                this.alias = alias;
 
             }
 
@@ -47,7 +48,14 @@ define(["angular", "js/models"], function(angular, models) {
             Modulo.prototype.getId = function(id) {
                 return  this.modulo_id;
             };
+            
+            Modulo.prototype.setAlias = function(alias) {
+                this.alias = alias;
+            };
 
+            Modulo.prototype.getAlias = function(alias) {
+                return  this.alias;
+            };
 
             Modulo.prototype.setCarpetaRaiz = function(carpeta) {
                 this.carpetaRaiz = carpeta;
@@ -277,8 +285,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.rolesModulos.push(rolModulo);
             };
 
-            this.get = function(id, parent, text, url, prefijo) {
-                return new Modulo(id, parent, text, url, prefijo);
+            this.get = function(id, parent, text, url, prefijo, alias) {
+                return new Modulo(id, parent, text, url, prefijo, alias);
             };
 
             return this;

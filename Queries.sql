@@ -458,6 +458,8 @@ CREATE TABLE "public"."modulos" (
   "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
   "estado" CHAR(1), 
   "carpeta_raiz" VARCHAR(255), 
+  "alias" VARCHAR(50), 
+  CONSTRAINT "modulos_alias_key" UNIQUE("alias"),
   CONSTRAINT "modulos_pkey" PRIMARY KEY("id")
 ) WITH OIDS;
 
@@ -1779,4 +1781,38 @@ ALTER TABLE "public"."logs_despachos_ws"
 
 COMMENT ON COLUMN "public"."logs_despachos_ws"."error"
 IS 'Describe si hay error en la cabecera';
+
+
+
  
+CREATE TABLE "public"."logs_pedidos" (
+  "id" SERIAL, 
+  "usuario_responsable" INTEGER, 
+  "fecha" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "accion" CHAR(1), 
+  "tipo_pedido" CHAR(1), 
+  "pedido" INTEGER, 
+  "empresa_id" CHAR(2), 
+  "codigo_producto" CHAR(30), 
+  "cantidad_solicitada" INTEGER, 
+  "cantidad_actual" INTEGER, 
+  CONSTRAINT "logs_pedidos_fk" FOREIGN KEY ("usuario_responsable")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "logs_pedidos_fk1" FOREIGN KEY ("empresa_id")
+    REFERENCES "public"."empresas"("empresa_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON COLUMN "public"."logs_pedidos"."accion"
+IS 'accion = 0 => ''modifico_cantidad'', 1 => ''elimino_producto''';
+
+COMMENT ON COLUMN "public"."logs_pedidos"."tipo_pedido"
+IS '0 => ''cliente'', 1 => ''farmacia''';
+
+
+

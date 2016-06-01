@@ -71,7 +71,7 @@ define(["angular",
             
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs",
                 "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs",
-                "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
+                "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-warning btn-xs"];
 
             $scope.rootPedidosFarmacias.lista_pedidos_farmacias = {
                 data: 'rootPedidosFarmacias.empresaSeleccionada.obtenerPedidos()',

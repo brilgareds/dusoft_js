@@ -85,8 +85,8 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                         cantidad_despachada = 0;
                                     }
 
-                                    //disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
-                                    disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
+                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
+                                    //disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                     disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
                                     
@@ -180,9 +180,9 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     }
 
                                     
-                                    ///disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
                                     //Correccion de bug de stock en calculo de disponible
-                                    disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    //disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                     disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
 

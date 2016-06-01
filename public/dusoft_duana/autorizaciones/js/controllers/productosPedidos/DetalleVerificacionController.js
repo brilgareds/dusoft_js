@@ -136,6 +136,7 @@ define(["angular", "js/controllers",
                     listaAutorizacion.push(producto);
                 }
                 $scope.listarPedido = listaAutorizacion;
+                console.log("sss",$scope.listarPedido);
             };
 
             /**
@@ -150,7 +151,7 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "10%",
+                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.autorizacion[0].estado==2" class="btn btn-danger btn-xs" >\
                                                     <i class="glyphicon glyphicon-remove"></i>\n\
@@ -162,10 +163,11 @@ define(["angular", "js/controllers",
                                                 </button>\
                                             </div>'
                     },
-                    {field: 'getDescripcion()', displayName: 'Producto', width: "40%"},
+                    {field: 'codigo_producto', displayName: 'Codigo', width: "8%"},
+                    {field: 'getDescripcion()', displayName: 'Producto', width: "42%"},
                     {field: 'getCantidad()', displayName: 'Cantidad', width: "10%"},
-                    {field: 'autorizacion[0].fechaVerificacion', displayName: 'Fecha', width: "10%"},
-                    {field: 'autorizacion[0].nombreVerifica', displayName: 'Responsable', width: "30%"}
+                    {field: 'autorizacion[0].fechaVerificacion', displayName: 'Fecha', width: "12%"},
+                    {field: 'autorizacion[0].nombreVerifica', displayName: 'Responsable', width: "20%"}
                 ]
 
             };

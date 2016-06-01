@@ -25,8 +25,6 @@ define(["angular", "js/controllers",
 
             var that = this;
             var filtroPedido = localStorageService.get("pedidoCabecera");
-            
-            console.log("filtroPedido>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",filtroPedido);
             var listaTerceros = [];
             $scope.Empresa = Empresa.get();
             $scope.pedido = "";
@@ -242,7 +240,6 @@ define(["angular", "js/controllers",
                 for (var i in data.obj.listarProductosBloqueados) {
 
                     var objt = data.obj.listarProductosBloqueados[i];
-                     console.log("AAAAA>>>>>>> ",data);
                     var autorizacion = Autorizacion.get(objt.autorizaciones_productos_pedidos_id);
                     autorizacion.setFechaVerificacion(objt.fecha_verificacion);
                     autorizacion.setResponsable(objt.usuario_verifica);
@@ -270,7 +267,6 @@ define(["angular", "js/controllers",
                     listaTerceros.push(terceros);
                 }
                 $scope.listarPedido = listaTerceros;
-                console.log("AAAAA>>>>>>> ",$scope.listarPedido);
             };
 
             /**
@@ -285,7 +281,7 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "5%",
+                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "10%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==2" class="btn btn-danger btn-xs" >\
                                                     <i class="glyphicon glyphicon-remove"></i>\n\
@@ -301,12 +297,10 @@ define(["angular", "js/controllers",
                                                 </button>\
                                             </div>'
                     },//obtenerPedidoPorPosiscion(0).productos[0].descripcion
-                    {field: 'descripcion', displayName: 'Producto', cellClass: "dropdown-button", width: "40%",
-                      cellTemplate:'<span ng-bind="row.entity.obtenerPedidoPorPosiscion(0).productos[0].codigo_producto"></span> - \
-                                    <span ng-bind="row.entity.obtenerPedidoPorPosiscion(0).productos[0].descripcion"></span>'
-                    
-                    },
-                    {field: 'Estado', displayName: 'Estado Producto', cellClass: "txt-center dropdown-button", width: "8%",
+                    {field: 'obtenerPedidoPorPosiscion(0).productos[0].codigo_producto', displayName: 'Codigo', width: "8%"},
+                    {field: 'obtenerPedidoPorPosiscion(0).productos[0].descripcion', displayName: 'Descripción', width: "32%"},
+                  
+                    {field: 'Estado', displayName: 'Estado Producto', cellClass: "txt-center dropdown-button", width: "10%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].estado==0" class="btn btn-danger btn-xs" >\
                                                     <i class="glyphicon glyphicon-remove"></i>\n\
@@ -318,10 +312,10 @@ define(["angular", "js/controllers",
                                                 </button>\
                                         </div>'
                     },                    
-                    {field: 'obtenerPedidoPorPosiscion(0).productos[0].cantidad', displayName: 'Cantidad', width: "10%"},
+                    {field: 'obtenerPedidoPorPosiscion(0).productos[0].cantidad', displayName: 'Cantidad', width: "7%"},
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].fechaVerificacion', displayName: 'Fecha', width: "10%"},
                     {field: 'obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].nombreVerifica', displayName: 'Responsable', width: "10%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",width: "10%",
+                    {displayName: "Estado", cellClass: "txt-center dropdown-button",width: "8%",
                         cellTemplate: '<div class="btn-group">\
                                             <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Pendiente <span class="caret"></span></button>\
                                             <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==1" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Aprobado <span class="caret"></span></button>\
@@ -332,7 +326,7 @@ define(["angular", "js/controllers",
                                              </ul>\
                                        </div>'
                     },
-                    {displayName: "Detalle", cellClass: "txt-center dropdown-button",width: "8%",
+                    {displayName: "Detalle", cellClass: "txt-center dropdown-button",width: "5%",
                         cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.obtenerPedidoPorPosiscion(0).productos[0].autorizacion[0].estado==0"  ng-click="onAbrirVentana(row.entity.obtenerPedidoPorPosiscion(0).productos[0].codigo_producto)">\n\
                                              <span class="glyphicon glyphicon-search"></span>\

@@ -85,8 +85,11 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                         cantidad_despachada = 0;
                                     }
 
-                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
-
+                                    //disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
+                                    disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
+                                    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
+                                    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
+                                    
                                     console.log('============ Here =================');
                                     console.log("empresa ", empresa_id);
                                     console.log("stock real ", stock_producto);
@@ -98,10 +101,6 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     console.log("cantidad_reservada_temporales", cantidad_reservada_temporales);
                                     console.log('fecha_registro', fecha_registro_pedido);
                                     console.log('===================================');
-
-
-                                    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
-                                    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
 
                                     callback(err, {
                                         codigo_producto: codigo_producto,
@@ -180,8 +179,10 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                         cantidad_despachada = 0;
                                     }
 
-                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
-
+                                    
+                                    ///disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    //Correccion de bug de stock en calculo de disponible
+                                    disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                     disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
 

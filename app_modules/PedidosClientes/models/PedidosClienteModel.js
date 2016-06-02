@@ -1468,7 +1468,8 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      when a.estado = '5' then 'Tiene un pedido'\
      when a.estado = '6' then 'Se solicita autorizacion'\
      when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
-     a.fecha_registro\
+     a.fecha_registro,\
+     h.pedido_cliente_id as numero_pedido\
      from ventas_ordenes_pedidos_tmp a\
      inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
      inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
@@ -1476,6 +1477,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
      inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
      left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
+     left join ventas_ordenes_pedidos h on a.pedido_cliente_id_tmp = h.pedido_cliente_id_tmp \
      where a.empresa_id= :1 and a.fecha_registro between :2 and :3 \
      " + filtroCotizacion + " " + filtroEstadoCotizacion;
 
@@ -1485,6 +1487,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
             offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("err ", err);
         callback(err);
 
     });

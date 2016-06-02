@@ -392,6 +392,7 @@ define(["angular", "js/controllers",
                     cotizacion.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
                     cotizacion.set_tipo_producto(data.tipo_producto);
                     cotizacion.setFechaRegistro(data.fecha_registro);
+                    cotizacion.setNumeroPedido(data.numero_pedido);
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
@@ -410,6 +411,7 @@ define(["angular", "js/controllers",
                                         ng-class='agregar_clase_cotizacion(row.entity.get_estado_cotizacion())'> \n\
                                         <span ng-class=''></span> {{ row.entity.get_descripcion_estado_cotizacion() }} </button>"},
                     {field: 'get_numero_cotizacion()', displayName: 'No. Cotización', width: "10%"},
+                    {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
                     {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
                     {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
                     {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%", cellFilter: 'date : "dd-MM-yyyy" '},

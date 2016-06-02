@@ -1177,7 +1177,7 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
   var bloqueo=false;
     G.Q.ninvoke(thats.m_pedidos_farmacias, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(resultado) {
         producto=resultado;
-        for(var i=0; i < producto.length;i++){
+        for(var i=0; i < producto.length;i++){           
             if(producto[i].bloqueado === '0'){
                 bloqueo=true;
             }    
@@ -1199,7 +1199,7 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
     }).then(function() {
         callback(false,bloqueo);
     }).fail(function(err) {
-        console.log("AAAAAAAAAAAAAAAAAA",err);
+        console.log("Eror",err);
         callback(err);
     });
 }

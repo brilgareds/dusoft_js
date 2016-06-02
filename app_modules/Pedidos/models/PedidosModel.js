@@ -355,7 +355,6 @@ PedidosModel.prototype.guardarAutorizacion = function(parametros, callback) {
  *               los productos que se van autorizar
  */
 function __insertarAutorizacionesProductosPedido(params, callback) {
-    console.log("__insertarAutorizacionesProductosPedido ", params);
     var sql = "INSERT INTO autorizaciones_productos_pedidos(\n\
                     tipo_pedido,\n\
                     pedido_id,\n\
@@ -399,7 +398,7 @@ function __guardarAutorizacionesProductosPedidos(params, callback) {
         });
     } else {
         params.productos.splice(0, 1);
-        callback(false);
+        __guardarAutorizacionesProductosPedidos(params, callback);
     }
 }
 

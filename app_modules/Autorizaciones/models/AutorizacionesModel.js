@@ -22,6 +22,7 @@ AutorizacionesModel.prototype.insertarAutorizacionProductos = function(obj, call
     query.then(function(resultado) {
        callback(false, resultado.rows);
      }).catch (function(err) {
+        console.log("error sql",err);
         callback(err);
      });
 };
@@ -44,6 +45,7 @@ AutorizacionesModel.prototype.modificarAutorizacionProductos = function(obj, cal
     query.then(function(resultado) {
         callback(false, resultado.rows);
     }).catch (function(err) {
+        console.log("error sql",err);
         callback(err);
     });
 };
@@ -65,6 +67,7 @@ AutorizacionesModel.prototype.verificarAutorizacionProducto = function(obj, call
         callback(false, resultado.rows);
     }). 
         catch (function(err) {
+        console.log("error sql",err);
         callback(err);
     });
 };
@@ -84,6 +87,7 @@ AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback
     G.knex.raw(sql, {1: obj}).then(function(resultado) {
         callback(false, resultado);
     }).catch (function(err) {
+        console.log("error sql",err);
         callback(err);
     });
 }
@@ -120,7 +124,7 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoFarmacia = function(obj
     G.knex.raw(sql, {1: obj}).then(function(resultado) {
         callback(false, resultado.rows);
     }).catch (function(err) {
-        console.log("erro sql",err);
+        console.log("error sql",err);
         callback(err);
     });
 };
@@ -157,6 +161,7 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoCliente = function(obj,
     G.knex.raw(sql, {1: obj}).then(function(resultado) {
         callback(false, resultado.rows);
     }).catch (function(err) {
+        console.log("error sql",err);
         callback(err);
     });
 };
@@ -216,7 +221,7 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
                         LEFT  JOIN system_usuarios AS e ON (a.usuario_id=e.usuario_id) \
                         INNER JOIN inventarios_productos as f ON (f.codigo_producto=a.codigo_producto)   \
                         WHERE true  " + WHERE2 + "\
-                              AND a.empresa_id = :1 AND a.tipo_pedido = :2 \
+                               AND a.tipo_pedido = :2 \
                               ) as p \
                        order by p.estado_verificado desc";
     
@@ -226,6 +231,7 @@ AutorizacionesModel.prototype.listarProductosBloqueados = function(termino_busqu
     then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
+        console.log("error sql",err);
         callback(err);       
     });   
 };
@@ -292,6 +298,7 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
         then(function(resultado){
             callback(false, resultado);
         }).catch(function(err){
+            console.log("error sql",err);
             callback(err);       
         });
 };
@@ -371,6 +378,7 @@ AutorizacionesModel.prototype.listarVerificacionProductos = function(obj, pagina
         then(function(resultado){  
          callback(false, resultado);
         }).catch(function(err){
+          console.log("error sql",err);
           callback(err);
         });
 };

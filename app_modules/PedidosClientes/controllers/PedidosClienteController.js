@@ -2595,6 +2595,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogAutorizarPedido);
         }
     }).fail(function(err) {
+        console.log("error generado ", err);
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };

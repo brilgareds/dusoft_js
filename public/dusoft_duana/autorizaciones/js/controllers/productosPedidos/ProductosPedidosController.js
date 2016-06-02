@@ -31,19 +31,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-            
-             
-//             if($state.is("AutorizacionesProductos") === true){
-//                var estado = localStorageService.get("tabActivo");
-//                if(estado){
-//                    if(estado.estadoTab === 1 ){
-//                      $scope.activarTabFarmacia = "true";                   
-//                    }else{
-//                      $scope.activarTabCliente = "true";  
-//                    }
-//                    $scope.tipoPedido=estado.estadoTab;
-//                }
-//             };
 
             that.init = function(callback) {
                 $scope.root = {};
@@ -179,7 +166,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableRowSelection: false,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "8%",
+                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "10%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).getBoolPorAprobar()" class="btn btn-warning btn-xs" >\
                                                     <i class="glyphicon glyphicon-warning-sign"></i>\n\
@@ -191,10 +178,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 </button>\
                                             </div>'
                     },
-                    {field: 'getNombre()', displayName: 'Cliente / Farmacia', width: "60%"},
+                    {field: 'getNombre()', displayName: 'Cliente / Farmacia', width: "65%"},
                     {field: 'obtenerPedidoPorPosiscion(0).get_numero_pedido()', displayName: 'Pedido', width: "10%"},
                     {field: 'obtenerPedidoPorPosiscion(0).getFechasolicitud()', displayName: 'Fecha', width: "10%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
                         cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.separado"  ng-click="onAbrirVentana(row.entity)">\n\
                                              <span class="glyphicon glyphicon-search"></span>\

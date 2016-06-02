@@ -2036,14 +2036,14 @@ PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, produc
 
     var cantidadDespachar;
     var campoDespacho = "";
-    if (pedido.estadoSolicitud == '8') {
+    if (pedido.estadoSolicitud === '8') {
         cantidadDespachar = producto.cantidadPendienteDespachar;
         campoDespacho = "cantidad_despachada = '0' , numero_unidades = :2,";
 
 
     } else {
         cantidadDespachar = producto.cantidad_solicitada;
-        campoDespacho = "numero_unidades";
+        campoDespacho = "numero_unidades = :2, ";
     }
 
     var sql = "UPDATE ventas_ordenes_pedidos_d SET porc_iva= :1," + campoDespacho + " valor_unitario = :3, usuario_id = :4, fecha_registro = :5 \

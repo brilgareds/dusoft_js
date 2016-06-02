@@ -879,7 +879,8 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
                 to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido,\
                 '1' as tipo_pedido,\
-                '' as farmacia_id\
+                '' as farmacia_id,\
+                j.observacion as descripcion_pedido\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -910,7 +911,8 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
                 to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido,\
                 '2' as tipo_pedido,\
-                j.farmacia_id\
+                j.farmacia_id,\
+                j.observacion as descripcion_pedido\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\

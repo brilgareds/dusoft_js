@@ -402,7 +402,7 @@ function __validarExistenciasProducto(params, callback){
         totalExistencias += cantidadNueva;
     }
     
-    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto, {activo:true}).
+    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto, {activo:false}).
     then(function(resultado){
         console.log("existencia ",parseInt(resultado[0].existencia), " total ", totalExistencias);
         

@@ -1,0 +1,32 @@
+{
+    "module": "Reportes",
+    "dependency": {
+        "controllers": [{
+                "reportes_controller": {
+                    "module": "Reportes",
+                    "controller": "ReportesController",
+                    "alias": "c_reportes"
+                }
+            }],
+        "models": [{
+                "autorizaciones_model": {
+                    "module": "Reportes",
+                    "model": "DrAriasModel",
+                    "alias": "m_drArias"
+                }
+            }],
+        "events": [{
+                "pedidos_clientes_events": {
+                    "module": "PedidosClientes",
+                    "event": "PedidosClientesEvents",
+                    "alias": "e_pedidos_clientes"
+                },
+                "pedidos_farmacias_events": {
+                    "module": "PedidosFarmacias",
+                    "event": "PedidosFarmaciasEvents",
+                    "alias": "e_pedidos_farmacias"
+                }
+            }],
+        "cronJobs": []
+    }
+}

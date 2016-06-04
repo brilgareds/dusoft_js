@@ -164,7 +164,7 @@ define(["angular", "js/services"], function(angular, services) {
              self.listarMedicamentosFormulados = function(obj,callback){
                
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
-                       console.log("AAAAA ", data)
+                       
                         callback(data);
                  });
              };
@@ -181,7 +181,7 @@ define(["angular", "js/services"], function(angular, services) {
                 for(var i in producto.listar_medicamentos_formulados){
                     
                     var _productos = producto.listar_medicamentos_formulados[i];
-                    //console.log("_productos ", _productos)
+                    console.log("_productos ", _productos)
                     var Productos  = ProductosFOFO.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
                         Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
                         Productos.setTiempoTotal(_productos.tiempo_total);

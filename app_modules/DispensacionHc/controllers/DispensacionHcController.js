@@ -87,7 +87,7 @@ DispensacionHc.prototype.listarTipoDocumento = function(req, res){
    
    G.Q.ninvoke(that.m_dispensacion_hc,'listarTipoDocumento').then(function(resultado){
        
-       if(resultado.rowCount > 0){
+       if(resultado.rows > 0){
            res.send(G.utils.r(req.url, 'Consulta tipo documento', 200, {listar_tipo_documento:resultado.rows}));
        }else{
            throw 'Consulta sin resultados';
@@ -116,7 +116,7 @@ DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
    
    G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulasPendientes').then(function(resultado){
        
-       if(resultado.rowCount > 0){
+       if(resultado.rows.length > 0){
             res.send(G.utils.r(req.url, 'Consulta formulas pendientes', 200, {listar_formulas:resultado}));
        }else{
            throw 'Consulta sin resultados';
@@ -171,8 +171,8 @@ DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
    
    
    G.Q.ninvoke(that.m_dispensacion_hc,'cantidadProductoTemporal',parametros).then(function(resultado){
-     
-       if(resultado.rowCount > 0){
+      
+       if(resultado.rows.length > 0){
             res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {cantidadProducto:resultado.rows}));
        }else{
            throw 'Consulta sin resultados';
@@ -214,7 +214,7 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
    
    G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosFormulados',parametros).then(function(resultado){
        
-        if(resultado.rowCount > 0){
+       if(resultado.rows.length > 0){ 
               res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado.rows}));
        }else{
            throw 'Consulta sin resultados';
@@ -270,8 +270,13 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
    
    
    G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros).then(function(resultado){
-     
-       res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado}));
+       
+       if(resultado.rows.length > 0){ 
+             res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado.rows}));
+       }else{
+           throw 'Consulta sin resultados';
+       }
+      
         
    }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));

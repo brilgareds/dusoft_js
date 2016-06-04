@@ -230,7 +230,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                 WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";
    
   G.knex.raw(sql,parametros).then(function(resultado){  
-     
+   
       callback(false, resultado)
   }).catch(function(err){     
       
@@ -266,11 +266,11 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
                     where tmp.codigo_formulado= :1\
                     and tmp.evolucion_id = :2 "+condicion+" GROUP BY codigo_formulado";
   
-      
+        console.log("parametros ", parametros);
   
     
   G.knex.raw(sql,parametros).then(function(resultado){  
-     
+      console.log("resultado ", resultado);
       callback(false, resultado)
   }).catch(function(err){     
      
@@ -293,7 +293,7 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
 DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
 
       var parametros = {1: obj.empresa, 2: obj.centroUtilidad, 3: obj.bodega, 4: obj.principioActivo, 5: obj.codigoProducto};
-      console.log("parametros ", parametros)
+    
       var condicion = "";
        if (obj.principioActivo !== "") {
 
@@ -321,12 +321,10 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     WHERE fv.empresa_id = :1 and fv.centro_utilidad = :2\
                     and fv.bodega = :3 and fv.existencia_actual > 0 "+condicion+" ORDER BY invp.descripcion ASC,fv.fecha_vencimiento ASC";
   
-       console.log("sql ", sql)
-  
-    
+     
   G.knex.raw(sql,parametros).then(function(resultado){  
      console.log("cantidadProductoTemporal resultado = ", resultado)
-      callback(false, resultado.rows)
+      callback(false, resultado)
   }).catch(function(err){     
         console.log("err cantidadProductoTemporal = ", err)
       callback(err)

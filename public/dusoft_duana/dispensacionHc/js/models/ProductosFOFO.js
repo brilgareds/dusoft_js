@@ -45,7 +45,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             };
             
             ProductosFOFO.prototype.getCantidadEntrega = function(){   
-                this.cantidadEntrega;              
+                return this.cantidadEntrega;              
             };
             
             ProductosFOFO.prototype.agregarProductosHc = function(productoHc){

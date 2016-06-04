@@ -124,7 +124,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                        }    
                     };
                dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
-                   
+                  
                     if(data.status === 200) {       
 
                        productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
@@ -157,7 +157,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             {field: 'getCodigoProducto()', displayName: 'Codigo', width:"15%"},
             {field: 'getDescripcion()', displayName: 'Medicamento'},
-            {field: 'getExistencia()', displayName: 'Cant. entregar', width:"10%"},
+            {field: 'getCantidadEntrega()', displayName: 'Cant. entregar', width:"10%"},
             {field: 'getPerioricidadEntrega()', displayName: 'Perioricidad entrega', width:"25%"},
             {field: 'getTiempoTotal()', displayName: 'Dias tratamiento', width:"15%"},
             {field: 'Dispensar', width: "10%",
@@ -184,7 +184,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.producto= entity.codigo_producto;
                 $scope.descripcion= entity.descripcion;
                 $scope.cantidadEntrega = entity.cantidadEntrega;
-                $scope.cantidadPendiente = 44885;
+               
               
                 var obj = {                   
                         session: $scope.session,
@@ -196,23 +196,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                            }
                        }    
                     };
-                    
+                 
+           
                 dispensacionHcService.cantidadProductoTemporal(obj,function(data){
-                    
-                  
-                    if(data.status === 200) {       
+                   that.cantidadPendiente = 0;
+                 
+                   if(data.status === 200) {       
                        
                         if (entity.codigo_producto === data.obj.cantidadProducto[0].codigo_formulado) {
                            
-                               $scope.cantidadPendiente= entity.cantidadEntrega - data.obj.cantidadProducto[0].total;
+                              that.cantidadPendiente = entity.cantidadEntrega - data.obj.cantidadProducto[0].total;
                          }
-                                that.consultarExistenciasBodegas(entity);
-                        //that.ventanaDispensacionFormula();
-                        
+                           
                      }else{
-                         
-                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                     }
+                              that.cantidadPendiente = entity.cantidadEntrega;
+                        }
+                     $scope.cantidadPendiente = that.cantidadPendiente;
+                     that.consultarExistenciasBodegas(entity);
+                   
+                     
 
                 });
                // $scope.datos_view.pedido_seleccionado = obj;       
@@ -238,14 +240,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
              
             dispensacionHcService.existenciasBodegas(obj, function(data){
-                
+               
                  entity.vaciarProductosHc();
                  if(data.status === 200) {                      
                      
                      entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));
                  
                      $scope.lotes = entity.mostrarProductosHc();
-                    that.ventanaDispensacionFormula();
+                     that.ventanaDispensacionFormula();
                  }else{
                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                  }

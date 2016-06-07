@@ -20,7 +20,7 @@
     "jade": "*",
     "jsreport": "0.2.1",
     "jsreport-client": "*",
-    "knex": "^0.8.6",
+    "knex": "^0.11.5",
     "moment": "^2.13.0",
     "node-xlsx": "~0.5.1",
     "nodemailer": "^0.6.1",

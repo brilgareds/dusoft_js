@@ -17,7 +17,7 @@ define(["angular","js/services"], function(angular, services){
                 return response;
             },
             'request':function(config){
-                
+                config.timeout = 1000000;
                 if(config.data && config.data.session){
                     var usuario = Usuario.getUsuarioActual() || null;
                     var modulo = (usuario) ? usuario.getModuloActual() : null;

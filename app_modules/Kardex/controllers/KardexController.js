@@ -100,93 +100,107 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
     var fecha_inicial = args.kardex.fecha_inicial;
     var fecha_final = args.kardex.fecha_final;
 
-
     // Seleccionar los Movimientos del Producto
-    this.m_kardex.obtener_movimientos_productos(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, function(err, movimientos_producto) {
+    G.redis.get("producto_"+codigo_producto,function(err, result){
+       if(!result){
+        console.log("no habia resultado ", result, err);
+        that.m_kardex.obtener_movimientos_productos(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, function(err, movimientos_producto) {
 
-        var i = movimientos_producto.length;
+            var i = movimientos_producto.length;
 
-        if (err)
-            res.send(G.utils.r(req.url, 'Error Seleccionado los Movimientos del Producto', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
-        else {
-            // Seleccionar los Pedidos de Farmacia que estan Pendientes con ese producto
-            that.m_pedidos_farmacias.listar_pedidos_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_farmacias) {
+            if (err)
+                res.send(G.utils.r(req.url, 'Error Seleccionado los Movimientos del Producto', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
+            else {
+                // Seleccionar los Pedidos de Farmacia que estan Pendientes con ese producto
+                that.m_pedidos_farmacias.listar_pedidos_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_farmacias) {
 
-                if (err)
-                    res.send(G.utils.r(req.url, 'Error Seleccionado los Pendientes en Farmacias', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
-                else {
-                    // Seleccionar los Pedidos de Clientes que estan Pendientes con ese producto
-                    that.m_pedidos_clientes.listar_pedidos_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_clientes) {
+                    if (err)
+                        res.send(G.utils.r(req.url, 'Error Seleccionado los Pendientes en Farmacias', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
+                    else {
+                        // Seleccionar los Pedidos de Clientes que estan Pendientes con ese producto
+                        that.m_pedidos_clientes.listar_pedidos_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_clientes) {
 
-                        if (err)
-                            res.send(G.utils.r(req.url, 'Error Seleccionado los Pendientes en Clientes', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
-                        else {
-                            // Seleccionar las Ordenes de Compras que estan Pendientes con ese producto
-                            that.m_ordenes_compra.listar_ordenes_compra_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_ordenes_compra) {
+                            if (err)
+                                res.send(G.utils.r(req.url, 'Error Seleccionado los Pendientes en Clientes', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
+                            else {
+                                // Seleccionar las Ordenes de Compras que estan Pendientes con ese producto
+                                that.m_ordenes_compra.listar_ordenes_compra_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_ordenes_compra) {
 
-                                if (err)
-                                    res.send(G.utils.r(req.url, 'Error Seleccionado Las Ordenes de Compra Pendientes', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
-                                else {
+                                    if (err)
+                                        res.send(G.utils.r(req.url, 'Error Seleccionado Las Ordenes de Compra Pendientes', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
+                                    else {
 
-                                    if (movimientos_producto.length > 0) {
+                                        if (movimientos_producto.length > 0) {
 
-                                        //Calcular la existencia inicial del producto
+                                            //Calcular la existencia inicial del producto
 
-                                        that.m_kardex.obtener_existencia_inicial(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, function(err, existencia_inicial) {
+                                            that.m_kardex.obtener_existencia_inicial(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, function(err, existencia_inicial) {
 
-                                            var stock_actual = 0;
-                                            if (err)
-                                                res.send(G.utils.r(req.url, 'Error Calculando la Existencia Inicial del Producto', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
-                                            else {
-                                                // Existencia Inicial del Producto
-                                                if (existencia_inicial.length > 0) {
-                                                    stock_actual = parseInt(existencia_inicial[0]['existencia_inicial']);
-                                                }
-
-                                                movimientos_producto.forEach(function(movimiento) {
-
-
-                                                    //Calcular stock del producto en un determinado movimiento.
-                                                    var cantidad = parseInt(movimiento.cantidad);
-                                                    if (movimiento.tipo_movimiento === "E") {
-                                                        stock_actual -= cantidad;
-                                                      
-                                                    } else {
-                                                        stock_actual += cantidad;
-                                                       
+                                                var stock_actual = 0;
+                                                if (err)
+                                                    res.send(G.utils.r(req.url, 'Error Calculando la Existencia Inicial del Producto', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
+                                                else {
+                                                    // Existencia Inicial del Producto
+                                                    if (existencia_inicial.length > 0) {
+                                                        stock_actual = parseInt(existencia_inicial[0]['existencia_inicial']);
                                                     }
-                                                    movimiento.stock_actual = stock_actual;
-                                                  
 
-                                                    // Seleccionar los detalles de los movimientos del producto
-                                                    that.m_kardex.obtener_detalle_movimientos_producto(empresa_id, movimiento.tipo_documento, movimiento.prefijo, movimiento.numero, function(err, detalle_movimiento) {
+                                                    movimientos_producto.forEach(function(movimiento) {
 
-                                                        if (err) {
-                                                            res.send(G.utils.r(req.url, 'Error Seleccionando el detalle del Movimiento', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
-                                                            return;
+
+                                                        //Calcular stock del producto en un determinado movimiento.
+                                                        var cantidad = parseInt(movimiento.cantidad);
+                                                        if (movimiento.tipo_movimiento === "E") {
+                                                            stock_actual -= cantidad;
+
                                                         } else {
+                                                            stock_actual += cantidad;
 
-                                                            movimiento.detalle = detalle_movimiento[0];
-
-                                                            if (--i === 0) {
-                                                                res.send(G.utils.r(req.url, 'Movimientos Producto', 200, {movimientos_producto: movimientos_producto, pendientes_farmacias: pendientes_farmacias, pendientes_clientes: pendientes_clientes, pendientes_ordenes_compra: pendientes_ordenes_compra}));
-                                                            }
                                                         }
+                                                        movimiento.stock_actual = stock_actual;
+
+
+                                                        // Seleccionar los detalles de los movimientos del producto
+                                                        that.m_kardex.obtener_detalle_movimientos_producto(empresa_id, movimiento.tipo_documento, movimiento.prefijo, movimiento.numero, function(err, detalle_movimiento) {
+
+                                                            if (err) {
+                                                                res.send(G.utils.r(req.url, 'Error Seleccionando el detalle del Movimiento', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
+                                                                return;
+                                                            } else {
+
+                                                                movimiento.detalle = detalle_movimiento[0];
+
+                                                                if (--i === 0) {
+                                                                    var obj = {movimientos_producto: movimientos_producto, pendientes_farmacias: pendientes_farmacias, pendientes_clientes: pendientes_clientes, pendientes_ordenes_compra: pendientes_ordenes_compra};
+                                                                    G.redis.setex("producto_"+codigo_producto,21600, JSON.stringify(obj));
+                                                                    console.log("guardando en redix >>>>>>>>>>>>>>>>>>>>>>>");
+                                                                    res.send(G.utils.r(req.url, 'Movimientos Producto!!!!!!!!', 200, obj));
+                                                                }
+                                                            }
+                                                        });
                                                     });
-                                                });
-                                            }
-                                        });
-                                    } else {
-                                        res.send(G.utils.r(req.url, 'Movimientos Producto', 200, {movimientos_producto: movimientos_producto, pendientes_farmacias: pendientes_farmacias, pendientes_clientes: pendientes_clientes, pendientes_ordenes_compra: pendientes_ordenes_compra}));
+                                                }
+                                            });
+                                        } else {
+                                            var obj = {movimientos_producto: movimientos_producto, pendientes_farmacias: pendientes_farmacias, pendientes_clientes: pendientes_clientes, pendientes_ordenes_compra: pendientes_ordenes_compra};
+                                            G.redis.setex("producto_"+codigo_producto,21600, JSON.stringify(obj));
+                                            console.log("guardando en redix >>>>>>>>>>>>>>>>>>>>>>>");
+                                            res.send(G.utils.r(req.url, 'Movimientos Producto', 200, obj));
+                                        }
                                     }
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+       } else {
+           console.log("result from cache for producto ",codigo_producto);
+           res.send(G.utils.r(req.url, 'Movimientos Producto', 200, JSON.parse(result)));
+       }
     });
+    
 };
 
 

@@ -17,10 +17,11 @@ Reportes.prototype.listarDrArias = function(req, res) {
 
         G.Q.ninvoke(this.m_drArias,'listarDrArias',termino_busqueda).
           then(function(resultado) {
+      console.log("resultado controller ",resultado);
           res.send(G.utils.r(req.url, 'Listado de Dr Arias!!!!', 200, {listarDrArias: resultado}));
         }).
           fail(function(err) {
-      console.log("error controller ",err);
+          console.log("error controller ",err);
           res.send(G.utils.r(req.url, 'Error Listado Dr Arias', 500, {listarDrArias: err}));
         }).
           done();

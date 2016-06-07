@@ -397,12 +397,15 @@ DrAriasModel.prototype.listarDrArias = function(obj, callback) {
                     true  \
                     order by 18,24,3,7 limit 10000";
  var query = G.knex.raw(sql);
+  
     query.then(function(resultado) {
+         console.log("resultado moedel >>>>>>>>>>>>>>>>>>>>>>>>>>>>",resultado);
        callback(false, resultado.rows);
      }).catch (function(err) {
          console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
         callback(err);
      });
+     
 };
 
 module.exports = DrAriasModel;

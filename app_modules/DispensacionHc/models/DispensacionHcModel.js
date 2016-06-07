@@ -108,7 +108,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
         
         callback(false, resultado);
     }).catch(function(err){
-       console.log("err ", err)
+      
         callback(err);
        
     });
@@ -136,7 +136,6 @@ DispensacionHcModel.prototype.listarTipoDocumento = function(callback){
         
       callback(err)
   });
-          
     
 };
 
@@ -180,7 +179,7 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
     
       callback(false, resultado)
   }).catch(function(err){     
-        console.log("err ", err)
+     
       callback(err)
   });
           
@@ -251,7 +250,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
 DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
 
       var parametros = {1: obj.codigoProducto, 2: obj.evolucionId, 3: obj.principioActivo};
-    
+     
       var condicion = "";
        if (obj.principioActivo !== "") {
            condicion =" and med.cod_principio_activo = :3 ";
@@ -266,11 +265,11 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
                     where tmp.codigo_formulado= :1\
                     and tmp.evolucion_id = :2 "+condicion+" GROUP BY codigo_formulado";
   
-        console.log("parametros ", parametros);
+       
   
     
   G.knex.raw(sql,parametros).then(function(resultado){  
-      console.log("resultado ", resultado);
+    
       callback(false, resultado)
   }).catch(function(err){     
      
@@ -309,6 +308,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     invmcf.descripcion as forma_farmacologica,\
                     invci.descripcion as laboratorio,\
                     fc_descripcion_producto_alterno(fv.codigo_producto) as producto,\
+                    med.cod_principio_activo,\
                     fv.*\
                     FROM existencias_bodegas_lote_fv AS fv\
                     JOIN existencias_bodegas as ext ON (fv.empresa_id = ext.empresa_id) and (fv.centro_utilidad = ext.centro_utilidad) and (fv.bodega = ext.bodega) and (fv.codigo_producto = ext.codigo_producto)\
@@ -323,15 +323,119 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
   
      
   G.knex.raw(sql,parametros).then(function(resultado){  
-     console.log("cantidadProductoTemporal resultado = ", resultado)
+     
       callback(false, resultado)
   }).catch(function(err){     
-        console.log("err cantidadProductoTemporal = ", err)
+       
       callback(err)
   });
           
     
 };
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de obtener los productos temporales
+ *              para validar si ya existe el producto
+ * @controller DispensacionHc.prototype.listarTipoDocumento
+ */
+DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,callback){
+   
+    var parametros = {1: obj.evolucionId, 2: obj.codigoProducto, 3: obj.fechaVencimiento, 4: obj.lote};
+    
+    var sql = "SELECT  * FROM hc_dispensacion_medicamentos_tmp \
+              WHERE evolucion_id = :1\
+              AND codigo_producto = :2\
+              AND fecha_vencimiento = :3 \
+              AND lote = :4 ";
+  
+    G.knex.raw(sql,parametros).then(function(resultado){  
+   
+      callback(false, resultado)
+    }).catch(function(err){     
+        
+      callback(err)
+    });
+    
+};
+
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : SQL para ingresar el producto en la tabla temporal
+ *               cada vez que se dispensa el lote de la formula
+ * Modificacion: Se migra a KNEX.js 
+ * @fecha: 04/12/2015 2:43 pm 
+ */
+function __insertarTemporalFarmacia(producto, transaccion, callback) {
+   
+    var sql = "INSERT INTO hc_dispensacion_medicamentos_tmp\
+      (hc_dispen_tmp_id,evolucion_id,empresa_id,centro_utilidad,\
+       bodega,codigo_producto,cantidad_despachada,fecha_vencimiento, \
+        lote, codigo_formulado,usuario_id,sw_entregado_off\)\
+            VALUES( DEFAULT, :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11 );";
+
+ 
+     var query = G.knex.raw(sql, {1: producto.evolucionId, 
+                                  2: producto.empresa, 
+                                  3: producto.centroUtilidad,
+                                  4: producto.bodega,
+                                  5: producto.codigoProducto,
+                                  6: producto.cantidad,
+                                  7: producto.fechaVencimiento,
+                                  8: producto.lote,
+                                  9: producto.formulado,
+                                  10: producto.usuario,
+                                  11: producto.rango});
+    
+    if(transaccion) query.transacting(transaccion);
+     
+      query.then(function(resultado){  
+         
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);   
+    });
+    
+    
+};
+/*
+ * @autor : Cristian Ardila
+ * +Descripcion : Transaccion para almacenar los temporales de la formula
+ *                que vendrian siendo los lotes
+ * @fecha: 05/07/2015
+ */
+DispensacionHcModel.prototype.guardarTemporalFormula = function(producto, callback)
+{
+    
+     G.knex.transaction(function(transaccion) {  
+        
+        G.Q.nfcall(__insertarTemporalFarmacia, producto, transaccion).then(function(resultado){
+            
+          console.log("resultado ", resultado);
+          transaccion.commit();
+          
+        }).fail(function(err){
+         
+           transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function(){
+     
+       callback(false);
+
+    }).catch(function(err){
+        
+       callback(err);
+       
+    }).done(); 
+    
+};
+
 //DispensacionHcModel.$inject = ["m_productos"];
 
 

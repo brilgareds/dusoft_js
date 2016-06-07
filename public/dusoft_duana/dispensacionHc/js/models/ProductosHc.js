@@ -7,11 +7,19 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
             function ProductosHc(codigo_producto, descripcion, existencia) {                           
                 Producto.getClass().call(this,codigo_producto, descripcion, existencia); 
                 this.lotes = [];
+                this.principioActivo = "";
             }
             
             ProductosHc.prototype = Object.create(Producto.getClass().prototype);
             
+            
+            ProductosHc.prototype.setPrincipioActivo = function(principioActivo){
+                this.principioActivo = principioActivo;
+            };
        
+            ProductosHc.prototype.getPrincipioActivo = function(){
+                return this.principioActivo;
+            };
             
              ProductosHc.prototype.agregarLotes = function(lote){
                 this.lotes.push(lote);

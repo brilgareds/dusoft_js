@@ -16,11 +16,7 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
    
     var that = this;
     var args = req.body.data;
-   console.log("**************************************args******************");
-   console.log("**************************************args******************");
-   console.log("**************************************args******************");
    
-   console.log("args ", args)
    if (args.listar_formulas === undefined || args.listar_formulas.paginaActual === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_formulas: []}));
         return;
@@ -79,15 +75,17 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
  *              
  */
 DispensacionHc.prototype.listarTipoDocumento = function(req, res){
-       
+    
+    
     var that = this;
     var args = req.body.data;
 
    
-   
+
    G.Q.ninvoke(that.m_dispensacion_hc,'listarTipoDocumento').then(function(resultado){
+      
+       if(resultado.rows.length > 0){
        
-       if(resultado.rows > 0){
            res.send(G.utils.r(req.url, 'Consulta tipo documento', 200, {listar_tipo_documento:resultado.rows}));
        }else{
            throw 'Consulta sin resultados';
@@ -282,6 +280,100 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+
+/**
+ * @author Cristian Ardila
+ */
+DispensacionHc.prototype.temporalLotes = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (args.temporalLotes === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {existenciasBodegas: []}));
+        return;
+    }
+   
+    if (!args.temporalLotes.detalle) {
+        res.send(G.utils.r(req.url, 'Los parametros estan llegando vacios', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    
+    var cantidadDispensada = parseInt(args.temporalLotes.detalle.cantidadDispensada);
+    var codigoProductoLote = args.temporalLotes.detalle.codigo_producto;
+    var fechaVencimientoLote = args.temporalLotes.detalle.lotes[0].fecha_vencimiento;
+    var usuario = req.session.user.usuario_id;
+    var medicamentoFormulado = args.temporalLotes.codigoProducto;
+    var lote = args.temporalLotes.detalle.lotes[0].codigo_lote;
+    
+    var parametros={codigoProducto:medicamentoFormulado,
+                     evolucionId:args.temporalLotes.evolucion,
+                     principioActivo:args.temporalLotes.detalle.principioActivo
+                    };
+   
+   G.Q.ninvoke(that.m_dispensacion_hc,'cantidadProductoTemporal',parametros).then(function(resultado){
+       var total;
+       
+       if(resultado.rows.length > 0){         
+            total = parseInt(resultado.rows[0].total) + cantidadDispensada;          
+       }else{
+           total = parseInt(cantidadDispensada);
+       }
+      
+        if( total <= args.temporalLotes.cantidadSolicitada){
+             
+              var parametrosConsultarProductoTemporal = {
+                  evolucionId:args.temporalLotes.evolucion,
+                  lote: lote,
+                  fechaVencimiento: fechaVencimientoLote,
+                  codigoProducto: codigoProductoLote       
+              };
+
+              
+              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal', parametrosConsultarProductoTemporal);     
+
+            }
+       
+    }).then(function(resultado){
+        
+         
+         var parametrosGuardarProductoTemporal = {
+                  evolucionId:args.temporalLotes.evolucion,
+                  empresa: 'FD',
+                  centroUtilidad: '06',
+                  bodega: '06',
+                  codigoProducto: codigoProductoLote,
+                  cantidad: cantidadDispensada,
+                  fechaVencimiento: fechaVencimientoLote,
+                  lote: lote,
+                  formulado: medicamentoFormulado,
+                  usuario: usuario,
+                  rango: 0                    
+              };
+              
+        if(resultado.rows.length >0){
+            throw 'El lote ya se encuentra registrado en temporal';
+        }else{
+            return G.Q.ninvoke(that.m_dispensacion_hc,'guardarTemporalFormula', parametrosGuardarProductoTemporal); 
+        }
+        
+    }).then(function(){
+         
+             res.send(G.utils.r(req.url, 'Se almacena el temporal satisfactoriamente', 200, {existenciasBodegas: []}));  
+         
+    
+     }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();   
+      
+};
+
+
+
+
+
 
 DispensacionHc.$inject = ["m_dispensacion_hc"];
 

@@ -116,7 +116,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                  var obj = {                   
                         session: $scope.session,
                         data: {
-                           listar_medicamentos_formulados: {
+                           listar_medicamentos_formulados: { 
                               
                                 evolucionId: resultadoStorage.evolucionId,//$scope.root.numero,
                                 
@@ -180,11 +180,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           */  
         $scope.detalleLotesProductoFormula = function(entity) {
        
-               
+              
                 $scope.producto= entity.codigo_producto;
                 $scope.descripcion= entity.descripcion;
                 $scope.cantidadEntrega = entity.cantidadEntrega;
                
+               console.log("$scope.cantidadEntrega ", $scope.cantidadEntrega);
               
                 var obj = {                   
                         session: $scope.session,
@@ -200,17 +201,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
                 dispensacionHcService.cantidadProductoTemporal(obj,function(data){
                    that.cantidadPendiente = 0;
-                 
+                   
                    if(data.status === 200) {       
                        
                         if (entity.codigo_producto === data.obj.cantidadProducto[0].codigo_formulado) {
                            
                               that.cantidadPendiente = entity.cantidadEntrega - data.obj.cantidadProducto[0].total;
-                         }
-                           
-                     }else{
-                              that.cantidadPendiente = entity.cantidadEntrega;
                         }
+                           
+                    }else{
+                              that.cantidadPendiente = entity.cantidadEntrega;
+                    }
                      $scope.cantidadPendiente = that.cantidadPendiente;
                      that.consultarExistenciasBodegas(entity);
                    
@@ -228,7 +229,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * @fecha 26/05/2016
           */
          that.consultarExistenciasBodegas = function(entity){
-             var lotes;
+              
              var obj = {                   
                         session: $scope.session,
                         data: {
@@ -240,19 +241,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
              
             dispensacionHcService.existenciasBodegas(obj, function(data){
-               
+                
                  entity.vaciarProductosHc();
                  if(data.status === 200) {                      
                      
                      entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));
-                 
+                     
                      $scope.lotes = entity.mostrarProductosHc();
                      that.ventanaDispensacionFormula();
                  }else{
                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                  }
               
-                //console.log("entity ", $scope.lotes)
             });
             
             
@@ -283,16 +283,58 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
             {field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
             {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Existencia', width:"10%"},
-           
+            {field: 'cantidad_solicitada', width: "7%", displayName: 'Cantidad',
+                        cellTemplate: '<div class="col-xs-12"> \
+                                      <input type="text" \
+                                       ng-model="row.entity.cantidadDispensada" \
+                                       validacion-numero-entero \
+                                       class="form-control grid-inline-input" \n\
+                                       name="" id="" /> </div>'},
             {field: 'Sel', width: "10%",
                        displayName: "Dispensar",
                        cellClass: "txt-center",
-                       cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)">Dispensar'
+                       cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="temporalLotes(row.entity)">Dispensar'
 
                  }
                ]
            };
          
+         /**
+          * @author Cristian Ardila
+          * +Descripcion Metodo encargado de invocar el servicio que
+          *              almacenara los productos en las tablas temporales
+          * @fecha 07/06/2016
+          */
+         $scope.temporalLotes = function(entity){
+             
+             
+             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+            
+            var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           temporalLotes: {
+                                evolucion: resultadoStorage.evolucionId,
+                                detalle: entity,
+                                codigoProducto: $scope.producto,
+                                cantidadSolicitada: $scope.cantidadEntrega
+                           }
+                       }    
+                    };
+               
+            dispensacionHcService.temporalLotes(obj, function(data){
+               
+                 if(data.status === 200) {                      
+                     
+                     AlertService.mostrarMensaje("mensaje del sistema", data.msj);
+                 }else{
+                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                 }
+              
+            });
+            
+             
+         };
          
          that.ventanaDispensacionFormula = function() {
                

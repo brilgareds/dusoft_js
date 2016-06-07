@@ -119,14 +119,14 @@ define(["angular", "js/services"], function(angular, services) {
                 var obj = {
                      session: session,
                               data: {
-                        listar_formulas:{
+                        listar_tipo_documento:{
                            
                         }
                      }
                 };
                 
                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TIPO_DOCUMENTO,"POST", obj, function(data){
-                      
+                    
                         callback(data);
                 });
              };
@@ -181,7 +181,7 @@ define(["angular", "js/services"], function(angular, services) {
                 for(var i in producto.listar_medicamentos_formulados){
                     
                     var _productos = producto.listar_medicamentos_formulados[i];
-                    console.log("_productos ", _productos)
+                 
                     var Productos  = ProductosFOFO.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
                         Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
                         Productos.setTiempoTotal(_productos.tiempo_total);
@@ -216,7 +216,7 @@ define(["angular", "js/services"], function(angular, services) {
              self.existenciasBodegas = function(obj,callback){
                
                  Request.realizarRequest(API.DISPENSACIONHC.EXISTENCIAS_BODEGAS,"POST", obj, function(data){
-                        console.log("Resultado de la consulta ", data)
+                      
                         callback(data);
                  });
              };
@@ -229,7 +229,7 @@ define(["angular", "js/services"], function(angular, services) {
                */
             self.renderListarProductosLotes = function(productoLote){
                 
-              
+                      
                 var lotes = [];
                 for(var i in productoLote.existenciasBodegas){
                     
@@ -241,7 +241,9 @@ define(["angular", "js/services"], function(angular, services) {
                         Producto.setMolecula(_lote.molecula);
                         Producto.setCodigoFormaFarmacologico(_lote.forma_farmacologica);
                         Producto.setLaboratorio(_lote.laboratorio);
+                        Producto.setPrincipioActivo(_lote.cod_principio_activo);
                         Producto.agregarLotes(Lote);
+                       
                        
                     lotes.push(Producto);
                 }
@@ -249,9 +251,32 @@ define(["angular", "js/services"], function(angular, services) {
                   return lotes;
             };
             
-             
+            
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Consulta los lotes disponibles para el FOFO
+              */
+             self.temporalLotes = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.TEMPORAL_LOTES,"POST", obj, function(data){
+                       
+                        callback(data);
+                 });
+             };
+            
+            
+            
+            
                  return this;
         }]);
+    
+    
+    
+    
+    
+            
 });
 
 

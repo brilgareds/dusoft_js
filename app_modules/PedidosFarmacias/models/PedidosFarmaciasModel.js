@@ -544,12 +544,12 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "g.prefijo as despacho_prefijo", 
         "g.numero as despacho_numero", 
         G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
-        G.knex.raw("(\
+       /* G.knex.raw("(\
                         SELECT bb.descripcion FROM solicitud_productos_a_bodega_principal_detalle AS aa \
                         INNER JOIN inv_tipo_producto AS bb ON bb.tipo_producto_id = aa.tipo_producto\
                         WHERE aa.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id limit 1\
-                  ) as descripcion_tipo_producto"),
-        //"i.descripcion_tipo_producto",
+                  ) as descripcion_tipo_producto"),*/
+        "i.descripcion as descripcion_tipo_producto",
         "h.descripcion as zona"
         
     ];
@@ -586,6 +586,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "=",
         "a.solicitud_prod_a_bod_ppal_id"
     ).*/
+    leftJoin("inv_tipo_producto as i", "a.tipo_pedido", "i.tipo_producto_id").
     where(function(){
         this.where("a.farmacia_id", empresa_id);
         

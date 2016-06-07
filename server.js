@@ -124,7 +124,8 @@ var cluster = require('cluster'),
         sub = redis.createClient(),
         client = redis.createClient();
 
-G.cronJob = require('cron-cluster')(client).CronJob
+G.cronJob = require('cron-cluster')(client).CronJob;
+G.redis = client;
 
 if (cluster.isMaster) {
 

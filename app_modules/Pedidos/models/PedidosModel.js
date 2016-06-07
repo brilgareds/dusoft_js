@@ -84,9 +84,18 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     if (parseInt(cantidad_despachada) === parseInt(stock)) {
                                         cantidad_despachada = 0;
                                     }
-
-                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
-
+                                    
+                                    //Correccion de bug de stock en calculo de disponible
+                                    if(parseInt(stock) < parseInt(cantidad_despachada)){
+                                        disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    } else {
+                                        disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    }
+                                   
+                                    //disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
+                                    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
+                                    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
+                                    
                                     console.log('============ Here =================');
                                     console.log("empresa ", empresa_id);
                                     console.log("stock real ", stock_producto);
@@ -98,10 +107,6 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     console.log("cantidad_reservada_temporales", cantidad_reservada_temporales);
                                     console.log('fecha_registro', fecha_registro_pedido);
                                     console.log('===================================');
-
-
-                                    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
-                                    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
 
                                     callback(err, {
                                         codigo_producto: codigo_producto,
@@ -179,9 +184,14 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     if (parseInt(cantidad_despachada) === parseInt(stock)) {
                                         cantidad_despachada = 0;
                                     }
-
-                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
-
+                                    
+                                    //Correccion de bug de stock en calculo de disponible
+                                    if(parseInt(stock) < parseInt(cantidad_despachada)){
+                                        disponible_bodega = (parseInt(stock) + parseInt(cantidad_despachada)) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    } else {
+                                        disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+                                    }
+                                    
                                     disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                     disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
 
@@ -355,7 +365,6 @@ PedidosModel.prototype.guardarAutorizacion = function(parametros, callback) {
  *               los productos que se van autorizar
  */
 function __insertarAutorizacionesProductosPedido(params, callback) {
-    console.log("__insertarAutorizacionesProductosPedido ", params);
     var sql = "INSERT INTO autorizaciones_productos_pedidos(\n\
                     tipo_pedido,\n\
                     pedido_id,\n\
@@ -399,7 +408,7 @@ function __guardarAutorizacionesProductosPedidos(params, callback) {
         });
     } else {
         params.productos.splice(0, 1);
-        callback(false);
+        __guardarAutorizacionesProductosPedidos(params, callback);
     }
 }
 

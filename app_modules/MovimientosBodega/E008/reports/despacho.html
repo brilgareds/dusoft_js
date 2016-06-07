@@ -108,7 +108,7 @@
 
     
     <body>
-             
+        <h2 style="text-align:right;">{{:encabezado.prefijo}} - {{:encabezado.numero}}</h2>
        <table class="table" width='100%'>
             <tr>
                 <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
@@ -128,8 +128,14 @@
         
         <hr/>
         
+
+        
         <div class="panel panel-default">
              <table width='100%' >
+                <tr>
+                    <td class='title'>OBSERVACIÓN</td>
+                    <td>{{:encabezado.descripcion_pedido}}</td>
+                </tr>
                 {{props   adicionales}}
                     <tr>
                         <td class='title'>{{>prop.titulo}}</td>

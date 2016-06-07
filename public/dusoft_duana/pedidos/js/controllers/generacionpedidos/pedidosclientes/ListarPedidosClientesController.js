@@ -87,6 +87,7 @@ define(["angular", "js/controllers",
                     "btn btn-primary btn-xs",
                     "btn btn-primary btn-xs",
                     "btn btn-info btn-xs",
+                    "btn btn-warning btn-xs",
                     "btn btn-warning btn-xs"
                 ],
                 filtros: [
@@ -391,6 +392,7 @@ define(["angular", "js/controllers",
                     cotizacion.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
                     cotizacion.set_tipo_producto(data.tipo_producto);
                     cotizacion.setFechaRegistro(data.fecha_registro);
+                    cotizacion.setNumeroPedido(data.numero_pedido);
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
@@ -409,6 +411,7 @@ define(["angular", "js/controllers",
                                         ng-class='agregar_clase_cotizacion(row.entity.get_estado_cotizacion())'> \n\
                                         <span ng-class=''></span> {{ row.entity.get_descripcion_estado_cotizacion() }} </button>"},
                     {field: 'get_numero_cotizacion()', displayName: 'No. Cotización', width: "10%"},
+                    {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
                     {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
                     {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
                     {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%", cellFilter: 'date : "dd-MM-yyyy" '},
@@ -806,10 +809,6 @@ define(["angular", "js/controllers",
 
             };
 
-
-
-
-
             /**
              * @author Cristian Ardila
              * +Descripcion: Funcion encargada de mostrar las notificaciones
@@ -876,7 +875,7 @@ define(["angular", "js/controllers",
              * @author Cristian Ardila
              * +Descripcion: Socket que se activa cada vez que se genere un cambio
              *               en un pedido, de tal forma que cambiara en tiempo real
-             *               el estado del pedido en el gridView de pedidos
+             *               el estado del pedido en el gridView de pedidos 
              */
             socket.on("onListarEstadoPedido", function(datos) {
 
@@ -899,6 +898,30 @@ define(["angular", "js/controllers",
                             that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido);
                         }
                     }
+                }
+            });
+            
+            
+           /**
+             * @author Eduar Garcia
+             * +Descripcion: Socket que permite modificar el estado de separacion del pedido de cliente
+             */
+            socket.on("onListarPedidosClientes", function(datos) {
+                if (datos.status === 200) {
+                    var _pedidos = datos.obj.pedidos_clientes;
+
+                    $scope.Empresa.get_pedidos().forEach(function(data) {
+                        
+                        for(var i in _pedidos){
+                            var _pedido = _pedidos[i];
+                            if (_pedido.numero_pedido === data.get_numero_pedido()) {
+                                data.set_descripcion_estado_actual_pedido(_pedido.descripcion_estado_actual_pedido);
+                                data.setEstadoActualPedido(_pedido.estado_actual_pedido);
+                            }
+                            
+                        }
+                        
+                    });
                 }
             });
 

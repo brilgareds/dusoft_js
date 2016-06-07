@@ -129,8 +129,9 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
             }
         }).spread(function(rows, responsable_estado_pedido){
             // Notificando Pedidos Actualizados en Real Time
+            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             if (--i === 0) {
-
+                
                 // Notificar que al operario los pedidos  fueron reasignados
                 if (responsable_estado_pedido.length > 0) {
 
@@ -2595,6 +2596,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogAutorizarPedido);
         }
     }).fail(function(err) {
+        console.log("error generado ", err);
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };

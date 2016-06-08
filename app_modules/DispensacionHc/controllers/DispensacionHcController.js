@@ -196,14 +196,14 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
     var args = req.body.data;
    
    if (args.listar_medicamentos_formulados === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_formulas: []}));
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_formulados: []}));
         return;
     }
    
     
     
     if (args.listar_medicamentos_formulados.evolucionId === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {pedidos_clientes: []}));
+        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_formulados: []}));
         return;
     }
 
@@ -249,13 +249,13 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
     
     
     if (!args.existenciasBodegas.codigoProducto) {
-        res.send(G.utils.r(req.url, 'Se requiere el codigo de producto', 404, {cantidadProducto: []}));
+        res.send(G.utils.r(req.url, 'Se requiere el codigo de producto', 404, {existenciasBodegas: []}));
         return;
     }
     
     
     if (!args.existenciasBodegas.principioActivo) {
-        res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {cantidadProducto: []}));
+        res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {existenciasBodegas: []}));
         return;
     }
     
@@ -283,6 +283,10 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
 
 /**
  * @author Cristian Ardila
+ * +Descripcion Metodo encargado de almacenar los productos de la formula
+ *              en la tabla de temporales
+ * @fecha 2016-07-06 (YYYY-DD-MM)
+ * 
  */
 DispensacionHc.prototype.temporalLotes = function(req, res){
     
@@ -332,7 +336,7 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
               };
 
               
-              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal', parametrosConsultarProductoTemporal);     
+              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal', parametrosConsultarProductoTemporal,0);     
 
             }
        
@@ -371,7 +375,45 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
 };
 
 
+/*
+ * @author Cristian Ardila
+ * @fecha 07/06/2016
+ * +Descripcion Controlador encargado listar los temporales de cada  medicamento
+ *              formulado
+ *              
+ */
+DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;
+   
+   if (args.listar_medicamentos_temporales === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_temporales: []}));
+        return;
+    }
+   
+    
+    
+    if (args.listar_medicamentos_temporales.evolucion === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_temporales: []}));
+        return;
+    }
 
+   var parametros = {evolucionId:args.listar_medicamentos_temporales.evolucion};
+  
+   G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',parametros,1).then(function(resultado){
+      
+       if(resultado.rows.length > 0){ 
+              res.send(G.utils.r(req.url, 'Consulta con medicamentos temporales', 200, {listar_medicamentos_temporales:resultado.rows}));
+       }else{
+           throw 'Consulta sin resultados';
+       }
+     
+        
+   }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 
 
 

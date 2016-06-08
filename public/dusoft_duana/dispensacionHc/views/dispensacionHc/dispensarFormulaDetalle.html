@@ -86,7 +86,7 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading clearfix">
                                                 <div class="pull-center">
-                                                    <h4 class="text-center"><strong>Medicamentos formulados</strong></h4>
+                                                    <h4 class="text-center"><strong>Medicamentos solicitados</strong></h4>
                                                 </div>
                                             </div>
                                         </div>
@@ -102,6 +102,35 @@
                                     </tab>                        
                                                               
                                 </tabset>
+                                
+                                
+                                
+                                <br>
+                                <div ng-if="medicamentosTemporales.length > '0'">
+                                
+                                        <div class="panel panel-default" >
+                                            <div class="panel-heading clearfix">
+                                                <div class="pull-center">
+                                                    <h4 class="text-center"><strong>Medicamentos temporales</strong></h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">  
+                                            <div class="col-md-12">
+                                                
+                                                <div class="table-responsive" >
+                                                    <div class="defaultGrid grid-responsive" ng-grid="listaMedicamentosTemporales" style="clear:both; height: 350px;" > </div>
+                                               </div>
+   
+                                            </div>
+                                        </div>   
+                                                         
+                                                              
+                              
+                                </div>
+                                
+                                
+                                
                                
                                 <!--Acciones Cotizacion/ Pedido -->    
                                 <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">

@@ -342,18 +342,29 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
  *              para validar si ya existe el producto
  * @controller DispensacionHc.prototype.listarTipoDocumento
  */
-DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,callback){
+DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,callback){
    
-    var parametros = {1: obj.evolucionId, 2: obj.codigoProducto, 3: obj.fechaVencimiento, 4: obj.lote};
-    
-    var sql = "SELECT  * FROM hc_dispensacion_medicamentos_tmp \
-              WHERE evolucion_id = :1\
-              AND codigo_producto = :2\
+   var parametros = [];
+   var condicion = "";
+   var descripcionProducto = "";
+   if(estado === 0){
+        parametros = {1: obj.evolucionId, 2: obj.codigoProducto, 3: obj.fechaVencimiento, 4: obj.lote};
+        condicion = "AND codigo_producto = :2\
               AND fecha_vencimiento = :3 \
-              AND lote = :4 ";
+              AND lote = :4";
+   }else{
+        parametros = {1: obj.evolucionId};
+        descripcionProducto =",fc_descripcion_producto_alterno(codigo_producto) as descripcion_prod";
+   }
+   
+    
+    
+    var sql = "SELECT  *"+descripcionProducto+" FROM hc_dispensacion_medicamentos_tmp \
+              WHERE evolucion_id = :1 " + condicion +"";
+               
   
     G.knex.raw(sql,parametros).then(function(resultado){  
-   
+      
       callback(false, resultado)
     }).catch(function(err){     
         
@@ -415,7 +426,7 @@ DispensacionHcModel.prototype.guardarTemporalFormula = function(producto, callba
         
         G.Q.nfcall(__insertarTemporalFarmacia, producto, transaccion).then(function(resultado){
             
-          console.log("resultado ", resultado);
+          
           transaccion.commit();
           
         }).fail(function(err){

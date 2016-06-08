@@ -307,9 +307,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           */
          $scope.temporalLotes = function(entity){
              
-             
-             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
-            
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");           
             var obj = {                   
                         session: $scope.session,
                         data: {
@@ -322,21 +320,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                        }    
                     };
                
-            dispensacionHcService.temporalLotes(obj, function(data){
-               
-                 if(data.status === 200) {                      
-                     
-                     AlertService.mostrarMensaje("mensaje del sistema", data.msj);
+            dispensacionHcService.temporalLotes(obj, function(data){              
+                 if(data.status === 200) {                                          
+                     AlertService.mostrarMensaje("mensaje del sistema", data.msj);   
                  }else{
                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                 }
-              
-            });
-            
-             
+                 }            
+            });            
          };
          
-         that.ventanaDispensacionFormula = function() {
+         /**
+          * @author Cristian Ardila
+          * +Descripcion Metodo que desplegara una ventana encargada de 
+          *              listar los lotes de la formula a traves de un formulario
+          */
+        that.ventanaDispensacionFormula = function() {
                
             $scope.opts = {
                     backdrop: 'static',
@@ -347,33 +345,91 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     scope: $scope,
                     windowClass: 'app-modal-window-xlg',
                     controller: function($scope, $modalInstance) {
-
                         $scope.cerrarVentanaDispensacionFormula = function() {
-
+                            that.consultarMedicamentosTemporales();
                             $modalInstance.close();
                         };
-                    }
-                            
+                    }                         
                 };
-                var modalInstance = $modal.open($scope.opts);
-                
-           };
-           
-           $scope.regresarListaFormulas = function() {
-                $state.go('DispensacionHc');
-            };
-
-                 
-            that.init();
+            var modalInstance = $modal.open($scope.opts);             
+        };
+        
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de invocar el servicio que consultara
+         *              los medicamentos temporales
+         * @fecha 08/06/2016
+         * @returns {undefined}
+         */
+        that.consultarMedicamentosTemporales = function(){
             
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+            var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_medicamentos_temporales: {
+                                evolucion: resultadoStorage.evolucionId                           
+                           }
+                       }    
+                    };        
+            dispensacionHcService.medicamentosTemporales(obj, function(data){
+                
+                    if(data.status === 200){                     
+                         $scope.medicamentosTemporales = dispensacionHcService.renderMedicamentosTemporales(data.obj.listar_medicamentos_temporales,1);    
+                    }      
+                    console.log("$scope.medicamentosTemporales ", $scope.medicamentosTemporales);
+            });  
+        };
+        
+        
+        /**
+           * @author Cristian Ardila
+           * +Descripcion Se visualiza la tabla con los medicamentos listos
+           *              para dispensar
+           * @fecha 25/05/2016
+           */
+           $scope.listaMedicamentosTemporales = {
+               data: 'medicamentosTemporales',
+               enableColumnResize: true,
+               enableRowSelection: false,
+               enableCellSelection: true,
+               enableHighlighting: true,
+               columnDefs: [
 
-                $scope.$$watchers = null;
+                {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},
+                {field: 'getDescripcion()', displayName: 'Medicamento'},
+                {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Cantidad', width:"10%"},          
+                {field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
+                {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
+           
+                {field: 'Sel', width: "10%",
+                       displayName: "Dispensar",
+                       cellClass: "txt-center",
+                       cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="eliminarTemporal(row.entity)">Dispensar'
+
+                 }
+               ]
+           };
+        
+        that.consultarMedicamentosTemporales();
+        
+        
+        $scope.regresarListaFormulas = function() {
+                $state.go('DispensacionHc');
+        };
+            
+                 
+        that.init();
+            
+        $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+            $scope.$$watchers = null;
                 // set localstorage
-                localStorageService.add("dispensarFormulaDetalle", null);
+            localStorageService.add("dispensarFormulaDetalle", null);
                 /*localStorageService.add("pedido", null);*/
-                $scope.root=null;
-                $scope.documentoDespachoAprobado=null;
+            $scope.root=null;
+            $scope.documentoDespachoAprobado=null;
                 
               
             });

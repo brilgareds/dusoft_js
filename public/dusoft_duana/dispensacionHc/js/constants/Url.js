@@ -26,7 +26,8 @@ define(["angular"], function (angular) {
                 "LISTAR_MEDICAMENTOS_FORMULADOS": BASE_URL + "/DispensacionHc/listarMedicamentosFormulados",
                 "CANTIDAD_PRODUCTO_TEMPORAL": BASE_URL + "/DispensacionHc/cantidadProductoTemporal",
                 "EXISTENCIAS_BODEGAS": BASE_URL + "/DispensacionHc/existenciasBodegas",
-                "TEMPORAL_LOTES": BASE_URL + "/DispensacionHc/temporalLotes"
+                "TEMPORAL_LOTES": BASE_URL + "/DispensacionHc/temporalLotes",
+                "LISTAR_MEDICAMENTOS_TEMPORALES": BASE_URL + "/DispensacionHc/listarMedicamentosTemporales"
                
             }
         }

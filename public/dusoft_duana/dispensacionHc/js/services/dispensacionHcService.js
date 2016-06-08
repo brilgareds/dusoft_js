@@ -221,7 +221,7 @@ define(["angular", "js/services"], function(angular, services) {
                  });
              };
             
-           /**
+            /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de los
                *              lotes formulados contra los modelos
@@ -266,8 +266,45 @@ define(["angular", "js/services"], function(angular, services) {
                  });
              };
             
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Consulta los medicamentos separados que se encuentran
+              *              en las tablas de temporales
+              */
+            self.medicamentosTemporales = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_TEMPORALES,"POST", obj, function(data){
+                      
+                        callback(data);
+                 });
+            };
             
-            
+            /**
+               * @author Cristian Ardila
+               * +Descripcion Funcion encargada de serializar los datos de los
+               *              lotes formulados contra los modelos
+               * @fecha 08/06/2016 (DD-MM-YYYY)
+               */
+            self.renderMedicamentosTemporales = function(productoLote){
+                
+             
+                var lotes = [];
+                for(var i in productoLote){
+                    
+                    var _lote = productoLote[i];
+                   
+                    var Lote  = LoteHc.get(_lote.lote,_lote.fecha_vencimiento, _lote.cantidad_despachada);  
+                    var Producto = ProductosHc.get(_lote.codigo_producto,_lote.descripcion_prod, 0);  
+                      
+                        Producto.agregarLotes(Lote);
+                       
+                       
+                    lotes.push(Producto);
+                }
+                        
+                  return lotes;
+            };
             
                  return this;
         }]);

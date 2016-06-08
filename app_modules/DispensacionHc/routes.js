@@ -45,6 +45,12 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/temporalLotes", function(req, res){
         c_dispensacion_hc.temporalLotes(req, res);
     });
+    
+    // Medicamentos temporales
+    app.post("/api/DispensacionHc/listarMedicamentosTemporales", function(req, res){
+        c_dispensacion_hc.listarMedicamentosTemporales(req, res);
+    });
+    
   
     
 };

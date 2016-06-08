@@ -2479,7 +2479,12 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
-
+	
+	if (!producto.cantidadPendienteDespachar  || producto.cantidadPendienteDespachar.length === 0) {
+        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacía', 404, {}));
+        return;
+    }  
+	
     pedido.usuario_id = req.session.user.usuario_id;
 
 

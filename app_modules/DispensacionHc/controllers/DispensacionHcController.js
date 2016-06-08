@@ -256,9 +256,24 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
         return;
     }
     
-   var parametros = {empresa: 'FD',
-                     centroUtilidad:'06', 
-                     bodega:'06',
+    if (!args.existenciasBodegas.empresa || args.existenciasBodegas.empresa.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La empresa esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.centroUtilidad || args.existenciasBodegas.centroUtilidad.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El centro de utilidad esta llegando vacio ó nulo', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.bodega || args.existenciasBodegas.bodega.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La bodega esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+   var parametros = {empresa: args.existenciasBodegas.empresa,
+                     centroUtilidad:args.existenciasBodegas.centroUtilidad, 
+                     bodega:args.existenciasBodegas.bodega,
                      codigoProducto:args.existenciasBodegas.codigoProducto,
                      principioActivo:args.existenciasBodegas.principioActivo
                     };
@@ -289,12 +304,7 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
     
     var that = this;
     var args = req.body.data;
-    
-    console.log("************DispensacionHc.prototype.temporalLotes**************");
-    console.log("************DispensacionHc.prototype.temporalLotes**************");
-    console.log("************DispensacionHc.prototype.temporalLotes**************");
-    console.log("************DispensacionHc.prototype.temporalLotes**************");
-    
+   
     if (args.temporalLotes === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {existenciasBodegas: []}));
         return;
@@ -309,7 +319,23 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
         res.send(G.utils.r(req.url, 'La cantidad dispensada no debe ser mayor a la existencia', 404, {existenciasBodegas: []}));
         return;
     }
-   
+    
+    if (!args.temporalLotes.empresa || args.temporalLotes.empresa.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La empresa esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.temporalLotes.centroUtilidad || args.temporalLotes.centroUtilidad.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El centro de utilidad esta llegando vacio ó nulo', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.temporalLotes.bodega || args.temporalLotes.bodega.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La bodega esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    
     
     var cantidadDispensada = parseInt(args.temporalLotes.detalle.cantidadDispensada);
     var codigoProductoLote = args.temporalLotes.detalle.codigo_producto;
@@ -341,7 +367,6 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
                   codigoProducto: codigoProductoLote       
               };
 
-              console.log("resultado 1 ", resultado);
               return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal', parametrosConsultarProductoTemporal,0);     
 
             }else{
@@ -350,12 +375,12 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
        
     }).then(function(resultado){
         
-         console.log("resultado 2 ",resultado)
+         
          var parametrosGuardarProductoTemporal = {
                   evolucionId:args.temporalLotes.evolucion,
-                  empresa: 'FD',
-                  centroUtilidad: '06',
-                  bodega: '06',
+                  empresa: args.temporalLotes.empresa,
+                  centroUtilidad: args.temporalLotes.centroUtilidad,
+                  bodega: args.temporalLotes.bodega,
                   codigoProducto: codigoProductoLote,
                   cantidad: cantidadDispensada,
                   fechaVencimiento: fechaVencimientoLote,
@@ -373,11 +398,10 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
         
     }).then(function(){
          
-             res.send(G.utils.r(req.url, 'Se almacena el temporal satisfactoriamente', 200, {existenciasBodegas: []}));  
-         
+            res.send(G.utils.r(req.url, 'Se almacena el temporal satisfactoriamente', 200, {existenciasBodegas: []}));  
     
      }).fail(function(err){  
-       console.log("err ", err);    
+      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();   
       
@@ -401,8 +425,6 @@ DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
         return;
     }
    
-    
-    
     if (!args.listar_medicamentos_temporales.evolucion || args.listar_medicamentos_temporales.evolucion.length === 0 ) {
         res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_temporales: []}));
         return;

@@ -13,29 +13,7 @@ define(["angular", "js/services"], function(angular, services) {
             
            
                 
-            /*
-             * @Author: Cristian Ardila
-             * @fecha 05/02/2016
-             * +Descripcion: consulta todas las empresas de acuerdo al texto
-             *               ingresado
-             */   
-            self.listarEmpresas = function(session,termino_busqueda_empresa,callback) {
-                   var obj = {
-                       session: session,
-                       data: {
-                           listar_empresas: {
-                               pagina: 1,
-                               empresaName: termino_busqueda_empresa
-                           }
-                       }
-                   };
-                   Request.realizarRequest(API.VALIDACIONDESPACHOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-                           
-                           callback(data);                 
-                   });
-            };
-               
-               
+           
               
              /**
               * @author Cristian Ardila

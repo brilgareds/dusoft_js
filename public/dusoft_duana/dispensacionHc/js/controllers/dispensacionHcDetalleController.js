@@ -16,18 +16,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "$filter",
         "Usuario","EmpresaDispensacionHc","dispensacionHcService",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                 Sesion,EmpresaDispensacionHc,dispensacionHcService) {
+                 Usuario,EmpresaDispensacionHc,dispensacionHcService) {
 
         var that = this;
-        // Definicion Variables de Sesion
+        // Definicion Variables de Usuario
         $scope.session = {
-            usuario_id: Sesion.getUsuarioActual().getId(),
-            auth_token: Sesion.getUsuarioActual().getToken()
+            usuario_id: Usuario.getUsuarioActual().getId(),
+            auth_token: Usuario.getUsuarioActual().getToken()
         };
-         
+        var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());    
        // Definicion variables del View
            
-        that.init = function() {
+        that.init = function(empresa, callback) {
 
             $scope.root = {
              seleccionarOtros: '',
@@ -35,7 +35,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              activar_tab: {tab_productos: true, tab_cargar_archivo: false},
              visualizar: false,
              // Opciones del Modulo 
-             opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
+             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
              progresoArchivo: 0,
              btnSolicitarAutorizacionCartera: true,
              estadoRegistro: 0,
@@ -45,7 +45,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
               };
-
+            callback();
         };  
             
             
@@ -54,7 +54,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         $scope.cargarEmpresaSession = function(){
 
             if($scope.root.seleccionarOtros){
-                var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
+                var session = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                 var empresa = EmpresaDispensacionHc.get(session.nombre, session.codigo);          
                 $scope.root.empresaSeleccionada = empresa;
 
@@ -71,12 +71,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              */
         if ($state.is("DispensarFormulaDetalle") === true) {
   
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");         
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
+            
             var obj = {                   
                         session: $scope.session,
                         data: {
                             listar_formulas: {
-                              filtro:{tipo:'EV'},
+                              filtro:resultadoStorage.filtro,
                               terminoBusqueda: resultadoStorage.evolucionId,//$scope.root.numero,
                               empresaId:'',
                               fechaInicial: resultadoStorage.fechaInicial,
@@ -224,7 +225,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         data: {
                            existenciasBodegas: {
                                 codigoProducto: entity.codigo_producto,
-                                principioActivo: entity.principioActivo
+                                principioActivo: entity.principioActivo,
+                                empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                                centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                                bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                            }
                        }    
                     };
@@ -295,7 +299,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * @fecha 07/06/2016
           */
         $scope.temporalLotes = function(entity){
-             
+           
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");           
             var obj = {                   
                         session: $scope.session,
@@ -304,7 +308,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 evolucion: resultadoStorage.evolucionId,
                                 detalle: entity,
                                 codigoProducto: $scope.producto,
-                                cantidadSolicitada: $scope.cantidadEntrega
+                                cantidadSolicitada: $scope.cantidadEntrega,
+                                empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                                centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                                bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                            }
                        }    
                     };
@@ -444,7 +451,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         };
             
                  
-        that.init();
+        that.init(empresa, function() {
+
+                          if (!Usuario.getUsuarioActual().getEmpresa()) {
+                              $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
+                              AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+                          } else {
+                              if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
+                                      Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+                                  $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
+                                  AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+                              } else {
+                                  if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                                      $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
+                                      AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                  }
+                              }
+                          }
+                      });
             
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 

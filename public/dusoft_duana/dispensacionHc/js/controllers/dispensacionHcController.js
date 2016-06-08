@@ -1,20 +1,18 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
-    controllers.controller('dispensacionHcController',
+ var fo = controllers.controller('dispensacionHcController',
             ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario',
-                'EmpresaDispensacionHc', 
-                'CentroUtilidadInduccion', 
-                'BodegaInduccion', 
+                'EmpresaDispensacionHc',    
                 "$timeout", 
                 "$filter",
                 "localStorageService",
                 "$state",
                 "dispensacionHcService",
-                "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc",
+                "TipoDocumentoHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
-                        EmpresaDispensacionHc, CentroUtilidadInduccion, BodegaInduccion,
+                        EmpresaDispensacionHc,
                         $timeout, $filter,localStorageService,$state,dispensacionHcService,
-                        FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc) {
+                        TipoDocumentoHc) {
 
                 var that = this;
                 $scope.paginaactual = 1;
@@ -43,7 +41,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 that.init = function(empresa, callback) {
                    
                     $scope.root.empresaSeleccionada = EmpresaDispensacionHc.get("TODAS LAS EMPRESAS", -1);
-                    $scope.root.empresaNombre;
+                    
                     
                     $scope.session = {
                         usuario_id: Usuario.getUsuarioActual().getId(),
@@ -119,36 +117,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
                 
                
-                /*
-                 * @author Cristian Ardila
-                 * @fecha 05/02/2016
-                 * +Descripcion funcion obtiene las empresas del servidor invocando
-                 *              el servicio listarEmpresas de 
-                 *              (ValidacionDespachosSerivice.js)
-                 * @returns {json empresas}
-                 */
-                that.listarEmpresas = function(callback) {
-
-                   dispensacionHcService.listarEmpresas($scope.session,$scope.root.termino_busqueda_empresa, function(data){
-                         
-                      $scope.empresas = [];      
-                      if (data.status === 200) {
-
-                            that.render_empresas(data.obj.listar_empresas);
-                            callback(true);
-                       }else{
-                            callback(false);
-                       }
-                   });
-                };
-
-
-                that.render_empresas = function(empresas) {
-                    for (var i in empresas) {
-                         var _empresa = EmpresaDispensacionHc.get(empresas[i].razon_social, empresas[i].empresa_id);
-                         $scope.empresas.push(_empresa);
-                    }
-                };
+               
 
                 /**
                  * @author Cristian Ardila
@@ -246,18 +215,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    }
                 };
                      
-                    /*
-                     * funcion ejecuta listarCentroUtilidad
-                     * @returns {lista CentroUtilidad}
-                     */
-                    $scope.onSeleccionarEmpresa = function(empresa_Nombre) {
-                        if (empresa_Nombre.length < 3) {
-                            return;
-                        }
-                        $scope.root.termino_busqueda_empresa = empresa_Nombre;
-                        that.listarEmpresas(function() {
-                        });
-                    };
+                  
 
                    
                     /*
@@ -438,40 +396,32 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         $scope.root.datepicker_fecha_final = true;
 
                     };
+                    
+                  
+                    that.init(empresa, function() {
 
-                     that.init(empresa, function() {            
-                         
-                        
-                         
-                         if(!Usuario.getUsuarioActual().getEmpresa()){
-                             AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
-                         }else {
-                          
-                            if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado()||
-                                Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+                          if (!Usuario.getUsuarioActual().getEmpresa()) {
+                              $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
+                              AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+                          } else {
+                              if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
+                                      Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+                                  $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
+                                  AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+                              } else {
+                                  if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                                      $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
+                                      AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                  } else {
+                                  
+                                        that.listarTipoDocumentos(function(){
+                                            
+                                        });
+                                  }
+                              }
+                          }
+                      });
 
-                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
-
-                            }else{
-                               
-                                if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) { 
-                                    
-                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
-                                }else{
-                                 $scope.root.estadoSesion = false;
-                                 that.listarTipoDocumentos(function(estado){
-                   
-                                 });
-                                 that.listarEmpresas(function(estado) {
-                                
-                                   // that.listarFormulasMedicas();
-                                   // that.listarFormulasMedicasPendientes();
-                                });                                  
-                                }   
-                            }
-                         }                        
-                     });
-                     
                      
                      $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 

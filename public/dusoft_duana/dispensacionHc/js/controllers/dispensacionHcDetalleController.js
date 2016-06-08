@@ -241,7 +241,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }else{
                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
-              
+            
             });
             
             
@@ -397,7 +397,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              {field: 'Sel', width: "10%",
                     displayName: "Dispensar",
                     cellClass: "txt-center",
-                    cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="eliminarMedicamentoTemporal(row.entity)">Dispensar'
+                    cellTemplate: '<button class="btn btn-default btn-xs" ng-click="eliminarMedicamentoTemporal(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>'
 
               }
             ]

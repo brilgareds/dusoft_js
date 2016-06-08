@@ -345,7 +345,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
 DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,callback){
    
    var parametros = [];
-   var condicion = "";
+   var condicion = "";//TO_CHAR(a.fecha_registro,'YYYY-MM-DD')
    var descripcionProducto = "";
    if(estado === 0){
         parametros = {1: obj.evolucionId, 2: obj.codigoProducto, 3: obj.fechaVencimiento, 4: obj.lote};

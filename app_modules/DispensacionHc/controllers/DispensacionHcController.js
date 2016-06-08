@@ -290,6 +290,10 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
     var that = this;
     var args = req.body.data;
     
+    console.log("************DispensacionHc.prototype.temporalLotes**************");
+    console.log("************DispensacionHc.prototype.temporalLotes**************");
+    console.log("************DispensacionHc.prototype.temporalLotes**************");
+    console.log("************DispensacionHc.prototype.temporalLotes**************");
     
     if (args.temporalLotes === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {existenciasBodegas: []}));
@@ -301,6 +305,11 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
         return;
     }
     
+    if(args.temporalLotes.detalle.cantidadDispensada > args.temporalLotes.detalle.lotes[0].cantidad){
+        res.send(G.utils.r(req.url, 'La cantidad dispensada no debe ser mayor a la existencia', 404, {existenciasBodegas: []}));
+        return;
+    }
+   
     
     var cantidadDispensada = parseInt(args.temporalLotes.detalle.cantidadDispensada);
     var codigoProductoLote = args.temporalLotes.detalle.codigo_producto;
@@ -332,16 +341,16 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
                   codigoProducto: codigoProductoLote       
               };
 
-              
+              console.log("resultado 1 ", resultado);
               return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal', parametrosConsultarProductoTemporal,0);     
 
             }else{
-                 throw 'No debe sobrepasar la cantidad total a dispensar';
+                 throw 'La cantidad dispensada no debe ser mayor a la solicitada';
             }
        
     }).then(function(resultado){
         
-         
+         console.log("resultado 2 ",resultado)
          var parametrosGuardarProductoTemporal = {
                   evolucionId:args.temporalLotes.evolucion,
                   empresa: 'FD',
@@ -355,7 +364,7 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
                   usuario: usuario,
                   rango: 0                    
               };
-              
+            
         if(resultado.rows.length >0){
             throw 'El lote ya se encuentra registrado en temporal';
         }else{
@@ -367,7 +376,8 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
              res.send(G.utils.r(req.url, 'Se almacena el temporal satisfactoriamente', 200, {existenciasBodegas: []}));  
          
     
-     }).fail(function(err){      
+     }).fail(function(err){  
+       console.log("err ", err);    
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();   
       

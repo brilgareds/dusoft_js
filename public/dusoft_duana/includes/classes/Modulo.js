@@ -23,6 +23,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.observacion = "";
                 this.nodo_principal = false;
                 this.estado = false;
+                this.isPadre = false;
+                this.swReporte = '0';
                 this.opcionAGuardar;
                 this.variableAGuardar;
 
@@ -185,6 +187,22 @@ define(["angular", "js/models"], function(angular, models) {
 
             Modulo.prototype.getEstado = function(estado) {
                 return this.estado;
+            };
+            
+            Modulo.prototype.setSwReporte = function(swReporte) {
+                this.swReporte = Boolean(Number(swReporte));
+            };
+
+            Modulo.prototype.getSwReporte = function(swReporte) {
+                return this.swReporte;
+            };
+            
+            Modulo.prototype.setIsPadre = function(isPadre) {
+                this.isPadre = isPadre;
+            };
+
+            Modulo.prototype.getIsPadre = function(isPadre) {
+                return this.isPadre;
             };
 
             Modulo.prototype.setNodoPrincipal = function(nodo_principal) {

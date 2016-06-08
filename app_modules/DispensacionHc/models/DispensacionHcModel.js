@@ -105,7 +105,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){
-        
+        console.log("resultado ", resultado);
         callback(false, resultado);
     }).catch(function(err){
       
@@ -374,45 +374,7 @@ DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,ca
 };
 
 
-/*
- * Autor : Camilo Orozco
- * Descripcion : SQL para ingresar el producto en la tabla temporal
- *               cada vez que se dispensa el lote de la formula
- * Modificacion: Se migra a KNEX.js 
- * @fecha: 04/12/2015 2:43 pm 
- */
-function __insertarTemporalFarmacia(producto, transaccion, callback) {
-   
-    var sql = "INSERT INTO hc_dispensacion_medicamentos_tmp\
-      (hc_dispen_tmp_id,evolucion_id,empresa_id,centro_utilidad,\
-       bodega,codigo_producto,cantidad_despachada,fecha_vencimiento, \
-        lote, codigo_formulado,usuario_id,sw_entregado_off\)\
-            VALUES( DEFAULT, :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11 );";
 
- 
-     var query = G.knex.raw(sql, {1: producto.evolucionId, 
-                                  2: producto.empresa, 
-                                  3: producto.centroUtilidad,
-                                  4: producto.bodega,
-                                  5: producto.codigoProducto,
-                                  6: producto.cantidad,
-                                  7: producto.fechaVencimiento,
-                                  8: producto.lote,
-                                  9: producto.formulado,
-                                  10: producto.usuario,
-                                  11: producto.rango});
-    
-    if(transaccion) query.transacting(transaccion);
-     
-      query.then(function(resultado){  
-         
-        callback(false, resultado);
-    }).catch(function(err){
-        callback(err);   
-    });
-    
-    
-};
 /*
  * @autor : Cristian Ardila
  * +Descripcion : Transaccion para almacenar los temporales de la formula
@@ -445,6 +407,107 @@ DispensacionHcModel.prototype.guardarTemporalFormula = function(producto, callba
        
     }).done(); 
     
+};
+
+/*
+ * @autor : Cristian Ardila
+ * +Descripcion : Transaccion para almacenar los temporales de la formula
+ *                que vendrian siendo los lotes
+ * @fecha: 05/07/2015
+ */
+DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callback)
+{
+  
+    G.knex.transaction(function(transaccion) {  
+        
+        G.Q.nfcall(__eliminarTemporalFarmacia, producto, transaccion).then(function(resultado){
+         
+          transaccion.commit();
+          
+        }).fail(function(err){
+      
+           transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function(){
+    
+       callback(false);
+
+    }).catch(function(err){
+        
+       callback(err);
+       
+    }).done(); 
+    
+};
+/*
+ * @autor : Cristian Ardila
+ * Descripcion : SQL para eliminar el producto de la tabla temporal
+ * @fecha: 08/06/2015 09:45 pm 
+ */
+function __eliminarTemporalFarmacia(producto, transaccion, callback) {
+   
+    var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp\
+               WHERE hc_dispen_tmp_id = :1 \
+               AND   evolucion_id = :2\
+               AND   codigo_producto = :3";
+
+ 
+     var query = G.knex.raw(sql, {1: producto.serialId, 
+                                  2: producto.evolucionId, 
+                                  3: producto.codigoProducto
+                                  });
+    
+    if(transaccion) query.transacting(transaccion);
+     
+      query.then(function(resultado){  
+         
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);   
+    });
+   
+};
+
+
+
+/*
+ * Autor : Cristian Ardila
+ * Descripcion : SQL para ingresar el producto en la tabla temporal
+ *               cada vez que se dispensa el lote de la formula
+ * @fecha: 08/06/2015 2:43 pm 
+ */
+function __insertarTemporalFarmacia(producto, transaccion, callback) {
+   
+    var sql = "INSERT INTO hc_dispensacion_medicamentos_tmp\
+      (hc_dispen_tmp_id,evolucion_id,empresa_id,centro_utilidad,\
+       bodega,codigo_producto,cantidad_despachada,fecha_vencimiento, \
+        lote, codigo_formulado,usuario_id,sw_entregado_off\)\
+            VALUES( DEFAULT, :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11 );";
+
+ 
+     var query = G.knex.raw(sql, {1: producto.evolucionId, 
+                                  2: producto.empresa, 
+                                  3: producto.centroUtilidad,
+                                  4: producto.bodega,
+                                  5: producto.codigoProducto,
+                                  6: producto.cantidad,
+                                  7: producto.fechaVencimiento,
+                                  8: producto.lote,
+                                  9: producto.formulado,
+                                  10: producto.usuario,
+                                  11: producto.rango});
+    
+    if(transaccion) query.transacting(transaccion);
+     
+      query.then(function(resultado){  
+         
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);   
+    });
+   
 };
 
 //DispensacionHcModel.$inject = ["m_productos"];

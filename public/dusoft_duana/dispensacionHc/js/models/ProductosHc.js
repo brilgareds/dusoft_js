@@ -8,10 +8,18 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 Producto.getClass().call(this,codigo_producto, descripcion, existencia); 
                 this.lotes = [];
                 this.principioActivo = "";
+                this.serialId = 0;
             }
             
             ProductosHc.prototype = Object.create(Producto.getClass().prototype);
             
+            ProductosHc.prototype.setSerialId = function(serialId){
+                this.serialId = serialId;
+            };
+       
+            ProductosHc.prototype.getSerialId = function(){
+                return this.serialId;
+            };
             
             ProductosHc.prototype.setPrincipioActivo = function(principioActivo){
                 this.principioActivo = principioActivo;
@@ -21,17 +29,17 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 return this.principioActivo;
             };
             
-             ProductosHc.prototype.agregarLotes = function(lote){
+            ProductosHc.prototype.agregarLotes = function(lote){
                 this.lotes.push(lote);
-             };
+            };
              
-             ProductosHc.prototype.mostrarLotes = function(){
+            ProductosHc.prototype.mostrarLotes = function(){
                 return this.lotes;
-             };
+            };
              
-             ProductosHc.prototype.vaciarLotes = function () {
+            ProductosHc.prototype.vaciarLotes = function () {
                 this.lotes = [];
-             };
+            };
              
             
             this.get = function(codigo_producto, descripcion, existencia) {

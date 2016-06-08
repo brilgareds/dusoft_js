@@ -33,7 +33,7 @@ define(["angular", "js/services"], function(angular, services) {
                            
                            callback(data);                 
                    });
-               };
+            };
                
                
               
@@ -42,21 +42,153 @@ define(["angular", "js/services"], function(angular, services) {
               * @fecha  21/05/2016
               * +Descripcion Consulta todas las formulas
               */
-             self.listarFormulas = function(obj, callback){
+            self.listarFormulas = function(obj, callback){
                  
                  Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
                       
                         callback(data);
                         
                  });
-             };
-              /**
+            };
+              
+             
+             /**
+              * @author Cristian Ardila
+              * @fecha  20/05/2016
+              * +Descripcion Servicio que lista los tipos de documentos
+              */
+            self.listarTipoDocumentos = function(session, callback){
+                 
+                var obj = {
+                     session: session,
+                              data: {
+                        listar_tipo_documento:{
+                           
+                        }
+                     }
+                };
+                
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TIPO_DOCUMENTO,"POST", obj, function(data){
+                    
+                        callback(data);
+                });
+            };
+             
+             
+             /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
+              * +Descripcion Consulta todas las formulas
+              */
+            self.listarFormulasPendientes = function(session, terminoBusqueda, callback){
+               
+                 var obj = {
+                     session: session,
+                     data: {
+                           listar_formulas: {
+                               pagina: 1,
+                               empresaName: terminoBusqueda
+                           }
+                       }
+                     
+                 };
+                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){
+                     
+                        callback(data);
+                 });
+            };
+             
+             
+            /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
+              * +Descripcion Consulta todas las formulas
+              */
+            self.listarMedicamentosFormulados = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
+                       
+                        callback(data);
+                 });
+            };
+             
+             
+            
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
+              * +Descripcion Consulta todas las formulas
+              */
+            self.cantidadProductoTemporal = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.CANTIDAD_PRODUCTO_TEMPORAL,"POST", obj, function(data){
+
+                        callback(data);
+                 });
+            };
+            
+            
+             /**
+              * @author Cristian Ardila
+              * @fecha  21/05/2016
+              * +Descripcion Consulta los lotes disponibles para el FOFO
+              */
+            self.existenciasBodegas = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.EXISTENCIAS_BODEGAS,"POST", obj, function(data){
+                      
+                        callback(data);
+                 });
+            };
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Consulta los lotes disponibles para el FOFO
+              */
+            self.temporalLotes = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.TEMPORAL_LOTES,"POST", obj, function(data){
+                       
+                        callback(data);
+                 });
+            };
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Consulta los medicamentos separados que se encuentran
+              *              en las tablas de temporales
+              */
+            self.medicamentosTemporales = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_TEMPORALES,"POST", obj, function(data){
+                        
+                        callback(data);
+                 });
+            };
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Consulta los medicamentos separados que se encuentran
+              *              en las tablas de temporales
+              */
+            self.eliminarMedicamentosTemporales = function(obj,callback){
+               
+                 Request.realizarRequest(API.DISPENSACIONHC.ELIMINAR_MEDICAMENTOS_TEMPORALES,"POST", obj, function(data){
+                        console.log("eliminarMedicamentosTemporales data ", data);
+                        callback(data);
+                 });
+            };
+            /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la
                *              formula medica contra los modelos
                * @fecha 25/05/2016
                */
-              self.renderListarFormulasMedicas = function(formulas, estadoFormula){
+            self.renderListarFormulasMedicas = function(formulas, estadoFormula){
                     
                       var resultado = [];
                      
@@ -107,69 +239,8 @@ define(["angular", "js/services"], function(angular, services) {
                          resultado.push(afiliados);
                         }
                         return resultado;
-                 };
-             
-             /**
-              * @author Cristian Ardila
-              * @fecha  20/05/2016
-              * +Descripcion Servicio que lista los tipos de documentos
-              */
-             self.listarTipoDocumentos = function(session, callback){
-                 
-                var obj = {
-                     session: session,
-                              data: {
-                        listar_tipo_documento:{
-                           
-                        }
-                     }
-                };
-                
-                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TIPO_DOCUMENTO,"POST", obj, function(data){
-                    
-                        callback(data);
-                });
-             };
-             
-             
-             /**
-              * @author Cristian Ardila
-              * @fecha  21/05/2016
-              * +Descripcion Consulta todas las formulas
-              */
-             self.listarFormulasPendientes = function(session, terminoBusqueda, callback){
-               
-                 var obj = {
-                     session: session,
-                     data: {
-                           listar_formulas: {
-                               pagina: 1,
-                               empresaName: terminoBusqueda
-                           }
-                       }
-                     
-                 };
-                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){
-                     
-                        callback(data);
-                 });
-             };
-             
-             
+            };
             /**
-              * @author Cristian Ardila
-              * @fecha  21/05/2016
-              * +Descripcion Consulta todas las formulas
-              */
-             self.listarMedicamentosFormulados = function(obj,callback){
-               
-                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
-                       
-                        callback(data);
-                 });
-             };
-             
-             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de los
                *              medicamentos formulados contra los modelos
@@ -192,36 +263,7 @@ define(["angular", "js/services"], function(angular, services) {
                        
                   return productos;
             };
-            
-            
-            /**
-              * @author Cristian Ardila
-              * @fecha  21/05/2016
-              * +Descripcion Consulta todas las formulas
-              */
-             self.cantidadProductoTemporal = function(obj,callback){
-               
-                 Request.realizarRequest(API.DISPENSACIONHC.CANTIDAD_PRODUCTO_TEMPORAL,"POST", obj, function(data){
-
-                        callback(data);
-                 });
-             };
-            
-            
              /**
-              * @author Cristian Ardila
-              * @fecha  21/05/2016
-              * +Descripcion Consulta los lotes disponibles para el FOFO
-              */
-             self.existenciasBodegas = function(obj,callback){
-               
-                 Request.realizarRequest(API.DISPENSACIONHC.EXISTENCIAS_BODEGAS,"POST", obj, function(data){
-                      
-                        callback(data);
-                 });
-             };
-            
-            /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de los
                *              lotes formulados contra los modelos
@@ -251,35 +293,6 @@ define(["angular", "js/services"], function(angular, services) {
                   return lotes;
             };
             
-            
-            
-            /**
-              * @author Cristian Ardila
-              * @fecha  07/06/2016
-              * +Descripcion Consulta los lotes disponibles para el FOFO
-              */
-             self.temporalLotes = function(obj,callback){
-               
-                 Request.realizarRequest(API.DISPENSACIONHC.TEMPORAL_LOTES,"POST", obj, function(data){
-                       
-                        callback(data);
-                 });
-             };
-            
-            /**
-              * @author Cristian Ardila
-              * @fecha  07/06/2016
-              * +Descripcion Consulta los medicamentos separados que se encuentran
-              *              en las tablas de temporales
-              */
-            self.medicamentosTemporales = function(obj,callback){
-               
-                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_TEMPORALES,"POST", obj, function(data){
-                      
-                        callback(data);
-                 });
-            };
-            
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de los
@@ -296,7 +309,8 @@ define(["angular", "js/services"], function(angular, services) {
                    
                     var Lote  = LoteHc.get(_lote.lote,_lote.fecha_vencimiento, _lote.cantidad_despachada);  
                     var Producto = ProductosHc.get(_lote.codigo_producto,_lote.descripcion_prod, 0);  
-                      
+                        Producto.setSerialId(_lote.hc_dispen_tmp_id)
+
                         Producto.agregarLotes(Lote);
                        
                        
@@ -309,11 +323,7 @@ define(["angular", "js/services"], function(angular, services) {
                  return this;
         }]);
     
-    
-    
-    
-    
-            
+         
 });
 
 

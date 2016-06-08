@@ -14,9 +14,10 @@ var DispensacionHc = function(m_dispensacion_hc) {
  */
 DispensacionHc.prototype.listarFormulas = function(req, res){
    
+  
     var that = this;
     var args = req.body.data;
-   
+  
    if (args.listar_formulas === undefined || args.listar_formulas.paginaActual === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_formulas: []}));
         return;
@@ -56,7 +57,7 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
                     fechaFinal: fechaFinal,
                     filtro: filtro,
                     estadoFormula: estadoFormula};
-   
+  
    
    G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametros).then(function(resultado){
      
@@ -145,19 +146,17 @@ DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
         return;
     }
    
-    
-    
-    if (!args.cantidadProducto.codigoProducto) {
+    if (!args.cantidadProducto.codigoProducto || args.cantidadProducto.codigoProducto.length === 0) {
         res.send(G.utils.r(req.url, 'Se requiere el codigo de producto', 404, {cantidadProducto: []}));
         return;
     }
     
-    if (!args.cantidadProducto.evolucionId) {
+    if (!args.cantidadProducto.evolucionId || args.cantidadProducto.evolucionId.length === 0) {
         res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {cantidadProducto: []}));
         return;
     }
     
-    if (!args.cantidadProducto.principioActivo) {
+    if (!args.cantidadProducto.principioActivo || args.cantidadProducto.principioActivo.length === 0) {
         res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {cantidadProducto: []}));
         return;
     }
@@ -200,9 +199,7 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
         return;
     }
    
-    
-    
-    if (args.listar_medicamentos_formulados.evolucionId === undefined) {
+    if (!args.listar_medicamentos_formulados.evolucionId || args.listar_medicamentos_formulados.evolucionId.length === 0) {
         res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_formulados: []}));
         return;
     }
@@ -254,7 +251,7 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
     }
     
     
-    if (!args.existenciasBodegas.principioActivo) {
+    if (!args.existenciasBodegas.principioActivo || args.existenciasBodegas.principioActivo.length === 0) {
         res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {existenciasBodegas: []}));
         return;
     }
@@ -299,7 +296,7 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
         return;
     }
    
-    if (!args.temporalLotes.detalle) {
+    if (!args.temporalLotes.detalle || args.temporalLotes.detalle.length === 0 ) {
         res.send(G.utils.r(req.url, 'Los parametros estan llegando vacios', 404, {existenciasBodegas: []}));
         return;
     }
@@ -338,6 +335,8 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
               
               return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal', parametrosConsultarProductoTemporal,0);     
 
+            }else{
+                 throw 'No debe sobrepasar la cantidad total a dispensar';
             }
        
     }).then(function(resultado){
@@ -394,7 +393,7 @@ DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
    
     
     
-    if (args.listar_medicamentos_temporales.evolucion === undefined) {
+    if (!args.listar_medicamentos_temporales.evolucion || args.listar_medicamentos_temporales.evolucion.length === 0 ) {
         res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_temporales: []}));
         return;
     }
@@ -416,6 +415,53 @@ DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
 };
 
 
+
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 07/06/2016
+ * +Descripcion Controlador encargado eliminar los temporales de una formula
+ *              
+ */
+DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+    
+    if (args.eliminar_medicamentos_temporales === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {eliminar_medicamentos_temporales: []}));
+        return;
+    }
+   
+    if (!args.eliminar_medicamentos_temporales.evolucion || args.eliminar_medicamentos_temporales.evolucion.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {eliminar_medicamentos_temporales: []}));
+        return;
+    }
+    
+    if (!args.eliminar_medicamentos_temporales.serialId || args.eliminar_medicamentos_temporales.serialId.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el serialId', 404, {eliminar_medicamentos_temporales: []}));
+        return;
+    }
+    
+    if (!args.eliminar_medicamentos_temporales.codigoProducto || args.eliminar_medicamentos_temporales.codigoProducto.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo del producto', 404, {eliminar_medicamentos_temporales: []}));
+        return;
+    }
+    
+    var parametros = {serialId:args.eliminar_medicamentos_temporales.serialId, 
+                      evolucionId:args.eliminar_medicamentos_temporales.evolucion, 
+                      codigoProducto:args.eliminar_medicamentos_temporales.codigoProducto};
+      
+    G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalFormula',parametros).then(function(resultado){
+        
+          res.send(G.utils.r(req.url, 'Se elimina temporal satisfactoriamente', 200, {eliminar_medicamentos_temporales:resultado}));
+      
+   }).fail(function(err){      
+      
+       res.send(G.utils.r(req.url, 'Error al eliminar el temporal', 500, {}));
+    }).done();
+};
 
 DispensacionHc.$inject = ["m_dispensacion_hc"];
 

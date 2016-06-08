@@ -51,6 +51,12 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarMedicamentosTemporales(req, res);
     });
     
+    // Eliminar Medicamentos temporales
+    app.post("/api/DispensacionHc/eliminarTemporalFormula", function(req, res){
+        c_dispensacion_hc.eliminarTemporalFormula(req, res);
+    });
+    
+    
   
     
 };

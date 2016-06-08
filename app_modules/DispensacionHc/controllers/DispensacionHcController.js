@@ -425,6 +425,8 @@ DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
         return;
     }
    
+    
+    
     if (!args.listar_medicamentos_temporales.evolucion || args.listar_medicamentos_temporales.evolucion.length === 0 ) {
         res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_temporales: []}));
         return;

@@ -78,35 +78,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                
         };
         
-        /**
-        * @author Cristian Ardila
-        * @fecha 09/06/2016 (MM/DD/YYYY)
-        * +Descripcion Metodo el cual invocara el servicio que consulta
-        *              todos los tipos de formulas
-        * */
-        that.listarTipoFormulas = function(){
-
-            var obj = {
-                session: $scope.session,
-                data: {
-                    listar_tipo_formula:{
-
-                    }
-                }
-            };
-
-            dispensacionHcService.listarTipoFormula(obj,function(data){
-             
-                if(data.status === 200){                        
-                   $scope.tipoFormula =  dispensacionHcService.renderListarTipoDocumento(data.obj.listar_tipo_formula);
-                  
-                }else{                         
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
-                }
-               
-            });
-
-        };
+        
         
        
         /**
@@ -292,23 +264,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         };
         
         
-         /**
-         * @author Cristian Ardila
-         * +Descripcion Se visualiza la tabla con los tipos de formulas
-         * @fecha 25/05/2016
-         */
-        $scope.listaTiposFormulas = {
-            data: 'tipoFormula',
-            enableColumnResize: true,
-                enableRowSelection: false,
-            columnDefs: [
-
-                //{field: 'getTipo()', displayName: 'Tipo'},
-             //   {field: 'getDescripcion()', displayName: 'Descripcion' },
-                {field: 'getDescripcion()', displayName: "Tipo formula", cellClass: "txt-center",
-                        cellTemplate: "<span ng-class=''> {{ row.entity.getDescripcion() }} </span> "},
-            ]
-        };
+        
+        
+       
          /**
           * @author Cristian Ardila
           * +Descripcion Metodo encargado de invocar el servicio que
@@ -457,16 +415,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     backdropClick: true,
                     dialogFade: true,
                     keyboard: true,
-                    templateUrl: 'views/dispensacionHc/tipoEntregaFormula.html',
+                    templateUrl: 'views/dispensacionHc/dispensacionRealizarEntrega.html',
                     scope: $scope,
                     
-                    //controller: "SeparacionProductoJustificacion",
-                    controller: function($scope, $modalInstance) {
-                        $scope.cerrarVentanaDispensacionFormula = function() {
-                            that.consultarMedicamentosTemporales();
+                    controller: "dispensacionRealizarEntregaController",
+                    /*controller: function($scope, $modalInstance) {
+                        $scope.cerrarVentanaDispensacionFormula = function() {  
                             $modalInstance.close();
                         };
-                    }                         
+                    }   */                      
                 };
             var modalInstance = $modal.open($scope.opts);      
         };
@@ -498,7 +455,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         
         
         that.consultarMedicamentosTemporales();
-        that.listarTipoFormulas();
+        
         
             
                  

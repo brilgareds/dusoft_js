@@ -30,21 +30,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         that.init = function(empresa, callback) {
 
             $scope.root = {
-             seleccionarOtros: '',
-             empresaSeleccionada: '',
-             activar_tab: {tab_productos: true, tab_cargar_archivo: false},
-             visualizar: false,
+                seleccionarOtros: '',
+                empresaSeleccionada: '',
+                activar_tab: {tab_productos: true, tab_cargar_archivo: false},
+                visualizar: false,
              // Opciones del Modulo 
-             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
-             progresoArchivo: 0,
-             btnSolicitarAutorizacionCartera: true,
-             estadoRegistro: 0,
-             prefijoList: '',
-             existenciaDocumento:true,
-             detalleFormula: []
+                opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
+                progresoArchivo: 0,
+                btnSolicitarAutorizacionCartera: true,
+                estadoRegistro: 0,
+                prefijoList: '',
+                existenciaDocumento:true,
+                detalleFormula: []
 
 
-              };
+            };
             callback();
         };  
             
@@ -74,28 +74,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
             
             var obj = {                   
-                        session: $scope.session,
-                        data: {
-                            listar_formulas: {
-                              filtro:resultadoStorage.filtro,
-                              terminoBusqueda: resultadoStorage.evolucionId,//$scope.root.numero,
-                              empresaId:'',
-                              fechaInicial: resultadoStorage.fechaInicial,
-                              fechaFinal:resultadoStorage.fechaFinal,
-                              paginaActual:resultadoStorage.paginaActual,
-                              estadoFormula : resultadoStorage.estadoFormula
-                            }
-                        }    
-                    };      
+                session: $scope.session,
+                data: {
+                    listar_formulas: {
+                        filtro:resultadoStorage.filtro,
+                        terminoBusqueda: resultadoStorage.evolucionId,//$scope.root.numero,
+                        empresaId:'',
+                        fechaInicial: resultadoStorage.fechaInicial,
+                        fechaFinal:resultadoStorage.fechaFinal,
+                        paginaActual:resultadoStorage.paginaActual,
+                        estadoFormula : resultadoStorage.estadoFormula
+                    }
+                }    
+            };      
             dispensacionHcService.listarFormulas(obj, function(data){
 
-                   if(data.status === 200) {       
-                       //$scope.root.items = data.obj.listar_formulas.length;                              
-                       $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                       that.listarMedicamentosFormulados(resultadoStorage);
-                   }else{
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                   }
+                if(data.status === 200) {       
+                    //$scope.root.items = data.obj.listar_formulas.length;                              
+                    $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
+                    that.listarMedicamentosFormulados(resultadoStorage);
+                 }else{
+                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                 }
 
             });
                
@@ -108,24 +108,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @fecha 25/05/2016
          */    
         that.listarMedicamentosFormulados = function(resultadoStorage){
+            
             var productos;
             var obj = {                   
-                    session: $scope.session,
-                    data: {
-                       listar_medicamentos_formulados: { 
-
-                            evolucionId: resultadoStorage.evolucionId,//$scope.root.numero,
-
-                       }
-                   }    
-                };
+                session: $scope.session,
+                data: {
+                   listar_medicamentos_formulados: { 
+                        evolucionId: resultadoStorage.evolucionId,
+                   }
+                }    
+            };
             dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
 
                 if(data.status === 200) {       
 
                    productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
-                 }else{
+                }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 } 
             });
@@ -178,37 +177,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.cantidadEntrega = entity.cantidadEntrega;
 
             var obj = {                   
-                    session: $scope.session,
-                    data: {
-                       cantidadProducto: {
-                            codigoProducto: entity.codigo_producto,
-                            evolucionId: resultadoStorage.evolucionId,
-                            principioActivo: entity.principioActivo
-                       }
-                   }    
-                };
-                 
+                session: $scope.session,
+                data: {
+                    cantidadProducto: {
+                        codigoProducto: entity.codigo_producto,
+                        evolucionId: resultadoStorage.evolucionId,
+                        principioActivo: entity.principioActivo
+                   }
+                }    
+            };
            
             dispensacionHcService.cantidadProductoTemporal(obj,function(data){
-               that.cantidadPendiente = 0;
-
-               if(data.status === 200) {       
-
+                
+                that.cantidadPendiente = 0;
+                if(data.status === 200) {       
                     if (entity.codigo_producto === data.obj.cantidadProducto[0].codigo_formulado) {
-
                         that.cantidadPendiente = entity.cantidadEntrega - data.obj.cantidadProducto[0].total;
                     }
-
                 }else{
-                        that.cantidadPendiente = entity.cantidadEntrega;
+                    that.cantidadPendiente = entity.cantidadEntrega;
                 }
                 $scope.cantidadPendiente = that.cantidadPendiente;
                 that.consultarExistenciasBodegas(entity);
 
-
-
             });
-               // $scope.datos_view.pedido_seleccionado = obj;       
                
         };
            
@@ -221,34 +213,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         that.consultarExistenciasBodegas = function(entity){
               
             var obj = {                   
-                        session: $scope.session,
-                        data: {
-                           existenciasBodegas: {
-                                codigoProducto: entity.codigo_producto,
-                                principioActivo: entity.principioActivo,
-                                empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
-                                centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
-                                bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
-                           }
-                       }    
-                    };
+                session: $scope.session,
+                data: {
+                    existenciasBodegas: {
+                        codigoProducto: entity.codigo_producto,
+                        principioActivo: entity.principioActivo,
+                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                   }
+               }    
+            };
              
             dispensacionHcService.existenciasBodegas(obj, function(data){
-                
+               
                 entity.vaciarProductosHc();
-                if(data.status === 200) {                      
-                     
-                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));
-                     
-                     $scope.lotes = entity.mostrarProductosHc();
-                     that.ventanaDispensacionFormula();
+                if(data.status === 200) {                                          
+                    entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
+                    $scope.lotes = entity.mostrarProductosHc();
+                    that.ventanaDispensacionFormula();
                 }else{
-                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
             
-            });
-            
-            
+            });   
         };
          
            
@@ -302,26 +290,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");           
             var obj = {                   
-                        session: $scope.session,
-                        data: {
-                           temporalLotes: {
-                                evolucion: resultadoStorage.evolucionId,
-                                detalle: entity,
-                                codigoProducto: $scope.producto,
-                                cantidadSolicitada: $scope.cantidadEntrega,
-                                empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
-                                centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
-                                bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
-                           }
-                       }    
-                    };
+                session: $scope.session,
+                data: {
+                    temporalLotes: {
+                        evolucion: resultadoStorage.evolucionId,
+                        detalle: entity,
+                        codigoProducto: $scope.producto,
+                        cantidadSolicitada: $scope.cantidadEntrega,
+                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                   }
+               }    
+            };
                
             dispensacionHcService.temporalLotes(obj, function(data){              
-                 if(data.status === 200) {                                          
-                     AlertService.mostrarMensaje("success", data.msj);   
-                 }else{
-                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                 }            
+                if(data.status === 200) {                                          
+                    AlertService.mostrarMensaje("success", data.msj);   
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }            
             });            
         };
          
@@ -357,23 +345,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          *              los medicamentos temporales
          * @fecha 08/06/2016
          * @returns {undefined}
-         */
-        
+         */      
         that.consultarMedicamentosTemporales = function(){
             $scope.medicamentosTemporales = [];
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
             var obj = {                   
-                        session: $scope.session,
-                        data: {
-                           listar_medicamentos_temporales: {
-                                evolucion: resultadoStorage.evolucionId                           
-                           }
-                       }    
-                    };        
+                session: $scope.session,
+                data: {
+                   listar_medicamentos_temporales: {
+                        evolucion: resultadoStorage.evolucionId                           
+                   }
+                }    
+            };        
             dispensacionHcService.medicamentosTemporales(obj, function(data){
                     
                 if(data.status === 200){                     
-                     $scope.medicamentosTemporales.push(dispensacionHcService.renderMedicamentosTemporales(data.obj.listar_medicamentos_temporales));    
+                    $scope.medicamentosTemporales.push(dispensacionHcService.renderMedicamentosTemporales(data.obj.listar_medicamentos_temporales));    
 
                 }      
                     
@@ -395,18 +382,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             enableHighlighting: true,
             columnDefs: [
 
-             {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},
-             {field: 'getDescripcion()', displayName: 'Medicamento'},
-             {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Cantidad', width:"10%"},          
-             {field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
-             {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
+                {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},
+                {field: 'getDescripcion()', displayName: 'Medicamento'},
+                {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Cantidad', width:"10%"},          
+                {field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
+                {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
 
-             {field: 'Sel', width: "10%",
+                {field: 'Sel', width: "10%",
                     displayName: "Dispensar",
                     cellClass: "txt-center",
                     cellTemplate: '<button class="btn btn-default btn-xs" ng-click="eliminarMedicamentoTemporal(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>'
 
-              }
+                }
             ]
         };
         
@@ -445,30 +432,29 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
     
         that.consultarMedicamentosTemporales();
         
-        
         $scope.regresarListaFormulas = function() {
-                $state.go('DispensacionHc');
+            $state.go('DispensacionHc');
         };
             
                  
         that.init(empresa, function() {
 
-                          if (!Usuario.getUsuarioActual().getEmpresa()) {
-                              $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
-                              AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
-                          } else {
-                              if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
-                                      Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
-                                  $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
-                                  AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
-                              } else {
-                                  if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
-                                      $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
-                                      AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
-                                  }
-                              }
-                          }
-                      });
+            if (!Usuario.getUsuarioActual().getEmpresa()) {
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
+                AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+            }else{
+                if(!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
+                    Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+                    $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+                }else{
+                    if(!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                        $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
+                        AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                    }
+                }
+            }
+        });
             
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 

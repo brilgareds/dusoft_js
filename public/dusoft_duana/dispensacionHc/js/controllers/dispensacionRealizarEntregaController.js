@@ -6,9 +6,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService",
+            "dispensacionHcService","$modalInstance",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
@@ -91,9 +91,34 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                
         $scope.realizarEntregaFormula = function(){
             
-            alert("Realizando");
+             AlertService.mostrarVentanaAlerta("IMPORTANTE",  "UNA VEZ REALIZADA LA ENTREGA DE LOS MEDICAMENTOS\n NO SE PODRA MODIFICAR (POR FAVOR VERIFIQUE!!!)",
+             function(estado){
+                 
+                 if(estado){
+                     
+                    AlertService.mostrarVentanaAlerta("MENSAJE DE ENTREGA DE MEDICAMENTOS",  "DESEA REALIZAR LA ENTREGA DE MEDICAMENTOS",
+             function(estado){
+                 
+                 if(estado){
+                     
+                     
+                     
+                 }
+             });  
+                     
+                 }
+             }); 
         };
-                                  
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de cerrar la ventana actual
+         * @fecha 09/06/2016 (DD/MM/YYYY)
+         */
+        $scope.cerrarVentana = function(){
+            
+            $modalInstance.close();
+        };
         that.init(empresa, function() {
 
             if(!Usuario.getUsuarioActual().getEmpresa()) {

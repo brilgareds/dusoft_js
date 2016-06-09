@@ -408,25 +408,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           *              listar los tipos de entrega de la formula
         */
         $scope.ventanaTipoEntregaFormula = function(){
-             
-                            
+            
             $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
                     keyboard: true,
                     templateUrl: 'views/dispensacionHc/dispensacionRealizarEntrega.html',
-                    scope: $scope,
-                    
-                    controller: "dispensacionRealizarEntregaController",
-                    /*controller: function($scope, $modalInstance) {
-                        $scope.cerrarVentanaDispensacionFormula = function() {  
-                            $modalInstance.close();
-                        };
-                    }   */                      
-                };
+                    scope: $scope,                  
+                    controller: "dispensacionRealizarEntregaController"
+                                   
+            };
             var modalInstance = $modal.open($scope.opts);      
         };
+        
         
         /**
           * @author Cristian Ardila

@@ -28,7 +28,8 @@ define(["angular"], function (angular) {
                 "EXISTENCIAS_BODEGAS": BASE_URL + "/DispensacionHc/existenciasBodegas",
                 "TEMPORAL_LOTES": BASE_URL + "/DispensacionHc/temporalLotes",
                 "LISTAR_MEDICAMENTOS_TEMPORALES": BASE_URL + "/DispensacionHc/listarMedicamentosTemporales",
-                "ELIMINAR_MEDICAMENTOS_TEMPORALES": BASE_URL + "/DispensacionHc/eliminarTemporalFormula"
+                "ELIMINAR_MEDICAMENTOS_TEMPORALES": BASE_URL + "/DispensacionHc/eliminarTemporalFormula",
+                "LISTAR_TIPO_FORMULA": BASE_URL + "/DispensacionHc/listarTipoFormula"
                
             }
         }

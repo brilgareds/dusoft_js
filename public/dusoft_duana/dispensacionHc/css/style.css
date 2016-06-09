@@ -1,3 +1,9 @@
 .contenedorfiltrocombobox{
     width: 100%;
 }
+
+.gridStyle2 {
+    border: 1px solid rgb(212,212,212);
+    width: 585px; 
+    height: 400px
+}

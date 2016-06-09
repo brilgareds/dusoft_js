@@ -57,6 +57,9 @@ module.exports = function(app, di_container) {
     });
     
     
-  
+    // consultar tipos de formulas
+    app.post("/api/DispensacionHc/listarTipoFormula", function(req, res){
+        c_dispensacion_hc.listarTipoFormula(req, res);
+    });
     
 };

@@ -140,11 +140,9 @@
                                         <span class="glyphicon glyphicon-ok" ></span> volver
                                     </button>
                                     
-                                    <button class="btn btn-default" ng-click="regresarListaFormulas()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
-                                        <span class="glyphicon glyphicon-ok" ></span> Volver
-                                    </button>
-                                    <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
-                                        <span class="glyphicon glyphicon-cog" ></span> Generar reporte
+                                   
+                                    <button class="btn btn-default"  ng-click="ventanaTipoEntregaFormula()" ng-if="medicamentosTemporales.length > '0'">
+                                        <span class="glyphicon glyphicon-cog" ></span> Realizar entrega
                                     </button>
                                     
                                      <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() >0" ng-disabled="!datos_view.btnSolicitarAutorizacionCartera">

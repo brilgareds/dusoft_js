@@ -122,7 +122,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
  */
 DispensacionHcModel.prototype.listarTipoDocumento = function(callback){
     
-    var sql = "SELECT tipo_id_tercero, descripcion\
+    var sql = "SELECT tipo_id_tercero as id, descripcion\
                  FROM tipo_id_terceros\
                  ORDER BY  tipo_id_tercero ";
   
@@ -225,9 +225,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
         callback(false, resultado)
     }).catch(function(err){          
         callback(err)
-    });
-          
-    
+    });  
 };
 
 
@@ -391,6 +389,31 @@ DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callb
     }).done(); 
     
 };
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener los diferentes tipos de formula
+ * @controller DispensacionHc.prototype.listarTipoFormula
+ */
+DispensacionHcModel.prototype.listarTipoFormula = function(callback){
+
+    var sql = "SELECT\
+            a.tipo_formula_id as id,\
+            a.descripcion_tipo_formula as descripcion\
+            FROM esm_tipos_formulas as a\
+            ORDER BY a.descripcion_tipo_formula ASC";
+   
+    G.knex.raw(sql).then(function(resultado){    
+        callback(false, resultado)
+    }).catch(function(err){          
+        callback(err)
+    });
+          
+    
+};
+
 /*
  * @autor : Cristian Ardila
  * Descripcion : SQL para eliminar el producto de la tabla temporal

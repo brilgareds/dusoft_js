@@ -29,41 +29,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
         that.init = function(empresa, callback) {
 
-            $scope.root = {
-                seleccionarOtros: '',
-                empresaSeleccionada: '',
+            $scope.root = {              
                 activar_tab: {tab_productos: true, tab_cargar_archivo: false},
                 visualizar: false,
              // Opciones del Modulo 
                 opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
-                progresoArchivo: 0,
-                btnSolicitarAutorizacionCartera: true,
-                estadoRegistro: 0,
-                prefijoList: '',
-                existenciaDocumento:true,
                 detalleFormula: []
 
 
             };
             callback();
         };  
-            
-            
-        $scope.documentoDespachoAprobado;
-            
-        $scope.cargarEmpresaSession = function(){
-
-            if($scope.root.seleccionarOtros){
-                var session = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                var empresa = EmpresaDispensacionHc.get(session.nombre, session.codigo);          
-                $scope.root.empresaSeleccionada = empresa;
-
-            }else{
-                $scope.root.empresaSeleccionada = "";
-            }
-        };    
-            
-			 
+       	 
 	
             /**
              * +Descripcion: Se activa el cambio de interfaz, cuando se selecciona
@@ -100,7 +77,38 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             });
                
         };
-            
+        
+        /**
+        * @author Cristian Ardila
+        * @fecha 09/06/2016 (MM/DD/YYYY)
+        * +Descripcion Metodo el cual invocara el servicio que consulta
+        *              todos los tipos de formulas
+        * */
+        that.listarTipoFormulas = function(){
+
+            var obj = {
+                session: $scope.session,
+                data: {
+                    listar_tipo_formula:{
+
+                    }
+                }
+            };
+
+            dispensacionHcService.listarTipoFormula(obj,function(data){
+             
+                if(data.status === 200){                        
+                   $scope.tipoFormula =  dispensacionHcService.renderListarTipoDocumento(data.obj.listar_tipo_formula);
+                  
+                }else{                         
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                }
+               
+            });
+
+        };
+        
+       
         /**
          * @author Cristian Ardila
          * +Descripcion Metodo encargado de ejecutar el servicio que consultara
@@ -133,33 +141,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
            
            
-          /**
-           * @author Cristian Ardila
-           * +Descripcion Se visualiza la tabla con los medicamentos listos
-           *              para dispensar
-           * @fecha 25/05/2016
-           */
-        $scope.listaMedicamentosFormulados = {
-            data: 'root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0]',
-            enableColumnResize: true,
-            enableRowSelection: false,
-            enableCellSelection: true,
-            enableHighlighting: true,
-            columnDefs: [
-
-                {field: 'getCodigoProducto()', displayName: 'Codigo', width:"15%"},
-                {field: 'getDescripcion()', displayName: 'Medicamento'},
-                {field: 'getCantidadEntrega()', displayName: 'Cant. entregar', width:"10%"},
-                {field: 'getPerioricidadEntrega()', displayName: 'Perioricidad entrega', width:"25%"},
-                {field: 'getTiempoTotal()', displayName: 'Dias tratamiento', width:"15%"},
-                {field: 'Dispensar', width: "10%",
-                           displayName: "Dispensar",
-                           cellClass: "txt-center",
-                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)">Dispensar</button>'
-
-                }
-            ]
-        };
+        
                     
 
         /**
@@ -279,7 +261,54 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                   }
             ]
         };
-         
+        
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Se visualiza la tabla con los medicamentos listos
+         *              para dispensar
+         * @fecha 25/05/2016
+         */
+        $scope.listaMedicamentosFormulados = {
+            data: 'root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0]',
+            enableColumnResize: true,
+            enableRowSelection: false,
+            enableCellSelection: true,
+            enableHighlighting: true,
+            columnDefs: [
+
+                {field: 'getCodigoProducto()', displayName: 'Codigo', width:"15%"},
+                {field: 'getDescripcion()', displayName: 'Medicamento'},
+                {field: 'getCantidadEntrega()', displayName: 'Cant. entregar', width:"10%"},
+                {field: 'getPerioricidadEntrega()', displayName: 'Perioricidad entrega', width:"25%"},
+                {field: 'getTiempoTotal()', displayName: 'Dias tratamiento', width:"15%"},
+                {field: 'Dispensar', width: "10%",
+                           displayName: "Dispensar",
+                           cellClass: "txt-center",
+                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)">Dispensar</button>'
+
+                }
+            ]
+        };
+        
+        
+         /**
+         * @author Cristian Ardila
+         * +Descripcion Se visualiza la tabla con los tipos de formulas
+         * @fecha 25/05/2016
+         */
+        $scope.listaTiposFormulas = {
+            data: 'tipoFormula',
+            enableColumnResize: true,
+                enableRowSelection: false,
+            columnDefs: [
+
+                //{field: 'getTipo()', displayName: 'Tipo'},
+             //   {field: 'getDescripcion()', displayName: 'Descripcion' },
+                {field: 'getDescripcion()', displayName: "Tipo formula", cellClass: "txt-center",
+                        cellTemplate: "<span ng-class=''> {{ row.entity.getDescripcion() }} </span> "},
+            ]
+        };
          /**
           * @author Cristian Ardila
           * +Descripcion Metodo encargado de invocar el servicio que
@@ -313,30 +342,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             });            
         };
          
-         /**
-          * @author Cristian Ardila
-          * +Descripcion Metodo que desplegara una ventana encargada de 
-          *              listar los lotes de la formula a traves de un formulario
-          */
-        that.ventanaDispensacionFormula = function() {
-               
-            $scope.opts = {
-                    backdrop: 'static',
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    templateUrl: 'views/dispensacionHc/lotesMedicamentosFormulados.html',
-                    scope: $scope,
-                    windowClass: 'app-modal-window-xlg',
-                    controller: function($scope, $modalInstance) {
-                        $scope.cerrarVentanaDispensacionFormula = function() {
-                            that.consultarMedicamentosTemporales();
-                            $modalInstance.close();
-                        };
-                    }                         
-                };
-            var modalInstance = $modal.open($scope.opts);             
-        };
         
         
         /**
@@ -428,13 +433,73 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             });
             
         };
-       
-    
-        that.consultarMedicamentosTemporales();
         
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de cambiar de view al inicio del modulo
+         * @fecha 09/06/2016 (DD-MM-YYYY)
+         */
         $scope.regresarListaFormulas = function() {
             $state.go('DispensacionHc');
         };
+        
+        
+        /**
+          * @author Cristian Ardila
+          * +Descripcion Metodo que desplegara una ventana encargada de 
+          *              listar los tipos de entrega de la formula
+        */
+        $scope.ventanaTipoEntregaFormula = function(){
+             
+                            
+            $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/dispensacionHc/tipoEntregaFormula.html',
+                    scope: $scope,
+                    
+                    //controller: "SeparacionProductoJustificacion",
+                    controller: function($scope, $modalInstance) {
+                        $scope.cerrarVentanaDispensacionFormula = function() {
+                            that.consultarMedicamentosTemporales();
+                            $modalInstance.close();
+                        };
+                    }                         
+                };
+            var modalInstance = $modal.open($scope.opts);      
+        };
+        
+        /**
+          * @author Cristian Ardila
+          * +Descripcion Metodo que desplegara una ventana encargada de 
+          *              listar los lotes de la formula a traves de un formulario
+        */
+        that.ventanaDispensacionFormula = function() {
+               
+            $scope.opts = {
+                    backdrop: 'static',
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/dispensacionHc/lotesMedicamentosFormulados.html',
+                    scope: $scope,
+                    windowClass: 'app-modal-window-xlg',
+                    controller: function($scope, $modalInstance) {
+                        $scope.cerrarVentanaDispensacionFormula = function() {
+                            that.consultarMedicamentosTemporales();
+                            $modalInstance.close();
+                        };
+                    }                         
+                };
+            var modalInstance = $modal.open($scope.opts);             
+        };
+        
+        
+        that.consultarMedicamentosTemporales();
+        that.listarTipoFormulas();
+        
             
                  
         that.init(empresa, function() {
@@ -463,9 +528,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             localStorageService.add("dispensarFormulaDetalle", null);
                 
             $scope.root=null;
-            $scope.documentoDespachoAprobado=null;
-                
-              
+         
             });
         }]);
 });

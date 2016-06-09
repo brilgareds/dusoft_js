@@ -83,7 +83,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 * */
                 that.listarTipoDocumentos = function(callback){
                     
-                    dispensacionHcService.listarTipoDocumentos($scope.session,function (data){
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            listar_tipo_documento:{
+
+                            }
+                        }
+                    };
+                
+                    dispensacionHcService.listarTipoDocumentos(obj,function (data){
                        
                         if(data.status === 200){                        
                            $scope.tipoDocumentos =  dispensacionHcService.renderListarTipoDocumento(data.obj.listar_tipo_documento);

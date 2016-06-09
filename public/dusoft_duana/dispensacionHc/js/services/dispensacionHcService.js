@@ -33,23 +33,27 @@ define(["angular", "js/services"], function(angular, services) {
               * @fecha  20/05/2016
               * +Descripcion Servicio que lista los tipos de documentos
               */
-            self.listarTipoDocumentos = function(session, callback){
-                 
-                var obj = {
-                    session: session,
-                    data: {
-                        listar_tipo_documento:{
-
-                        }
-                    }
-                };
-                
+            self.listarTipoDocumentos = function(obj, callback){
+              
                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TIPO_DOCUMENTO,"POST", obj, function(data){
                     
                         callback(data);
                 });
             };
              
+             
+            /**
+              * @author Cristian Ardila
+              * @fecha  20/05/2016
+              * +Descripcion Servicio que lista los tipos de documentos
+              */
+            self.listarTipoFormula = function(obj, callback){
+              
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TIPO_FORMULA,"POST", obj, function(data){
+                    
+                        callback(data);
+                });
+            };
              
              /**
               * @author Cristian Ardila
@@ -147,6 +151,9 @@ define(["angular", "js/services"], function(angular, services) {
                     callback(data);
                 });
             };
+            
+            
+           
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la
@@ -289,7 +296,7 @@ define(["angular", "js/services"], function(angular, services) {
                 
                 var tipoDocumentos = [];                
                 for(var i in tipoDocumento){                
-                     var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].tipo_id_tercero, tipoDocumento[i].descripcion);
+                     var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].id, tipoDocumento[i].descripcion);
                      tipoDocumentos.push(_tipoDocumento);
                 }                  
                 return tipoDocumentos;

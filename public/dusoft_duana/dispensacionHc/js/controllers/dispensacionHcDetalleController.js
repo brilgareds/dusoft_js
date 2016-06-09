@@ -318,7 +318,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                
             dispensacionHcService.temporalLotes(obj, function(data){              
                  if(data.status === 200) {                                          
-                     AlertService.mostrarMensaje("mensaje del sistema", data.msj);   
+                     AlertService.mostrarMensaje("success", data.msj);   
                  }else{
                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                  }            
@@ -434,7 +434,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             dispensacionHcService.eliminarMedicamentosTemporales(obj,function(data){
                
                 if(data.status === 200){                     
-                    AlertService.mostrarMensaje("mensaje del sistema", data.msj); 
+                    AlertService.mostrarMensaje("success", data.msj); 
                     that.consultarMedicamentosTemporales();
                          
                 }      

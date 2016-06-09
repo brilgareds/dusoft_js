@@ -8,11 +8,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 "localStorageService",
                 "$state",
                 "dispensacionHcService",
-                "TipoDocumentoHc",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
                         EmpresaDispensacionHc,
-                        $timeout, $filter,localStorageService,$state,dispensacionHcService,
-                        TipoDocumentoHc) {
+                        $timeout, $filter,localStorageService,$state,dispensacionHcService) {
 
                 var that = this;
                 $scope.paginaactual = 1;
@@ -60,8 +58,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     {tipo: 'EV',descripcion: "Evolucion"}
                     ];
                  
-                    $scope.root.filtro = $scope.root.filtros[0];
-                    
+                    $scope.root.filtro = $scope.root.filtros[0];                   
                    //Deja en estado visible el buscador
                     $scope.root.visibleBuscador = true;
                     $scope.root.visibleBotonBuscador = true;
@@ -70,14 +67,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
                    
                   $scope.onSeleccionFiltro = function(filtro) {
-
                     $scope.root.filtro = filtro;
                     $scope.root.termino_busqueda = '';
-
                     $scope.root.visibleBuscador = true;
                     $scope.root.visibleListaEstados = false;
                     $scope.root.visibleBotonBuscador = true;
-
                 };
                 
                 
@@ -87,38 +81,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 * +Descripcion Metodo el cual invocara el servicio que consulta
                 *              todos los tipos de documentos
                 * */
-               that.listarTipoDocumentos = function(callback){
+                that.listarTipoDocumentos = function(callback){
                     
-                   dispensacionHcService.listarTipoDocumentos($scope.session,function (data){
-                      
-                      $scope.tipoDocumentos = []; 
+                    dispensacionHcService.listarTipoDocumentos($scope.session,function (data){
+                       
+                        if(data.status === 200){                        
+                           $scope.tipoDocumentos =  dispensacionHcService.renderListarTipoDocumento(data.obj.listar_tipo_documento);
+                           callback(true);
+                        }else{                         
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                        }
                     
-                      if(data.status === 200){
-                          
-                          that.renderListarTipoDocumento(data.obj.listar_tipo_documento);
-                          callback(true);
-                      }else{
-                          
-                          callback(false);
-                      }
-                   });
+                    });
                    
-               };
+                };
                
-               that.renderListarTipoDocumento = function(tipoDocumento){
-                   
-                   for(var i in tipoDocumento){
-                     
-                        var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].tipo_id_tercero, tipoDocumento[i].descripcion);
-                         $scope.tipoDocumentos.push(_tipoDocumento);
-                   }
-                   console.log("TIpos de coumentos ", $scope.tipoDocumentos);
-               };
-                
-                
-               
-               
-
                 /**
                  * @author Cristian Ardila
                  * @fecha 16/05/2016
@@ -128,7 +105,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
                 that.listarFormulasMedicas = function(){
                     
-                     var obj = {                   
+                    var obj = {                   
                         session: $scope.session,
                         data: {
                            listar_formulas: {
@@ -145,12 +122,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     dispensacionHcService.listarFormulas(obj, function(data){
                       
-                           if(data.status === 200) {       
-                               $scope.root.items = data.obj.listar_formulas.length;                              
-                               $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                           }else{
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                           }
+                        if(data.status === 200) {       
+                           $scope.root.items = data.obj.listar_formulas.length;                              
+                           $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
+                        }else{
+                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        }
                           
                     });
                 };
@@ -164,7 +141,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  */
                 that.listarFormulasMedicasPendientes = function(){
                     $scope.afiliadosFormulasPendientes;
-                   var obj = {
+                    var obj = {
                         
                        session: $scope.session,
                        prefijo:$scope.root.prefijo,
@@ -178,14 +155,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
                     dispensacionHcService.listarFormulasPendientes($scope.session,$scope.root.termino_busqueda_empresa, function(data){
                             
-                            console.log("data ", data)
-                           if(data.status === 200) {       
-                               $scope.root.items = data.obj.listar_formulas.length;                               
-                              $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicas(data.obj,0);
-                                
-                           }else{
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                           }
+                        if(data.status === 200) {       
+                           $scope.root.items = data.obj.listar_formulas.length;                               
+                          $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicas(data.obj,0);
+
+                        }else{
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        }
                     });
                 };
                 
@@ -204,7 +180,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    if (event.which === 13) {  
 
                          //if($scope.root.estadoFormula === '0'){
-                         that.listarFormulasMedicas();
+                        that.listarFormulasMedicas();
                             // that.listarFormulasMedicasPendientes();
                          //}
 
@@ -212,7 +188,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              that.listarFormulasMedicasPendientes();
                          }
                        */
-                   }
+                    }
                 };
                      
                   
@@ -236,7 +212,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.paginaSiguiente = function() {
                         $scope.paginaactual++;
-                       that.listarFormulasMedicas();
+                        that.listarFormulasMedicas();
                     };
                     
                     /*
@@ -247,8 +223,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */
                     $scope.dispensacionFormula = function(dispensar) {
                           
-                         
-                          localStorageService.add("dispensarFormulaDetalle",{
+                            localStorageService.add("dispensarFormulaDetalle",{
                                 evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
                                 filtro:$scope.root.filtro,
                                 terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
@@ -259,9 +234,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 estadoFormula : $scope.root.estadoFormula
                            
                     
-                          });
+                            });
                              
-                          $state.go('DispensarFormulaDetalle');
+                            $state.go('DispensarFormulaDetalle');
                      };
                     
                     /*
@@ -273,19 +248,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.dispensacionFormulaPendientes = function(dispensar) {
                           console.log("dispensar ", dispensar) 
                        
-                     };
+                    };
                    
                    
                      /**
                       * +Descripcion Se visualiza la tabla con todas las aprobaciones
                       *              por parte del personal de seguridad
                       */
-                     $scope.listaFormulas = {
+                    $scope.listaFormulas = {
                         data: 'root.afiliados',
-                         enableColumnResize: true,
-                         enableRowSelection: false,
-                         enableCellSelection: true,
-                         enableHighlighting: true,
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
                         columnDefs: [
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
@@ -311,7 +286,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 0"><a href="javascript:void(0);" ng-click="dispensacionFormulaPendientes(row.entity)" >Pendientes</a></li>\
                                              </ul>\
                                        </div>'
-                             },
+                            },
                             
                         ]
                     };
@@ -320,14 +295,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                       * +Descripcion Se visualiza la tabla con todas las aprobaciones
                       *              por parte del personal de seguridad
                       */
-                     $scope.listaFormulasPendientes = {
+                    $scope.listaFormulasPendientes = {
                         data: 'afiliadosFormulasPendientes',
-                         enableColumnResize: true,
-                         enableRowSelection: false,
-                         enableCellSelection: true,
-                         enableHighlighting: true,
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
                         columnDefs: [
-                        {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
                             {displayName: 'Identificacion', width:"9%",
                              cellTemplate: "<div\n\
@@ -375,12 +350,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      */   
                     $scope.abrir_fecha_inicial = function($event) {
 
-                         $event.preventDefault();
-                         $event.stopPropagation();
-                         $scope.root.datepicker_fecha_inicial = true;
-                         $scope.root.datepicker_fecha_final = false;
+                        $event.preventDefault();
+                        $event.stopPropagation();
+                        $scope.root.datepicker_fecha_inicial = true;
+                        $scope.root.datepicker_fecha_final = false;
 
-                     };
+                    };
                 
                     /**
                     * @author Cristian Ardila
@@ -400,27 +375,24 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                   
                     that.init(empresa, function() {
 
-                          if (!Usuario.getUsuarioActual().getEmpresa()) {
-                              $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
-                              AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
-                          } else {
-                              if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
-                                      Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
-                                  $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
-                                  AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
-                              } else {
-                                  if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
-                                      $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
-                                      AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
-                                  } else {
-                                  
-                                        that.listarTipoDocumentos(function(){
-                                            
-                                        });
-                                  }
-                              }
-                          }
-                      });
+                        if(!Usuario.getUsuarioActual().getEmpresa()) {
+                            $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
+                            AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+                        }else{                               
+                            if(!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
+                                Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+                                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
+                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+                            }else{
+                                if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                                    $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
+                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                                }else{                                
+                                    that.listarTipoDocumentos(function(){});                                   
+                                }
+                            }
+                        }
+                    });
 
                      
                      $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

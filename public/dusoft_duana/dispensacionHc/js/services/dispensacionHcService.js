@@ -4,10 +4,10 @@ define(["angular", "js/services"], function(angular, services) {
     services.factory('dispensacionHcService', 
                     ['$rootScope', 'Request', 'API',
                      "Usuario","$modal","localStorageService",
-                     "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosFOFO","LoteHc","ProductosHc",
+                     "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosFOFO","LoteHc","ProductosHc","TipoDocumentoHc",
         function($rootScope, Request, API,
-                 $modal, Usuario,localStorageService,
-             FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosFOFO,LoteHc,ProductosHc) {
+                $modal,Usuario,localStorageService,
+                FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosFOFO,LoteHc,ProductosHc,TipoDocumentoHc) {
 
             var self = this;
             
@@ -21,12 +21,10 @@ define(["angular", "js/services"], function(angular, services) {
               * +Descripcion Consulta todas las formulas
               */
             self.listarFormulas = function(obj, callback){
-                 
-                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){
-                      
-                        callback(data);
-                        
-                 });
+                
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS,"POST", obj, function(data){    
+                    callback(data);                        
+                });
             };
               
              
@@ -38,12 +36,12 @@ define(["angular", "js/services"], function(angular, services) {
             self.listarTipoDocumentos = function(session, callback){
                  
                 var obj = {
-                     session: session,
-                              data: {
+                    session: session,
+                    data: {
                         listar_tipo_documento:{
-                           
+
                         }
-                     }
+                    }
                 };
                 
                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TIPO_DOCUMENTO,"POST", obj, function(data){
@@ -60,22 +58,20 @@ define(["angular", "js/services"], function(angular, services) {
               */
             self.listarFormulasPendientes = function(session, terminoBusqueda, callback){
                
-                 var obj = {
-                     session: session,
-                     data: {
-                           listar_formulas: {
-                               pagina: 1,
-                               empresaName: terminoBusqueda
-                           }
-                       }
+                var obj = {
+                    session: session,
+                    data: {
+                        listar_formulas: {
+                            pagina: 1,
+                            empresaName: terminoBusqueda
+                        }
+                    }
                      
-                 };
-                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){
-                     
-                        callback(data);
-                 });
+                };
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){
+                    callback(data);
+                });
             };
-             
              
             /**
               * @author Cristian Ardila
@@ -84,15 +80,11 @@ define(["angular", "js/services"], function(angular, services) {
               */
             self.listarMedicamentosFormulados = function(obj,callback){
                
-                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
-                       
-                        callback(data);
-                 });
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_FORMULADOS,"POST", obj, function(data){
+                   callback(data);
+                });
             };
              
-             
-            
-            
             /**
               * @author Cristian Ardila
               * @fecha  21/05/2016
@@ -100,10 +92,9 @@ define(["angular", "js/services"], function(angular, services) {
               */
             self.cantidadProductoTemporal = function(obj,callback){
                
-                 Request.realizarRequest(API.DISPENSACIONHC.CANTIDAD_PRODUCTO_TEMPORAL,"POST", obj, function(data){
-
-                        callback(data);
-                 });
+                Request.realizarRequest(API.DISPENSACIONHC.CANTIDAD_PRODUCTO_TEMPORAL,"POST", obj, function(data){
+                    callback(data);
+                });
             };
             
             
@@ -114,10 +105,9 @@ define(["angular", "js/services"], function(angular, services) {
               */
             self.existenciasBodegas = function(obj,callback){
                
-                 Request.realizarRequest(API.DISPENSACIONHC.EXISTENCIAS_BODEGAS,"POST", obj, function(data){
-                      
-                        callback(data);
-                 });
+                Request.realizarRequest(API.DISPENSACIONHC.EXISTENCIAS_BODEGAS,"POST", obj, function(data){
+                    callback(data);
+                });
             };
             
             /**
@@ -127,10 +117,9 @@ define(["angular", "js/services"], function(angular, services) {
               */
             self.temporalLotes = function(obj,callback){
                
-                 Request.realizarRequest(API.DISPENSACIONHC.TEMPORAL_LOTES,"POST", obj, function(data){
-                       
-                        callback(data);
-                 });
+                Request.realizarRequest(API.DISPENSACIONHC.TEMPORAL_LOTES,"POST", obj, function(data){
+                    callback(data);
+                });
             };
             
             /**
@@ -141,10 +130,9 @@ define(["angular", "js/services"], function(angular, services) {
               */
             self.medicamentosTemporales = function(obj,callback){
                
-                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_TEMPORALES,"POST", obj, function(data){
-                        
-                        callback(data);
-                 });
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_TEMPORALES,"POST", obj, function(data){                       
+                   callback(data);
+                });
             };
             
             /**
@@ -155,10 +143,9 @@ define(["angular", "js/services"], function(angular, services) {
               */
             self.eliminarMedicamentosTemporales = function(obj,callback){
                
-                 Request.realizarRequest(API.DISPENSACIONHC.ELIMINAR_MEDICAMENTOS_TEMPORALES,"POST", obj, function(data){
-                        console.log("eliminarMedicamentosTemporales data ", data);
-                        callback(data);
-                 });
+                Request.realizarRequest(API.DISPENSACIONHC.ELIMINAR_MEDICAMENTOS_TEMPORALES,"POST", obj, function(data){     
+                    callback(data);
+                });
             };
             /**
                * @author Cristian Ardila
@@ -168,55 +155,56 @@ define(["angular", "js/services"], function(angular, services) {
                */
             self.renderListarFormulasMedicas = function(formulas, estadoFormula){
                     
-                      var resultado = [];
+                var resultado = [];
                      
-                          for (var i in formulas.listar_formulas) {
-                            var _formula = formulas.listar_formulas[i];
-                            //Se crea el objeto afiliados
-                            var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
-                            //Se crea el objeto paciente
-                            var paciente = PacienteHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.apellidos,_formula.nombres)
+                for(var i in formulas.listar_formulas) {
+                    var _formula = formulas.listar_formulas[i];
+                    //Se crea el objeto afiliados
+                    var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
+                    //Se crea el objeto paciente
+                    var paciente = PacienteHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.apellidos,_formula.nombres)
                             
                             //Se crea el objeto formula
-                         if(estadoFormula === 1){
+                    if(estadoFormula === 1){
                            
-                           var plan = PlanesHc.get(_formula.plan_id,_formula.plan_descripcion);
-                           var planesAtencion  = PlanesRangosHc.get('','');
-                               planesAtencion.agregarPlanes(plan);
-                               paciente.setMedico(_formula.nombre);
-                               paciente.setTipoBloqueoId(_formula.tipo_bloqueo_id);  
-                               paciente.setBloqueo(_formula.bloqueo);  
-                           var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
-                                                      _formula.transcripcion_medica,
-                                                     _formula.descripcion_tipo_formula,
-                                                   _formula.fecha_registro,
-                                                  _formula.fecha_finalizacion,
-                                                _formula.fecha_formulacion);
-                                                
-                               formula.setEstado( _formula.sw_estado);
+                        var plan = PlanesHc.get(_formula.plan_id,_formula.plan_descripcion);
+                        var planesAtencion  = PlanesRangosHc.get('','');
+                            planesAtencion.agregarPlanes(plan);
+                            paciente.setMedico(_formula.nombre);
+                            paciente.setTipoBloqueoId(_formula.tipo_bloqueo_id);  
+                            paciente.setBloqueo(_formula.bloqueo);  
+                        var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,_formula.tipo_formula, 
+                                                   _formula.transcripcion_medica,
+                                                  _formula.descripcion_tipo_formula,
+                                                _formula.fecha_registro,
+                                               _formula.fecha_finalizacion,
+                                             _formula.fecha_formulacion);
+
+                            formula.setEstado( _formula.sw_estado);
                                 
-                          }
+                    }
                           
-                          if(estadoFormula === 0){
-                               paciente.setEdad(_formula.edad);
-                               paciente.setResidenciaDireccion(_formula.residencia_direccion);
-                               paciente.setResidenciaTelefono(_formula.residencia_telefono);
-                               paciente.setSexo(_formula.sexo);  
-                           var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');                             
-                           var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);                               
-                               formula.agregarProductos(Productos);           
-                          }
+                    if(estadoFormula === 0){
+                            paciente.setEdad(_formula.edad);
+                            paciente.setResidenciaDireccion(_formula.residencia_direccion);
+                            paciente.setResidenciaTelefono(_formula.residencia_telefono);
+                            paciente.setSexo(_formula.sexo);  
+                        var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');                             
+                        var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);                               
+                         formula.agregarProductos(Productos);           
+                    }
                          //El paciente tiene su formula
-                         paciente.agregarFormulas(formula);
-                         
-                         //debe ser afiliado el paciente
-                         afiliados.agregarPacientes(paciente);
-                         afiliados.agregarPlanAtencion(planesAtencion);
-                         
-                         //Se almacenan los afiliados
-                         resultado.push(afiliados);
-                        }
-                        return resultado;
+                    paciente.agregarFormulas(formula);
+
+                     //debe ser afiliado el paciente
+                    afiliados.agregarPacientes(paciente);
+                    afiliados.agregarPlanAtencion(planesAtencion);
+
+                     //Se almacenan los afiliados
+                    resultado.push(afiliados);
+                }
+                return resultado;
+                
             };
             /**
                * @author Cristian Ardila
@@ -248,8 +236,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016
                */
             self.renderListarProductosLotes = function(productoLote){
-                
-                      
+                   
                 var lotes = [];
                 for(var i in productoLote.existenciasBodegas){
                     
@@ -279,28 +266,37 @@ define(["angular", "js/services"], function(angular, services) {
                */
             self.renderMedicamentosTemporales = function(productoLote){
                 
-             
                 var lotes = [];
                 for(var i in productoLote){
                     
-                    var _lote = productoLote[i];
-                   
+                    var _lote = productoLote[i];                   
                     var Lote  = LoteHc.get(_lote.lote,_lote.fecha_vencimiento, _lote.cantidad_despachada);  
                     var Producto = ProductosHc.get(_lote.codigo_producto,_lote.descripcion_prod, 0);  
                         Producto.setSerialId(_lote.hc_dispen_tmp_id)
-
-                        Producto.agregarLotes(Lote);
-                       
-                       
-                    lotes.push(Producto);
-                }
-                        
-                  return lotes;
+                        Producto.agregarLotes(Lote);                       
+                        lotes.push(Producto);
+                }                        
+                return lotes;
             };
             
-                 return this;
-        }]);
-    
+            /**
+               * @author Cristian Ardila
+               * +Descripcion Funcion encargada de serializar el resultado de la
+               *              consulta que ontiene los tipos de documentos
+               * @fecha 08/06/2016 (DD-MM-YYYY)
+               */
+            self.renderListarTipoDocumento = function(tipoDocumento){
+                
+                var tipoDocumentos = [];                
+                for(var i in tipoDocumento){                
+                     var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].tipo_id_tercero, tipoDocumento[i].descripcion);
+                     tipoDocumentos.push(_tipoDocumento);
+                }                  
+                return tipoDocumentos;
+            };
+            
+        return this;
+    }]);
          
 });
 

@@ -30,18 +30,7 @@
 <br>
 
 <div class ="row">
-    
-  <div class="col-md-2">
-     <fieldset>                           
-        <ui-select ng-model="empresaSeleccionada"  ng-change="seleccionar_Empresas(empresaSeleccionada)"  theme="select2" class="form-control selectgeneral pull-left" >
-                    <ui-select-match   placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
-                    <ui-select-choices  refresh="onSeleccionarEmpresa($select.search)" refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
-                        {{ empresa.getNombre()}}
-                    </ui-select-choices>
-        </ui-select>  </fieldset>  
-     </div>
-    
-    
+  
      <div class="col-md-2">
             <p class="input-group">
                 <input type="text" class="form-control readonlyinput" 

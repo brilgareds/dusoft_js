@@ -91,23 +91,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                
         $scope.realizarEntregaFormula = function(){
             
-             AlertService.mostrarVentanaAlerta("IMPORTANTE",  "UNA VEZ REALIZADA LA ENTREGA DE LOS MEDICAMENTOS\n NO SE PODRA MODIFICAR (POR FAVOR VERIFIQUE!!!)",
-             function(estado){
-                 
-                 if(estado){
+            AlertService.mostrarVentanaAlerta("IMPORTANTE",  "UNA VEZ REALIZADA LA ENTREGA DE LOS MEDICAMENTOS\n NO SE PODRA MODIFICAR (POR FAVOR VERIFIQUE!!!)",
+                function(estado){               
+                    if(estado){                    
+                        AlertService.mostrarVentanaAlerta("MENSAJE DE ENTREGA DE MEDICAMENTOS",  "DESEA REALIZAR LA ENTREGA DE MEDICAMENTOS",
+                            function(estadoConfirm){                
+                                if(estadoConfirm){
+
+                                }
+                            });  
                      
-                    AlertService.mostrarVentanaAlerta("MENSAJE DE ENTREGA DE MEDICAMENTOS",  "DESEA REALIZAR LA ENTREGA DE MEDICAMENTOS",
-             function(estado){
-                 
-                 if(estado){
-                     
-                     
-                     
-                 }
-             });  
-                     
-                 }
-             }); 
+                    }
+                }); 
         };
         
         /**

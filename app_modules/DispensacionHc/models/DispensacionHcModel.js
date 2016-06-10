@@ -23,29 +23,43 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
    if(obj.estadoFormula === '1'){       
         pendienteCampoEstado = ",j.sw_estado";
         pendienteTabla = "INNER JOIN HC_PENDIENTES_POR_DISPENSAR j ON (a.evolucion_id=j.evolucion_id)";
-        pendienteCondicion = "AND a.sw_estado = '0'";
+        pendienteCondicion = " a.fecha_registro between :1 and :2 AND a.sw_estado = '0'";
    }
   
-   var parametros = {1: obj.fechaInicial, 2: obj.fechaFinal};
+   var parametros = {};
    var sqlCondicion = "";
    var sqlCondicion2 = "";
    
-   
+   if(obj.fechaInicial !=="" && obj.fechaFinal !=="" && obj.terminoBusqueda ==="" || obj.terminoBusqueda ===""){
+       
+       sqlCondicion = " a.fecha_registro between :1 and :2 ";
+        parametros["1"]= obj.fechaInicial;
+        parametros["2"]= obj.fechaFinal;
+        console.log("sqlCondicion ", sqlCondicion);
+        console.log("parametros ", parametros);
+    }
    
    if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
-        sqlCondicion = " AND a.numero_formula::varchar = :3";
+        sqlCondicion = " a.fecha_registro between :1 and :2 AND a.numero_formula::varchar = :3";
         sqlCondicion2  =" WHERE numero_formula::varchar = :3";
+        
+        parametros["1"]= obj.fechaInicial;
+        parametros["2"]= obj.fechaFinal;
         parametros["3"]= obj.terminoBusqueda;
        
    }
    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
        
-        sqlCondicion = " AND a.evolucion_id = :3";
+        sqlCondicion = "  a.evolucion_id = :3";
         parametros["3"]= obj.terminoBusqueda;
+        
+       
    }
    if(obj.filtro.tipo !== 'EV' && obj.filtro.tipo !== 'FO'){
        
-        sqlCondicion = " AND a.tipo_id_paciente = :3 AND a.paciente_id::varchar = :4 ";
+        sqlCondicion = " a.fecha_registro between :1 and :2 AND a.tipo_id_paciente = :3 AND a.paciente_id::varchar = :4 ";
+        parametros["1"]= obj.fechaInicial;
+        parametros["2"]= obj.fechaFinal;
         parametros["3"]= obj.filtro.tipo;
         parametros["4"]= obj.terminoBusqueda;
      
@@ -99,15 +113,16 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         AND (g.rango_afiliado_atencion=h.rango)\
                         inner join planes as i ON (h.plan_id=i.plan_id)\
                         "+pendienteTabla+" WHERE a.codigo_medicamento IS NOT NULL \
-                    ) AS a WHERE a.fecha_registro between :1 and :2 " + sqlCondicion + " " + pendienteCondicion; 
-               
+                    ) AS a WHERE  " + sqlCondicion + " " + pendienteCondicion; 
+              
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){
-        callback(false, resultado);
-    }).catch(function(err){  
-        callback(err);
+    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){    
        
+        callback(false, resultado);
+    }).catch(function(err){    
+       
+        callback(err);      
     });
  
 };
@@ -414,6 +429,32 @@ DispensacionHcModel.prototype.listarTipoFormula = function(callback){
     
 };
 
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener el estado de la variable 
+ *              de parametrizacion reformular
+ * @controller DispensacionHc.prototype.estadoParametrizacionReformular
+ */
+DispensacionHcModel.prototype.estadoParametrizacionReformular = function(obj,callback){
+    
+  
+    var sql = "a.valor FROM system_modulos_variables as a ";
+    var query = G.knex.select(G.knex.raw(sql));
+        query.where('a.variable',G.constants.db().LIKE,"%" + obj.variable + "%").
+    then(function(resultado){  
+        
+        callback(false, resultado)
+        
+    }).catch(function(err){          
+        
+        callback(err)
+    });
+          
+    
+};
 /*
  * @autor : Cristian Ardila
  * Descripcion : SQL para eliminar el producto de la tabla temporal

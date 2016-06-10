@@ -62,4 +62,10 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarTipoFormula(req, res);
     });
     
+    // realizando la entrega de la formula
+    app.post("/api/DispensacionHc/realizarEntregaFormula", function(req, res){
+        c_dispensacion_hc.realizarEntregaFormula(req, res);
+    });
+    
+    
 };

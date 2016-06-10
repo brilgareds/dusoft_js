@@ -1,12 +1,9 @@
-
-<div ng-controller="dispensacionHcDetalleController">
-
-    <div class="row paddingToptZero">
+<div class="row paddingToptZero">
         <div class="col-sm-12 col-md-12">
 
             <div class="panel panel-info ">
                 <div class="panel-heading">
-                    <h4 class="h4MarginTopBottom"><span >Seleccionar Justificacion</span> </h4>
+                    <h4 class="h4MarginTopBottom"><span >Entrega medicamentos</span> </h4>
                 </div>
 
                 <br>
@@ -29,7 +26,9 @@
 
 
                             <div class="col-md-10">
-                                <div class="col-sm-10"><textarea class="form-control" ng-model="datos_view.email_message" id="inputBody" rows="8"></textarea></div>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control" ng-model="root.observacion"  id="inputBody" rows="8"></textarea>
+                                </div>
                             </div> 
                         </div>
 
@@ -39,9 +38,9 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning" ng-click="cerrarVentana()">Cancelar</button>
-                <button type="button" class="btn btn-primary" ng-click="realizarEntregaFormula()" ng-disabled="">Aceptar</button>
+                
+                <button type="button" class="btn btn-warning" ng-click="realizarEntregaFormula()" ng-disabled="">Aceptar</button>
+                <button type="button" class="btn btn-primary" ng-click="cerrarVentana()">Cancelar</button>
             </div>
         </div>
     </div> 
-</div> 

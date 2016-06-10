@@ -13,14 +13,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
 
-        $scope.root = {}; 
-
-            /*
-             * Inicializacion de variables
-             * @param {type} empresa
-             * @param {type} callback
-             * @returns {void}
-             */
+        $scope.root = { observacion:''}; 
+        
+        /*
+         * Inicializacion de variables
+         * @param {type} empresa
+         * @param {type} callback
+         * @returns {void}
+         */
         that.init = function(empresa, callback) {
 
             $scope.session = {
@@ -33,7 +33,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         };
                   
         
-            /**
+      /**
         * @author Cristian Ardila
         * @fecha 09/06/2016 (MM/DD/YYYY)
         * +Descripcion Metodo el cual invocara el servicio que consulta
@@ -88,7 +88,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             console.log("entity ", entity)
         };
-               
+        
+        that.realizarEntregaFormula = function(){
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                   realizar_entrega_formula: {
+                        variable: 'ParametrizacionReformular',
+                        evolucionId: resultadoStorage.evolucionId,
+                        opcion: 1,
+                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(), 
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                        observacion: $scope.root.observacion
+                   }
+               }    
+            };  
+           console.log("ESTO obj ", obj);
+            dispensacionHcService.realizarEntregaFormula(obj,function(data){
+                
+                console.log("estado realizarEntregaFormula: ", data);
+            });
+        };
+        
         $scope.realizarEntregaFormula = function(){
             
             AlertService.mostrarVentanaAlerta("IMPORTANTE",  "UNA VEZ REALIZADA LA ENTREGA DE LOS MEDICAMENTOS\n NO SE PODRA MODIFICAR (POR FAVOR VERIFIQUE!!!)",
@@ -97,12 +119,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         AlertService.mostrarVentanaAlerta("MENSAJE DE ENTREGA DE MEDICAMENTOS",  "DESEA REALIZAR LA ENTREGA DE MEDICAMENTOS",
                             function(estadoConfirm){                
                                 if(estadoConfirm){
-
+                                    that.realizarEntregaFormula();
                                 }
-                            });  
+                            }
+                        );  
                      
                     }
-                }); 
+                }
+            ); 
         };
         
         /**

@@ -57,8 +57,12 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
   
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametros).then(function(resultado){
-     
+   
+    if(resultado.length >0){
         res.send(G.utils.r(req.url, 'Consulta con formulas', 200, {listar_formulas:resultado}));
+    }else{
+        throw 'Consulta sin resultados';
+    }
         
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
@@ -201,6 +205,7 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosFormulados',parametros).then(function(resultado){
        
+      
         if(resultado.rows.length > 0){ 
               res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado.rows}));
         }else{
@@ -481,7 +486,7 @@ DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
 /*
  * @author Cristian Ardila
  * @fecha 24/05/2016
- * +Descripcion Controlador encargado de consultar la cabecera de la formula
+ * +Descripcion Controlador encargado de consultar los tipos de formulas
  *              
  */
 DispensacionHc.prototype.listarTipoFormula = function(req, res){
@@ -506,6 +511,65 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
+};
+
+
+
+DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+    
+   
+    if(!args.realizar_entrega_formula){
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {realizar_entrega_formula: []}));
+        return;
+    } 
+    
+    if(!args.realizar_entrega_formula.variable){
+        res.send(G.utils.r(req.url, 'La variable de parametrizacion de formulacion esta vacia ó indefinida', 404, {realizar_entrega_formula: []}));
+        return;
+    } 
+    
+    if(!args.realizar_entrega_formula.evolucionId){
+        res.send(G.utils.r(req.url, 'La evolucion esta vacia ó indefinida', 404, {realizar_entrega_formula: []}));
+        return;
+    } 
+    
+    console.log("args.realizar_entrega_formula ", args.realizar_entrega_formula);
+    
+    var parametrosReformular = {variable: args.realizar_entrega_formula.variable,
+                                terminoBusqueda: args.realizar_entrega_formula.evolucionId,
+                                filtro: {tipo:'EV'},
+                                opcion: args.realizar_entrega_formula.opcion,
+                                empresa: args.realizar_entrega_formula.empresa,
+                                bodega: args.realizar_entrega_formula.bodega,
+                                observacion: args.realizar_entrega_formula.observacion
+                                
+    
+    };
+    // console.log("parametrosReformular ---> ", parametrosReformular);
+    G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular).then(function(resultado){
+        
+        console.log("Plan id ", resultado[0].plan_id);
+      
+        if(resultado.length > 0){
+            
+            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametrosReformular);
+        }else{
+            throw 'Consulta sin resultados '
+        }
+        
+    }).then(function(resultado){
+        
+        console.log("resultado ", resultado[0].valor);
+        
+    }).fail(function(err){      
+        
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+    
+    
 };
 
 DispensacionHc.$inject = ["m_dispensacion_hc"];

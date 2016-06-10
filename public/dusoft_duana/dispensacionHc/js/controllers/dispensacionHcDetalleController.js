@@ -55,7 +55,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 data: {
                     listar_formulas: {
                         filtro:resultadoStorage.filtro,
-                        terminoBusqueda: resultadoStorage.evolucionId,//$scope.root.numero,
+                        terminoBusqueda: resultadoStorage.terminoBusqueda,//$scope.root.numero,
                         empresaId:'',
                         fechaInicial: resultadoStorage.fechaInicial,
                         fechaFinal:resultadoStorage.fechaFinal,
@@ -64,11 +64,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 }    
             };      
+           
             dispensacionHcService.listarFormulas(obj, function(data){
-
+               
                 if(data.status === 200) {       
                     //$scope.root.items = data.obj.listar_formulas.length;                              
                     $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
+                    
                     that.listarMedicamentosFormulados(resultadoStorage);
                  }else{
                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);

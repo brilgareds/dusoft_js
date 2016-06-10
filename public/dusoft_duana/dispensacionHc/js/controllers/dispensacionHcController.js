@@ -231,7 +231,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *              se seleccione la opcion dispensacion
                      */
                     $scope.dispensacionFormula = function(dispensar) {
-                          
+                            
                             localStorageService.add("dispensarFormulaDetalle",{
                                 evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
                                 filtro:$scope.root.filtro,

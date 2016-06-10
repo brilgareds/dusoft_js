@@ -33,9 +33,15 @@ ModuloModel.prototype.obtenerCantidadModulos = function(callback) {
 };
 
 ModuloModel.prototype.obtenerModulosPorId = function(ids, callback) {
+    var rowsall;
+    var self = this;
     G.knex.column("*").from("modulos").whereIn('id', ids).
     then(function(rows){
-        callback(false, rows);
+     rowsall=rows;
+     return G.Q.ninvoke(self, "esModuloPadre", ids[0]);
+    }).then(function(estado){
+        rowsall[0].ispadre=estado;
+        callback(false, rowsall);
     }).catch(function(err){
         callback(err);
     }).done();
@@ -44,7 +50,9 @@ ModuloModel.prototype.obtenerModulosPorId = function(ids, callback) {
 //gestiona para modificar o insertar el modulo
 ModuloModel.prototype.guardarModulo = function(modulo, callback) {
     var self = this;
-
+    var def = G.Q.defer();
+    var resultadoinsert;
+    var resultado;
     __validarCreacionModulo(self, modulo, function(validacion) {
         if (!validacion.valido) {
             var err = {msj: validacion.msj};
@@ -53,16 +61,96 @@ ModuloModel.prototype.guardarModulo = function(modulo, callback) {
         }
 
         if (modulo.modulo_id && modulo.modulo_id !== 0) {
-            self.modificarModulo(modulo, function(err, rows) {
-                callback(err, rows);
+           G.Q.ninvoke(self, "modificarModulo", modulo).then(function(resultado) {
+                resultadoinsert=resultado;
+                return G.Q.ninvoke(self, "consultaReporteAdmin", modulo);
+            }).then(function(result) { 
+                resultado=result;
+                return G.Q.ninvoke(self, "esModuloPadre", modulo.modulo_id);
+            }).then(function(result) {  
+               if(modulo.swReporte==='1' && modulo.parent_id !== '' && resultado.length === 0 && !result){
+                   return G.Q.ninvoke(self, "guardarReporteAdmin", modulo);
+               }else if(modulo.swReporte==='0' && modulo.parent_id !== '' && resultado.length !== 0 && !result){
+                   return G.Q.ninvoke(self, "modificarReporteAdmin", modulo);                    
+               }else if(modulo.swReporte==='1' && modulo.parent_id !== '' && resultado.length !== 0 && !result){
+                   return G.Q.ninvoke(self, "modificarReporteAdmin", modulo);
+               }else{
+                   def.resolve();
+               }
+            }).then(function(resultado) {
+               callback(false,resultadoinsert);
+            }).fail(function(err) {
+                callback(err);
             });
-        } else {
-            self.insertarModulo(modulo, function(err, rows) {
-                callback(err, rows);
+        } else {            
+           G.Q.ninvoke(self, "insertarModulo", modulo).then(function(resultado) {
+                resultadoinsert=resultado;  
+                return G.Q.ninvoke(self, "esModuloPadre", modulo.modulo_id);
+            }).then(function(result) {
+               if(modulo.swReporte==='1' && modulo.parent_id !== '' && !result){
+                   return G.Q.ninvoke(self, "guardarReporteAdmin", modulo);            
+               }else{
+                   def.resolve();
+               }
+            }).then(function(resultado) {
+               callback(false,resultadoinsert);
+            }).fail(function(err) {
+                callback(err);
             });
         }
     });
 
+};
+
+ModuloModel.prototype.consultaReporteAdmin = function(modulo,callback) {
+    var sql = " select id \
+                 from \
+                reporte_admin \
+                where id = :1 ;";
+    
+     var params = {
+        1:modulo.modulo_id
+    };
+    
+    G.knex.raw(sql,params).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
+    });    
+};
+
+ModuloModel.prototype.modificarReporteAdmin = function (modulo, callback){
+    var sql = "UPDATE reporte_admin SET nombre_reporte= :1 , estado = :2 \
+               WHERE  id = :3 ;";
+    
+    var params = {
+        1:modulo.nombre,        
+        2:modulo.swReporte,
+        3:modulo.modulo_id
+    };
+    
+    G.knex.raw(sql, params).then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(err){
+       callback(err);
+    });
+};
+
+ModuloModel.prototype.guardarReporteAdmin = function (modulo, callback){
+    var sql = "INSERT INTO reporte_admin(nombre_reporte, id , estado)\
+               VALUES ( :1 , :2 , :3);";
+
+    var params = {
+        1:modulo.nombre,
+        2:modulo.modulo_id,
+        3:modulo.swReporte
+    };         
+    
+    G.knex.raw(sql, params). then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(err){
+       callback(err);
+    });
 };
 
 
@@ -76,15 +164,14 @@ ModuloModel.prototype.insertarModulo = function(modulo, callback) {
     }
 
     var sql = "INSERT INTO modulos (id, parent, nombre, url, parent_name, icon, state, observacion, usuario_id,\
-               fecha_creacion, estado, carpeta_raiz, alias) VALUES (" + modulo_id + ", :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, replace(LOWER( :2 ), ' ', '_') ) RETURNING id";
+               fecha_creacion, estado, carpeta_raiz, alias, sw_reporte) VALUES (" + modulo_id + ", :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, replace(LOWER( :2 ), ' ', '_'), :12 ) RETURNING id";
 
 
     var params = {
         1:modulo.parent, 2:modulo.nombre, 3:modulo.url, 4:modulo.parent_name, 5:modulo.icon || null,
-        6:modulo.state, 7:modulo.observacion, 8:modulo.usuario_id, 9:'now()', 10:Number(modulo.estado), 11:modulo.carpetaRaiz,
+        6:modulo.state, 7:modulo.observacion, 8:modulo.usuario_id, 9:'now()', 10:Number(modulo.estado), 11:modulo.carpetaRaiz, 12:modulo.swReporte
     };
     
-    console.log(">>>>>>>>>>>>>>>>>>>>>> parametros ", params);
     
     G.knex.raw(sql, params).
     then(function(resultado){
@@ -99,12 +186,12 @@ ModuloModel.prototype.modificarModulo = function(modulo, callback) {
     var that = this;
     var sql = "UPDATE modulos SET parent = :1, nombre = :2, url = :3, parent_name = :4,\
                icon = :5, state = :6, observacion = :7, usuario_id = :8, usuario_id_modifica = :9,\
-               estado = :10, fecha_modificacion = :11, carpeta_raiz = :12, alias = replace(LOWER( :2 ), ' ', '_') WHERE id = :13 ";
+               estado = :10, fecha_modificacion = :11, carpeta_raiz = :12, alias = replace(LOWER( :2 ), ' ', '_'), sw_reporte = :14 WHERE id = :13 ";
 
     var params = {
         1:modulo.parent, 2:modulo.nombre, 3:modulo.url, 4:modulo.parent_name ||  null, 5:modulo.icon,
         6:modulo.state, 7:modulo.observacion, 8:modulo.usuario_id, 9:modulo.usuario_id,
-        10:Number(modulo.estado), 11:'now()', 12:modulo.carpetaRaiz, 13:modulo.modulo_id
+        10:Number(modulo.estado), 11:'now()', 12:modulo.carpetaRaiz, 13:modulo.modulo_id, 14:modulo.swReporte,
     };
     
     G.knex.raw(sql, params).

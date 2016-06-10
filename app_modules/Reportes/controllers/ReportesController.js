@@ -16,14 +16,15 @@ Reportes.prototype.listarDrArias = function (req, res) {
     //  var pagina_actual = args.autorizaciones.pagina_actual;
 
     G.Q.ninvoke(this.m_drArias, 'listarDrArias', termino_busqueda).
-            then(function (resultado) {
-                res.send(G.utils.r(req.url, 'Listado de Dr Arias!!!!', 200, {listarDrArias: resultado}));
-            }).
-            fail(function (err) {
-                console.log("error controller ", err);
-                res.send(G.utils.r(req.url, 'Error Listado Dr Arias', 500, {listarDrArias: err}));
-            }).
-            done();
+    then(function (resultado) {
+        res.send(G.utils.r(req.url, 'Listado de Dr Arias!!!!', 200, {listarDrArias: resultado}));
+    }).
+    fail(function (err) {
+        console.log("error controller ", err);
+        res.send(G.utils.r(req.url, 'Error Listado Dr Arias', 500, {listarDrArias: err}));
+    }).
+    done();
+
 };
 
 Reportes.$inject = [

@@ -504,6 +504,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
         console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
        callback(err);
     });
+
 };
 
 

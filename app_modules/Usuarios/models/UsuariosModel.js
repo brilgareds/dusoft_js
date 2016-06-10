@@ -372,7 +372,7 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
 
     //obtiene el rol del usuario
     that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol) {
-        console.log("usuario obtenido ", rol);
+        //console.log("usuario obtenido ", rol);
 
         //el usuario no tiene un rol asignado como predeterminado
         if (!rol || !rol.id) {
@@ -412,7 +412,7 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
                             return;
                         }
 
-                        console.log("centros utilidad usuario ", rows, empresa_id, usuario_id);
+                        //console.log("centros utilidad usuario ", rows, empresa_id, usuario_id);
                         //return;
 
                         if (rows.length === 0) {
@@ -567,7 +567,7 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
     }
      
     query.then(function(resultado){
-       console.log("resultado >>>>>>>>>>>>>> ", resultado);
+       //console.log("resultado >>>>>>>>>>>>>> ", resultado);
        callback(false, resultado.rows || resultado, resultado);
     }).catch(function(err){
         console.log(">>>>>>>>>>>>>>>>>>>> ",err);

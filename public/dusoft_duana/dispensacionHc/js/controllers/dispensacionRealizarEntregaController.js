@@ -96,11 +96,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 data: {
                    realizar_entrega_formula: {
                         variable: 'ParametrizacionReformular',
-                        evolucionId: resultadoStorage.evolucionId,
-                        opcion: 1,
+                        evolucionId: resultadoStorage.evolucionId,                    
                         empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(), 
                         bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                        observacion: $scope.root.observacion
+                        observacion: $scope.root.observacion,
+                        todoPendiente:0
+                        
                    }
                }    
             };  

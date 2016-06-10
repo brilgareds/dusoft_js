@@ -35,8 +35,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
        sqlCondicion = " a.fecha_registro between :1 and :2 ";
         parametros["1"]= obj.fechaInicial;
         parametros["2"]= obj.fechaFinal;
-        console.log("sqlCondicion ", sqlCondicion);
-        console.log("parametros ", parametros);
+         
     }
    
    if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
@@ -434,17 +433,22 @@ DispensacionHcModel.prototype.listarTipoFormula = function(callback){
 /**
  * @author Cristian Ardila
  * @fecha 09/06/2016 (DD-MM-YYYY)
- * +Descripcion Modelo encargado de obtener el estado de la variable 
- *              de parametrizacion reformular
+ * +Descripcion tipoVariable = 0 Modelo encargado de obtener el estado de la variable 
+ *              de parametrizacion reformular 
+ *              tipoVariable = 1 Modelo encargado de obtener el bodegas_doc_id
  * @controller DispensacionHc.prototype.estadoParametrizacionReformular
  */
 DispensacionHcModel.prototype.estadoParametrizacionReformular = function(obj,callback){
     
-  
+   
     var sql = "a.valor FROM system_modulos_variables as a ";
     var query = G.knex.select(G.knex.raw(sql));
-        query.where('a.variable',G.constants.db().LIKE,"%" + obj.variable + "%").
-    then(function(resultado){  
+        query.where('a.variable',G.constants.db().LIKE,"%" + obj.variable + "%");
+        if(obj.tipoVariable ===1){            
+            query.andWhere('a.modulo',G.constants.db().LIKE,"%" + obj.modulo + "%")
+        }
+              
+        query.then(function(resultado){  
         
         callback(false, resultado)
         
@@ -453,6 +457,88 @@ DispensacionHcModel.prototype.estadoParametrizacionReformular = function(obj,cal
         callback(err)
     });
           
+    
+};
+
+/**
+ * 
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+DispensacionHcModel.prototype.asignacionNumeroDocumentoDespacho = function(obj, callback) {
+    
+     var sql = "UPDATE bodegas_doc_numeraciones set numeracion=numeracion + 1 \
+                WHERE  bodegas_doc_id= :1 RETURNING numeracion;";
+   
+    G.knex.raw(sql, {1: obj.bodegasDocId}).
+    then(function(resultado){   
+       callback(false, resultado);
+    }).catch(function(err){    
+       callback(err);
+    });
+
+};
+
+/**
+ * 
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+DispensacionHcModel.prototype.bloquearTabla = function(callback) {
+
+     var sql = "BEGIN WORK;\
+                LOCK TABLE bodegas_doc_numeraciones IN ROW EXCLUSIVE MODE ;\
+                COMMIT WORK;\
+                ";
+   
+    G.knex.raw(sql).
+    then(function(resultado){     
+       callback(false, resultado);
+    }).catch(function(err){       
+       callback(err);
+    });
+
+};
+
+
+DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callback)
+{   
+    console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
+    console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
+    console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
+    console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
+    
+    G.knex.transaction(function(transaccion) {  
+        
+        G.Q.nfcall(__insertarBodegasDocumentos, obj, transaccion).then(function(resultado){
+          
+          console.log("resultado 1 ", resultado);
+         return G.Q.nfcall(__insertarDespachoMedicamentos, obj, transaccion);
+
+        })/*.then(function(){
+
+           return G.Q.nfcall(__CambioEstadoCotizacionCreacionProducto, cotizacion, transaccion);
+
+        })*/.then(function(){
+
+           transaccion.commit();
+
+        }).fail(function(err){
+            console.log("err ", err);
+           transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function(){
+
+       callback(false);
+
+    }).catch(function(err){
+        console.log("catch ", err);
+       callback(err);
+    }).done(); 
     
 };
 /*
@@ -513,6 +599,44 @@ function __insertarTemporalFarmacia(producto, transaccion, callback) {
     });
    
 };
+
+
+
+function __insertarBodegasDocumentos(obj, transaccion, callback){
+    
+    var parametros ={1: obj.bodegasDocId,2: obj.numeracion,3: 'now()',
+                     4: '0',5: null,6: obj.observacion,7: obj.usuario,
+                     8: obj.estadoPendiente,9: 'now()'};
+                 
+    var sql = " INSERT INTO bodegas_documentos(bodegas_doc_id,numeracion,fecha,total_costo,transaccion,observacion,usuario_id,todo_pendiente,fecha_registro)\
+                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9 );";
+    
+    var query = G.knex.raw(sql, parametros);
+    
+    if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){           
+            callback(false, resultado);
+    }).catch(function(err){
+            callback(err);   
+    });
+};
+
+                   
+function __insertarDespachoMedicamentos(obj, transaccion, callback){
+
+    var sql = " INSERT INTO hc_formulacion_despachos_medicamentos(hc_formulacion_despacho_id,evolucion_id,bodegas_doc_id,numeracion)\
+                VALUES( DEFAULT, :1, :2, :3);";
+    
+     var query = G.knex.raw(sql, {1: obj.evolucion, 2: obj.bodegasDocId,3: obj.numeracion});
+                             
+     if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){           
+            callback(false, resultado);
+    }).catch(function(err){
+            callback(err);   
+    });
+}
+
 
 DispensacionHcModel.$inject = [];
 

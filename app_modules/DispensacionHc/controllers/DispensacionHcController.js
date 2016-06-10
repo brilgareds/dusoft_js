@@ -536,35 +536,107 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         return;
     } 
     
-    console.log("args.realizar_entrega_formula ", args.realizar_entrega_formula);
+    var evolucionId = args.realizar_entrega_formula.evolucionId;
+    var empresa = args.realizar_entrega_formula.empresa;
+    var bodega = args.realizar_entrega_formula.bodega;
+    var variable = args.realizar_entrega_formula.variable;
+    var observacion = args.realizar_entrega_formula.observacion;
     
-    var parametrosReformular = {variable: args.realizar_entrega_formula.variable,
-                                terminoBusqueda: args.realizar_entrega_formula.evolucionId,
-                                filtro: {tipo:'EV'},
-                                opcion: args.realizar_entrega_formula.opcion,
-                                empresa: args.realizar_entrega_formula.empresa,
-                                bodega: args.realizar_entrega_formula.bodega,
-                                observacion: args.realizar_entrega_formula.observacion
+    var bodegasDocId;
+    var planId;
+    var variableParametrizacion;
+    var numeracion;
+    var parametrosReformular = {variable: variable,
+                                terminoBusqueda: evolucionId,
+                                filtro: {tipo:'EV'},                             
+                                empresa: empresa,
+                                bodega: bodega,
+                                observacion: observacion,
+                                tipoVariable : 0
                                 
     
     };
-    // console.log("parametrosReformular ---> ", parametrosReformular);
+   
     G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular).then(function(resultado){
         
-        console.log("Plan id ", resultado[0].plan_id);
-      
         if(resultado.length > 0){
-            
+           planId =  resultado[0].plan_id;
             return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametrosReformular);
         }else{
             throw 'Consulta sin resultados '
         }
         
     }).then(function(resultado){
+       
         
-        console.log("resultado ", resultado[0].valor);
+        if(resultado.length > 0){
+            
+            var parametroBodegaDocId = {variable:"documento_dispensacion_"+empresa+"_"+bodega, tipoVariable:1, modulo:'Dispensacion' };
+                variableParametrizacion = resultado[0].valor;
+            /**
+             *+Descripcion Se consulta el bodegas_doc_id correspondiente
+             */
+            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
+        }else{
+            
+            throw 'Variable reformular no se encontro';
+            
+        }
+      
         
-    }).fail(function(err){      
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){
+            
+           bodegasDocId = resultado[0].valor;
+           
+           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);
+            
+        }else{
+            throw 'No hay temporales'
+        }
+            
+    }).then(function(resultado){
+          
+        if(resultado.rows.length > 0){
+            
+             return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');
+             
+        }else{
+            throw 'No hay temporales separados'
+        }
+           
+    }).then(function(resultado){
+            
+            return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId:bodegasDocId});
+            
+    }).then(function(resultado){
+        
+         
+        if(resultado.rowCount === 0){
+            throw 'No se genero numero de despacho'
+        }else{
+            numeracion = resultado.rows[0].numeracion;
+            var parametrosGenerarDispensacion={bodegasDocId:bodegasDocId, 
+                    numeracion:numeracion, 
+                    observacion:observacion, 
+                    estadoPendiente:0,
+                    usuario: req.session.user.usuario_id,
+                    evolucion: evolucionId};
+                console.log("parametrosGenerarDispensacion ", parametrosGenerarDispensacion);
+            /*console.log("bodegasDocId ", bodegasDocId);     
+            console.log("planId ", planId);     
+            console.log("variableParametrizacion ", variableParametrizacion);
+            console.log("numeracion ", numeracion);*/
+            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',
+                    parametrosGenerarDispensacion);
+        }
+            
+            
+    })/*.then(function(resultado){
+        
+           
+    })*/.fail(function(err){      
         
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();

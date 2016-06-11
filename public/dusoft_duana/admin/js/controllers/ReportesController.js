@@ -30,8 +30,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
+                    console.log("AAAAAAAAAAAAAAAAA111111111");
                 Request.realizarRequest(
-                        API.ADMIN.OBTENER_REPORTES,
+                        API.ADMIN.OBTENER_CONFIGURACION_REPORTE,
                         "POST",
                         obj,
                         function(data) {
@@ -42,6 +43,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             }
                         }
                 );
+                    console.log("AAAAAAAAAAAAAAAAA2222");
             };
             
               that.init(function() {

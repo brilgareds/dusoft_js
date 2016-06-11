@@ -6,6 +6,11 @@
                     "module": "Admin",
                     "controller": "AdminController",
                     "alias": "c_admin"
+                },
+                "reportesAdmin_controller": {
+                    "module": "Admin",
+                    "controller": "ReportesAdminController",
+                    "alias": "c_configreportesAdmin"
                 }
             }],
         "models": [{

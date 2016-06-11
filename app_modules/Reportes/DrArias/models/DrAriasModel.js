@@ -486,7 +486,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
     //sql = "select * from prueba_andres  ";
     
     var query = G.knex.raw(sql, {1:fechaInicial.format(formato), 2:fechaFinal.format(formato)});
-    query.timeout(820000).then(function(resultado) {
+    query.timeout(200000).then(function(resultado) {
                 
         //console.log("fecha final format ", resultado.rows);
          obj.resultado = obj.resultado.concat(resultado.rows);

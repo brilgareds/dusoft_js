@@ -18,6 +18,7 @@
     "intravenous": "latest",
     "j": "^0.4.3",
     "jade": "*",
+    "jinq": "^1.6.0",
     "jsreport": "0.2.1",
     "jsreport-client": "*",
     "knex": "^0.11.5",

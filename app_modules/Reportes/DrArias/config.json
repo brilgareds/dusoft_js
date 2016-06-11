@@ -1,16 +1,16 @@
 {
-    "module": "Reportes",
+    "module": "DrArias",
     "dependency": {
         "controllers": [{
                 "reportes_controller": {
-                    "module": "Reportes",
+                    "module": "Reportes/DrArias",
                     "controller": "ReportesController",
                     "alias": "c_reportes"
                 }
             }],
         "models": [{
                 "autorizaciones_model": {
-                    "module": "Reportes",
+                    "module": "Reportes/DrArias",
                     "model": "DrAriasModel",
                     "alias": "m_drArias"
                 }

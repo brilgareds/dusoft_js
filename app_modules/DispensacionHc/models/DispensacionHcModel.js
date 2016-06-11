@@ -502,7 +502,14 @@ DispensacionHcModel.prototype.bloquearTabla = function(callback) {
 
 };
 
-
+/*
+ * @autor : Cristian Ardila
+ * Descripcion : Modelo encargado de manejar los procesos de generacion de dispensacion
+ *               de una formula a traves de las transacciones, con el fin de que se
+ *               cumpla cada registro prerequisito de otro y evitar la inconsistencia
+ *               de datos
+ * @fecha: 11/06/2015 09:45 pm 
+ */
 DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callback)
 {   
     console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
@@ -522,7 +529,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
            return G.Q.nfcall(__CambioEstadoCotizacionCreacionProducto, cotizacion, transaccion);
 
         })*/.then(function(){
-
+           console.log("INSERTA DESPACHOS MEDICAMENTOS ");
            transaccion.commit();
 
         }).fail(function(err){
@@ -541,6 +548,116 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
     }).done(); 
     
 };
+
+
+/*
+ * @autor : Cristian Ardila
+ * Descripcion : Modelo encargado de insertar el detalle de la dispensacion en
+ *               la tabla bodegas_documentos_d a traves de transacciones para que
+ *               la existencia de lotes sea consistente al descontarse con la
+ *               cantidad dispensada
+ * @fecha: 11/06/2015 09:45 pm 
+ */
+DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj, callback)
+{   
+    console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
+    
+    console.log("parametros ENVIANDOLOS ", obj);
+    
+     callback(false);
+    G.knex.transaction(function(transaccion) {  
+        
+        G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, obj, transaccion).then(function(resultado){
+         
+            return G.Q.nfcall(__actualizarExistenciasBodegas, obj, transaccion);
+
+        })/*.then(function(){
+
+           return G.Q.nfcall(__CambioEstadoCotizacionCreacionProducto, cotizacion, transaccion);
+
+        })*/.then(function(){
+           console.log("INSERTA DESPACHOS MEDICAMENTOS ");
+           transaccion.commit();
+
+        }).fail(function(err){
+            console.log("err ", err);
+           transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function(){
+
+       callback(false);
+
+    }).catch(function(err){
+        
+       callback(err);
+    }).done(); 
+    
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Query invocado desde una transaccion para actualizar
+ *              la existencia actual de un producto cuando se dispensar
+ *              una formula
+ * @fecha 11/06/2016 (DD-MM-YYYY)
+ */
+function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
+    
+    console.log("*****__actualizarExistenciasBodegasLotesFv****");
+    
+    var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
+                      4: obj.bodega , 5:obj.codigo_producto, 6: obj.fecha_vencimiento, 7: obj.lote};
+    var sql = "UPDATE  existencias_bodegas_lote_fv set  existencia_actual= existencia_actual - :1\
+                WHERE   empresa_id = :2 \
+                AND  centro_utilidad = :3\
+                AND     bodega = :4\
+                AND     codigo_producto = :5\
+                AND     fecha_vencimiento = :6\
+                AND     lote = :7 ";
+
+    var query = G.knex.raw(sql,parametros);    
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){     
+            console.log("resultado ExistenciasBodegasLotesFv ", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            callback(err);   
+    });  
+
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Query invocado desde una transaccion para actualizar
+ *              la existencia actual de un producto cuando se dispensar
+ *              una formula
+ * @fecha 11/06/2016 (DD-MM-YYYY)
+ */
+function __actualizarExistenciasBodegas(obj,transaccion,callback) {
+    
+    console.log("*****__actualizarExistenciasBodegas****");
+    
+    var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
+                      4: obj.bodega , 5:obj.codigo_producto};
+    var sql = "UPDATE  existencias_bodegas set     existencia= existencia - :1\
+                WHERE   empresa_id = :2 \
+                AND  centro_utilidad = :3\
+                AND     bodega = :4\
+                AND     codigo_producto = :5";
+
+    var query = G.knex.raw(sql,parametros);    
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){    
+            console.log("resultado ExistenciasBodegas ", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            callback(err);   
+    });  
+
+};
+
 /*
  * @autor : Cristian Ardila
  * Descripcion : SQL para eliminar el producto de la tabla temporal
@@ -601,7 +718,12 @@ function __insertarTemporalFarmacia(producto, transaccion, callback) {
 };
 
 
-
+/**
+ * @author Cristian Ardila
+ * +Descripcion Modelo encargado de crear el numero de despacho de la entrega
+ *              de una formula
+ * @fecha 11/06/2016
+ */
 function __insertarBodegasDocumentos(obj, transaccion, callback){
     
     var parametros ={1: obj.bodegasDocId,2: obj.numeracion,3: 'now()',
@@ -621,7 +743,12 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
     });
 };
 
-                   
+/**
+ * @author Cristian Ardila
+ * +Descripcion Modelo encargado de registrar el despacho de medicamentos
+ *              de una entrega de la formula
+ * @fecha 11/06/2016
+ */                   
 function __insertarDespachoMedicamentos(obj, transaccion, callback){
 
     var sql = " INSERT INTO hc_formulacion_despachos_medicamentos(hc_formulacion_despacho_id,evolucion_id,bodegas_doc_id,numeracion)\

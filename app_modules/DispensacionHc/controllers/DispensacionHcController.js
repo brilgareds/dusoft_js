@@ -541,11 +541,12 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     var bodega = args.realizar_entrega_formula.bodega;
     var variable = args.realizar_entrega_formula.variable;
     var observacion = args.realizar_entrega_formula.observacion;
-    
+    var usuario = req.session.user.usuario_id;
     var bodegasDocId;
     var planId;
     var variableParametrizacion;
     var numeracion;
+    var temporales;
     var parametrosReformular = {variable: variable,
                                 terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},                             
@@ -599,7 +600,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     }).then(function(resultado){
           
         if(resultado.rows.length > 0){
-            
+             temporales = resultado.rows;
              return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');
              
         }else{
@@ -621,7 +622,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                     numeracion:numeracion, 
                     observacion:observacion, 
                     estadoPendiente:0,
-                    usuario: req.session.user.usuario_id,
+                    usuario: usuario,
                     evolucion: evolucionId};
                 console.log("parametrosGenerarDispensacion ", parametrosGenerarDispensacion);
             /*console.log("bodegasDocId ", bodegasDocId);     
@@ -630,19 +631,79 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             console.log("numeracion ", numeracion);*/
             return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',
                     parametrosGenerarDispensacion);
-        }
+        };
             
             
-    })/*.then(function(resultado){
+    }).then(function(){
         
-           
-    })*/.fail(function(err){      
+     /*   if(resultado.rowCount === 0){
+            throw 'No se genero numero de despacho'
+        }else{
+           console.log("temporales ----->>> ", temporales);
+       }*/   
+     //console.log("temporales ----->>> ", temporales);
+     
+     __insertarBodegasDocumentosDetalle(that,0, usuario, temporales, function(estado, productos){
+            
+            if(!estado){
+                console.log("Debe salir a qui " , estado);
+                res.send(G.utils.r(req.url, 'Documentos registrada correctamente', 200, {pedidos_clientes: {realizar_entrega_formula:productos}}));
+                return;
+            }
+            //console.log("estado ", estado);
+            //console.log("productos ", productos);
+     });
+     
+    }).fail(function(err){      
         
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
     
     
 };
+
+
+function __insertarBodegasDocumentosDetalle(that, index, usuario, _productos_validos, callback) {
+    
+  
+    //console.log(" _productos_validos ", _productos_validos);
+    var producto = _productos_validos[index];
+    
+    //console.log("producto ----->>>>> ::: ", producto);
+    if (!producto) {
+        
+        console.log("Debe salir a qui ");
+        callback(false, _productos_validos);
+        return;
+    }
+    
+    index++;
+    
+    G.Q.ninvoke(that.m_dispensacion_hc,'insertarBodegasDocumentosDetalle',producto).then(function(resultado){
+        
+       // console.log("resultado ", resultado);
+    /*that.m_pedidos_clientes.insertar_detalle_cotizacion( producto, function(err, rows) {
+        if (err) {
+            _productos_invalidos.push(producto);
+        }
+
+        index++;
+        var porcentaje = (index * 100) / _productos_validos.length;
+        that.e_pedidos_clientes.onNotificarProgresoArchivoPlanoClientes(usuario, porcentaje, function() {
+*/          
+            //setTimeout(function() {
+                
+                __insertarBodegasDocumentosDetalle(that, index, usuario, _productos_validos, callback);
+            //}, 300);
+       // });
+
+   // });
+        }).fail(function(err){      
+        
+            callback(true);
+            
+    }).done();
+}
 
 DispensacionHc.$inject = ["m_dispensacion_hc"];
 

@@ -558,11 +558,14 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
  *               cantidad dispensada
  * @fecha: 11/06/2015 09:45 pm 
  */
-DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj, callback)
+DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bodegasDocId,numeracion,plan, callback)
 {   
     console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
     
     console.log("parametros ENVIANDOLOS ", obj);
+    console.log("----bodegasDocId----", bodegasDocId);
+    console.log("----numeracion----", numeracion);
+    console.log("----plan----", plan);
     
      callback(false);
     G.knex.transaction(function(transaccion) {  
@@ -571,11 +574,11 @@ DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj, c
          
             return G.Q.nfcall(__actualizarExistenciasBodegas, obj, transaccion);
 
-        })/*.then(function(){
+        }).then(function(){
 
-           return G.Q.nfcall(__CambioEstadoCotizacionCreacionProducto, cotizacion, transaccion);
+           return G.Q.nfcall(__insertarBodegasDocumentosDetalle,obj,bodegasDocId,numeracion,plan, transaccion);
 
-        })*/.then(function(){
+        }).then(function(){
            console.log("INSERTA DESPACHOS MEDICAMENTOS ");
            transaccion.commit();
 
@@ -609,7 +612,7 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     
     var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto, 6: obj.fecha_vencimiento, 7: obj.lote};
-    var sql = "UPDATE  existencias_bodegas_lote_fv set  existencia_actual= existencia_actual - :1\
+    var sql = "UPDATE  existencias_bodegas_lote_fv set     existencia_actual= existencia_actual - :1\
                 WHERE   empresa_id = :2 \
                 AND  centro_utilidad = :3\
                 AND     bodega = :4\
@@ -620,7 +623,7 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){     
-            console.log("resultado ExistenciasBodegasLotesFv ", resultado);
+            console.log("resultado __actualizarExistenciasBodegasLotesFv ", resultado);
             callback(false, resultado);
     }).catch(function(err){
             callback(err);   
@@ -655,8 +658,40 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
     }).catch(function(err){
             callback(err);   
     });  
-
 };
+
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Modelo encargado insertar el detalle del pedido en la tabla
+ *              de documentos
+ * @fecha 11/06/2016
+ */
+function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,transaccion, callback){
+    
+    console.log("********__insertarBodegasDocumentosDetalle************");
+     console.log("DES----bodegasDocId----", bodegasDocId);
+    console.log("DES----numeracion----", numeracion);
+    console.log("DES----plan----", plan);
+    var parametros ={1: obj.codigo_producto,2: obj.cantidad_despachada,3: obj.empresa_id,
+                     4: plan,5: bodegasDocId,6: numeracion,7: obj.fecha_vencimiento,
+                     8: obj.lote,9: '1'};
+                 
+    var sql = " INSERT INTO bodegas_documentos_d(consecutivo,codigo_producto,cantidad,total_costo,total_venta,bodegas_doc_id,numeracion,fecha_vencimiento,lote,sw_pactado)\
+                VALUES( DEFAULT, :1, :2, (COALESCE(fc_precio_producto_plan('0', :1, :3,'0','0'),0)),\
+                (COALESCE(fc_precio_producto_plan( :4, :1, :3,'0','0'),0)* :2),\
+                 :5, :6, :7, :8, :9 );";
+    
+    var query = G.knex.raw(sql, parametros);
+    
+    if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){           
+            callback(false, resultado);
+    }).catch(function(err){
+            callback(err);   
+    });
+};
+
 
 /*
  * @autor : Cristian Ardila

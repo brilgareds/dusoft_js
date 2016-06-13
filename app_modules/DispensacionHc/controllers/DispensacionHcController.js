@@ -642,8 +642,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
            console.log("temporales ----->>> ", temporales);
        }*/   
      //console.log("temporales ----->>> ", temporales);
-     
-     __insertarBodegasDocumentosDetalle(that,0, usuario, temporales, function(estado, productos){
+     var parametrosBodegasDocumentosDetalle = {temporales: temporales, usuario:usuario, bodegasDocId:bodegasDocId, numeracion:numeracion, planId: planId};
+     __insertarBodegasDocumentosDetalle(that,0, parametrosBodegasDocumentosDetalle, function(estado, productos){
             
             if(!estado){
                 console.log("Debe salir a qui " , estado);
@@ -662,46 +662,31 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     
 };
 
-
-function __insertarBodegasDocumentosDetalle(that, index, usuario, _productos_validos, callback) {
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
+ *              temporales que se dispensaran
+ */
+function __insertarBodegasDocumentosDetalle(that, index, parametros, callback) {
     
   
-    //console.log(" _productos_validos ", _productos_validos);
-    var producto = _productos_validos[index];
+    console.log(" parametrosBodegasDocumentosDetalle ", parametros);
+    var producto = parametros.temporales[index];
     
-    //console.log("producto ----->>>>> ::: ", producto);
-    if (!producto) {
-        
+    if (!producto) {       
         console.log("Debe salir a qui ");
-        callback(false, _productos_validos);
+        callback(false, parametros.temporales);
         return;
-    }
-    
+    }  
     index++;
     
-    G.Q.ninvoke(that.m_dispensacion_hc,'insertarBodegasDocumentosDetalle',producto).then(function(resultado){
-        
-       // console.log("resultado ", resultado);
-    /*that.m_pedidos_clientes.insertar_detalle_cotizacion( producto, function(err, rows) {
-        if (err) {
-            _productos_invalidos.push(producto);
-        }
+    G.Q.ninvoke(that.m_dispensacion_hc,'insertarBodegasDocumentosDetalle',producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId).then(function(resultado){    
+        setTimeout(function() {
+            __insertarBodegasDocumentosDetalle(that, index, parametros, callback);
+        }, 300);
 
-        index++;
-        var porcentaje = (index * 100) / _productos_validos.length;
-        that.e_pedidos_clientes.onNotificarProgresoArchivoPlanoClientes(usuario, porcentaje, function() {
-*/          
-            //setTimeout(function() {
-                
-                __insertarBodegasDocumentosDetalle(that, index, usuario, _productos_validos, callback);
-            //}, 300);
-       // });
-
-   // });
-        }).fail(function(err){      
-        
-            callback(true);
-            
+    }).fail(function(err){      
+        callback(true);            
     }).done();
 }
 

@@ -27,7 +27,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             // setUsuarioActual(obj_session);
             
             self.redireccionarLogin = function(){
-               // window.location = "../login";
+                window.location = "../login";
             };
             
             $scope.mostarLock = false;

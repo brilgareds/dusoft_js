@@ -149,9 +149,6 @@ DispensacionHcModel.prototype.listarTipoDocumento = function(callback){
 };
 
 
-
-
-
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
@@ -242,6 +239,54 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
     });  
 };
 
+/**
+ * @author Cristian Ardila
+ * @fecha 13/06/2016
+ * +Descripcion Modelo encargado de listar los medicamentos pendientes de la
+ *              formula
+ * @controller DispensacionHc.prototype.listarMedicamentosPendientes
+ */
+DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callback){
+
+    var parametros = {1: obj.evolucionId};
+       
+        var sql = "SELECT  a.codigo_producto,\
+                          (b.cantidades - a.cantidades) as total\
+                  from\
+                  (\
+                        SELECT codigo_formulado AS codigo_producto,\
+                              SUM(cantidad_despachada) as cantidades\
+                        FROM hc_dispensacion_medicamentos_tmp\
+                        where evolucion_id= :1\
+                        group by  codigo_formulado\
+                  ) as a,\
+                  (\
+                  SELECT codigo_medicamento as codigo_producto,\
+                            SUM(cantidad_entrega) as cantidades\
+                            FROM hc_formulacion_antecedentes\
+                            where evolucion_id= :1\
+                      group by codigo_medicamento\
+                  ) as b\
+                 where\
+                          a.codigo_producto = b.codigo_producto\
+                UNION\
+                    SELECT codigo_medicamento as codigo_producto,\
+                          cantidad_entrega as cantidades\
+                          FROM hc_formulacion_antecedentes\
+                          where evolucion_id= :1 and sw_mostrar='1'\
+                     and codigo_medicamento NOT IN( select\
+                                                      codigo_formulado\
+                                                      FROM hc_dispensacion_medicamentos_tmp\
+                                                      where evolucion_id= :1 )";
+   
+    G.knex.raw(sql,parametros).then(function(resultado){    
+       
+        callback(false, resultado)
+    }).catch(function(err){        
+      
+        callback(err)
+    });  
+};
 
 /**
  * @author Cristian Ardila
@@ -350,10 +395,10 @@ DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,ca
               WHERE evolucion_id = :1 " + condicion +"";
                
   
-    G.knex.raw(sql,parametros).then(function(resultado){       
+    G.knex.raw(sql,parametros).then(function(resultado){         
         callback(false, resultado)
-    }).catch(function(err){            
-        callback(err)
+    }).catch(function(err){       
+        callback(err);
     });
     
 };
@@ -562,12 +607,6 @@ DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bo
 {   
     console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
     
-    console.log("parametros ENVIANDOLOS ", obj);
-    console.log("----bodegasDocId----", bodegasDocId);
-    console.log("----numeracion----", numeracion);
-    console.log("----plan----", plan);
-    
-     callback(false);
     G.knex.transaction(function(transaccion) {  
         
         G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, obj, transaccion).then(function(resultado){
@@ -579,7 +618,7 @@ DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bo
            return G.Q.nfcall(__insertarBodegasDocumentosDetalle,obj,bodegasDocId,numeracion,plan, transaccion);
 
         }).then(function(){
-           console.log("INSERTA DESPACHOS MEDICAMENTOS ");
+           console.log("INSERTA DESPACHOS MEDICAMENTOS FIANLIZADO");
            transaccion.commit();
 
         }).fail(function(err){
@@ -599,6 +638,11 @@ DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bo
     
 };
 
+function __convertDate(inputFormat) {
+  function pad(s) { return (s < 10) ? '0' + s : s; }
+  var d = new Date(inputFormat);
+  return [pad(d.getDate()+1), pad(d.getMonth()+1), d.getFullYear()].join('/');
+}
 /**
  * @author Cristian Ardila
  * +Descripcion Query invocado desde una transaccion para actualizar
@@ -607,12 +651,14 @@ DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bo
  * @fecha 11/06/2016 (DD-MM-YYYY)
  */
 function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
-    
-    console.log("*****__actualizarExistenciasBodegasLotesFv****");
-    
+    //Problemas con el filtro de la fecha de vencimiento
+    console.log("*****1)__actualizarExistenciasBodegasLotesFv****");
+   
     var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
-                      4: obj.bodega , 5:obj.codigo_producto, 6: obj.fecha_vencimiento, 7: obj.lote};
-    var sql = "UPDATE  existencias_bodegas_lote_fv set     existencia_actual= existencia_actual - :1\
+                      4: obj.bodega , 5:obj.codigo_producto, 6:  __convertDate(obj.fecha_vencimiento), 7: obj.lote};
+                  console.log("{parametros: ", parametros);
+    var sql = "UPDATE  existencias_bodegas_lote_fv \
+                set existencia_actual= existencia_actual - :1\
                 WHERE   empresa_id = :2 \
                 AND  centro_utilidad = :3\
                 AND     bodega = :4\
@@ -623,9 +669,10 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){     
-            console.log("resultado __actualizarExistenciasBodegasLotesFv ", resultado);
+            console.log(" 1) resultado ", resultado)
             callback(false, resultado);
     }).catch(function(err){
+             console.log(" 1) err ", err);
             callback(err);   
     });  
 
@@ -640,10 +687,11 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
  */
 function __actualizarExistenciasBodegas(obj,transaccion,callback) {
     
-    console.log("*****__actualizarExistenciasBodegas****");
+    console.log("*****2)__actualizarExistenciasBodegas****");
     
     var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto};
+                    console.log("{parametros: ", parametros +"}");
     var sql = "UPDATE  existencias_bodegas set     existencia= existencia - :1\
                 WHERE   empresa_id = :2 \
                 AND  centro_utilidad = :3\
@@ -653,9 +701,10 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){    
-            console.log("resultado ExistenciasBodegas ", resultado);
+              console.log("2) resultado: ", resultado);
             callback(false, resultado);
     }).catch(function(err){
+        console.log("2) err: ", err);
             callback(err);   
     });  
 };
@@ -669,10 +718,8 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
  */
 function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,transaccion, callback){
     
-    console.log("********__insertarBodegasDocumentosDetalle************");
-     console.log("DES----bodegasDocId----", bodegasDocId);
-    console.log("DES----numeracion----", numeracion);
-    console.log("DES----plan----", plan);
+    console.log("********3)__insertarBodegasDocumentosDetalle************");
+   
     var parametros ={1: obj.codigo_producto,2: obj.cantidad_despachada,3: obj.empresa_id,
                      4: plan,5: bodegasDocId,6: numeracion,7: obj.fecha_vencimiento,
                      8: obj.lote,9: '1'};
@@ -685,13 +732,69 @@ function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,tra
     var query = G.knex.raw(sql, parametros);
     
     if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){           
+        query.then(function(resultado){ 
+          
             callback(false, resultado);
     }).catch(function(err){
             callback(err);   
     });
 };
 
+
+/*
+ * Autor : Cristian Ardila
+ * Descripcion : SQL para qye ingresara los productos que quedan pendientes
+ *               por dispensar
+ * @fecha: 08/06/2015 2:43 pm 
+ */
+DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto,evolucionId,todoPendiente,usuario,callback) {
+   
+   var parametros = {1: evolucionId, 2: producto.codigo_producto, 3: Math.round(producto.total),
+                     4: usuario, 5: todoPendiente, 6: 'now()'};
+   console.log("********__insertarPendientesPorDispensar************ ", parametros );
+   
+    var sql = "INSERT INTO hc_pendientes_por_dispensar\
+      (hc_pendiente_dispensacion_id,evolucion_id,codigo_medicamento,cantidad,\
+       usuario_id,todo_pendiente,fecha_registro)\
+            VALUES( DEFAULT, :1, :2, :3, :4, :5, :6 );";
+
+           
+    var query = G.knex.raw(sql,parametros );
+    
+    query.then(function(resultado){
+        console.log("resultado ", resultado);
+       callback(false, resultado);
+    }).catch(function(err){
+     console.log("err ", err);
+       callback(err);
+    });
+   
+};
+
+/*
+ * Autor : Cristian Ardila
+ * Descripcion : SQL encargado de eliminar los productos que ya se han dispensado
+ * @fecha: 08/06/2015 2:43 pm 
+ */
+DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,callback) {
+   
+   var parametros = {1: obj.evolucionId};
+   console.log("********eliminarTemporalesDispensados************ ", parametros );
+   
+    var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp WHERE  evolucion_id = :1;";
+
+           
+    var query = G.knex.raw(sql,parametros );
+    
+    query.then(function(resultado){
+        console.log("resultado ELiminar", resultado);
+       callback(false, resultado);
+    }).catch(function(err){
+     console.log("err ELiminar", err);
+       callback(err);
+    });
+   
+};
 
 /*
  * @autor : Cristian Ardila

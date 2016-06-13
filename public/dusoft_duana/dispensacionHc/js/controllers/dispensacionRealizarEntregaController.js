@@ -108,7 +108,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
            console.log("ESTO obj ", obj);
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
                 
-                console.log("estado realizarEntregaFormula: ", data);
+                if(data.status === 200){
+                     
+                    AlertService.mostrarMensaje("success", data.msj);
+                    $scope.cerrarVentana();
+                }
             });
         };
         

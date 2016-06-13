@@ -112,8 +112,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      
                     AlertService.mostrarMensaje("success", data.msj);
                     $scope.cerrarVentana();
+                     $state.go('DispensacionHc');
                 }
-            });
+            }); 
         };
         
         $scope.realizarEntregaFormula = function(){

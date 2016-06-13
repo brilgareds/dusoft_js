@@ -1,24 +1,24 @@
-var ReportesAdmin = function(m_reportesAdmin, job_temporales) {
+var ReportesAdmin = function(m_reportesAdmin) {
     this.m_reportesAdmin = m_reportesAdmin;
-    this.job_temporales = job_temporales;
 };
 
 
 ReportesAdmin.prototype.obtenerConfiguracionReporte = function(req, res){
    var that = this;
    var args = req.body.data;
-   
+   var termino={};
 G.Q.nfcall(that.m_reportesAdmin.obtenerReportesAdmin, termino).
-        then(function(verificarAutorizacionProductos) {
-        res.send(G.utils.r(req.url, 'Consultar Autorizacion de Productos Bloqueados ok!!!!', 200, {verificarAutorizacionProductos: verificarAutorizacionProductos}));
+        then(function(obtenerReportesAdmin) {
+    console.log(">>>>>>>",obtenerReportesAdmin);
+        res.send(G.utils.r(req.url, 'Consultar Configuracion Reportes ok!!!!', 200, {obtenerReportesAdmin: obtenerReportesAdmin}));
     }).
        fail(function(err) {
-       res.send(G.utils.r(req.url, 'Error al Consultar Autorizacion de Productos Bloqueados', 500, {verificarAutorizacionProducto: {}}));
+       res.send(G.utils.r(req.url, 'Error al Consultar Configuracion Reportes', 500, {obtenerReportesAdmin: {}}));
     }).
        done();    
 };
 
 
-ReportesAdmin.$inject = ["m_reportesAdmin", "job_temporales"];
+ReportesAdmin.$inject = ["m_reportesAdmin"];
 
 module.exports = ReportesAdmin;

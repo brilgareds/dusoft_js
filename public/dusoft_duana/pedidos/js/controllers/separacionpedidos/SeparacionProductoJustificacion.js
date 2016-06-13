@@ -26,7 +26,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                    {descripcion: "Averiado"},
                    {descripcion: "Proximo A Vencer"},
                    {descripcion: "Trocado"},
-                   {descripcion: "Por presentacion"}
+                   {descripcion: "Por presentacion"},
+                   {descripcion: "Finca"},
+                   {descripcion: "En compras"}
                 ];
       
             };

@@ -36,7 +36,9 @@ define(["angular", "js/controllers",
                 {descripcion: "Averiado"},
                 {descripcion: "Proximo A Vencer"},
                 {descripcion: "Trocado"},
-                {descripcion: "Por presentacion"}
+                {descripcion: "Por presentacion"},
+                {descripcion: "Finca"},
+                {descripcion: "En compras"}
             ];
 
 

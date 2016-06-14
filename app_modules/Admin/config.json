@@ -6,6 +6,11 @@
                     "module": "Admin",
                     "controller": "AdminController",
                     "alias": "c_admin"
+                },
+                "reportesAdmin_controller": {
+                    "module": "Admin",
+                    "controller": "ReportesAdminController",
+                    "alias": "c_configreportesAdmin"
                 }
             }],
         "models": [{
@@ -13,6 +18,11 @@
                     "module": "Admin",
                     "model": "AdminModel",
                     "alias": "m_admin"
+                },
+                "reportesAdmin_model": {
+                    "module": "Admin",
+                    "model": "ReportesAdminModel",
+                    "alias": "m_reportesAdmin"
                 },
                 "terceros_model": {
                     "module": "Usuarios",

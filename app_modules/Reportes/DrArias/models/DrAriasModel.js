@@ -3,11 +3,51 @@ var DrAriasModel = function() {
 };
 
 DrAriasModel.prototype.listarDrArias = function(obj, callback) {    
-   var that = this;
-   var cache;
-   var filtro = {fecha_inicial:'09-06-2016', fecha_final:'10-06-2016', dias:1};
+    var that = this;
+    var cache;
+    var filtro = {fecha_inicial:'2016-06-08', fecha_final:'2016-06-13', dias:1};
    
-   callback(false);
+    var diasDiferenciaSql=4;
+    var mesDiferenciaSql=5;    
+    var now = new Date();
+    
+    var dateInicial = G.moment(filtro.fecha_inicial);
+    var dateFinal = G.moment(filtro.fecha_final);
+    var dateHoy = G.moment(now);
+    var dateInicialSelect;
+    var dateFinalTable;
+    
+    var diferenciaFinal=dateHoy.diff(dateFinal,'days');
+    var diferenciaInicial=dateHoy.diff(dateInicial,'days');    
+    var diferenciaFinalMes=dateHoy.diff(dateFinal,'months');
+    var diferenciaInicialMes=dateHoy.diff(dateInicial,'months');
+    
+ 
+    if(diferenciaInicialMes > mesDiferenciaSql){
+      console.log("consulta (no esta en el rango de la tabla)",diferenciaFinalMes);   
+    }
+    
+    if(diferenciaInicial > diasDiferenciaSql && diferenciaFinal >= diasDiferenciaSql ){
+      console.log("tabla nueva");
+      //se consulta en la tabla reporte_dr_arias 
+      filtro.consulta=0;
+    }else if(diferenciaInicial < diasDiferenciaSql && diferenciaFinal <= diasDiferenciaSql){
+      console.log("consulta");
+      //se realiza la consulta de dr_arias
+      filtro.consulta=1;
+    }else if(diferenciaInicial >= diasDiferenciaSql && diferenciaFinal <= diasDiferenciaSql){   
+       //se realiza el union entre reporte_dr_arias y la consulta dr_Arias
+        dateInicialSelect = G.moment(filtro.fecha_final).subtract(diasDiferenciaSql-1, "days").format("YYYY-MM-DD");
+        dateFinalTable = G.moment(dateInicialSelect).subtract(1, "days").format("YYYY-MM-DD");
+        filtro.inicioFechaConsultaReporte=dateInicialSelect;
+        filtro.finFechaTablaReporte=dateFinalTable;      
+        filtro.consulta=2;      
+    }else{
+      console.log("fuera de la tabla");  
+    }
+
+
+  // callback(false);
    
    G.redis.del("dr_arias");
    G.Q.ninvoke(G.redis, "get", "dr_arias").then(function(resultado){
@@ -23,11 +63,11 @@ DrAriasModel.prototype.listarDrArias = function(obj, callback) {
    }).then(function(resultado){
         if(!cache){
             G.redis.setex("dr_arias", 21600, JSON.stringify(resultado));
-            //callback(false, resultado.rows);
+            callback(false, resultado.rows);
             console.log("datos guardados en cache ", resultado.length);
         } else {
            console.log("datos guardados en cache ", resultado.length);
-          //  callback(false, resultado);
+            callback(false, resultado);
         }
        
    }).fail(function(err){
@@ -42,31 +82,38 @@ DrAriasModel.prototype.listarDrArias = function(obj, callback) {
 DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
     
     var that = this;
-    var formato = 'DD-mm-YYYY';
-    var fechaInicial = G.moment(obj.filtro.fecha_inicial, formato);
-    var fechaFinal   = G.moment(obj.filtro.fecha_inicial, formato);
-    var diasDelMes = G.moment(obj.filtro.fecha_inicial, formato).daysInMonth();
-    var suma = fechaFinal.date() + obj.filtro.dias;
+//    var formato = 'DD-mm-YYYY';
+//    var fechaInicial = G.moment(obj.filtro.fecha_inicial, formato);
+//    var fechaFinal   = G.moment(obj.filtro.fecha_inicial, formato);
+//    var diasDelMes = G.moment(obj.filtro.fecha_inicial, formato).daysInMonth();
+//    var suma = fechaFinal.date() + obj.filtro.dias;
+    var sql;
+    var filtro;
    
-    if(!obj.resultado){
-       console.log("setting new result");
-       obj.resultado = [];
-    }
+   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>",obj);
+  // callback(false);
+   
+//    if(!obj.resultado){
+//       console.log("setting new result");
+//       obj.resultado = [];
+//    }
    
     //Determina si se pueden sumar los dias a la fecha, de lo contrario se suma la diferencia
-    if(suma <= diasDelMes){
-        fechaFinal.add(obj.filtro.dias, 'days');
-    } else {//diferencia
-        var dias =  obj.filtro.dias - (suma - diasDelMes);
-        fechaFinal.add( dias, 'days');
-    }
+//    if(suma <= diasDelMes){
+//        fechaFinal.add(obj.filtro.dias, 'days');
+//    } else {//diferencia
+//        var dias =  obj.filtro.dias - (suma - diasDelMes);
+//        fechaFinal.add( dias, 'days');
+//    }
 
-    console.log("fecha a buscar ", fechaInicial.format(formato), " a ", fechaFinal.format(formato));
+//    console.log("fecha a buscar ", fechaInicial.format(formato), " a ", fechaFinal.format(formato));
    
-
-   var sql = "\
-         select * from((  select  \
-                    distinct fdm.formula_id, \
+  
+//   var sqlTablaNueva =" select * from reporte_dr_arias where fecha between :3 AND :4 ";
+   var sqlTablaNueva =" select * from temporal_reporte_dr_arias where fecha between :3 AND :4 ";
+   var sqlConsulta = "\
+         (select * from((  select  \
+                    distinct fdm.formula_id, bdd.lote, \
                     efe.formula_papel, \
                     i.descripcion_tipo_formula, \
                     epad.primer_apellido||' '||epad.segundo_apellido||' '||epad.primer_nombre||' '||epad.segundo_nombre as paciente, \
@@ -78,7 +125,6 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     (select descripcion from especialidades esp  inner join profesionales_especialidades pe ON  ( pe.especialidad = esp.especialidad) where  te.tercero_id = pe.tercero_id and te.tipo_id_tercero = pe.tipo_id_tercero limit 1) as especialidad, \
                     bd.fecha_registro  as fecha, \
                     efe.fecha_formula, \
-                    bdd.bodegas_doc_id, \
                     bdd.codigo_producto, \
                     bdd.cantidad, \
                     bdd.total_costo, \
@@ -114,7 +160,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     and bdd.total_costo >0 ) \
                     union ( \
                     select\
-                    distinct dmp.formula_id, \
+                    distinct dmp.formula_id, bdd.lote, \
                     efe.formula_papel, \
                     i.descripcion_tipo_formula, \
                     epad.primer_apellido||' '||epad.segundo_apellido||' '||epad.primer_nombre||' '||epad.segundo_nombre as paciente, \
@@ -126,7 +172,6 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     (select descripcion from especialidades esp  inner join profesionales_especialidades pe ON  ( pe.especialidad = esp.especialidad) where  te.tercero_id = pe.tercero_id and te.tipo_id_tercero = pe.tipo_id_tercero limit 1) as especialidad, \
                     bd.fecha_registro  as fecha, \
                     efe.fecha_formula, \
-                    bdd.bodegas_doc_id, \
                     bdd.codigo_producto, \
                     bdd.cantidad, \
                     bdd.total_costo, \
@@ -163,7 +208,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     and bdd.total_costo >0) \
                     union( \
                     select\
-                    distinct d.evolucion_id as formula_id, \
+                    distinct d.evolucion_id as formula_id, c.lote, \
                     CAST(hfc.numero_formula as text) as formula_papel, \
                     i.descripcion_tipo_formula, \
                     epad.primer_apellido||' '||epad.segundo_apellido||' '||epad.primer_nombre||' '||epad.segundo_nombre as paciente, \
@@ -175,7 +220,6 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     'especialidad' as especialidad, \
                     b.fecha_registro  as fecha, \
                     hfc.fecha_registro as fecha_formula, \
-                    c.bodegas_doc_id, \
                     c.codigo_producto, \
                     c.cantidad, \
                     c.total_costo, \
@@ -211,7 +255,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     and c.total_costo >0\
                     and cast(b.fecha_registro as date) between :1 AND :2 )   \
                     union(  select  \
-                    distinct d.evolucion_id as formula_id, \
+                    distinct d.evolucion_id as formula_id,c.lote, \
                     CAST(hfc.numero_formula as text)  as formula_papel, \
                     i.descripcion_tipo_formula, \
                     epad.primer_apellido||' '||epad.segundo_apellido||' '||epad.primer_nombre||' '||epad.segundo_nombre as paciente, \
@@ -223,7 +267,6 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     'especialidad' as especialidad, \
                     b.fecha_registro as fecha, \
                     hfc.fecha_registro as fecha_formula, \
-                    c.bodegas_doc_id, \
                     c.codigo_producto, \
                     c.cantidad, \
                     c.total_costo, \
@@ -259,12 +302,35 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     and cast(b.fecha_registro as date) between :1 AND :2 )) as w \
                     where \
                     true  \
-                    order by 18,24,3,7";
+                    order by 18,24,3,7) ";
+    
+//    console.log("fecha inicial ",obj.filtro.fecha_inicial);   
+//    console.log("fecha final ",obj.filtro.fecha_final);
     
     
-    //sql = "select * from prueba_andres  ";
     
-    var query = G.knex.raw(sql, {1:fechaInicial.format(formato), 2:fechaFinal.format(formato)});
+     if(obj.filtro.consulta === 0){
+      sql = sqlTablaNueva;
+      filtro={3:obj.filtro.fecha_inicial+' 00:00:00 ',4:obj.filtro.fecha_final+' 23:59:59 '};
+     }else if(obj.filtro.consulta === 1){
+      sql = sqlConsulta;
+      filtro={1:obj.filtro.fecha_inicial+' 00:00:00 ',2:obj.filtro.fecha_final+' 23:59:59 '};
+     }else if(obj.filtro.consulta === 2){
+      sql = sqlConsulta+ " union "+sqlTablaNueva;      
+      filtro={1:obj.filtro.fecha_inicial+' 00:00:00 ',4:obj.filtro.fecha_final+' 23:59:59 ' ,3:obj.filtro.inicioFechaConsultaReporte+' 00:00:00 ',2:obj.filtro.finFechaTablaReporte+' 23:59:59 '};
+     }    
+//     console.log("sql ",sql);
+    var query = G.knex.raw(sql,filtro);
+    query.then(function(resultado) {
+       callback(false, resultado.rows);
+     //  callback(false);
+       return;
+     }).catch (function(err) {
+        console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
+        callback(err);
+     });
+    
+   /* var query = G.knex.raw(sql, {1:fechaInicial.format(formato), 2:fechaFinal.format(formato)});
     query.timeout(200000).then(function(resultado) {
                 
         //console.log("fecha final format ", resultado.rows);
@@ -282,7 +348,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
     }).catch (function(err) {
         console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
        callback(err);
-    });
+    });*/
 
 };
 

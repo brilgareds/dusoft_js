@@ -1,0 +1,173 @@
+<html>
+    <head>
+        <style>
+
+            td{
+                font-size:7pt;
+               
+            }
+            
+             BODY { 
+                font: 7pt Verdana, Geneva, Arial, Helvetica, sans-serif; 
+                background-color: #ffffff; 
+                overflow:visible;
+                overflow-y:visible;
+                display:inline;
+            } 
+            
+            .title{
+                font-weight:bold;
+                /*font-family:"Times New Roman", Georgia, Serif;*/
+                font-size:7pt;
+            }
+            
+            .docInfo{
+                float:right;
+                font-size:7pt;
+            }
+            
+            .footer{
+                margin-top:20px;
+                width:100%;
+                text-align:right;
+            }
+            
+
+            
+            .fecha_pedido{
+                margin-left:20px;
+            }
+            
+            th{
+                text-align: left;
+            }
+            
+            .rellenoCelda{
+                padding-top:15px;
+            }
+            
+           @page
+            {
+                size: auto;   /* auto is the initial value */
+                margin: 10mm 10mm 10mm 10mm;  ;  /* this affects the margin in the printer settings */
+            }
+            
+            table,
+            table tr td,
+            table tr th {
+                   /* page-break-inside: avoid;*/
+            }
+            
+            .thDetalle{
+                width:25%;            
+            }
+            
+            .tablaPrincipal{   
+                overflow:visible;
+                overflow-y:visible;
+               /* display:inline;*/
+            }
+            
+            table{
+                padding:0px 5px;
+            }
+            
+            .detalle{
+                padding:0px;
+            }
+            
+            @-moz-document url-prefix() {
+                td{
+                     font-size:10pt!important;
+
+                 }
+
+                  BODY { 
+                     font: 10pt Verdana, Geneva, Arial, Helvetica, sans-serif!important; 
+
+                 } 
+
+                 .title{
+                     font-weight:bold;
+                     /*font-family:"Times New Roman", Georgia, Serif;*/
+                     font-size:10pt!important;
+                 }
+
+                 .docInfo{
+                     font-size:10pt!important;
+                 }
+            }
+
+        </style>
+        
+        <!-- link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css" / -->
+        
+        
+    </head>
+    
+
+    
+    <body>
+        <h2 style="text-align:right;">{{:encabezado.prefijo}} - {{:encabezado.numero}}</h2>
+       <table class="table" width='100%'>
+            <tr>
+                <td class='title' >Empresa</td><td></td>
+                <td class='title' >Usuario</td><td></td>
+                <td class='title' >Imprime</td><td></td>
+            </tr>
+            <tr>
+                 <td class='title'>Bodega</td><td></td>
+                <td class='title'>Documento</td><td></td>
+                <td class='title'></td><td></td>
+            </tr>
+            <tr>
+               <td class='title'>Pedido</td><td><span class='fecha_pedido'></span></td>
+                <td class='title'>Fecha Despacho</td><td></td>
+            </tr>
+        </table>
+        
+        <hr/>
+        
+
+        
+        <div class="panel panel-default">
+             <table width='100%' >
+                <tr>
+                    <td class='title'>OBSERVACIÓN</td>
+                    <td></td>
+                </tr>
+                    <tr>
+                        <td class='title'></td>
+                        <td></td>
+                    </tr>
+                {{/props}}
+            </table>
+        </div>
+
+        <table  width='100%'  style="margin-top:20px" >
+            <tr align='center'>
+                <td>
+                    _______________________________
+                </td>
+                <td>
+                    _______________________________
+                </td>
+                <td>
+                    _______________________________
+                </td>
+            </tr>
+            <tr align='center'>
+                <td>
+                   Separo
+                </td>
+                <td>
+                   Audito
+                </td>
+                <td>
+                    Verifico
+                </td>
+            </tr>
+        </table>
+        
+    </body>
+</html>

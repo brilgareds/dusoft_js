@@ -17,7 +17,16 @@ Reportes.prototype.listarDrArias = function (req, res) {
 
     G.Q.ninvoke(this.m_drArias, 'listarDrArias', termino_busqueda).
     then(function (resultado) {
-        res.send(G.utils.r(req.url, 'Listado de Dr Arias!!!!', 200, {listarDrArias: resultado}));
+        console.log(resultado);
+        
+        __generarCsvDrArias(resultado, function(nombre_pdf) {
+                    
+                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200,{
+                      //  movimientos_bodegas: {nombre_pdf: nombre_pdf}
+                        listarDrArias: {nombre_pdf: nombre_pdf, datos_documento: datos_documento}
+                    }));
+                });
+//        res.send(G.utils.r(req.url, 'Listado de Dr Arias!!!!', 200, {listarDrArias: resultado}));
     }).
     fail(function (err) {
         console.log("error controller ", err);
@@ -26,6 +35,38 @@ Reportes.prototype.listarDrArias = function (req, res) {
     done();
 
 };
+
+function __generarCsvDrArias(datos, callback) {  
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/Reportes/DrArias/reports/drArias.html', 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+        
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = "andres.html";
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    callback(nombreTmp);
+                }
+            });
+                
+            
+        });
+    });
+}
+
 
 Reportes.$inject = [
     "m_drArias"

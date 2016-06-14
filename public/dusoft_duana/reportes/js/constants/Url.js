@@ -8,7 +8,7 @@ define(["angular"], function(angular) {
         'API': {
             'BASE_URL': BASE_URL,
             'REPORTES': {
-                "LISTAR_DR_ARIAS": BASE_URL + "/Reportes/listarDrArias"
+                "LISTAR_DR_ARIAS": BASE_URL + "/Reportes/DrArias/listarDrArias"
             }
         }
     };

@@ -14,42 +14,42 @@ define(["angular", "js/models", "includes/classes/Paciente"], function (angular,
             
             PacienteHc.prototype = Object.create(Paciente.getClass().prototype);
             
-             PacienteHc.prototype.setMedico = function(medico){
-                return this.medico = medico;
-             };
+            PacienteHc.prototype.setMedico = function(medico){
+                this.medico = medico;
+            };
 
-             PacienteHc.prototype.setTipoBloqueoId = function(tipoBloqueoId){
-                return this.tipoBloqueoId = tipoBloqueoId;
-             };
+            PacienteHc.prototype.setTipoBloqueoId = function(tipoBloqueoId){
+                this.tipoBloqueoId = tipoBloqueoId;
+            };
 
-             PacienteHc.prototype.setBloqueo = function(bloqueo){
-                return this.bloqueo = bloqueo;
-             };
-             
-             
-             PacienteHc.prototype.getMedico = function(){
-                 return this.medico;
-             };
-        
-             PacienteHc.prototype.getTipoBloqueoId = function(){
-                 return this.tipoBloqueoId;
-             };
-             
-             PacienteHc.prototype.getBloqueo = function(){
-                return this.bloqueo;
-             };
-        
-             PacienteHc.prototype.agregarFormulas = function(formula){
-                this.formulasHc.push(formula);
-             };
-             
-             PacienteHc.prototype.mostrarFormulas = function(){
-                return this.formulasHc;
-             };
-             
-             PacienteHc.prototype.vaciarFormulasHc = function () {
-                this.formulasHc = [];
-             };
+            PacienteHc.prototype.setBloqueo = function(bloqueo){
+                this.bloqueo = bloqueo;
+            };
+
+
+            PacienteHc.prototype.getMedico = function(){
+                return this.medico;
+            };
+
+            PacienteHc.prototype.getTipoBloqueoId = function(){
+                return this.tipoBloqueoId;
+            };
+
+            PacienteHc.prototype.getBloqueo = function(){
+               return this.bloqueo;
+            };
+
+            PacienteHc.prototype.agregarFormulas = function(formula){
+               this.formulasHc.push(formula);
+            };
+
+            PacienteHc.prototype.mostrarFormulas = function(){
+               return this.formulasHc;
+            };
+
+            PacienteHc.prototype.vaciarFormulasHc = function () {
+               this.formulasHc = [];
+            };
              
              
             

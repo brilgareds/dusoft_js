@@ -14,9 +14,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "localStorageService",
         "$state",
         "$filter",
-        "Usuario","EmpresaDispensacionHc","dispensacionHcService",
+        "Usuario","dispensacionHcService",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                 Usuario,EmpresaDispensacionHc,dispensacionHcService) {
+                 Usuario,dispensacionHcService) {
 
         var that = this;
         // Definicion Variables de Usuario
@@ -42,10 +42,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         };  
        	 
 	
-            /**
-             * +Descripcion: Se activa el cambio de interfaz, cuando se selecciona
-             *               el detalle de una formula para dispensar
-             */
+        /**
+         * +Descripcion: Se activa el cambio de interfaz, cuando se selecciona
+         *               el detalle de una formula para dispensar
+         */
         if ($state.is("DispensarFormulaDetalle") === true) {
   
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   

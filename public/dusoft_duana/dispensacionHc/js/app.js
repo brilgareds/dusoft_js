@@ -25,8 +25,6 @@ define([
     "includes/validation/NgValidateEvents",
     "chart",
     "models/EmpresaDispensacionHc",
-    "models/CentroUtilidadInduccion",
-    "models/BodegaInduccion",
     "models/FormulaHc",
     "models/PacienteHc",
     "models/EpsAfiliadosHc",

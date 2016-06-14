@@ -569,11 +569,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
           console.log("resultado 1 ", resultado);
          return G.Q.nfcall(__insertarDespachoMedicamentos, obj, transaccion);
 
-        })/*.then(function(){
-
-           return G.Q.nfcall(__CambioEstadoCotizacionCreacionProducto, cotizacion, transaccion);
-
-        })*/.then(function(){
+        }).then(function(){
            console.log("INSERTA DESPACHOS MEDICAMENTOS ");
            transaccion.commit();
 

@@ -514,7 +514,44 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
 };
 
 
-
+/**
+ * @author Cristian Ardila
+ * +Descripcion Controlador encargado de generar la dispensacion total de una
+ *              formula, ejecutando en cascada los procesos pertinentes
+ *              en el siguiente orden
+ *  1) se ejecuta el model listarFormulas para obtener el plan id
+ *  2) se ejecuta el model estadoParametrizacionReformular para obtener el valor
+ *     de la variable de parametrizacion para formular
+ *  3) se ejecuta el model estadoParametrizacionReformular para obtener el bodegas_doc_id
+ *  4) se ejecuta el model consultarProductoTemporal para obtener los productos
+ *     listos para ser dispensados
+ *  5) se ejecuta el model bloquearTabla encargado de que la numeracion de la tabla
+ *     bodegas_doc_numeraciones sea consistente y no se troque con una transaccion al tiempo
+ *  6) se ejecuta el model asignacionNumeroDocumentoDespacho y se actualiza la numeracion
+ *     segun el bodegas_doc_id enviado
+ *  7) se ejecuta el model generarDispensacionFormula el cual ejecutara los siguientes procesos
+ *      a traves de transacciones para que haya consistencia de datos, y si uno de los procesos
+ *      falla se realizara un rollback
+ *      (a)__insertarBodegasDocumentos se inserta la cabecera del despacho 
+ *      (b)__insertarDespachoMedicamentos se inserta el documento generado
+ *  8) se ejecuta la funcion privada recursiva __insertarBodegasDocumentosDetalle encargada
+ *     de recorrer el arreglo con los productos preparados para dispensar
+ *     (*)se ejecuta el model insertarBodegasDocumentosDetalle el cual ejecutara los siguientes procesos
+ *      a traves de transacciones para que haya consistencia de datos, y si uno de los procesos
+ *      falla se realizara un rollback
+ *       (a)__actualizarExistenciasBodegasLotesFv se actualiza la existencias del lote
+ *       (b)__actualizarExistenciasBodegas se actualiza las existencias de bodega
+ *       (c)__insertarBodegasDocumentosDetalle se almacenan los productos dispensados
+ *  9) se ejecuta el model consultarProductoTemporal para obtener los productos temporales
+ *     y validar la cantidad pendiente que se dejo
+ *  10) se ejecuta el model listarMedicamentosPendientes para listar los medicamentos pendientes
+ *  11) se ejecuta la funcion privada recursiva __insertarMedicamentosPendientes encargada
+ *      de recorrer el arreglo con los productos que quedan pendientes
+ *      (a) se ejecuta el model insertarPendientesPorDispensar para almacenar lo que queda
+ *      pendiente por dispensar
+ *  12) se ejecuta el model eliminarTemporalesDispensados el cual eliminara los temporales
+ *      de la formula actualmente dispensada y con esto se termina el proceso de realizarEntregaFormula
+ */
 DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     
     var that = this;

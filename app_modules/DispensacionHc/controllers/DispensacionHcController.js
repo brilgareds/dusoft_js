@@ -1,7 +1,8 @@
 
-var DispensacionHc = function(m_dispensacion_hc) {
+var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion) {
 
     this.m_dispensacion_hc = m_dispensacion_hc;
+    this.e_dispensacion_hc = eventos_dispensacion;
   
   //  this.m_pedidos_clientes_log = m_pedidos_clientes_log;
 };
@@ -573,12 +574,18 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         return;
     } 
     
+    if(!args.realizar_entrega_formula.tipoFormula){
+        res.send(G.utils.r(req.url, 'Debe seleccionar el tipo de formula', 404, {realizar_entrega_formula: []}));
+        return;
+    } 
+    
     var evolucionId = args.realizar_entrega_formula.evolucionId;
     var empresa = args.realizar_entrega_formula.empresa;
     var bodega = args.realizar_entrega_formula.bodega;
     var variable = args.realizar_entrega_formula.variable;
     var observacion = args.realizar_entrega_formula.observacion;
     var usuario = req.session.user.usuario_id;
+    var tipoFormula = args.realizar_entrega_formula.tipoFormula;
     var bodegasDocId;
     var planId;
     var variableParametrizacion;
@@ -730,9 +737,25 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
          return G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalesDispensados',{evolucionId:evolucionId}); 
           
     }).then(function(resultado){
+          
+        if(resultado.rowCount === 0){
+            throw 'Error al eliminar los temporales'
+        }else{
+           return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo}); 
+        }  
+         
                 
-          res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
-                
+    }).then(function(resultado){
+        
+       
+        if(resultado.rowCount === 0){
+            throw 'Error al actualizar el tipo de formula'
+         
+        }else{
+            
+           res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
+           that.e_dispensacion_hc.onNotificarEntregaFormula(12545); 
+        }   
     }).fail(function(err){      
        
        res.send(G.utils.r(req.url, err, 500, {}));
@@ -806,6 +829,6 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
         callback(true);            
     }).done();
 }
-DispensacionHc.$inject = ["m_dispensacion_hc"];
+DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc"];
 
 module.exports = DispensacionHc;

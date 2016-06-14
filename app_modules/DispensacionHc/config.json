@@ -15,8 +15,12 @@
                     "alias": "m_dispensacion_hc"
                 }
             }],
-        "events": [{
-                
+         "events": [{
+                "dispensacion_hc_events": {
+                    "module": "DispensacionHc",
+                    "event": "DispensacionHcEvents",
+                    "alias": "e_dispensacion_hc"
+                }
             }],
         "cronJobs": []
     }

@@ -6,13 +6,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService","$modalInstance",
+            "dispensacionHcService","$modalInstance","socket",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
-
+        var seleccionTipoFormula;
         $scope.root = { observacion:''}; 
         
         /*
@@ -83,10 +83,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             ],
             
         };
-      
+         
         that.onSeleccionTipoFormula = function(entity){
-            
-            console.log("entity ", entity)
+            seleccionTipoFormula = entity;
+            console.log("entity ", seleccionTipoFormula);
         };
         
         that.realizarEntregaFormula = function(){
@@ -100,22 +100,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(), 
                         bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                         observacion: $scope.root.observacion,
-                        todoPendiente:0
+                        todoPendiente:0,
+                        tipoFormula: seleccionTipoFormula
                         
                    }
                }    
             };  
            console.log("ESTO obj ", obj);
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
-                
+                console.log("DATA ULTIMA RESPUESTA ", data);
                 if(data.status === 200){
                      
                     AlertService.mostrarMensaje("success", data.msj);
                     $scope.cerrarVentana();
-                     $state.go('DispensacionHc');
+                    //$state.go('DispensacionHc');
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
             }); 
         };
+        
         
         $scope.realizarEntregaFormula = function(){
             
@@ -166,7 +170,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         });
         
         that.listarTipoFormulas();
-
+        
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
             $scope.$$watchers = null;

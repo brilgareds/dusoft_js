@@ -505,6 +505,29 @@ DispensacionHcModel.prototype.estadoParametrizacionReformular = function(obj,cal
     
 };
 
+
+/**
+ * 
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+DispensacionHcModel.prototype.actualizarTipoFormula = function(obj, callback) {
+    console.log("****DispensacionHcModel.prototype.actualizarTipoFormula***");
+     var sql = "UPDATE hc_evoluciones set tipo_formula = :2 WHERE evolucion_id = :1 ;";
+   
+    G.knex.raw(sql, {1: obj.evolucionId, 2: obj.tipoFormula}).
+    then(function(resultado){ 
+        console.log("resultado --->>>", resultado);
+       callback(false, resultado);
+    }).catch(function(err){    
+        console.log("err ", err);
+       callback(err);
+    });
+
+};
+
+
 /**
  * 
  * @param {type} obj

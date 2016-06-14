@@ -455,7 +455,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         
         
             
-                 
+        socket.on("onActualizarGridTemporal", function(datos) {
+                
+                that.consultarMedicamentosTemporales();
+                console.log("A QUI CERRAR LA VENTANA LMPIAR GRID TEMPORALES");
+            });
+            
         that.init(empresa, function() {
 
             if (!Usuario.getUsuarioActual().getEmpresa()) {
@@ -482,7 +487,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             localStorageService.add("dispensarFormulaDetalle", null);
                 
             $scope.root=null;
-         
+            socket.removeAllListeners();
             });
         }]);
 });

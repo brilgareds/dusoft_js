@@ -185,6 +185,12 @@ if (cluster.isMaster) {
     /*=========================================
      * Configuracion Express.js
      * =========================================*/
+    app.use(express.compress({
+        threshold : 0
+    }));
+    
+    var tiempo = 10800000;
+    
     app.set('port', process.env.PORT || G.settings.server_port);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
@@ -194,6 +200,7 @@ if (cluster.isMaster) {
     app.use(express.json());
     app.use(express.urlencoded());
     app.use(express.methodOverride());
+    
     //========================================
     app.use(express.cookieParser('123Dusoft123'));
     app.use(express.session());
@@ -201,7 +208,7 @@ if (cluster.isMaster) {
     app.use(G.utils.validar_request());
     app.use(G.auth.validate());
     app.use(app.router);
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
     app.use(express.static(path.join(__dirname, 'files')));
 
     /*=========================================

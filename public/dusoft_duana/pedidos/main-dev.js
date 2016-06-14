@@ -29,7 +29,7 @@ requirejs.config({
         dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone",
         fileupload:"../../javascripts/fileupload/fileupload",
         desktopNotify:"../../javascripts/notifications/desktop-notify-min",
-        webNotification:"../../javascripts/notifications/angular-web-notification",
+        webNotification:"../../javascripts/notifications/angular-web-notification"
     },
     shim: {
         "angular": {

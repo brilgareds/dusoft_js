@@ -33,7 +33,7 @@ G.accounting = accounting;
 G.XlsParser =  require("./lib/XlsParser");
 G.moment = require("moment");
 G.jsonQuery = require('jinq');
-
+G.json2csv = require('json2csv');
 var events = require('events');
 G.eventEmitter = new events.EventEmitter();
 

@@ -15,18 +15,13 @@
                     "alias": "m_drArias"
                 }
             }],
-        "events": [{
-                "pedidos_clientes_events": {
-                    "module": "PedidosClientes",
-                    "event": "PedidosClientesEvents",
-                    "alias": "e_pedidos_clientes"
-                },
-                "pedidos_farmacias_events": {
-                    "module": "PedidosFarmacias",
-                    "event": "PedidosFarmaciasEvents",
-                    "alias": "e_pedidos_farmacias"
-                }
-            }],
-        "cronJobs": []
+        "events": [],
+        "cronJobs": [{
+            "ReporteDrAriasJobs_crontab": {
+                "module": "Reportes/DrArias",
+                "cronjob": "ReporteDrAriasJobs",
+                "alias": "j_reporteDrAriasJobs"
+            }
+        }]
     }
 }

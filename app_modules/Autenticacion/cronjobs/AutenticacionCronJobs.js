@@ -12,7 +12,7 @@ var AutenticacionCronJobs = function(auth_events) {
 AutenticacionCronJobs.prototype.cerrarSesionesInactivas = function() {
 
     var that = this;
-    
+    return;
     var cron = new this.cronJob({
         cronTime: '*/5 * * * *',
         //cronTime: '*/5 * * * * *',

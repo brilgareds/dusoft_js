@@ -1,6 +1,7 @@
 
-var Reportes = function (drArias) {
+var Reportes = function (drArias,j_reporteDrAriasJobs) {
     this.m_drArias = drArias;
+    this.j_reporteDrAriasJobs = j_reporteDrAriasJobs;
 };
 
 /**
@@ -13,18 +14,14 @@ Reportes.prototype.listarDrArias = function (req, res) {
     var that = this;
     var args = req.body.data;
     var termino_busqueda = {};
+    var filtro = {fecha_inicial:'2016-06-14', fecha_final:'2016-06-15', dias:1};
+    filtro.nombre='drArias_'+filtro.fecha_inicial+'_'+filtro.fecha_final+'.csv';
     //  var pagina_actual = args.autorizaciones.pagina_actual;
-
-    G.Q.ninvoke(this.m_drArias, 'listarDrArias', termino_busqueda).
-    then(function (resultado) {
-        console.log(resultado);
+    res.send(G.utils.r(req.url, 'Listado Dr Arias', 200, {listarDrArias: 'pendiente'}));   
+  
+    G.Q.ninvoke(that.m_drArias, 'listarDrArias', termino_busqueda).then(function (resultado) {
         
-        __generarCsvDrArias(resultado, function(nombre_pdf) {
-                    
-                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200,{
-                      //  movimientos_bodegas: {nombre_pdf: nombre_pdf}
-                        listarDrArias: {nombre_pdf: nombre_pdf, datos_documento: datos_documento}
-                    }));
+        __generarCsvDrArias(resultado,filtro, function(nombre_pdf) {
                 });
 //        res.send(G.utils.r(req.url, 'Listado de Dr Arias!!!!', 200, {listarDrArias: resultado}));
     }).
@@ -36,40 +33,40 @@ Reportes.prototype.listarDrArias = function (req, res) {
 
 };
 
-function __generarCsvDrArias(datos, callback) {  
-
-    G.jsreport.render({
-        template: {
-            content: G.fs.readFileSync('app_modules/Reportes/DrArias/reports/drArias.html', 'utf8'),
-            recipe: "html",
-            engine: 'jsrender',
-            phantom: {
-                margin: "10px",
-                width: '700px'
-            }
-        },
-        data: datos
-    }, function(err, response) {
-        
-        response.body(function(body) {
-           var fecha = new Date();
-           var nombreTmp = "andres.html";
-           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
-                if(err) {
-                    console.log(err);
-                } else {
-                    callback(nombreTmp);
-                }
-            });
-                
-            
+function __generarCsvDrArias(datos,filtro, callback) {  
+    
+    console.log("Generar CSV DR ARDIAS");
+        //fields=Object.keys(datos[0]);
+        var fields =  ["fecha","fecha_formula","formula_id","formula_papel","nom_bode","plan_descripcion","usuario_digita",
+                        "descripcion_tipo_formula","paciente_id","paciente","tercero_id","medico","especialidad",
+                        "codigo_producto","codigo_cum","producto","cantidad","precio","total","eps_punto_atencion_nombre"];
+                    
+       var fieldNames=["FECHA","FECHA FORMULA","FORMULA_ID","FORMULA","FARMACIA","PROGRAMA","USUARIO FARMACIA",
+                        "TIPO FORMULA","CC. PACIENTE","NOMBRES PACIENTE","CC. MEDICO","MEDICO","ESPECIALIDAD",
+                        "CODIGO","CODIGO CUM","PRODUCTO","CANTIDAD","PRECIO UNITARIO","PRECIO TOTAL","PUNTO DE ATENCION"];
+        var opts = {
+                    data: datos,
+                    fields: fields,
+                    fieldNames: fieldNames,
+                    del: ';'
+                  };
+                  
+       G.json2csv(opts, function(err, csv) {
+        if (err) console.log("Eror de Archivo: ",err);
+        var nombreReporte=filtro.nombre;
+        G.fs.writeFile(G.dirname + "/public/reports/" +nombreReporte, csv, function(err) {
+          if (err){ 
+           console.log('Error ',err);
+           throw err;
+          }
+          console.log('file saved');
         });
-    });
+      });
 }
 
 
 Reportes.$inject = [
-    "m_drArias"
+    "m_drArias","j_reporteDrAriasJobs"
 ];
 
 module.exports = Reportes;

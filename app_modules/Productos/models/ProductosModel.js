@@ -258,7 +258,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresaId, co
                 inner join inventarios_productos d on c.codigo_producto = d.codigo_producto\
                 where a.empresa_id = :1 \
                 and a.codigo_producto = :2 " + sqlAux +
-                "order by a.fecha_vencimiento desc ;";
+                "order by a.existencia_actual desc, a.fecha_registro desc ;";
 
     
    G.knex.raw(sql, obj).

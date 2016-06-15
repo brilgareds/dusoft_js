@@ -248,6 +248,17 @@ if (cluster.isMaster) {
         res.redirect('/dusoft_duana/login');
     });
     
+    app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
+        
+        //Si es produccion se hace render del css normal
+        if(!G.program.prod ) {
+           next();
+           return;
+        } else {
+           var url = req.protocol + '://' + req.get('host') + req.originalUrl;
+           res.redirect(url.replace("main-dev", "dist/main"));
+        }
+    });
     
     //Permite hacer render de reglas especificas de css para el entorno de pruebas
     app.all('/stylesheets/style.css', function(req, res, next){

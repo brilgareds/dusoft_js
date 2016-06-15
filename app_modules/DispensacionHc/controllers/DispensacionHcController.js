@@ -792,19 +792,20 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
         return;
     }
    var productosPendientes;
+   var detalleCabecera;
    var parametros = {evolucionId:args.listar_medicamentos_pendientes.evolucion,
                     tipoIdPaciente: args.listar_medicamentos_pendientes.tipoIdPaciente,
                     pacienteId: args.listar_medicamentos_pendientes.pacienteId
                 };
-   console.log("Estos son los parametros ", parametros);
+   
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesPorDispensar',parametros).then(function(resultado){
-        //console.log("resultado ", resultado);
+       
         if(resultado.rows.length > 0){ 
             
             productosPendientes = resultado.rows;
            
             return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
-              //res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200, {listar_medicamentos_pendientes:resultado.rows}));
+          
         }else{
            throw 'No hay pendientes por dispensar';
         }
@@ -812,20 +813,29 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
    }).then(function(resultado){
        
        if(resultado.rows.length > 0){ 
-        __generarPdfPendientesPorDispensar({productosPendientes:productosPendientes, serverUrl:req.protocol + '://' + req.get('host')+ "/", detalle: resultado.rows[0]}, function(nombre_pdf) {
+            
+            detalleCabecera = resultado.rows[0];
+            return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros)
+                
+        }else{
+            throw 'Consulta sin resultados';
+        }
+       
+   }).then(function(resultado){
+           
+        if(resultado.rows.length > 0){ 
+            __generarPdfPendientesPorDispensar({productosPendientes:productosPendientes, serverUrl:req.protocol + '://' + req.get('host')+ "/", detalle: detalleCabecera, profesional:resultado.rows[0]}, function(nombre_pdf) {
                     
-                    console.log("ESTE ES EL RESULTADO ", nombre_pdf);
                     res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
                     
                         listar_medicamentos_pendientes: {nombre_pdf: nombre_pdf, resultadoos: productosPendientes}
                     }));
                 });
-                
-         }else{
-           throw 'Consulta sin resultados';
+        }else{
+            throw 'Consulta sin resultados';
         }
-       
-   }).fail(function(err){      
+           
+    }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };

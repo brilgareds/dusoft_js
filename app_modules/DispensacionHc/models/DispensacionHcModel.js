@@ -513,8 +513,8 @@ DispensacionHcModel.prototype.listarTipoFormula = function(callback){
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
- * +Descripcion Modelo encargado de listar los productos formulados
- * @controller DispensacionHc.prototype.listarMedicamentosFormulados
+ * +Descripcion Modelo encargado de obtener la cabecera de informacion de la formula
+ * @controller DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar
  */
 DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = function(obj,callback){
        
@@ -565,15 +565,45 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
                 and g.estado='1' ; ";
    
     G.knex.raw(sql,parametros).then(function(resultado){
-        console.log("resultado ", resultado);
+       
         callback(false, resultado);
     }).catch(function(err){        
-        console.log("err ", err);
+        
         callback(err);
     });  
 };
 
-
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener quien realiza la formula
+ * @controller DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar
+ */
+DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
+    
+    var parametros = {1: obj.evolucionId};
+    var sql = "SELECT hc.medico_id,\
+              pro.nombre,\
+              pro.tipo_id_tercero,\
+              pro.tercero_id,\
+              tipos.descripcion\
+            FROM   hc_formulacion_antecedentes hc\
+            LEFT JOIN profesionales_usuarios usu ON(hc.medico_id=usu.usuario_id)\
+            LEFT JOIN profesionales pro ON (usu.tipo_tercero_id=pro.tipo_id_tercero) and (usu.tercero_id=pro.tercero_id)\
+            LEFT JOIN tipos_profesionales tipos ON (pro.tipo_profesional=tipos.tipo_profesional)\
+            WHERE  hc.evolucion_id = :1 ";
+   
+    G.knex.raw(sql,parametros).then(function(resultado){    
+        
+        console.log("LOS RESULTADO ", resultado);
+        callback(false, resultado)
+    }).catch(function(err){        
+        console.log("err ", err);
+        callback(err)
+    });
+          
+    
+};
 /**
  * @author Cristian Ardila
  * @fecha 09/06/2016 (DD-MM-YYYY)

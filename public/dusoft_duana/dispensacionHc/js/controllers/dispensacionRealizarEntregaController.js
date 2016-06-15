@@ -112,6 +112,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 if(data.status === 200){
                      
                     AlertService.mostrarMensaje("success", data.msj);
+                    
+                    $scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
                     //$state.go('DispensacionHc');
                 }else{

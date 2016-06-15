@@ -240,7 +240,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
                                 fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
                                 paginaActual:$scope.paginaactual,
-                                estadoFormula : $scope.root.estadoFormula
+                                estadoFormula : $scope.root.estadoFormula,
+                                pacienteId: dispensar.getAfiliadoId(),
+                                tipoIdPaciente: dispensar.getAfiliadoTipoId()
                            
                     
                             });

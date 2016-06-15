@@ -20,7 +20,8 @@ define(["angular"], function (angular) {
                 "LISTAR_MEDICAMENTOS_TEMPORALES": BASE_URL + "/DispensacionHc/listarMedicamentosTemporales",
                 "ELIMINAR_MEDICAMENTOS_TEMPORALES": BASE_URL + "/DispensacionHc/eliminarTemporalFormula",
                 "LISTAR_TIPO_FORMULA": BASE_URL + "/DispensacionHc/listarTipoFormula",
-                "REALIZAR_ENTREGA_FORMULA": BASE_URL + "/DispensacionHc/realizarEntregaFormula"
+                "REALIZAR_ENTREGA_FORMULA": BASE_URL + "/DispensacionHc/realizarEntregaFormula",
+                "LISTAR_MEDICAMENTOS_PENDIENTES_POR_DISPENSAR": BASE_URL + "/DispensacionHc/listarMedicamentosPendientesPorDispensar"
                
             }
         }

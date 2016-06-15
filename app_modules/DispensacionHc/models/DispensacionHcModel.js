@@ -239,6 +239,43 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
     });  
 };
 
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 15/06/2016
+ * +Descripcion Modelo encargado de listar los medicamentos pendientes por dispensar
+ * @controller DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar
+ */
+DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = function(obj,callback){
+
+    var parametros = {1: obj.evolucionId};
+       
+        var sql = "select codigo_medicamento,\
+                    SUM(numero_unidades) as total,\
+                  fc_descripcion_producto_alterno(codigo_medicamento) as descripcion\
+                    from\
+                        (\
+                        select\
+                        dc.codigo_medicamento,\
+                        SUM(dc.cantidad) as numero_unidades\
+                        FROM  hc_pendientes_por_dispensar as dc\
+                   WHERE      dc.evolucion_id = :1\
+                   and        dc.sw_estado = '0'\
+                  group by(dc.codigo_medicamento)\
+                  ) as A\
+                  group by (codigo_medicamento)\
+                   ";
+   
+    G.knex.raw(sql,parametros).then(function(resultado){   
+        //console.log("resultado  listarMedicamentosPendientesPorDispensar ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){      
+        //console.log("err   ", err);    
+        callback(err);
+    });  
+};
+
 /**
  * @author Cristian Ardila
  * @fecha 13/06/2016
@@ -473,6 +510,68 @@ DispensacionHcModel.prototype.listarTipoFormula = function(callback){
     
 };
 
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de listar los productos formulados
+ * @controller DispensacionHc.prototype.listarMedicamentosFormulados
+ */
+DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = function(obj,callback){
+       
+    var parametros = {};
+        parametros["1"] = obj.evolucionId;
+    var where;
+
+    if(!obj.paciente_id){
+        where=" and a.tipo_id_paciente= :2 and a.paciente_id= :3 ";
+        parametros["2"]= obj.tipoIdPaciente;
+        parametros["3"]= obj.pacienteId;
+    }
+
+    var sql = "select distinct  ON (a.evolucion_id)\
+            a.evolucion_id,\
+            a.numero_formula,\
+            a.tipo_id_paciente,\
+            a.paciente_id,\
+            to_char(a.fecha_registro,'YYYY-MM-DD') as fecha_registro,\
+            to_char(a.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion,\
+            to_char(a.fecha_formulacion,'YYYY-MM-DD') as fecha_formulacion,\
+            b.primer_apellido ||' '|| b.segundo_apellido AS apellidos,\
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,\
+            edad(b.fecha_nacimiento) as edad,\
+            b.sexo_id as sexo,\
+            b.residencia_direccion,\
+            b.residencia_telefono,\
+            e.plan_id,\
+            e.plan_descripcion,\
+            f.nombre,\
+            g.tipo_bloqueo_id,\
+            g.descripcion AS bloqueo,\
+            h.tipo_formula,\
+            i.descripcion_tipo_formula\
+            from hc_formulacion_antecedentes a\
+            inner join hc_evoluciones h on a.evolucion_id = h.evolucion_id\
+            inner join pacientes b on a.tipo_id_paciente = b.tipo_id_paciente and a.paciente_id = b.paciente_id\
+            left join  eps_afiliados c on b.tipo_id_paciente = c.afiliado_tipo_id AND b.paciente_id = c.afiliado_id\
+            inner join planes_rangos d on c.plan_atencion = d.plan_id and c.tipo_afiliado_atencion = d.tipo_afiliado_id and c.rango_afiliado_atencion = d.rango\
+            inner join planes e on d.plan_id = e.plan_id\
+            inner join system_usuarios f on a.medico_id = f.usuario_id\
+            inner join inv_tipos_bloqueos g on b.tipo_bloqueo_id = g.tipo_bloqueo_id\
+            left join esm_tipos_formulas i on h.tipo_formula = i.tipo_formula_id\
+            where\
+                a.evolucion_id= :1\
+                "+where+"\
+                and a.sw_formulado='1' \
+                and g.estado='1' ; ";
+   
+    G.knex.raw(sql,parametros).then(function(resultado){
+        console.log("resultado ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){        
+        console.log("err ", err);
+        callback(err);
+    });  
+};
 
 
 /**

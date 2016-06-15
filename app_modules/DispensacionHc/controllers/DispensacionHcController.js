@@ -551,6 +551,8 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
  *      (a) se ejecuta el model insertarPendientesPorDispensar para almacenar lo que queda
  *      pendiente por dispensar
  *  12) se ejecuta el model eliminarTemporalesDispensados el cual eliminara los temporales
+ *      de la formula actualmente dispensada 
+ *  13) se ejecuta el model actualizarTipoFormula el cual actualizara el tipo 
  *      de la formula actualmente dispensada y con esto se termina el proceso de realizarEntregaFormula
  */
 DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
@@ -754,7 +756,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         }else{
             
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
-           that.e_dispensacion_hc.onNotificarEntregaFormula(12545); 
+           that.e_dispensacion_hc.onNotificarEntregaFormula(); 
         }   
     }).fail(function(err){      
        
@@ -764,6 +766,104 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     
 };
 
+/*
+ * @author Cristian Ardila
+ * @fecha 15/06/2016
+ * +Descripcion Controlador encargado listar los medicamentos pendientes
+ *              por dispensar
+ *              
+ */
+DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req, res){
+   
+   console.log("*****DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar ********");
+   console.log("*****DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar ********");
+   console.log("*****DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar ********");
+   
+    var that = this;
+    var args = req.body.data;
+   console.log("args ", args);
+    if (args.listar_medicamentos_pendientes === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_pendientes: []}));
+        return;
+    }
+   
+    if (!args.listar_medicamentos_pendientes.evolucion || args.listar_medicamentos_pendientes.evolucion.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {listar_medicamentos_pendientes: []}));
+        return;
+    }
+   var productosPendientes;
+   var parametros = {evolucionId:args.listar_medicamentos_pendientes.evolucion,
+                    tipoIdPaciente: args.listar_medicamentos_pendientes.tipoIdPaciente,
+                    pacienteId: args.listar_medicamentos_pendientes.pacienteId
+                };
+   console.log("Estos son los parametros ", parametros);
+    G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesPorDispensar',parametros).then(function(resultado){
+        //console.log("resultado ", resultado);
+        if(resultado.rows.length > 0){ 
+            
+            productosPendientes = resultado.rows;
+           
+            return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
+              //res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200, {listar_medicamentos_pendientes:resultado.rows}));
+        }else{
+           throw 'No hay pendientes por dispensar';
+        }
+      
+   }).then(function(resultado){
+       
+       if(resultado.rows.length > 0){ 
+        __generarPdfPendientesPorDispensar({productosPendientes:productosPendientes, serverUrl:req.protocol + '://' + req.get('host')+ "/", detalle: resultado.rows[0]}, function(nombre_pdf) {
+                    
+                    console.log("ESTE ES EL RESULTADO ", nombre_pdf);
+                    res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
+                    
+                        listar_medicamentos_pendientes: {nombre_pdf: nombre_pdf, resultadoos: productosPendientes}
+                    }));
+                });
+                
+         }else{
+           throw 'Consulta sin resultados';
+        }
+       
+   }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
+
+function __generarPdfPendientesPorDispensar(datos, callback) {  
+   
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/DispensacionHc/reports/pendientesPorDispensar.html', 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+        
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = "Medicamentos_pendientes_por_dispensar_" + fecha.toFormat('DD-MM-YYYY') + ".html";
+             
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                    console.log("err ",err);
+                } else {
+                    console.log("nombreTmp ", nombreTmp);
+                    callback(nombreTmp);
+                }
+            });
+                
+            
+        });
+    });
+}
 /**
  * @author Cristian Ardila
  * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
@@ -771,24 +871,18 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
  */
 function __insertarBodegasDocumentosDetalle(that, index, parametros, callback) {
     
-  
-    //console.log(" parametrosBodegasDocumentosDetalle ", parametros);
     var producto = parametros.temporales[index];
     
     if (!producto) {       
-        //console.log("Debe salir a qui ");
         callback(false);
         return;
     }  
     
-    
     G.Q.ninvoke(that.m_dispensacion_hc,'insertarBodegasDocumentosDetalle',producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId).then(function(resultado){    
         index++;
-       // console.log(" producto /** ", producto);
         setTimeout(function() {
             __insertarBodegasDocumentosDetalle(that, index, parametros, callback);
         }, 300);
-       // console.log("RRRR resultado", resultado);
     }).fail(function(err){      
         callback(true);            
     }).done();
@@ -814,17 +908,11 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
         return;
     }  
     
-    
-    
-    console.log("productos ", producto);
     G.Q.ninvoke(that.m_dispensacion_hc,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario).then(function(resultado){    
         index++;
-        console.log("Se van insertando ", resultado);
-       // console.log(" index /** ", index);
-        //setTimeout(function() {
+        setTimeout(function() {
             __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback);
-        //}, 300);
-       // console.log("RRRR resultado", resultado);
+        }, 300);
     }).fail(function(err){      
         callback(true);            
     }).done();

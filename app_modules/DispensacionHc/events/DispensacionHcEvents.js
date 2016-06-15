@@ -18,7 +18,7 @@ var DispensacionHcEvents = function(socket, dispensacion) {
  *  --PedidosCliente.prototype.solicitarAutorizacion
  *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  */
-DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(numeroCotizacion) {
+DispensacionHcEvents.prototype.onNotificarEntregaFormula = function() {
   
   console.log("*******************NOTIFICAR ENTREGA FORMULA ************");
     var that = this;
@@ -44,17 +44,6 @@ DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(numeroCotiza
 
 };
 
-// Notificacion al Clientes que esta conectado al socket
-DispensacionHcEvents.prototype.onConnected = function(socket_id) {    
-    console.log('== SocletConectado == ' + socket_id);
-    this.io.sockets.socket(socket_id).emit('onConnected', {socket_id: socket_id});
-};
-DispensacionHcEvents.prototype.onActualizarSesion = function(datos) { 
-    console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
-    G.auth.update(datos, function(){
-        
-    });
-};
 
 
 DispensacionHcEvents.$inject = ["socket", "m_dispensacion_hc"];

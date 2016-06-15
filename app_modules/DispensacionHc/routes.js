@@ -67,5 +67,9 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.realizarEntregaFormula(req, res);
     });
     
+    // consultando los medicamentos pendientes por dispensar
+    app.post("/api/DispensacionHc/listarMedicamentosPendientesPorDispensar", function(req, res){
+        c_dispensacion_hc.listarMedicamentosPendientesPorDispensar(req, res);
+    });
     
 };

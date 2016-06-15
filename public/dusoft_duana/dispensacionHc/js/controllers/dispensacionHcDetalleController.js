@@ -321,7 +321,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         evolucion: resultadoStorage.evolucionId                           
                    }
                 }    
-            };        
+            };      
+            
             dispensacionHcService.medicamentosTemporales(obj, function(data){
                     
                 if(data.status === 200){                     
@@ -412,16 +413,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         $scope.ventanaTipoEntregaFormula = function(){
             
             $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: true,
-                    keyboard: true,
-                    templateUrl: 'views/dispensacionHc/dispensacionRealizarEntrega.html',
-                    scope: $scope,                  
-                    controller: "dispensacionRealizarEntregaController"
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: true,
+                keyboard: true,
+                templateUrl: 'views/dispensacionHc/dispensacionRealizarEntrega.html',
+                scope: $scope,                  
+                controller: "dispensacionRealizarEntregaController"
                                    
             };
-            var modalInstance = $modal.open($scope.opts);      
+            var modalInstance = $modal.open($scope.opts);   
+           
+                modalInstance.result.then(function(){
+                    //$scope.showBtnImprimirPendientes = true;
+                    that.consultarMedicamentosTemporales();
+                },function(){});                          
+                
         };
         
         
@@ -447,20 +454,50 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         };
                     }                         
                 };
-            var modalInstance = $modal.open($scope.opts);             
+            var modalInstance = $modal.open($scope.opts);   
+            
         };
         
         
         that.consultarMedicamentosTemporales();
         
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de escuchar el evento emitido cuando se
+         *              finaliza la entrega de la formula
+         * @fecha 15/06/2016
+         */
+        var emitRealizarEntregaFormula = $scope.$on('emitRealizarEntregaFormula', function(e, parametros) { 
+            $scope.showBtnImprimirPendientes = true;
+            that.consultarMedicamentosTemporales();
+        });                    
         
+        $scope.imprimirMedicamentosPendientes = function(){
             
-        socket.on("onActualizarGridTemporal", function(datos) {
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
+                console.log("resultadoStorage ", resultadoStorage);
+            var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_medicamentos_pendientes: {
+                                evolucion: resultadoStorage.evolucionId,
+                                tipoIdPaciente:resultadoStorage.tipoIdPaciente,
+                                pacienteId: resultadoStorage.pacienteId
+                           }
+                       }    
+                    };    
+            dispensacionHcService.listarMedicamentosPendientesPorDispensar(obj,function(data){
+
+                if (data.status === 200) {
+                        var nombre = data.obj.listar_medicamentos_pendientes.nombre_pdf;
+                        console.log("nombre ", nombre);
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                }
+            });  
                 
-                that.consultarMedicamentosTemporales();
-                console.log("A QUI CERRAR LA VENTANA LMPIAR GRID TEMPORALES");
-            });
-            
+        };
+        
+        
         that.init(empresa, function() {
 
             if (!Usuario.getUsuarioActual().getEmpresa()) {
@@ -481,13 +518,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         });
             
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-
+           
             $scope.$$watchers = null;
-                // set localstorage
+           
+            emitRealizarEntregaFormula();
+             //socket.removeAllListeners();
             localStorageService.add("dispensarFormulaDetalle", null);
                 
             $scope.root=null;
-            socket.removeAllListeners();
+           
             });
         }]);
 });

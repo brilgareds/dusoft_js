@@ -171,8 +171,8 @@ define(["angular", "js/services"], function(angular, services) {
             /**
               * @author Cristian Ardila
               * @fecha  07/06/2016
-              * +Descripcion Servicio encargado de realizar la dispensacion de
-              *              los medicamentos
+              * +Descripcion Servicio encargado de obtener los medicamentos que
+              *              quedaron pendientes por dispensar
               */
             self.listarMedicamentosPendientesPorDispensar = function(obj,callback){
                
@@ -181,7 +181,19 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
-            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Servicio encargado de obtener los medicamentos
+              *              dispensados
+              */
+            self.listarMedicamentosDispensados = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_MEDICAMENTOS_DISPENSADOS,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
+
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la

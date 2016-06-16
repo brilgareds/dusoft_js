@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <title>&nbsp;</title>
+        
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css >
+        <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print">
+        
+    </head>
+    <body>
+        <br>
+        <p class="normal_10AN">DATOS FORMULA -- ENTREGA DE MEDICAMENTOS </p>
+
+        <table width="100%" border ='0' >
+            <tr>
+                <td align="center">
+                    <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+                        <tr >
+                            <td  align="left" width="10%">FECHA DE REGISTRO:</td>
+                            <td  align="left" width="15%">{{:detalle.fecha_registro}}</td>
+                            
+                            <td  align="left" width="10%">FECHA DE FORMULA:</td>
+                            <td  align="left" width="15%">{{:detalle.fecha_formulacion}}</td>
+                            
+                            <td  align="right" width="45%">FORMULA No:</td>
+                            <td  align="left" width="5%">{{:detalle.numero_formula }}</td>
+                        </tr>
+                        <tr>
+                            <td  align="left">IDENTIFICACION:</td>
+                            <td  align="left" > {{:detalle.tipo_id_paciente}}  {{:detalle.paciente_id}} </td>
+
+                            <td  colspan="1" align="left"   >NOMBRE COMPLETO: </td>
+                            <td  colspan="3" align="left"   >{{:detalle.nombres}} {{:detalle.apellidos}}</td>
+                        </tr>
+                        <tr>
+                            <td  align="left">EDAD:</td>
+                            <td  align="left" >{{:detalle.edad}} &nbsp; A&Ntilde;OS </td>
+
+                            <td  colspan="1" align="left">SEXO: </td>
+                            <td  colspan="1" align="left">{{:detalle.sexo}}
+                            </td>
+                        </tr> 
+                       <tr>
+                            <td  align="left">TELEFONO:</td>
+                            <td  align="left" > {{:detalle.residencia_telefono}} </td>
+
+                            <td  colspan="1" align="left">DIRECCION: </td>
+                            <td  colspan="1" align="left">{{:detalle.residencia_direccion}}</td>
+                        </tr>
+                        <tr>
+                            <td  align="left">PROFESIONAL:</td>
+                            <td  align="left"  colspan="3" >  {{:profesional.tipo_id_tercero}} {{:profesional.tercero_id}}  &nbsp; - {{:profesional.nombre}} {{:profesional.descripcion}}
+                        </tr>
+
+                        <tr>
+                            <td  align="left">TIPO FORMULA:</td>
+                            <td  align="left"  colspan="3" >{{:detalle.descripcion_tipo_formula}}</td> 
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+    <center><h3>- Medicamento Pendientes -</h3></center><p class="normal_10AN">MEDICAMENTOS PENDIENTES</p>
+    <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+        <table width="100%" cellspacing="2">
+            <tr>
+                <td align="center">
+                    <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+                        <tr>
+                            <td><U>CODIGO</U></td>
+                            <td colspan="2" ><U>MEDICAMENTO</U></td>
+                            <td><U>CANTIDAD</U></td>
+                        </tr>
+                        
+                            {{for productosPendientes}}
+                            <tr>
+                                <td colspan="1">{{:codigo_medicamento}}</td>
+                                <td colspan="2" >{{:descripcion}}</td>
+                                <td>{{:total}}</td>
+                            </tr>
+                            {{/for}}
+                        
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>
+        <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+            <tr class="label"  valign="bottom" >
+                <td align="LEFT" height="50">________________________________________</td>
+            </tr>
+            <tr class="label" >
+                <td align="LEFT">FIRMA PACIENTE</td>
+
+            </tr>
+            <tr class="label" >
+                <td align="LEFT"></td>
+            </tr>
+        </table>
+        <br>
+        <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+            <tr align='right'>
+                <td align="rigth" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px"></td>
+            </tr>
+
+        </table>
+    </BODY>
+</HTML>
+
+
+

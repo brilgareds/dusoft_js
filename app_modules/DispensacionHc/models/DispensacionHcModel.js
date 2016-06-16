@@ -116,17 +116,66 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
               
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){    
-       
+    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){          
         callback(false, resultado);
-    }).catch(function(err){    
-       
-        callback(err);      
+    }).catch(function(err){         
+        callback("Ha ocurrido un error");      
     });
- 
 };
 
 
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener quien realiza la formula
+ * @controller DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar
+ */
+DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callback){
+    
+     var fecha=" to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega ";
+          if(obj.ultimo ===1){
+              fecha=" max(to_char(d.fecha_registro,'YYYY-mm-dd')) as fecha_entrega ";
+              group=" GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12 order by fecha_entrega desc ";
+          }
+    var parametros = {1: obj.evolucionId};
+    var sql = "select\
+              dd.codigo_producto,\
+              dd.cantidad as numero_unidades,\
+              dd.fecha_vencimiento ,\
+              dd.lote,\
+              fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+              fc_descripcion_producto_alterno(dd.codigo_producto) as molecula,\
+              d.usuario_id,\
+              sys.nombre,\
+              sys.descripcion,\
+              dd.sw_pactado,\
+              dd.total_costo,\
+	      inv.grupo_id, "+fecha+" \
+              FROM\
+                hc_formulacion_despachos_medicamentos as dc,\
+                bodegas_documentos as d,\
+                bodegas_documentos_d AS dd,\
+                system_usuarios  sys,\
+		inventarios_productos inv\
+              WHERE\
+                   dc.bodegas_doc_id = d.bodegas_doc_id\
+              and        dc.numeracion = d.numeracion\
+              and        dc.evolucion_id = :1\
+              and        d.bodegas_doc_id = dd.bodegas_doc_id\
+              and        d.numeracion = dd.numeracion\
+              and       d.usuario_id=sys.usuario_id\
+	      and       inv.codigo_producto  = dd.codigo_producto " + group;
+    console.log("sql ----->>>>>>>>>> ", sql);
+    G.knex.raw(sql,parametros).then(function(resultado){    
+      
+        callback(false, resultado)
+    }).catch(function(err){        
+      
+        callback(err);
+    });
+          
+    
+};
 
 /**
  * @author Cristian Ardila
@@ -595,14 +644,11 @@ DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
    
     G.knex.raw(sql,parametros).then(function(resultado){    
         
-        console.log("LOS RESULTADO ", resultado);
         callback(false, resultado)
     }).catch(function(err){        
-        console.log("err ", err);
+       ;
         callback(err)
-    });
-          
-    
+    });   
 };
 /**
  * @author Cristian Ardila

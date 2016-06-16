@@ -145,30 +145,14 @@
                                         <span class="glyphicon glyphicon-cog" ></span> Realizar entrega
                                     </button>
                                     
-                                     <button class="btn btn-default"  ng-click="imprimirMedicamentosPendientes()" ng-if="!showBtnImprimirPendientes">
+                                     <button class="btn btn-default"  ng-click="imprimirMedicamentosPendientes()" ng-if="!showBtnImprimir">
                                         <span class="glyphicon glyphicon-cog" ></span> Imprimir pendientes
                                     </button>
-                                   <!-- <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 " >//-->
-                                  <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_estado_cotizacion() ==1 || Pedido.get_estado_cotizacion() ==2 || Pedido.get_estado_cotizacion() ==4 || Pedido.get_estado_cotizacion() ==6" >
-                                        
-                                   
-                                   <span class="glyphicon glyphicon-ok" ></span> Aceptar 
-                                    </button>                                
-                                    <button class="btn btn-default" ng-click="gestionar_pedido()" ng-if="Pedido.get_numero_cotizacion() > 0 && Pedido.get_aprobado_cartera() === '1'" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
-                                        <span class="glyphicon glyphicon-ok" ></span> Generar Pedido
-                                    </button>                                
-                                </div> 
-                                <!--Acciones Cartera-->
-                                <div class="modal-footer col-md-12" ng-if="datos_view.cartera">                                                             
-                                    <button class="btn btn-default" ng-click="gestion_cartera(4)" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">
-                                        <span class="glyphicon glyphicon-remove" ></span> Denegado Cartera
+                                    
+                                    <button class="btn btn-default"  ng-click="imprimirMedicamentosDispensados()" ng-if="!showBtnImprimir">
+                                        <span class="glyphicon glyphicon-cog" ></span> Imprimir dispensados
                                     </button>
-                                <!--   <button class="btn btn-default" ng-click="gestion_cartera(1)" ng-disabled ="Pedido.getEstado() !=4 && !items >0 || Pedido.get_estado_cotizacion() ==5">
-                                        <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera 
-                                    </button> //-->
-                                     <button class="btn btn-default" ng-click="gestion_cartera(1)" ng-disabled ="Pedido.getEstado() !=4 && !items >0 || Pedido.get_estado_cotizacion() ==5">
-                                        <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera 
-                                    </button>
+                                  
                                     
                                 </div>                              
                             </div>

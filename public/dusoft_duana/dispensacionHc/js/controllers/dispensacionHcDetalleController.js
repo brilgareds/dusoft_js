@@ -468,10 +468,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @fecha 15/06/2016
          */
         var emitRealizarEntregaFormula = $scope.$on('emitRealizarEntregaFormula', function(e, parametros) { 
-            $scope.showBtnImprimirPendientes = true;
+            $scope.showBtnImprimir = true;
             that.consultarMedicamentosTemporales();
         });                    
         
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de imprimir el reporte de los medicamentos
+         *              que quedaron pendientes para dispensar
+         * @fecha 16/06/2016
+         */
         $scope.imprimirMedicamentosPendientes = function(){
             
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
@@ -490,6 +496,37 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 if (data.status === 200) {
                         var nombre = data.obj.listar_medicamentos_pendientes.nombre_pdf;
+                        console.log("nombre ", nombre);
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                }
+            });  
+                
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de imprimir el reporte de los medicamentos
+         *              que quedaron pendientes para dispensar
+         * @fecha 16/06/2016
+         */
+        $scope.imprimirMedicamentosDispensados = function(){
+            
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
+                console.log("resultadoStorage ", resultadoStorage);
+            var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_medicamentos_dispensados: {
+                                evolucion: resultadoStorage.evolucionId,
+                                tipoIdPaciente:resultadoStorage.tipoIdPaciente,
+                                pacienteId: resultadoStorage.pacienteId
+                           }
+                       }    
+                    };    
+            dispensacionHcService.listarMedicamentosDispensados(obj,function(data){
+
+                if (data.status === 200) {
+                        var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
                         console.log("nombre ", nombre);
                         $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                 }

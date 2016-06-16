@@ -87,20 +87,12 @@ DrAriasModel.prototype.listarDrArias = function(obj, callback) {
 */
 DrAriasModel.prototype.borrarTemporalesReporteDrArias = function(callback) {
   var that = this;
-  console.log("borrarTemporalesReporteDrArias qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
-//  var sql=" delete from temporal_reporte_dr_arias \
-//            where \
-//            fecha between date_trunc('month',current_date - interval '4 month')\
-//            and \
-//            date_trunc('month',current_date - interval '3 month') - interval '1 sec'";
     
    var query = G.knex('temporal_reporte_dr_arias');
-               query.whereBetween('fecha', ['date_trunc("month",current_date - interval "4 month")', 'date_trunc("month",current_date - interval "3 month") - interval "1 sec"'])
+               query.whereBetween('fecha', [G.knex.raw("date_trunc('month',current_date - interval '3 month' )"), G.knex.raw("date_trunc('month',current_date - interval '2 month') - interval '1 sec'")])
                .del().then(function(rows) { 
-                    console.log("Rows dr arias qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",rows);
                     callback(false);
                 }).catch(function(error){
-                    console.log("ERROR qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",error);
                     callback(error);
                 });
 };
@@ -114,11 +106,8 @@ DrAriasModel.prototype.borrarTemporalesReporteDrArias = function(callback) {
 */
 DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
   var that = this;
-  console.log("addTemporalesReporteDrArias qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
   var sql = " INSERT INTO temporal_reporte_dr_arias \
-                    (select to_char(fecha,'YYYY/MM/DD HH:MM:SS') as fecha,to_char(fecha_formula,'YYYY/MM/DD') as fecha_formula,formula_id,formula_papel,nom_bode,plan_descripcion,usuario_digita,\
-                         descripcion_tipo_formula,paciente_id,paciente,tercero_id,medico,especialidad,\
-                         codigo_producto,codigo_cum,producto,replace(cantidad,'.',',') as cantidad,replace(precio,'.',',') as precio,replace(total,'.',',') as total,eps_punto_atencion_nombre\
+                    (select * \
                         from((  select  \
                         distinct fdm.formula_id, bdd.lote, \
                         efe.formula_papel, \
@@ -312,11 +301,9 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                     order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto )";
          var query = G.knex.raw(sql);
                query.then(function(resultado) {
-                   console.log("resultado bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",resultado);
                   callback(false);
 
                 }).catch (function(err) {
-                   console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
                    callback(err);
                 });
 };

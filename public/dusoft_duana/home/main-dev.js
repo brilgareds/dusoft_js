@@ -11,6 +11,7 @@ requirejs.config({
         models:"js/models",
         directive:"js/directive",
         bootstrap:"../../javascripts/bootstrap/bootstrap",
+        bootstrapLib:"../../javascripts/bootstrap/bootstrap.min",
         nggrid:"../../javascripts/angular/ng-grid",
         jquery:"../../javascripts/jquery",
         treemenu:"../includes/menu/myTree",
@@ -40,6 +41,9 @@ requirejs.config({
             deps: ["angular"]
         },
         "bootstrap":{
+            deps:["angular"]
+        },
+        "bootstrapLib":{
             deps:["angular"]
         },
         "nggrid":{

@@ -803,7 +803,7 @@ define(["angular", "js/controllers",
                                 <button class="btn btn-warning" ng-click="confirmar()" ng-disabled="" >Si</button>\
                             </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance, caja) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance, caja) {
 
                         $scope.caja = caja;
                         $scope.confirmar = function() {
@@ -815,7 +815,7 @@ define(["angular", "js/controllers",
                             $modalInstance.close();
                         };
 
-                    },
+                    }],
                     resolve: {
                         caja: function() {
                             return caja;

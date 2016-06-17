@@ -303,7 +303,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <button class="btn btn-primary" ng-disabled="planilla.get_documentos().length === 1" ng-click="aceptar_eliminacion_documento()">Aceptar</button>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.aceptar_eliminacion_documento = function() {
                             that.eliminarDocumentoPlanillaDevolucion();
@@ -313,7 +313,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.cancelar_eliminacion_documento = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
 
@@ -392,7 +392,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <button class="btn btn-primary" ng-click="aceptarDespacho()">Aceptar</button>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.aceptarDespacho = function() {
                             that.despachar_planilla_despacho();
@@ -402,7 +402,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.cancelarDespacho = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
 

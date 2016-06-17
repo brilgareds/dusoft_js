@@ -215,7 +215,7 @@ define(["angular", "js/controllers",
                                         <button class="btn btn-primary"  ng-click="aceptarEliminacion()">Aceptar</button>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller:["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.aceptarEliminacion = function() {
                             $modalInstance.close();
@@ -225,7 +225,7 @@ define(["angular", "js/controllers",
                             $modalInstance.close();
                             callback(false);
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
@@ -346,13 +346,13 @@ define(["angular", "js/controllers",
                     dialogClass: "editarproductomodal",
                     templateUrl: 'views/separacionpedidos/separacionSeleccionDocumentoDespacho.html',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.cerrarGenerarAuditar = function() {
                             $modalInstance.close();
 
                         };
-                    }
+                    }]
                 };
                 self.ventanaAuditoria = $modal.open($scope.opts);
             };
@@ -649,13 +649,13 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-primary" ng-click="cerrarGenerarAuditar();" ng-disabled="" >Aceptar</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.cerrarGenerarAuditar = function() {
                             $modalInstance.close();
 
                         };
-                    }
+                    }]
                 };
                 self.ventanaAuditoria = $modal.open($scope.opts);                
             };

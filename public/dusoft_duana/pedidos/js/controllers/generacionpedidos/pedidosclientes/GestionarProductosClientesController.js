@@ -619,7 +619,7 @@ define(["angular", "js/controllers",
                     templateUrl: 'views/generacionpedidos/pedidosclientes/formularioBusquedaAvanzadaProducto.html',
                     scope: $scope,
                     height: 300,
-                    controller: function($scope, $modalInstance) {
+                        controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
 
 
@@ -627,7 +627,7 @@ define(["angular", "js/controllers",
 
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

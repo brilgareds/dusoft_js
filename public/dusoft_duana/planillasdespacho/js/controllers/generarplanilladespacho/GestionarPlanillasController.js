@@ -264,7 +264,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <button class="btn btn-primary" ng-disabled="planilla.get_documentos().length === 1" ng-click="aceptar_eliminacion_documento()">Aceptar</button>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.aceptar_eliminacion_documento = function() {
                             $scope.eliminar_documento_planilla_despacho();
@@ -274,7 +274,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.cancelar_eliminacion_documento = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
 
@@ -338,7 +338,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <button class="btn btn-primary" ng-click="aceptar_despacho()">Aceptar</button>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.aceptar_despacho = function() {
                             $scope.despachar_planilla_despacho();
@@ -348,7 +348,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.cancelar_despacho = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
 
@@ -398,7 +398,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         </div>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.descargar_reporte_pdf = function() {
                             $scope.generar_reporte($scope.planilla, true);
@@ -413,7 +413,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.cancelar_generacion_reporte = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

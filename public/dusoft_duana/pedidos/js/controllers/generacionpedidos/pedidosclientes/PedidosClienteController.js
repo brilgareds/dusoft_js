@@ -594,7 +594,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
                             $scope.eliminar_producto();
@@ -603,10 +603,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
+            
+            
             $scope.eliminar_producto = function() {
 
                 var obj = {};
@@ -679,7 +681,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope","$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
                             $scope.modificar_producto();
@@ -688,7 +690,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
@@ -983,12 +985,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                         </div>',
                             scope: $scope,
-                            controller: function($scope, $modalInstance) {
+                            controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                                 $scope.close = function() {
                                     $scope.datos_view.progresoArchivo = 0;
                                     $modalInstance.close();
                                 };
-                            }
+                            }]
                         };
                         var modalInstance = $modal.open($scope.opts);
                     }
@@ -1051,7 +1053,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                         scope: $scope,
-                        controller: function($scope, $modalInstance) {
+                        controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                             $scope.confirmar = function() {
                                 that.eliminarCotizacionDetalle();
@@ -1060,7 +1062,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             $scope.close = function() {
                                 $modalInstance.close();
                             };
-                        }
+                        }]
                     };
                     var modalInstance = $modal.open($scope.opts);
                 }
@@ -1214,7 +1216,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
                             $scope.generar_pedido_cliente();
@@ -1223,7 +1225,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
@@ -1292,7 +1294,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         </div>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.descargar_reporte_pdf = function() {
 
@@ -1306,7 +1308,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.cancelar_generacion_reporte = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

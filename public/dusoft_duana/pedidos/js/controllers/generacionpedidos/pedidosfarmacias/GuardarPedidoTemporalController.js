@@ -335,11 +335,11 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 
                 var modalInstance = $modal.open($scope.opts);  
@@ -404,7 +404,7 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-warning" ng-click="onConfirmarEliminarPedido()">Si</button>\
                                 </div>';
 
-                controller = function($scope, $modalInstance) {
+                controller = ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                     $scope.close = function() {
                         $modalInstance.close();
@@ -414,7 +414,7 @@ define(["angular", "js/controllers",
                         $modalInstance.close();
                         self.eliminarPedidoTemporal();
                     };
-                };
+                }];
 
                 $scope.opts = {
                     backdrop: true,

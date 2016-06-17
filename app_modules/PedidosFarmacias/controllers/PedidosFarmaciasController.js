@@ -2137,12 +2137,13 @@ function __agruparProductosPorTipo(that, productos, callback) {
  */
 
 function __validar_productos_archivo_plano(contexto, filas, index, productos_validos, productos_invalidos, callback) {
-
+    console.log("contenido ", filas);
     var fila = filas[index];
     var that = contexto;
+    var def = G.Q.defer();
 
-    console.log("validos", productos_validos);
-    console.log("invalidos", productos_invalidos);
+   /* console.log("validos", productos_validos);
+    console.log("invalidos", productos_invalidos);*/
 
     if (!fila) {
         callback(productos_validos, productos_invalidos);
@@ -2152,6 +2153,7 @@ function __validar_productos_archivo_plano(contexto, filas, index, productos_val
     var producto = {codigo_producto: fila.codigo || '', cantidad_solicitada: fila.cantidad || 0};
 
     G.Q.ninvoke(that.m_productos, "validar_producto", producto.codigo_producto).then(function(resultado) {
+        console.log("resulado de buscar con producto ", producto, " == ");
         if (resultado.length > 0 && producto.cantidad_solicitada > 0) {
 
             producto.tipoProductoId = resultado[0].tipo_producto_id;
@@ -2160,19 +2162,23 @@ function __validar_productos_archivo_plano(contexto, filas, index, productos_val
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
 
         } else {
-            index++;
             producto.mensajeError = "No existe en inventario";
             producto.existeInventario = false;
             productos_invalidos.push(producto);
 
-            setTimeout(function() {
-                __validar_productos_archivo_plano(that, filas, index, productos_validos, productos_invalidos, callback);
-            }, 0);
+            def.resolve();
         }
 
     }).then(function(resultado) {
         index++;
-        if (resultado.length > 0 && resultado[0].valido === '1') {
+        
+        if(!resultado){
+            
+            setTimeout(function() {
+                __validar_productos_archivo_plano(that, filas, index, productos_validos, productos_invalidos, callback);
+            }, 0);
+            
+        } else if (resultado.length > 0 && resultado[0].valido === '1') {
             productos_validos.push(producto);
 
             setTimeout(function() {

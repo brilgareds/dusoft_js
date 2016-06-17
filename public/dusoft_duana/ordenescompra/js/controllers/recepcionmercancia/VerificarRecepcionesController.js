@@ -306,7 +306,7 @@ define(["angular", "js/controllers"
                                         <button class="btn btn-primary" ng-click="aceptar_finalizacion()">Aceptar</button>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.aceptar_finalizacion = function() {
                             $scope.finalizar_recepcion();
@@ -316,7 +316,7 @@ define(["angular", "js/controllers"
                         $scope.cancelar_finalizacion = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

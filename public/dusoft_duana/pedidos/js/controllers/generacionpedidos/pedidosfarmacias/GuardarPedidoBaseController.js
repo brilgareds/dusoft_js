@@ -309,7 +309,7 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-warning" ng-click="onConfirmarEliminarProducto()">Si</button>\
                                 </div>';
 
-                controller = function($scope, $modalInstance) {
+                controller = ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                     $scope.close = function() {
                         $modalInstance.close();
@@ -320,7 +320,7 @@ define(["angular", "js/controllers",
                         //se crea esta funcion debido a que se requiere enviar un broadcast en el scope del base mas no del scope del modal
                         self.onConfirmarEliminarProducto(producto, index);
                     };
-                };
+                }];
 
                 $scope.opts = {
                     backdrop: true,
@@ -407,7 +407,7 @@ define(["angular", "js/controllers",
                                         </div>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.descargarReportePdf = function() {
                             self.generarPdf();
@@ -422,7 +422,7 @@ define(["angular", "js/controllers",
                         $scope.cancelar_generacion_reporte = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

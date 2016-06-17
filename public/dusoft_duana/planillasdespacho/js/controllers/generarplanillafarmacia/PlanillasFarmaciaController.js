@@ -60,7 +60,7 @@ define(["angular", "js/controllers", "controllers/generarplanillafarmacia/Listar
                     keyboard: true,
                     templateUrl: 'views/generarplanillafarmacia/redactaremailfarmacia.html',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.validar_envio_email = function() {
 
@@ -93,7 +93,7 @@ define(["angular", "js/controllers", "controllers/generarplanillafarmacia/Listar
                         $scope.cancelar_enviar_email = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

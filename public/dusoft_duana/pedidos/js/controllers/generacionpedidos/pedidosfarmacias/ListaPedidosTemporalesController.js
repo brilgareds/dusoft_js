@@ -252,7 +252,7 @@ define(["angular",
                                     <button class="btn btn-primary" ng-click="eliminarPedidoTemporal()">Si</button>\
                                 </div>';
 
-                controller = function($scope, $modalInstance) {
+                controller = ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                     $scope.eliminarPedidoTemporal = function() {
 
@@ -263,7 +263,7 @@ define(["angular",
                     $scope.close = function() {
                         $modalInstance.close();
                     };
-                };
+                }];
 
                 $scope.opts = {
                     backdrop: true,

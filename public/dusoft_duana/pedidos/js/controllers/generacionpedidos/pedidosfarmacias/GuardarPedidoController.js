@@ -226,12 +226,12 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-primary" ng-click="cerrar(true)" ng-disabled="" >Aceptar</button>\
                                     </div>',
                                            scope: $scope,
-                                           controller: function($scope, $modalInstance) {
+                                           controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                                                $scope.cerrar = function(acepto) {
                                                    callback(acepto);
                                                    $modalInstance.close();
                                                };
-                                           }
+                                           }]
                                        };
 
                   var modalInstance = $modal.open($scope.opts);
@@ -332,9 +332,9 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-primary" ng-click="modal.dismiss();" ng-disabled="" >Aceptar</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                         $scope.modal = $modalInstance;
-                    }
+                    }]
                 };
                 
                 var modalInstance = $modal.open($scope.opts);  

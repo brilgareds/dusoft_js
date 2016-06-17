@@ -16,6 +16,7 @@ function minificarModulo(modulos, callback){
         return;
     }
     
+    //Comando que permite minificar todos los javascripts de los modulos y librerias
     var cmd = 'r.js.cmd -o ' + rootPath + "/" + modulo + '/build.js';
 
     exec(cmd, function(error, stdout, stderr) {
@@ -31,9 +32,12 @@ function minificarModulo(modulos, callback){
 }
 
 var modulos;
-if(process.argv.indexOf("modulos") == -1 ){
+//Se valida si se especifico los modulos en la consola, de lo contrario se listan de la carpeta raiz de la aplicacion del cliente
+if(process.argv.indexOf("modulos") === -1 ){
+    //Se obtienen los modulos de la carpeta dusoft_duana
     modulos = listarDirectorios(rootPath);
 } else {
+    //Se obtienen los modulos especificados por consola
     modulos = process.argv.slice(process.argv.indexOf("modulos") + 1, process.argv.length);
 }
 

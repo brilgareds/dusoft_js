@@ -184,6 +184,11 @@ if (cluster.isMaster) {
     /*=========================================
      * Configuracion Express.js
      * =========================================*/
+    app.use(express.compress({
+        threshold : 0
+    }));
+    
+    
     var tiempo = 10800000;
     app.set('port', process.env.PORT || G.settings.server_port);
     app.set('views', path.join(__dirname, 'views'));

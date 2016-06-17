@@ -14,7 +14,6 @@ var multipart = require('connect-multiparty');
 //var jsreport = require("jsreport");
 
 var accounting = require("accounting");
-var date;
 
 
 /*=========================================
@@ -185,7 +184,7 @@ if (cluster.isMaster) {
     /*=========================================
      * Configuracion Express.js
      * =========================================*/
-    var tiempo = 0;//10800000;
+    var tiempo = 10800000;
     app.set('port', process.env.PORT || G.settings.server_port);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
@@ -258,24 +257,21 @@ if (cluster.isMaster) {
     app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
         
         //Si es produccion se hace render del css normal
-        /*if(!G.program.prod ) {
+        if(!G.program.prod ) {
            next();
            return;
         } else {
             
-           /* var cacheKey = "d";
+            var cacheKey = "d";
             
             if(process.argv.indexOf("cacheKey") !== -1){ 
                 cacheKey = process.argv[process.argv.indexOf("cacheKey") + 1]; 
                 console.log("Limpiar cache con llave ", cacheKey);
-            } */
-            if(!date){
-                date = new Date().getTime();
-            }
+            } 
             
             var url = req.protocol + '://' + req.get('host') + req.originalUrl;
-            res.redirect(url.replace("main-dev", "dist/main")+ "?"+date);
-       // }
+            res.redirect(url.replace("main-dev", "dist/main")+ "?"+cacheKey);
+        }
     });
     
     //Permite hacer render de reglas especificas de css para el entorno de pruebas

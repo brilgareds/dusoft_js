@@ -1,5 +1,5 @@
 //main app module
- define(["angular", "route", "bootstrap","js/controllers",
+ define(["angular", "route", "bootstrap", "bootstrapLib", "js/controllers",
   "js/services", "js/models", "nggrid",
   "js/directive", "controllers/movimientos/productoscontroller","controllers/movimientos/empresacontroller", 
   "models/EmpresaKardex", "includes/menu/menucontroller",  "url", "includes/header/HeaderController",

@@ -872,7 +872,9 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         return;
     }
    var productosDispensados;
+   var profesional;
    var detalleCabecera;
+   
    var parametros = {evolucionId:args.listar_medicamentos_dispensados.evolucion,
                     tipoIdPaciente: args.listar_medicamentos_dispensados.tipoIdPaciente,
                     pacienteId: args.listar_medicamentos_dispensados.pacienteId,
@@ -905,11 +907,23 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
    }).then(function(resultado){
            
         if(resultado.rows.length > 0){ 
-          
-            __generarPdf({productosDispensados:productosDispensados, 
+            
+             profesional = resultado.rows;
+            return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros);
+            
+        }else{
+            throw 'Consulta sin resultados';
+        }
+           
+    }).then(function(resultado){
+        
+        if(resultado.rows.length > 0){ 
+              console.log("MEdicamentos pendientes dispensaods ", resultado.rows);
+              
+              __generarPdf({productosDispensados:productosDispensados, 
                           serverUrl:req.protocol + '://' + req.get('host')+ "/", 
                           detalle: detalleCabecera, 
-                          profesional:resultado.rows[0],
+                          profesional:profesional,
                           archivoHtml: 'medicamentosDispensados.html',
                           reporte: "Medicamentos_dispensados"
                           }, function(nombre_pdf) {
@@ -919,10 +933,9 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
                         listar_medicamentos_dispensados: {nombre_pdf: nombre_pdf, resultado: productosDispensados}
                     }));
                 });
-        }else{
-            throw 'Consulta sin resultados';
-        }
-           
+        
+        };
+        
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();

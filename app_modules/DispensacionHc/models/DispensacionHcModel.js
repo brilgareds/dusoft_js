@@ -123,6 +123,51 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     });
 };
 
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de obtener los lotes relacionados con los productos    
+ *              de los FOFO
+ * @controller DispensacionHc.prototype.existenciasBodegas
+ */
+DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function(obj,callback){
+    
+    console.log("*************listarMedicamentosPendientesDispensados*****************");
+    console.log("*************listarMedicamentosPendientesDispensados*****************");
+    console.log("*************listarMedicamentosPendientesDispensados*****************");
+    console.log("*************listarMedicamentosPendientesDispensados*****************");
+    
+    var parametros = {1: obj.evolucionId};
+    
+    var sql =  "SELECT dd.codigo_producto,\
+                dd.cantidad as numero_unidades,\
+                dd.fecha_vencimiento,\
+                dd.lote,\
+                fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+                dd.sw_pactado,\
+                fc_descripcion_producto_molecula(dd.codigo_producto) as molecula,\
+                dd.total_costo,\
+                to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
+                '1' as pendiente_dispensado,(select fecha_registro as fecha_entrega\
+		from\
+		hc_pendientes_por_dispensar  AS e \
+		where \
+		e.evolucion_id  = :1 and sw_estado='1' limit 1) as fecha_pendiente\
+                FROM hc_formulacion_despachos_medicamentos_pendientes tmp\
+                inner join bodegas_documentos as d on (tmp.bodegas_doc_id = d.bodegas_doc_id and tmp.numeracion = d.numeracion)\
+                inner join bodegas_documentos_d AS dd on (d.bodegas_doc_id = dd.bodegas_doc_id and d.numeracion = dd.numeracion)\
+                WHERE \
+                tmp.evolucion_id = :1 AND d.todo_pendiente != 1";
+
+     
+    G.knex.raw(sql,parametros).then(function(resultado){ 
+        console.log("resultado ", resultado);
+      callback(false, resultado)
+    }).catch(function(err){         
+         console.log("err ", err);
+      callback(err)
+    });            
+};
 
 /**
  * @author Cristian Ardila
@@ -132,13 +177,75 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
  */
 DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callback){
     
-     var fecha=" to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega ";
-          if(obj.ultimo ===1){
-              fecha=" max(to_char(d.fecha_registro,'YYYY-mm-dd')) as fecha_entrega ";
-              group=" GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12 order by fecha_entrega desc ";
-          }
+   
+    var fecha=" to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega ";
+    var group;
+    if(obj.ultimo ===1){
+          fecha=" max(to_char(d.fecha_registro,'YYYY-mm-dd')) as fecha_entrega ";
+          group=" GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12 order by fecha_entrega desc ";
+      }
     var parametros = {1: obj.evolucionId};
-    var sql = "select\
+    var sql = "SELECT\
+        dd.codigo_producto,\
+        dd.cantidad as numero_unidades,\
+        dd.fecha_vencimiento ,\
+        dd.lote,\
+        fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+        fc_descripcion_producto_alterno(dd.codigo_producto) as molecula,\
+        d.usuario_id,\
+        sys.nombre,\
+        sys.descripcion,\
+        dd.sw_pactado,\
+        dd.total_costo,\
+        inv.grupo_id, "+fecha+" \
+        FROM\
+          hc_formulacion_despachos_medicamentos as dc,\
+          bodegas_documentos as d,\
+          bodegas_documentos_d AS dd,\
+          system_usuarios  sys,\
+          inventarios_productos inv\
+        WHERE\
+            dc.bodegas_doc_id = d.bodegas_doc_id\
+        and dc.numeracion = d.numeracion\
+        and dc.evolucion_id = :1\
+        and d.bodegas_doc_id = dd.bodegas_doc_id\
+        and d.numeracion = dd.numeracion\
+        and d.usuario_id=sys.usuario_id\
+        and inv.codigo_producto  = dd.codigo_producto " + group;
+    console.log("sql ----->>>>>>>>>> ", sql);
+    G.knex.raw(sql,parametros).then(function(resultado){    
+      
+        callback(false, resultado)
+    }).catch(function(err){        
+      
+        callback(err);
+    });
+          
+    /*var group;
+    if(obj.ultimo ===1){
+
+        group="AND (to_char(d.fecha_registro,'YYYY-mm-dd')) >= \
+            (\
+                SELECT\
+                max( to_char(d.fecha_registro,'YYYY-mm-dd') ) as fecha_entrega\
+                FROM\
+                hc_formulacion_despachos_medicamentos as dc,\
+                bodegas_documentos as d,\
+                bodegas_documentos_d AS dd,\
+                system_usuarios  sys,\
+                inventarios_productos inv\
+                WHERE\
+                    dc.bodegas_doc_id = d.bodegas_doc_id\
+                    and  dc.numeracion = d.numeracion\
+                    and  dc.evolucion_id = :1\
+                    and  d.bodegas_doc_id = dd.bodegas_doc_id\
+                    and  d.numeracion = dd.numeracion\
+                    and  d.usuario_id=sys.usuario_id\
+                    and  inv.codigo_producto  = dd.codigo_producto\
+            )";
+    }
+    var parametros = {1: obj.evolucionId};
+    var sql = "SELECT\
               dd.codigo_producto,\
               dd.cantidad as numero_unidades,\
               dd.fecha_vencimiento ,\
@@ -150,7 +257,7 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
               sys.descripcion,\
               dd.sw_pactado,\
               dd.total_costo,\
-	      inv.grupo_id, "+fecha+" \
+	      inv.grupo_id, to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega \
               FROM\
                 hc_formulacion_despachos_medicamentos as dc,\
                 bodegas_documentos as d,\
@@ -159,22 +266,13 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
 		inventarios_productos inv\
               WHERE\
                    dc.bodegas_doc_id = d.bodegas_doc_id\
-              and        dc.numeracion = d.numeracion\
-              and        dc.evolucion_id = :1\
-              and        d.bodegas_doc_id = dd.bodegas_doc_id\
-              and        d.numeracion = dd.numeracion\
-              and       d.usuario_id=sys.usuario_id\
-	      and       inv.codigo_producto  = dd.codigo_producto " + group;
-    console.log("sql ----->>>>>>>>>> ", sql);
-    G.knex.raw(sql,parametros).then(function(resultado){    
-      
-        callback(false, resultado)
-    }).catch(function(err){        
-      
-        callback(err);
-    });
-          
-    
+              and  dc.numeracion = d.numeracion\
+              and  dc.evolucion_id = :1\
+              and  d.bodegas_doc_id = dd.bodegas_doc_id\
+              and  d.numeracion = dd.numeracion\
+              and  d.usuario_id=sys.usuario_id\
+	      and  inv.codigo_producto  = dd.codigo_producto " + group;
+    console.log("sql ----->>>>>>>>>> ", sql);*/
 };
 
 /**

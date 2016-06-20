@@ -14,6 +14,13 @@ var multipart = require('connect-multiparty');
 //var jsreport = require("jsreport");
 
 var accounting = require("accounting");
+var cacheKey = "dusoft";
+
+
+if(process.argv.indexOf("cacheKey") !== -1){ 
+    cacheKey = process.argv[process.argv.indexOf("cacheKey") + 1]; 
+    console.log("Limpiar cache con llave ", cacheKey);
+} 
 
 
 /*=========================================
@@ -259,26 +266,7 @@ if (cluster.isMaster) {
         res.redirect('/dusoft_duana/login');
     });
     
-    app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
-        
-        //Si es produccion se hace render del css normal
-        if(!G.program.prod ) {
-           next();
-           return;
-        } else {
-            
-            var cacheKey = "d";
-            
-            if(process.argv.indexOf("cacheKey") !== -1){ 
-                cacheKey = process.argv[process.argv.indexOf("cacheKey") + 1]; 
-                console.log("Limpiar cache con llave ", cacheKey);
-            } 
-            
-            var url = req.protocol + '://' + req.get('host') + req.originalUrl;
-            res.redirect(url.replace("main-dev", "dist/main")+ "?"+cacheKey);
-        }
-    });
-    
+
     //Permite hacer render de reglas especificas de css para el entorno de pruebas
     app.all('/stylesheets/style.css', function(req, res, next){
         console.log("params for query ", req.query);
@@ -296,6 +284,34 @@ if (cluster.isMaster) {
         }
         
                 
+    });
+    
+    //Obtiene contenido estatico basado en la llave de cache
+    app.all("*",function(req, res, next){
+        var url = req.protocol + '://' + req.get('host') + req.originalUrl;
+
+        if(req.originalUrl.match(/[^/]+(jpg|png|gif|html|css|js)$/)){
+            //console.log("redirect with cache key >>>>>>>>>>>>>>***********************", req.originalUrl);
+            res.redirect(req.originalUrl+ "?c="+cacheKey);
+            return;
+        }
+        
+        next();
+
+    });
+    
+    //Si el servidro esta en modo produccion se sobreescribe el mand-dev.js por el de produccion
+    app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
+        
+        //Si es produccion se hace render del css normal
+        if(!G.program.prod ) {
+           next();
+           return;
+        } else {
+                        
+            var url = req.protocol + '://' + req.get('host') + req.originalUrl;
+            res.redirect(url.replace("main-dev", "dist/main")+ "?c="+cacheKey);
+        }
     });
 
     process.on('SIGINT', function() {

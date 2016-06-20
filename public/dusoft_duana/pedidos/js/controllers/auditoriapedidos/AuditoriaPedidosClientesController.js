@@ -198,7 +198,6 @@ define(["angular", "js/controllers",
                 }
                 
             }
-            console.log("prueba produccion >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
         }]);
 });

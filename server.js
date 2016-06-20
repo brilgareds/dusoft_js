@@ -214,7 +214,7 @@ if (cluster.isMaster) {
     app.use(G.auth.validate());
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
-    app.use(express.static(path.join(__dirname, 'public')));
+    //app.use(express.static(path.join(__dirname, 'public')));
     app.use(express.static(path.join(__dirname, 'files')));
     
     
@@ -311,7 +311,6 @@ if (cluster.isMaster) {
            next();
            return;
         } else {
-                        
             var url = req.protocol + '://' + req.get('host') + req.originalUrl;
             res.redirect(url.replace("main-dev", "dist/main")+ "?c="+cacheKey);
         }

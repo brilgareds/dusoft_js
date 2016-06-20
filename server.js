@@ -291,9 +291,13 @@ if (cluster.isMaster) {
         var url = req.protocol + '://' + req.get('host') + req.originalUrl;
 
         if(req.originalUrl.match(/[^/]+(jpg|png|gif|html|css|js)$/)){
-            //console.log("redirect with cache key >>>>>>>>>>>>>>***********************", req.originalUrl);
-            res.redirect(req.originalUrl+ "?c="+cacheKey);
-            return;
+            
+            //La validacion del archivo del main-dev se delega en otro router
+            if(!req.originalUrl.match(/main-dev/g)){
+                res.redirect(req.originalUrl+ "?c="+cacheKey);
+                return;
+            }
+
         }
         
         next();
@@ -303,7 +307,6 @@ if (cluster.isMaster) {
     //Si el servidro esta en modo produccion se sobreescribe el mand-dev.js por el de produccion
     app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
         
-        //Si es produccion se hace render del css normal
         if(!G.program.prod ) {
            next();
            return;

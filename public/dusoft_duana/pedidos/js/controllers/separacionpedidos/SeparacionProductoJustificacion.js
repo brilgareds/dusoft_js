@@ -4,11 +4,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
     controllers.controller('SeparacionProductoJustificacion',[
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService", "$state",
-        "Usuario", "$modalInstance", "SeparacionService","pedido", "$modalInstance",
+        "Usuario", "$modalInstance", "SeparacionService","pedido", "$modalInstance","AuditoriaDespachoService",
         function($scope,$rootScope,Request,
                  API,socket,AlertService,$modal,
                  localStorageService,$state, Usuario, $modalInstance,
-                 SeparacionService, pedido, $modalInstance){
+                 SeparacionService, pedido, $modalInstance, AuditoriaDespachoService){
          
             var self = this;
             
@@ -18,16 +18,21 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
+             
+                               
+                var parametros =  {
+                    empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                    session:$scope.rootJustificacion.session
+                };
                 
-                
-                $scope.rootJustificacion.justificaciones = [
-                   {descripcion: "No hay fisico"},
-                   {descripcion: "No hay disponible"},
-                   {descripcion: "Averiado"},
-                   {descripcion: "Proximo A Vencer"},
-                   {descripcion: "Trocado"},
-                   {descripcion: "Por presentacion"}
-                ];
+                AuditoriaDespachoService.obtenerJustificaciones(parametros,function(resultado){
+                    if(resultado.status === 200){
+                        $scope.rootJustificacion.justificaciones = resultado.obj.justificaciones;
+                        callback();
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
+                    }
+                });
       
             };
              

@@ -143,6 +143,7 @@ define(["angular"], function(angular) {
                 'E008_DETALLE' : BASE_URL + "/movBodegas/E008/detalleDocumentoTemporal",
                 'JUSTIFICACION_PENDIENTES' : BASE_URL + "/movBodegas/E008/justificacionPendientes",
                 'ELIMINAR_ITEM_TEMPORAL' : BASE_URL + "/movBodegas/E008/eliminarProductoDocumentoTemporal",
+                'OBTENER_JUSTIFICACIONES' : BASE_URL + "/movBodegas/E008/obtenerJustificaciones",
                 'CLIENTES':{
                     'LISTAR_PEDIDOS_OPERARIO_CLIENTE': BASE_URL + "/PedidosClientes/listaPedidosOperarioBodega",
                     'CONSULTAR_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalClientes",

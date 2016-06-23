@@ -13,12 +13,12 @@ define(["angular", "js/controllers",
         '$modalInstance', 'EmpresaPedido', 'Cliente',
         'PedidoAuditoria', 'API', "socket", "AlertService",
         "producto", "Usuario", "documento", "LoteProductoPedido", "productos",
-        "documento_despacho", "Caja", "$modal",
+        "documento_despacho", "Caja", "$modal", "AuditoriaDespachoService",
         function($scope, $rootScope, Request,
                 $modalInstance, Empresa, Cliente,
                 PedidoAuditoria, API, socket, AlertService,
                 producto, Usuario, documento, LoteProductoPedido, productos,
-                documento_despacho, Caja, $modal) {
+                documento_despacho, Caja, $modal, AuditoriaDespachoService) {
 
             $scope.rootEditarProducto = {};
             $scope.rootEditarProducto.producto = producto;
@@ -30,14 +30,14 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.seleccionados = [];
             $scope.rootEditarProducto.justificacionAuditor;
 
-            $scope.justificaciones = [
+           /* $scope.justificaciones = [
                 {descripcion: "No hay fisico"},
                 {descripcion: "No hay disponible"},
                 {descripcion: "Averiado"},
                 {descripcion: "Proximo A Vencer"},
                 {descripcion: "Trocado"},
                 {descripcion: "Por presentacion"}
-            ];
+            ];*/
 
 
             var that = this;
@@ -58,7 +58,22 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.itemValido = true;
 
             $modalInstance.opened.then(function() {
-                that.refrescarProducto();
+                
+                var parametros =  {
+                    empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                    session:$scope.session
+                };
+                
+                AuditoriaDespachoService.obtenerJustificaciones(parametros,function(resultado){
+                    if(resultado.status === 200){
+                        $scope.justificaciones = resultado.obj.justificaciones;
+                        that.refrescarProducto();
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
+                    }
+                });
+                
+                
 
             });
 

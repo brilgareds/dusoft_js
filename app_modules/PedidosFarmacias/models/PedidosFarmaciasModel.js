@@ -766,7 +766,12 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 c.codigo_barras,\
                 h.existencia_actual,\
                 i.existencia as existencia_bodega,\
-                c.estado as bloqueado\
+                c.estado as bloqueado,\
+                (\
+                    select case when j.estado = '1' then 'Denegado' when j.estado = '2' then 'Aprobado' end as descripcion_autorizacion from autorizaciones_productos_pedidos  as j\
+                    where  tipo_pedido = '1' and j.codigo_producto = a.codigo_producto and j.pedido_id = a.solicitud_prod_a_bod_ppal_id\
+                    order by fecha_verificacion asc limit 1\
+                ) as descripcion_autorizacion\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\

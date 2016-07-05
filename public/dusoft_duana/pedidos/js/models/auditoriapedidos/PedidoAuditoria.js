@@ -182,6 +182,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
                 producto.setCantidadPendiente(cantidadPendiente);
                 producto.setCodigoBarras(_producto.codigo_barras);
+                producto.setDescripcionAutorizacion(_producto.descripcion_autorizacion);
                 
                 producto.setEstado(_producto.estado);
                 if(_producto.justificacion){

@@ -57,7 +57,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.tipo;
             this.tipoCajaId;
             this.pedido;
-
+            this.descripcionAutorizacion = "";
             
         }
 
@@ -346,7 +346,13 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.numeroCaja;
         };
         
+        ProductoPedido.prototype.setDescripcionAutorizacion = function(descripcionAutorizacion) {
+            this.descripcionAutorizacion = descripcionAutorizacion;
+        };  
         
+        ProductoPedido.prototype.getDescripcionAutorizacion = function() {
+            return this.descripcionAutorizacion;
+        };
         
         ProductoPedido.prototype.obtenerCantidadSeleccionada = function() {
             var cantidad = 0;

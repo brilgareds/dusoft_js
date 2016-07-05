@@ -30,16 +30,6 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.seleccionados = [];
             $scope.rootEditarProducto.justificacionAuditor;
 
-           /* $scope.justificaciones = [
-                {descripcion: "No hay fisico"},
-                {descripcion: "No hay disponible"},
-                {descripcion: "Averiado"},
-                {descripcion: "Proximo A Vencer"},
-                {descripcion: "Trocado"},
-                {descripcion: "Por presentacion"}
-            ];*/
-
-
             var that = this;
 
 
@@ -48,7 +38,7 @@ define(["angular", "js/controllers",
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-            $scope.rootEditarProducto.caja = Caja.get();
+            $scope.rootEditarProducto.caja = Caja.get(0, 0);
 
             $scope.rootEditarProducto.validacionlote = {valido: true};
             $scope.rootEditarProducto.validacionproducto = {
@@ -593,7 +583,7 @@ define(["angular", "js/controllers",
                 
               
                 var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[index];
-                console.log(" lote ::::::::::______------------ ", lote);
+                //console.log(" lote ::::::::::______------------ ", lote);
 
                 if (lote.seleccionado){
 

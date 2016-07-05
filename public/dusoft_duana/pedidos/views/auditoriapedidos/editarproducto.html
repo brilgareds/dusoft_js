@@ -72,7 +72,7 @@
 
                         <input type="text" role="group" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero />
                         <div class="input-group-btn" role="group">
-                            <button ng-disabled="cerrar" type="button" style="width:85px;" class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> {{ rootEditarProducto.caja.getTipo(true) || "Tipo" }} <span class="caret"></span></button>
+                            <button ng-disabled="cerrar" type="button" style="width:85px;" class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> {{ rootEditarProducto.caja.getTipo(true)}} <span class="caret"></span></button>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li><a href="javascript:void(0)" ng-click="rootEditarProducto.caja.tipo = 0">Caja</a></li>
                                 <li><a href="javascript:void(0)" ng-click="rootEditarProducto.caja.tipo = 1">Nevera</a></li>

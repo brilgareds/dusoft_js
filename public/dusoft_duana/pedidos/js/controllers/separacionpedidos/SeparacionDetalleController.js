@@ -625,6 +625,8 @@ define(["angular", "js/controllers",
                 });
             };
             
+
+            
             self.mostrarProductosSinCajaJustificacion = function(productosInvalidos){
                 $scope.productos = productosInvalidos; 
                 $scope.opts = {
@@ -632,16 +634,11 @@ define(["angular", "js/controllers",
                     dialogClass: "editarproductomodal",
                      template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="cerrarGenerarAuditar();">&times;</button>\
-                                    <h4 class="modal-title">Productos sin caja asignada o sin justificación.</h4>\
+                                    <h4 class="modal-title">Productos sin caja asignada o sin justificación</h4>\
                                 </div>\
                                 <div class="modal-body row">\
                                     <div class="col-md-12">\
-                                        <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
-                                            <div class="list-group">\
-                                                <div ng-repeat="producto in productos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                    {{ producto.getCodigoProducto()}} - {{producto.getDescripcion()}}\
-                                                </div>\
-                                            </div>\
+                                        <div class="row" ng-grid="productosSinCajaJustificacion" style="height:300px;">\
                                         </div>\
                                     </div>\
                                 </div>\
@@ -650,10 +647,37 @@ define(["angular", "js/controllers",
                                 </div>',
                     scope: $scope,
                     controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+                            
+                        $scope.productosSinCajaJustificacion = {
+                            data: 'productos',
+                            enableColumnResize: true,
+                            enableRowSelection: false,
+                            showFilter: true,
+                            columnDefs: [
+                                {field: 'codigo_producto', displayName: 'Codigo', width:120},
+                                {field: 'descripcion', displayName: 'Descripcion'},
+                                {displayName: "", cellClass: "txt-center dropdown-button", width: "50",
+                                    cellTemplate: '<div class="btn-group">\
+                                                        <button class="btn btn-default btn-xs"  ng-click="onRevisarProducto(row.entity, row)">\n\
+                                                            <span class="glyphicon glyphicon-search"></span>\n\
+                                                        </button>\
+                                                    </div>'
+                                }
+                            ]
+                        };
 
                         $scope.cerrarGenerarAuditar = function() {
                             $modalInstance.close();
 
+                        };
+                        
+                        $scope.onRevisarProducto = function(producto){
+                
+                            var productos = $scope.rootSeparacion.empresa.getPedidoSeleccionado().getProductos();
+                            var index = productos.indexOf(producto);
+                            $modalInstance.close();
+                            $scope.cerrarDetallePedidos(false);
+                            $scope.$emit("onMostarProductoEnPosicion",index);
                         };
                     }]
                 };
@@ -676,7 +700,7 @@ define(["angular", "js/controllers",
                     var justificacion = productos[i].getJustificacion(); 
                     var producto = productos[i];
 
-                    console.log("producto pendiente ",producto.getCantidadPendiente(), " producto des ",producto.getDescripcion());
+                    //console.log("producto pendiente ",producto.getCantidadPendiente(), " producto des ",producto.getDescripcion());
                     if(justificacion === null || justificacion === undefined || justificacion.length === 0 &&
                       producto.getCantidadPendiente() > 0){
                         _productosInvalidos.push(producto);

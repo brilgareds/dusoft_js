@@ -445,7 +445,12 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                    ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\
                     f.existencia_actual,\
                     g.existencia as existencia_bodega,\
-                    c.estado as bloqueado\
+                    c.estado as bloqueado,\
+                    (\
+                        select case when j.estado = '1' then 'Aprobado' when j.estado = '2' then 'Denegado' end as descripcion_autorizacion from autorizaciones_productos_pedidos  as j\
+                        where  tipo_pedido = '0' and j.codigo_producto = a.codigo_producto and j.pedido_id = a.pedido_cliente_id\
+                        order by fecha_verificacion asc limit 1\
+                    ) as descripcion_autorizacion\
                     from ventas_ordenes_pedidos_d a \
                     inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
                     inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \

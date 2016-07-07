@@ -145,7 +145,8 @@
             </table>
         </div>
         
-        {{if encabezado.tipo_pedido == '1' || encabezado.farmacia_id == '01' || encabezado.farmacia_id == '02' || encabezado.farmacia_id == '99' }}
+        {{if encabezado.tipo_pedido == '1' || encabezado.farmacia_id == '01' || encabezado.farmacia_id == '02' 
+          || encabezado.farmacia_id == '99' || encabezado.farmacia_id == '17' }}
             <table class="table table-bordered  tablaPrincipal" width='100%'  cellspacing="0">
                 <tr>
                    <th class='title'>Producto</th>      
@@ -222,9 +223,8 @@
                     </td>
                 </tr>
             </table>
-        {{/if}}
+        {{else  encabezado.tipo_pedido == '2' && encabezado.farmacia_id != '01' && encabezado.farmacia_id != '02'}}
         
-        {{if encabezado.tipo_pedido == '2' && encabezado.farmacia_id != '01' && encabezado.farmacia_id != '02'}}
             <table class="table table-bordered  tablaPrincipal" width='100%'>
                 <tr>
                    <th class='title'>Producto</th>      
@@ -248,7 +248,7 @@
                 
             </table>
         
-        {{/if}}
+        {{/end}}
         <table  width='100%'  style="margin-top:20px" >
             <tr align='center'>
                 <td>

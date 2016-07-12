@@ -1325,10 +1325,9 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, parametros).
-            then(function(resultado) {
+    then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
-
         callback(err);
     });
 

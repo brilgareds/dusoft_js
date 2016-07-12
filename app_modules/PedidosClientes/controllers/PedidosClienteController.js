@@ -1,5 +1,6 @@
 
-var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos, m_terceros, emails, pedidos_farmacias, m_pedidos_clientes_log) {
+var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos,
+                              m_terceros, emails, pedidos_farmacias, m_pedidos_clientes_log, terceros_clientes_model) {
 
 
     this.m_pedidos_clientes = pedidos_clientes;
@@ -10,6 +11,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
     this.m_terceros = m_terceros;
     this.emails = emails;
     this.m_pedidos_clientes_log = m_pedidos_clientes_log;
+    this.terceros_clientes_model = terceros_clientes_model;
 };
 
 /**
@@ -419,22 +421,22 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     var pagina = args.pedidos_clientes.pagina_actual;
 
     that.m_pedidos_clientes.listar_productos(empresa_id,
-            centro_utilidad,
-            bodega,
-            contrato_cliente,
-            filtro,
-            pagina,
-            filtros, filtroAvanzado,
-            function(err, lista_productos) {
+        centro_utilidad,
+        bodega,
+        contrato_cliente,
+        filtro,
+        pagina,
+        filtros, filtroAvanzado,
+        function(err, lista_productos) {
 
-                if (err) {
-                    res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));
-                    return;
-                } else {
-                    res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
-                    return;
-                }
-            });
+            if (err) {
+                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));
+                return;
+            } else {
+                res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
+                return;
+            }
+        });
 };
 
 
@@ -516,21 +518,38 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     }
 
     cotizacion.usuario_id = req.session.user.usuario_id;
-
-    that.m_pedidos_clientes.insertar_cotizacion(cotizacion, function(err, rows, result) {
-
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {}}));
-            return;
+    
+    var obj = {
+        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
+        "tercero_id":cotizacion.cliente.id
+    };
+    
+    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).            
+    then(function(tercero){
+                
+        if(tercero[0].tipo_bloqueo_id !== '1'){
+            throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:403};
         } else {
-
-            var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
-
-            res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
-            return;
+            return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);
         }
-    });
+        
+    }).spread(function(rows, result){
+        
+        var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
+        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
+        
+    }).fail(function(err){
+        var msj = "Erro Interno";
+        var status = 500;
+        
+        if(err.status){
+            msj = err.msj;
+            status = err.status;
+        }
+        
+        res.send(G.utils.r(req.url, msj, status, {pedidos_clientes: {}}));
+    }).done();
+
 };
 
 /*
@@ -586,10 +605,23 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     cotizacion.usuario_id = req.session.user.usuario_id;
 
     var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+    
+    var obj = {
+        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
+        "tercero_id":cotizacion.cliente.id
+    };
+    
+    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).
+    then(function(tercero) {
+        
+        if(tercero[0].tipo_bloqueo_id !== '1'){
+            throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:403};
+        } else {
+            return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros);
+        }
 
-    G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function(resultado) {
-
-        /**
+    }).then(function(resultado){
+                /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
          */
         var precioVenta = __validarPrecioVenta(producto, resultado, 0);
@@ -633,8 +665,16 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         }
 
     }).fail(function(err) {
-
-        res.send(G.utils.r(req.url, err, 500, {}));
+        var msj = "Erro Interno";
+        var status = 500;
+        
+        if(err.status){
+            msj = err.msj;
+            status = err.status;
+        }
+        
+        res.send(G.utils.r(req.url, msj, status, {pedidos_clientes: {}}));
+        //res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
 };
@@ -1447,8 +1487,23 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
      * @author Cristian Ardila
      * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
      */
-
-    G.Q.ninvoke(that.m_pedidos_clientes, 'observacion_cartera_cotizacion', cotizacion).then(function(resultado) {
+    
+    var obj = {
+        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
+        "tercero_id":cotizacion.cliente.id
+    };
+    
+    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).
+    then(function(tercero){
+        
+        if(tercero[0].tipo_bloqueo_id !== '1'){
+            throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:403};
+        } else {
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'observacion_cartera_cotizacion', cotizacion);
+        }
+        
+        
+    }).then(function(resultado) {
         if (resultado.rowCount === 0) {
             throw 'Error actualizando la observacion de cartera';
         } else {
@@ -1465,7 +1520,16 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
         return;
 
     }).fail(function(err) {
-        res.send(G.utils.r(req.url, err, 500, {}));
+        
+        var msj = "Erro Interno";
+        var status = 500;
+        
+        if(err.status){
+            msj = err.msj;
+            status = err.status;
+        }
+        
+        res.send(G.utils.r(req.url, msj, status, {}));
     }).done();
 
 };
@@ -3447,6 +3511,6 @@ PedidosCliente.$inject = ["m_pedidos_clientes",
     "m_pedidos",
     "m_terceros",
     "emails",
-    "m_pedidos_farmacias", "m_pedidos_clientes_log"];
+    "m_pedidos_farmacias", "m_pedidos_clientes_log", "terceros_clientes_model"];
 
 module.exports = PedidosCliente;

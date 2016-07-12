@@ -32,6 +32,7 @@
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
     "xls-to-json": "*",
-    "json2csv": "~3.4.2"
+    "json2csv": "~3.4.2",
+    "promise": "~7.1.1"
   }
 }

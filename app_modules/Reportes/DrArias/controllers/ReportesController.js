@@ -12,25 +12,44 @@ var Reportes = function (drArias,j_reporteDrAriasJobs) {
  */
 Reportes.prototype.listarDrArias = function (req, res) {
     var that = this;
-    var args = req.body.data;
-    var termino_busqueda = {};
-    var filtro = {fecha_inicial:'2016-06-14', fecha_final:'2016-06-15', dias:1};
+    var args = req.body.data;    
+    var filtro = args;
+    filtro.dias=1;
+    filtro.fecha_inicial=G.moment(filtro.fecha_inicial).format("YYYY-MM-DD");
+    filtro.fecha_final=G.moment(filtro.fecha_final).format("YYYY-MM-DD");
     filtro.nombre='drArias_'+filtro.fecha_inicial+'_'+filtro.fecha_final+'.csv';
-    //  var pagina_actual = args.autorizaciones.pagina_actual;
-    res.send(G.utils.r(req.url, 'Listado Dr Arias', 200, {listarDrArias: 'pendiente'}));   
-  
-    G.Q.ninvoke(that.m_drArias, 'listarDrArias', termino_busqueda).then(function (resultado) {
+    res.send(G.utils.r(req.url, 'Listado Dr Arias', 200, {listarDrArias: 'pendiente'})); 
+    
+    G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function (resultado) {
         
         __generarCsvDrArias(resultado,filtro, function(nombre_pdf) {
                 });
-//        res.send(G.utils.r(req.url, 'Listado de Dr Arias!!!!', 200, {listarDrArias: resultado}));
     }).
     fail(function (err) {
         console.log("error controller ", err);
         res.send(G.utils.r(req.url, 'Error Listado Dr Arias', 500, {listarDrArias: err}));
     }).
     done();
+};
 
+/**
+ * @author Andres M Gonzalez
+ * +Descripcion controlador que lista los planes
+ * @params detalle: 
+ * @fecha 2016-06-17
+ */
+Reportes.prototype.listarPlanes = function (req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    G.Q.ninvoke(that.m_drArias, 'listarPlanes').then(function (listarPlanes) {
+       res.send(G.utils.r(req.url, 'Listado Planes', 200, {listarPlanes: listarPlanes}));  
+    }).
+    fail(function (err) {
+        console.log("error controller ", err);
+        res.send(G.utils.r(req.url, 'Error Listado Planes', 500, {listarPlanes: err}));
+    }).
+    done();
 };
 
 function __generarCsvDrArias(datos,filtro, callback) {  

@@ -1,6 +1,7 @@
 
 define(["angular", "js/controllers", 'includes/slide/slideContent',
     "includes/classes/Empresa",
+    'controllers/drArias/FiltroDrAriasController',
 ], function(angular, controllers) {
 
     controllers.controller('DrAriasController', [
@@ -22,37 +23,45 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
-            };
-            
+            };           
              
-//             if($state.is("AutorizacionesProductos") === true){
-//                var estado = localStorageService.get("tabActivo");
-//                if(estado){
-//                    if(estado.estadoTab === 1 ){
-//                      $scope.activarTabFarmacia = "true";                   
-//                    }else{
-//                      $scope.activarTabCliente = "true";  
-//                    }
-//                    $scope.tipoPedido=estado.estadoTab;
-//                }
-//             };
 
             that.init = function(callback) {
                 $scope.root = {};
-                
-                $scope.tipoPedido = 0;
-                $scope.Empresa = Empresa.get();
-                $scope.EmpresasProductos = [];
-                $scope.paginaactual = 1;
-                $scope.paginas = 0;
-                $scope.items = 0;
-                $scope.listarPedido = [];
-                $scope.ultima_busqueda = "";
-                $scope.listaEmpresas = [];
-                $scope.empresa_seleccion = '';
-                $scope.termino = "";
-                $scope.empresa_seleccion = $scope.seleccion.codigo;                
+                $scope.abrirModalDrArias();
+//                $scope.tipoPedido = 0;
+//                $scope.Empresa = Empresa.get();
+//                $scope.EmpresasProductos = [];
+//                $scope.paginaactual = 1;
+//                $scope.paginas = 0;
+//                $scope.items = 0;
+//                $scope.listarPedido = [];
+//                $scope.ultima_busqueda = "";
+//                $scope.listaEmpresas = [];
+//                $scope.empresa_seleccion = '';
+//                $scope.termino = "";
+//                $scope.empresa_seleccion = $scope.seleccion.codigo;                
                 callback();
+            };
+            
+            
+            
+             $scope.abrirModalDrArias= function() {
+                 
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/drArias/modal-drArias.html',
+                    controller: "FiltroDrAriasController"
+                };
+                
+//                modalInstance.result.then(function(){
+//                   that.consultarMedicamentosTemporales();
+//               },function(){}); 
+
+                var modalInstance = $modal.open($scope.opts);
             };
 
             /**
@@ -93,27 +102,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             that.buscarProductosBloqueados = function(termino,paginando) {
                     
-                if ($scope.ultima_busqueda !== $scope.termino) {
-                    $scope.paginaactual = 1;
-                }
-                
-                var obj = {
-                    termino_busqueda: termino,
-                    pagina_actual: $scope.paginaactual,
-                    empresa_id: $scope.empresa_seleccion,
-                    session: $scope.session,
-                    tipo_pedido: $scope.tipoPedido,
-                    detalle: '0'
-                };
-                ParametrosBusquedaService.buscarProductosBloqueados(obj, function(data) {
-                    if (data.status === 200) {
-                        console.log(">>>>>>>>>>>>>>",data);
-                        $scope.ultima_busqueda = $scope.termino;
-                        that.renderProductos(data, paginando);
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    }
-                });
+//                if ($scope.ultima_busqueda !== $scope.termino) {
+//                    $scope.paginaactual = 1;
+//                }
+//                
+//                var obj = {
+//                    termino_busqueda: termino,
+//                    pagina_actual: $scope.paginaactual,
+//                    empresa_id: $scope.empresa_seleccion,
+//                    session: $scope.session,
+//                    tipo_pedido: $scope.tipoPedido,
+//                    detalle: '0'
+//                };
+//                ParametrosBusquedaService.buscarProductosBloqueados(obj, function(data) {
+//                    if (data.status === 200) {
+//                        console.log(">>>>>>>>>>>>>>",data);
+//                        $scope.ultima_busqueda = $scope.termino;
+//                        that.renderProductos(data, paginando);
+//                    } else {
+//                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+//                    }
+//                });
             };
 
             /**
@@ -123,41 +132,41 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {objeto}
              */
             that.renderProductos = function(data, paginando) {
-                listaTerceros = [];
-                $scope.items = data.obj.listarProductosBloqueados.length;
-                
-//                se valida que hayan registros en una siguiente pagina
-                if (paginando && $scope.items === 0) {
-                    if ($scope.paginaactual > 1) {
-                        $scope.paginaactual--;
-                    }
-                    AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
-                    return;
-                }
-
-                $scope.EmpresasProductos = [];
-                $scope.paginas = (data.obj.listarProductosBloqueados.length / 10);
-                $scope.items = data.obj.listarProductosBloqueados.length;
-
-                for (var i in data.obj.listarProductosBloqueados) {
-
-                    var objt = data.obj.listarProductosBloqueados[i];
-                    var pedidoAutorizacion = PedidoAutorizacion.get();
-                    var datos = {};
-                    datos.numero_pedido = objt.pedido_id;
-                    datos.fecha_registro = objt.fecha_solicitud;
-                    pedidoAutorizacion.setDatos(datos);
-                    pedidoAutorizacion.setTipoPedido(objt.tipo_pedido);
-                    pedidoAutorizacion.setFechaSolicitud(objt.fecha_solicitud);
-                    pedidoAutorizacion.setPorAprobar(objt.poraprobacion);
-                    pedidoAutorizacion.setBoolPorAprobar(objt.poraprobacion);
-                    //  pedidoAutorizacion.setProductos(producto);
-
-                    var terceros = TerceroAutorizacion.get(objt.nombre_tercero, objt.tipo_id_tercero, objt.tercero_id);
-                    terceros.agregarPedido(pedidoAutorizacion);
-                    listaTerceros.push(terceros);
-                }
-                $scope.listarPedido = listaTerceros;
+//                listaTerceros = [];
+//                $scope.items = data.obj.listarProductosBloqueados.length;
+//                
+////                se valida que hayan registros en una siguiente pagina
+//                if (paginando && $scope.items === 0) {
+//                    if ($scope.paginaactual > 1) {
+//                        $scope.paginaactual--;
+//                    }
+//                    AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+//                    return;
+//                }
+//
+//                $scope.EmpresasProductos = [];
+//                $scope.paginas = (data.obj.listarProductosBloqueados.length / 10);
+//                $scope.items = data.obj.listarProductosBloqueados.length;
+//
+//                for (var i in data.obj.listarProductosBloqueados) {
+//
+//                    var objt = data.obj.listarProductosBloqueados[i];
+//                    var pedidoAutorizacion = PedidoAutorizacion.get();
+//                    var datos = {};
+//                    datos.numero_pedido = objt.pedido_id;
+//                    datos.fecha_registro = objt.fecha_solicitud;
+//                    pedidoAutorizacion.setDatos(datos);
+//                    pedidoAutorizacion.setTipoPedido(objt.tipo_pedido);
+//                    pedidoAutorizacion.setFechaSolicitud(objt.fecha_solicitud);
+//                    pedidoAutorizacion.setPorAprobar(objt.poraprobacion);
+//                    pedidoAutorizacion.setBoolPorAprobar(objt.poraprobacion);
+//                    //  pedidoAutorizacion.setProductos(producto);
+//
+//                    var terceros = TerceroAutorizacion.get(objt.nombre_tercero, objt.tipo_id_tercero, objt.tercero_id);
+//                    terceros.agregarPedido(pedidoAutorizacion);
+//                    listaTerceros.push(terceros);
+//                }
+//                $scope.listarPedido = listaTerceros;
             };
 
             /**
@@ -197,7 +206,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ]
 
             };
-
+            
             /**
              * +Descripcion: metodo para navegar a la ventana detalle
              * @author Andres M Gonzalez
@@ -206,12 +215,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {ventana}
              */
             that.mostrarDetalle = function(pedido) {
-                localStorageService.add("pedidoCabecera",
-                        {
-                            numeroPedido: pedido,
-                            tipoPedido: $scope.tipoPedido
-                        });
-                $state.go("AutorizacionesDetalle");
+//                localStorageService.add("pedidoCabecera",
+//                        {
+//                            numeroPedido: pedido,
+//                            tipoPedido: $scope.tipoPedido
+//                        });
+//                $state.go("AutorizacionesDetalle");
             };
             
              /**
@@ -221,9 +230,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {pagina}
              */
              $scope.paginaAnterior = function() {
-                if($scope.paginaactual === 1) return;
-                $scope.paginaactual--;
-                that.buscarProductosBloqueados($scope.termino, true);
+//                if($scope.paginaactual === 1) return;
+//                $scope.paginaactual--;
+//                that.buscarProductosBloqueados($scope.termino, true);
             };
             
             /**
@@ -233,8 +242,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {pagina}
              */
             $scope.paginaSiguiente = function() {
-                $scope.paginaactual++;
-                that.buscarProductosBloqueados($scope.termino, true);
+//                $scope.paginaactual++;
+//                that.buscarProductosBloqueados($scope.termino, true);
             };
             
 
@@ -246,13 +255,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {ventana}
              */
             $scope.onAbrirVentana = function(pedido) {
-                
-                that.mostrarDetalle(pedido);
+//                
+//                that.mostrarDetalle(pedido);
             };
 
             that.init(function() {
-                $scope.tipoPedido=0;
-                that.buscarProductosBloqueados("");
+//                $scope.tipoPedido=0;
+//                that.buscarProductosBloqueados("");
             });
                        
 

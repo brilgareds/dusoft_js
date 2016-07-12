@@ -20,13 +20,7 @@ define(["angular", "js/services"], function(angular, services) {
                                 "POST",
                                 {
                                     session: obj.session,
-                                    data: {
-                                        autorizaciones: {
-                                            termino_busqueda: obj.termino_busqueda,
-                                            pagina_actual: obj.pagina_actual,
-                                            empresa_id: obj.empresa_id
-                                        }
-                                    }
+                                    data: obj
                                 },
                         function(data) {                           
                             callback(data);

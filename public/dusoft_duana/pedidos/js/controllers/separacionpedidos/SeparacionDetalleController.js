@@ -440,8 +440,9 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-
-                self.renderDocumentoTemporalClienteFarmacia(obj, pedido.getTipo(), function(continuar) {
+                
+                self.generarDocumento(function(continuar) {
+                
                     if (!continuar) {
                         AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                     }
@@ -450,7 +451,7 @@ define(["angular", "js/controllers",
                     
                    
                     
-                    self.generarDocumento(function(continuar) {
+                    self.renderDocumentoTemporalClienteFarmacia(obj, pedido.getTipo(), function(continuar) {
 
                         if (continuar) {
                             self.auditarLotes(productos, 0, function(continuar, msj) {
@@ -471,7 +472,7 @@ define(["angular", "js/controllers",
                         } else {
                             AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                         }
-                    })
+                    });
                 });
             };
 
@@ -502,7 +503,7 @@ define(["angular", "js/controllers",
             
             /*
              * +Descripcion: Funcion encargada de auditar los lotes en grupo
-             * @author Edu Gracia
+             * @author Eduar Gracia
              * @Fecha  23/09/2015
              * @param {type} productos
              * @param {type} index

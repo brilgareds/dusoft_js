@@ -2,21 +2,25 @@
 
     <div class="row paddingToptZero">
         <div class="col-sm-12 col-md-12">
-
+            
             <div class="panel panel-info ">
                 <div class="panel-heading">
-                    <h4 class="h4MarginTopBottom"><span >Seleccionar Justificacion</span> </h4>
+                    <h4 class="h4MarginTopBottom"><span >Justificación de pendientes</span> </h4>
                 </div>
+                
+                <br />
+                <p class="panel">
+                    <textarea placeholder="Observación maximo 100 caracteres" maxlength="100" ng-model="rootJustificacion.observacionJustificacion" style="width: 100%; padding:5px;  height: 60px;"></textarea>
+                </p>
 
                 <br>
-                <textarea placeholder="Observación">
                 
-                </textarea>
                 <div class="table-responsive" >
-                    <div class="gridStyle2" ng-grid="listaJustificaciones" > </div>
+                    <div class="gridStyle2" style="height: 300px" ng-grid="listaJustificaciones"> </div>
                 </div>
-
+                
             </div>
+           
             <div class="col-lg-2 pull-right">
                 <button class="btn btn-warning" ng-click="cerrar()">Cancelar</button>
             </div>

@@ -150,7 +150,7 @@ define(["angular", "js/controllers",
 
                     /*
                      * @author Eduar Garcia
-                     * permite mostar un producto en determinada posicion
+                     * permite mostrar un producto en determinada posicion
                      */
                     self.seleccionarProductoPorPosicion = function(callback) {
                         var pedido = EmpresaPedido.getPedidoSeleccionado();

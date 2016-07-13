@@ -771,28 +771,37 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                     select case when j.estado = '1' then 'Aprobado' when j.estado = '2' then 'Denegado' end as descripcion_autorizacion from autorizaciones_productos_pedidos  as j\
                     where  tipo_pedido = '1' and j.codigo_producto = a.codigo_producto and j.pedido_id = a.solicitud_prod_a_bod_ppal_id\
                     order by fecha_verificacion asc limit 1\
-                ) as descripcion_autorizacion\
+                ) as descripcion_autorizacion,\
+                b.observacion_justificacion_separador,\
+                b.observacion_justificacion_auditor\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
                 inner join inventarios_productos c on f.codigo_producto = c.codigo_producto \
                 inner join inv_clases_inventarios e on c.grupo_id = e.grupo_id and c.clase_id = e.clase_id \
                 left join (\
-                    SELECT a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada, a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega \
+                    SELECT a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
+                    a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega, \
+                    a.observacion_justificacion_separador, a.observacion_justificacion_auditor\
                     FROM ( \
-                      select a.solicitud_prod_a_bod_ppal_id as numero_pedido, b.codigo_producto, c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado, b.empresa_id, b.centro_utilidad, b.bodega\
+                      select a.solicitud_prod_a_bod_ppal_id as numero_pedido, b.codigo_producto, c.observacion as justificacion, \
+                      c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
+                      b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado, b.empresa_id, b.centro_utilidad, b.bodega,\
+                      c.observacion_justificacion_separador, c.observacion_justificacion_auditor\
                       from inv_bodegas_movimiento_tmp_despachos_farmacias a\
                       inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                      group by 1,2,3,4,6,7, 8,9, 10, 11,12,13,14\
+                      group by 1,2,3,4,6,7, 8,9, 10, 11,12,13,14,15,16\
                       UNION\
-                      select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento,  0 as item_id, '3' as tipo_estado_auditoria, 0 as cantidad_ingresada, '0' as auditado, '' as empresa_id, '' as centro_utilidad, '' as bodega  \
+                      select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor,\
+                      0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento,  0 as item_id, '3' as tipo_estado_auditoria,\
+                      0 as cantidad_ingresada, '0' as auditado, '' as empresa_id, '' as centro_utilidad, '' as bodega,  b.observacion_justificacion_separador, b.observacion_justificacion_auditor  \
                       from inv_bodegas_movimiento_tmp_despachos_farmacias a \
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                        and b.codigo_producto not in(\
                             select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
                        )\
-                    ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11,12,13,14\
+                    ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11,12,13,14,15,16\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 left join existencias_bodegas_lote_fv h on h.empresa_id = b.empresa_id and h.centro_utilidad = b.centro_utilidad and h.codigo_producto = b.codigo_producto and h.lote = b.lote and h.fecha_vencimiento = b.fecha_vencimiento :: date and  h.bodega = b.bodega\
                 left join existencias_bodegas i on i.empresa_id = b.empresa_id and i.centro_utilidad = b.centro_utilidad and i.codigo_producto = b.codigo_producto and i.bodega = b.bodega\

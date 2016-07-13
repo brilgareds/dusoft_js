@@ -185,8 +185,11 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 producto.setDescripcionAutorizacion(_producto.descripcion_autorizacion);
                 
                 producto.setEstado(_producto.estado);
+                
                 if(_producto.justificacion){
-                     producto.setJustificacion(_producto.justificacion);
+                    producto.setJustificacion(_producto.justificacion);
+                    producto.setObservacionJustificacionAuditor(_producto.observacion_justificacion_auditor);
+                    producto.setObservacionJustificacionSeparador(_producto.observacion_justificacion_separador);
                 }
                
                 if(!temporal){

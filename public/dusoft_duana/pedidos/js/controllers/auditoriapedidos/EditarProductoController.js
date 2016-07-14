@@ -29,6 +29,7 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.lotes = [];
             $scope.rootEditarProducto.seleccionados = [];
             $scope.rootEditarProducto.justificacionAuditor;
+            $scope.rootEditarProducto.observacionJustificacion = "";
 
             var that = this;
 
@@ -241,6 +242,30 @@ define(["angular", "js/controllers",
                 }
 
             };
+            
+            $scope.gridJustificaciones = {
+                data: 'justificaciones',
+                showFilter: true,
+                enableRowSelection: true,
+                multiSelect:false,
+                columnDefs: [
+                    {field: 'descripcion', displayName: 'Motivo'}
+                    /*{field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
+                        cellTemplate: ' <div class="row">\n\
+                                         <button class="btn btn-default btn-xs"   ng-click="justificacionSeleccionada(row.entity)">\n\
+                                             <span class="glyphicon glyphicon-search"></span>\n\
+                                         </button>\n\
+                                     </div>'
+                    }*/
+
+                ],
+                beforeSelectionChange: function(row, event) {
+                    
+                    $scope.justificacionSeleccionada(row.entity);
+                    return true;
+
+                }
+            }
 
 
             $scope.getClass = function(row) {
@@ -545,7 +570,9 @@ define(["angular", "js/controllers",
                         justificacion_auditor: $scope.rootEditarProducto.producto.lote.justificacion_auditor,
                         existencia: 0,
                         usuario_id: $scope.rootEditarProducto.documento.separador.usuario_id,
-                        justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador
+                        justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador,
+                        observacion_justificacion_auditor: $scope.rootEditarProducto.observacionJustificacion
+
                     };
                 }
                 
@@ -609,7 +636,8 @@ define(["angular", "js/controllers",
                             justificacion_auditor: $scope.rootEditarProducto.producto.lote.justificacion_auditor,
                             existencia: lote.existencia_actual,
                             usuario_id: $scope.rootEditarProducto.documento.separador.usuario_id,
-                            justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador
+                            justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador,
+                            observacion_justificacion_auditor: $scope.rootEditarProducto.observacionJustificacion
                         };
                     }
 
@@ -659,8 +687,8 @@ define(["angular", "js/controllers",
                 return cantidad;
             };
 
-            $scope.justificacionSeleccionada = function(){
-                $scope.rootEditarProducto.producto.lote.justificacion_auditor = $scope.rootEditarProducto.justificacionAuditor.descripcion;
+            $scope.justificacionSeleccionada = function(justificacion){
+                $scope.rootEditarProducto.producto.lote.justificacion_auditor = justificacion.descripcion;
             };
             
             

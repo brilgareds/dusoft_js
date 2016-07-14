@@ -582,12 +582,23 @@ DocuemntoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes =
     existencia, justificacion, justificacion_auditor, observacionSeparador, observacionAuditor, callback) {
 
     console.log('========= actualizar_justificaciones_temporales_pendientes =========');
-
-    var sql = " UPDATE inv_bodegas_movimiento_tmp_justificaciones_pendientes SET cantidad_pendiente = :4 , existencia = :5, observacion = :6, justificacion_auditor = :7,  \
-                observacion_justificacion_separador = :8, observacion_justificacion_auditor = :9\
-                WHERE doc_tmp_id = :1 and usuario_id = :2 and codigo_producto = :3 ; ";
+    var sqlAux = "";
+    var params = {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto, 4:cantidad_pendiente, 5:existencia, 6:justificacion, 7:justificacion_auditor};
     
-   G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto, 4:cantidad_pendiente, 5:existencia, 6:justificacion, 7:justificacion_auditor, 8:observacionSeparador, 9:observacionAuditor}).
+    if(observacionSeparador.length > 0){
+        sqlAux = " ,observacion_justificacion_separador = :8 ";
+        params["8"] =  observacionSeparador;
+    }
+    
+    if(observacionAuditor.length > 0){
+        sqlAux += " ,observacion_justificacion_auditor = :9 ";
+        params["9"] = observacionAuditor;
+    }
+    
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_justificaciones_pendientes SET cantidad_pendiente = :4 , existencia = :5, observacion = :6, justificacion_auditor = :7 "+sqlAux+
+                "WHERE doc_tmp_id = :1 and usuario_id = :2 and codigo_producto = :3 ; ";
+    
+   G.knex.raw(sql, params).
    then(function(resultado){
        callback(false, resultado.rows, resultado);
    }).catch(function(err){

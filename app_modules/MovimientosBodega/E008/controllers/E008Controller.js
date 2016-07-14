@@ -1215,8 +1215,8 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
         var justificacion = args.documento_temporal.justificacion.justificacion;
         var justificacion_auditor = args.documento_temporal.justificacion.justificacion_auditor;
         var existencia = args.documento_temporal.justificacion.existencia;
-        var observacionAuditor = args.documento_temporal.observacion_justificacion_auditor || "";
-        var observacionSeparador = args.documento_temporal.observacion_justificacion_separador || "";
+        var observacionAuditor = args.documento_temporal.justificacion.observacion_justificacion_auditor || "";
+        var observacionSeparador = args.documento_temporal.justificacion.observacion_justificacion_separador || "";
 
         that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, 
         justificacion, justificacion_auditor, observacionSeparador, observacionAuditor, function(err, rows, result) {

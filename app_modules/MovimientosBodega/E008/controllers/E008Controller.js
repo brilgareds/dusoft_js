@@ -850,9 +850,9 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
     var justificacion_auditor = args.documento_temporal.justificacion_auditor;
     var existencia = args.documento_temporal.existencia;
     var usuario_id = req.session.user.usuario_id;
+    var observacionSeparador = args.documento_temporal.observacion_justificacion_separador || "";
 
-    that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
-
+    that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, observacionSeparador, "", function(err, rows, result) {
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
             return;
@@ -1215,8 +1215,11 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
         var justificacion = args.documento_temporal.justificacion.justificacion;
         var justificacion_auditor = args.documento_temporal.justificacion.justificacion_auditor;
         var existencia = args.documento_temporal.justificacion.existencia;
+        var observacionAuditor = args.documento_temporal.justificacion.observacion_justificacion_auditor || "";
+        var observacionSeparador = args.documento_temporal.justificacion.observacion_justificacion_separador || "";
 
-        that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
+        that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, 
+        justificacion, justificacion_auditor, observacionSeparador, observacionAuditor, function(err, rows, result) {
             if (err || result.rowCount === 0) {
                 res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
                 return;

@@ -789,8 +789,8 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                        )\
                     ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11,12,13,14\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                left join existencias_bodegas_lote_fv h on h.empresa_id = b.empresa_id and h.centro_utilidad = b.centro_utilidad and h.codigo_producto = b.codigo_producto and h.lote = b.lote and h.fecha_vencimiento = b.fecha_vencimiento :: date\
-                left join existencias_bodegas i on i.empresa_id = b.empresa_id and i.centro_utilidad = b.centro_utilidad and i.codigo_producto = b.codigo_producto\
+                left join existencias_bodegas_lote_fv h on h.empresa_id = b.empresa_id and h.centro_utilidad = b.centro_utilidad and h.codigo_producto = b.codigo_producto and h.lote = b.lote and h.fecha_vencimiento = b.fecha_vencimiento :: date and  h.bodega = b.bodega\
+                left join existencias_bodegas i on i.empresa_id = b.empresa_id and i.centro_utilidad = b.centro_utilidad and i.codigo_producto = b.codigo_producto and i.bodega = b.bodega\
                 where a.solicitud_prod_a_bod_ppal_id= ? order by e.descripcion ; ";
 
    G.knex.raw(sql, [numero_pedido]).

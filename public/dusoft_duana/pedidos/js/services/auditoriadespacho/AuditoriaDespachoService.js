@@ -73,6 +73,19 @@ define(["angular", "js/services"], function(angular, services) {
                callback(data);
             });
         };
+        
+        self.obtenerJustificaciones = function(obj, callback){
+             var obj = {
+                session: obj.session,
+                data: {
+                    movimientos_bodegas: obj
+                }
+            };
+
+            Request.realizarRequest(API.SEPARACION_PEDIDOS.OBTENER_JUSTIFICACIONES, "POST", obj, function(data) {
+               callback(data);
+            });
+        };
 
         return this;
     }]);

@@ -58,6 +58,34 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
     
 };
 
+
+ClientesModel.prototype.obtenterClientePorId = function(parametros, callback) {
+
+    var sql = " SELECT\
+                a.tipo_id_tercero,\
+                a.tercero_id,\
+                a.direccion,\
+                a.telefono,\
+                a.email,\
+                a.nombre_tercero,\
+                a.tipo_bloqueo_id\
+                FROM terceros as a\
+                LEFT JOIN inv_tipos_bloqueos b ON a.tipo_bloqueo_id = b.tipo_bloqueo_id\
+                WHERE \
+                    a.tercero_id = :1  AND \
+                    a.tipo_id_tercero = :2";
+    
+    
+    var query = G.knex.raw(sql, {1:parametros.tercero_id, 2:parametros.tipo_id_tercero});
+    
+    query.then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
+    });
+    
+};
+
 ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, callback) {
 
     var sql = " a.tipo_id_tercero,\

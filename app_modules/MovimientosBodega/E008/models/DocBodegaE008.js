@@ -1275,6 +1275,24 @@ DocuemntoBodegaE008.prototype.detallePedidoFarmaciaDocumento = function(obj, cal
 };
 
 
+/**
+ * @author Eduar Garcia 
+ * @fecha  22/06/2016
+ * +Descripcion Permite obtener las jusitificaciones que se listan en separacion o auditoria
+ * @param {type} callback
+ * @returns {undefined} */
+DocuemntoBodegaE008.prototype.obtenerJustificaciones = function(obj, callback) {
+   
+    //var sql = "SELECT * FROM justificaciones_bodega";
+    G.knex.select().table("justificaciones_bodega").where({empresa_id:obj.empresa_id}).then(function(resultado){       
+       
+        callback(false, resultado);   
+    }).catch(function(err) { 
+       
+        callback(err);
+    });
+};
+
 
 
 DocuemntoBodegaE008.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];

@@ -220,9 +220,14 @@ module.exports = function(app, di_container) {
         c_e008.consultarNumeroMayorRotulo(req, res);
     }); 
     
-   app.post('/api/movBodegas/E008/sincronizarDocumentoDespacho', function(req, res) {
+    app.post('/api/movBodegas/E008/sincronizarDocumentoDespacho', function(req, res) {
        
         c_e008.sincronizarDocumentoDespacho(req, res);
+    }); 
+    
+    app.post('/api/movBodegas/E008/obtenerJustificaciones', function(req, res) {
+       
+        c_e008.obtenerJustificaciones(req, res);
     }); 
       
     //========================== FIN Despachos bodegas =========================

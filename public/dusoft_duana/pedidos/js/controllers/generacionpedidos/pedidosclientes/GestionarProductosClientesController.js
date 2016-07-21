@@ -158,11 +158,13 @@ define(["angular", "js/controllers",
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
-                    AlertService.mostrarMensaje("success", data.msj);
+                   
 
                     if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", data.msj);
                         callback(true);
                     } else {
+                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         callback(false);
                     }
                 });

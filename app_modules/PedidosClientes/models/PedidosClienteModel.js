@@ -468,8 +468,8 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                                 )\
                         ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11,12,13,14 \
                     ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                    left join existencias_bodegas_lote_fv f on f.empresa_id = b.empresa_id and f.centro_utilidad = b.centro_utilidad and f.codigo_producto = b.codigo_producto and f.lote = b.lote and f.fecha_vencimiento = b.fecha_vencimiento :: date\
-                    left join existencias_bodegas g on g.empresa_id = b.empresa_id and g.centro_utilidad = b.centro_utilidad and g.codigo_producto = b.codigo_producto\
+                    left join existencias_bodegas_lote_fv f on f.empresa_id = b.empresa_id and f.centro_utilidad = b.centro_utilidad and f.codigo_producto = b.codigo_producto and f.lote = b.lote and f.fecha_vencimiento = b.fecha_vencimiento :: date and f.bodega = b.bodega\
+                    left join existencias_bodegas g on g.empresa_id = b.empresa_id and g.centro_utilidad = b.centro_utilidad and g.codigo_producto = b.codigo_producto and g.bodega = b.bodega\
                     where a.pedido_cliente_id = ?  order by e.descripcion ;";
 
     G.knex.raw(sql, [numero_pedido]).
@@ -1325,10 +1325,9 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, parametros).
-            then(function(resultado) {
+    then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
-
         callback(err);
     });
 

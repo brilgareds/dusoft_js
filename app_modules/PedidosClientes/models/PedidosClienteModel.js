@@ -1161,19 +1161,19 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
 
         }
     }
-
+   
     if (filtroAvanzado.tipoBusqueda === 1) {
         parametros["5"] = '%' + filtroAvanzado.molecula + '%';
         parametros["6"] = '%' + filtroAvanzado.descripcionProducto + '%';
         parametros["7"] = '%' + filtroAvanzado.concentracion + '%';
         parametros["8"] = '%' + filtroAvanzado.codigoProducto + '%';
         parametros["9"] = '%' + filtroAvanzado.laboratorio_id + '%';
-
+        
         sql_aux = "AND a.codigo_producto " + G.constants.db().LIKE + " :8\
                    AND b.contenido_unidad_venta " + G.constants.db().LIKE + " :7\
                    AND fc_descripcion_producto(b.codigo_producto) " + G.constants.db().LIKE + " :6\
                    AND e.descripcion " + G.constants.db().LIKE + " :5\
-                   AND f.clase_id " + G.constants.db().LIKE + " :9";
+                   AND f.clase_id " + G.constants.db().LIKE + " :9 and b.tipo_producto_id = '" + filtroAvanzado.tipo_producto + "'";
 
         //filtroAvanzado.tipoBusqueda
     }

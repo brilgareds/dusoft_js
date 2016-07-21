@@ -413,7 +413,8 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         codigoProducto: args.pedidos_clientes.codigoProducto,
         descripcionProducto: args.pedidos_clientes.descripcionProducto,
         concentracion: args.pedidos_clientes.concentracion,
-        tipoBusqueda: args.pedidos_clientes.tipoBusqueda
+        tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
     };
 
 

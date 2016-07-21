@@ -802,7 +802,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                  </div>',
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
-                    {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
+                    {field: 'getDescripcion()', displayName: 'Descripcion', width: "30%"},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> \n\
                                        <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || Pedido.getEstadoSolicitud() == 8" \n\

@@ -673,7 +673,7 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-if="row.entity.getEstadoActualPedido() != \'0\' "  ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li  ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
                                                 <li ng-if="row.entity.getEstadoActualPedido() == \'0\' || row.entity.getEstadoActualPedido() == \'8\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\

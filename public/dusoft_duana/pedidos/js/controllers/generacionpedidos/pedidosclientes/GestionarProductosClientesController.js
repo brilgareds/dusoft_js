@@ -432,8 +432,8 @@ define(["angular", "js/controllers",
              * @param {type} producto
              */
             $scope.solicitar_producto = function(producto) {
-
-
+                console.log("**********producto.precio_venta ", producto.precio_venta)
+            if(producto.precio_venta > 0){
                 /*  var val = producto.precio_venta;
                  /*   var clean = val.replace(/[^0-9\.]/g, '');
                  var decimalCheck = clean.split('');*/
@@ -442,28 +442,28 @@ define(["angular", "js/controllers",
                 // decimalCheck[1] = decimalCheck[1].slice(0, 4);
                 //  clean = decimalCheck[0] + '.' + decimalCheck[1];
 
-                $scope.datos_form.producto_seleccionado = producto;
+                    $scope.datos_form.producto_seleccionado = producto;
 
-                $scope.Pedido.set_productos(producto);
+                    $scope.Pedido.set_productos(producto);
 
-                $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+                    $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
 
-                if ($scope.datos_form.tipo_producto === '') {
-                    $scope.datos_form.tipo_producto = producto.get_tipo_producto();
-                    $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
-                }
+                    if ($scope.datos_form.tipo_producto === '') {
+                        $scope.datos_form.tipo_producto = producto.get_tipo_producto();
+                        $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
+                    }
 
-                if ($scope.Pedido.get_numero_pedido() > 0) {
+                    if ($scope.Pedido.get_numero_pedido() > 0) {
 
-                    that.gestionar_pedidos();
-                } else {
+                        that.gestionar_pedidos();
+                    } else {
 
-                    that.gestionar_cotizaciones();
-                }
+                        that.gestionar_cotizaciones();
+                    }
 
-                /*}else{
-                 AlertService.mostrarMensaje("danger", "El tipo de valor es errado");
-                 }*/
+               }else{
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta debe ser mayor a cero (0)");
+               }
             };
 
             $scope.validarHtml = function(html) {
@@ -621,9 +621,7 @@ define(["angular", "js/controllers",
                     templateUrl: 'views/generacionpedidos/pedidosclientes/formularioBusquedaAvanzadaProducto.html',
                     scope: $scope,
                     height: 300,
-                        controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
-
-
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.cerrarVentanaBusquedaAvanzada = function() {
 

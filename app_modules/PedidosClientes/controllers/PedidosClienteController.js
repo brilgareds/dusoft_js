@@ -601,9 +601,14 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
-
+    
+    if (producto.precioVentaIva <= 0) {
+        res.send(G.utils.r(req.url, 'El valor del precio de venta no puede ser cero (0)', 404, {}));
+        return;
+    }
+    
     cotizacion.usuario_id = req.session.user.usuario_id;
-
+   
     var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
     
     var obj = {
@@ -1943,7 +1948,12 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'precioVentaIva no esta definido o esta vacio', 404, {}));
         return;
     }
-
+    
+    if (producto.precioVentaIva <= 0) {
+        res.send(G.utils.r(req.url, 'El valor del precio de venta no puede ser cero (0)', 404, {}));
+        return;
+    }
+    
     pedido.usuario_id = req.session.user.usuario_id;
     /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido

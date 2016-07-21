@@ -37,7 +37,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-3">
-                                <p class="input-group col-md-12">    
+                                
                                 <h4>Laboratorio</h4>
                                 <ui-select ng-model="datos_form.laboratorio" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_laboratorio()">
                                     <ui-select-match  placeholder="Seleccionar laboratorio">{{ $select.selected.get_nombre() }}</ui-select-match>                                        
@@ -45,9 +45,9 @@
                                         {{ laboratorio.get_nombre() }}
                                     </ui-select-choices>
                                 </ui-select>
-                                </p>
+                                
                             </div>
-
+                           
                             <div ng-if="validar_seleccion_producto()" class="col-md-6 text-center" style="margin-top: 35px;">
                                 <p class="input-group">
                                 <h4>No se pueden agregar mas productos, el pedido ya contiene el limite de productos</h4>                                                                            
@@ -78,9 +78,9 @@
                                         <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13},0)">
                                             <i class="glyphicon glyphicon-search"></i></button>
                                     </div>
-                                </div><!-- /input-group -->
+                                </div> <br><!-- /input-group -->
                             </div>
-                            <br>
+                          
                             <div class="table-responsive" style="clear:both;">
                                 <div class="defaultGrid grid-responsive" ng-grid="lista_productos" > </div>
                             </div>                          

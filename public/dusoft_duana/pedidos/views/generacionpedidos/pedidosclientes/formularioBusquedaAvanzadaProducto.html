@@ -29,10 +29,22 @@
             </p>
         </div> 
          
+         <div class="col-md-6">
+              <p class="input-group">
+            <h4 class="h4MarginTopBottom">Laboratorio </h4>
+                   <ui-select ng-model="datos_form.laboratorioAvanzado" theme="select2" class="form-control selectgeneral">
+                       <ui-select-match  placeholder="Seleccionar laboratorio">{{ $select.selected.get_nombre() }}</ui-select-match>                                        
+                       <ui-select-choices repeat="laboratorio in  Empresa.get_laboratorios() | filter:$select.search">
+                           {{ laboratorio.get_nombre() }}
+                       </ui-select-choices>
+                   </ui-select>    
+            </p>
+        </div> 
+         
     </div> 
     
     
-    <div class="marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
+  <!--  <div class="marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> 
             <div class="row">
               <div class="col-md-6">
                    </br>                                  
@@ -43,7 +55,9 @@
                            {{ laboratorio.get_nombre() }}
                        </ui-select-choices>
                    </ui-select>                                   
-               </div>                               
+               </div>   2 //-->
+  
+  
            <!--    <div class="col-md-6">
                    </br>
                    <h4 class="h4MarginTopBottom">Molecula </h4>
@@ -54,8 +68,8 @@
                        </ui-select-choices>
                    </ui-select>
                </div>    //-->                                   
-          </div>          
-    </div>
+     <!--   2  </div>          
+    </div> //-->
 </div>
     
 <div class="modal-footer">

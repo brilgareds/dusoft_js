@@ -56,8 +56,8 @@ define(["angular", "js/controllers",
                                                     <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
                                                     <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
                                                     <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
-                                                    <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
-                                                    <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 8">Nu</span>\
+                                                    <span class="label label-info"    ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                    <span class="label label-info"    ng-show="row.entity.getTipoProductoId() == 8">Nu</span>\
                                                     <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                                 </div>'
                     },

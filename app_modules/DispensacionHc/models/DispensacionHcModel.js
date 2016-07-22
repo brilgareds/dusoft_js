@@ -898,7 +898,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
 DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bodegasDocId,numeracion,plan, callback)
 {   
     console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
-    
+    console.log("obj ", obj)
     G.knex.transaction(function(transaccion) {  
         
         G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, obj, transaccion).then(function(resultado){
@@ -930,11 +930,6 @@ DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bo
     
 };
 
-function __convertDate(inputFormat) {
-  function pad(s) { return (s < 10) ? '0' + s : s; }
-  var d = new Date(inputFormat);
-  return [pad(d.getDate()+1), pad(d.getMonth()+1), d.getFullYear()].join('/');
-}
 /**
  * @author Cristian Ardila
  * +Descripcion Query invocado desde una transaccion para actualizar
@@ -944,11 +939,11 @@ function __convertDate(inputFormat) {
  */
 function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     //Problemas con el filtro de la fecha de vencimiento
-    console.log("*****1)__actualizarExistenciasBodegasLotesFv****");
    
+    var formato = 'DD/mm/YYYY';
     var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
-                      4: obj.bodega , 5:obj.codigo_producto, 6:  __convertDate(obj.fecha_vencimiento), 7: obj.lote};
-                  console.log("{parametros: ", parametros);
+                      4: obj.bodega , 5:obj.codigo_producto, 6:  G.moment(obj.fecha_vencimiento, formato), 7: obj.lote};
+                
     var sql = "UPDATE  existencias_bodegas_lote_fv \
                 set existencia_actual= existencia_actual - :1\
                 WHERE   empresa_id = :2 \

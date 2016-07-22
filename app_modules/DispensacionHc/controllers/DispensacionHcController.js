@@ -725,11 +725,31 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         }
             
     }).then(function(resultado){
-        
+        var def = G.Q.defer();
         console.log("-----------------------------------------------------");
         console.log("-----------------------------------------------------");
         console.log("-----------------------------------------------------");
-        console.log("resultado Lista medicamentos pendientes::> ", resultado)
+        console.log("-----------------------------------------------------");
+        console.log("-----------------------------------------------------");
+        console.log("-----------------------------------------------------");
+        console.log("*");
+        console.log("**");
+        console.log("***");
+        console.log("****");
+        console.log("resultado Lista medicamentos pendientes::> ");
+        console.log("resultado Lista medicamentos pendientes::> ");
+        console.log("resultado Lista medicamentos pendientes::> ");
+        console.log("RESULTADO::: ", resultado);
+        console.log("****");
+        console.log("***");
+        console.log("**");
+        console.log("*");
+        console.log("-----------------------------------------------------");
+        console.log("-----------------------------------------------------");
+        console.log("-----------------------------------------------------");
+        console.log("-----------------------------------------------------");
+        console.log("-----------------------------------------------------");
+        console.log("-----------------------------------------------------");
         /**
          * Se valida de que hallan medicamentos pendientes
          */
@@ -739,11 +759,17 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
            * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
            */
          return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, evolucionId,0, usuario);
-        }
+        } /*else {
+            def.resolve();
+        }*/
     
     }).then(function(resultado){
         
-         return G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalesDispensados',{evolucionId:evolucionId}); 
+         console.log("resultado ", resultado)
+         return res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
+         //AQUI SE DEBE DESCOMENTAR PARA QUE CONTINUE ELIMINANDO LOS TEMPORALES
+         //SE ESTA VALIDANDO QUE NO TENGA EN CUENTA LOS PRODUCTOS CON TOTAL EN 0.00
+         //G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalesDispensados',{evolucionId:evolucionId}); 
           
     }).then(function(resultado){
           
@@ -1024,13 +1050,14 @@ function __insertarBodegasDocumentosDetalle(that, index, parametros, callback) {
  * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
  *              temporales que se almacenaran como pendientes
  */
-function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback) {
+ /*function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback) {
     
   
    
     var producto = productos[index];
     
-     //console.log(" parametrosBodegasDocumentosDetalle ", productos);
+    
+    console.log("<<<<<------->>>>>>> producto.codigo <<<<<<---**>>>>", producto);
     if (!producto) {       
         //console.log("Debe salir a qui ");
         callback(false);
@@ -1045,6 +1072,27 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
     }).fail(function(err){      
         callback(true);            
     }).done();
+}*/
+function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback) {
+    
+  
+   
+    var producto = productos[index];
+    
+    
+   
+    if (!producto || parseInt(producto.total) === 0) {       
+        //console.log("Debe salir a qui ");
+        callback(false);
+        return;
+    }  
+     console.log(" -- ", parseInt(producto.total));
+      
+        index++;
+        setTimeout(function() {
+            __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback);
+        }, 300);
+   
 }
 DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc"];
 

@@ -398,8 +398,7 @@ define(["angular", "js/controllers",
                     producto.set_cantidad_disponible(data.cantidad_disponible);
 
                     $scope.Empresa.set_productos(producto);
-
-
+                    
                 });
 
             };
@@ -436,7 +435,7 @@ define(["angular", "js/controllers",
              * @param {type} producto
              */
             $scope.solicitar_producto = function(producto) {
-                console.log("**********producto.precio_venta ", producto.precio_venta)
+               
             if(producto.precio_venta > 0){
                 /*  var val = producto.precio_venta;
                  /*   var clean = val.replace(/[^0-9\.]/g, '');
@@ -483,14 +482,15 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 enableColumnResize: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "120",
+                    {field: 'codigo_producto', displayName: 'Código', width: 120,
+                        
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
-                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
-                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
-                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 8">Nu</span>\
+                                                <span class="label label-success" ng-show="row.entity.get_tipo_producto() == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.get_tipo_producto() == 2">A</span>\
+                                                <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 3">C</span>\
+                                                <span class="label label-warning" ng-show="row.entity.get_tipo_producto() == 4">I</span>\
+                                                <span class="label label-default" ng-show="row.entity.get_tipo_producto() == 5">Ne</span>\
+                                                <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 8">Nu</span>\
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
                                                 <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'

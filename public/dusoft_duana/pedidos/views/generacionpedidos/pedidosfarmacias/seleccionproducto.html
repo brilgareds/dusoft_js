@@ -11,7 +11,7 @@
                 <div class="panel-body">                       
                     <div class="input-group col-sm-12 col-md-12 col-lg-12">                       
                          <div class="row" >
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <h4>Busqueda por <span ng-bind="datos_form.seleccion_tipo_producto"></span> </h4> 
                                     
                                   <div class="btn-group">
@@ -32,7 +32,10 @@
                                         </label>
                                         <label class="btn btn-default">
                                           <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="5" /><span class="label label-info">Nevera</span>
-                                        </label>    
+                                        </label>  
+                                        <label class="btn btn-default">
+                                          <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="8" /><span class="label label-info">Nutricional</span>
+                                        </label>  
                                   </div>                               
                                 </div>                                                              
                         <div class="col-sm-12 col-md-6 col-lg-3 pull-left" ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true">
@@ -46,7 +49,8 @@
                                 <span class="label label-danger" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 2">Alto Costo</span>
                                 <span class="label label-warning" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 3">Controlados</span>
                                 <span class="label label-primary" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 4">Insumos</span>
-                                <span class="label label-info" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 5">Nevera</span>                              
+                                <span class="label label-info" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 5">Nevera</span>   
+                                <span class="label label-info" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 8">Nutricional</span>   
                             </div>                              
                            <div class="input-group">
                                 <div class="input-group-btn">

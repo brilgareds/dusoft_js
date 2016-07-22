@@ -250,6 +250,7 @@ define(["angular", "js/controllers",
 
             // Productos
             $scope.seleccionar_tipo_producto = function(tipo_producto) {
+                
                 $scope.datos_form.tipo_producto = tipo_producto;
                 $scope.datos_form.pagina_actual = 1;
 
@@ -273,6 +274,9 @@ define(["angular", "js/controllers",
                     $scope.datos_form.seleccion_tipo_producto = "- Insumos -";
                 if ($scope.datos_form.tipo_producto === '5')
                     $scope.datos_form.seleccion_tipo_producto = "- Neveras -";
+                
+                if ($scope.datos_form.tipo_producto === '8')
+                    $scope.datos_form.seleccion_tipo_producto = "- Nutricional -";
             };
 
             $scope.buscador_productos = function(ev, tipo) {
@@ -486,6 +490,7 @@ define(["angular", "js/controllers",
                                                 <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
                                                 <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
                                                 <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 8">Nu</span>\
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
                                                 <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'

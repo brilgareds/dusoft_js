@@ -33,8 +33,5 @@ define(["angular", "js/models"], function(angular, models) {
         };
 
         return this;
-
-    }]);
-
-    
+    }]);    
 });

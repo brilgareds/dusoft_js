@@ -12,7 +12,8 @@ define(["angular"], function(angular) {
                 'CENTROS_UTILIDAD_EMPRESAS':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
                 'BODEGAS_EMPRESA':BASE_URL+'/Bodegas/listarBodegasEmpresas',
                 'LISTAR_EMPRESAS_FARMACIAS':BASE_URL+'/Empresas/listarEmpresasFarmacias',
-                'LISTAR_PLANES':BASE_URL+'/Reportes/DrArias/listarPlanes'
+                'LISTAR_PLANES':BASE_URL+'/Reportes/DrArias/listarPlanes',
+                "REPORTES_GENERADOS": BASE_URL + "/Reportes/DrArias/reportesGenerados"
             }
         }
     };

@@ -20,11 +20,13 @@ define(["angular",
     "includes/classes/Bodega",
     "includes/classes/Usuario",
     "models/Planes",
+    "models/ReportesGenerados",
     "socketservice",
     "includes/http/Request",
     "uiselect2",
     "includes/classes/CentroUtilidad",
     "services/ParametrosBusquedaService",
+    "includes/helpersdirectives/visualizarReporte",
     "webNotification"
 ], function(angular, Agencia) {
     /* App Module and its dependencies */

@@ -19,7 +19,7 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
     var diferenciaInicialMes=dateHoy.diff(dateInicial,'months');
   
     if(diferenciaInicialMes > mesDiferenciaSql){
-      callback(true, "consulta (no esta en el rango de la tabla)");  
+      callback(false, -1);  
       console.log("consulta (no esta en el rango de la tabla)",diferenciaFinalMes);   
     }
     
@@ -39,7 +39,7 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
         filtro.finFechaTablaReporte=dateFinalTable;      
         filtro.consulta=2;      
     }else{
-      callback(true, "consulta (no esta en el rango de la tabla)");    
+      callback(false, -1);    
       console.log("fuera de la tabla");  
     }
    
@@ -109,6 +109,76 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
      }).catch (function(err) {
         callback(err);
      });
+};
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion: guardar estado del reporte 
+* @fecha 2016-06-17
+*/
+DrAriasModel.prototype.guardarEstadoReporte = function(datos,callback) {
+    var that = this;
+    var sql = "INSERT INTO estado_reportes (nombre_reporte,nombre_archivo,fecha_inicio,estado,parametros_de_busqueda,usuario_id)\
+                VALUES \
+               ( :1 , :2 , :3 , :4 , :5 , :6 ) ";
+    var query = G.knex.raw(sql,{1:datos.nombre_reporte,2:datos.nombre_archivo,3:datos.fecha_inicio,4:datos.estado,5:datos.busqueda,6:datos.usuario});
+    query.then(function(resultado) {
+        console.log("guardarEstadoReporte:::::::::");
+       callback(false);
+     }).catch (function(err) {
+         console.log("guardarEstadoReporte:::: ",err);
+        callback(err);
+     });
+};
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion: editar estado del reporte 
+* @fecha 2016-06-17
+*/
+DrAriasModel.prototype.editarEstadoReporte = function(datos,callback) {
+    var that = this;     
+    G.knex("estado_reportes").
+    where("nombre_reporte", datos.nombre_reporte).
+    andWhere("nombre_archivo", datos.nombre_archivo).
+    andWhere("usuario_id", datos.usuario).
+    update({fecha_fin : datos.fecha_fin, estado:datos.estado}).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });     
+};
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion: editar estado del reporte 
+* @fecha 2016-06-17
+*/
+DrAriasModel.prototype.reportesGenerados = function (datos,callback) {
+
+    var column = [
+                    "estado_reportes_id",
+                    "nombre_reporte",
+                    "nombre_archivo",
+                    "fecha_inicio",
+                    "fecha_fin",
+                    "estado",
+                    "usuario_id",
+                    "parametros_de_busqueda"
+                 ];
+
+    var query =  G.knex.column(column)
+                   .select()
+                   .from('estado_reportes')
+                   .where("usuario_id",datos.usuario)
+       //             callback(false, query.toSQL());
+                   .orderByRaw("4 DESC")
+                   .then(function (rows) {
+                       callback(false, rows);
+                   })
+                   .catch(function (error) {
+                       callback(error);
+                   }).done();
 };
 
 /**
@@ -331,34 +401,28 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
 DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
     
     var that = this;
-//    var formato = 'DD-mm-YYYY';
-//    var fechaInicial = G.moment(obj.filtro.fecha_inicial, formato);
-//    var fechaFinal   = G.moment(obj.filtro.fecha_inicial, formato);
-//    var diasDelMes = G.moment(obj.filtro.fecha_inicial, formato).daysInMonth();
-//    var suma = fechaFinal.date() + obj.filtro.dias;
+    var formato = 'DD-mm-YYYY';
+    var fechaInicial = G.moment(obj.filtro.fecha_inicial, formato);
+    var fechaFinal   = G.moment(obj.filtro.fecha_inicial, formato);
+    var diasDelMes = G.moment(obj.filtro.fecha_inicial, formato).daysInMonth();
+    var suma = fechaFinal.date() + obj.filtro.dias;
     var sql;
     var filtro;
    
-   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>",obj);
-  // callback(false);
    
-//    if(!obj.resultado){
-//       console.log("setting new result");
-//       obj.resultado = [];
-//    }
+    if(!obj.resultado){
+       console.log("setting new result");
+       obj.resultado = [];
+    }
    
     //Determina si se pueden sumar los dias a la fecha, de lo contrario se suma la diferencia
-//    if(suma <= diasDelMes){
-//        fechaFinal.add(obj.filtro.dias, 'days');
-//    } else {//diferencia
-//        var dias =  obj.filtro.dias - (suma - diasDelMes);
-//        fechaFinal.add( dias, 'days');
-//    }
+    if(suma <= diasDelMes){
+        fechaFinal.add(obj.filtro.dias, 'days');
+    } else {//diferencia
+        var dias =  obj.filtro.dias - (suma - diasDelMes);
+        fechaFinal.add( dias, 'days');
+    }
 
-//    console.log("fecha a buscar ", fechaInicial.format(formato), " a ", fechaFinal.format(formato));
-   
-  
-//   var sqlTablaNueva =" select * from reporte_dr_arias where fecha between :3 AND :4 ";
    var sqlTablaNueva =" (select \
                         to_char(fecha,'YYYY/MM/DD HH:MM:SS') as fecha,to_char(fecha_formula,'YYYY/MM/DD') as fecha_formula,formula_id,formula_papel,nom_bode,plan_descripcion,usuario_digita,\
                         descripcion_tipo_formula,paciente_id,paciente,tercero_id,medico,especialidad,\
@@ -603,64 +667,71 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                 
              if(obj.filtro.consulta === 0){
                     
-                // sql = "select nom_bode,formula_id,count(formula_id) as plan_descripcion,count(paciente_id ) as plan_descripcion from (select distinct on (formula_id) formula_id,nom_bode,paciente_id ,count(formula_id) as plan_descripcion from "+sqlTablaNueva+" as b group by 1,2,3 order by 1,2,3) as c group by 1,2 ";
                  sql = sqlTablaNueva;
                  filtro={3:obj.filtro.fecha_inicial+' 00:00:00 ',4:obj.filtro.fecha_final+' 23:59:59 '};
-              //   console.log("sql Nueva",filtro);
+          
                 }else if(obj.filtro.consulta === 1){
                     
                  sql = sqlConsulta;
                  filtro={1:obj.filtro.fecha_inicial+' 00:00:00 ',2:obj.filtro.fecha_final+' 23:59:59 '};
-               //  console.log("sql ACTUAL",filtro);
+             
                 }else if(obj.filtro.consulta === 2){
                     
                  sql = " "+sqlConsulta+ " union  "+sqlTablaNueva+ " order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto;" ;      
                  filtro={1:obj.filtro.fecha_inicial+' 00:00:00 ',4:obj.filtro.fecha_final+' 23:59:59 ' ,3:obj.filtro.inicioFechaConsultaReporte+' 00:00:00 ',2:obj.filtro.finFechaTablaReporte+' 23:59:59 '};
-               //  console.log("sql union",filtro);
+             
                 }  
-                console.log("json1: ",new Date());
-//                console.log(filtro);
                var query = G.knex.raw(sql,filtro);
-               query.then(function(resultado) {
-                   
+                query.then(function(resultado) {
+                    
+                    
+//var LINQ = require("node-linq").LINQ;
+//var arr = new LINQ(resultado.rows)        
+//        .Where(function(user) {
+//            return user.formula_id > 0;
+//            })
+//	.OrderBy(function(user) {           
+//           return user.formula_id;
+//       })
+////               .GroupBy(function(user) {
+////           return user.nom_bode;
+////        })
+//	.Select(function(user) {
+//            user.totaless=suma;
+//            return user;
+//       }).Count();
+//	//.ToArray();
+//console.log(">>>>>>>>",arr);
+
+                   callback(false, resultado);
+                 }).catch (function(err) {
+                     console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
+                    callback(err);
+                 });
+//               var query = G.knex.raw(sql,filtro);
+//               query.then(function(resultado) {
+//                   
                 ///////////////////////////////////////////////////     
-//                    var jsonArray = [
-//                    { "user": { "id": 100, "screen_name": "d_linq" }, "text": "to objects" },
-//                    { "user": { "id": 130, "screen_name": "c_bill" }, "text": "g" },
-//                    { "user": { "id": 155, "screen_name": "b_mskk" }, "text": "kabushiki kaisha" },
-//                    { "user": { "id": 301, "screen_name": "a_xbox" }, "text": "halo reach" }
-//                ]
-//                // ["b_mskk:kabushiki kaisha", "c_bill:g", "d_linq:to objects"]
-////                var queryResult = Enumerable.From(jsonArray)
-////                    .Where(function (x) { return x.user.id < 200 })
-////                    .OrderBy(function (x) { return x.user.screen_name })
-////                    .Select(function (x) { return x.user.screen_name + ':' + x.text })
-////                    .ToArray();
-//                // shortcut! string lambda selector
- var Enumerable = require('linq');
-var jsonArray = [
-    { "user": { "id": 100, "screen_name": "d_linq" }, "text": "to objects" },
-    { "user": { "id": 130, "screen_name": "c_bill" }, "text": "g" },
-    { "user": { "id": 155, "screen_name": "b_mskk" }, "text": "kabushiki kaisha" },
-    { "user": { "id": 301, "screen_name": "a_xbox" }, "text": "halo reach" }
-]
-// ["b_mskk:kabushiki kaisha", "c_bill:g", "d_linq:to objects"]
-var queryResult = Enumerable.From(jsonArray)
-    .Where(function (x) { return x.user.id < 200 })
-    .OrderBy(function (x) { return x.user.screen_name })
-    .Select(function (x) { return x.user.screen_name + ':' + x.text })
-    .ToArray();
+
+//var LINQ = require('node-linq').LINQ;
+//var path = require('path');
+//var files = ['test.txt', 'choni.txt', 'legacy.zip', 'secrets.txt', 'etc.rar'];
+//var arr = new LINQ(files)
+//  .Where(function(file) { return path.extname(file) === 'txt'; })
+//  .OrderBy(function(file) { return file;})
+//  .ToArray();
+//console.log(">>>>>>>>",arr);
 // shortcut! string lambda selector
 
-                   console.log("json2: ",queryResult);      
-//                
-                /////////////////////////////////////////   
-                  callback(false, resultado);
-
-                }).catch (function(err) {
-                   console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
-                   callback(err);
-                });
+//                   console.log("json2: ",queryResult);      
+////                
+//                /////////////////////////////////////////   
+//                  callback(false, resultado);
+//
+//                }).catch (function(err) {
+//                   console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
+//                   callback(err);
+//                });
     
    /* var query = G.knex.raw(sql, {1:fechaInicial.format(formato), 2:fechaFinal.format(formato)});
     query.timeout(200000).then(function(resultado) {

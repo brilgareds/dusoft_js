@@ -2,18 +2,19 @@
 define(["angular", "js/controllers", 'includes/slide/slideContent',
     "includes/classes/Empresa",
     'controllers/drArias/FiltroDrAriasController',
+    "models/ReportesGenerados",
 ], function(angular, controllers) {
 
     controllers.controller('DrAriasController', [
         '$scope', '$rootScope', "Request",
         "$filter", '$state', '$modal',
         "API", "AlertService", 'localStorageService',
-        "Usuario", "socket", "$timeout",
+        "Usuario", "socket", "$timeout","ReportesGenerados",
         "Empresa", "ParametrosBusquedaService",
         function($scope, $rootScope, Request,
                 $filter, $state, $modal,
                 API, AlertService, localStorageService,
-                Usuario, socket, $timeout,
+                Usuario, socket, $timeout,ReportesGenerados,
                Empresa, ParametrosBusquedaService) {
 
             var that = this;
@@ -28,25 +29,43 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.init = function(callback) {
                 $scope.root = {};
-                $scope.abrirModalDrArias();
-//                $scope.tipoPedido = 0;
-//                $scope.Empresa = Empresa.get();
-//                $scope.EmpresasProductos = [];
-//                $scope.paginaactual = 1;
-//                $scope.paginas = 0;
-//                $scope.items = 0;
-//                $scope.listarPedido = [];
-//                $scope.ultima_busqueda = "";
-//                $scope.listaEmpresas = [];
-//                $scope.empresa_seleccion = '';
-//                $scope.termino = "";
-//                $scope.empresa_seleccion = $scope.seleccion.codigo;                
+                $scope.abrirModalDrArias();            
                 callback();
             };
             
             
             
-             $scope.abrirModalDrArias= function() {
+             $scope.abrirModalParametros= function(parametros) {  
+                 var parametros =JSON.parse(parametros.parametros_de_busqueda);
+                 console.log(">>>>>>>>>>>>>>>>>",parametros);
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/drArias/modal-parametros.html',
+                    controller:['$scope',function($scope){
+                      $scope.titulo="Parametros de Busqueda";
+                      $scope.filtro={};
+                      $scope.filtro.fechainicial=parametros.fecha_inicial;
+                      $scope.filtro.fechafinal=parametros.fecha_final;
+                      $scope.filtro.empresa=parametros.empresa_seleccion;
+                      $scope.filtro.bodega=parametros.bodega_seleccion;
+                      $scope.filtro.centroUtilidad=parametros.centro_seleccion;
+                      $scope.filtro.documento=parametros.documento;
+                      $scope.filtro.codigoProducto=parametros.codigo;
+                      $scope.filtro.descripcion=parametros.descripcion;
+                      $scope.filtro.plan=parametros.plan_seleccion;
+                      $scope.close = function() {
+                         modalInstancesy.close();
+                      };
+                    }]                    
+                }
+                
+                var modalInstancesy = $modal.open($scope.opts);
+            };
+            
+             $scope.abrirModalDrArias= function(parametros) {
                  
                 $scope.opts = {
                     backdrop: true,
@@ -54,16 +73,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     dialogFade: false,
                     keyboard: true,
                     templateUrl: 'views/drArias/modal-drArias.html',
-                    controller: "FiltroDrAriasController"
+                    controller: "FiltroDrAriasController",
+                    resolve: {
+                        parametros: function() {
+                            return parametros;
+                        }
+                    }                     
                 };
-                
-//                modalInstance.result.then(function(){
-//                   that.consultarMedicamentosTemporales();
-//               },function(){}); 
 
                 var modalInstance = $modal.open($scope.opts);
             };
-
+            
+            $scope.cerrar=function($scope, $modalInstance) {
+                $scope.onCerrar = function(acepto) {
+                    $modalInstance.close();
+                };
+             }
+             
+             
+             $scope.onDescagarArchivo=function(nombre_reporte){
+              $scope.visualizarReporte("/reports/" + nombre_reporte, nombre_reporte, "download");
+             }
+             
             /**
              * +Descripcion: funcion que realiza la busqueda de los pedidos
              * @author Andres M Gonzalez
@@ -94,79 +125,52 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
             };
 
+            
             /**
              * @author Andres M. Gonzalez
-             * @fecha 04/02/2016
+             * @fecha 22/07/2016
              * +Descripcion Metodo encargado de invocar el servicio que
-             *              listar todos las autorizaciones de productos en pedido
+             *              listar todos los reportes generados
              */
-            that.buscarProductosBloqueados = function(termino,paginando) {
-                    
-//                if ($scope.ultima_busqueda !== $scope.termino) {
-//                    $scope.paginaactual = 1;
-//                }
-//                
-//                var obj = {
-//                    termino_busqueda: termino,
-//                    pagina_actual: $scope.paginaactual,
-//                    empresa_id: $scope.empresa_seleccion,
-//                    session: $scope.session,
-//                    tipo_pedido: $scope.tipoPedido,
-//                    detalle: '0'
-//                };
-//                ParametrosBusquedaService.buscarProductosBloqueados(obj, function(data) {
-//                    if (data.status === 200) {
-//                        console.log(">>>>>>>>>>>>>>",data);
-//                        $scope.ultima_busqueda = $scope.termino;
-//                        that.renderProductos(data, paginando);
-//                    } else {
-//                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-//                    }
-//                });
+            that.buscarReportesBloqueados = function() {
+                var obj = {
+                    session: $scope.session
+                };
+                ParametrosBusquedaService.reportesGenerados(obj, function(data) {
+                    if (data.status === 200) {
+                        that.renderReportesBloqueados(data);                        
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema ReportesBloqueados: ", data.msj);
+                    }
+                });
             };
-
+            
             /**
              * +Descripcion:renderizar la consulta al modelo
              * @author Andres M Gonzalez
              * @fecha: 11/05/2016
              * @returns {objeto}
              */
-            that.renderProductos = function(data, paginando) {
-//                listaTerceros = [];
-//                $scope.items = data.obj.listarProductosBloqueados.length;
-//                
-////                se valida que hayan registros en una siguiente pagina
-//                if (paginando && $scope.items === 0) {
-//                    if ($scope.paginaactual > 1) {
-//                        $scope.paginaactual--;
-//                    }
-//                    AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
-//                    return;
-//                }
-//
-//                $scope.EmpresasProductos = [];
-//                $scope.paginas = (data.obj.listarProductosBloqueados.length / 10);
-//                $scope.items = data.obj.listarProductosBloqueados.length;
-//
-//                for (var i in data.obj.listarProductosBloqueados) {
-//
-//                    var objt = data.obj.listarProductosBloqueados[i];
-//                    var pedidoAutorizacion = PedidoAutorizacion.get();
-//                    var datos = {};
-//                    datos.numero_pedido = objt.pedido_id;
-//                    datos.fecha_registro = objt.fecha_solicitud;
-//                    pedidoAutorizacion.setDatos(datos);
-//                    pedidoAutorizacion.setTipoPedido(objt.tipo_pedido);
-//                    pedidoAutorizacion.setFechaSolicitud(objt.fecha_solicitud);
-//                    pedidoAutorizacion.setPorAprobar(objt.poraprobacion);
-//                    pedidoAutorizacion.setBoolPorAprobar(objt.poraprobacion);
-//                    //  pedidoAutorizacion.setProductos(producto);
-//
-//                    var terceros = TerceroAutorizacion.get(objt.nombre_tercero, objt.tipo_id_tercero, objt.tercero_id);
-//                    terceros.agregarPedido(pedidoAutorizacion);
-//                    listaTerceros.push(terceros);
-//                }
-//                $scope.listarPedido = listaTerceros;
+            that.renderReportesBloqueados = function(data) {               
+                listaReportesGenerados = [];
+                for (var i in data.obj.reportes) {
+                    var objt = data.obj.reportes[i];
+                    var reportesGenerados = ReportesGenerados.get(objt.estado_reportes_id);
+                    reportesGenerados.setNombreReporte(objt.nombre_reporte);
+                    reportesGenerados.setNombreArchivo(objt.nombre_archivo);
+                    reportesGenerados.setFechaInicio(objt.fecha_inicio);
+                    reportesGenerados.setFechaFin(objt.fecha_fin);
+                    reportesGenerados.setEstado(objt.estado);
+                    reportesGenerados.setUsuarioId(objt.usuario_id);
+                    //var json = JSON.parse(objt.parametros_de_busqueda);
+                    reportesGenerados.setParametrosBusqueda(objt.parametros_de_busqueda);
+                    listaReportesGenerados.push(reportesGenerados);
+                }              
+                $scope.listaReportesGenerados = listaReportesGenerados;
+            };
+            
+            $scope.onAbrirVentana=function(json){
+                
             };
 
             /**
@@ -175,93 +179,58 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @fecha: 11/05/2016
              * @returns {objeto}
              */
-            $scope.lista_pedidos_clientes = {
-                data: 'listarPedido',
+            $scope.lista_reportesGenerados = {
+                data: 'listaReportesGenerados',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'opciones', displayName: "Estado Actual", cellClass: "txt-center dropdown-button", width: "8%",
+                    {field: 'Estado del Reporte', displayName: "Estado del Reporte", cellClass: "txt-center dropdown-button", width: "10%",
                         cellTemplate: ' <div class="row">\
-                                                <button ng-if="row.entity.obtenerPedidoPorPosiscion(0).getBoolPorAprobar()" class="btn btn-warning btn-xs" >\
-                                                    <i class="glyphicon glyphicon-warning-sign"></i>\n\
-                                                        <span> Pendiente </span>\
+                                                <button ng-if="row.entity.getEstado()==0" class="btn btn-primary btn-xs" >\
+                                                    <i class="glyphicon glyphicon-hourglass"></i>\n\
+                                                        <span> En Proceso </span>\
                                                 </button>\
-                                                <button ng-if="!row.entity.obtenerPedidoPorPosiscion(0).getBoolPorAprobar()" class="btn btn-primary btn-xs" >\
+                                                <button ng-if="row.entity.getEstado()==1" class="btn btn-success btn-xs" >\
                                                     <i class="glyphicon glyphicon-ok"></i>\
-                                                    <span> Revisado </span>\
+                                                    <span> Generado </span>\
+                                                </button>\
+                                                <button ng-if="row.entity.getEstado()==2" class="btn btn-danger btn-xs" >\
+                                                    <i class="glyphicon glyphicon-remove"></i>\
+                                                    <span> Error </span>\
+                                                </button>\
+                                                <button ng-if="row.entity.getEstado()==3" class="btn btn-warning btn-xs" >\
+                                                    <i class="glyphicon glyphicon-warning-sign"></i>\
+                                                    <span> 0 Registros </span>\
                                                 </button>\
                                             </div>'
+                    },                    
+                    {field: 'getNombreReporte()', displayName: 'Nombre', width: "60%"},
+                    {field: 'Fecha de Generación', displayName: "Fecha de Generación", cellClass: "txt-center dropdown-button", width: "10%",
+                        cellTemplate: ' <div class="row">\
+                                                <div>{{row.entity.getFechaInicio()| date:"yyyy-MM-dd HH:mm:ss"}}</div>\
+                                            </div>'
                     },
-                    {field: 'getNombre()', displayName: 'Cliente / Farmacia', width: "60%"},
-                    {field: 'obtenerPedidoPorPosiscion(0).get_numero_pedido()', displayName: 'Pedido', width: "10%"},
-                    {field: 'obtenerPedidoPorPosiscion(0).getFechasolicitud()', displayName: 'Fecha', width: "10%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {displayName: "Parametros de Busqueda", cellClass: "txt-center dropdown-button", width: "10%",
                         cellTemplate: ' <div class="row">\n\
-                                         <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.separado"  ng-click="onAbrirVentana(row.entity)">\n\
+                                         <button class="btn btn-default btn-xs" ng-click="abrirModalParametros(row.entity)" >\n\
                                              <span class="glyphicon glyphicon-search"></span>\
                                          </button>\
                                        </div>'
-                    }
+                    },
+                    {displayName: "Descarga", cellClass: "txt-center dropdown-button", width: "10%",
+                        cellTemplate: ' <div class="row">\n\
+                                         <button class="btn btn-default btn-xs" ng-click="onDescagarArchivo(row.entity.getNombreArchivo())" >\n\
+                                             <span class="glyphicon glyphicon-download-alt"></span>\
+                                         </button>\
+                                       </div>'
+                    }//ng-click="onAbrirVentana(row.entity)"ng-click="onAbrirVentana(row.entity)"
                 ]
 
             };
-            
-            /**
-             * +Descripcion: metodo para navegar a la ventana detalle
-             * @author Andres M Gonzalez
-             * @fecha: 11/05/2016
-             * @params pedido : numero del pedido
-             * @returns {ventana}
-             */
-            that.mostrarDetalle = function(pedido) {
-//                localStorageService.add("pedidoCabecera",
-//                        {
-//                            numeroPedido: pedido,
-//                            tipoPedido: $scope.tipoPedido
-//                        });
-//                $state.go("AutorizacionesDetalle");
-            };
-            
-             /**
-             * +Descripcion: metodo para el paginado
-             * @author Andres M Gonzalez
-             * @fecha: 11/05/2016
-             * @returns {pagina}
-             */
-             $scope.paginaAnterior = function() {
-//                if($scope.paginaactual === 1) return;
-//                $scope.paginaactual--;
-//                that.buscarProductosBloqueados($scope.termino, true);
-            };
-            
-            /**
-             * +Descripcion: metodo para el paginado
-             * @author Andres M Gonzalez
-             * @fecha: 11/05/2016
-             * @returns {pagina}
-             */
-            $scope.paginaSiguiente = function() {
-//                $scope.paginaactual++;
-//                that.buscarProductosBloqueados($scope.termino, true);
-            };
-            
-
-            /**
-             * +Descripcion: evento de la vista para pasar a la ventana detalle
-             * @author Andres M Gonzalez
-             * @fecha: 11/05/2016
-             * @params pedido : numero del pedido
-             * @returns {ventana}
-             */
-            $scope.onAbrirVentana = function(pedido) {
-//                
-//                that.mostrarDetalle(pedido);
-            };
 
             that.init(function() {
-//                $scope.tipoPedido=0;
-//                that.buscarProductosBloqueados("");
+                that.buscarReportesBloqueados();
             });
                        
 

@@ -90,7 +90,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @fecha 25/05/2016
          */    
         that.listarMedicamentosFormulados = function(resultadoStorage){
-            
+            console.log("AQUI HACER LA VALIDACION DE LOS CONFRONTADOS")
             var productos;
             var obj = {                   
                 session: $scope.session,
@@ -100,6 +100,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    }
                 }    
             };
+            
+            dispensacionHcService.consultarMedicamentosDespachados(obj,function(data){
+                    console.log("---------consultarMedicamentosDespachados---------------");
+                    console.log("DATA ", data);
+            });
             dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
 
                 if(data.status === 200) {       
@@ -259,7 +264,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 {field: 'Dispensar', width: "10%",
                            displayName: "Dispensar",
                            cellClass: "txt-center",
-                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)">Dispensar</button>'
+                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)" ng-disabled ="showBtnDispensar">Dispensar</button>'
 
                 }
             ]
@@ -469,6 +474,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          */
         var emitRealizarEntregaFormula = $scope.$on('emitRealizarEntregaFormula', function(e, parametros) { 
             $scope.showBtnImprimir = true;
+            $scope.showBtnDispensar = true;
+            console.log("AQUI REALIZA LA ENTREGA DE LA FORMULA")
             that.consultarMedicamentosTemporales();
         });                    
         

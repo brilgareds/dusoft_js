@@ -218,6 +218,48 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
     }).done();
 };
 
+
+/*
+ * @author Cristian Ardila
+ * @fecha 24/05/2016
+ * +Descripcion Controlador encargado de consultar los medicamentos despachados
+ *              
+ */
+DispensacionHc.prototype.consultarMedicamentosDespachados = function(req, res){
+   
+   console.log("********DispensacionHc.prototype.consultarMedicamentosDespachados*****************");
+   console.log("********DispensacionHc.prototype.consultarMedicamentosDespachados*****************");
+   console.log("********DispensacionHc.prototype.consultarMedicamentosDespachados*****************");
+   
+    var that = this;
+    var args = req.body.data;
+   
+    if (args.listar_medicamentos_formulados === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_formulados: []}));
+        return;
+    }
+   
+    if (!args.listar_medicamentos_formulados.evolucionId || args.listar_medicamentos_formulados.evolucionId.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_formulados: []}));
+        return;
+    }
+
+    var parametros = {evolucionId:args.listar_medicamentos_formulados.evolucionId};
+   
+   
+    G.Q.ninvoke(that.m_dispensacion_hc,'consultarMedicamentosDespachados',parametros).then(function(resultado){
+       
+      console.log("---resultado.rows.length ---- ", resultado.rows.length)
+        if(resultado.rows.length > 0){ 
+              res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado.rows}));
+        }else{
+           throw 'Consulta sin resultados';
+        }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 /*
  * @author Cristian Ardila
  * @fecha 24/05/2016
@@ -753,23 +795,18 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         /**
          * Se valida de que hallan medicamentos pendientes
          */
-        if(resultado.rows.length >0){ 
-            
-          /**
-           * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
-           */
+        if(resultado.rows.length >0){            
+        /**
+         * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
+         */
          return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, evolucionId,0, usuario);
-        } /*else {
+        }else{
             def.resolve();
-        }*/
+        }
     
     }).then(function(resultado){
-        
-         console.log("resultado ", resultado)
-         return res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
-         //AQUI SE DEBE DESCOMENTAR PARA QUE CONTINUE ELIMINANDO LOS TEMPORALES
-         //SE ESTA VALIDANDO QUE NO TENGA EN CUENTA LOS PRODUCTOS CON TOTAL EN 0.00
-         //G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalesDispensados',{evolucionId:evolucionId}); 
+       
+         return G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalesDispensados',{evolucionId:evolucionId}); 
           
     }).then(function(resultado){
           
@@ -1050,44 +1087,24 @@ function __insertarBodegasDocumentosDetalle(that, index, parametros, callback) {
  * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
  *              temporales que se almacenaran como pendientes
  */
- /*function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback) {
+function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback) {
     
   
    
-    var producto = productos[index];
-    
-    
-    console.log("<<<<<------->>>>>>> producto.codigo <<<<<<---**>>>>", producto);
+    var producto = productos[index];   
+   
     if (!producto) {       
         //console.log("Debe salir a qui ");
         callback(false);
         return;
     }  
-    
-    G.Q.ninvoke(that.m_dispensacion_hc,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario).then(function(resultado){    
-        index++;
-        setTimeout(function() {
-            __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback);
-        }, 300);
-    }).fail(function(err){      
-        callback(true);            
-    }).done();
-}*/
-function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback) {
-    
-  
-   
-    var producto = productos[index];
-    
-    
-   
-    if (!producto || parseInt(producto.total) === 0) {       
-        //console.log("Debe salir a qui ");
-        callback(false);
-        return;
-    }  
-     console.log(" -- ", parseInt(producto.total));
-      
+     
+    if(parseInt(producto.total) > 0){
+        G.Q.ninvoke(that.m_dispensacion_hc,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario).then(function(resultado){
+
+         }).fail(function(err){      
+       }).done();   
+    }
         index++;
         setTimeout(function() {
             __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback);

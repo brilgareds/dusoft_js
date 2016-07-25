@@ -472,6 +472,218 @@ DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callba
     });  
 };
 
+
+/**
+ * @author Cristian Ardila
+ * @fecha 25/07/2016
+ * +Descripcion Modelo encargado de consultar los medicamentos despachados
+ * @controller DispensacionHc.prototype.consultarMedicamentosDespachados
+ * -- Pertenece a la funcion medicamentosDespachados
+ */
+DispensacionHcModel.prototype.consultarMedicamentosDespachados = function(obj,callback){
+
+    var parametros = {1: obj.evolucionId};
+                     
+        var sql = "SELECT * FROM(\
+                        SELECT   dd.codigo_producto,\
+                        dd.cantidad as numero_unidades,\
+                        dd.fecha_vencimiento ,\
+                        dd.lote,\
+                        fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+                        d.usuario_id,\
+                        'dispensacion_hc' as sistema,\
+                        to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
+                        to_char(now()- d.fecha_registro,'dd') as dias_de_entregado\
+			FROM  hc_formulacion_despachos_medicamentos_pendientes hc\
+                        INNER JOIN bodegas_documentos d\
+                         ON  hc.bodegas_doc_id = d.bodegas_doc_id AND hc.numeracion = d.numeracion\
+                        INNER JOIN bodegas_documentos_d dd\
+                         ON dd.bodegas_doc_id = d.bodegas_doc_id AND dd.numeracion = d.numeracion\
+                        WHERE hc.evolucion_id = :1 AND d.todo_pendiente = 1\
+			UNION\
+                        select\
+                        dd.codigo_producto,\
+                        dd.cantidad as numero_unidades,\
+                        dd.fecha_vencimiento ,\
+                        dd.lote,\
+                        fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+                        d.usuario_id,\
+                        'dispensacion_hc' as sistema,\
+                        to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
+                        to_char(now()- d.fecha_registro,'dd') as dias_de_entregado\
+                        FROM\
+                          hc_formulacion_despachos_medicamentos as dc,\
+                          bodegas_documentos as d,\
+                          bodegas_documentos_d AS dd\
+                        WHERE\
+                            dc.bodegas_doc_id = d.bodegas_doc_id\
+                        and dc.numeracion = d.numeracion\
+                        and dc.evolucion_id = :1\
+                        and d.bodegas_doc_id = dd.bodegas_doc_id\
+                        and d.numeracion = dd.numeracion\
+                           )as k\
+                           order by fecha_entrega asc;\
+                           ";  
+    G.knex.raw(sql,parametros).then(function(resultado){     
+        callback(false, resultado);
+    }).catch(function(err){            
+        callback(err);
+    });  
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha 25/07/2016
+ * +Descripcion Modelo encargado de consultar los medicamentos despachados
+ * @controller DispensacionHc.prototype.consultarUltimoRegistroDispensacion
+ * -- Pertenece a la funcion ConsultarUltimoResg_Dispens_
+ */
+/*DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj,callback){
+
+    var formato = 'DD/mm/YYYY';
+    var fechaDias = 1;
+    var today =   G.moment(obj.fecha_vencimiento, formato);
+    var sql = "";
+    var sql2 = "";
+    if(obj.principio_activo){
+        sql = "and mm.cod_principio_activo='" + obj.principio_activo + "' ";
+        sql2 = "and h.subclase_id='" + obj.principio_activo + "' ";
+       
+    }else{
+        sql ="and inve.codigo_producto='" + obj.producto + "' ";
+        sql2 ="and b.codigo_producto ='" + obj.producto + "' ";
+                                     
+    }
+    var parametros = {1: obj.tipo_id_paciente, 2: obj.paciente_id};
+                     
+        var sql = "SELECT A.resultado,\
+                A.fecha_registro,\
+                A.unidades,\
+                A.nombre,\
+                A.razon_social\
+                FROM (\
+                    SELECT to_char(d.fecha_registro,'YYYY-mm-dd') AS fecha_registro,\
+                    '1' as resultado,\
+                    SUM(dd.cantidad) as unidades,\
+                    SYS.nombre,\
+                    EMPRE.razon_social\
+                    FROM hc_formulacion_despachos_medicamentos as dc\
+                    JOIN hc_formulacion_antecedentes hc ON(dc.evolucion_id=hc.evolucion_id),\
+                    bodegas_documentos as d,\
+                    bodegas_documentos_d AS dd ,\
+                    inventarios_productos inve  left join medicamentos mm ON (inve.codigo_producto=mm.codigo_medicamento),\
+                    system_usuarios  SYS,\
+                    bodegas_doc_numeraciones  NUME,\
+                    empresas EMPRE\
+                    WHERE dc.bodegas_doc_id = d.bodegas_doc_id\
+                    and dc.numeracion = d.numeracion\
+                    and d.bodegas_doc_id = dd.bodegas_doc_id\
+                    and d.numeracion = dd.numeracion\
+                    and dd.codigo_producto=inve.codigo_producto\
+                    and d.usuario_id=SYS.usuario_id\
+                    and d.bodegas_doc_id=NUME.bodegas_doc_id\
+                    and NUME.empresa_id=EMPRE.empresa_id " + sql + "and hc.tipo_id_paciente= :1\
+                    and hc.paciente_id= :2\
+                    and dc.sw_estado='1'\
+                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social\
+                    UNION\
+                   SELECT to_char(d.fecha_registro,'YYYY-mm-dd') AS fecha_registro,\
+                    '0' as resultado,\
+                    SUM(dd.cantidad) as unidades,\
+                    SYS.nombre,\
+                    EMPRE.razon_social\
+                    FROM hc_formulacion_despachos_medicamentos_pendientes as dc\
+                    JOIN hc_formulacion_antecedentes hc ON(dc.evolucion_id=hc.evolucion_id) ,\
+                    bodegas_documentos as d,\
+                    bodegas_documentos_d AS dd ,\
+                    inventarios_productos inve  left join medicamentos mm ON (inve.codigo_producto=mm.codigo_medicamento) ,\
+                    system_usuarios  SYS,\
+                    bodegas_doc_numeraciones  NUME,\
+                    empresas EMPRE\
+                    WHERE dc.bodegas_doc_id = d.bodegas_doc_id\
+                    and dc.numeracion = d.numeracion\
+                    and d.bodegas_doc_id = dd.bodegas_doc_id\
+                    and d.numeracion = dd.numeracion\
+                    and dd.codigo_producto=inve.codigo_producto\
+                    and d.usuario_id=SYS.usuario_id\
+                    and d.bodegas_doc_id=NUME.bodegas_doc_id\
+                    and NUME.empresa_id=EMPRE.empresa_id  " + sql +  "and hc.tipo_id_paciente= :1\
+                    and hc.paciente_id= :2\
+                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social\
+                    UNION\
+                SELECT\
+                MAX(to_char(a.fecha_registro,'YYYY-MM-DD')) AS fecha_registro,\
+                '1' as resultado,\
+                SUM(b.cantidad) as unidades,\
+                g.nombre,\
+                --d.formula_papel,\
+                f.descripcion||'-'||i.razon_social as razon_social\
+                FROM\
+                bodegas_documentos as a\
+                JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id)\
+                AND (a.numeracion = b.numeracion)\
+                JOIN esm_formulacion_despachos_medicamentos as c ON (a.bodegas_doc_id = c.bodegas_doc_id)\
+                AND (a.numeracion = c.numeracion)\
+                JOIN esm_formula_externa as d ON (c.formula_id = d.formula_id)\
+                JOIN bodegas_doc_numeraciones as e ON (a.bodegas_doc_id = e.bodegas_doc_id)\
+                JOIN centros_utilidad as f ON (e.empresa_id = f.empresa_id)\
+                AND (e.centro_utilidad = f.centro_utilidad)\
+                JOIN empresas as i ON (f.empresa_id = i.empresa_id)\
+                JOIN system_usuarios as g ON (a.usuario_id = g.usuario_id)\
+                JOIN inventarios_productos as h ON (b.codigo_producto = h.codigo_producto)\
+                WHERE TRUE   " + sql2 +  " and d.tipo_id_paciente= :1\
+                and d.paciente_id= :2\
+                and c.sw_estado='1'\
+                and d.sw_estado IN ('0','1')\
+                and d.fecha_registro <= ('" + today + "'::date +'1 day' ::interval)::date\
+		and d.fecha_registro >= '" +fechaDias+ "'::date\
+                GROUP BY 2,4,5";
+   
+    /*union   
+
+    SELECT 										
+                MAX(to_char(a.fecha_registro,'YYYY-MM-DD')) AS fecha_registro,
+                '0' as resultado,
+                SUM(b.cantidad) as unidades,
+                g.nombre,
+                --d.formula_papel,
+                f.descripcion||'-'||i.razon_social as razon_social
+
+                FROM
+               bodegas_documentos as a
+                JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id)
+                AND (a.numeracion = b.numeracion)
+                JOIN esm_formulacion_despachos_medicamentos_pendientes as c ON (a.bodegas_doc_id = c.bodegas_doc_id)
+                AND (a.numeracion = c.numeracion)
+                JOIN esm_formula_externa as d ON (c.formula_id = d.formula_id)
+                JOIN bodegas_doc_numeraciones as e ON (a.bodegas_doc_id = e.bodegas_doc_id)
+                JOIN centros_utilidad as f ON (e.empresa_id = f.empresa_id)
+                AND (e.centro_utilidad = f.centro_utilidad)
+                JOIN empresas as i ON (f.empresa_id = i.empresa_id)
+                JOIN system_usuarios as g ON (a.usuario_id = g.usuario_id)
+                JOIN inventarios_productos as h ON (b.codigo_producto = h.codigo_producto)
+                WHERE TRUE  ";
+           if ($principio_activo != "")
+            $sql .= " and h.subclase_id='" . trim($principio_activo) . "' ";
+        else
+            $sql .= "and 		b.codigo_producto='" . trim($producto) . "'  	";
+        $sql .= "  
+                and 		d.tipo_id_paciente='" . $tipo_id_paciente . "'
+                and 		d.paciente_id='" . $paciente_id . "'
+                and 		d.sw_estado IN ('0','1')
+                and   	d.fecha_registro <= ('" . $today . "'::date +'1 day' ::interval)::date
+		and 		d.fecha_registro >= '" . $fecha_dias . "'::date 
+                GROUP BY 2,4,5	
+
+
+           ) AS A    ORDER BY  A.resultado ASC 
+                           ";  */
+    /*G.knex.raw(sql,parametros).then(function(resultado){     
+        callback(false, resultado);
+    }).catch(function(err){            
+        callback(err);
+    });  
+};*/
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
@@ -1069,7 +1281,6 @@ DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,callb
    console.log("********eliminarTemporalesDispensados************ ", parametros );
    
     var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp WHERE  evolucion_id = :1;";
-
            
     var query = G.knex.raw(sql,parametros );
     

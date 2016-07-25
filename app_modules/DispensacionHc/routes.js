@@ -30,6 +30,11 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/listarMedicamentosFormulados", function(req, res){
         c_dispensacion_hc.listarMedicamentosFormulados(req, res);
     });
+    
+    // consultar los medicamentos despachados
+    app.post("/api/DispensacionHc/consultarMedicamentosDespachados", function(req, res){
+        c_dispensacion_hc.consultarMedicamentosDespachados(req, res);
+    });
   
         // cantidad de producto temporal
     app.post("/api/DispensacionHc/cantidadProductoTemporal", function(req, res){

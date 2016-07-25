@@ -3,16 +3,7 @@ define(["angular", "js/models"], function(angular, models) {
 
     models.factory('ReportesGenerados',["$filter", function($filter) {
             
-//        var estado_reportes_id;
-//        var nombre_reporte;
-//        var nombre_archivo;
-//        var fecha_inicio;
-//        var fecha_fin;
-//        var estado;
-//        var usuario_id;
-//        var parametros_de_busqueda;
-
-        function ReportesGenerados(estado_reportes_id) {
+       function ReportesGenerados(estado_reportes_id) {
             this.estado_reportes_id=estado_reportes_id;
         };
 

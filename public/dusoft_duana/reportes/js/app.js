@@ -25,7 +25,7 @@ define(["angular",
     "includes/http/Request",
     "uiselect2",
     "includes/classes/CentroUtilidad",
-    "services/ParametrosBusquedaService",
+    "services/drArias/ParametrosBusquedaService",
     "includes/helpersdirectives/visualizarReporte",
     "webNotification"
 ], function(angular, Agencia) {

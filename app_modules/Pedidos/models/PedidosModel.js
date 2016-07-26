@@ -302,10 +302,9 @@ function consultar_cantidad_total_productos_despachados(empresa_id, codigo_produ
                 group by 1 order by 1 asc ; ";
 
 
-    G.knex.raw(sql, {1: empresa_id, 2: codigo_producto, 3: fecha_registro_pedido}).
-            then(function(resultado) {
+    G.knex.raw(sql, {1: empresa_id, 2: codigo_producto, 3: fecha_registro_pedido}).then(function(resultado) {
         callback(false, resultado.rows);
-    }). catch (function(err) {
+    }).catch (function(err) {
         callback(err);
     });
 }

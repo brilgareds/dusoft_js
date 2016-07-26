@@ -417,10 +417,12 @@ function __guardarAutorizacionesProductosPedidos(params, callback) {
     console.log("productos a guardar ", params.productos);
     var producto = params.productos[0];
     var def = G.Q.defer();
+    
     if (!producto) {
         callback(false);
         return;
     }
+    
     if (params.productos[0].bloqueado === '0') {
         G.Q.nfcall(__insertarAutorizacionesProductosPedido, params).then(function(resultado) {
             setTimeout(function() {

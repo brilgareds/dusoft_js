@@ -207,6 +207,19 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Servicio encargado de obtener los medicamentos
+              *              dispensados
+              */
+            self.usuarioPrivilegios = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.USUARIO_PRIVILEGIOS,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
+            
             
             /**
                * @author Cristian Ardila

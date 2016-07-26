@@ -671,6 +671,36 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
         callback(err);
     });  
 };
+
+/**
+ * @author Cristian Ardila
+ * @fecha 26/07/2016
+ * +Descripcion Modelo encargado de consultar si un usuario tiene privilegios
+ *              para autorizar una dispensacion de un producto confrontado
+ * @controller DispensacionHc.prototype.usuarioPrivilegios
+ * -- Pertenece a la funcion Usuario_Privilegios_ del (VIEJO)
+ */
+DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
+
+    var parametros = {1: obj.empresa, 2: obj.centroUtilidad,
+                      3: obj.bodega, 4: obj.usuario};
+
+   
+        var sql = "SELECT sw_privilegios\
+                  FROM userpermisos_dispensacion\
+                  WHERE empresa_id= :1 AND centro_utilidad = :2 AND bodega = :3\
+                  AND usuario_id = :4 AND sw_activo = '1' ";
+  
+    G.knex.raw(sql,parametros).then(function(resultado){ 
+        console.log("resultado ", resultado)
+          callback(false, resultado)
+    }).catch(function(err){   
+        console.log("err ", err);
+          callback(err);
+    });
+    
+};
+
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016

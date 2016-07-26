@@ -162,23 +162,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                
         };
        
-        var sumaFecha = function(d, fecha)
-            {
-             var Fecha = new Date();
-             var sFecha = fecha || (Fecha.getDate() + "-" + (Fecha.getMonth() +1) + "-" + Fecha.getFullYear());
-             var sep = sFecha.indexOf('/') !== -1 ? '/' : '-'; 
-             var aFecha = sFecha.split(sep);
-             var fecha = aFecha[2]+'-'+aFecha[1]+'-'+aFecha[0];
-             fecha= new Date(fecha);
-             fecha.setDate(fecha.getDate()+parseInt(d));
-             var anno=fecha.getFullYear();
-             var mes= fecha.getMonth()+1;
-             var dia= fecha.getDate();
-             mes = (mes < 10) ? ("0" + mes) : mes;
-             dia = (dia < 10) ? ("0" + dia) : dia;
-             var fechaFinal = anno+sep+mes+sep+dia;
-             return (fechaFinal);
-             }
          /**
           * @author Cristian ardila
           * +Descripcion Metodo encargado de invocar el servicio que consultara
@@ -201,36 +184,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                }    
             };
              
-             /*dispensacionHcService.consultarUltimoRegistroDispensacion(obj, function(data){
-                
-                 if(data.status === 200) {  
-                     console.log("data.obj.fechaRegistro ", data.obj.fechaRegistro)
-                    //fechaRegistro = data.obj.fechaRegistro;
+            dispensacionHcService.existenciasBodegas(obj, function(data){
+                //console.log("data ---->>>>", data)
+                entity.vaciarProductosHc();
+                if(data.status === 200) {                                          
+                    entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
+                    $scope.lotes = entity.mostrarProductosHc();
+                    that.ventanaDispensacionFormula();
+                }if(data.status === 204) {  
                     
-                 }else{
-                    fechaRegistro = "";
-                 }
-             });
-           //  console.log("data.obj.fechaRegistro ", fechaRegistro)
-             if(today >= fechaRegistro){
-                
-                 if(today > fechaDespacho){
-                     
-                     
-                 }*/
-                  dispensacionHcService.existenciasBodegas(obj, function(data){
-                      console.log("data ", data);
-                            entity.vaciarProductosHc();
-                            if(data.status === 200) {                                          
-                                entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
-                                $scope.lotes = entity.mostrarProductosHc();
-                                that.ventanaDispensacionFormula();
+                    dispensacionHcService.usuarioPrivilegios(obj, function(privilegio){
+                            
+                        if(privilegio.status === 200){
+                           
+                            if(privilegio.obj.privilegios[0].sw_privilegios === '1'){
+                             that.ventanaAutorizaDispensacion();                         
                             }else{
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no posee privilegios para autorizar la dispensacion");   
                             }
-                        }); 
-                 
-             //}              
+                        }
+                        
+                    });    
+                    
+                    //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }if(data.status === 500){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+            }); 
+                      
         };
          
            
@@ -470,6 +451,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         };
         
         
+        
+        that.ventanaAutorizaDispensacion = function(){
+            
+            $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: true,
+                keyboard: true,
+                templateUrl: 'views/dispensacionHc/dispensarAutorizaDispensacion.html',
+                scope: $scope,                  
+                //controller: "dispensacionRealizarEntregaController"
+                                   
+            };
+            var modalInstance = $modal.open($scope.opts);   
+           
+                modalInstance.result.then(function(){
+                    //$scope.showBtnImprimirPendientes = true;
+                    //that.consultarMedicamentosTemporales();
+                },function(){});                          
+                
+        };
         /**
           * @author Cristian Ardila
           * +Descripcion Metodo que desplegara una ventana encargada de 

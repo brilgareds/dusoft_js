@@ -285,19 +285,16 @@ var sumaFecha = function(d, fechaP){
  */
 DispensacionHc.prototype.existenciasBodegas = function(req, res){
    
-   console.log("***DispensacionHc.prototype.existenciasBodegas*************");
-   console.log("***DispensacionHc.prototype.existenciasBodegas*************");
-   console.log("***DispensacionHc.prototype.existenciasBodegas*************");
     var today = new Date();
-            var dd = today.getDate();
-            var mm = today.getMonth()+1; //January is 0!
-            var yyyy = today.getFullYear();
-            if(dd<10){
-                dd='0'+dd
-            } 
-            if(mm<10){
-                mm='0'+mm
-            } 
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+        if(dd<10){
+            dd='0'+dd
+        } 
+        if(mm<10){
+            mm='0'+mm
+        } 
     var today = yyyy+'-'+mm+'-'+dd;
     var fechaDias = sumaFecha(25,today);
     var that = this;
@@ -348,9 +345,7 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
                                                fechaDia: fechaDias,
                                                today: today
                                                };
-
-  
-    G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametrosUltimoRegistroDispensacion).then(function(resultado){
+G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametrosUltimoRegistroDispensacion).then(function(resultado){
 
         if(resultado.rows.length > 0){ 
             fechaRegistro = resultado.rows[0].fecha_registro;
@@ -365,21 +360,73 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
            return G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros);
            
          }else{
-             def.resolve();
+              def.resolve();             
+              throw {msj: resultado.rows, codigo: 204};
          }
    
    }).then(function(resultado){
-       
-       if(resultado && resultado.rows.length > 0){ 
+       console.log("AQUI QUE PASO ", resultado)
+       if(resultado || resultado.rows.length > 0){ 
              res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado.rows}));
        }else{
-           throw 'Este medicamento fue despachado hace menos de 25 dias';
+           throw {msj: "Consulta sin resultado", codigo: 500};
        }
            
-   }).fail(function(err){      
+   }).fail(function(err){     
+      res.send(G.utils.r(req.url, err.msj, err.codigo, {existenciasBodegas: []}));
+      // res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 24/05/2016
+ * +Descripcion Controlador encargado de consultar si el usuario cuenta con 
+ *              privilegios para generar la accion
+ *              
+ */
+DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+    var usuario = req.session.user.usuario_id;
+    
+    if (!args.existenciasBodegas.empresa || args.existenciasBodegas.empresa.length === 0 ) {
+           res.send(G.utils.r(req.url, 'La empresa esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
+           return;
+       }
+    
+    if (!args.existenciasBodegas.centroUtilidad || args.existenciasBodegas.centroUtilidad.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El centro de utilidad esta llegando vacio ó nulo', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.bodega || args.existenciasBodegas.bodega.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La bodega esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    var parametros={empresa: args.existenciasBodegas.empresa,
+                    centroUtilidad:args.existenciasBodegas.centroUtilidad, 
+                    bodega:args.existenciasBodegas.bodega,
+                    usuario:usuario              
+                    };
+                    
+ G.Q.ninvoke(that.m_dispensacion_hc,'usuarioPrivilegios', parametros).then(function(resultado){
+     
+       if(resultado && resultado.rows.length > 0){ 
+           res.send(G.utils.r(req.url, 'Usuario con privilegios de autorizar dispensacion', 200, {privilegios:resultado.rows}));
+       }else{
+           throw "Consulta sin resultado";
+       }
+
+}).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+
 
 /**
  * @author Cristian Ardila

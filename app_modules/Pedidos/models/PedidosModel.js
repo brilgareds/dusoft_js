@@ -338,8 +338,7 @@ function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto
         callback(err);
     });
 
-}
-;
+};
 
 /*
  * @Author: Andres M. Gonzalez
@@ -365,22 +364,48 @@ PedidosModel.prototype.guardarAutorizacion = function(parametros, callback) {
  *               los productos que se van autorizar
  */
 function __insertarAutorizacionesProductosPedido(params, callback) {
-    var sql = "INSERT INTO autorizaciones_productos_pedidos(\n\
-                    tipo_pedido,\n\
-                    pedido_id,\n\
-                    codigo_producto,\n\
-                    fecha_solicitud,\n\
-                    empresa_id,\n\
-                    estado)\n\
-                VALUES( :1, :2, :3, CURRENT_TIMESTAMP, :5, :6 )";
-    var query = G.knex.raw(sql, {1: params.farmacia, 2: params.numero_pedido, 3: params.productos[0].codigo_producto, 5: params.empresa_id, 6: '0'});
+    
+    params.codigo_producto = params.productos[0].codigo_producto;
+    G.Q.nfcall(__obtenerEstadoAutorizacionProducto, params).then(function(resultado){
+        var def = G.Q.defer();
+        
+        if(resultado.length === 0){
+            var sql = "INSERT INTO autorizaciones_productos_pedidos(\
+                           tipo_pedido,\
+                           pedido_id,\
+                           codigo_producto,\
+                           fecha_solicitud,\
+                           empresa_id,\
+                           estado)\
+                       VALUES( :1, :2, :3, CURRENT_TIMESTAMP, :5, :6 )";
+            return  G.knex.raw(sql, {1: params.farmacia, 2: params.numero_pedido, 3: params.productos[0].codigo_producto, 5: params.empresa_id, 6: '0'});
+        } else {
+            def.resolve();
+        }
+        
+    }).then(function(resultado){
+        callback(false, (resultado)? resultado.rows: {});
+    }).catch (function(err) {
+        callback(err);
+    });
+    
+};
+
+
+function __obtenerEstadoAutorizacionProducto(params, callback){
+    
+    var sql = "SELECT * FROM autorizaciones_productos_pedidos \
+                   WHERE codigo_producto = :1 AND pedido_id = :2 AND tipo_pedido = :3 AND empresa_id = :4";
+    
+    var query = G.knex.raw(sql, {1:params.codigo_producto, 2: params.numero_pedido, 3: params.farmacia, 4: params.empresa_id});
 
     query.then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
         callback(err);
     });
-};
+    
+}
 
 /*
  * @Author: Andres M. Gonzalez
@@ -389,6 +414,7 @@ function __insertarAutorizacionesProductosPedido(params, callback) {
  * +Descripcion: Funcion recursiva que permite crear los poductos por autorizar
  */
 function __guardarAutorizacionesProductosPedidos(params, callback) {
+    console.log("productos a guardar ", params.productos);
     var producto = params.productos[0];
     var def = G.Q.defer();
     if (!producto) {
@@ -396,8 +422,7 @@ function __guardarAutorizacionesProductosPedidos(params, callback) {
         return;
     }
     if (params.productos[0].bloqueado === '0') {
-        G.Q.nfcall(__insertarAutorizacionesProductosPedido, params)
-                .then(function(resultado) {
+        G.Q.nfcall(__insertarAutorizacionesProductosPedido, params).then(function(resultado) {
             setTimeout(function() {
                 params.productos.splice(0, 1);
                 __guardarAutorizacionesProductosPedidos(params, callback);

@@ -1172,11 +1172,11 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
  * @fecha: 16/05/2016
  * @params el arreglo autorizacion y this de generarPedidoFarmacia
  */
-function __guardarAutorizacion(thats, autorizacion, callback) {
+function __guardarAutorizacion(that, autorizacion, callback) {
   var producto;
   var def = G.Q.defer();
   var bloqueo=false;
-    G.Q.ninvoke(thats.m_pedidos_farmacias, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(resultado) {
         producto=resultado;
         for(var i=0; i < producto.length;i++){           
             if(producto[i].bloqueado === '0'){
@@ -1186,14 +1186,14 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
     }).then(function() {
         if(bloqueo){
         var estado_pedido='10';
-        thats.m_pedidos_farmacias.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function(_err) { 
+        that.m_pedidos_farmacias.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function(_err) { 
             if (_err){
             res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
             return;
             }
          });
         autorizacion.productos = producto;
-        return G.Q.ninvoke(thats.m_pedidos, "guardarAutorizacion", autorizacion);
+        return G.Q.ninvoke(that.m_pedidos, "guardarAutorizacion", autorizacion);
         }else{
           def.resolve();
         }
@@ -1826,8 +1826,6 @@ PedidosFarmacias.prototype.enviarEmailPedido = function(req, res) {
 
 };
 
-//************** fin nuevo eduar garcia temporal farmacias ***************
-
 
 PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req, res) {
 
@@ -1881,18 +1879,42 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
     var cantidad_pendiente = args.detalle_pedidos_farmacias.cantidad_pendiente;
 
     var usuario_id = req.session.user.usuario_id;
+    
+    
+    var autorizacion = {};
+    autorizacion.farmacia = 1;
+    autorizacion.empresa_id = empresa_id;
+    autorizacion.numero_pedido = numero_pedido;
 
+    var notificacion = {
+        aliasModulo: 'productos_en_pedidos',
+        opcionModulo: "sw_ver_notificaciones",
+        titulo: "Autorizaciones Pedidos Farmacia",
+        mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
+    };
+    
+    
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
         if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null ||
             cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '10') {
-
+                    
             return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia", numero_pedido, empresa_id, centro_utilidad_id,
                     bodega_id, codigo_producto, cantidad_solic,
                     tipo_producto_id, usuario_id, cantidad_pendiente);
+            
         } else {
             throw {msj: "El estado actual del pedido no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
         }
-    }).then(function(rows) {
+    }).then(function(resultado){
+        return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);  
+                    
+    }).then(function(notificar) {
+        
+        if(notificar){
+            that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+            G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion); 
+        }
+        
         res.send(G.utils.r(req.url, 'Detalle del pedido almacenado exitosamente', 200, {}));
     }).fail(function(err) {
         if (err.status) {

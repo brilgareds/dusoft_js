@@ -26,6 +26,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.concentracion = 0;
             this.molecula = "";
             this.laboratorio = "";
+            this.autorizado = "";
         }
         
         
@@ -224,6 +225,16 @@ define(["angular", "js/models"], function(angular, models) {
         
         Producto.prototype.getContrato = function() {
             return this.contrato;
+        };
+        
+        
+        Producto.prototype.setAutorizado= function(autorizado) {
+            this.autorizado = autorizado;
+            return this;
+        };
+        
+        Producto.prototype.getAutorizado = function() {
+            return this.autorizado;
         };
         
         this.get = function(codigo_producto, descripcion, existencia) {

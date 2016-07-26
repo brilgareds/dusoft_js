@@ -206,7 +206,8 @@ define(["angular", "js/services"], function(angular, services) {
                     callback(data);
                 });
             };
-
+            
+            
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la
@@ -284,6 +285,7 @@ define(["angular", "js/services"], function(angular, services) {
                         Productos.setTiempoTotal(_productos.tiempo_total);
                         Productos.setPrincipioActivo(_productos.cod_principio_activo);
                         Productos.setCantidadEntrega(_productos.cantidad_entrega);
+                        Productos.setAutorizado(_productos.sw_autorizado);
                     productos.push(Productos);
                 }
                        

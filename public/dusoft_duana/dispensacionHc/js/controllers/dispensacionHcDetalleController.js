@@ -80,9 +80,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                
         };
         
-        
-        
-       
         /**
          * @author Cristian Ardila
          * +Descripcion Metodo encargado de ejecutar el servicio que consultara
@@ -101,12 +98,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }    
             };
             
-            dispensacionHcService.consultarMedicamentosDespachados(obj,function(data){
+            /*dispensacionHcService.consultarMedicamentosDespachados(obj,function(data){
                     console.log("---------consultarMedicamentosDespachados---------------");
                     console.log("DATA ", data);
-            });
+            });*/
             dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
-
+                
                 if(data.status === 200) {       
 
                    productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
@@ -164,7 +161,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             });
                
         };
-           
+       
+        var sumaFecha = function(d, fecha)
+            {
+             var Fecha = new Date();
+             var sFecha = fecha || (Fecha.getDate() + "-" + (Fecha.getMonth() +1) + "-" + Fecha.getFullYear());
+             var sep = sFecha.indexOf('/') !== -1 ? '/' : '-'; 
+             var aFecha = sFecha.split(sep);
+             var fecha = aFecha[2]+'-'+aFecha[1]+'-'+aFecha[0];
+             fecha= new Date(fecha);
+             fecha.setDate(fecha.getDate()+parseInt(d));
+             var anno=fecha.getFullYear();
+             var mes= fecha.getMonth()+1;
+             var dia= fecha.getDate();
+             mes = (mes < 10) ? ("0" + mes) : mes;
+             dia = (dia < 10) ? ("0" + dia) : dia;
+             var fechaFinal = anno+sep+mes+sep+dia;
+             return (fechaFinal);
+             }
          /**
           * @author Cristian ardila
           * +Descripcion Metodo encargado de invocar el servicio que consultara
@@ -172,7 +186,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * @fecha 26/05/2016
           */
         that.consultarExistenciasBodegas = function(entity){
-              
+           
             var obj = {                   
                 session: $scope.session,
                 data: {
@@ -181,23 +195,42 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         principioActivo: entity.principioActivo,
                         empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                         centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
-                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                        autorizado: entity.autorizado
                    }
                }    
             };
              
-            dispensacionHcService.existenciasBodegas(obj, function(data){
-               
-                entity.vaciarProductosHc();
-                if(data.status === 200) {                                          
-                    entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
-                    $scope.lotes = entity.mostrarProductosHc();
-                    that.ventanaDispensacionFormula();
-                }else{
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }
-            
-            });   
+             /*dispensacionHcService.consultarUltimoRegistroDispensacion(obj, function(data){
+                
+                 if(data.status === 200) {  
+                     console.log("data.obj.fechaRegistro ", data.obj.fechaRegistro)
+                    //fechaRegistro = data.obj.fechaRegistro;
+                    
+                 }else{
+                    fechaRegistro = "";
+                 }
+             });
+           //  console.log("data.obj.fechaRegistro ", fechaRegistro)
+             if(today >= fechaRegistro){
+                
+                 if(today > fechaDespacho){
+                     
+                     
+                 }*/
+                  dispensacionHcService.existenciasBodegas(obj, function(data){
+                      console.log("data ", data);
+                            entity.vaciarProductosHc();
+                            if(data.status === 200) {                                          
+                                entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
+                                $scope.lotes = entity.mostrarProductosHc();
+                                that.ventanaDispensacionFormula();
+                            }else{
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                        }); 
+                 
+             //}              
         };
          
            
@@ -264,7 +297,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 {field: 'Dispensar', width: "10%",
                            displayName: "Dispensar",
                            cellClass: "txt-center",
-                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)" ng-disabled ="showBtnDispensar">Dispensar</button>'
+                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)" ng-disabled ="showBtnDispensar">Dispensar </button>'
 
                 }
             ]

@@ -206,7 +206,7 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosFormulados',parametros).then(function(resultado){
        
-      
+     // console.log("resultado.rows ", resultado.rows);
         if(resultado.rows.length > 0){ 
               res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado.rows}));
         }else{
@@ -221,15 +221,11 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
 
 /*
  * @author Cristian Ardila
- * @fecha 24/05/2016
+ * @fecha 25/07/2016
  * +Descripcion Controlador encargado de consultar los medicamentos despachados
  *              
  */
 DispensacionHc.prototype.consultarMedicamentosDespachados = function(req, res){
-   
-   console.log("********DispensacionHc.prototype.consultarMedicamentosDespachados*****************");
-   console.log("********DispensacionHc.prototype.consultarMedicamentosDespachados*****************");
-   console.log("********DispensacionHc.prototype.consultarMedicamentosDespachados*****************");
    
     var that = this;
     var args = req.body.data;
@@ -249,7 +245,7 @@ DispensacionHc.prototype.consultarMedicamentosDespachados = function(req, res){
    
     G.Q.ninvoke(that.m_dispensacion_hc,'consultarMedicamentosDespachados',parametros).then(function(resultado){
        
-      console.log("---resultado.rows.length ---- ", resultado.rows.length)
+     // console.log("---resultado.rows.length ---- ", resultado.rows.length)
         if(resultado.rows.length > 0){ 
               res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado.rows}));
         }else{
@@ -260,6 +256,26 @@ DispensacionHc.prototype.consultarMedicamentosDespachados = function(req, res){
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+
+
+var sumaFecha = function(d, fechaP){
+        
+        var Fecha = new Date();
+        var sFecha = fechaP || (Fecha.getDate() + "-" + (Fecha.getMonth() +1) + "-" + Fecha.getFullYear());      
+        var sep = sFecha.indexOf('/') !== -1 ? '/' : '-'; 
+        var aFecha = sFecha.split(sep);
+        var fecha = aFecha[0]+'-'+aFecha[1]+'-'+aFecha[2];           
+            fecha= new Date(fecha);        
+            fecha.setDate(fecha.getDate()+parseInt(d));
+        var anno=fecha.getFullYear();            
+        var mes= fecha.getMonth()+1;         
+        var dia= fecha.getDate();        
+            mes = (mes < 10) ? ("0" + mes) : mes;
+            dia = (dia < 10) ? ("0" + dia) : dia;
+        var fechaFinal = anno+sep+mes+sep+dia;
+
+        return (fechaFinal) === "NaN-NaN-NaN" ? "" : (fechaFinal);
+    };
 /*
  * @author Cristian Ardila
  * @fecha 24/05/2016
@@ -269,9 +285,26 @@ DispensacionHc.prototype.consultarMedicamentosDespachados = function(req, res){
  */
 DispensacionHc.prototype.existenciasBodegas = function(req, res){
    
+   console.log("***DispensacionHc.prototype.existenciasBodegas*************");
+   console.log("***DispensacionHc.prototype.existenciasBodegas*************");
+   console.log("***DispensacionHc.prototype.existenciasBodegas*************");
+    var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            if(dd<10){
+                dd='0'+dd
+            } 
+            if(mm<10){
+                mm='0'+mm
+            } 
+    var today = yyyy+'-'+mm+'-'+dd;
+    var fechaDias = sumaFecha(25,today);
     var that = this;
     var args = req.body.data;
-   
+    var fechaRegistro = "";
+    var fechaDespacho = "";
+    var def = G.Q.defer();
     if (args.existenciasBodegas === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {existenciasBodegas: []}));
         return;
@@ -308,17 +341,41 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
                     codigoProducto:args.existenciasBodegas.codigoProducto,
                     principioActivo:args.existenciasBodegas.principioActivo
                     };
-   
-   
-   G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros).then(function(resultado){
+   var parametrosUltimoRegistroDispensacion = {tipoIdPaciente: 'CC', 
+                                               pacienteId: '42076373', 
+                                               principioActivo: args.existenciasBodegas.principioActivo, 
+                                               producto: args.existenciasBodegas.codigoProducto,
+                                               fechaDia: fechaDias,
+                                               today: today
+                                               };
+
+  
+    G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametrosUltimoRegistroDispensacion).then(function(resultado){
+
+        if(resultado.rows.length > 0){ 
+            fechaRegistro = resultado.rows[0].fecha_registro;
+        }
+
+        if(today >= fechaRegistro){
+               fechaDespacho = sumaFecha(25,fechaRegistro);
+         }
+      
+         if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1'){
        
-       if(resultado.rows.length > 0){ 
+           return G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros);
+           
+         }else{
+             def.resolve();
+         }
+   
+   }).then(function(resultado){
+       
+       if(resultado && resultado.rows.length > 0){ 
              res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado.rows}));
        }else{
-           throw 'Consulta sin resultados';
+           throw 'Este medicamento fue despachado hace menos de 25 dias';
        }
-      
-        
+           
    }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
@@ -332,6 +389,7 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
  * 
  */
 DispensacionHc.prototype.temporalLotes = function(req, res){
+    
     
     var that = this;
     var args = req.body.data;

@@ -342,6 +342,7 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
  * @fecha 20/05/2016
  * +Descripcion Modelo encargado de listar los productos formulados
  * @controller DispensacionHc.prototype.listarMedicamentosFormulados
+ * --- equivale a la funcion  Consultar_Medicamentos_Detalle_ (VIEJO)
  */
 DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callback){
 
@@ -538,23 +539,21 @@ DispensacionHcModel.prototype.consultarMedicamentosDespachados = function(obj,ca
  * @controller DispensacionHc.prototype.consultarUltimoRegistroDispensacion
  * -- Pertenece a la funcion ConsultarUltimoResg_Dispens_
  */
-/*DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj,callback){
+DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj,callback){
 
-    var formato = 'DD/mm/YYYY';
-    var fechaDias = 1;
-    var today =   G.moment(obj.fecha_vencimiento, formato);
     var sql = "";
     var sql2 = "";
-    if(obj.principio_activo){
-        sql = "and mm.cod_principio_activo='" + obj.principio_activo + "' ";
-        sql2 = "and h.subclase_id='" + obj.principio_activo + "' ";
+    var parametros = {1: obj.tipoIdPaciente, 2: obj.pacienteId};
+    if(obj.principioActivo){
+        sql = "and mm.cod_principio_activo='" + obj.principioActivo + "' ";
+        sql2 = "and h.subclase_id='" + obj.principioActivo + "' ";
        
     }else{
         sql ="and inve.codigo_producto='" + obj.producto + "' ";
         sql2 ="and b.codigo_producto ='" + obj.producto + "' ";
                                      
     }
-    var parametros = {1: obj.tipo_id_paciente, 2: obj.paciente_id};
+    
                      
         var sql = "SELECT A.resultado,\
                 A.fecha_registro,\
@@ -616,7 +615,6 @@ DispensacionHcModel.prototype.consultarMedicamentosDespachados = function(obj,ca
                 '1' as resultado,\
                 SUM(b.cantidad) as unidades,\
                 g.nombre,\
-                --d.formula_papel,\
                 f.descripcion||'-'||i.razon_social as razon_social\
                 FROM\
                 bodegas_documentos as a\
@@ -632,58 +630,47 @@ DispensacionHcModel.prototype.consultarMedicamentosDespachados = function(obj,ca
                 JOIN system_usuarios as g ON (a.usuario_id = g.usuario_id)\
                 JOIN inventarios_productos as h ON (b.codigo_producto = h.codigo_producto)\
                 WHERE TRUE   " + sql2 +  " and d.tipo_id_paciente= :1\
-                and d.paciente_id= :2\
+                and d.paciente_id = :2\
                 and c.sw_estado='1'\
                 and d.sw_estado IN ('0','1')\
-                and d.fecha_registro <= ('" + today + "'::date +'1 day' ::interval)::date\
-		and d.fecha_registro >= '" +fechaDias+ "'::date\
-                GROUP BY 2,4,5";
-   
-    /*union   
-
-    SELECT 										
-                MAX(to_char(a.fecha_registro,'YYYY-MM-DD')) AS fecha_registro,
-                '0' as resultado,
-                SUM(b.cantidad) as unidades,
-                g.nombre,
-                --d.formula_papel,
-                f.descripcion||'-'||i.razon_social as razon_social
-
-                FROM
-               bodegas_documentos as a
-                JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id)
-                AND (a.numeracion = b.numeracion)
-                JOIN esm_formulacion_despachos_medicamentos_pendientes as c ON (a.bodegas_doc_id = c.bodegas_doc_id)
-                AND (a.numeracion = c.numeracion)
-                JOIN esm_formula_externa as d ON (c.formula_id = d.formula_id)
-                JOIN bodegas_doc_numeraciones as e ON (a.bodegas_doc_id = e.bodegas_doc_id)
-                JOIN centros_utilidad as f ON (e.empresa_id = f.empresa_id)
-                AND (e.centro_utilidad = f.centro_utilidad)
-                JOIN empresas as i ON (f.empresa_id = i.empresa_id)
-                JOIN system_usuarios as g ON (a.usuario_id = g.usuario_id)
-                JOIN inventarios_productos as h ON (b.codigo_producto = h.codigo_producto)
-                WHERE TRUE  ";
-           if ($principio_activo != "")
-            $sql .= " and h.subclase_id='" . trim($principio_activo) . "' ";
-        else
-            $sql .= "and 		b.codigo_producto='" . trim($producto) . "'  	";
-        $sql .= "  
-                and 		d.tipo_id_paciente='" . $tipo_id_paciente . "'
-                and 		d.paciente_id='" . $paciente_id . "'
-                and 		d.sw_estado IN ('0','1')
-                and   	d.fecha_registro <= ('" . $today . "'::date +'1 day' ::interval)::date
-		and 		d.fecha_registro >= '" . $fecha_dias . "'::date 
-                GROUP BY 2,4,5	
-
-
-           ) AS A    ORDER BY  A.resultado ASC 
-                           ";  */
-    /*G.knex.raw(sql,parametros).then(function(resultado){     
+                and d.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
+		and d.fecha_registro >= '" +obj.fechaDia+ "'::date\
+                GROUP BY 2,4,5\
+                union\
+                SELECT\
+                            MAX(to_char(a.fecha_registro,'YYYY-MM-DD')) AS fecha_registro,\
+                            '0' as resultado,\
+                            SUM(b.cantidad) as unidades,\
+                            g.nombre,\
+                            f.descripcion||'-'||i.razon_social as razon_social\
+                            FROM\
+                           bodegas_documentos as a\
+                            JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id)\
+                            AND (a.numeracion = b.numeracion)\
+                            JOIN esm_formulacion_despachos_medicamentos_pendientes as c ON (a.bodegas_doc_id = c.bodegas_doc_id)\
+                            AND (a.numeracion = c.numeracion)\
+                            JOIN esm_formula_externa as d ON (c.formula_id = d.formula_id)\
+                            JOIN bodegas_doc_numeraciones as e ON (a.bodegas_doc_id = e.bodegas_doc_id)\
+                            JOIN centros_utilidad as f ON (e.empresa_id = f.empresa_id)\
+                            AND (e.centro_utilidad = f.centro_utilidad)\
+                            JOIN empresas as i ON (f.empresa_id = i.empresa_id)\
+                            JOIN system_usuarios as g ON (a.usuario_id = g.usuario_id)\
+                            JOIN inventarios_productos as h ON (b.codigo_producto = h.codigo_producto)\
+                            WHERE TRUE  " + sql2 + "and d.tipo_id_paciente = :1\
+                            and d.paciente_id= :2\
+                            and d.sw_estado IN ('0','1')\
+                            and d.fecha_registro <= ('" +obj.today + "'::date +'1 day' ::interval)::date\
+                            and d.fecha_registro >= '" +obj.fechaDia+ "'::date\
+                            GROUP BY 2,4,5\
+                       ) AS A ORDER BY  A.resultado ASC ";  
+    G.knex.raw(sql,parametros).then(function(resultado){     
+      //  console.log("resultado ", resultado)
         callback(false, resultado);
-    }).catch(function(err){            
+    }).catch(function(err){       
+      //  console.log("err ", err)
         callback(err);
     });  
-};*/
+};
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016

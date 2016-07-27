@@ -87,7 +87,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @fecha 25/05/2016
          */    
         that.listarMedicamentosFormulados = function(resultadoStorage){
-            console.log("AQUI HACER LA VALIDACION DE LOS CONFRONTADOS")
+            
             var productos;
             var obj = {                   
                 session: $scope.session,
@@ -108,6 +108,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                    productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
+                   console.log("Mostrar Productso ", $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos())
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 } 
@@ -129,7 +130,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * @param {type} cotizacion_pedido
           */  
         $scope.detalleLotesProductoFormula = function(entity) {
-
+            
+            console.log("entity ///--> ", entity)
             $scope.producto= entity.codigo_producto;
             $scope.descripcion= entity.descripcion;
             $scope.cantidadEntrega = entity.cantidadEntrega;
@@ -198,10 +200,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         if(privilegio.status === 200){
                            
                             if(privilegio.obj.privilegios[0].sw_privilegios === '1'){
-                             that.ventanaAutorizaDispensacion();                         
+                               that.ventanaAutorizaDispensacion(data, entity.codigo_producto);                         
                             }else{
-                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no posee privilegios para autorizar la dispensacion");   
+                               AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no posee privilegios para autorizar la dispensacion");   
                             }
+                        }else{
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", privilegio.msj);
                         }
                         
                     });    
@@ -452,7 +456,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         
         
         
-        that.ventanaAutorizaDispensacion = function(){
+        that.ventanaAutorizaDispensacion = function(ultimoRegistroDispensacion, codigoProducto){
             
             $scope.opts = {
                 backdrop: true,
@@ -461,8 +465,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 keyboard: true,
                 templateUrl: 'views/dispensacionHc/dispensarAutorizaDispensacion.html',
                 scope: $scope,                  
-                //controller: "dispensacionRealizarEntregaController"
-                                   
+                controller: "dispensacionAutorizarDispensacion",
+                resolve: {
+                        detalleRegistroDispensacion: function() {
+                            return ultimoRegistroDispensacion;
+                        },
+                        codigoProducto: function() {
+                            return codigoProducto;
+                        }                       
+                    }           
             };
             var modalInstance = $modal.open($scope.opts);   
            
@@ -513,6 +524,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             console.log("AQUI REALIZA LA ENTREGA DE LA FORMULA")
             that.consultarMedicamentosTemporales();
         });                    
+        
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de escuchar el evento emitido cuando se
+         *              finaliza la entrega de la formula
+         * @fecha 15/06/2016
+         */
+        var emitAutorizarDispensacionMedicamento = $scope.$on('emitAutorizarDispensacionMedicamento', function(e, parametros) { 
+         
+            console.log("AQUI AUTORIZA LA ENTREGA DE MEDICAMENTO ---------------");
+            console.log("e ", e);
+            console.log("parametros ", parametros);
+            that.listarMedicamentosFormulados(parametros);
+        }); 
+        
         
         /**
          * @author Cristian Ardila
@@ -601,6 +628,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.$$watchers = null;
            
             emitRealizarEntregaFormula();
+            emitAutorizarDispensacionMedicamento();
              //socket.removeAllListeners();
             localStorageService.add("dispensarFormulaDetalle", null);
                 

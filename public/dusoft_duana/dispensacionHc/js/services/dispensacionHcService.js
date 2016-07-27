@@ -209,7 +209,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  27/07/2016
               * +Descripcion Servicio encargado de obtener los medicamentos
               *              dispensados
               */
@@ -220,6 +220,18 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Servicio encargado autorizar la dispensacion de un
+              *              medicamento
+              */
+            self.autorizarDispensacionMedicamento = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.AUTORIZAR_DISPENSACION_MEDICAMENTO,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
             
             /**
                * @author Cristian Ardila

@@ -428,6 +428,62 @@ DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
 };
 
 
+
+/*
+ * @author Cristian Ardila
+ * @fecha 07/06/2016
+ * +Descripcion Controlador autorizar una dispensacion de un medicamento en caso
+ *              de este ser confrontado
+ *              
+ */
+DispensacionHc.prototype.autorizarDispensacionMedicamento  = function(req, res){
+    
+    console.log("DispensacionHc.prototype.autorizarDispensacionMedicamento  ");
+    console.log("DispensacionHc.prototype.autorizarDispensacionMedicamento  ");
+    console.log("DispensacionHc.prototype.autorizarDispensacionMedicamento  ");
+    var that = this;
+    var args = req.body.data;
+    var usuario = req.session.user.usuario_id;
+    if (args.autorizar_dispensacion === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {autorizar_dispensacion: []}));
+        return;
+    }
+   
+    if (!args.autorizar_dispensacion.evolucion || args.autorizar_dispensacion.evolucion.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {autorizar_dispensacion: []}));
+        return;
+    }
+    
+    if (!args.autorizar_dispensacion.producto || args.autorizar_dispensacion.producto.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo del producto', 404, {autorizar_dispensacion: []}));
+        return;
+    }
+    
+    if (!args.autorizar_dispensacion.observacion || args.autorizar_dispensacion.observacion.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere la observacion', 404, {autorizar_dispensacion: []}));
+        return;
+    }
+    
+    var parametros={evolucionId:args.autorizar_dispensacion.evolucion, 
+                    usuario:usuario, 
+                    observacion: args.autorizar_dispensacion.observacion,
+                    producto:args.autorizar_dispensacion.producto};
+      
+    G.Q.ninvoke(that.m_dispensacion_hc,'autorizarDispensacionMedicamento',parametros).then(function(resultado){
+        
+        if(resultado.rows.length > 0){ 
+           res.send(G.utils.r(req.url, 'Se autoriza la dispensacion del producto', 200, {autorizar_dispensacion:resultado.rows[0]}));
+       }else{
+           throw "Consulta sin resultado";
+       }
+        
+   }).fail(function(err){      
+      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
 /**
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de almacenar los productos de la formula

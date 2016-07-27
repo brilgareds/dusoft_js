@@ -684,8 +684,7 @@ DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
 
     var parametros = {1: obj.empresa, 2: obj.centroUtilidad,
                       3: obj.bodega, 4: obj.usuario};
-
-   
+  
         var sql = "SELECT sw_privilegios\
                   FROM userpermisos_dispensacion\
                   WHERE empresa_id= :1 AND centro_utilidad = :2 AND bodega = :3\
@@ -1026,10 +1025,38 @@ DispensacionHcModel.prototype.actualizarTipoFormula = function(obj, callback) {
         console.log("err ", err);
        callback(err);
     });
-
 };
 
 
+/**
+ * 
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+DispensacionHcModel.prototype.autorizarDispensacionMedicamento = function(obj, callback) {
+
+    console.log("****DispensacionHcModel.prototype.autorizarDispensacionMedicamento***");
+    console.log("****DispensacionHcModel.prototype.autorizarDispensacionMedicamento***");
+    console.log("****DispensacionHcModel.prototype.autorizarDispensacionMedicamento***");
+    
+     var sql = "update    hc_formulacion_antecedentes\
+              set    sw_autorizado='1',\
+                  usuario_autoriza_id = :2,\
+                  observacion_autorizacion= :3,\
+                  fecha_registro_autorizacion= :5\
+            WHERE     evolucion_id = :1\
+            AND     codigo_medicamento = :4 returning evolucion_id";
+   
+    G.knex.raw(sql, {1: obj.evolucionId, 2: obj.usuario, 3: obj.observacion, 4: obj.producto, 5: 'now()'}).
+    then(function(resultado){ 
+        console.log("resultado --->>>", resultado);
+       callback(false, resultado);
+    }).catch(function(err){    
+        console.log("err ", err);
+       callback(err);
+    });
+};
 /**
  * 
  * @param {type} obj

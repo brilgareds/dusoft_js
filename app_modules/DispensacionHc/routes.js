@@ -87,5 +87,8 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.usuarioPrivilegios(req, res);
     });
     
+    app.post("/api/DispensacionHc/autorizarDispensacionMedicamento", function(req, res){
+        c_dispensacion_hc.autorizarDispensacionMedicamento(req, res);
+    });
     
 };

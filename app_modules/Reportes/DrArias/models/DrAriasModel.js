@@ -65,7 +65,7 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
         }
        
    }).fail(function(err){
-        console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
+        console.log("error bd 2222>>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
         callback(err);
    }).done();
     
@@ -408,8 +408,8 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
     var suma = fechaFinal.date() + obj.filtro.dias;
     var sql;
     var filtro;
-   
-   
+  
+     
     if(!obj.resultado){
        console.log("setting new result");
        obj.resultado = [];
@@ -422,6 +422,25 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
         var dias =  obj.filtro.dias - (suma - diasDelMes);
         fechaFinal.add( dias, 'days');
     }
+    
+        var empresa_seleccion=null;
+        var centro_seleccion=null;
+        var bodega_seleccion=null;
+       if(obj.filtro.empresa_seleccion !== null || obj.filtro.empresa_seleccion !== 'undefined'){
+        empresa_seleccion=obj.filtro.empresa_seleccion.codigo === undefined ? null:obj.filtro.empresa_seleccion.codigo;                          
+       }else{
+           empresa_seleccion=null;
+       }
+       if(obj.filtro.centro_seleccion !== null || obj.filtro.centro_seleccion !== undefined){
+        centro_seleccion=obj.filtro.centro_seleccion.codigo  === undefined ? null:obj.filtro.centro_seleccion.codigo;
+       }else{
+           centro_seleccion=null;
+       }
+       if(obj.filtro.bodega_seleccion !==null || obj.filtro.bodega_seleccion !== 'undefined'){
+        bodega_seleccion=obj.filtro.bodega_seleccion.codigo=== undefined ? null:obj.filtro.bodega_seleccion.codigo;
+       }else{
+            bodega_seleccion=null;
+       }
 
    var sqlTablaNueva =" (select \
                         to_char(fecha,'YYYY/MM/DD HH:MM:SS') as fecha,to_char(fecha_formula,'YYYY/MM/DD') as fecha_formula,formula_id,formula_papel,nom_bode,plan_descripcion,usuario_digita,\
@@ -430,16 +449,16 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                         from \
                         temporal_reporte_dr_arias \
                         where \
-                            case when '"+obj.filtro.empresa_seleccion+"' is not null then empresa_id = '"+obj.filtro.empresa_seleccion+"' else true end \
-                            and case when "+obj.filtro.centro_seleccion+" is not null then centro_utilidad = '"+obj.filtro.centro_seleccion+"' else true end \
-                            and case when "+obj.filtro.bodega_seleccion+" is not null then bodega = '"+obj.filtro.bodega_seleccion+"' else true end \
+                            case when '"+empresa_seleccion+"' is not null then empresa_id = '"+empresa_seleccion+"' else true end \
+                            and case when "+centro_seleccion+" is not null then centro_utilidad = '"+centro_seleccion+"' else true end \
+                            and case when "+bodega_seleccion+" is not null then bodega = '"+bodega_seleccion+"' else true end \
                             and case when '"+obj.filtro.documento+"' != 'null' then paciente_id= '"+obj.filtro.documento+"' else true end \
                             and case when '"+obj.filtro.codigo+"' != 'null' then codigo_producto= '"+obj.filtro.codigo+"' else true end \
                             and case when "+obj.filtro.plan_seleccion+"  is not null then plan_id= "+obj.filtro.plan_seleccion+" else true end \
-                            and case when "+obj.filtro.descripcion+" is not null then producto ilike '%"+obj.filtro.descripcion+"%' else true end \
+                            and case when '"+obj.filtro.descripcion+"' != 'null' then producto ilike '%"+obj.filtro.descripcion+"%' else true end \
                             and fecha between :3 AND :4 \
                         order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto) \
-                        ";//order by centro_utilidad,plan_descripcion,descripcion_tipo_formula,producto
+                        ";
     
    var sqlConsulta = "\
                     (select to_char(fecha,'YYYY/MM/DD HH:MM:SS') as fecha,to_char(fecha_formula,'YYYY/MM/DD') as fecha_formula,formula_id,formula_papel,nom_bode,plan_descripcion,usuario_digita,\
@@ -489,9 +508,9 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                         inner join terceros te on efe.tipo_id_tercero = te.tipo_id_tercero and efe.tercero_id = te.tercero_id\
                         where\
                             efe.sw_estado not in('2')  \
-                            and case when '"+obj.filtro.empresa_seleccion+"' is not null then dn.empresa_id = '"+obj.filtro.empresa_seleccion+"' else true end \
-                            and case when "+obj.filtro.centro_seleccion+" is not null then dn.centro_utilidad = '"+obj.filtro.centro_seleccion+"' else true end \
-                            and case when "+obj.filtro.bodega_seleccion+" is not null then dn.bodega = '"+obj.filtro.bodega_seleccion+"' else true end \
+                            and case when '"+empresa_seleccion+"' is not null then dn.empresa_id = '"+empresa_seleccion+"' else true end \
+                            and case when "+centro_seleccion+" is not null then dn.centro_utilidad = '"+centro_seleccion+"' else true end \
+                            and case when "+bodega_seleccion+" is not null then dn.bodega = '"+bodega_seleccion+"' else true end \
                             and case when '"+obj.filtro.documento+"' != 'null' then efe.paciente_id= '"+obj.filtro.documento+"' else true end \
                             and case when '"+obj.filtro.codigo+"' != 'null' then bdd.codigo_producto= '"+obj.filtro.codigo+"' else true end \
                             and case when "+obj.filtro.plan_seleccion+" is not null then efe.plan_id= "+obj.filtro.plan_seleccion+" else true end \
@@ -543,9 +562,9 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                         inner JOIN profesionales prf ON efe.tercero_id =  prf.tercero_id and efe.tipo_id_tercero = prf.tipo_id_tercero \
                         where \
                             efe.sw_estado not in('2')  \
-                            and case when '"+obj.filtro.empresa_seleccion+"' is not null then dn.empresa_id = '"+obj.filtro.empresa_seleccion+"' else true end \
-                            and case when "+obj.filtro.centro_seleccion+" is not null then dn.centro_utilidad = '"+obj.filtro.centro_seleccion+"' else true end \
-                            and case when "+obj.filtro.bodega_seleccion+" is not null then dn.bodega = '"+obj.filtro.bodega_seleccion+"' else true end \
+                            and case when '"+empresa_seleccion+"' is not null then dn.empresa_id = '"+empresa_seleccion+"' else true end \
+                            and case when "+centro_seleccion+" is not null then dn.centro_utilidad = '"+centro_seleccion+"' else true end \
+                            and case when "+bodega_seleccion+" is not null then dn.bodega = '"+bodega_seleccion+"' else true end \
                             and case when '"+obj.filtro.documento+"' != 'null' then efe.paciente_id= '"+obj.filtro.documento+"' else true end \
                             and case when '"+obj.filtro.codigo+"' != 'null' then bdd.codigo_producto= '"+obj.filtro.codigo+"' else true end \
                             and case when "+obj.filtro.plan_seleccion+" is not null then efe.plan_id= "+obj.filtro.plan_seleccion+" else true end \
@@ -597,9 +616,9 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                         inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula \
                         where   \
                                 c.total_costo >0  \
-                                and case when '"+obj.filtro.empresa_seleccion+"' is not null then a.empresa_id = '"+obj.filtro.empresa_seleccion+"' else true end \
-                                and case when "+obj.filtro.centro_seleccion+" is not null then a.centro_utilidad = '"+obj.filtro.centro_seleccion+"' else true end \
-                                and case when "+obj.filtro.bodega_seleccion+" is not null then a.bodega = '"+obj.filtro.bodega_seleccion+"' else true end \
+                                and case when '"+empresa_seleccion+"' is not null then a.empresa_id = '"+empresa_seleccion+"' else true end \
+                                and case when "+centro_seleccion+" is not null then a.centro_utilidad = '"+centro_seleccion+"' else true end \
+                                and case when "+bodega_seleccion+" is not null then a.bodega = '"+bodega_seleccion+"' else true end \
                                 and case when '"+obj.filtro.documento+"' != 'null' then hfc.paciente_id= '"+obj.filtro.documento+"' else true end \
                                 and case when '"+obj.filtro.codigo+"' != 'null' then c.codigo_producto= '"+obj.filtro.codigo+"' else true end \
                                 and case when "+obj.filtro.plan_seleccion+"  is not null then g.plan_id= "+obj.filtro.plan_seleccion+" else true end \
@@ -649,9 +668,9 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                         inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula  \
                         where  \
                             c.total_costo >0  \
-                            and case when '"+obj.filtro.empresa_seleccion+"' is not null then a.empresa_id = '"+obj.filtro.empresa_seleccion+"' else true end \
-                            and case when "+obj.filtro.centro_seleccion+" is not null then a.centro_utilidad = '"+obj.filtro.centro_seleccion+"' else true end \
-                            and case when "+obj.filtro.bodega_seleccion+" is not null then a.bodega = '"+obj.filtro.bodega_seleccion+"' else true end \
+                            and case when '"+empresa_seleccion+"' is not null then a.empresa_id = '"+empresa_seleccion+"' else true end \
+                            and case when "+centro_seleccion+" is not null then a.centro_utilidad = '"+centro_seleccion+"' else true end \
+                            and case when "+bodega_seleccion+" is not null then a.bodega = '"+bodega_seleccion+"' else true end \
                             and case when '"+obj.filtro.documento+"' != 'null' then hfc.paciente_id = '"+obj.filtro.documento+"' else true end \
                             and case when '"+obj.filtro.codigo+"' != 'null' then c.codigo_producto = '"+obj.filtro.codigo+"' else true end \
                             and case when "+obj.filtro.plan_seleccion+" is not null then g.plan_id = "+obj.filtro.plan_seleccion+" else true end \
@@ -659,11 +678,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                     where  \
                     true   \
                     and case when '"+obj.filtro.descripcion+"' != 'null' then producto ilike '%"+obj.filtro.descripcion+"%' else true end \
-                     order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto ) ";//order by centro_utilidad,plan_descripcion,descripcion_tipo_formula,producto
-    //order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto
-             //       and case when '"+obj.filtro.descripcion+"' is not null then producto ilike '%"+obj.filtro.descripcion+"%' else true end \
-             //
-               //     and case when '"+obj.filtro.descripcion+"' != null then producto ilike '%"+obj.filtro.descripcion+"%' else true end \
+                     order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto ) ";
                 
              if(obj.filtro.consulta === 0){
                     
@@ -681,77 +696,13 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                  filtro={1:obj.filtro.fecha_inicial+' 00:00:00 ',4:obj.filtro.fecha_final+' 23:59:59 ' ,3:obj.filtro.inicioFechaConsultaReporte+' 00:00:00 ',2:obj.filtro.finFechaTablaReporte+' 23:59:59 '};
              
                 }  
+              console.log("SSSSSSSSSSSSSSSSSSSSS",sql);
                var query = G.knex.raw(sql,filtro);
                 query.then(function(resultado) {
-                    
-                    
-//var LINQ = require("node-linq").LINQ;
-//var arr = new LINQ(resultado.rows)        
-//        .Where(function(user) {
-//            return user.formula_id > 0;
-//            })
-//	.OrderBy(function(user) {           
-//           return user.formula_id;
-//       })
-////               .GroupBy(function(user) {
-////           return user.nom_bode;
-////        })
-//	.Select(function(user) {
-//            user.totaless=suma;
-//            return user;
-//       }).Count();
-//	//.ToArray();
-//console.log(">>>>>>>>",arr);
-
                    callback(false, resultado);
                  }).catch (function(err) {
-                     console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
                     callback(err);
                  });
-//               var query = G.knex.raw(sql,filtro);
-//               query.then(function(resultado) {
-//                   
-                ///////////////////////////////////////////////////     
-
-//var LINQ = require('node-linq').LINQ;
-//var path = require('path');
-//var files = ['test.txt', 'choni.txt', 'legacy.zip', 'secrets.txt', 'etc.rar'];
-//var arr = new LINQ(files)
-//  .Where(function(file) { return path.extname(file) === 'txt'; })
-//  .OrderBy(function(file) { return file;})
-//  .ToArray();
-//console.log(">>>>>>>>",arr);
-// shortcut! string lambda selector
-
-//                   console.log("json2: ",queryResult);      
-////                
-//                /////////////////////////////////////////   
-//                  callback(false, resultado);
-//
-//                }).catch (function(err) {
-//                   console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
-//                   callback(err);
-//                });
-    
-   /* var query = G.knex.raw(sql, {1:fechaInicial.format(formato), 2:fechaFinal.format(formato)});
-    query.timeout(200000).then(function(resultado) {
-                
-        //console.log("fecha final format ", resultado.rows);
-         obj.resultado = obj.resultado.concat(resultado.rows);
-        if(fechaFinal.format(formato) >= obj.filtro.fecha_final){
-            callback(false, obj.resultado);
-            return;
-        } else {
-            //Aumenta un dia de la fecha inicial para continuar con el recorrido de fechas
-            obj.filtro.fecha_inicial = fechaFinal.add(1, 'days').format(formato);
-            that.realizarReportePorRango(obj, callback);
-            return;
-        }
-        
-    }).catch (function(err) {
-        console.log("error bd >>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
-       callback(err);
-    });*/
 
 };
 

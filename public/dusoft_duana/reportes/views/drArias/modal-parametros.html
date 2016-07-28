@@ -7,63 +7,63 @@
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Fecha Inicio:</b></h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.fechainicial}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.fechainicial}}</h5>
         </div>       
     </div>   
     <div class="row" ng-if="filtro.fechafinal!== null">
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Fecha Fin:</b> </h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.fechafinal}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.fechafinal}}</h5>
         </div>       
     </div>   
-    <div class="row" ng-if="filtro.empresa!== null">
+    <div class="row" ng-if="filtro.empresa.codigo !== undefined">
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Empresa:</b> </h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.empresa}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.empresa.nombre}}</h5>
         </div>       
     </div>   
-    <div class="row" ng-if="filtro.centroUtilidad !== null">
+    <div class="row" ng-if="filtro.centroUtilidad.codigo !== undefined">
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Centro Utilidad: </b></h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.centroUtilidad}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.centroUtilidad.nombre}}</h5>
         </div>       
     </div>   
-    <div class="row" ng-if="filtro.bodega !== null">
+    <div class="row" ng-if="filtro.bodega.codigo !== undefined">
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Bodega: </b></h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.bodega}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.bodega.nombre}}</h5>
         </div>       
     </div>   
     <div class="row" ng-if="filtro.documento!== null">
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Documento del Paciente: </b></h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.documento}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.documento}}</h5>
         </div>       
     </div>   
     <div class="row"ng-if="filtro.codigoProducto!== null">
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Codigo del Producto: </b></h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.codigoProducto}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.codigoProducto}}</h5>
         </div>       
     </div>   
     <div class="row" ng-if="filtro.descripcion!== null">
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Descripción del Producto: </b></h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.descripcion}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.descripcion}}</h5>
         </div>       
     </div>   
     <div class="row" ng-if="filtro.plan !== null">
         <div class="col-md-6">
             <h4 class="h4MarginTopBottom"><b>Plan: </b></h4> </div>
         <div class="col-md-6">    
-            <h4 class="h4MarginTopBottom">{{filtro.plan}}</h4>
+            <h5 class="h4MarginTopBottom">{{filtro.plan}}</h5>
         </div>       
     </div>   
 </div>   

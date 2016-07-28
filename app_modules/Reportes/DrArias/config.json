@@ -15,7 +15,13 @@
                     "alias": "m_drArias"
                 }
             }],
-        "events": [],
+        "events": [{
+                "dr_arias_events": {
+                    "module": "Reportes/DrArias",
+                    "event": "DrAriasEvents",
+                    "alias": "e_dr_arias"
+                }
+            }],
         "cronJobs": [{
             "ReporteDrAriasJobs_crontab": {
                 "module": "Reportes/DrArias",

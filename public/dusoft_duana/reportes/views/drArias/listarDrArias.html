@@ -1,11 +1,21 @@
 <div>
-    <span>
-        <button class="btn btn-primary" type="button" ng-click="abrirModalDrArias()">Buscar</button>
-    </span>
-    <br></br>
-    <div class="table-responsive" >
-        <div class="defaultGrid grid-responsive" ng-grid="lista_reportesGenerados">
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
+                <button type="button" class="btn btn-default" ng-click="abrirModalDrArias()" name="btnCrearPedido">
+                    <span class="glyphicon glyphicon-plus"></span> Generar
+                </button>
+            </div>
         </div>
     </div>
-    <visualizar-reporte></visualizar-reporte>
+    <br>
+    <div class="row">    
+        <div class="col-md-12 col-lg-12">
+            <div class="table-responsive" >
+                <div class="defaultGrid grid-responsive" ng-grid="lista_reportesGenerados">
+                </div>
+            </div>
+            <visualizar-reporte></visualizar-reporte>
+        </div>
+    </div>
 </div>

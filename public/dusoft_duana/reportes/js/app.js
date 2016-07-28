@@ -13,7 +13,6 @@ define(["angular",
     "includes/header/HeaderController",
     "loader",
     "includes/alert/Alert",
-    "i18n",
     "httpinterceptor",
     "storage",
     "includes/classes/Pedido",
@@ -40,7 +39,7 @@ define(["angular",
         'Url',
         'services',
         'LocalStorageModule',
-        'ui.select2',
+        'ui.select',
         'angular-web-notification'
     ]);
 

@@ -13,7 +13,7 @@ define(["angular", "js/services"], function(angular, services) {
                      * @fecha 05/02/2016
                      * +Descripcion: lista Dr. Arias
                      */
-                    self.buscarProductosBloqueados = function(obj, callback) {
+                    self.buscarReporteDrArias = function(obj, callback) {
 
                         Request.realizarRequest(
                                 API.REPORTES.LISTAR_DR_ARIAS,
@@ -24,7 +24,7 @@ define(["angular", "js/services"], function(angular, services) {
                                 },
                         function(data) {                           
                             callback(data);
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                           // AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
                         );
 

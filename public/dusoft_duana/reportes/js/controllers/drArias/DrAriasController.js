@@ -36,8 +36,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             
              $scope.abrirModalParametros= function(parametros) {  
-                 var parametros =JSON.parse(parametros.parametros_de_busqueda);
-                 console.log(">>>>>>>>>>>>>>>>>",parametros);
+                 var parametros =parametros.parametros_de_busqueda;
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -64,6 +63,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 var modalInstancesy = $modal.open($scope.opts);
             };
+            
+            
+            /*
+             * @Author: Andres M.
+             * +Descripcion: Evento que actualiza la vista 
+             */
+           socket.on("onNotificarEstadoDescargaReporte", function(datos) {
+               if(datos.estado ==='ok'){
+                that.buscarReportesBloqueados();
+               }
+            }); 
             
              $scope.abrirModalDrArias= function(parametros) {
                  
@@ -106,7 +116,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.listarPedido = [];
                // listaTerceros = [];
                 $scope.empresa_seleccion = $scope.seleccion.codigo;
-                that.buscarProductosBloqueados("");
+                that.buscarReporteDrArias("");
             };
 
             /**
@@ -119,7 +129,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if (ev.which === 13) {
                     $scope.termino = terminoBusqueda;
                     $scope.paginaactual = 1;
-                    that.buscarProductosBloqueados(terminoBusqueda,true);
+                    that.buscarReporteDrArias(terminoBusqueda,true);
                     //listaTerceros = [];
                     // that.buscarPedidos(terminoBusqueda);
                 }
@@ -163,7 +173,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     reportesGenerados.setEstado(objt.estado);
                     reportesGenerados.setUsuarioId(objt.usuario_id);
                     //var json = JSON.parse(objt.parametros_de_busqueda);
-                    reportesGenerados.setParametrosBusqueda(objt.parametros_de_busqueda);
+                    reportesGenerados.setParametrosBusqueda(JSON.parse(objt.parametros_de_busqueda));
                     listaReportesGenerados.push(reportesGenerados);
                 }              
                 $scope.listaReportesGenerados = listaReportesGenerados;
@@ -185,7 +195,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableRowSelection: false,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'Estado del Reporte', displayName: "Estado del Reporte", cellClass: "txt-center dropdown-button", width: "10%",
+                    {field: 'Estado del Reporte', displayName: "Estado del Reporte", cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.getEstado()==0" class="btn btn-primary btn-xs" >\
                                                     <i class="glyphicon glyphicon-hourglass"></i>\n\
@@ -204,21 +214,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                     <span> 0 Registros </span>\
                                                 </button>\
                                             </div>'
-                    },                    
-                    {field: 'getNombreReporte()', displayName: 'Nombre', width: "60%"},
+                    },   
                     {field: 'Fecha de Generación', displayName: "Fecha de Generación", cellClass: "txt-center dropdown-button", width: "10%",
                         cellTemplate: ' <div class="row">\
                                                 <div>{{row.entity.getFechaInicio()| date:"yyyy-MM-dd HH:mm:ss"}}</div>\
                                             </div>'
                     },
-                    {displayName: "Parametros de Busqueda", cellClass: "txt-center dropdown-button", width: "10%",
+                    {field: 'getNombreReporte()', displayName: 'Nombre Reporte', width: "10%"},
+                    {field: 'getParametrosBusqueda().fecha_inicial', displayName: 'Fecha Inicio', width: "5%"},
+                    {field: 'getParametrosBusqueda().fecha_final', displayName: 'Fecha Fin', width: "5%"},
+                    {field: 'getParametrosBusqueda().empresa_seleccion.nombre', displayName: 'Empresa', width: "16%"},
+                    {field: 'getParametrosBusqueda().centro_seleccion.nombre', displayName: 'Centro Utilidad', width: "15%"},
+                    {field: 'getParametrosBusqueda().bodega_seleccion.nombre', displayName: 'Bodega', width: "16%"},                   
+                    {displayName: "Parametros de Busqueda", cellClass: "txt-center dropdown-button", width: "11%",
                         cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" ng-click="abrirModalParametros(row.entity)" >\n\
                                              <span class="glyphicon glyphicon-search"></span>\
                                          </button>\
                                        </div>'
                     },
-                    {displayName: "Descarga", cellClass: "txt-center dropdown-button", width: "10%",
+                    {displayName: "Descarga", cellClass: "txt-center dropdown-button", width: "5%",
                         cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" ng-click="onDescagarArchivo(row.entity.getNombreArchivo())" >\n\
                                              <span class="glyphicon glyphicon-download-alt"></span>\

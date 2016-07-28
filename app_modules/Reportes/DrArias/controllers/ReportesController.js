@@ -1,7 +1,8 @@
 
-var Reportes = function (drArias,j_reporteDrAriasJobs) {
+var Reportes = function (drArias,j_reporteDrAriasJobs,eventos_dr_arias) {
     this.m_drArias = drArias;
     this.j_reporteDrAriasJobs = j_reporteDrAriasJobs;
+    this.e_dr_arias = eventos_dr_arias;
 };
 
 /**
@@ -19,15 +20,17 @@ Reportes.prototype.listarDrArias = function (req, res) {
     filtro.fecha_inicial=G.moment(filtro.fecha_inicial).format("YYYY-MM-DD");
     filtro.fecha_final=G.moment(filtro.fecha_final).format("YYYY-MM-DD");
     filtro.nombre='drArias_'+filtro.fecha_inicial+'_'+filtro.fecha_final+'_'+Math.floor((Math.random() * 100000) + 1)+'.csv';    
-    datos.nombre_reporte='drArias';
+    datos.nombre_reporte='Reporte Dr Arias';
     datos.nombre_archivo=filtro.nombre;
     datos.fecha_inicio=G.moment().format();
     datos.usuario=filtro.session.usuario_id;
     datos.estado='0';
-    datos.busqueda=filtro;  
-    
+    datos.busqueda=filtro; 
     __guardarEstadoReporte(that,datos);
+    console.log("parametros:: ",datos);
     
+    
+    that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
     res.send(G.utils.r(req.url, 'Generando Informe...', 200, {listarDrArias: 'pendiente'})); 
     
     G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function (resultado) {
@@ -40,15 +43,21 @@ Reportes.prototype.listarDrArias = function (req, res) {
                   datos.estado='3';     
                   }
                   __editarEstadoReporte(that,datos);
+                  that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
                 });
         }else{
             datos.fecha_fin=G.moment().format();
             datos.estado='2';
             __editarEstadoReporte(that,datos);
+            that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
         }
     }).
     fail(function (err) {
         console.log("error controller ", err);
+        datos.fecha_fin=G.moment().format();
+        datos.estado='2';
+        __editarEstadoReporte(that,datos);
+        that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
         res.send(G.utils.r(req.url, 'Error Listado Dr Arias', 500, {listarDrArias: err}));
     }).
     done();
@@ -149,7 +158,7 @@ function __editarEstadoReporte(that,datos){
 }
 
 Reportes.$inject = [
-    "m_drArias","j_reporteDrAriasJobs"
+    "m_drArias","j_reporteDrAriasJobs","e_dr_arias"
 ];
 
 module.exports = Reportes;

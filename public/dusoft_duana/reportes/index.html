@@ -1,23 +1,24 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
     <head>
         <link href="../../stylesheets/style.css" rel="stylesheet">
         <link href="../../stylesheets/bootstrap.min.css" rel="stylesheet">
         <link href="../../stylesheets/ng-grid.css" rel="stylesheet">
         <link href="../../stylesheets/jtree/themes/default/style.css" rel="stylesheet">
-        <link href="css/style.css" rel="stylesheet">
         <link href="../../stylesheets/select2.css" rel="stylesheet">
         <link href="../../stylesheets/select.min.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+         <!--script src="../../javascripts/require/require.js" data-main="dist/main.js"></script-->
+
         <script src="../../javascripts/require/require.js" data-main="main-dev"></script>
-        <!--script src="../../javascripts/require/require.js" data-main="dist/main"></script-->
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
 
     <body class="body">
-        <div class="row" class="header" ng-include src="'../includes/header/header.html'" ng-controller="HeaderController"></div>
+        <div class="row" class="header" ng-include src="'../includes/header/header.html'" ng-controller="HeaderController" ></div>
 
 
-        <div class="loader" ng-include src="'../includes/loader/loader.html'"></div>
+        <div class="loader"  ng-include src="'../includes/loader/loader.html'"></div>
 
         <div class="row contenedor">
             <div ng-include src="'../includes/menu/menu.html'" class="col-md-3 contenedormenu cerrarmenu" ng-controller="menucontroller"></div>
@@ -25,6 +26,4 @@
             <div  ng-include src="'../includes/content/content.html'" class="contenedorDerecho"></div>          
         </div> 
     </body>
-
-
 </html>

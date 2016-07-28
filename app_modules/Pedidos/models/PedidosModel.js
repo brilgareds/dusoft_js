@@ -307,8 +307,7 @@ function consultar_cantidad_total_productos_despachados(empresa_id, codigo_produ
     }).catch (function(err) {
         callback(err);
     });
-}
-;
+};
 
 // Consultar la cantidad total pendiente de un producto
 function consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto, fecha_registro_pedido, callback) {

@@ -212,7 +212,7 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
         and d.numeracion = dd.numeracion\
         and d.usuario_id=sys.usuario_id\
         and inv.codigo_producto  = dd.codigo_producto " + group;
-    console.log("sql ----->>>>>>>>>> ", sql);
+    //console.log("sql ----->>>>>>>>>> ", sql);
     G.knex.raw(sql,parametros).then(function(resultado){    
       
         callback(false, resultado)
@@ -1113,17 +1113,22 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
     console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
     console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
     console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
-    
+    var that = this;
     G.knex.transaction(function(transaccion) {  
         
-        G.Q.nfcall(__insertarBodegasDocumentos, obj, transaccion).then(function(resultado){
+        G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion).then(function(resultado){
           
           console.log("resultado 1 ", resultado);
-         return G.Q.nfcall(__insertarDespachoMedicamentos, obj, transaccion);
+         return G.Q.nfcall(__insertarDespachoMedicamentos, obj.parametro1, transaccion);
+
+        }).then(function(){
+            
+            return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion);
+    
 
         }).then(function(){
            console.log("INSERTA DESPACHOS MEDICAMENTOS ");
-           transaccion.commit();
+           //transaccion.commit();
 
         }).fail(function(err){
             console.log("err ", err);
@@ -1142,6 +1147,33 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
     
 };
 
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
+ *              temporales que se dispensaran
+ */
+function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback) {
+    
+    console.log("****__guardarBodegasDocumentosDetalle****");
+    var producto = parametros.temporales[index];
+    
+    if (!producto) {       
+        callback(false);
+        return;
+    }  
+    
+    console.log("producto >>> ", producto);
+   
+    //console.log("transaccion ", transaccion);
+    G.Q.ninvoke(that.m_dispensacion_hc,'insertarBodegasDocumentosDetalle',producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId).then(function(resultado){    
+        index++;
+        setTimeout(function() {
+            __guardarBodegasDocumentosDetalle(that, index, parametros, callback);
+        }, 300);
+    }).fail(function(err){      
+        callback(true);            
+    }).done();
+}
 
 /*
  * @autor : Cristian Ardila
@@ -1152,6 +1184,42 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
  * @fecha: 11/06/2015 09:45 pm 
  */
 DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bodegasDocId,numeracion,plan, callback)
+{   
+    console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
+    console.log("obj ", obj)
+    G.knex.transaction(function(transaccion) {  
+        
+        G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, obj, transaccion).then(function(resultado){
+         
+            return G.Q.nfcall(__actualizarExistenciasBodegas, obj, transaccion);
+
+        }).then(function(){
+
+           return G.Q.nfcall(__insertarBodegasDocumentosDetalle,obj,bodegasDocId,numeracion,plan, transaccion);
+
+        }).then(function(){
+           console.log("INSERTA DESPACHOS MEDICAMENTOS FIANLIZADO");
+           transaccion.commit();
+
+        }).fail(function(err){
+            console.log("err ", err);
+           transaccion.rollback(err);
+
+        }).done();
+
+    }).then(function(){
+
+       callback(false);
+
+    }).catch(function(err){
+        
+       callback(err);
+    }).done(); 
+    
+}; 
+ 
+ 
+DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle2 = function(obj,bodegasDocId,numeracion,plan, callback)
 {   
     console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
     console.log("obj ", obj)

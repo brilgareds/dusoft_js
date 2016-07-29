@@ -100,6 +100,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                }    
             };  
           
+          //$scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId:352974});
+          //  $scope.cerrarVentana();
             dispensacionHcService.autorizarDispensacionMedicamento(obj,function(data){
                 console.log("RESPONDIENDO Y ACTUALIZANDO " );
                 if(data.status === 200){

@@ -24,6 +24,7 @@ DispensacionHcEvents.prototype.onNotificarEntregaFormula = function() {
     var that = this;
     var response = G.utils.r('onActualizarGridTemporal', 'nuevo estado de cotizacion Actualizado', 200,
                     {
+                        evolucionId: '352974',
                         numeroCotizacion: '',
                         estado: ''
                     });

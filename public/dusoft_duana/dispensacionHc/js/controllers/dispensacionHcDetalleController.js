@@ -103,14 +103,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     console.log("DATA ", data);
             });*/
             dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
-                
+                $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 if(data.status === 200) {       
 
                    productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
-                   console.log("Mostrar Productso ", $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos())
+                  
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                   //  $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 } 
             });
               
@@ -279,6 +280,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 {field: 'getCantidadEntrega()', displayName: 'Cant. entregar', width:"10%"},
                 {field: 'getPerioricidadEntrega()', displayName: 'Perioricidad entrega', width:"25%"},
                 {field: 'getTiempoTotal()', displayName: 'Dias tratamiento', width:"15%"},
+                {field: 'getAutorizado()', displayName: 'Autorizado', width:"5%"},
                 {field: 'Dispensar', width: "10%",
                            displayName: "Dispensar",
                            cellClass: "txt-center",
@@ -478,6 +480,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var modalInstance = $modal.open($scope.opts);   
            
                 modalInstance.result.then(function(){
+               
                     //$scope.showBtnImprimirPendientes = true;
                     //that.consultarMedicamentosTemporales();
                 },function(){});                          
@@ -532,12 +535,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          *              finaliza la entrega de la formula
          * @fecha 15/06/2016
          */
-        var emitAutorizarDispensacionMedicamento = $scope.$on('emitAutorizarDispensacionMedicamento', function(e, parametros) { 
+       $scope.$on('emitAutorizarDispensacionMedicamento', function(e, parametros) { 
          
             console.log("AQUI AUTORIZA LA ENTREGA DE MEDICAMENTO ---------------");
             console.log("e ", e);
             console.log("parametros ", parametros);
             that.listarMedicamentosFormulados(parametros);
+            
+           // $scope.listaMedicamentosFormulados.refreshView();
+            //console.log("$scope.listaMedicamentosFormulados ", $scope.listaMedicamentosFormulados)
+            //$scope.listaMedicamentosFormulados.api.refreshView();
+
+
+
         }); 
         
         
@@ -628,7 +638,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.$$watchers = null;
            
             emitRealizarEntregaFormula();
-            emitAutorizarDispensacionMedicamento();
+            //emitAutorizarDispensacionMedicamento();
              //socket.removeAllListeners();
             localStorageService.add("dispensarFormulaDetalle", null);
                 

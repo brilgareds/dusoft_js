@@ -1113,22 +1113,25 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
     console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
     console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
     console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
+    
     var that = this;
     G.knex.transaction(function(transaccion) {  
         
+        console.log("1 Accion : __insertarBodegasDocumentos ");
         G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion).then(function(resultado){
-          
-          console.log("resultado 1 ", resultado);
-         return G.Q.nfcall(__insertarDespachoMedicamentos, obj.parametro1, transaccion);
+         
+            console.log("2 Accion : __insertarDespachoMedicamentos ");
+            return G.Q.nfcall(__insertarDespachoMedicamentos, obj.parametro1, transaccion);
 
         }).then(function(){
             
+            ///SE LE AGREGO PARA ACOMODAR SI FUNCIONA ASI
             return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion);
     
 
         }).then(function(){
            console.log("INSERTA DESPACHOS MEDICAMENTOS ");
-           //transaccion.commit();
+           transaccion.commit();
 
         }).fail(function(err){
             console.log("err ", err);
@@ -1141,8 +1144,8 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
        callback(false);
 
     }).catch(function(err){
-        console.log("catch ", err);
-       callback(err);
+        console.log("catch ---->>>>", err);
+       callback(err.msj);
     }).done(); 
     
 };
@@ -1156,34 +1159,42 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
     
     console.log("****__guardarBodegasDocumentosDetalle****");
     var producto = parametros.temporales[index];
-    
+    console.log("ES ESTE producto ", producto)
     if (!producto) {       
         callback(false);
         return;
     }  
     
-    console.log("producto >>> ", producto);
+       console.log("3 Accion : insertarBodegasDocumentosDetalle ");
+     
+    G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, producto, transaccion).then(function(resultado){    
+            
+       console.log("4 Accion : __actualizarExistenciasBodegasLotesFv ");
+       return  G.Q.nfcall(__actualizarExistenciasBodegas, producto, transaccion);
+        
+       
+    }).then(function(resultado){
+            
+       console.log("5 Accion : __insertarBodegasDocumentosDetalle ");
+       return G.Q.nfcall(__insertarBodegasDocumentosDetalle,producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId,transaccion);
    
-    //console.log("transaccion ", transaccion);
-    G.Q.ninvoke(that.m_dispensacion_hc,'insertarBodegasDocumentosDetalle',producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId).then(function(resultado){    
-        index++;
+    
+    }).then(function(resultado){
+      
+       index++;
         setTimeout(function() {
-            __guardarBodegasDocumentosDetalle(that, index, parametros, callback);
+            __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback);
         }, 300);
+        
     }).fail(function(err){      
-        callback(true);            
+        callback(err);            
     }).done();
 }
 
-/*
- * @autor : Cristian Ardila
- * Descripcion : Modelo encargado de insertar el detalle de la dispensacion en
- *               la tabla bodegas_documentos_d a traves de transacciones para que
- *               la existencia de lotes sea consistente al descontarse con la
- *               cantidad dispensada
- * @fecha: 11/06/2015 09:45 pm 
- */
-DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bodegasDocId,numeracion,plan, callback)
+
+ 
+ 
+/*DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle2 = function(obj,bodegasDocId,numeracion,plan, callback)
 {   
     console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
     console.log("obj ", obj)
@@ -1216,43 +1227,7 @@ DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle = function(obj,bo
        callback(err);
     }).done(); 
     
-}; 
- 
- 
-DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle2 = function(obj,bodegasDocId,numeracion,plan, callback)
-{   
-    console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
-    console.log("obj ", obj)
-    G.knex.transaction(function(transaccion) {  
-        
-        G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, obj, transaccion).then(function(resultado){
-         
-            return G.Q.nfcall(__actualizarExistenciasBodegas, obj, transaccion);
-
-        }).then(function(){
-
-           return G.Q.nfcall(__insertarBodegasDocumentosDetalle,obj,bodegasDocId,numeracion,plan, transaccion);
-
-        }).then(function(){
-           console.log("INSERTA DESPACHOS MEDICAMENTOS FIANLIZADO");
-           transaccion.commit();
-
-        }).fail(function(err){
-            console.log("err ", err);
-           transaccion.rollback(err);
-
-        }).done();
-
-    }).then(function(){
-
-       callback(false);
-
-    }).catch(function(err){
-        
-       callback(err);
-    }).done(); 
-    
-};
+};*/
 
 /**
  * @author Cristian Ardila
@@ -1263,11 +1238,11 @@ DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle2 = function(obj,b
  */
 function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     //Problemas con el filtro de la fecha de vencimiento
-   
+     
     var formato = 'DD/mm/YYYY';
     var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto, 6:  G.moment(obj.fecha_vencimiento, formato), 7: obj.lote};
-                
+          
     var sql = "UPDATE  existencias_bodegas_lote_fv \
                 set existencia_actual= existencia_actual - :1\
                 WHERE   empresa_id = :2 \
@@ -1280,11 +1255,11 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){     
-            console.log(" 1) resultado ", resultado)
+            //console.log(" 1) resultado ", resultado)
             callback(false, resultado);
     }).catch(function(err){
-             console.log(" 1) err ", err);
-            callback(err);   
+             //console.log(" 1) err ", err);
+            callback({err:err, msj: "Error al actualizar las existencias de los lotes por que no pueden ser menores a 0"});   
     });  
 
 };
@@ -1298,11 +1273,11 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
  */
 function __actualizarExistenciasBodegas(obj,transaccion,callback) {
     
-    console.log("*****2)__actualizarExistenciasBodegas****");
+    //console.log("*****2)__actualizarExistenciasBodegas****");
     
     var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto};
-                    console.log("{parametros: ", parametros +"}");
+                    //console.log("{parametros: ", parametros +"}");
     var sql = "UPDATE  existencias_bodegas set     existencia= existencia - :1\
                 WHERE   empresa_id = :2 \
                 AND  centro_utilidad = :3\
@@ -1312,11 +1287,11 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){    
-              console.log("2) resultado: ", resultado);
+              //console.log("2) resultado: ", resultado);
             callback(false, resultado);
     }).catch(function(err){
-        console.log("2) err: ", err);
-            callback(err);   
+        //console.log("2) err: ", err);
+            callback({err:err, msj: "Error al actualizar las existencias de bodega por que no pueden ser menores a 0"});   
     });  
 };
 
@@ -1329,7 +1304,7 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
  */
 function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,transaccion, callback){
     
-    console.log("********3)__insertarBodegasDocumentosDetalle************");
+    //console.log("********3)__insertarBodegasDocumentosDetalle************");
    
     var parametros ={1: obj.codigo_producto,2: obj.cantidad_despachada,3: obj.empresa_id,
                      4: plan,5: bodegasDocId,6: numeracion,7: obj.fecha_vencimiento,
@@ -1347,7 +1322,7 @@ function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,tra
           
             callback(false, resultado);
     }).catch(function(err){
-            callback(err);   
+            callback({err:err, msj: "Error al guardar el detalle de los productos dispensados"});   
     });
 };
 
@@ -1487,7 +1462,7 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
         query.then(function(resultado){           
             callback(false, resultado);
     }).catch(function(err){
-            callback(err);   
+            callback({err:err, msj: "Error al generar el documento de bodega"});   
     });
 };
 
@@ -1508,7 +1483,7 @@ function __insertarDespachoMedicamentos(obj, transaccion, callback){
         query.then(function(resultado){           
             callback(false, resultado);
     }).catch(function(err){
-            callback(err);   
+            callback({err:err, msj: "Error al generar el despacho del medicamento"});  
     });
 }
 

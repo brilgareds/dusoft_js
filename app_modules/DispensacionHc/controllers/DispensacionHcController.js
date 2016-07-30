@@ -1129,6 +1129,9 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             /**
              * Inserta bodegas_documentos
              * Inserta hc_formulacion_despachos_medicamentos
+             * Actualiza existencias_bodegas_lotes_fv, 
+             * Actualiza existencias_bodegas
+             * Inserta   bodegas_documentos_d
              */
             
             return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',
@@ -1136,14 +1139,14 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         };
             
             
-    }).then(function(resultado){
+    })/*.then(function(resultado){
         
         
         console.log("********************************************");
         console.log("********************************************");
         console.log("********************************************");
         console.log("resultado ", resultado);
-    })
+    })*/
     
 
     /*.then(function(){
@@ -1159,7 +1162,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     return  G.Q.nfcall(__insertarBodegasDocumentosDetalle,that,0, parametrosBodegasDocumentosDetalle);
     
      
-    }).then(function(estado){
+    })*/.then(function(estado){
         
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1)
         
@@ -1213,7 +1216,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
            that.e_dispensacion_hc.onNotificarEntregaFormula(); 
         }   
-    })*/.fail(function(err){      
+    }).fail(function(err){      
        
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();

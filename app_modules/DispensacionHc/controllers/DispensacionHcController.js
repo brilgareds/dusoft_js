@@ -1124,90 +1124,26 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                             planId: planId}
                   };
             
-       // var parametrosBodegasDocumentosDetalle = {temporales: temporales, usuario:usuario, bodegasDocId:bodegasDocId, numeracion:numeracion, planId: planId};
-    
             /**
              * Inserta bodegas_documentos
              * Inserta hc_formulacion_despachos_medicamentos
              * Actualiza existencias_bodegas_lotes_fv, 
              * Actualiza existencias_bodegas
              * Inserta   bodegas_documentos_d
-             */
-            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',
-                    parametrosGenerarDispensacion);
+             * Inserta   hc_pendientes_por_dispensar
+             * elimina   hc_dispensacion_medicamentos_tmp
+             */        
+            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
         };
             
             
-    })/*.then(function(resultado){
-        
-        
-        console.log("********************************************");
-        console.log("********************************************");
-        console.log("********************************************");
-        console.log("resultado ", resultado);
-    })*/
-    
-
-    /*.then(function(){
-
-     var parametrosBodegasDocumentosDetalle = {temporales: temporales, usuario:usuario, bodegasDocId:bodegasDocId, numeracion:numeracion, planId: planId};
-    
-     
-      //Actualiza existencias_bodegas_lotes_fv, 
-      //Actualiza existencias_bodegas
-      //Inserta   bodegas_documentos_d
-      
-       
-    return  G.Q.nfcall(__insertarBodegasDocumentosDetalle,that,0, parametrosBodegasDocumentosDetalle);
-    
-     
-    })*/.then(function(estado){
-        
-        return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1)
-        
     }).then(function(resultado){
-        
-       
-          // +Descripcion Si hay productos en la temporal o si se va a dejar
-                       //la formula como todo pendiente se procede a consultar tambien
-                      // el pendiente que se deja en la dispensacion
-          
-        if(resultado.rows.length >0 || todoPendiente === '1'){                       
-            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientes',{evolucionId:evolucionId});                        
-            
-        }
-            
-    }).then(function(resultado){
-        var def = G.Q.defer();
-        
-        //Se valida de que hallan medicamentos pendientes
+          console.log("AQUI TERMINA TODA LA TRANSACCION YA DESPUES QUE SE ELIMINA EL TEMPORAL DISPENSADOS");
          
-        if(resultado.rows.length >0){            
-        //Descripcion Funcion recursiva que se encargada de almacenar los pendientes
-         
-         return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, evolucionId,0, usuario);
-        }else{
-            def.resolve();
-        }
-    
-    }).then(function(resultado){
-       
-         return G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalesDispensados',{evolucionId:evolucionId}); 
-          
-    }).then(function(resultado){
-          
-        if(resultado.rowCount === 0){
-            throw 'Error al eliminar los temporales'
-        }else{
            return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo}); 
-        }  
-         
-                
+            
     }).then(function(resultado){
         
-       
         if(resultado.rowCount === 0){
             throw 'Error al actualizar el tipo de formula'
          

@@ -161,7 +161,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
 
      
     G.knex.raw(sql,parametros).then(function(resultado){ 
-        console.log("resultado ", resultado);
+        console.log("resultado Pendientes por dispensar::: ", resultado);
       callback(false, resultado)
     }).catch(function(err){         
          console.log("err ", err);
@@ -1126,13 +1126,48 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
         }).then(function(){
             
             ///SE LE AGREGO PARA ACOMODAR SI FUNCIONA ASI
+            //console.log("obj.parametro2 ", obj.parametro2)
+            console.log("### Accion : __guardarBodegasDocumentosDetalle ");
             return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion);
     
 
         }).then(function(){
-           console.log("INSERTA DESPACHOS MEDICAMENTOS ");
-           transaccion.commit();
+            //SE AGREGAN PARA VALIDAR DESDE LA TRANSACCION
+            return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)
+            
+        }).then(function(resultado){
+          
+            if(resultado.rows.length >0 ){                       
+            
+            return G.Q.ninvoke(that,'listarMedicamentosPendientes',{evolucionId:obj.parametro1.evolucion});                        
+            
+           }
+           
 
+        }).then(function(resultado){
+            
+               var def = G.Q.defer();
+               
+               console.log(" listarMedicamentosPendientes ", resultado)
+               
+            if(resultado.rows.length >0){            
+            //Descripcion Funcion recursiva que se encargada de almacenar los pendientes
+
+             return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, obj.parametro1.evolucion,0, obj.parametro1.usuario,transaccion);
+            }else{
+                def.resolve();
+            }
+          
+            
+        }).then(function(){
+            
+           return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
+            
+            
+        }).then(function(){
+            console.log("SE REALIZA EL COMMIT");
+             transaccion.commit(); 
+            
         }).fail(function(err){
             console.log("err ", err);
            transaccion.rollback(err);
@@ -1150,6 +1185,40 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
     
 };
 
+
+/* USANDO ESTA FUNCION POR A QUI **/
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
+ *              temporales que se almacenaran como pendientes
+ */
+function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback) {
+    
+  
+   
+    var producto = productos[index];   
+   
+    if (!producto) {       
+        //console.log("Debe salir a qui ");
+        callback(false);
+        return;
+    }  
+     
+    if(parseInt(producto.total) > 0){
+        G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
+
+         }).fail(function(err){      
+       }).done();   
+    }
+        index++;
+        setTimeout(function() {
+            __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback);
+        }, 300);
+   
+}
+
+
+
 /**
  * @author Cristian Ardila
  * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
@@ -1159,12 +1228,12 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
     
     console.log("****__guardarBodegasDocumentosDetalle****");
     var producto = parametros.temporales[index];
-    console.log("ES ESTE producto ", producto)
+    console.log("------------ES ESTE producto ----------------------", producto)
     if (!producto) {       
         callback(false);
         return;
     }  
-    
+    index++;
        console.log("3 Accion : insertarBodegasDocumentosDetalle ");
      
     G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, producto, transaccion).then(function(resultado){    
@@ -1181,7 +1250,7 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
     
     }).then(function(resultado){
       
-       index++;
+        
         setTimeout(function() {
             __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback);
         }, 300);
@@ -1333,7 +1402,7 @@ function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,tra
  *               por dispensar
  * @fecha: 08/06/2015 2:43 pm 
  */
-DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto,evolucionId,todoPendiente,usuario,callback) {
+DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto,evolucionId,todoPendiente,usuario,transaccion,callback) {
    
    var parametros = {1: evolucionId, 2: producto.codigo_producto, 3: Math.round(producto.total),
                      4: usuario, 5: todoPendiente, 6: 'now()'};
@@ -1347,14 +1416,20 @@ DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto
            
     var query = G.knex.raw(sql,parametros );
     
-    query.then(function(resultado){
+    /*query.then(function(resultado){
         console.log("resultado ", resultado);
        callback(false, resultado);
     }).catch(function(err){
      console.log("err ", err);
        callback(err);
+    });*/
+   if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){ 
+          
+            callback(false, resultado);
+    }).catch(function(err){
+            callback({err:err, msj: "Error al guardar los medicamentos pendientes"});   
     });
-   
 };
 
 /*
@@ -1362,7 +1437,7 @@ DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto
  * Descripcion : SQL encargado de eliminar los productos que ya se han dispensado
  * @fecha: 08/06/2015 2:43 pm 
  */
-DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,callback) {
+DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,transaccion,callback) {
    
    var parametros = {1: obj.evolucionId};
    console.log("********eliminarTemporalesDispensados************ ", parametros );
@@ -1371,12 +1446,18 @@ DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,callb
            
     var query = G.knex.raw(sql,parametros );
     
-    query.then(function(resultado){
+   /* query.then(function(resultado){
         console.log("resultado ELiminar", resultado);
        callback(false, resultado);
     }).catch(function(err){
      console.log("err ELiminar", err);
        callback(err);
+    });*/
+      if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){           
+            callback(false, resultado);
+    }).catch(function(err){
+            callback({err:err, msj: "Error al eliminar los temporales"});   
     });
    
 };

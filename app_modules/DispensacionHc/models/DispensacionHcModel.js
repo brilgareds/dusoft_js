@@ -1109,77 +1109,57 @@ DispensacionHcModel.prototype.bloquearTabla = function(callback) {
  */
 DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callback)
 {   
-    console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
-    console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
-    console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
-    console.log("*******DispensacionHcModel.prototype.generarDispensacionFormula*************");
-    
+   
     var that = this;
     G.knex.transaction(function(transaccion) {  
         
         console.log("1 Accion : __insertarBodegasDocumentos ");
         G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion).then(function(resultado){
          
-            console.log("2 Accion : __insertarDespachoMedicamentos ");
-            return G.Q.nfcall(__insertarDespachoMedicamentos, obj.parametro1, transaccion);
+                console.log("2 Accion : __insertarDespachoMedicamentos ");
+                return G.Q.nfcall(__insertarDespachoMedicamentos, obj.parametro1, transaccion);
 
-        }).then(function(){
-            
-            ///SE LE AGREGO PARA ACOMODAR SI FUNCIONA ASI
-            //console.log("obj.parametro2 ", obj.parametro2)
-            console.log("### Accion : __guardarBodegasDocumentosDetalle ");
-            return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion);
-    
-
+        }).then(function(){          
+                console.log("### Accion : __guardarBodegasDocumentosDetalle ");
+                return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion);  
         }).then(function(){
             //SE AGREGAN PARA VALIDAR DESDE LA TRANSACCION
-            return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)
+                return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)
             
         }).then(function(resultado){
           
-            if(resultado.rows.length >0 ){                       
-            
-            return G.Q.ninvoke(that,'listarMedicamentosPendientes',{evolucionId:obj.parametro1.evolucion});                        
-            
-           }
+                if(resultado.rows.length >0 || obj.parametro1.todoPendiente === '1'){                                   
+                    return G.Q.ninvoke(that,'listarMedicamentosPendientes',{evolucionId:obj.parametro1.evolucion});                                   
+                }
            
-
         }).then(function(resultado){
             
-               var def = G.Q.defer();
-               
-               console.log(" listarMedicamentosPendientes ", resultado)
-               
-            if(resultado.rows.length >0){            
-            //Descripcion Funcion recursiva que se encargada de almacenar los pendientes
+                var def = G.Q.defer();
 
-             return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, obj.parametro1.evolucion,0, obj.parametro1.usuario,transaccion);
-            }else{
-                def.resolve();
-            }
-          
+                if(resultado.rows.length >0){                   
+                /**
+                 * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
+                 */
+                    return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, obj.parametro1.evolucion,0, obj.parametro1.usuario,transaccion);
+                }else{
+                    def.resolve();
+                }         
             
         }).then(function(){
             
-           return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
-            
-            
+                return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
+         
         }).then(function(){
             console.log("SE REALIZA EL COMMIT");
-             transaccion.commit(); 
+                transaccion.commit(); 
             
         }).fail(function(err){
-            console.log("err ", err);
-           transaccion.rollback(err);
-
+                transaccion.rollback(err);
         }).done();
 
     }).then(function(){
-
        callback(false);
-
-    }).catch(function(err){
-        console.log("catch ---->>>>", err);
+    }).catch(function(err){      
        callback(err.msj);
     }).done(); 
     
@@ -1193,8 +1173,6 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
  *              temporales que se almacenaran como pendientes
  */
 function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback) {
-    
-  
    
     var producto = productos[index];   
    
@@ -1210,12 +1188,12 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
          }).fail(function(err){      
        }).done();   
     }
-        index++;
-        setTimeout(function() {
-            __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback);
-        }, 300);
+    index++;
+    setTimeout(function() {
+        __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback);
+    }, 300);
    
-}
+};
 
 
 
@@ -1262,42 +1240,6 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
 
 
  
- 
-/*DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle2 = function(obj,bodegasDocId,numeracion,plan, callback)
-{   
-    console.log("*******DispensacionHcModel.prototype.insertarBodegasDocumentosDetalle*************");
-    console.log("obj ", obj)
-    G.knex.transaction(function(transaccion) {  
-        
-        G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, obj, transaccion).then(function(resultado){
-         
-            return G.Q.nfcall(__actualizarExistenciasBodegas, obj, transaccion);
-
-        }).then(function(){
-
-           return G.Q.nfcall(__insertarBodegasDocumentosDetalle,obj,bodegasDocId,numeracion,plan, transaccion);
-
-        }).then(function(){
-           console.log("INSERTA DESPACHOS MEDICAMENTOS FIANLIZADO");
-           transaccion.commit();
-
-        }).fail(function(err){
-            console.log("err ", err);
-           transaccion.rollback(err);
-
-        }).done();
-
-    }).then(function(){
-
-       callback(false);
-
-    }).catch(function(err){
-        
-       callback(err);
-    }).done(); 
-    
-};*/
-
 /**
  * @author Cristian Ardila
  * +Descripcion Query invocado desde una transaccion para actualizar
@@ -1306,8 +1248,7 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
  * @fecha 11/06/2016 (DD-MM-YYYY)
  */
 function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
-    //Problemas con el filtro de la fecha de vencimiento
-     
+    //Problemas con el filtro de la fecha de vencimiento    
     var formato = 'DD/mm/YYYY';
     var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto, 6:  G.moment(obj.fecha_vencimiento, formato), 7: obj.lote};
@@ -1324,10 +1265,8 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){     
-            //console.log(" 1) resultado ", resultado)
             callback(false, resultado);
     }).catch(function(err){
-             //console.log(" 1) err ", err);
             callback({err:err, msj: "Error al actualizar las existencias de los lotes por que no pueden ser menores a 0"});   
     });  
 
@@ -1341,12 +1280,9 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
  * @fecha 11/06/2016 (DD-MM-YYYY)
  */
 function __actualizarExistenciasBodegas(obj,transaccion,callback) {
-    
-    //console.log("*****2)__actualizarExistenciasBodegas****");
-    
+
     var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto};
-                    //console.log("{parametros: ", parametros +"}");
     var sql = "UPDATE  existencias_bodegas set     existencia= existencia - :1\
                 WHERE   empresa_id = :2 \
                 AND  centro_utilidad = :3\
@@ -1356,10 +1292,8 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){    
-              //console.log("2) resultado: ", resultado);
             callback(false, resultado);
     }).catch(function(err){
-        //console.log("2) err: ", err);
             callback({err:err, msj: "Error al actualizar las existencias de bodega por que no pueden ser menores a 0"});   
     });  
 };
@@ -1373,8 +1307,6 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
  */
 function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,transaccion, callback){
     
-    //console.log("********3)__insertarBodegasDocumentosDetalle************");
-   
     var parametros ={1: obj.codigo_producto,2: obj.cantidad_despachada,3: obj.empresa_id,
                      4: plan,5: bodegasDocId,6: numeracion,7: obj.fecha_vencimiento,
                      8: obj.lote,9: '1'};
@@ -1406,9 +1338,8 @@ DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto
    
    var parametros = {1: evolucionId, 2: producto.codigo_producto, 3: Math.round(producto.total),
                      4: usuario, 5: todoPendiente, 6: 'now()'};
-   console.log("********__insertarPendientesPorDispensar************ ", parametros );
-   
-    var sql = "INSERT INTO hc_pendientes_por_dispensar\
+  
+   var sql = "INSERT INTO hc_pendientes_por_dispensar\
       (hc_pendiente_dispensacion_id,evolucion_id,codigo_medicamento,cantidad,\
        usuario_id,todo_pendiente,fecha_registro)\
             VALUES( DEFAULT, :1, :2, :3, :4, :5, :6 );";
@@ -1416,13 +1347,6 @@ DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto
            
     var query = G.knex.raw(sql,parametros );
     
-    /*query.then(function(resultado){
-        console.log("resultado ", resultado);
-       callback(false, resultado);
-    }).catch(function(err){
-     console.log("err ", err);
-       callback(err);
-    });*/
    if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){ 
           
@@ -1439,27 +1363,16 @@ DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto
  */
 DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,transaccion,callback) {
    
-   var parametros = {1: obj.evolucionId};
-   console.log("********eliminarTemporalesDispensados************ ", parametros );
-   
-    var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp WHERE  evolucion_id = :1;";
-           
-    var query = G.knex.raw(sql,parametros );
+   var parametros = {1: obj.evolucionId};   
+   var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp WHERE  evolucion_id = :1;";          
+   var query = G.knex.raw(sql,parametros );
     
-   /* query.then(function(resultado){
-        console.log("resultado ELiminar", resultado);
-       callback(false, resultado);
-    }).catch(function(err){
-     console.log("err ELiminar", err);
-       callback(err);
-    });*/
-      if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){           
-            callback(false, resultado);
-    }).catch(function(err){
+   if(transaccion) query.transacting(transaccion);     
+      query.then(function(resultado){           
+          callback(false, resultado);
+   }).catch(function(err){
             callback({err:err, msj: "Error al eliminar los temporales"});   
-    });
-   
+    });  
 };
 
 /*

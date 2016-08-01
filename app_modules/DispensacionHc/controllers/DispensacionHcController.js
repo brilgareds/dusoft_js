@@ -759,245 +759,12 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
  *  13) se ejecuta el model actualizarTipoFormula el cual actualizara el tipo 
  *      de la formula actualmente dispensada y con esto se termina el proceso de realizarEntregaFormula
  */
-DispensacionHc.prototype.realizarEntregaFormula2 = function(req, res){
-    console.log("***************DispensacionHc.prototype.realizarEntregaFormula****************");
-    console.log("***************DispensacionHc.prototype.realizarEntregaFormula****************");
-    console.log("***************DispensacionHc.prototype.realizarEntregaFormula****************");
-    
-    var that = this;
-    var args = req.body.data;
-    
-   
-    if(!args.realizar_entrega_formula){
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {realizar_entrega_formula: []}));
-        return;
-    } 
-    
-    if(!args.realizar_entrega_formula.variable){
-        res.send(G.utils.r(req.url, 'La variable de parametrizacion de formulacion esta vacia ó indefinida', 404, {realizar_entrega_formula: []}));
-        return;
-    } 
-    
-    if(!args.realizar_entrega_formula.evolucionId){
-        res.send(G.utils.r(req.url, 'La evolucion esta vacia ó indefinida', 404, {realizar_entrega_formula: []}));
-        return;
-    } 
-    
-    if(!args.realizar_entrega_formula.tipoFormula){
-        res.send(G.utils.r(req.url, 'Debe seleccionar el tipo de formula', 404, {realizar_entrega_formula: []}));
-        return;
-    } 
-    
-    var evolucionId = args.realizar_entrega_formula.evolucionId;
-    var empresa = args.realizar_entrega_formula.empresa;
-    var bodega = args.realizar_entrega_formula.bodega;
-    var variable = args.realizar_entrega_formula.variable;
-    var observacion = args.realizar_entrega_formula.observacion;
-    var usuario = req.session.user.usuario_id;
-    var tipoFormula = args.realizar_entrega_formula.tipoFormula;
-    var bodegasDocId;
-    var planId;
-    var variableParametrizacion;
-    var numeracion;
-    var temporales;
-    var todoPendiente;
-    var parametrosReformular = {variable: variable,
-                                terminoBusqueda: evolucionId,
-                                filtro: {tipo:'EV'},                             
-                                empresa: empresa,
-                                bodega: bodega,
-                                observacion: observacion,
-                                tipoVariable : 0
-                                
-    
-    };
-   
-    G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular).then(function(resultado){
-        
-        if(resultado.length > 0){
-           planId =  resultado[0].plan_id;
-            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametrosReformular);
-        }else{
-            throw 'Consulta sin resultados '
-        }
-        
-    }).then(function(resultado){
-       
-        
-        if(resultado.length > 0){
-            
-            var parametroBodegaDocId = {variable:"documento_dispensacion_"+empresa+"_"+bodega, tipoVariable:1, modulo:'Dispensacion' };
-                variableParametrizacion = resultado[0].valor;
-            /**
-             *+Descripcion Se consulta el bodegas_doc_id correspondiente
-             */
-            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
-        }else{
-            
-            throw 'Variable reformular no se encontro';
-            
-        }
-      
-        
-    }).then(function(resultado){
-        
-        if(resultado.length > 0){
-            
-           bodegasDocId = resultado[0].valor;
-           
-           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);
-            
-        }else{
-            throw 'No hay temporales'
-        }
-            
-    }).then(function(resultado){
-          console.log("1) temporales ", temporales);
-        if(resultado.rows.length > 0){
-             temporales = resultado.rows;
-             return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');
-             
-        }else{
-            throw 'No hay temporales separados'
-        }
-           
-    }).then(function(resultado){
-            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId:bodegasDocId});
-            
-    }).then(function(resultado){
-        
-         
-        if(resultado.rowCount === 0){
-            throw 'No se genero numero de despacho'
-        }else{
-            numeracion = resultado.rows[0].numeracion;
-            var parametrosGenerarDispensacion={bodegasDocId:bodegasDocId, 
-                    numeracion:numeracion, 
-                    observacion:observacion, 
-                    estadoPendiente:0,
-                    usuario: usuario,
-                    evolucion: evolucionId};
-            
-            /**
-             * Inserta bodegas_documentos
-             * Inserta hc_formulacion_despachos_medicamentos
-             */
-            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',
-                    parametrosGenerarDispensacion);
-        };
-            
-            
-    }).then(function(){
-
-     var parametrosBodegasDocumentosDetalle = {temporales: temporales, usuario:usuario, bodegasDocId:bodegasDocId, numeracion:numeracion, planId: planId};
-    
-    /**
-      *
-      *Actualiza existencias_bodegas_lotes_fv, 
-      *Actualiza existencias_bodegas
-      *Inserta   bodegas_documentos_d
-      *
-      **/
-    return  G.Q.nfcall(__insertarBodegasDocumentosDetalle,that,0, parametrosBodegasDocumentosDetalle);
-    
-     
-    }).then(function(estado){
-        
-        return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1)
-        
-    }).then(function(resultado){
-        
-       /**
-         * +Descripcion Si hay productos en la temporal o si se va a dejar
-         *              la formula como todo pendiente se procede a consultar tambien
-         *              el pendiente que se deja en la dispensacion
-         */
-        if(resultado.rows.length >0 || todoPendiente === '1'){                       
-            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientes',{evolucionId:evolucionId});                        
-            
-        }
-            
-    }).then(function(resultado){
-        var def = G.Q.defer();
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("*");
-        console.log("**");
-        console.log("***");
-        console.log("****");
-        console.log("resultado Lista medicamentos pendientes::> ");
-        console.log("resultado Lista medicamentos pendientes::> ");
-        console.log("resultado Lista medicamentos pendientes::> ");
-        console.log("RESULTADO::: ", resultado);
-        console.log("****");
-        console.log("***");
-        console.log("**");
-        console.log("*");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        console.log("-----------------------------------------------------");
-        /**
-         * Se valida de que hallan medicamentos pendientes
-         */
-        if(resultado.rows.length >0){            
-        /**
-         * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
-         */
-         return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, evolucionId,0, usuario);
-        }else{
-            def.resolve();
-        }
-    
-    }).then(function(resultado){
-       
-         return G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalesDispensados',{evolucionId:evolucionId}); 
-          
-    }).then(function(resultado){
-          
-        if(resultado.rowCount === 0){
-            throw 'Error al eliminar los temporales'
-        }else{
-           return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo}); 
-        }  
-         
-                
-    }).then(function(resultado){
-        
-       
-        if(resultado.rowCount === 0){
-            throw 'Error al actualizar el tipo de formula'
-         
-        }else{
-            
-           res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
-           that.e_dispensacion_hc.onNotificarEntregaFormula(); 
-        }   
-    }).fail(function(err){      
-       
-       res.send(G.utils.r(req.url, err, 500, {}));
-    }).done();
-    
-    
-};
 
 
 
 
 DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
-    console.log("***************DispensacionHc.prototype.realizarEntregaFormula22****************");
-    console.log("***************DispensacionHc.prototype.realizarEntregaFormula22****************");
-    console.log("***************DispensacionHc.prototype.realizarEntregaFormula22****************");
-    
+   
     var that = this;
     var args = req.body.data;
     
@@ -1113,7 +880,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                      observacion:observacion, 
                      estadoPendiente:0,
                      usuario: usuario,
-                     evolucion: evolucionId
+                     evolucion: evolucionId,
+                     todoPendiente: todoPendiente
                     },
                     
                     parametro2:{
@@ -1131,16 +899,17 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
              * Actualiza existencias_bodegas
              * Inserta   bodegas_documentos_d
              * Inserta   hc_pendientes_por_dispensar
+             * Consulta  hc_dispensacion_medicamentos_tmp
+             * Consulta  Medicamentos pendientes
              * elimina   hc_dispensacion_medicamentos_tmp
              */        
             return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
         };
             
             
-    }).then(function(resultado){
-          console.log("AQUI TERMINA TODA LA TRANSACCION YA DESPUES QUE SE ELIMINA EL TEMPORAL DISPENSADOS");
-         
-           return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo}); 
+    }).then(function(){
+          
+         return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo}); 
             
     }).then(function(resultado){
         
@@ -1169,13 +938,9 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
  */
 DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req, res){
    
-   console.log("*****DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar ********");
-   console.log("*****DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar ********");
-   console.log("*****DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar ********");
-   
     var that = this;
     var args = req.body.data;
-   console.log("args ", args);
+  
     if (args.listar_medicamentos_pendientes === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_pendientes: []}));
         return;
@@ -1380,61 +1145,8 @@ function __generarPdf(datos, callback) {
         });
     });
 }
-/**
- * @author Cristian Ardila
- * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
- *              temporales que se dispensaran
- */
-function __insertarBodegasDocumentosDetalle2(that, index, parametros, callback) {
-    
-    var producto = parametros.temporales[index];
-    
-    if (!producto) {       
-        callback(false);
-        return;
-    }  
-    
-    G.Q.ninvoke(that.m_dispensacion_hc,'insertarBodegasDocumentosDetalle',producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId).then(function(resultado){    
-        index++;
-        setTimeout(function() {
-            __insertarBodegasDocumentosDetalle2(that, index, parametros, callback);
-        }, 300);
-    }).fail(function(err){      
-        callback(true);            
-    }).done();
-}
 
 
-
-/**
- * @author Cristian Ardila
- * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
- *              temporales que se almacenaran como pendientes
- */
-function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback) {
-    
-  
-   
-    var producto = productos[index];   
-   
-    if (!producto) {       
-        //console.log("Debe salir a qui ");
-        callback(false);
-        return;
-    }  
-     
-    if(parseInt(producto.total) > 0){
-        G.Q.ninvoke(that.m_dispensacion_hc,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario).then(function(resultado){
-
-         }).fail(function(err){      
-       }).done();   
-    }
-        index++;
-        setTimeout(function() {
-            __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario, callback);
-        }, 300);
-   
-}
 DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc"];
 
 module.exports = DispensacionHc;

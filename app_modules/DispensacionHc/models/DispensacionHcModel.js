@@ -1105,7 +1105,7 @@ DispensacionHcModel.prototype.bloquearTabla = function(callback) {
  *               de una formula a traves de las transacciones, con el fin de que se
  *               cumpla cada registro prerequisito de otro y evitar la inconsistencia
  *               de datos
- * @fecha: 11/06/2015 09:45 pm 
+ * @fecha: 2016-08-01 09:45 pm 
  */
 DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callback)
 {   
@@ -1113,29 +1113,20 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
     var that = this;
     G.knex.transaction(function(transaccion) {  
         
-        console.log("1 Accion : __insertarBodegasDocumentos ");
-        G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion).then(function(resultado){
-         
-                console.log("2 Accion : __insertarDespachoMedicamentos ");
+        G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion).then(function(resultado){        
                 return G.Q.nfcall(__insertarDespachoMedicamentos, obj.parametro1, transaccion);
-
         }).then(function(){          
-                console.log("### Accion : __guardarBodegasDocumentosDetalle ");
+               
                 return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion);  
         }).then(function(){
-            //SE AGREGAN PARA VALIDAR DESDE LA TRANSACCION
-                return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)
-            
+                return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)          
         }).then(function(resultado){
           
                 if(resultado.rows.length >0 || obj.parametro1.todoPendiente === '1'){                                   
                     return G.Q.ninvoke(that,'listarMedicamentosPendientes',{evolucionId:obj.parametro1.evolucion});                                   
-                }
-           
-        }).then(function(resultado){
-            
+                }        
+        }).then(function(resultado){           
                 var def = G.Q.defer();
-
                 if(resultado.rows.length >0){                   
                 /**
                  * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
@@ -1149,10 +1140,8 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
             
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
          
-        }).then(function(){
-            console.log("SE REALIZA EL COMMIT");
-                transaccion.commit(); 
-            
+        }).then(function(){          
+                transaccion.commit();            
         }).fail(function(err){
                 transaccion.rollback(err);
         }).done();
@@ -1166,11 +1155,12 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
 };
 
 
-/* USANDO ESTA FUNCION POR A QUI **/
 /**
  * @author Cristian Ardila
  * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
  *              temporales que se almacenaran como pendientes
+ * @fecha 2016-08-01
+ * @Funcion local
  */
 function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback) {
    
@@ -1199,14 +1189,16 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
 
 /**
  * @author Cristian Ardila
- * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
- *              temporales que se dispensaran
+ * +Descripcion Funcion encargada de actualizar la existencias de bodegas
+ *              y bodegas lotes fv a insertar el detalle de la dispensacion
+ *              a traves de una funcion recursiva encargada de recorrer el arreglo de los productos
+ *              temporales que se dispensaran 
+ * @fecha 2016-08-01
  */
 function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback) {
     
-    console.log("****__guardarBodegasDocumentosDetalle****");
     var producto = parametros.temporales[index];
-    console.log("------------ES ESTE producto ----------------------", producto)
+   
     if (!producto) {       
         callback(false);
         return;

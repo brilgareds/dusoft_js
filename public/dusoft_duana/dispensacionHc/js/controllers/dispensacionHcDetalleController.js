@@ -188,7 +188,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
              
             dispensacionHcService.existenciasBodegas(obj, function(data){
-                //console.log("data ---->>>>", data)
+              
                 entity.vaciarProductosHc();
                 if(data.status === 200) {                                          
                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   

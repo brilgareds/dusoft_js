@@ -759,15 +759,10 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
  *  13) se ejecuta el model actualizarTipoFormula el cual actualizara el tipo 
  *      de la formula actualmente dispensada y con esto se termina el proceso de realizarEntregaFormula
  */
-
-
-
-
 DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
    
     var that = this;
-    var args = req.body.data;
-    
+    var args = req.body.data;   
    
     if(!args.realizar_entrega_formula){
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {realizar_entrega_formula: []}));
@@ -802,17 +797,10 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     var numeracion;
     var temporales;
     var todoPendiente;
-    var parametrosReformular = {variable: variable,
-                                terminoBusqueda: evolucionId,
-                                filtro: {tipo:'EV'},                             
-                                empresa: empresa,
-                                bodega: bodega,
-                                observacion: observacion,
-                                tipoVariable : 0
+    var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
+                                filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
+                                observacion: observacion,tipoVariable : 0};
                                 
-    
-    };
-   
     G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular).then(function(resultado){
         
         if(resultado.length > 0){
@@ -823,51 +811,39 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         }
         
     }).then(function(resultado){
-       
-        
-        if(resultado.length > 0){
-            
+             
+        if(resultado.length > 0){           
             var parametroBodegaDocId = {variable:"documento_dispensacion_"+empresa+"_"+bodega, tipoVariable:1, modulo:'Dispensacion' };
                 variableParametrizacion = resultado[0].valor;
             /**
              *+Descripcion Se consulta el bodegas_doc_id correspondiente
              */
             return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
-        }else{
-            
-            throw 'Variable reformular no se encontro';
-            
+        }else{           
+            throw 'Variable reformular no se encontro';            
         }
-      
-        
+            
     }).then(function(resultado){
         
-        if(resultado.length > 0){
-            
-           bodegasDocId = resultado[0].valor;
-           
-           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);
-            
+        if(resultado.length > 0){           
+           bodegasDocId = resultado[0].valor;          
+           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);          
         }else{
             throw 'No hay temporales'
         }
             
     }).then(function(resultado){
-          console.log("1) temporales ", resultado.rows);
+          
         if(resultado.rows.length > 0){
              temporales = resultado.rows;
-             return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');
-             
+             return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');            
         }else{
             throw 'No hay temporales separados'
         }
            
-    }).then(function(resultado){
-            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId:bodegasDocId});
-            
-    }).then(function(resultado){
-        
+    }).then(function(resultado){            
+            return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId:bodegasDocId});            
+    }).then(function(resultado){     
          
         if(resultado.rowCount === 0){
             throw 'No se genero numero de despacho'
@@ -907,26 +883,19 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         };
             
             
-    }).then(function(){
-          
-         return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo}); 
-            
+    }).then(function(){          
+         return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});            
     }).then(function(resultado){
         
         if(resultado.rowCount === 0){
-            throw 'Error al actualizar el tipo de formula'
-         
-        }else{
-            
+            throw 'Error al actualizar el tipo de formula'        
+        }else{           
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
            that.e_dispensacion_hc.onNotificarEntregaFormula(); 
         }   
-    }).fail(function(err){      
-       
+    }).fail(function(err){            
        res.send(G.utils.r(req.url, err, 500, {}));
-    }).done();
-    
-    
+    }).done();       
 };
 
 /*

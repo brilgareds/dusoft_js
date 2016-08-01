@@ -50,7 +50,7 @@ define(["angular",
                     {field: 'codigo_lote', displayName: 'Lote'},
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                     {field: 'cantidad', displayName: 'Cantidad'},
-                    {field: 'disponible', displayName: 'Disponible'},
+                    ///{field: 'disponible', displayName: 'Disponible'},
                     {field: 'cantidadNueva', displayName: 'Restar Cantidad', 
                         cellTemplate: ' <div class="col-xs-12">\
                                             <input  type="text" ng-model="row.entity.cantidadARestar" ng-disabled="row.entity.cantidad == 0" validacion-numero-entero class="form-control grid-inline-input" />\

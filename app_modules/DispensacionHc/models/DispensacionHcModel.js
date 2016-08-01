@@ -19,11 +19,11 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
    var pendienteCampoEstado = "";
    var pendienteTabla = "";
    var pendienteCondicion = "";
-   
-   if(obj.estadoFormula === '1'){       
+
+  if(obj.estadoFormula === '1'){       
         pendienteCampoEstado = ",j.sw_estado";
         pendienteTabla = "INNER JOIN HC_PENDIENTES_POR_DISPENSAR j ON (a.evolucion_id=j.evolucion_id)";
-        pendienteCondicion = " a.fecha_registro between :1 and :2 AND a.sw_estado = '0'";
+       
    }
   
    var parametros = {};
@@ -39,6 +39,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     }
    
    if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
+        
+        
+        
         sqlCondicion = " a.fecha_registro between :1 and :2 AND a.numero_formula::varchar = :3";
         sqlCondicion2  =" WHERE numero_formula::varchar = :3";
         
@@ -49,13 +52,12 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
    }
    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
        
-        sqlCondicion = "  a.evolucion_id = :3";
-        parametros["3"]= obj.terminoBusqueda;
+            sqlCondicion = "  a.evolucion_id = :3";
+            parametros["3"]= obj.terminoBusqueda;
         
-       
    }
    if(obj.filtro.tipo !== 'EV' && obj.filtro.tipo !== 'FO'){
-       
+       console.log("BUSQUEDA DIFERENTE A EV o A FO")
         sqlCondicion = " a.fecha_registro between :1 and :2 AND a.tipo_id_paciente = :3 AND a.paciente_id::varchar = :4 ";
         parametros["1"]= obj.fechaInicial;
         parametros["2"]= obj.fechaFinal;
@@ -117,8 +119,10 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){          
+        console.log("resultado ", resultado)
         callback(false, resultado);
-    }).catch(function(err){         
+    }).catch(function(err){    
+        console.log("err ", err)
         callback("Ha ocurrido un error");      
     });
 };

@@ -130,7 +130,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
                     
                     dispensacionHcService.listarFormulas(obj, function(data){
-                      
+                      console.log("data ", data)
                         if(data.status === 200) {       
                            $scope.root.items = data.obj.listar_formulas.length;                              
                            $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);

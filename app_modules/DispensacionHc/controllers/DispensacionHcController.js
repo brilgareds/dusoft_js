@@ -15,6 +15,10 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion) {
  */
 DispensacionHc.prototype.listarFormulas = function(req, res){
     
+    console.log("************DispensacionHc.prototype.listarFormulas*************");
+    console.log("************DispensacionHc.prototype.listarFormulas*************");
+    console.log("************DispensacionHc.prototype.listarFormulas*************");
+    
     var that = this;
     var args = req.body.data;
   

@@ -53,6 +53,7 @@ function(angular, controllers) {
                 data: 'producto.getMovimientos()',
                 multiSelect: false,
                 rowHeight: 200,
+                enableColumnResize: true,
                 enableHighlighting: true,
                 enableRowSelection: false,
                 filterOptions: $scope.filterOptions,
@@ -64,11 +65,11 @@ function(angular, controllers) {
                     {field: 'numero', displayName: 'Numero', cellTemplate: "<div>{{row.entity.prefijo}} - {{row.entity.numero}} </div>", width: "10%"},
                    // {field: 'factura', displayName: 'Factura', width: "9%"},
                     {field: 'detalle.detalle', height: "200px", displayName: 'Terceros', cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.detalle.getDetalle())\"></div>"},
-                    {field: 'cantidad_entradas', displayName: 'Entradas', width: "6%"},
-                    {field: 'cantidad_salidas', displayName: 'Salidas', width: "6%"},
-                    {field: 'stock_actual', displayName: 'Existencia', width: "6%"},
+                    {field: 'cantidad_entradas', displayName: 'Entradas', width: "5%"},
+                    {field: 'cantidad_salidas', displayName: 'Salidas', width: "5%"},
+                    {field: 'stock_actual', displayName: 'Existencia', width: "5%"},
                     {field: 'costo', displayName: 'Costo', width: "6%"},
-                    {field: 'lote', displayName: 'Lote', width: "5%"},
+                    {field: 'lote', displayName: 'Lote', width: "150"},
                     {field: 'fecha_vencimiento', displayName: 'Fecha V', cellTemplate: "<div> {{formatearFecha(row.entity.fecha_vencimiento)}} </div>", width: "10%"},
                     {field: 'nombre', displayName: 'Usuario', width: "7%"}
                 ]

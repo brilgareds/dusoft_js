@@ -185,7 +185,7 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
     var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia, c.estado from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
-                where a.empresa_id = :1 and a.centro_utilidad = '1' and a.bodega = '03' and a.codigo_producto = :2 and a.estado = '1'" +sqlAux +" group by 2";
+                where a.empresa_id = :1  and a.codigo_producto = :2 and a.estado = '1'" +sqlAux +" group by 2";
     
    G.knex.raw(sql, {1 : empresa_id, 2 : codigo_producto}).
    then(function(resultado){

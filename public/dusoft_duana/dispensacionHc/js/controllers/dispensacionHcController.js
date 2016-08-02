@@ -230,7 +230,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * +Descripcion Funcion encargada de cambiar de VIEW cuando 
                      *              se seleccione la opcion dispensacion
                      */
-                    $scope.dispensacionFormula = function(dispensar) {
+                    $scope.dispensacionFormula = function(dispensar, pendientes) {
                             
                             localStorageService.add("dispensarFormulaDetalle",{
                                 evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
@@ -242,24 +242,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 paginaActual:$scope.paginaactual,
                                 estadoFormula : $scope.root.estadoFormula,
                                 pacienteId: dispensar.getAfiliadoId(),
-                                tipoIdPaciente: dispensar.getAfiliadoTipoId()
-                           
+                                tipoIdPaciente: dispensar.getAfiliadoTipoId(),
+                                pendientes: pendientes
                     
                             });
                              
                             $state.go('DispensarFormulaDetalle');
                      };
                     
-                    /*
-                     * @author Cristian Ardila
-                     * @fecha 24/05/2016
-                     * +Descripcion Funcion encargada de cambiar de VIEW cuando 
-                     *              se seleccione la opcion dispensacion
-                     */
-                    $scope.dispensacionFormulaPendientes = function(dispensar) {
-                          console.log("dispensar ", dispensar) 
-                       
-                    };
+                    
                    
                    
                      /**
@@ -293,8 +284,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                 <li><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity)" >Dispensaci&oacute;n</a></li>\
-                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 0"><a href="javascript:void(0);" ng-click="dispensacionFormulaPendientes(row.entity)" >Pendientes</a></li>\
+                                                 <li><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 0"><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes</a></li>\
                                              </ul>\
                                        </div>'
                             },

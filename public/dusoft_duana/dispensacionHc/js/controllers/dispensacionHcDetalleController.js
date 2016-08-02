@@ -64,22 +64,56 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 }    
             };      
-           
-            dispensacionHcService.listarFormulas(obj, function(data){
-               
-                if(data.status === 200) {       
-                    //$scope.root.items = data.obj.listar_formulas.length;                              
-                    $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                    
-                    that.listarMedicamentosFormulados(resultadoStorage);
-                 }else{
-                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                 }
+          
+            
+                
+                dispensacionHcService.listarFormulas(obj, function(data){
 
-            });
-               
+                    if(data.status === 200) {       
+                        //$scope.root.items = data.obj.listar_formulas.length;                              
+                        $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
+                        if(resultadoStorage.pendientes === 0){
+                        that.listarMedicamentosFormulados(resultadoStorage);
+                        }
+                        
+                        if(resultadoStorage.pendientes === 1){
+                        
+                            that.listarMedicamentosFormuladosPendientes(resultadoStorage);
+                        
+                        }
+                              
+                     }else{
+                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                     }
+
+                });
+        
+             
         };
         
+        
+        that.listarMedicamentosFormuladosPendientes = function(resultadoStorage){
+            
+            
+            var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_medicamentos_pendientes: {
+                                evolucion: resultadoStorage.evolucionId,
+                                tipoIdPaciente:resultadoStorage.tipoIdPaciente,
+                                pacienteId: resultadoStorage.pacienteId
+                           }
+                       }    
+                    };    
+            dispensacionHcService.listarMedicamentosPendientesPorDispensar(obj,function(data){
+
+                if (data.status === 200) {
+                      
+                        console.log("listarMedicamentosFormuladosPendientes ", data);
+                     
+                }
+            });
+        }
         /**
          * @author Cristian Ardila
          * +Descripcion Metodo encargado de ejecutar el servicio que consultara
@@ -132,7 +166,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           */  
         $scope.detalleLotesProductoFormula = function(entity) {
             
-            console.log("entity ///--> ", entity)
+            //console.log("entity ///--> ", entity)
             $scope.producto= entity.codigo_producto;
             $scope.descripcion= entity.descripcion;
             $scope.cantidadEntrega = entity.cantidadEntrega;
@@ -560,7 +594,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         $scope.imprimirMedicamentosPendientes = function(){
             
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
-                console.log("resultadoStorage ", resultadoStorage);
+             
             var obj = {                   
                         session: $scope.session,
                         data: {

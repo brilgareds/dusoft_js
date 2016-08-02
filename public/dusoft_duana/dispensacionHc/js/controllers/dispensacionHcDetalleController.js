@@ -73,13 +73,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         //$scope.root.items = data.obj.listar_formulas.length;                              
                         $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
                         if(resultadoStorage.pendientes === 0){
-                        that.listarMedicamentosFormulados(resultadoStorage);
+                            that.listarMedicamentosFormulados(resultadoStorage);
                         }
                         
-                        if(resultadoStorage.pendientes === 1){
-                        
-                            that.listarMedicamentosFormuladosPendientes(resultadoStorage);
-                        
+                        if(resultadoStorage.pendientes === 1){                      
+                            that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
                         }
                               
                      }else{
@@ -93,8 +91,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         
         
         that.listarMedicamentosFormuladosPendientes = function(resultadoStorage){
-            
-            
+            var productos;            
             var obj = {                   
                         session: $scope.session,
                         data: {
@@ -107,11 +104,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };    
             dispensacionHcService.listarMedicamentosPendientesPorDispensar(obj,function(data){
 
-                if (data.status === 200) {
-                      
-                        console.log("listarMedicamentosFormuladosPendientes ", data);
-                     
-                }
+                $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
+                if(data.status === 200) {       
+
+                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_pendientes.resultados);
+                   console.log("------productos------", productos)
+                   $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
+                  
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                   //  $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
+                } 
             });
         }
         /**
@@ -140,7 +143,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 if(data.status === 200) {       
 
-                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj);
+                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_formulados);
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
                   
                 }else{
@@ -166,7 +169,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           */  
         $scope.detalleLotesProductoFormula = function(entity) {
             
-            //console.log("entity ///--> ", entity)
             $scope.producto= entity.codigo_producto;
             $scope.descripcion= entity.descripcion;
             $scope.cantidadEntrega = entity.cantidadEntrega;

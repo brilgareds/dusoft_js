@@ -299,12 +299,12 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016
                */
             self.renderListarMedicamentosFormulados = function(producto){
-                
+               console.log("A QUI ESTA EL PRODYCTO ", producto)
                 var productos = [];
-                for(var i in producto.listar_medicamentos_formulados){
+                for(var i in producto){
                     
-                    var _productos = producto.listar_medicamentos_formulados[i];
-                    console.log("_productos ", _productos)
+                    var _productos = producto[i];
+                   // console.log("_productos ", _productos)
                     var Productos  = ProductosFOFO.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
                         Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
                         Productos.setTiempoTotal(_productos.tiempo_total);
@@ -313,7 +313,7 @@ define(["angular", "js/services"], function(angular, services) {
                         Productos.setAutorizado(_productos.sw_autorizado);
                     productos.push(Productos);
                 }
-                       
+                     
                   return productos;
             };
              /**

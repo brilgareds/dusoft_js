@@ -403,10 +403,11 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
 
     var parametros = {1: obj.evolucionId};
        
-        var sql = "select codigo_medicamento,\
-                    SUM(numero_unidades) as total,\
-                  fc_descripcion_producto_alterno(codigo_medicamento) as descripcion\
-                    from\
+        var sql = "select A.codigo_medicamento,\
+                    SUM(numero_unidades) as cantidad_entrega,\
+                  fc_descripcion_producto_alterno(A.codigo_medicamento) as descripcion_prod,\
+                   med.cod_principio_activo\
+                     from\
                         (\
                         select\
                         dc.codigo_medicamento,\
@@ -416,14 +417,14 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                    and        dc.sw_estado = '0'\
                   group by(dc.codigo_medicamento)\
                   ) as A\
-                  group by (codigo_medicamento)\
+                     LEFT JOIN  medicamentos med ON(A.codigo_medicamento=med.codigo_medicamento)\
+                     LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
+                    group by med.cod_principio_activo,A.codigo_medicamento\
                    ";
    
-    G.knex.raw(sql,parametros).then(function(resultado){   
-        //console.log("resultado  listarMedicamentosPendientesPorDispensar ", resultado);
+    G.knex.raw(sql,parametros).then(function(resultado){        
         callback(false, resultado);
-    }).catch(function(err){      
-        //console.log("err   ", err);    
+    }).catch(function(err){                
         callback(err);
     });  
 };

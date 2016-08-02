@@ -966,7 +966,7 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
                     
                     res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
                     
-                        listar_medicamentos_pendientes: {nombre_pdf: nombre_pdf, resultadoos: productosPendientes}
+                        listar_medicamentos_pendientes: {nombre_pdf: nombre_pdf, resultados: productosPendientes}
                     }));
                 });
         }else{

@@ -80,6 +80,7 @@ function(angular, controllers) {
             $scope.lista_pendientes_farmacia = {
                 data: "producto.getPendientesFarmacia()",
                 enableHighlighting: true,
+                enableColumnResize: true,
                 columnDefs: [
                     {field: 'pedido.numero_pedido', displayName: 'Solicitud'},
                     {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
@@ -96,6 +97,7 @@ function(angular, controllers) {
             $scope.lista_pendientes_cliente = {
                 data: "producto.getPendientesClientes()",
                 enableHighlighting: true,
+                enableColumnResize: true,
                 columnDefs: [
                     {field: 'pedido.numero_pedido', displayName: 'Pedido'},
                     {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
@@ -111,6 +113,7 @@ function(angular, controllers) {
             $scope.lista_pendientes_ordenes = {
                 data: "producto.getPendientesOrdenes()",
                 enableHighlighting: true,
+                enableColumnResize: true,
                 columnDefs: [
                     {field: 'orden.numero_orden_compra', displayName: 'Orden De Compra'},
                     {field: 'orden.cantidad_solicitada', displayName: 'Cant Solicitada'},

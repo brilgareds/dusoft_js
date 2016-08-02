@@ -26,7 +26,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         };
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());    
        // Definicion variables del View
-           
+        var estadoEntregaFormula;
         that.init = function(empresa, callback) {
 
             $scope.root = {              
@@ -68,11 +68,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
                 
                 dispensacionHcService.listarFormulas(obj, function(data){
-
+                    estadoEntregaFormula = resultadoStorage.pendientes;
                     if(data.status === 200) {       
                         //$scope.root.items = data.obj.listar_formulas.length;                              
                         $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
                         if(resultadoStorage.pendientes === 0){
+                            
                             that.listarMedicamentosFormulados(resultadoStorage);
                         }
                         
@@ -114,7 +115,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                    //  $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
-                } 
+                }                   
             });
         }
         /**
@@ -468,7 +469,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           *              listar los tipos de entrega de la formula
         */
         $scope.ventanaTipoEntregaFormula = function(){
-            
+           
             $scope.opts = {
                 backdrop: true,
                 backdropClick: true,
@@ -476,7 +477,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 keyboard: true,
                 templateUrl: 'views/dispensacionHc/dispensacionRealizarEntrega.html',
                 scope: $scope,                  
-                controller: "dispensacionRealizarEntregaController"
+                controller: "dispensacionRealizarEntregaController",
+                resolve: {
+                        estadoEntregaFormula: function() {
+                            return estadoEntregaFormula;
+                        }                    
+                    }
                                    
             };
             var modalInstance = $modal.open($scope.opts);   

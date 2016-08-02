@@ -6,9 +6,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService","$modalInstance","socket",
+            "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,estadoEntregaFormula) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
@@ -106,8 +106,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    }
                }    
             };  
-           console.log("ESTO obj ", obj);
-            dispensacionHcService.realizarEntregaFormula(obj,function(data){
+            
+            if(estadoEntregaFormula === 0){
+                console.log("DISPENSAR FORMULA ", obj);
+            }
+           
+           
+            if(estadoEntregaFormula === 1){
+                console.log("DISPENSAR PENDIENTES FORMULA ", obj);
+            }
+           /* dispensacionHcService.realizarEntregaFormula(obj,function(data){
                 console.log("DATA ULTIMA RESPUESTA ", data);
                 if(data.status === 200){
                      
@@ -119,7 +127,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
-            }); 
+            }); */
         };
         
         

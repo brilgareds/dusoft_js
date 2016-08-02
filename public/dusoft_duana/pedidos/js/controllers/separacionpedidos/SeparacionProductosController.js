@@ -150,7 +150,7 @@ define(["angular", "js/controllers",
 
                     /*
                      * @author Eduar Garcia
-                     * permite mostar un producto en determinada posicion
+                     * permite mostrar un producto en determinada posicion
                      */
                     self.seleccionarProductoPorPosicion = function(callback) {
                         var pedido = EmpresaPedido.getPedidoSeleccionado();
@@ -306,7 +306,7 @@ define(["angular", "js/controllers",
                             producto.agregarLote(lote);
                             $scope.rootSeparacion.existenciaTotal +=  parseInt(_lote.existencia_actual);
                         }
-                        console.log("datos del producto ", datos, " existencias ", $scope.rootSeparacion.existenciaTotal);
+                        //console.log("datos del producto ", datos, " existencias ", $scope.rootSeparacion.existenciaTotal);
 
                     };
 

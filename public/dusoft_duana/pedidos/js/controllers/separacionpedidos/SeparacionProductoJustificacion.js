@@ -13,7 +13,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             var self = this;
             
             self.init = function(callback){
-                $scope.rootJustificacion = {};
+                $scope.rootJustificacion = {
+                    observacionJustificacion : ""
+                };
                 $scope.rootJustificacion.session = {
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
@@ -66,7 +68,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                             existencia : 0,
                             doc_tmp_id : pedido.getTemporalId(),
                             justificacion : justificacion.descripcion,
-                            justificacion_auditor : ""
+                            justificacion_auditor : "",
+                            observacion_justificacion_separador:$scope.rootJustificacion.observacionJustificacion
                             
                         }
                     }
@@ -92,7 +95,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'descripcion', displayName: 'Descripcion'},
+                    {field: 'descripcion', displayName: 'Motivo'},
                     {field: '', displayName: "", cellClass: "txt-center", width: "50",
                      cellTemplate: ' <input-check ng-model="row.entity.selected" ng-click="onSeleccionJustificacion(row.entity)"  />'}
                 ]

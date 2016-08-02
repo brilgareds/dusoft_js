@@ -6,7 +6,7 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
     var that = this;
     var cache;   
     var diasDiferenciaSql=2;
-    var mesDiferenciaSql=5;    
+    var mesDiferenciaSql=8;    
     var now = new Date();    
     var dateInicial = G.moment(filtro.fecha_inicial);
     var dateFinal = G.moment(filtro.fecha_final);
@@ -20,7 +20,8 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
   
     if(diferenciaInicialMes > mesDiferenciaSql){
       callback(false, -1);  
-      console.log("consulta (no esta en el rango de la tabla)",diferenciaFinalMes);   
+      console.log("consulta (no esta en el rango de la tabla)",diferenciaFinalMes); 
+      return;
     }
     
     if(diferenciaInicial >= diasDiferenciaSql && diferenciaFinal >= diasDiferenciaSql ){
@@ -40,7 +41,8 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
         filtro.consulta=2;      
     }else{
       callback(false, -1);    
-      console.log("fuera de la tabla");  
+      console.log("fuera de la tabla");
+      return;
     }
    
    G.redis.del("dr_arias");
@@ -61,7 +63,8 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
             console.log("datos guardados en cache ", resultado.length);
         } else {
            console.log("datos guardados en cache ", resultado.length);
-            callback(false, resultado);
+           callback(false, resultado);
+           return;
         }
        
    }).fail(function(err){
@@ -696,11 +699,12 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                  filtro={1:obj.filtro.fecha_inicial+' 00:00:00 ',4:obj.filtro.fecha_final+' 23:59:59 ' ,3:obj.filtro.inicioFechaConsultaReporte+' 00:00:00 ',2:obj.filtro.finFechaTablaReporte+' 23:59:59 '};
              
                 }  
-              console.log("SSSSSSSSSSSSSSSSSSSSS",sql);
+              
                var query = G.knex.raw(sql,filtro);
                 query.then(function(resultado) {
                    callback(false, resultado);
                  }).catch (function(err) {
+                    console.log("ERROR ",err);
                     callback(err);
                  });
 

@@ -197,19 +197,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 columnDefs: [
                     {field: 'Estado del Reporte', displayName: "Estado del Reporte", cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: ' <div class="row">\
-                                                <button ng-if="row.entity.getEstado()==0" class="btn btn-primary btn-xs" >\
-                                                    <i class="glyphicon glyphicon-hourglass"></i>\n\
-                                                        <span> En Proceso </span>\
+                                                <button ng-if="row.entity.getEstado()==0" style="width: 100px"; class="btn btn-default btn-xs" > \
+                                                <img style="width: 15px";  src="/stylesheets/jtree/themes/default/throbber.gif"/> \
+                                                        <span> En Proceso </span> \
                                                 </button>\
-                                                <button ng-if="row.entity.getEstado()==1" class="btn btn-success btn-xs" >\
+                                                <button ng-if="row.entity.getEstado()==1" style="width: 100px"; class="btn btn-success btn-xs" >\
                                                     <i class="glyphicon glyphicon-ok"></i>\
                                                     <span> Generado </span>\
                                                 </button>\
-                                                <button ng-if="row.entity.getEstado()==2" class="btn btn-danger btn-xs" >\
+                                                <button ng-if="row.entity.getEstado()==2" style="width: 100px"; class="btn btn-danger btn-xs" >\
                                                     <i class="glyphicon glyphicon-remove"></i>\
                                                     <span> Error </span>\
                                                 </button>\
-                                                <button ng-if="row.entity.getEstado()==3" class="btn btn-warning btn-xs" >\
+                                                <button ng-if="row.entity.getEstado()==3" style="width: 100px"; class="btn btn-warning btn-xs" >\
                                                     <i class="glyphicon glyphicon-warning-sign"></i>\
                                                     <span> 0 Registros </span>\
                                                 </button>\
@@ -235,7 +235,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     },
                     {displayName: "Descarga", cellClass: "txt-center dropdown-button", width: "5%",
                         cellTemplate: ' <div class="row">\n\
-                                         <button class="btn btn-default btn-xs" ng-click="onDescagarArchivo(row.entity.getNombreArchivo())" >\n\
+                                         <button class="btn btn-default btn-xs" ng-disabled="row.entity.getEstado()==3 || row.entity.getEstado()==2 || row.entity.getEstado()==0" ng-click="onDescagarArchivo(row.entity.getNombreArchivo())" >\n\
                                              <span class="glyphicon glyphicon-download-alt"></span>\
                                          </button>\
                                        </div>'

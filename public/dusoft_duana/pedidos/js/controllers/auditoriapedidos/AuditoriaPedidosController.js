@@ -283,6 +283,7 @@ define(["angular", "js/controllers",
                 producto_pedido_separado.cantidad_despachada = obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada = producto_pedido_separado.cantidad_solicitada - obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada_real = obj.cantidad_solicitada;
+                producto_pedido_separado.observacionJustificacionSeparador = obj.observacion_justificacion_separador; 
                                                
 
                 producto_pedido_separado.setLote(lote_pedido);

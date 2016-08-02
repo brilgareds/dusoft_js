@@ -57,7 +57,9 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.tipo;
             this.tipoCajaId;
             this.pedido;
-
+            this.descripcionAutorizacion = "";
+            this.observacionJustificacionSeparador = "";
+            this.observacionJustificacionAuditor = "";
             
         }
 
@@ -329,8 +331,23 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         ProductoPedido.prototype.getValorUnitarioConIva = function() {
             return this.valorUnitarioConIva;
         };
-             
         
+        ProductoPedido.prototype.setObservacionJustificacionSeparador = function(observacionJustificacionSeparador) {
+            this.observacionJustificacionSeparador = observacionJustificacionSeparador;
+        };  
+        
+        ProductoPedido.prototype.getObservacionJustificacionSeparador = function() {
+            return this.observacionJustificacionSeparador;
+        };
+        
+        
+        ProductoPedido.prototype.setObservacionJustificacionAuditor = function(observacionJustificacionAuditor) {
+            this.observacionJustificacionAuditor = observacionJustificacionAuditor;
+        };  
+        
+        ProductoPedido.prototype.getObservacionJustificacionAuditor = function() {
+            return this.observacionJustificacionAuditor;
+        };
         
         /**
          * +Descripcion Numero caja this.numeroCaja
@@ -346,7 +363,13 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.numeroCaja;
         };
         
+        ProductoPedido.prototype.setDescripcionAutorizacion = function(descripcionAutorizacion) {
+            this.descripcionAutorizacion = descripcionAutorizacion;
+        };  
         
+        ProductoPedido.prototype.getDescripcionAutorizacion = function() {
+            return this.descripcionAutorizacion;
+        };
         
         ProductoPedido.prototype.obtenerCantidadSeleccionada = function() {
             var cantidad = 0;

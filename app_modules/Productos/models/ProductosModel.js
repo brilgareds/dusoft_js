@@ -182,6 +182,10 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
         sqlAux = " and c.estado = '1'";
     }
     
+    if(filtro.validarBodega){
+        sqlAux += " and a.centro_utilidad = '1' and a.bodega = '03' "
+    }
+    
     var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia, c.estado from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
@@ -409,7 +413,7 @@ function __validarExistenciasProducto(params, callback){
         totalExistencias += cantidadNueva;
     }
     
-    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto, {activo:false}).
+    G.Q.ninvoke(params.contexto, "consultar_stock_producto", params.empresaId, params.codigoProducto, {activo:false, validarBodega:true}).
     then(function(resultado){
         console.log("existencia ",parseInt(resultado[0].existencia), " total ", totalExistencias);
         

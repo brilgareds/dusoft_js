@@ -288,6 +288,9 @@ var sumaFecha = function(d, fechaP){
  *              
  */
 DispensacionHc.prototype.existenciasBodegas = function(req, res){
+   console.log("*********DispensacionHc.prototype.existenciasBodegas*************");
+   console.log("*********DispensacionHc.prototype.existenciasBodegas*************");
+   console.log("*********DispensacionHc.prototype.existenciasBodegas*************");
    
     var today = new Date();
     var dd = today.getDate();
@@ -349,19 +352,35 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
                                                fechaDia: fechaDias,
                                                today: today
                                                };
+                                               
+        console.log("parametros ", parametros);
+        console.log("parametrosUltimoRegistroDispensacion ", parametrosUltimoRegistroDispensacion);
+        
 G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametrosUltimoRegistroDispensacion).then(function(resultado){
-
+        
+        
         if(resultado.rows.length > 0){ 
+            console.log("1) Validacion resultado")
             fechaRegistro = resultado.rows[0].fecha_registro;
         }
-
+        
+        
+        
         if(today >= fechaRegistro){
-               fechaDespacho = sumaFecha(25,fechaRegistro);
+            console.log("2) Validacion ");
+            console.log("today ", today);
+            console.log("fechaRegistro ", fechaRegistro);
+            fechaDespacho = sumaFecha(25,fechaRegistro);
          }
-      
-         if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1'){
-       
-           return G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros);
+         
+         
+            console.log("today ", today);
+            console.log("fechaDespacho ", fechaDespacho);
+            console.log("authorizado ", args.existenciasBodegas.autorizado);
+        if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1'){
+            console.log("3) Validacion ");
+            
+            return G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros);
            
          }else{
               def.resolve();             

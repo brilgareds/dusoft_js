@@ -405,9 +405,10 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
        
         var sql = "select A.codigo_medicamento,\
                     SUM(numero_unidades) as cantidad_entrega,\
-                  fc_descripcion_producto_alterno(A.codigo_medicamento) as descripcion_prod,\
-                   med.cod_principio_activo\
-                     from\
+                   fc_descripcion_producto_alterno(A.codigo_medicamento) as descripcion_prod,\
+                   med.cod_principio_activo,hc.sw_autorizado,\
+                   hc.perioricidad_entrega,\
+                   hc.tiempo_total from\
                         (\
                         select\
                         dc.codigo_medicamento,\
@@ -416,11 +417,15 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                    WHERE      dc.evolucion_id = :1\
                    and        dc.sw_estado = '0'\
                   group by(dc.codigo_medicamento)\
-                  ) as A\
+                  ) as A INNER JOIN hc_formulacion_antecedentes hc ON (hc.codigo_medicamento=A.codigo_medicamento)\
                      LEFT JOIN  medicamentos med ON(A.codigo_medicamento=med.codigo_medicamento)\
                      LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
-                    group by med.cod_principio_activo,A.codigo_medicamento\
-                   ";
+                    WHERE hc.evolucion_id = :1\
+                    group by med.cod_principio_activo,\
+                          A.codigo_medicamento,\
+                          hc.sw_autorizado,\
+                          hc.perioricidad_entrega,\
+                          hc.tiempo_total";
    
     G.knex.raw(sql,parametros).then(function(resultado){        
         callback(false, resultado);

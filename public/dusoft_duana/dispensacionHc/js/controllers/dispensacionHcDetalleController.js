@@ -196,9 +196,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
                 $scope.cantidadPendiente = that.cantidadPendiente;
                 that.consultarExistenciasBodegas(entity);
-
-            });
-               
+            });           
         };
        
          /**
@@ -224,7 +222,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
              
             dispensacionHcService.existenciasBodegas(obj, function(data){
-              
+            
                 entity.vaciarProductosHc();
                 if(data.status === 200) {                                          
                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
@@ -243,10 +241,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }else{
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", privilegio.msj);
-                        }
-                        
-                    });    
-                    
+                        }                       
+                    });                       
                     //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }if(data.status === 500){
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);

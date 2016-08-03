@@ -747,6 +747,7 @@ function __validarCreacionVariable(that, variable, callback) {
 
 };
 
+
 //funcion recursiva para actualizar listado de empresas_modulos
 function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback) {
 

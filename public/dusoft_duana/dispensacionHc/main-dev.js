@@ -29,6 +29,7 @@ requirejs.config({
         chart:"../../javascripts/charts/angularjs-nvd3-directives.min",
         desktopNotify:"../../javascripts/notifications/desktop-notify-min",
         webNotification:"../../javascripts/notifications/angular-web-notification"
+
     },
     shim: {
         "angular": {

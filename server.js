@@ -305,7 +305,7 @@ if (cluster.isMaster) {
     });
     
     //Si el servidro esta en modo produccion se sobreescribe el mand-dev.js por el de produccion
-    app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
+    /*app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
         
         if(!G.program.prod ) {
            next();
@@ -314,7 +314,7 @@ if (cluster.isMaster) {
             var url = req.protocol + '://' + req.get('host') + req.originalUrl;
             res.redirect(url.replace("main-dev", "dist/main")+ "?c="+cacheKey);
         }
-    });
+    });*/
 
     process.on('SIGINT', function() {
         io.sockets.emit('onDisconnect');

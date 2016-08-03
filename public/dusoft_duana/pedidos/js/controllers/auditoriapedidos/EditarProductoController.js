@@ -438,7 +438,7 @@ define(["angular", "js/controllers",
                 var obj = {valido: true};
                 var cantidad_ingresada = parseInt(lote.cantidad_ingresada);
                 //var cantidad_ingresada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
-                var cantidad_por_lote = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionadaPorLote(lote.codigo_lote);
+                var cantidad_por_lote = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionadaPorLote(lote.codigo_lote, lote.fecha_vencimiento);
 
                 obj.cantidad_ingresada = cantidad_ingresada;
 
@@ -467,6 +467,7 @@ define(["angular", "js/controllers",
                 }
 
                 if (cantidad_por_lote > lote.existencia_actual) {
+                    //console.log("cantidad "+ cantidad_por_lote, " lote ", lote.existencia_actual);
                     obj.valido = false;
                     obj.mensaje = "La cantidad ingresada, debe ser menor al stock de la bodega!!.";
                     return obj;

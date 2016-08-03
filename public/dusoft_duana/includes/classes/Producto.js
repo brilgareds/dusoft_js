@@ -22,8 +22,48 @@ define(["angular", "js/models"], function(angular, models) {
             this.cantidadSolicitada = 0;
             this.cantidadActual = 0;
             this.fechaModificacion = "";
+            this.codigoFormaFarmacologico = "";
+            this.concentracion = 0;
+            this.molecula = "";
+            this.laboratorio = "";
+            this.autorizado = "";
         }
+        
+        
+        Producto.prototype.setLaboratorio = function(laboratorio) {
+            this.laboratorio = laboratorio;
+        };
 
+        Producto.prototype.getLaboratorio = function() {
+            return this.laboratorio;
+        };
+        
+        
+        Producto.prototype.setMolecula = function(molecula) {
+            this.molecula = molecula;
+        };
+
+        Producto.prototype.getMolecula = function() {
+            return this.molecula;
+        };
+        
+        Producto.prototype.setConcentracion = function(concentracion) {
+            this.concentracion = concentracion;
+        };
+
+        Producto.prototype.getConcentracion = function() {
+            return this.concentracion;
+        };
+        
+        Producto.prototype.setCodigoFormaFarmacologico = function(codigoFormaFarmacologico) {
+            this.codigoFormaFarmacologico = codigoFormaFarmacologico;
+        };
+
+        Producto.prototype.getCodigoFormaFarmacologico = function() {
+            return this.codigoFormaFarmacologico;
+        };
+        
+        
         Producto.prototype.setCodigoProducto = function(codigo) {
             this.codigo_producto = codigo;
         };
@@ -185,6 +225,16 @@ define(["angular", "js/models"], function(angular, models) {
         
         Producto.prototype.getContrato = function() {
             return this.contrato;
+        };
+        
+        
+        Producto.prototype.setAutorizado= function(autorizado) {
+            this.autorizado = autorizado;
+            return this;
+        };
+        
+        Producto.prototype.getAutorizado = function() {
+            return this.autorizado;
         };
         
         this.get = function(codigo_producto, descripcion, existencia) {

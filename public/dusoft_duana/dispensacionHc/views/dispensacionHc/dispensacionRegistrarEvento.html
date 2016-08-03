@@ -1,0 +1,54 @@
+<div class="row paddingToptZero">
+    <div class="col-sm-12 col-md-12">
+
+        <div class="panel panel-info ">
+            <div class="panel-heading">
+                <h4 class="h4MarginTopBottom"><span >Registrar evento</span> </h4>
+            </div>
+            
+<div class="modal-body">
+    <form role="form" class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2" for="inputTo">Fecha</label>
+            <div class="col-sm-4">
+                
+                <div class="row">            
+                        <p class="input-group">
+                            <input type="text" class="form-control readonlyinput" 
+                                   datepicker-popup="{{format}}" 
+                                   ng-model="root.fechaRegistroEvento" 
+                                   is-open="root.datepickerFechaRegistroEvento" 
+                                   min="minDate"   
+                                   readonly  close-text="Cerrar" 
+                                   ng-change="" 
+                                   clear-text="Borrar" 
+                                   current-text="Hoy" 
+                                   placeholder="Fecha" 
+                                   show-weeks="false" 
+                                   toggle-weeks-text="#"  />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" ng-click="abrirFechaRegistroEvento($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </p>
+                    </div>
+                
+                
+            </div>
+        </div>
+             
+        <div class="form-group">
+            <label class="col-sm-12" for="inputBody">Observacion</label>
+            <div class="col-sm-12"><textarea class="form-control" ng-model="root.observacion" id="inputBody" rows="8"></textarea></div>
+        </div>
+        
+    </form>
+</div>
+<div class="modal-footer">    
+    <button type="button" class="btn btn-primary" ng-click="registrarEvento()" >Aceptar</button>
+    <button type="button" class="btn btn-warning" ng-click="cerrarVentana()">Cancelar</button>
+</div>
+
+            </div>
+        </div>
+    </div>
+

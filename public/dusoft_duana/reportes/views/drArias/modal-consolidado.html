@@ -1,0 +1,91 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title"><b>{{titulo}}</b></h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-4">
+            <h4 class="h4MarginTopBottom"><b>Cant. Formulas:</b></h4> </div>
+        <div class="col-md-2">    
+            <h5 class="h4MarginTopBottom">{{consolidado.cantidadFomulas}}</h5>
+        </div>  
+        <div class="col-md-4">
+            <h4 class="h4MarginTopBottom"><b>Cant. Pacientes:</b></h4> </div>
+        <div class="col-md-2">    
+            <h5 class="h4MarginTopBottom">{{consolidado.cantidadPacientes}}</h5>
+        </div>
+    </div>   
+    <div class="row" ng-if="consolidado.cantidadDespachoUnidades!== null">
+        <div class="col-md-3">
+            <h4 class="h4MarginTopBottom"><b>Precio Total:</b></h4> </div>
+        <div class="col-md-3">    
+            <h5 class="h4MarginTopBottom">{{consolidado.precio}}</h5>
+        </div>  
+        <div class="col-md-3">
+            <h4 class="h4MarginTopBottom"><b>Total:</b></h4> </div>
+        <div class="col-md-3">    
+            <h5 class="h4MarginTopBottom">{{consolidado.total}}</h5>
+        </div>
+    </div>   
+    <div class="row" ng-if="consolidado.fechafinal!== null">
+        <div class="col-md-6">
+            <h4 class="h4MarginTopBottom"><b>Fecha Fin:</b> </h4> </div>
+        <div class="col-md-6">    
+            <h5 class="h4MarginTopBottom">{{consolidado.fechafinal}}</h5>
+        </div>       
+    </div>   
+    <div class="row" ng-if="consolidado.empresa.codigo !== undefined">
+        <div class="col-md-6">
+            <h4 class="h4MarginTopBottom"><b>Empresa:</b> </h4> </div>
+        <div class="col-md-6">    
+            <h5 class="h4MarginTopBottom">{{consolidado.empresa.nombre}}</h5>
+        </div>       
+    </div>   
+    <div class="row" ng-if="consolidado.centroUtilidad.codigo !== undefined">
+        <div class="col-md-6">
+            <h4 class="h4MarginTopBottom"><b>Centro Utilidad: </b></h4> </div>
+        <div class="col-md-6">    
+            <h5 class="h4MarginTopBottom">{{consolidado.centroUtilidad.nombre}}</h5>
+        </div>       
+    </div>   
+    <div class="row" ng-if="consolidado.bodega.codigo !== undefined">
+        <div class="col-md-6">
+            <h4 class="h4MarginTopBottom"><b>Bodega: </b></h4> </div>
+        <div class="col-md-6">    
+            <h5 class="h4MarginTopBottom">{{consolidado.bodega.nombre}}</h5>
+        </div>       
+    </div>   
+    <div class="row" ng-if="consolidado.documento!== null">
+        <div class="col-md-6">
+            <h4 class="h4MarginTopBottom"><b>Documento del Paciente: </b></h4> </div>
+        <div class="col-md-6">    
+            <h5 class="h4MarginTopBottom">{{consolidado.documento}}</h5>
+        </div>       
+    </div>   
+    <div class="row"ng-if="consolidado.codigoProducto!== null">
+        <div class="col-md-6">
+            <h4 class="h4MarginTopBottom"><b>Codigo del Producto: </b></h4> </div>
+        <div class="col-md-6">    
+            <h5 class="h4MarginTopBottom">{{consolidado.codigoProducto}}</h5>
+        </div>       
+    </div>   
+    <div class="row" ng-if="consolidado.descripcion!== null">
+        <div class="col-md-6">
+            <h4 class="h4MarginTopBottom"><b>Descripción del Producto: </b></h4> </div>
+        <div class="col-md-6">    
+            <h5 class="h4MarginTopBottom">{{consolidado.descripcion}}</h5>
+        </div>       
+    </div>   
+    <div class="row" ng-if="consolidado.plan !== null">
+        <div class="col-md-6">
+            <h4 class="h4MarginTopBottom"><b>Plan: </b></h4> </div>
+        <div class="col-md-6">    
+            <h5 class="h4MarginTopBottom">{{consolidado.plan}}</h5>
+        </div>       
+    </div>   
+</div>   
+<div class="modal-footer">
+    <button class="btn btn-warning" ng-click="close()">cerrar</button>         
+</div>
+
+

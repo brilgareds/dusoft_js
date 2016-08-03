@@ -70,6 +70,14 @@ define(["angular", "js/models"], function(angular, models) {
         ReportesGenerados.prototype.getParametrosBusqueda = function(){
         	return this.parametros_de_busqueda;
         };
+        
+        ReportesGenerados.prototype.setConsolidado = function(consolidado){
+        	this.consolidado = consolidado;
+        };
+        
+        ReportesGenerados.prototype.getConsolidado = function(){
+        	return this.consolidado;
+        };
 
         this.get = function(estado_reportes_id) {
             return new ReportesGenerados(estado_reportes_id);

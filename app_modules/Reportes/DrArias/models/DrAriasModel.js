@@ -68,7 +68,7 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
         }
        
    }).fail(function(err){
-        console.log("error bd 2222>>>>>>>>>>>>>>>>>>>>>>>>>>>>",err);
+        console.log("error listarDrArias",err);
         callback(err);
    }).done();
     
@@ -136,6 +136,24 @@ DrAriasModel.prototype.guardarEstadoReporte = function(datos,callback) {
 
 /**
 * @author Andres M Gonzalez
+* +Descripcion: adicionar detalle del reporte 
+* @fecha 2016-08-03
+*/
+DrAriasModel.prototype.editarConsolidadoReporte = function(datos,callback) {
+    var that = this;    
+    G.knex("estado_reportes").
+    where("nombre_reporte", datos.nombre_reporte).
+    andWhere("nombre_archivo", datos.nombre_archivo).
+    andWhere("usuario_id", datos.usuario).
+    update({consolidado : datos.detalle}).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log(">>>>>>>>>>>>>>",err);
+        callback(err);
+    });     
+};
+/**
+* @author Andres M Gonzalez
 * +Descripcion: editar estado del reporte 
 * @fecha 2016-06-17
 */
@@ -167,7 +185,8 @@ DrAriasModel.prototype.reportesGenerados = function (datos,callback) {
                     "fecha_fin",
                     "estado",
                     "usuario_id",
-                    "parametros_de_busqueda"
+                    "parametros_de_busqueda",
+                    "consolidado"
                  ];
 
     var query =  G.knex.column(column)
@@ -297,7 +316,11 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         epad.primer_apellido||' '||epad.segundo_apellido||' '||epad.primer_nombre||' '||epad.segundo_nombre as paciente, \
                         hfc.paciente_id, \
                         w.codigo_cum, \
-                        fc_descripcion_producto(c.codigo_producto) as producto, \
+                        --fc_descripcion_producto(c.codigo_producto) as producto, \\n\
+                        ( \
+                       SELECT (w.descripcion || ' '|| COALESCE(w.contenido_unidad_venta,'') || ' '||COALESCE((select uni.descripcion from unidades uni where w.unidad_id = uni.unidad_id),'') || ' | ' ||\
+                        COALESCE((select ipre.descripcion from inv_presentacioncomercial ipre where w.presentacioncomercial_id= ipre.presentacioncomercial_id),'') ||' X '||\
+                        COALESCE(w.cantidad,'') || '. '||(select clas.descripcion from inv_clases_inventarios clas where w.grupo_id = clas.grupo_id AND w.clase_id = clas.clase_id) ))     as producto,\
                         'medico' as medico, \
                         CAST(hfc.medico_id as text) as tercero_id, \
                         'especialidad' as especialidad, \
@@ -344,7 +367,11 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         epad.primer_apellido||' '||epad.segundo_apellido||' '||epad.primer_nombre||' '||epad.segundo_nombre as paciente, \
                         hfc.paciente_id, \
                         w.codigo_cum, \
-                        fc_descripcion_producto(c.codigo_producto) as producto, \
+                       -- fc_descripcion_producto(c.codigo_producto) as producto, \\n\
+                       ( \
+                       SELECT (w.descripcion || ' '|| COALESCE(w.contenido_unidad_venta,'') || ' '||COALESCE((select uni.descripcion from unidades uni where w.unidad_id = uni.unidad_id),'') || ' | ' ||\
+                        COALESCE((select ipre.descripcion from inv_presentacioncomercial ipre where w.presentacioncomercial_id= ipre.presentacioncomercial_id),'') ||' X '||\
+                        COALESCE(w.cantidad,'') || '. '||(select clas.descripcion from inv_clases_inventarios clas where w.grupo_id = clas.grupo_id AND w.clase_id = clas.clase_id) ))     as producto,\
                         'medico' as medico, \
                         CAST(hfc.medico_id as text) as tercero_id, \
                         'especialidad' as especialidad, \
@@ -385,7 +412,7 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         and cast(b.fecha_registro as date) between (current_date - interval '2 day') and (current_date - interval '1 day' -  interval '1 sec') )) as w \
                     where \
                     true  \
-                    order by nom_bode,plan_descripcion,descripcion_tipo_formula,producto )";
+                    order by paciente_id,nom_bode,plan_descripcion,descripcion_tipo_formula,producto)";
          var query = G.knex.raw(sql);
                query.then(function(resultado) {
                   callback(false);
@@ -704,7 +731,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                 query.then(function(resultado) {
                    callback(false, resultado);
                  }).catch (function(err) {
-                    console.log("ERROR ",err);
+                    console.log("ERROR realizarReportePorRango: ",err);
                     callback(err);
                  });
 

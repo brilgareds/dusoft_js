@@ -26,19 +26,21 @@ Reportes.prototype.listarDrArias = function (req, res) {
     datos.usuario=filtro.session.usuario_id;
     datos.estado='0';
     datos.busqueda=filtro; 
-    __guardarEstadoReporte(that,datos);
-    console.log("parametros:: ",datos);
-    
+    __guardarEstadoReporte(that,datos);   
     
     that.e_dr_arias.onNotificarEstadoDescargaReporte(datos.usuario);
     res.send(G.utils.r(req.url, 'Generando Informe...', 200, {listarDrArias: 'pendiente'})); 
     
     G.Q.ninvoke(that.m_drArias, 'listarDrArias', filtro).then(function (resultado) {
         if(resultado !== -1 ){
+            
+       
+             
         __generarCsvDrArias(resultado,filtro, function(tamaño) {
                   datos.fecha_fin=G.moment().format();
                   if(tamaño>0){
                   datos.estado='1';
+                   __generarDetalle(resultado,datos,that,function(){});
                   }else{
                   datos.estado='3';     
                   }
@@ -105,6 +107,57 @@ Reportes.prototype.listarPlanes = function (req, res) {
     done();
 };
 
+
+/**
+ * @author Andres M Gonzalez
+ * +Descripcion controlador que genera detalle
+ * @params detalle: 
+ * @fecha 2016-08-02
+ */
+function __generarDetalle(resultado,datos,that,callback) {  
+    var formula='';
+    var countFormula=0;
+    var countPaciente=0;
+    var paciente='';
+    var total=0;
+    var cantidades=0;
+    var precio=0;
+    var bodegas={};  
+   for (var key in resultado){
+    var value = resultado[key];
+    if(value.formula_id !== formula){
+        bodegas[nom_bode].countFormula++;
+        countFormula++;
+        formula=value.formula_id;
+    }
+    if(value.paciente_id !== paciente){
+        countPaciente++;
+        paciente=value.paciente_id;
+    }
+    var tt=value.total.replace(",",".");
+    var prc=value.precio.replace(",",".")
+    total=total+parseFloat(tt);
+    precio=precio+parseFloat(prc);
+    cantidades += parseInt(value.cantidad);
+  }
+  var detalle={};
+  detalle.cantidadFomulas=countFormula;
+  detalle.cantidadPacientes=countPaciente;
+  detalle.cantidadDespachoUnidades=cantidades;
+  detalle.total=total;
+  detalle.precio=precio;
+  datos.detalle=detalle;
+  console.log(">>>>>>>>>>>>>>>bodegas ",bodegas);
+  __editarConsolidadoReporte(that,datos);
+return;
+}
+
+/**
+ * @author Andres M Gonzalez
+ * +Descripcion controlador que genera csv
+ * @params detalle: 
+ * @fecha 2016-06-17
+ */
 function __generarCsvDrArias(datos,filtro, callback) {  
     
     console.log("Generar CSV DR ARDIAS");
@@ -120,7 +173,8 @@ function __generarCsvDrArias(datos,filtro, callback) {
                     data: datos,
                     fields: fields,
                     fieldNames: fieldNames,
-                    del: ';'
+                    del: ';',
+                    hasCSVColumnTitle:'Dr Arias'
                   };
                   
        G.json2csv(opts, function(err, csv) {
@@ -153,6 +207,15 @@ function __editarEstadoReporte(that,datos){
     }).
     fail(function (err) {
         console.log("error controller editarEstadoReporte ", err);
+    }).
+    done();
+}
+
+function __editarConsolidadoReporte(that,datos){   
+    G.Q.ninvoke(that.m_drArias, 'editarConsolidadoReporte',datos).then(function (resultado) {       
+    }).
+    fail(function (err) {
+        console.log("error controller editarConsolidadoReporte ", err);
     }).
     done();
 }

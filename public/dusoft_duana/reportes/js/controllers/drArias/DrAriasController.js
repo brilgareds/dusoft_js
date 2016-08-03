@@ -64,6 +64,40 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var modalInstancesy = $modal.open($scope.opts);
             };
             
+             $scope.abrirModalConsolidado= function(parametros) {  
+                 var consolidados =parametros.consolidado;
+                 console.log("Consolidados ",consolidados);
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/drArias/modal-consolidado.html',
+                    controller:['$scope',function($scope){
+                      $scope.titulo="Consolidado del Reporte";
+                      $scope.consolidado={};
+                      $scope.consolidado.cantidadDespachoUnidades=consolidados.cantidadDespachoUnidades;
+                      $scope.consolidado.cantidadFomulas=consolidados.cantidadFomulas;
+                      $scope.consolidado.cantidadPacientes=consolidados.cantidadPacientes;
+                      $scope.consolidado.total="$ "+consolidados.total.toFixed(2);
+                      $scope.consolidado.precio="$ "+consolidados.precio.toFixed(2);
+//                      $scope.consolidado.fechafinal=parametros.fecha_final;
+//                      $scope.consolidado.empresa=parametros.empresa_seleccion;
+//                      $scope.consolidado.bodega=parametros.bodega_seleccion;
+//                      $scope.consolidado.centroUtilidad=parametros.centro_seleccion;
+//                      $scope.consolidado.documento=parametros.documento;
+//                      $scope.consolidado.codigoProducto=parametros.codigo;
+//                      $scope.consolidado.descripcion=parametros.descripcion;
+//                      $scope.consolidado.plan=parametros.plan_seleccion;
+                      $scope.close = function() {
+                         modalInstancesy.close();
+                      };
+                    }]                    
+                }
+                
+                var modalInstancesy = $modal.open($scope.opts);
+            };
+            
             
             /*
              * @Author: Andres M.
@@ -174,6 +208,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     reportesGenerados.setUsuarioId(objt.usuario_id);
                     //var json = JSON.parse(objt.parametros_de_busqueda);
                     reportesGenerados.setParametrosBusqueda(JSON.parse(objt.parametros_de_busqueda));
+                    reportesGenerados.setConsolidado(JSON.parse(objt.consolidado));
                     listaReportesGenerados.push(reportesGenerados);
                 }              
                 $scope.listaReportesGenerados = listaReportesGenerados;
@@ -225,10 +260,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'getParametrosBusqueda().fecha_final', displayName: 'Fecha Fin', width: "5%"},
                     {field: 'getParametrosBusqueda().empresa_seleccion.nombre', displayName: 'Empresa', width: "16%"},
                     {field: 'getParametrosBusqueda().centro_seleccion.nombre', displayName: 'Centro Utilidad', width: "15%"},
-                    {field: 'getParametrosBusqueda().bodega_seleccion.nombre', displayName: 'Bodega', width: "16%"},                   
-                    {displayName: "Parametros de Busqueda", cellClass: "txt-center dropdown-button", width: "11%",
+                    {field: 'getParametrosBusqueda().bodega_seleccion.nombre', displayName: 'Bodega', width: "13%"},                   
+                    {displayName: "Busqueda", cellClass: "txt-center dropdown-button", width: "7%",
                         cellTemplate: ' <div class="row">\n\
                                          <button class="btn btn-default btn-xs" ng-click="abrirModalParametros(row.entity)" >\n\
+                                             <span class="glyphicon glyphicon-search"></span>\
+                                         </button>\
+                                       </div>'
+                    },
+                    {displayName: "Consolidado", cellClass: "txt-center dropdown-button", width: "7%",
+                        cellTemplate: ' <div class="row">\n\
+                                         <button class="btn btn-default btn-xs" ng-click="abrirModalConsolidado(row.entity)" >\n\
                                              <span class="glyphicon glyphicon-search"></span>\
                                          </button>\
                                        </div>'

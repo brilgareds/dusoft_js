@@ -37,10 +37,16 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
         return;
     }
     
-    if (!args.listar_formulas.filtro) {
+    if (!args.listar_formulas.filtro ) {
         res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
         return;
     }
+    
+    if (!args.listar_formulas.terminoBusqueda || args.listar_formulas.terminoBusqueda === '') {
+        res.send(G.utils.r(req.url, 'Debe diligenciar el termino de busqueda', 404, {}));
+        return;
+    }
+    
     
     var empresaId = args.listar_formulas.empresaId;
     var terminoBusqueda = args.listar_formulas.terminoBusqueda;

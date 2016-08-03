@@ -12,7 +12,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
-        var seleccionTipoObservacion;
         var fecha_actual = new Date();
         
          $scope.root = {                  
@@ -24,7 +23,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             * @author Cristian Ardila
             * @fecha 04/02/2016
             * +Descripcion Funcion que permitira desplegar el popup datePicker
-            *               de la fecha iniciañ
+            *               de la fecha de registro del evento
             * @param {type} $event
             */   
         $scope.abrirFechaRegistroEvento = function($event) {
@@ -70,23 +69,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                }    
             };  
          
-            dispensacionHcService.RegistrarEvento(obj,function(data){
+            dispensacionHcService.registrarEvento(obj,function(data){
              
-                if(data.status === 200){
-                    
-                    AlertService.mostrarMensaje("success", data.msj);
-                    //console.log("data.obj.autorizar_dispensacion.rows ", data.obj.autorizar_dispensacion.evolucion_id)
-                    //$scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id});
+                if(data.status === 200){                   
+                    AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.cerrarVentana();
-                    //$state.go('DispensacionHc');
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
             }); 
         };
         
-        
-         
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo de confirmacion que se ejecutara cuando desde el formulario
+         * @fecha 2016/08/03        
+         */
         $scope.registrarEvento = function(){
             
             AlertService.mostrarVentanaAlerta("Mensaje del sistema",  "Desea registrar el evento?",
@@ -103,8 +101,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          * +Descripcion Metodo encargado de cerrar la ventana actual
          * @fecha 09/06/2016 (DD/MM/YYYY)
          */
-        $scope.cerrarVentana = function(){
-            
+        $scope.cerrarVentana = function(){            
             $modalInstance.close();
         };
         that.init(empresa, function() {

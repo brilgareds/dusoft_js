@@ -240,7 +240,7 @@ define(["angular", "js/services"], function(angular, services) {
               * +Descripcion Servicio encargado de registrar la eventualidad
               *              del paciente para dispensarle los productos pendientes
               */
-            self.RegistrarEvento = function(obj,callback){
+            self.registrarEvento = function(obj,callback){
                
                 Request.realizarRequest(API.DISPENSACIONHC.REGISTRAR_EVENTO,"POST", obj, function(data){     
                     callback(data);

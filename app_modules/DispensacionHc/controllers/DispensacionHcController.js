@@ -928,7 +928,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
  *              medicamentos pendientes
  *              
  */
-DispensacionHc.prototype.RegistrarEvento = function(req, res){
+DispensacionHc.prototype.registrarEvento = function(req, res){
 
     var that = this;
     var args = req.body.data;
@@ -979,7 +979,7 @@ DispensacionHc.prototype.RegistrarEvento = function(req, res){
         res.send(G.utils.r(req.url, 'Evento registrado satisfactoriamente', 200, {registrar_evento: {}}));  
      
      }).fail(function(err){            
-       res.send(G.utils.r(req.url, err.msj, 500, {}));
+        res.send(G.utils.r(req.url, err.msj, 500, {}));
     }).done(); 
 }
 /*

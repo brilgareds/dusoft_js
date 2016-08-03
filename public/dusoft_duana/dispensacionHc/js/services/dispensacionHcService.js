@@ -180,6 +180,18 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Servicio encargado de realizar la dispensacion de
+              *              los medicamentos pendientes
+              */
+            self.realizarEntregaFormulaPendientes = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.REALIZAR_ENTREGA_FORMULA_PENDIENTES,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
             
             /**
               * @author Cristian Ardila

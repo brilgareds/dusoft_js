@@ -39,7 +39,8 @@ define([
     "controllers/dispensacionRealizarEntregaController",
     "controllers/dispensacionAutorizarDispensacion",
     "controllers/dispensacionRegistrarEventoController",
-    "services/dispensacionHcService"
+    "services/dispensacionHcService",
+    "webNotification"
 ], function(angular) { 
 
         /* App Module and its dependencies */

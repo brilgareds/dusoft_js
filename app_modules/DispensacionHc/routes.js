@@ -93,8 +93,12 @@ module.exports = function(app, di_container) {
     });
     
     // Registrando el evento causa de la entrega o no entrega de productos pendientes del paciente
-    app.post("/api/DispensacionHc/RegistrarEvento", function(req, res){
-        c_dispensacion_hc.RegistrarEvento(req, res);
+    app.post("/api/DispensacionHc/registrarEvento", function(req, res){
+        c_dispensacion_hc.registrarEvento(req, res);
     });
-    
+     
+     // realizando la entrega de los pendientes de la formula
+    app.post("/api/DispensacionHc/realizarEntregaFormulaPendientes", function(req, res){
+        c_dispensacion_hc.realizarEntregaFormulaPendientes(req, res);
+    });
 };

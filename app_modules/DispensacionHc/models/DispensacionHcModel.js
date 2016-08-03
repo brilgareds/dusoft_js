@@ -973,11 +973,36 @@ DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
             LEFT JOIN tipos_profesionales tipos ON (pro.tipo_profesional=tipos.tipo_profesional)\
             WHERE  hc.evolucion_id = :1 ";
    
-    G.knex.raw(sql,parametros).then(function(resultado){    
-        
+    G.knex.raw(sql,parametros).then(function(resultado){          
         callback(false, resultado)
     }).catch(function(err){        
-       ;
+        callback(err)
+    });   
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado consultar las formulas 
+ *              las cuales se han dejado con estado todo_pendiente
+ * @controller DispensacionHc.prototype.consultarProductosTodoPendiente
+ */
+DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(evolucionId,callback){
+    
+    var parametros = {1: evolucionId};
+    console.log("parametros ", parametros);
+    var sql = "SELECT   evolucion_id\
+               FROM    hc_pendientes_por_dispensar\
+               WHERE   todo_pendiente = 1\
+	       AND bodegas_doc_id is null\
+	       AND numeracion is null\
+	       AND evolucion_id = :1 ";
+   
+    G.knex.raw(sql,parametros).then(function(resultado){ 
+        console.log("resultado ", resultado)
+        callback(false, resultado)
+    }).catch(function(err){   
+        console.log("err ", err);
         callback(err)
     });   
 };
@@ -1382,18 +1407,12 @@ DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,trans
  * @fecha: 05/07/2015
  */
 DispensacionHcModel.prototype.registrarEvento = function(parametro, callback)
-{   
-    console.log("*******DispensacionHcModel.prototype.registrarEvento*********");
-    console.log("*******DispensacionHcModel.prototype.registrarEvento*********");
-    console.log("*******DispensacionHcModel.prototype.registrarEvento*********");
-    
+{  
     G.knex.transaction(function(transaccion) {          
-        G.Q.nfcall(__actualizarDespachoMedicamentoEvento, parametro, transaccion).then(function(resultado){         
-                       
-            return G.Q.nfcall(__insertarDespachoMedicamentoEvento,parametro, transaccion);    
-            
+        G.Q.nfcall(__actualizarDespachoMedicamentoEvento, parametro, transaccion).then(function(resultado){                               
+            return G.Q.nfcall(__insertarDespachoMedicamentoEvento,parametro, transaccion);                
         }).then(function(resultado){      
-            console.log("COMMIT TERMINA");
+           
             transaccion.commit();    
         }).fail(function(err){        
            transaccion.rollback(err);
@@ -1414,10 +1433,6 @@ DispensacionHcModel.prototype.registrarEvento = function(parametro, callback)
  */
 function __actualizarDespachoMedicamentoEvento(parametro, transaccion, callback) {
    
-   console.log("**********__actualizarDespachoMedicamentoEvento************");
-   console.log("**********__actualizarDespachoMedicamentoEvento************");
-   console.log("**********__actualizarDespachoMedicamentoEvento************");
-   
     var sql = "update hc_despacho_medicamentos_eventos\
          set   sw_estado='0'\
          where paciente_id= :1\
@@ -1427,11 +1442,9 @@ function __actualizarDespachoMedicamentoEvento(parametro, transaccion, callback)
 
     var query = G.knex.raw(sql,{1: parametro.pacienteId,2: parametro.tipoIdPaciente,3: parametro.evolucionId});    
     if(transaccion) query.transacting(transaccion);    
-        query.then(function(resultado){  
-            console.log(" resultado ", resultado);
+        query.then(function(resultado){          
             callback(false, resultado);
-    }).catch(function(err){
-        console.log(" err ", err);
+    }).catch(function(err){   
            callback({err:err, msj: "Error al actualizar el evento"});
     });  
 };
@@ -1442,10 +1455,7 @@ function __actualizarDespachoMedicamentoEvento(parametro, transaccion, callback)
  * @fecha: 08/06/2015 09:45 pm 
  */
 function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
-   console.log("**********__insertarDespachoMedicamentoEvento************");
-   console.log("**********__insertarDespachoMedicamentoEvento************");
-   console.log("**********__insertarDespachoMedicamentoEvento************");
-   console.log("2) parametro ", parametro)
+  
     var sql = "INSERT INTO hc_despacho_medicamentos_eventos(\
          hc_despacho_evento,\
         paciente_id,\

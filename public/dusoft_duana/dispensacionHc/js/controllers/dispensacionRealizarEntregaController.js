@@ -109,26 +109,62 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             if(estadoEntregaFormula === 0){
                 console.log("DISPENSAR FORMULA ", obj);
+                that.dispensacionNormal(obj);
             }
            
            
             if(estadoEntregaFormula === 1){
                 console.log("DISPENSAR PENDIENTES FORMULA ", obj);
+                that.dispensacionPendientes(obj);
             }
-           /* dispensacionHcService.realizarEntregaFormula(obj,function(data){
+           /*  */
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * @fecha  2016/08/03
+         * +Descripcion Metodo el cual invocara el servicio que permitira realizar
+         *              todo el proceso pertinente para dispensar una formula con
+         *              pendientes
+         *             
+         */
+        that.dispensacionPendientes = function(obj){
+            
+            dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
                 console.log("DATA ULTIMA RESPUESTA ", data);
-                if(data.status === 200){
-                     
-                    AlertService.mostrarMensaje("success", data.msj);
-                    
+                if(data.status === 200){                   
+                    AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
                     //$state.go('DispensacionHc');
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
-            }); */
+            });         
         };
+        
+        /**
+         * @author Cristian Ardila
+         * @fecha  2016/08/03
+         * +Descripcion Metodo el cual invocara el servicio que permitira realizar
+         *              todo el proceso pertinente para dispensar una formula
+         *             
+         */
+        that.dispensacionNormal = function(obj){
+            
+            dispensacionHcService.realizarEntregaFormula(obj,function(data){
+                console.log("DATA ULTIMA RESPUESTA ", data);
+                if(data.status === 200){                   
+                    AlertService.mostrarMensaje("success", data.msj);                  
+                    $scope.$emit('emitRealizarEntregaFormula', {response: data});
+                    $scope.cerrarVentana();
+                    //$state.go('DispensacionHc');
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+            });         
+        };
+        
         
         
         $scope.realizarEntregaFormula = function(){

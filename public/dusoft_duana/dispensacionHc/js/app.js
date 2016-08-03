@@ -4,6 +4,7 @@ define([
     "socketservice",
     "route",
     "bootstrap",
+    "bootstrapLib",
     "js/controllers",
     "js/models",
     "js/services",

@@ -12,7 +12,6 @@ requirejs.config({
         directive:"js/directive",
         services:"js/services",
         bootstrap:"../../javascripts/bootstrap/bootstrap",
-        bootstrap3:"../../javascripts/bootstrap/version_v3.1.1/bootstrap",
         nggrid:"../../javascripts/angular/ng-grid",
         jquery:"../../javascripts/jquery",
         treemenu:"../includes/menu/myTree",
@@ -28,7 +27,8 @@ requirejs.config({
         nvd3:"../../javascripts/charts/nv.d3.min",
         chart:"../../javascripts/charts/angularjs-nvd3-directives.min",
         desktopNotify:"../../javascripts/notifications/desktop-notify-min",
-        webNotification:"../../javascripts/notifications/angular-web-notification"
+        webNotification:"../../javascripts/notifications/angular-web-notification",
+        bootstrapLib:"../../javascripts/bootstrap/bootstrap.min",
 
     },
     shim: {
@@ -45,7 +45,7 @@ requirejs.config({
         "bootstrap":{
             deps:["angular"]
         },
-        "bootstrap3":{
+        "bootstrapLib":{
             deps:["angular"]
         },
         "nggrid":{

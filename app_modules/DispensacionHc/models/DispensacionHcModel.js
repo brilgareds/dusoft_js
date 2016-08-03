@@ -973,11 +973,36 @@ DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
             LEFT JOIN tipos_profesionales tipos ON (pro.tipo_profesional=tipos.tipo_profesional)\
             WHERE  hc.evolucion_id = :1 ";
    
-    G.knex.raw(sql,parametros).then(function(resultado){    
-        
+    G.knex.raw(sql,parametros).then(function(resultado){          
         callback(false, resultado)
     }).catch(function(err){        
-       ;
+        callback(err)
+    });   
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado consultar las formulas 
+ *              las cuales se han dejado con estado todo_pendiente
+ * @controller DispensacionHc.prototype.consultarProductosTodoPendiente
+ */
+DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(evolucionId,callback){
+    
+    var parametros = {1: evolucionId};
+    console.log("parametros ", parametros);
+    var sql = "SELECT   evolucion_id\
+               FROM    hc_pendientes_por_dispensar\
+               WHERE   todo_pendiente = 1\
+	       AND bodegas_doc_id is null\
+	       AND numeracion is null\
+	       AND evolucion_id = :1 ";
+   
+    G.knex.raw(sql,parametros).then(function(resultado){ 
+        console.log("resultado ", resultado)
+        callback(false, resultado)
+    }).catch(function(err){   
+        console.log("err ", err);
         callback(err)
     });   
 };

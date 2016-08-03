@@ -969,19 +969,19 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0};
-                                
-      console.log("parametrosReformular:::: ", parametrosReformular);
-      res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {realizar_entrega_formula: parametrosReformular}));
-    /*G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular).then(function(resultado){
-        
-        if(resultado.length > 0){
-           planId =  resultado[0].plan_id;
-            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametrosReformular);
+    var bodegasDocTodoPendiente;                           
+      //console.log("parametrosReformular:::: ", parametrosReformular);
+      
+    G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',evolucionId).then(function(resultado){
+      
+       if(resultado.length > 0){
+           bodegasDocTodoPendiente = 1;
         }else{
-            throw 'Consulta sin resultados '
-        }
+           bodegasDocTodoPendiente = 0;
+        };
         
-    }).then(function(resultado){
+       res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
+    })/*.then(function(resultado){
              
         if(resultado.length > 0){           
             var parametroBodegaDocId = {variable:"documento_dispensacion_"+empresa+"_"+bodega, tipoVariable:1, modulo:'Dispensacion' };
@@ -1052,9 +1052,9 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
            that.e_dispensacion_hc.onNotificarEntregaFormula(); 
         }   
-    }).fail(function(err){            
+    })*/.fail(function(err){            
        res.send(G.utils.r(req.url, err, 500, {}));
-    }).done(); */      
+    }).done(); 
 };
 /*
  * @author Cristian Ardila

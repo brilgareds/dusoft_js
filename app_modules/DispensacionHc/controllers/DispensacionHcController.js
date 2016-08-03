@@ -923,6 +923,67 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
 
 /*
  * @author Cristian Ardila
+ * @fecha 03/08/2016
+ * +Descripcion Controlador encargado de registrar el evento de entrega de 
+ *              medicamentos pendientes
+ *              
+ */
+DispensacionHc.prototype.RegistrarEvento = function(req, res){
+
+    var that = this;
+    var args = req.body.data;
+    var usuario = req.session.user.usuario_id;
+    
+    
+    if (args.registrar_evento === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {registrar_evento: []}));
+        return;
+    }
+   
+    if (!args.registrar_evento.evolucionId || args.registrar_evento.evolucionId.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {registrar_evento: []}));
+        return;
+    }
+    
+    if (!args.registrar_evento.pacienteId || args.registrar_evento.pacienteId.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere el documento del paciente', 404, {registrar_evento: []}));
+        return;
+    }
+    
+    if (!args.registrar_evento.tipoIdPaciente || args.registrar_evento.tipoIdPaciente.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de documento', 404, {registrar_evento: []}));
+        return;
+    }
+      
+    
+    if (!args.registrar_evento.fecha || args.registrar_evento.fecha.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la fecha', 404, {registrar_evento: []}));
+        return;
+    } 
+    
+    if (!args.registrar_evento.observacion || args.registrar_evento.observacion.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la observacion', 404, {registrar_evento: []}));
+        return;
+    } 
+    
+    var parametros = {evolucionId:args.registrar_evento.evolucionId,
+                    tipoIdPaciente: args.registrar_evento.tipoIdPaciente,
+                    pacienteId: args.registrar_evento.pacienteId,
+                    fecha: args.registrar_evento.fecha,
+                    observacion: args.registrar_evento.observacion,
+                    usuario: usuario
+                };
+          
+    G.Q.ninvoke(that.m_dispensacion_hc,'registrarEvento',parametros).then(function(resultado){
+   
+        res.send(G.utils.r(req.url, 'Evento registrado satisfactoriamente', 200, {registrar_evento: {}}));  
+     
+     }).fail(function(err){            
+       res.send(G.utils.r(req.url, err.msj, 500, {}));
+    }).done(); 
+}
+/*
+ * @author Cristian Ardila
  * @fecha 15/06/2016
  * +Descripcion Controlador encargado listar los medicamentos pendientes
  *              por dispensar

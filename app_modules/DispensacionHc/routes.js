@@ -82,13 +82,19 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarMedicamentosDispensados(req, res);
     });
     
-   
+    // consultando los privilegios de dispensacion del usuario de session
     app.post("/api/DispensacionHc/usuarioPrivilegios", function(req, res){
         c_dispensacion_hc.usuarioPrivilegios(req, res);
     });
     
+    // Autorizando la dispensacion de un medicamento confrontado
     app.post("/api/DispensacionHc/autorizarDispensacionMedicamento", function(req, res){
         c_dispensacion_hc.autorizarDispensacionMedicamento(req, res);
+    });
+    
+    // Registrando el evento causa de la entrega o no entrega de productos pendientes del paciente
+    app.post("/api/DispensacionHc/RegistrarEvento", function(req, res){
+        c_dispensacion_hc.RegistrarEvento(req, res);
     });
     
 };

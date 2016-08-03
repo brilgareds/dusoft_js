@@ -38,6 +38,7 @@ define([
     "controllers/dispensacionHcDetalleController",
     "controllers/dispensacionRealizarEntregaController",
     "controllers/dispensacionAutorizarDispensacion",
+    "controllers/dispensacionRegistrarEventoController",
     "services/dispensacionHcService"
 ], function(angular) { 
 

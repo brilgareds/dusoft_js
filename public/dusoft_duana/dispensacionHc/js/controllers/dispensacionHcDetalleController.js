@@ -69,6 +69,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                 dispensacionHcService.listarFormulas(obj, function(data){
                     estadoEntregaFormula = resultadoStorage.pendientes;
+                    
                     if(data.status === 200) {       
                         //$scope.root.items = data.obj.listar_formulas.length;                              
                         $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
@@ -76,8 +77,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             
                             that.listarMedicamentosFormulados(resultadoStorage);
                         }
-                        
-                        if(resultadoStorage.pendientes === 1){                      
+                                                  
+                        if(resultadoStorage.pendientes === 1){    
+                            $scope.showBotonRegistrarEvento = resultadoStorage.pendientes;
                             that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
                         }
                               
@@ -109,7 +111,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(data.status === 200) {       
 
                    productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_pendientes.resultados);
-                   console.log("------productos------", productos)
+                  
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
                   
                 }else{
@@ -488,7 +490,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var modalInstance = $modal.open($scope.opts);   
            
                 modalInstance.result.then(function(){
-                    //$scope.showBtnImprimirPendientes = true;
                     that.consultarMedicamentosTemporales();
                 },function(){});                          
                 
@@ -518,9 +519,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var modalInstance = $modal.open($scope.opts);   
            
                 modalInstance.result.then(function(){
-               
-                    //$scope.showBtnImprimirPendientes = true;
-                    //that.consultarMedicamentosTemporales();
                 },function(){});                          
                 
         };
@@ -551,6 +549,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         };
         
         
+        /**
+          * @author Cristian Ardila
+          * +Descripcion Metodo que desplegara una ventana encargada de 
+          *              listar los tipos de entrega de la formula
+        */
+        $scope.ventanaRegistrarEvento = function(){
+           
+            $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: true,
+                keyboard: true,
+                templateUrl: 'views/dispensacionHc/dispensacionRegistrarEvento.html',
+                scope: $scope,                  
+                controller: "dispensacionRegistrarEventoController",
+                /*resolve: {
+                        estadoEntregaFormula: function() {
+                            return estadoEntregaFormula;
+                        }                    
+                    }*/
+                                   
+            };
+            var modalInstance = $modal.open($scope.opts);   
+           
+                modalInstance.result.then(function(){
+                    
+                },function(){});                          
+                
+        };
         that.consultarMedicamentosTemporales();
         
         /**

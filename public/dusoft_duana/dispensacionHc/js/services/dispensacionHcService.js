@@ -210,8 +210,8 @@ define(["angular", "js/services"], function(angular, services) {
             /**
               * @author Cristian Ardila
               * @fecha  27/07/2016
-              * +Descripcion Servicio encargado de obtener los medicamentos
-              *              dispensados
+              * +Descripcion Servicio encargado de consultar los privilegios de
+              *              dispensacion del usuario de la session
               */
             self.usuarioPrivilegios = function(obj,callback){
                
@@ -232,6 +232,22 @@ define(["angular", "js/services"], function(angular, services) {
                     callback(data);
                 });
             };
+            
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Servicio encargado de registrar la eventualidad
+              *              del paciente para dispensarle los productos pendientes
+              */
+            self.RegistrarEvento = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.REGISTRAR_EVENTO,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
+            
+            
             
             /**
                * @author Cristian Ardila
@@ -299,7 +315,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016
                */
             self.renderListarMedicamentosFormulados = function(producto){
-               console.log("A QUI ESTA EL PRODYCTO ", producto)
+               
                 var productos = [];
                 for(var i in producto){
                     

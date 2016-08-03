@@ -383,11 +383,12 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return cantidad;
         };
         
-        ProductoPedido.prototype.obtenerCantidadSeleccionadaPorLote = function(codigo_lote) {
+        ProductoPedido.prototype.obtenerCantidadSeleccionadaPorLote = function(codigo_lote, fechaVencimiento) {
             var cantidad = 0;
             for(var i in this.lotesSeleccionados){
                 var lote = this.lotesSeleccionados[i];
-                if(lote.seleccionado && lote.codigo_lote === codigo_lote){
+                //console.log("lote.fecha_vencimiento ", lote.fecha_vencimiento, " fechaVencimiento ", fechaVencimiento);
+                if(lote.seleccionado && lote.codigo_lote === codigo_lote && lote.fecha_vencimiento === fechaVencimiento){
                       cantidad += parseInt(this.lotesSeleccionados[i].cantidad_ingresada);
                 }
             }

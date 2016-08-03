@@ -46,7 +46,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                         cellTemplate: ' <div class="row">\
                                                 <button ng-if="row.entity.getEnFarmaciaSeleccionada()" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
-                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada()) || row.entity.getEstado() != \'1\' ">\
+                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada())  ">\
                                                     <span class="glyphicon glyphicon-ok"></span>\
                                                 </button>\
                                                 <button ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-click="mostrarAlertaProducto()" class="btn btn-default btn-xs" >\
@@ -173,11 +173,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                                     <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
 
                 var modalInstance = $modal.open($scope.opts);

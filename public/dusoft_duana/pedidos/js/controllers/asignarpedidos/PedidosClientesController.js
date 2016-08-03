@@ -117,7 +117,7 @@ define(["angular",
                         obj.tipo_id_cliente,
                         obj.identificacion_cliente,
                         obj.telefono_cliente
-                        );
+                );
 
                 pedido.setCliente(cliente);
 
@@ -174,7 +174,7 @@ define(["angular",
             };
 
             $scope.habilitar_asignacion_pedidos = function(pedido) {
-
+                
                 var disabled = true;
 
                 if (pedido.estado_actual_pedido === '0') {
@@ -191,6 +191,10 @@ define(["angular",
 
                 if (pedido.estado_actual_pedido === '8') {
                     disabled = false;
+                }
+                
+                if (pedido.estado_actual_pedido === '10') {
+                    disabled = true;
                 }
 
                 if (pedido.estado_separacion) {
@@ -225,8 +229,8 @@ define(["angular",
 
             // Agregar Clase de acuerdo al estado del pedido
             $scope.agregarClase = function(estado) {
-
-                if (estado === 6) {
+                if (estado === '6' || estado === '10') {
+                    
                     return estados[1];
                 }
 
@@ -325,7 +329,7 @@ define(["angular",
                                     <button class="btn btn-primary" ng-click="cambiar_estado_pedido()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.cambiar_estado_pedido = function() {
 
@@ -353,7 +357,7 @@ define(["angular",
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

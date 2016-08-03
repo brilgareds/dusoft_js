@@ -23,6 +23,7 @@ requirejs.config({
         socket:"../includes/socket/socket.io/socket.io",
         socketservice:"../includes/socket/socket",
         uiselect2: "../../javascripts/select",
+        bootstrapLib:"../../javascripts/bootstrap/bootstrap.min",
         //uiselect2:"../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
@@ -43,6 +44,9 @@ requirejs.config({
             deps: ["angular"]
         },
         "bootstrap":{
+            deps:["angular"]
+        },
+        "bootstrapLib":{
             deps:["angular"]
         },
         "nggrid":{

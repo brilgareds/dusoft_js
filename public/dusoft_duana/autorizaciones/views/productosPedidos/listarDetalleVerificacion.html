@@ -1,0 +1,65 @@
+<div >
+    <div >
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <div class="pull-left">
+                            <h3 class="text-center"><strong>Información General</strong></h3>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>
+                                <h4>Pedido N°: <span ng-bind="pedido"></span></h4>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                <h4>Clinte/Farmacia: <span ng-bind="nombreTercero"></span></h4>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>
+                                <h4>Fecha Pedido: <span ng-bind="fechaSolicitud"></span></h4>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>
+                                <div class="table-responsive" >
+                                    <div class="defaultGrid grid-responsive" ng-grid="lista_detalle_verificados">
+
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row text-center">
+                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+                                        <span class="glyphicon glyphicon-chevron-left" ></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                                        <span class="glyphicon glyphicon-chevron-right" ></span>
+                                    </button>
+                                </div>
+                                <br/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p aling="center">
+                                    <button type="button" class="btn btn-default pull-right"  ng-click="onVolver()">volver</button>
+                                <p/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <visualizar-reporte></visualizar-reporte>
+</div>

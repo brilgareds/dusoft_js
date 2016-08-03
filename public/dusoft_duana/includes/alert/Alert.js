@@ -63,7 +63,7 @@ define(["angular","js/services"], function(angular, services){
                             <button class="btn btn-warning" ng-click="onBtnModal(true)" ng-if="callback">Aceptar</button>\
                             <button class="btn btn-primary" ng-click="onBtnModal(false)" ng-if="callback">Cancelar</button>\
                         </div>',
-            controller: function($scope, $modalInstance, titulo, mensaje, callback) {
+            controller: ["$scope", "$modalInstance", "titulo", "mensaje", "callback", function($scope, $modalInstance, titulo, mensaje, callback) {
                 $scope.mensaje = mensaje;
                 $scope.titulo  = titulo;
                 $scope.callback = callback;
@@ -79,7 +79,7 @@ define(["angular","js/services"], function(angular, services){
                     $modalInstance.close();
                 }
 
-            },
+            }],
             resolve: {
                 titulo: function() {
                     return titulo;

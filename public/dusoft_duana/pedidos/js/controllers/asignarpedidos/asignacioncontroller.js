@@ -4,8 +4,8 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
         '$scope', '$rootScope', 'API',
         '$modalInstance', "pedidosSeleccionados", "url",
         "Request", "Separador", "EmpresaPedido",
-        "Usuario",
-        function($scope, $rootScope, API, $modalInstance, pedidosSeleccionados, url, Request, Separador, Empresa, Usuario) {
+        "Usuario", "AlertService",
+        function($scope, $rootScope, API, $modalInstance, pedidosSeleccionados, url, Request, Separador, Empresa, Usuario, AlertService) {
 
             $scope.Empresa = Empresa;
             $scope.noAsignar = true;
@@ -80,6 +80,8 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
                             if (data.status === 200) {
                                 $modalInstance.close();
                                 $rootScope.$emit("refrescarPedidos");
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
                         }
                 );

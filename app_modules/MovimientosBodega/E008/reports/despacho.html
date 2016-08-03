@@ -108,7 +108,7 @@
 
     
     <body>
-             
+        <h2 style="text-align:right;">{{:encabezado.prefijo}} - {{:encabezado.numero}}</h2>
        <table class="table" width='100%'>
             <tr>
                 <td class='title' >Empresa</td><td>{{:encabezado.nombre_empresa_destino}}</td>
@@ -128,8 +128,14 @@
         
         <hr/>
         
+
+        
         <div class="panel panel-default">
              <table width='100%' >
+                <tr>
+                    <td class='title'>OBSERVACIÓN</td>
+                    <td>{{:encabezado.descripcion_pedido}}</td>
+                </tr>
                 {{props   adicionales}}
                     <tr>
                         <td class='title'>{{>prop.titulo}}</td>
@@ -139,7 +145,8 @@
             </table>
         </div>
         
-        {{if encabezado.tipo_pedido == '1' || encabezado.farmacia_id == '01' || encabezado.farmacia_id == '02'}}
+        {{if encabezado.tipo_pedido == '1' || encabezado.farmacia_id == '01' || encabezado.farmacia_id == '02' 
+          || encabezado.farmacia_id == '99' || encabezado.farmacia_id == '17' }}
             <table class="table table-bordered  tablaPrincipal" width='100%'  cellspacing="0">
                 <tr>
                    <th class='title'>Producto</th>      
@@ -216,9 +223,8 @@
                     </td>
                 </tr>
             </table>
-        {{/if}}
+        {{else  encabezado.tipo_pedido == '2' && encabezado.farmacia_id != '01' && encabezado.farmacia_id != '02'}}
         
-        {{if encabezado.tipo_pedido == '2' && encabezado.farmacia_id != '01' && encabezado.farmacia_id != '02'}}
             <table class="table table-bordered  tablaPrincipal" width='100%'>
                 <tr>
                    <th class='title'>Producto</th>      
@@ -242,7 +248,7 @@
                 
             </table>
         
-        {{/if}}
+        {{/end}}
         <table  width='100%'  style="margin-top:20px" >
             <tr align='center'>
                 <td>

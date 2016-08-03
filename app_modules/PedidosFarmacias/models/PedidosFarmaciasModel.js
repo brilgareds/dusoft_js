@@ -507,6 +507,10 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         if (filtro.en_zona_despacho_pdtes) {
             estado = '9';
         }
+        
+        if (filtro.por_autorizar) {
+            estado = '10';
+        }
     }
 
     var columns = [
@@ -529,7 +533,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                      when a.estado = '6' then 'Separacion Finalizada' \
                      when a.estado = '7' then 'En Auditoria'  \
                      when a.estado = '8' then 'Auditado con pdtes' \
-                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
+                     when a.estado = '9' then 'En zona con pdtes'\
+                     when a.estado = '10' then 'Por Autorizar' end as descripcion_estado_actual_pedido"),
         "f.estado as estado_separacion", 
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
         "b.descripcion as nombre_centro_utilidad",
@@ -539,12 +544,12 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "g.prefijo as despacho_prefijo", 
         "g.numero as despacho_numero", 
         G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
-        /*G.knex.raw("(\
+       /* G.knex.raw("(\
                         SELECT bb.descripcion FROM solicitud_productos_a_bodega_principal_detalle AS aa \
                         INNER JOIN inv_tipo_producto AS bb ON bb.tipo_producto_id = aa.tipo_producto\
                         WHERE aa.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id limit 1\
                   ) as descripcion_tipo_producto"),*/
-        "i.descripcion_tipo_producto",
+        "i.descripcion as descripcion_tipo_producto",
         "h.descripcion as zona"
         
     ];
@@ -569,7 +574,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     leftJoin("inv_bodegas_movimiento_tmp_despachos_farmacias as f", "a.solicitud_prod_a_bod_ppal_id", "f.solicitud_prod_a_bod_ppal_id").
     leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.solicitud_prod_a_bod_ppal_id", "g.solicitud_prod_a_bod_ppal_id ").
     leftJoin("zonas_bodegas as h", "c.zona_id", "h.id").
-    leftJoin(
+    /*leftJoin(
         G.knex.raw("(\
                         SELECT bb.descripcion as descripcion_tipo_producto, aa.solicitud_prod_a_bod_ppal_id FROM\
                         solicitud_productos_a_bodega_principal_detalle AS aa \
@@ -580,7 +585,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         "i.solicitud_prod_a_bod_ppal_id",
         "=",
         "a.solicitud_prod_a_bod_ppal_id"
-    ).
+    ).*/
+    leftJoin("inv_tipo_producto as i", "a.tipo_pedido", "i.tipo_producto_id").
     where(function(){
         this.where("a.farmacia_id", empresa_id);
         
@@ -665,8 +671,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
     
 };
 
-
-// Seleccionar Pedido Por un numero de pedido
+/**
+ * 
+ * @author Eduar Garcia
+ * +Descripcion Seleccionar Pedido Por un numero de pedido
+ * @fecha 0000-00-00
+ *  Controller: 
+ *  Autorizaciones.prototype.modificarAutorizacionProductos
+ */
 PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callback) {
   
     var columnas = [
@@ -689,7 +701,8 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
              when a.estado = '6' then 'Separacion Finalizada'\
              when a.estado = '7' then 'En auditoria'\
              when a.estado = '8' then 'Auditado con pdtes'\
-             when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"), 
+             when a.estado = '9' then 'En zona con pdtes'\
+             when a.estado = '10' then 'Por Autorizar' end as descripcion_estado_actual_pedido"), 
         "f.estado as estado_separacion", 
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro"), 
         "a.fecha_registro as fecha_registro_pedido",
@@ -753,31 +766,45 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 c.codigo_barras,\
                 h.existencia_actual,\
                 i.existencia as existencia_bodega,\
-                c.estado as bloqueado\
+                c.estado as bloqueado,\
+                (\
+                    select case when j.estado = '1' then 'Aprobado' when j.estado = '2' then 'Denegado' end as descripcion_autorizacion from autorizaciones_productos_pedidos  as j\
+                    where  tipo_pedido = '1' and j.codigo_producto = a.codigo_producto and j.pedido_id = a.solicitud_prod_a_bod_ppal_id\
+                    order by fecha_verificacion asc limit 1\
+                ) as descripcion_autorizacion,\
+                b.observacion_justificacion_separador,\
+                b.observacion_justificacion_auditor\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
                 inner join inventarios_productos c on f.codigo_producto = c.codigo_producto \
                 inner join inv_clases_inventarios e on c.grupo_id = e.grupo_id and c.clase_id = e.clase_id \
                 left join (\
-                    SELECT a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada, a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega \
+                    SELECT a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
+                    a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega, \
+                    a.observacion_justificacion_separador, a.observacion_justificacion_auditor\
                     FROM ( \
-                      select a.solicitud_prod_a_bod_ppal_id as numero_pedido, b.codigo_producto, c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado, b.empresa_id, b.centro_utilidad, b.bodega\
+                      select a.solicitud_prod_a_bod_ppal_id as numero_pedido, b.codigo_producto, c.observacion as justificacion, \
+                      c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
+                      b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado, b.empresa_id, b.centro_utilidad, b.bodega,\
+                      c.observacion_justificacion_separador, c.observacion_justificacion_auditor\
                       from inv_bodegas_movimiento_tmp_despachos_farmacias a\
                       inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                      group by 1,2,3,4,6,7, 8,9, 10, 11,12,13,14\
+                      group by 1,2,3,4,6,7, 8,9, 10, 11,12,13,14,15,16\
                       UNION\
-                      select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento,  0 as item_id, '3' as tipo_estado_auditoria, 0 as cantidad_ingresada, '0' as auditado, '' as empresa_id, '' as centro_utilidad, '' as bodega  \
+                      select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor,\
+                      0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento,  0 as item_id, '3' as tipo_estado_auditoria,\
+                      0 as cantidad_ingresada, '0' as auditado, '' as empresa_id, '' as centro_utilidad, '' as bodega,  b.observacion_justificacion_separador, b.observacion_justificacion_auditor  \
                       from inv_bodegas_movimiento_tmp_despachos_farmacias a \
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                        and b.codigo_producto not in(\
                             select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
                        )\
-                    ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11,12,13,14\
+                    ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11,12,13,14,15,16\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                left join existencias_bodegas_lote_fv h on h.empresa_id = b.empresa_id and h.centro_utilidad = b.centro_utilidad and h.codigo_producto = b.codigo_producto and h.lote = b.lote and h.fecha_vencimiento = b.fecha_vencimiento :: date\
-                left join existencias_bodegas i on i.empresa_id = b.empresa_id and i.centro_utilidad = b.centro_utilidad and i.codigo_producto = b.codigo_producto\
+                left join existencias_bodegas_lote_fv h on h.empresa_id = b.empresa_id and h.centro_utilidad = b.centro_utilidad and h.codigo_producto = b.codigo_producto and h.lote = b.lote and h.fecha_vencimiento = b.fecha_vencimiento :: date and  h.bodega = b.bodega\
+                left join existencias_bodegas i on i.empresa_id = b.empresa_id and i.centro_utilidad = b.centro_utilidad and i.codigo_producto = b.codigo_producto and i.bodega = b.bodega\
                 where a.solicitud_prod_a_bod_ppal_id= ? order by e.descripcion ; ";
 
    G.knex.raw(sql, [numero_pedido]).
@@ -937,7 +964,7 @@ PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_p
             //Actualizar
             that.actualizar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
                 // Actualizar Estado Actual del Pedido
-                that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() {
+                that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() { 
                     callback(_err, _rows, responsable_estado_pedido);
                     return;
                 });
@@ -1325,9 +1352,14 @@ PedidosFarmaciasModel.prototype.eliminarTemporalesFarmacias = function(callback)
  */
 PedidosFarmaciasModel.prototype.borrarReservas = function(callback){
     var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle SET cantidad_pendiente = 0 WHERE solicitud_prod_a_bod_ppal_id  IN(\
-                    SELECT a.solicitud_prod_a_bod_ppal_id FROM solicitud_productos_a_bodega_principal AS a\
-                    WHERE date_part('month', age(now()::timestamp, a.fecha_registro::timestamp) ) > 0\
-                )   and cantidad_pendiente > 0";
+                  SELECT a.solicitud_prod_a_bod_ppal_id FROM solicitud_productos_a_bodega_principal AS a\
+                  inner join (\
+                  	select  EXTRACT(DAY FROM MAX(now())-MIN(b.fecha_registro)) as dias, b.solicitud_prod_a_bod_ppal_id, b.empresa_destino\
+                        from solicitud_productos_a_bodega_principal as b\
+                        GROUP BY 2,3\
+                  ) as t on t.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id  and t.empresa_destino = a.empresa_destino\
+                  WHERE t.dias  >= 30\
+        )   and cantidad_pendiente > 0";
     
     G.knex.raw(sql).then(function(resultado){
         callback(false, resultado);

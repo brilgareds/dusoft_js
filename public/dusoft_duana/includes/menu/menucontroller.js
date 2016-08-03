@@ -1,7 +1,7 @@
 define(["angular", "js/controllers", "treemenu"], function(angular, controllers) {
 
-    controllers.controller('menucontroller', ['$scope', '$rootScope', "$state", "Request","Usuario",
-        function($scope, $rootScope, $state,Request, Usuario) {
+    controllers.controller('menucontroller', ['$scope', '$rootScope', "$state", "Request","Usuario","socket",
+        function($scope, $rootScope, $state,Request, Usuario, socket) {
             
             $scope.$on("nodeSelected", function(e, data) {
                 
@@ -17,6 +17,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                     if (isNaN(parent)) {
                         url = "../" + url;
                         $scope.changelocation(url);
+                        
                     } else {
                         //si no posee la propiedad parentname se coloca por default el nombre del modulo actual
                        // var parentname = (data.parentname === undefined) ? $rootScope.name : data.parentname;
@@ -45,6 +46,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
 
             $scope.changelocation = function(url) {
                 //el window location no deja setear el estado del menu por eso se debe cambiar con una milesima despues de hacer click
+                socket.forceRemoveListener();
                 var timer = setTimeout(function() {
                     window.location = url;
                     clearTimeout(timer);

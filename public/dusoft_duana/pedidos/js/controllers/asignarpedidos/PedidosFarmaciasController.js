@@ -119,7 +119,11 @@ define(["angular",
                 if (pedido.estado_actual_pedido === '8') {
                     disabled = false;
                 }
-
+                
+                if (pedido.estado_actual_pedido === '10') {
+                    disabled = true;
+                }
+                
                 if (pedido.estado_separacion) {
                     disabled = true;
                 }
@@ -152,10 +156,9 @@ define(["angular",
 
             $scope.agregarClase = function(estado) {
                 estado = parseInt(estado);
-                if (estado === 6) {
+                if (estado === 6 || estado === 10) {
                     return estados[1];
                 }
-
 
                 return estados[estado];
             };
@@ -294,7 +297,7 @@ define(["angular",
                                     <button class="btn btn-primary" ng-click="cambiar_estado_pedido()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.cambiar_estado_pedido = function() {
 
@@ -324,7 +327,7 @@ define(["angular",
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
 

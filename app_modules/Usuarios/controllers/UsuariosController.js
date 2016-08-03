@@ -183,7 +183,7 @@ Usuarios.prototype.obtenerParametrizacionUsuario = function(req, res){
         return;
     }
 
-    that.m_usuarios.obtenerParametrizacionUsuario(usuario_id, empresa_id, function(err, parametrizacion){
+    that.m_usuarios.obtenerParametrizacionUsuario({usuario_id:usuario_id, empresa_id:empresa_id, modulos:[]}, function(err, parametrizacion){
 
         if(err){
             res.send(G.utils.r(req.url, 'Se genero un error', 403, {}));
@@ -308,7 +308,7 @@ Usuarios.prototype.obtenerModulosPorUsuario = function(req, res) {
     var rol_id = args.parametrizacion_usuarios.rol_id;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_modulo.listarModulosUsuario(rol_id, empresa_id, login_id, function(err, rows) {
+    that.m_modulo.listarModulosUsuario(rol_id, empresa_id, login_id,[], function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando modulos del rol', 500, {parametrizacion_usuarios: {}}));
             return;

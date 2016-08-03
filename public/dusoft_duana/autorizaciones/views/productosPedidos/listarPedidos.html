@@ -1,34 +1,29 @@
-<!--<div>
-    <span ng-bind="hola"></span>
-
-</div>-->
-
 <div >
     <tabset  class="">
-        <tab heading="Clientes" >
-            <div class ="row"> 
+        <tab heading="Clientes" ng-click="onAutorizacionTab(0)"  >
+            <div class ="row">
 
                 <div class="col-md-3 pull-right">
-                    <p> 
+                    <p>
 
                     <div class="input-group">
 
                         <input type="text" class="form-control"
-                               ng-keypress="onBuscarPedido($event, termino_busqueda)" 
-                               ng-model="termino_busqueda" 
-                               placeholder="Numero Pedido" 
-                               name="srch-term" 
+                               ng-keypress="onBuscarPedido($event, termino_busqueda)"
+                               ng-model="termino_busqueda"
+                               placeholder="Numero Pedido"
+                               name="srch-term"
                                id="srch-term"
                                ng-model="rootSeleccionPedido.termino_busqueda_pedidos">
 
                         <div class="input-group-btn" >
-                            <button class="btn btn-default" 
-                                    type="submit" 
+                            <button class="btn btn-default"
+                                    type="submit"
                                     ng-click="onBuscarPedido({which:13}, termino_busqueda)">
                                 <i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
-                </div> 
+                </div>
             </div>
             <p>
             <div class="table-responsive" >
@@ -47,32 +42,32 @@
                     <span class="glyphicon glyphicon-chevron-right" ></span>
                 </button>
             </div>
-        </tab> 
+        </tab>
 
-        <tab heading="Farmacias">
-            <div class ="row"> 
+        <tab heading="Farmacias" ng-click="onAutorizacionTab(1)" >
+            <div class ="row">
                 <div class="col-md-3 pull-right">
-                    <p> 
+                    <p>
                     <div class="input-group">
 
                         <input type="text" class="form-control"
-                               ng-keypress="onKeyPress($event, termino_busqueda)" 
-                               ng-model="termino_busqueda" 
-                               placeholder="Numero Pedido" 
-                               name="srch-term" 
+                               ng-keypress="onBuscarPedido($event, termino_busqueda)"
+                               ng-model="termino_busqueda"
+                               placeholder="Numero Pedido"
+                               name="srch-term"
                                id="srch-term"
                                ng-model="rootSeleccionPedido.termino_busqueda_pedidos">
 
                         <div class="input-group-btn" >
-                            <button class="btn btn-default" 
-                                    type="submit" 
-                                    ng-click="buscarPedidosCliente(termino_busqueda)">
+                            <button class="btn btn-default"
+                                    type="submit"
+                                    ng-click="onBuscarPedido({which:13}, termino_busqueda)">
                                 <i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
 
 
-                </div> 
+                </div>
 
             </div>
             <p>
@@ -90,7 +85,7 @@
                     <span class="glyphicon glyphicon-chevron-right" ></span>
                 </button>
             </div>
-        </tab>      
+        </tab>
     </tabset>
     </br>
 </div>

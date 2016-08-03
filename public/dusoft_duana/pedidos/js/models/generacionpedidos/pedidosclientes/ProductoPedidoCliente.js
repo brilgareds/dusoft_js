@@ -22,12 +22,41 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.valor_total_con_iva = 0;
                 this.cantidad_inicial = 0;
                 this.precioVentaIva = 0;
+                this.cantidadPendiente = 0;
+                this.cantidadPendienteDespachar = 0;
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
 
             this.get = function(codigo, nombre, existencia, iva, tipo_producto, estado) {
                 return new ProductoPedidoCliente(codigo, nombre, existencia, iva, tipo_producto, estado);
+            };
+            
+            // cantidad pendiente despachar
+            ProductoPedidoCliente.prototype.setCantidadPendienteDespachar = function(cantidadPendienteDespachar) {
+                this.cantidadPendienteDespachar = cantidadPendienteDespachar;
+                return this;
+            };
+            
+            // cantidad pendiente despachar
+            ProductoPedidoCliente.prototype.getCantidadPendienteDespachar = function() {               
+                return this.cantidadPendienteDespachar;
+            };
+            
+            
+            
+            
+            
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.setCantidadPendiente = function(cantidadPendiente) {
+                this.cantidadPendiente = cantidadPendiente;
+                return this;
+            };
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.getCantidadPendiente = function() {               
+                return this.cantidadPendiente;
             };
             
             // precio_venta_iva

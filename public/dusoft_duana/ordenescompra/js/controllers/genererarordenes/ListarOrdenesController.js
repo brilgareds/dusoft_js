@@ -337,12 +337,12 @@ define(["angular", "js/controllers",
                                         <button class="btn btn-primary" ng-click="close()">Aceptar</button>\
                                     </div>',
                         scope: $scope,
-                        controller: function($scope, $modalInstance) {
+                        controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                             $scope.close = function() {
                                 $modalInstance.close();
                             };
-                        },
+                        }],
                         resolve: {
                             mensaje_sistema: function() {
                                 return $scope.mensaje_sistema;
@@ -414,7 +414,7 @@ define(["angular", "js/controllers",
                         keyboard: true,
                         templateUrl: 'views/genererarordenes/redactaremail.html',
                         scope: $scope,
-                        controller: function($scope, $modalInstance) {
+                        controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                             $scope.validar_envio_email = function() {
 
@@ -447,7 +447,7 @@ define(["angular", "js/controllers",
                             $scope.cancelar_enviar_email = function() {
                                 $modalInstance.close();
                             };
-                        }
+                        }]
                     };
                     var modalInstance = $modal.open($scope.opts);
                 } else {
@@ -525,7 +525,7 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-warning" ng-click="close()">No</button>\
                                     <button class="btn btn-primary" ng-click="anular()" ng-disabled="" >Si</button>\
                                 </div>';
-                    controller = function($scope, $modalInstance) {
+                    controller = ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.anular = function() {
                             $scope.cambiarEstadoOrden(estado);
@@ -537,7 +537,7 @@ define(["angular", "js/controllers",
                             $modalInstance.close();
                             $scope.orden_compra_seleccionada = null;
                         };
-                    };
+                    }];
 
                 } else {
                     template = ' <div class="modal-header">\
@@ -550,12 +550,12 @@ define(["angular", "js/controllers",
                                     <div class="modal-footer">\
                                         <button class="btn btn-primary" ng-click="close()">Aceptar</button>\
                                     </div>';
-                    controller = function($scope, $modalInstance) {
+                    controller = ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    };
+                    }];
                 }
 
 

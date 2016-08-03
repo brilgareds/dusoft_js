@@ -226,12 +226,12 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-primary" ng-click="cerrar(true)" ng-disabled="" >Aceptar</button>\
                                     </div>',
                                            scope: $scope,
-                                           controller: function($scope, $modalInstance) {
+                                           controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                                                $scope.cerrar = function(acepto) {
                                                    callback(acepto);
                                                    $modalInstance.close();
                                                };
-                                           }
+                                           }]
                                        };
 
                   var modalInstance = $modal.open($scope.opts);
@@ -332,9 +332,9 @@ define(["angular", "js/controllers",
                                     <button class="btn btn-primary" ng-click="modal.dismiss();" ng-disabled="" >Aceptar</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                         $scope.modal = $modalInstance;
-                    }
+                    }]
                 };
                 
                 var modalInstance = $modal.open($scope.opts);  
@@ -434,7 +434,8 @@ define(["angular", "js/controllers",
                 
                 var mensaje;
                 
-                if($scope.root.pedido.getEstadoActualPedido() === '0' || $scope.root.pedido.getEstadoActualPedido() === '8'){
+                if($scope.root.pedido.getEstadoActualPedido() === '0' || 
+                   $scope.root.pedido.getEstadoActualPedido() === '8' || $scope.root.pedido.getEstadoActualPedido() === '10'){
                     
                     if(producto.getCantidadIngresada() >= producto.getCantidadSolicitada()){
                         mensaje = "La cantidad ingresada debe ser menor a la solicitada";

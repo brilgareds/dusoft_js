@@ -38,6 +38,11 @@
                     "module": "Pedidos",
                     "model": "PedidosLogModel",
                     "alias": "m_pedidos_logs"
+                },
+                "autorizacion_model": {
+                    "module": "Autorizaciones",
+                    "model": "AutorizacionesModel",
+                    "alias": "m_autorizaciones"
                 }
             }],
         "events": [{

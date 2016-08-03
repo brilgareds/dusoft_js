@@ -28,6 +28,11 @@
                     "module": "Terceros/Proveedores",
                     "model": "ProveedoresModel",
                     "alias": "m_proveedores"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
                 }
             }],
         "events": [{

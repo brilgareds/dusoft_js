@@ -47,10 +47,16 @@ define(["angular",
                 enableHighlighting:true,
                 size:'sm',
                 columnDefs: [
-                    {field: 'codigo_lote', displayName: 'Lote', cellClass: "txt-center"},
-                    {field: 'cantidad', displayName: 'Cantidad'},
+                    {field: 'codigo_lote', displayName: 'Lote'},
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
-                    {field: 'cantidadNueva', displayName: 'Nueva Cantidad', 
+                    {field: 'cantidad', displayName: 'Cantidad'},
+                    ///{field: 'disponible', displayName: 'Disponible'},
+                    {field: 'cantidadNueva', displayName: 'Restar Cantidad', 
+                        cellTemplate: ' <div class="col-xs-12">\
+                                            <input  type="text" ng-model="row.entity.cantidadARestar" ng-disabled="row.entity.cantidad == 0" validacion-numero-entero class="form-control grid-inline-input" />\
+                                        </div>'
+                    },
+                    {field: 'cantidadNueva', displayName: 'Sumar Cantidad', 
                         cellTemplate: ' <div class="col-xs-12">\
                                             <input  type="text" ng-model="row.entity.cantidadNueva" validacion-numero-entero class="form-control grid-inline-input" />\
                                         </div>'
@@ -158,6 +164,12 @@ define(["angular",
              */
             self.actualizarExistenciasProducto = function(callback){
                 var lotes = $scope.rootExistencias.lotes;
+                
+                for(var i in lotes){
+                    var lote = lotes[i];
+                    var cantidad = lote.getCantidad() + parseInt(lote.getNuevaCantidad()) - parseInt(lote.getCantidadARestar());
+                    lote.setNuevaCantidad(cantidad);
+                }
 
                 var obj = {
                     session: $scope.rootExistencias.session,
@@ -172,8 +184,14 @@ define(["angular",
                     }
                 };
                 Request.realizarRequest(URL.CONSTANTS.API.PRODUCTOS.ACTUALIZAR_EXISTENCIAS, "POST", obj, function(data) {
+                    
                     if (data.status !== 200)  {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        for(var i in lotes){
+                            var lote = lotes[i];
+                            lote.setNuevaCantidad(0);
+                            lote.setCantidadARestar(0);
+                        }
                     } else {
                         //$scope.onCerrar();
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Se actualizaron las existencias correctamente");

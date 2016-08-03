@@ -11,6 +11,7 @@ requirejs.config({
         models:"js/models",
         directive:"js/directive",
         bootstrap:"../../javascripts/bootstrap/bootstrap",
+        bootstrapLib:"../../javascripts/bootstrap/bootstrap.min",
         facturacion: "../facturacion/js/models/",
         nggrid:"../../javascripts/angular/ng-grid",
         jquery:"../../javascripts/jquery",
@@ -24,7 +25,9 @@ requirejs.config({
         socket:"../includes/socket/socket.io/socket.io",
         socketservice:"../includes/socket/socket",
         uiselect2:"../../javascripts/uiselect2",
-        select:"../../javascripts/select2"
+        select:"../../javascripts/select2",
+        desktopNotify:"../../javascripts/notifications/desktop-notify-min",
+        webNotification:"../../javascripts/notifications/angular-web-notification"
     },
     shim: {
         "angular": {
@@ -34,8 +37,11 @@ requirejs.config({
         "route": {
             deps: ["angular"]
         },
-        "bootstrap":{
+        "bootstrapLib":{
             deps:["angular"]
+        },
+        "bootstrap":{
+            deps:["angular", "bootstrapLib"]
         },
         "nggrid":{
             deps:["jquery", "angular"]
@@ -66,6 +72,12 @@ requirejs.config({
         },
         "uiselect2":{
             deps:["angular","select"]
+        },
+        "desktopNotify":{
+            deps:["angular"]
+        },
+        "webNotification":{
+            deps:["desktopNotify"]
         }
     }
 });

@@ -14,6 +14,13 @@ var multipart = require('connect-multiparty');
 //var jsreport = require("jsreport");
 
 var accounting = require("accounting");
+var cacheKey = "dusoft";
+
+
+if(process.argv.indexOf("cacheKey") !== -1){ 
+    cacheKey = process.argv[process.argv.indexOf("cacheKey") + 1]; 
+    console.log("Limpiar cache con llave ", cacheKey);
+} 
 
 
 /*=========================================
@@ -32,6 +39,10 @@ G.Q = require('q');
 G.accounting = accounting;
 G.XlsParser =  require("./lib/XlsParser");
 G.moment = require("moment");
+
+var events = require('events');
+G.eventEmitter = new events.EventEmitter();
+
 //G.moment = G.moment().format();
 
 G.soap = require('soap');
@@ -120,7 +131,8 @@ var cluster = require('cluster'),
         sub = redis.createClient(),
         client = redis.createClient();
 
-G.cronJob = require('cron-cluster')(client).CronJob
+G.cronJob = require('cron-cluster')(client).CronJob;
+G.redis = client;
 
 if (cluster.isMaster) {
 
@@ -179,6 +191,12 @@ if (cluster.isMaster) {
     /*=========================================
      * Configuracion Express.js
      * =========================================*/
+    app.use(express.compress({
+        threshold : 0
+    }));
+    
+    
+    var tiempo = 10800000;
     app.set('port', process.env.PORT || G.settings.server_port);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
@@ -195,8 +213,13 @@ if (cluster.isMaster) {
     app.use(G.utils.validar_request());
     app.use(G.auth.validate());
     app.use(app.router);
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
+    //app.use(express.static(path.join(__dirname, 'public')));
     app.use(express.static(path.join(__dirname, 'files')));
+    
+    
+   
+    
 
     /*=========================================
      * error handlers
@@ -243,7 +266,7 @@ if (cluster.isMaster) {
         res.redirect('/dusoft_duana/login');
     });
     
-    
+
     //Permite hacer render de reglas especificas de css para el entorno de pruebas
     app.all('/stylesheets/style.css', function(req, res, next){
         console.log("params for query ", req.query);
@@ -262,6 +285,36 @@ if (cluster.isMaster) {
         
                 
     });
+    
+    //Obtiene contenido estatico basado en la llave de cache
+    app.all("*",function(req, res, next){
+        var url = req.protocol + '://' + req.get('host') + req.originalUrl;
+
+        if(req.originalUrl.match(/[^/]+(jpg|png|gif|html|css|js)$/)){
+            
+            //La validacion del archivo del main-dev se delega en otro router
+            if(!req.originalUrl.match(/main-dev/g)){
+                res.redirect(req.originalUrl+ "?c="+cacheKey);
+                return;
+            }
+
+        }
+        
+        next();
+
+    });
+    
+    //Si el servidro esta en modo produccion se sobreescribe el mand-dev.js por el de produccion
+    app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
+        
+        if(!G.program.prod ) {
+           next();
+           return;
+        } else {
+            var url = req.protocol + '://' + req.get('host') + req.originalUrl;
+            res.redirect(url.replace("main-dev", "dist/main")+ "?c="+cacheKey);
+        }
+    });
 
     process.on('SIGINT', function() {
         io.sockets.emit('onDisconnect');
@@ -275,6 +328,9 @@ if (cluster.isMaster) {
         process.exit(0);
 
     });
+    
+    //Notificaciones 
+    container.get("c_notificaciones");
 
     console.log('Express server listening on port _______________________________ ' + app.get('port') + ' in Dir ' + __dirname);
 

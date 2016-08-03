@@ -6,9 +6,10 @@ define(["angular", "js/models"], function(angular, models) {
 
 
         function Caja(numero, tipo) {
+            console.log("caja argumento ", tipo);
             this.valida = false;
             this.numero = numero || 0;
-            this.tipo = tipo || undefined;
+            this.tipo = tipo || 0;
         }
         
         Caja.prototype.setNumero = function(numero) {
@@ -29,6 +30,7 @@ define(["angular", "js/models"], function(angular, models) {
         
         Caja.prototype.setTipo = function(tipo) {
             this.tipo = tipo;
+            return this;
         };
         
         Caja.prototype.getTipo = function(cadena) {

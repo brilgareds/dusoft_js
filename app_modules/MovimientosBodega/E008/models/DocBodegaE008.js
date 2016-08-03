@@ -512,7 +512,8 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
 };
 
 // Consultar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback) {
+DocuemntoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia,
+                                                                                justificacion, justificacion_auditor, observacionSeparador, observacionAuditor, callback) {
 
     var that = this;
 
@@ -530,11 +531,11 @@ DocuemntoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = 
         } else {
             if (justificaciones.length > 0) {    
                 // Modificar
-                that.actualizar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback);
+                that.actualizar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, observacionSeparador, observacionAuditor, callback);
                 return;
             } else {
                 // Ingrsar
-                that.ingresar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback);
+                that.ingresar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, observacionSeparador, observacionAuditor, callback);
                 return;
             }
         }
@@ -559,14 +560,15 @@ DocuemntoBodegaE008.prototype.consultar_justificaciones_temporales_pendientes = 
 
 
 // Ingresar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.ingresar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback) {
+DocuemntoBodegaE008.prototype.ingresar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente,
+justificacion, existencia, justificacion_auditor, observacionSeparador, observacionAuditor, callback) {
 
     console.log('========= ingresar_justificaciones_temporales_pendientes =========');
 
-    var sql = " INSERT INTO inv_bodegas_movimiento_tmp_justificaciones_pendientes ( doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, observacion, existencia, justificacion_auditor ) \
-                VALUES ( :1, :2, :3, :4, :5, :6, :7 ); ";
+    var sql = " INSERT INTO inv_bodegas_movimiento_tmp_justificaciones_pendientes ( doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, observacion, existencia, justificacion_auditor,observacion_justificacion_separador, observacion_justificacion_auditor ) \
+                VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ); ";
 
-    G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto, 4:cantidad_pendiente, 5:justificacion, 6:existencia, 7:justificacion_auditor}).
+    G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto, 4:cantidad_pendiente, 5:justificacion, 6:existencia, 7:justificacion_auditor, 8:observacionSeparador, 9:observacionAuditor}).
     then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
@@ -576,14 +578,27 @@ DocuemntoBodegaE008.prototype.ingresar_justificaciones_temporales_pendientes = f
 };
 
 // Actualizar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback) {
+DocuemntoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente,
+    existencia, justificacion, justificacion_auditor, observacionSeparador, observacionAuditor, callback) {
 
     console.log('========= actualizar_justificaciones_temporales_pendientes =========');
-
-    var sql = " UPDATE inv_bodegas_movimiento_tmp_justificaciones_pendientes SET cantidad_pendiente = :4 , existencia = :5, observacion = :6, justificacion_auditor = :7  \
-                WHERE doc_tmp_id = :1 and usuario_id = :2 and codigo_producto = :3 ; ";
+    var sqlAux = "";
+    var params = {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto, 4:cantidad_pendiente, 5:existencia, 6:justificacion, 7:justificacion_auditor};
     
-   G.knex.raw(sql, {1:doc_tmp_id, 2:usuario_id, 3:codigo_producto, 4:cantidad_pendiente, 5:existencia, 6:justificacion, 7:justificacion_auditor}).
+    if(observacionSeparador.length > 0){
+        sqlAux = " ,observacion_justificacion_separador = :8 ";
+        params["8"] =  observacionSeparador;
+    }
+    
+    if(observacionAuditor.length > 0){
+        sqlAux += " ,observacion_justificacion_auditor = :9 ";
+        params["9"] = observacionAuditor;
+    }
+    
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_justificaciones_pendientes SET cantidad_pendiente = :4 , existencia = :5, observacion = :6, justificacion_auditor = :7 "+sqlAux+
+                "WHERE doc_tmp_id = :1 and usuario_id = :2 and codigo_producto = :3 ; ";
+    
+   G.knex.raw(sql, params).
    then(function(resultado){
        callback(false, resultado.rows, resultado);
    }).catch(function(err){
@@ -879,7 +894,8 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
                 to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido,\
                 '1' as tipo_pedido,\
-                '' as farmacia_id\
+                '' as farmacia_id,\
+                j.observacion as descripcion_pedido\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -910,7 +926,8 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
                 to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido,\
                 '2' as tipo_pedido,\
-                j.farmacia_id\
+                j.farmacia_id,\
+                j.observacion as descripcion_pedido\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -994,8 +1011,8 @@ function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_i
 function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, transaccion, callback) {
 
 
-    var sql = " INSERT INTO inv_bodegas_movimiento_justificaciones_pendientes ( empresa_id, prefijo, numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor ) \
-                SELECT :3 AS empresa_id, :4 AS prefijo, :5 AS numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\
+    var sql = " INSERT INTO inv_bodegas_movimiento_justificaciones_pendientes ( empresa_id, prefijo, numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor, observacion_justificacion_separador, observacion_justificacion_auditor ) \
+                SELECT :3 AS empresa_id, :4 AS prefijo, :5 AS numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor, observacion_justificacion_separador, observacion_justificacion_auditor  FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\
                 WHERE doc_tmp_id = :1 AND usuario_id = :2 ;  ";
 
     
@@ -1272,6 +1289,24 @@ DocuemntoBodegaE008.prototype.detallePedidoFarmaciaDocumento = function(obj, cal
     });
 };
 
+
+/**
+ * @author Eduar Garcia 
+ * @fecha  22/06/2016
+ * +Descripcion Permite obtener las jusitificaciones que se listan en separacion o auditoria
+ * @param {type} callback
+ * @returns {undefined} */
+DocuemntoBodegaE008.prototype.obtenerJustificaciones = function(obj, callback) {
+   
+    //var sql = "SELECT * FROM justificaciones_bodega";
+    G.knex.select().table("justificaciones_bodega").where({empresa_id:obj.empresa_id}).then(function(resultado){       
+       
+        callback(false, resultado);   
+    }).catch(function(err) { 
+       
+        callback(err);
+    });
+};
 
 
 

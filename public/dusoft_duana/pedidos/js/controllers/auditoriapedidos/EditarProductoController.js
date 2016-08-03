@@ -13,12 +13,12 @@ define(["angular", "js/controllers",
         '$modalInstance', 'EmpresaPedido', 'Cliente',
         'PedidoAuditoria', 'API', "socket", "AlertService",
         "producto", "Usuario", "documento", "LoteProductoPedido", "productos",
-        "documento_despacho", "Caja", "$modal",
+        "documento_despacho", "Caja", "$modal", "AuditoriaDespachoService",
         function($scope, $rootScope, Request,
                 $modalInstance, Empresa, Cliente,
                 PedidoAuditoria, API, socket, AlertService,
                 producto, Usuario, documento, LoteProductoPedido, productos,
-                documento_despacho, Caja, $modal) {
+                documento_despacho, Caja, $modal, AuditoriaDespachoService) {
 
             $scope.rootEditarProducto = {};
             $scope.rootEditarProducto.producto = producto;
@@ -29,16 +29,7 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.lotes = [];
             $scope.rootEditarProducto.seleccionados = [];
             $scope.rootEditarProducto.justificacionAuditor;
-
-            $scope.justificaciones = [
-                {descripcion: "No hay fisico"},
-                {descripcion: "No hay disponible"},
-                {descripcion: "Averiado"},
-                {descripcion: "Proximo A Vencer"},
-                {descripcion: "Trocado"},
-                {descripcion: "Por presentacion"}
-            ];
-
+            $scope.rootEditarProducto.observacionJustificacion = "";
 
             var that = this;
 
@@ -48,7 +39,7 @@ define(["angular", "js/controllers",
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-            $scope.rootEditarProducto.caja = Caja.get();
+            $scope.rootEditarProducto.caja = Caja.get(0, 0);
 
             $scope.rootEditarProducto.validacionlote = {valido: true};
             $scope.rootEditarProducto.validacionproducto = {
@@ -58,7 +49,22 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.itemValido = true;
 
             $modalInstance.opened.then(function() {
-                that.refrescarProducto();
+                
+                var parametros =  {
+                    empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                    session:$scope.session
+                };
+                
+                AuditoriaDespachoService.obtenerJustificaciones(parametros,function(resultado){
+                    if(resultado.status === 200){
+                        $scope.justificaciones = resultado.obj.justificaciones;
+                        that.refrescarProducto();
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
+                    }
+                });
+                
+                
 
             });
 
@@ -236,6 +242,30 @@ define(["angular", "js/controllers",
                 }
 
             };
+            
+            $scope.gridJustificaciones = {
+                data: 'justificaciones',
+                showFilter: true,
+                enableRowSelection: true,
+                multiSelect:false,
+                columnDefs: [
+                    {field: 'descripcion', displayName: 'Motivo'}
+                    /*{field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
+                        cellTemplate: ' <div class="row">\n\
+                                         <button class="btn btn-default btn-xs"   ng-click="justificacionSeleccionada(row.entity)">\n\
+                                             <span class="glyphicon glyphicon-search"></span>\n\
+                                         </button>\n\
+                                     </div>'
+                    }*/
+
+                ],
+                beforeSelectionChange: function(row, event) {
+                    
+                    $scope.justificacionSeleccionada(row.entity);
+                    return true;
+
+                }
+            }
 
 
             $scope.getClass = function(row) {
@@ -408,7 +438,7 @@ define(["angular", "js/controllers",
                 var obj = {valido: true};
                 var cantidad_ingresada = parseInt(lote.cantidad_ingresada);
                 //var cantidad_ingresada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
-                var cantidad_por_lote = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionadaPorLote(lote.codigo_lote);
+                var cantidad_por_lote = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionadaPorLote(lote.codigo_lote, lote.fecha_vencimiento);
 
                 obj.cantidad_ingresada = cantidad_ingresada;
 
@@ -437,6 +467,7 @@ define(["angular", "js/controllers",
                 }
 
                 if (cantidad_por_lote > lote.existencia_actual) {
+                    //console.log("cantidad "+ cantidad_por_lote, " lote ", lote.existencia_actual);
                     obj.valido = false;
                     obj.mensaje = "La cantidad ingresada, debe ser menor al stock de la bodega!!.";
                     return obj;
@@ -540,7 +571,9 @@ define(["angular", "js/controllers",
                         justificacion_auditor: $scope.rootEditarProducto.producto.lote.justificacion_auditor,
                         existencia: 0,
                         usuario_id: $scope.rootEditarProducto.documento.separador.usuario_id,
-                        justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador
+                        justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador,
+                        observacion_justificacion_auditor: $scope.rootEditarProducto.observacionJustificacion
+
                     };
                 }
                 
@@ -578,7 +611,7 @@ define(["angular", "js/controllers",
                 
               
                 var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[index];
-                console.log(" lote ::::::::::______------------ ", lote);
+                //console.log(" lote ::::::::::______------------ ", lote);
 
                 if (lote.seleccionado){
 
@@ -604,7 +637,8 @@ define(["angular", "js/controllers",
                             justificacion_auditor: $scope.rootEditarProducto.producto.lote.justificacion_auditor,
                             existencia: lote.existencia_actual,
                             usuario_id: $scope.rootEditarProducto.documento.separador.usuario_id,
-                            justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador
+                            justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador,
+                            observacion_justificacion_auditor: $scope.rootEditarProducto.observacionJustificacion
                         };
                     }
 
@@ -654,8 +688,8 @@ define(["angular", "js/controllers",
                 return cantidad;
             };
 
-            $scope.justificacionSeleccionada = function(){
-                $scope.rootEditarProducto.producto.lote.justificacion_auditor = $scope.rootEditarProducto.justificacionAuditor.descripcion;
+            $scope.justificacionSeleccionada = function(justificacion){
+                $scope.rootEditarProducto.producto.lote.justificacion_auditor = justificacion.descripcion;
             };
             
             
@@ -803,7 +837,7 @@ define(["angular", "js/controllers",
                                 <button class="btn btn-warning" ng-click="confirmar()" ng-disabled="" >Si</button>\
                             </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance, caja) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance, caja) {
 
                         $scope.caja = caja;
                         $scope.confirmar = function() {
@@ -815,7 +849,7 @@ define(["angular", "js/controllers",
                             $modalInstance.close();
                         };
 
-                    },
+                    }],
                     resolve: {
                         caja: function() {
                             return caja;

@@ -321,11 +321,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     size: 'lg',
                     templateUrl:'views/movimientos/seleccionEmpresa.html',
                     scope: $scope,
-                        controller: function($scope, $modalInstance) {
+                        controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                             $scope.onCerrar = function(acepto) {
                                 $modalInstance.close();
                             };
-                        }
+                        }]
                     };
 
                   var modalInstance = $modal.open($scope.opts);

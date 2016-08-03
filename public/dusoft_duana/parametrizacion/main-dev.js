@@ -10,6 +10,7 @@ requirejs.config({
         services:"js/services",
         directive: "js/directive",
         bootstrap: "../../javascripts/bootstrap/bootstrap",
+        bootstrapLib:"../../javascripts/bootstrap/bootstrap.min",
         nggrid: "../../javascripts/angular/ng-grid",
         jquery: "../../javascripts/jquery",
         treemenu: "../includes/menu/myTree",
@@ -21,7 +22,9 @@ requirejs.config({
         socketservice: "../includes/socket/socket",
         uiselect2: "../../javascripts/select",
         storage: "../../javascripts/angular/storage",
-        dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone"
+        dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone",
+        desktopNotify:"../../javascripts/notifications/desktop-notify-min",
+        webNotification:"../../javascripts/notifications/angular-web-notification"
     },
     shim: {
         "angular": {
@@ -33,6 +36,9 @@ requirejs.config({
         },
         "bootstrap": {
             deps: ["angular"]
+        },
+        "bootstrapLib":{
+            deps:["angular"]
         },
         "nggrid": {
             deps: ["jquery", "angular"]
@@ -60,6 +66,12 @@ requirejs.config({
         },
         "dragndropfile":{
             deps:["angular"]
+        }, 
+        "desktopNotify":{
+            deps:["angular"]
+        },
+        "webNotification":{
+            deps:["desktopNotify"]
         }
     }
 });

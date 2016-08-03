@@ -1,11 +1,12 @@
 //main app module
- define(["angular", "route", "bootstrap","js/controllers",
+ define(["angular", "route", "bootstrap", "bootstrapLib", "js/controllers",
   "js/services", "js/models", "nggrid",
   "js/directive", "controllers/movimientos/productoscontroller","controllers/movimientos/empresacontroller", 
   "models/EmpresaKardex", "includes/menu/menucontroller",  "url", "includes/header/HeaderController",
   "loader","models/ProductoMovimiento",  "includes/alert/Alert", "i18n", "httpinterceptor", "storage",
   "includes/classes/Usuario", "socketservice", "includes/http/Request","uiselect2",
-  "includes/classes/CentroUtilidad","includes/classes/Bodega", "controllers/consultar_existencias/ConsultarExistenciaCcontroller"
+  "includes/classes/CentroUtilidad","includes/classes/Bodega", "controllers/consultar_existencias/ConsultarExistenciaCcontroller",
+  "webNotification"
   ], function(angular,Agencia){
   /* App Module and its dependencies */
       var Kardex = angular.module('Kardex', [
@@ -18,7 +19,8 @@
           'Url',
           "services",
           'LocalStorageModule',
-          'ui.select2'
+          'ui.select2',
+          'angular-web-notification'
       ]); 
       
       Kardex.urlRouterProvider;

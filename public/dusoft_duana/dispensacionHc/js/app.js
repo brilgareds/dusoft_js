@@ -55,7 +55,8 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'nvd3ChartDirectives'
+        'nvd3ChartDirectives',
+        'angular-web-notification'
     ]);
 
     dispensacionHc.urlRouterProvider;

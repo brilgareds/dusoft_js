@@ -180,6 +180,7 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoCliente",numero_pedido);
             } 
      }).then(function(resultado){         
+         console.log(" resultado de autorizar pedido ", resultado, " numero de pedido ", numero_pedido, " tipo pedido ", tipoPedido);
          if(resultado[0].numero_productos !== resultado[0].numero_denegados ){
              if(resultado[0].numero_pendientes === '0' ){
                   envio=true;
@@ -286,6 +287,7 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoCliente",numero_pedido);
             } 
      }).then(function(resultado){
+         console.log(" resultado de autorizar pedido ", resultado, " numero de pedido ", numero_pedido, " tipo pedido ", tipoPedido);
           if(resultado[0].numero_productos !== resultado[0].numero_denegados){
             if(resultado[0].numero_pendientes === '0' ){
                 envio=true;

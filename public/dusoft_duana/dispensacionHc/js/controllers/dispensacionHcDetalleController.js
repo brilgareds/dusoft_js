@@ -537,12 +537,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     templateUrl: 'views/dispensacionHc/lotesMedicamentosFormulados.html',
                     scope: $scope,
                     windowClass: 'app-modal-window-xlg',
-                    controller: function($scope, $modalInstance) {
+                    controller:['$scope', '$modalInstance', function($scope, $modalInstance) {
                         $scope.cerrarVentanaDispensacionFormula = function() {
                             that.consultarMedicamentosTemporales();
                             $modalInstance.close();
                         };
-                    }                         
+                    }]                 
                 };
             var modalInstance = $modal.open($scope.opts);   
             

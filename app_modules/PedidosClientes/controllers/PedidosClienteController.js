@@ -670,7 +670,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     }).then(function(resultado) {
        
         if (resultado.rowCount === 0) {
-            throw {msj:'Error al registrar el producto', status:403};;
+            throw {msj:'Error al registrar el producto', status:403};
         } else {
             res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
         }

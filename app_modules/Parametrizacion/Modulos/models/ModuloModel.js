@@ -747,6 +747,7 @@ function __validarCreacionVariable(that, variable, callback) {
 
 };
 
+
 //funcion recursiva para actualizar listado de empresas_modulos
 function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback) {
 
@@ -775,7 +776,7 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, ca
         } else {
             empresas_modulos.splice(0, 1);
 
-            if (resultado.rows.length > 0 && resultado.rows[0].id) {
+            if (resultado && resultado.rows.length > 0 && resultado.rows[0].id) {
                 ids.push({modulos_empresas_id: resultado.rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
             }
             __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback);
@@ -785,12 +786,13 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, ca
         empresas_modulos.splice(0, 1);
 
         //se agrega el id del rol_modulo creado
-        if (resultado.rows.length > 0 && resultado.rows[0].id) {
+        if (resultado && resultado.rows.length > 0 && resultado.rows[0].id) {
             ids.push({modulos_empresas_id: resultado.rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
         }
 
         __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback);
     }).catch(function(err){
+        console.log("error actualizando modulo", err);
         callback(err);
     });
 

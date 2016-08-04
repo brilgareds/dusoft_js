@@ -707,7 +707,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
                             $scope.eliminar_producto();
@@ -718,7 +718,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             $modalInstance.close();
                         };
 
-                    },
+                    }],
                     resolve: {
                         producto_eliminar: function() {
                             return $scope.producto_eliminar;
@@ -851,11 +851,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                             <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                         </div>',
                             scope: $scope,
-                            controller: function($scope, $modalInstance) {
+                            controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                                 $scope.close = function() {
                                     $modalInstance.close();
                                 };
-                            }
+                            }]
                         };
                         var modalInstance = $modal.open($scope.opts);
                     },500);

@@ -393,6 +393,7 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
     G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("erro generado ", err);
        callback(err);
     });
 

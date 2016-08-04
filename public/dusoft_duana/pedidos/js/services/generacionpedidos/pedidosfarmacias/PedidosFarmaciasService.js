@@ -184,7 +184,7 @@ define(["angular", "js/services"], function(angular, services) {
                     dialogFade: false,
                     keyboard: true,
                     templateUrl: 'views/generacionpedidos/pedidosfarmacias/redactaremail.html',
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                         $scope.asunto = 'Pedido No.' + pedido.get_numero_pedido();
                         $scope.mensaje = 'Pedido con destino a  '+ pedido.getFarmaciaDestino().getNombre();
                         $scope.nombreAdjunto = "Se enviara el email con el pdf adjunto";
@@ -216,7 +216,7 @@ define(["angular", "js/services"], function(angular, services) {
                             callback(false, false);
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open(opts);
             };

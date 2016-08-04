@@ -1816,3 +1816,28 @@ IS '0 => ''cliente'', 1 => ''farmacia''';
 
 
 
+ALTER TABLE "public"."inv_bodegas_movimiento_tmp_justificaciones_pendientes"
+  ADD COLUMN "observacion_justificacion_separador" TEXT;
+
+COMMENT ON COLUMN "public"."inv_bodegas_movimiento_tmp_justificaciones_pendientes"."observacion_justificacion_separador"
+IS 'Observacion realizada por el separador de pedidos de clientes y farmacias';
+
+
+ALTER TABLE "public"."inv_bodegas_movimiento_tmp_justificaciones_pendientes"
+  ADD COLUMN "observacion_justificacion_auditor" TEXT;
+
+COMMENT ON COLUMN "public"."inv_bodegas_movimiento_tmp_justificaciones_pendientes"."observacion_justificacion_auditor"
+IS 'Observacion realizada por el auditor de pedidos de clientes y farmacias';
+
+
+ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
+  ADD COLUMN "observacion_justificacion_separador" TEXT;
+
+COMMENT ON COLUMN "public"."inv_bodegas_movimiento_justificaciones_pendientes"."observacion_justificacion_separador"
+IS 'Observacion realizada por el separador de pedidos de clientes y farmacias';
+
+ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
+  ADD COLUMN "observacion_justificacion_auditor" TEXT;
+
+COMMENT ON COLUMN "public"."inv_bodegas_movimiento_justificaciones_pendientes"."observacion_justificacion_auditor"
+IS 'Observacion realizada por el auditor de pedidos de clientes y farmacias';

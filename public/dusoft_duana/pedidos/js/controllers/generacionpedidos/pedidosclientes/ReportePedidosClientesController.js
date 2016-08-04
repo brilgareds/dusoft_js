@@ -98,7 +98,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     keyboard: true,
                     templateUrl: 'views/generacionpedidos/pedidosclientes/redactaremail.html',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.validar_envio_email = function() {
 
@@ -136,7 +136,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             $scope.datos_view.email_attachment_name = '';
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

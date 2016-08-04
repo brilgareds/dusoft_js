@@ -173,11 +173,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                                     <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                     </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
 
                 var modalInstance = $modal.open($scope.opts);

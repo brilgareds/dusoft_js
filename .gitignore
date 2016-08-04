@@ -2,7 +2,6 @@ nbproject
 node_modules
 newrelic_agent.log
 package.sublime-workspace
-dist/
 public/reports/*
 data/
 logs/

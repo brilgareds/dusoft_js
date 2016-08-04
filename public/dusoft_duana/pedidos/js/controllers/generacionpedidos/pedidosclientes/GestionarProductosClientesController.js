@@ -158,11 +158,13 @@ define(["angular", "js/controllers",
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
-                    AlertService.mostrarMensaje("success", data.msj);
+                   
 
                     if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", data.msj);
                         callback(true);
                     } else {
+                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         callback(false);
                     }
                 });
@@ -248,6 +250,7 @@ define(["angular", "js/controllers",
 
             // Productos
             $scope.seleccionar_tipo_producto = function(tipo_producto) {
+                
                 $scope.datos_form.tipo_producto = tipo_producto;
                 $scope.datos_form.pagina_actual = 1;
 
@@ -271,6 +274,9 @@ define(["angular", "js/controllers",
                     $scope.datos_form.seleccion_tipo_producto = "- Insumos -";
                 if ($scope.datos_form.tipo_producto === '5')
                     $scope.datos_form.seleccion_tipo_producto = "- Neveras -";
+                
+                if ($scope.datos_form.tipo_producto === '8')
+                    $scope.datos_form.seleccion_tipo_producto = "- Nutricional -";
             };
 
             $scope.buscador_productos = function(ev, tipo) {
@@ -392,8 +398,7 @@ define(["angular", "js/controllers",
                     producto.set_cantidad_disponible(data.cantidad_disponible);
 
                     $scope.Empresa.set_productos(producto);
-
-
+                    
                 });
 
             };
@@ -430,8 +435,8 @@ define(["angular", "js/controllers",
              * @param {type} producto
              */
             $scope.solicitar_producto = function(producto) {
-
-
+               
+            if(producto.precio_venta > 0){
                 /*  var val = producto.precio_venta;
                  /*   var clean = val.replace(/[^0-9\.]/g, '');
                  var decimalCheck = clean.split('');*/
@@ -440,28 +445,28 @@ define(["angular", "js/controllers",
                 // decimalCheck[1] = decimalCheck[1].slice(0, 4);
                 //  clean = decimalCheck[0] + '.' + decimalCheck[1];
 
-                $scope.datos_form.producto_seleccionado = producto;
+                    $scope.datos_form.producto_seleccionado = producto;
 
-                $scope.Pedido.set_productos(producto);
+                    $scope.Pedido.set_productos(producto);
 
-                $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+                    $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
 
-                if ($scope.datos_form.tipo_producto === '') {
-                    $scope.datos_form.tipo_producto = producto.get_tipo_producto();
-                    $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
-                }
+                    if ($scope.datos_form.tipo_producto === '') {
+                        $scope.datos_form.tipo_producto = producto.get_tipo_producto();
+                        $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
+                    }
 
-                if ($scope.Pedido.get_numero_pedido() > 0) {
+                    if ($scope.Pedido.get_numero_pedido() > 0) {
 
-                    that.gestionar_pedidos();
-                } else {
+                        that.gestionar_pedidos();
+                    } else {
 
-                    that.gestionar_cotizaciones();
-                }
+                        that.gestionar_cotizaciones();
+                    }
 
-                /*}else{
-                 AlertService.mostrarMensaje("danger", "El tipo de valor es errado");
-                 }*/
+               }else{
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta debe ser mayor a cero (0)");
+               }
             };
 
             $scope.validarHtml = function(html) {
@@ -477,13 +482,15 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 enableColumnResize: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "120",
+                    {field: 'codigo_producto', displayName: 'Código', width: 120,
+                        
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
-                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
-                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
-                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
-                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span class="label label-success" ng-show="row.entity.get_tipo_producto() == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.get_tipo_producto() == 2">A</span>\
+                                                <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 3">C</span>\
+                                                <span class="label label-warning" ng-show="row.entity.get_tipo_producto() == 4">I</span>\
+                                                <span class="label label-default" ng-show="row.entity.get_tipo_producto() == 5">Ne</span>\
+                                                <span class="label label-info" ng-show="row.entity.get_tipo_producto() == 8">Nu</span>\
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
                                                 <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
@@ -619,15 +626,13 @@ define(["angular", "js/controllers",
                     templateUrl: 'views/generacionpedidos/pedidosclientes/formularioBusquedaAvanzadaProducto.html',
                     scope: $scope,
                     height: 300,
-                    controller: function($scope, $modalInstance) {
-
-
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.cerrarVentanaBusquedaAvanzada = function() {
 
                             $modalInstance.close();
                         };
-                    }
+                    }]
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

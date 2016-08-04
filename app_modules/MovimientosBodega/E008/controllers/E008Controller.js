@@ -850,9 +850,9 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
     var justificacion_auditor = args.documento_temporal.justificacion_auditor;
     var existencia = args.documento_temporal.existencia;
     var usuario_id = req.session.user.usuario_id;
+    var observacionSeparador = args.documento_temporal.observacion_justificacion_separador || "";
 
-    that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
-
+    that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, observacionSeparador, "", function(err, rows, result) {
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
             return;
@@ -1215,8 +1215,11 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
         var justificacion = args.documento_temporal.justificacion.justificacion;
         var justificacion_auditor = args.documento_temporal.justificacion.justificacion_auditor;
         var existencia = args.documento_temporal.justificacion.existencia;
+        var observacionAuditor = args.documento_temporal.justificacion.observacion_justificacion_auditor || "";
+        var observacionSeparador = args.documento_temporal.justificacion.observacion_justificacion_separador || "";
 
-        that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
+        that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, 
+        justificacion, justificacion_auditor, observacionSeparador, observacionAuditor, function(err, rows, result) {
             if (err || result.rowCount === 0) {
                 res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
                 return;
@@ -2517,6 +2520,367 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
 
 };
 
+
+E008Controller.prototype.obtenerDocumento = function(req, res) {
+    
+    var that = this;
+    var args = req.body.data;
+
+    if (!args.documento_temporal) {
+          res.send(G.utils.r(req.url, 'Variable (documento_temporal) no esta definida', 404, {}));
+          return;
+    }
+    
+    if (!args.documento_temporal.empresa_id) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (!args.documento_temporal.prefijo) {
+        res.send(G.utils.r(req.url, 'Se requiere el prefijo', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (!args.documento_temporal.numero) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    
+    var empresa_id = args.documento_temporal.empresa_id;
+    var prefijo = args.documento_temporal.prefijo;
+    var numero = args.documento_temporal.numero;
+ 
+    var obj = {
+        empresa_id: empresa_id,
+        prefijo: prefijo,
+        numero: numero
+               
+    };
+     
+     G.Q.ninvoke(that.m_e008,'obtenerDocumento', obj).then(function(resultado){ 
+         
+         if(resultado.length>0){
+             
+            return res.send(G.utils.r(req.url, 'Documento existente', 200, {documento_temporal: resultado}));
+         
+         }else{
+             
+            return res.send(G.utils.r(req.url, 'No se encuentra el documento ', 404, {documento_temporal: {}}));   
+          
+         }
+         
+     }).fail(function(err){ 
+         
+             res.send(G.utils.r(req.url, 'Error en la consulta ', 500, {documento_temporal: {}}));
+       
+    }).done();
+   
+};
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para listar los despachos
+ *              Auditados
+ */
+E008Controller.prototype.listarDespachosAuditados = function(req, res) {
+  
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (DespachosAuditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+    var fechaInicial = args.despachos_auditados.fechaInicial;
+    var fechaFinal = args.despachos_auditados.fechaFinal;
+    var paginaActual = args.despachos_auditados.paginaactual;
+    var registroUnico = args.despachos_auditados.registroUnico;
+
+
+    var obj = {
+        fechaInicial: fechaInicial,
+        fechaFinal: fechaFinal,
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+        paginaActual: paginaActual,
+        registroUnico: registroUnico
+    };
+    
+    G.Q.ninvoke(that.m_e008, 'listarDespachosAuditados', obj).then(function(resultado) {
+
+        return res.send(G.utils.r(req.url, 'Lista de despachos audtados', 200, {despachos_auditados: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado los de despachos', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
+ *              un documento
+ */
+E008Controller.prototype.detalleDocumentoAuditado = function(req, res) {
+   
+    
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (DespachosAuditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+
+
+
+    var obj = {
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+    };
+    
+    G.Q.ninvoke(that.m_e008, 'detalleDocumentoAuditado', obj).then(function(resultado) {
+
+        return res.send(G.utils.r(req.url, 'Detalle de documento auditados', 200, {despachos_auditados: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado el detalle', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
+ *              de los pedidos de un documento
+ */
+E008Controller.prototype.detallePedidoClienteDocumento = function(req, res) {
+   
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (despachos_auditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+
+
+
+    var obj = {
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+    };
+    var status = {};   
+    
+    G.Q.ninvoke(that.m_e008, 'detallePedidoClienteDocumento', obj).then(function(resultado) {
+        
+         var def = G.Q.defer();  
+     
+        if(resultado.length > 0){
+             
+             status.codigo = 200;
+             status.mensaje = 'Detalle de pedidos cliente del documento auditados';
+           
+         }else{
+            
+             status.codigo = 403;
+             status.mensaje = 'El pedido no tiene productos asignados';
+             def.resolve();
+        }
+        res.send(G.utils.r(req.url, status.mensaje, status.codigo, {despachos_auditados: resultado}));
+
+    
+        //return res.send(G.utils.r(req.url, 'Detalle de pedidos cliente del documento auditados', 200, {despachos_auditados: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha  04/02/2016
+ * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
+ *              de los pedidos de un documento
+ */
+E008Controller.prototype.detallePedidoFarmaciaDocumento = function(req, res) {
+   
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.despachos_auditados === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (despachos_auditados) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
+        return;
+    }
+
+    if (args.despachos_auditados.numero === undefined) {
+        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
+        return;
+    }
+   
+    var empresa_id = args.despachos_auditados.empresa_id;
+    var prefijo = args.despachos_auditados.prefijo;
+    var numero = args.despachos_auditados.numero;
+
+    var obj = {
+        prefijo: prefijo.toUpperCase(),
+        numero: numero,
+        empresa_id: empresa_id,
+    };
+    var status = {}; 
+    
+    G.Q.ninvoke(that.m_e008, 'detallePedidoFarmaciaDocumento', obj).then(function(resultado) {
+        
+       var def = G.Q.defer();  
+     
+        if(resultado.length > 0){
+             
+             status.codigo = 200;
+             status.mensaje = 'Detalle del pedido farmacia del documento auditados';
+           
+         }else{
+            
+             status.codigo = 403;
+             status.mensaje = 'El pedido no tiene productos asignados';
+             def.resolve();
+        }
+        res.send(G.utils.r(req.url, status.mensaje, status.codigo, {despachos_auditados: resultado}));
+
+       
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+/**
+ * @author Eduar Garcia
+ * @fecha  22/06/2016
+ * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
+ *              de los pedidos de un documento
+ */
+E008Controller.prototype.obtenerJustificaciones = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    if(!args.movimientos_bodegas || !args.movimientos_bodegas.empresa_id){
+        res.send(G.utils.r(req.url, 'Algunos campos obligatorios no estan definidos', 404, {}));
+        return;
+    }
+    
+    var obj = {
+        empresa_id: args.movimientos_bodegas.empresa_id
+    };
+    
+    G.Q.ninvoke(that.m_e008, 'obtenerJustificaciones', obj).then(function(resultado) {
+        
+        res.send(G.utils.r(req.url, "Listado de justificaciones", 200, {justificaciones: resultado}));
+       
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
+
+    }).done();
+
+};
+
+
+
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS
@@ -2826,342 +3190,6 @@ function __generarPdfDespacho(datos, callback) {
         });
     });
 }
-
-
-E008Controller.prototype.obtenerDocumento = function(req, res) {
-    
-    var that = this;
-    var args = req.body.data;
-
-    if (!args.documento_temporal) {
-          res.send(G.utils.r(req.url, 'Variable (documento_temporal) no esta definida', 404, {}));
-          return;
-    }
-    
-    if (!args.documento_temporal.empresa_id) {
-        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
-        return;
-    }
-    
-    if (!args.documento_temporal.prefijo) {
-        res.send(G.utils.r(req.url, 'Se requiere el prefijo', 404, {pedidos_clientes: []}));
-        return;
-    }
-    
-    if (!args.documento_temporal.numero) {
-        res.send(G.utils.r(req.url, 'Se requiere el numero', 404, {pedidos_clientes: []}));
-        return;
-    }
-    
-    
-    var empresa_id = args.documento_temporal.empresa_id;
-    var prefijo = args.documento_temporal.prefijo;
-    var numero = args.documento_temporal.numero;
- 
-    var obj = {
-        empresa_id: empresa_id,
-        prefijo: prefijo,
-        numero: numero
-               
-    };
-     
-     G.Q.ninvoke(that.m_e008,'obtenerDocumento', obj).then(function(resultado){ 
-         
-         if(resultado.length>0){
-             
-            return res.send(G.utils.r(req.url, 'Documento existente', 200, {documento_temporal: resultado}));
-         
-         }else{
-             
-            return res.send(G.utils.r(req.url, 'No se encuentra el documento ', 404, {documento_temporal: {}}));   
-          
-         }
-         
-     }).fail(function(err){ 
-         
-             res.send(G.utils.r(req.url, 'Error en la consulta ', 500, {documento_temporal: {}}));
-       
-    }).done();
-   
-};
-
-
-
-/**
- * @author Cristian Ardila
- * @fecha  04/02/2016
- * +Descripcion Metodo encargado de invocar el modelo para listar los despachos
- *              Auditados
- */
-E008Controller.prototype.listarDespachosAuditados = function(req, res) {
-  
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.despachos_auditados === undefined) {
-        res.send(G.utils.r(req.url, 'Variable (DespachosAuditados) no esta definida', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.empresa_id === undefined) {
-        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.prefijo === undefined) {
-        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.numero === undefined) {
-        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
-        return;
-    }
-   
-    var empresa_id = args.despachos_auditados.empresa_id;
-    var prefijo = args.despachos_auditados.prefijo;
-    var numero = args.despachos_auditados.numero;
-    var fechaInicial = args.despachos_auditados.fechaInicial;
-    var fechaFinal = args.despachos_auditados.fechaFinal;
-    var paginaActual = args.despachos_auditados.paginaactual;
-    var registroUnico = args.despachos_auditados.registroUnico;
-
-
-    var obj = {
-        fechaInicial: fechaInicial,
-        fechaFinal: fechaFinal,
-        prefijo: prefijo.toUpperCase(),
-        numero: numero,
-        empresa_id: empresa_id,
-        paginaActual: paginaActual,
-        registroUnico: registroUnico
-    };
-    
-    G.Q.ninvoke(that.m_e008, 'listarDespachosAuditados', obj).then(function(resultado) {
-
-        return res.send(G.utils.r(req.url, 'Lista de despachos audtados', 200, {despachos_auditados: resultado}));
-
-    }).fail(function(err) {
-
-        res.send(G.utils.r(req.url, 'Error consultado los de despachos', 500, {despachos_auditados: {}}));
-
-    }).done();
-
-};
-
-
-
-
-/**
- * @author Cristian Ardila
- * @fecha  04/02/2016
- * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
- *              un documento
- */
-E008Controller.prototype.detalleDocumentoAuditado = function(req, res) {
-   
-    
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.despachos_auditados === undefined) {
-        res.send(G.utils.r(req.url, 'Variable (DespachosAuditados) no esta definida', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.empresa_id === undefined) {
-        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.prefijo === undefined) {
-        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.numero === undefined) {
-        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
-        return;
-    }
-   
-    var empresa_id = args.despachos_auditados.empresa_id;
-    var prefijo = args.despachos_auditados.prefijo;
-    var numero = args.despachos_auditados.numero;
-
-
-
-    var obj = {
-        prefijo: prefijo.toUpperCase(),
-        numero: numero,
-        empresa_id: empresa_id,
-    };
-    
-    G.Q.ninvoke(that.m_e008, 'detalleDocumentoAuditado', obj).then(function(resultado) {
-
-        return res.send(G.utils.r(req.url, 'Detalle de documento auditados', 200, {despachos_auditados: resultado}));
-
-    }).fail(function(err) {
-
-        res.send(G.utils.r(req.url, 'Error consultado el detalle', 500, {despachos_auditados: {}}));
-
-    }).done();
-
-};
-
-
-
-
-/**
- * @author Cristian Ardila
- * @fecha  04/02/2016
- * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
- *              de los pedidos de un documento
- */
-E008Controller.prototype.detallePedidoClienteDocumento = function(req, res) {
-   
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.despachos_auditados === undefined) {
-        res.send(G.utils.r(req.url, 'Variable (despachos_auditados) no esta definida', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.empresa_id === undefined) {
-        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.prefijo === undefined) {
-        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.numero === undefined) {
-        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
-        return;
-    }
-   
-    var empresa_id = args.despachos_auditados.empresa_id;
-    var prefijo = args.despachos_auditados.prefijo;
-    var numero = args.despachos_auditados.numero;
-
-
-
-    var obj = {
-        prefijo: prefijo.toUpperCase(),
-        numero: numero,
-        empresa_id: empresa_id,
-    };
-    var status = {};   
-    
-    G.Q.ninvoke(that.m_e008, 'detallePedidoClienteDocumento', obj).then(function(resultado) {
-        
-         var def = G.Q.defer();  
-     
-        if(resultado.length > 0){
-             
-             status.codigo = 200;
-             status.mensaje = 'Detalle de pedidos cliente del documento auditados';
-           
-         }else{
-            
-             status.codigo = 403;
-             status.mensaje = 'El pedido no tiene productos asignados';
-             def.resolve();
-        }
-        res.send(G.utils.r(req.url, status.mensaje, status.codigo, {despachos_auditados: resultado}));
-
-    
-        //return res.send(G.utils.r(req.url, 'Detalle de pedidos cliente del documento auditados', 200, {despachos_auditados: resultado}));
-
-    }).fail(function(err) {
-
-        res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
-
-    }).done();
-
-};
-
-
-
-
-
-
-/**
- * @author Cristian Ardila
- * @fecha  04/02/2016
- * +Descripcion Metodo encargado de invocar el modelo para mostrar el detalle de
- *              de los pedidos de un documento
- */
-E008Controller.prototype.detallePedidoFarmaciaDocumento = function(req, res) {
-   
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.despachos_auditados === undefined) {
-        res.send(G.utils.r(req.url, 'Variable (despachos_auditados) no esta definida', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.empresa_id === undefined) {
-        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido ', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.prefijo === undefined) {
-        res.send(G.utils.r(req.url, 'El prefijo no esta definido ', 404, {}));
-        return;
-    }
-
-    if (args.despachos_auditados.numero === undefined) {
-        res.send(G.utils.r(req.url, 'El numero no esta definido', 404, {}));
-        return;
-    }
-   
-    var empresa_id = args.despachos_auditados.empresa_id;
-    var prefijo = args.despachos_auditados.prefijo;
-    var numero = args.despachos_auditados.numero;
-
-
-
-    var obj = {
-        prefijo: prefijo.toUpperCase(),
-        numero: numero,
-        empresa_id: empresa_id,
-    };
-    var status = {}; 
-    
-    G.Q.ninvoke(that.m_e008, 'detallePedidoFarmaciaDocumento', obj).then(function(resultado) {
-        
-       var def = G.Q.defer();  
-     
-        if(resultado.length > 0){
-             
-             status.codigo = 200;
-             status.mensaje = 'Detalle del pedido farmacia del documento auditados';
-           
-         }else{
-            
-             status.codigo = 403;
-             status.mensaje = 'El pedido no tiene productos asignados';
-             def.resolve();
-        }
-        res.send(G.utils.r(req.url, status.mensaje, status.codigo, {despachos_auditados: resultado}));
-
-       
-    }).fail(function(err) {
-
-        res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
-
-    }).done();
-
-};
-
 
 
 E008Controller.$inject = ["m_movimientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos", "log_e008"];

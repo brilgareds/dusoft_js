@@ -445,37 +445,50 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                    ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\
                     f.existencia_actual,\
                     g.existencia as existencia_bodega,\
-                    c.estado as bloqueado\
+                    c.estado as bloqueado,\
+                    (\
+                        select case when j.estado = '1' then 'Aprobado' when j.estado = '2' then 'Denegado' end as descripcion_autorizacion from autorizaciones_productos_pedidos  as j\
+                        where  tipo_pedido = '0' and j.codigo_producto = a.codigo_producto and j.pedido_id = a.pedido_cliente_id\
+                        order by fecha_verificacion asc limit 1\
+                    ) as descripcion_autorizacion,\
+                    b.observacion_justificacion_separador,\
+                    b.observacion_justificacion_auditor\
                     from ventas_ordenes_pedidos_d a \
                     inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
                     inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \
                     inner join inv_clases_inventarios e on d.grupo_id = e.grupo_id and d.clase_id = e.clase_id \
                     left join (\
                         select a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
-                        a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega\
+                        a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega, a.observacion_justificacion_separador, a.observacion_justificacion_auditor\
                         from (\
-                                select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado, b.empresa_id, b.centro_utilidad, b.bodega\
+                                select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion, c.justificacion_auditor, \
+                                SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
+                                b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado, b.empresa_id, b.centro_utilidad, b.bodega,\
+                                c.observacion_justificacion_separador, c.observacion_justificacion_auditor\
                                 from inv_bodegas_movimiento_tmp_despachos_clientes a \
                                 inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
                                 left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                                group by 1,2,3,4,6, 7, 8, 9, 10, 11, 12, 13, 14\
+                                group by 1,2,3,4,6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16\
                                 union \
-                                select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento, 0 as item_id, '3' as tipo_estado_auditoria, 0 as  cantidad_ingresada, '0' as auditado, '' as empresa_id, '' as centro_utilidad, '' as bodega \
+                                select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, \
+                                0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento, 0 as item_id, '3' as tipo_estado_auditoria,\
+                                0 as  cantidad_ingresada, '0' as auditado, '' as empresa_id, '' as centro_utilidad, '' as bodega, b.observacion_justificacion_separador, b.observacion_justificacion_auditor \
                                 from inv_bodegas_movimiento_tmp_despachos_clientes a \
                                 left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                                 and b.codigo_producto not in(\
                                       select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
                                 )\
-                        ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11,12,13,14 \
+                        ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11,12,13,14,15,16 \
                     ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                    left join existencias_bodegas_lote_fv f on f.empresa_id = b.empresa_id and f.centro_utilidad = b.centro_utilidad and f.codigo_producto = b.codigo_producto and f.lote = b.lote and f.fecha_vencimiento = b.fecha_vencimiento :: date\
-                    left join existencias_bodegas g on g.empresa_id = b.empresa_id and g.centro_utilidad = b.centro_utilidad and g.codigo_producto = b.codigo_producto\
+                    left join existencias_bodegas_lote_fv f on f.empresa_id = b.empresa_id and f.centro_utilidad = b.centro_utilidad and f.codigo_producto = b.codigo_producto and f.lote = b.lote and f.fecha_vencimiento = b.fecha_vencimiento :: date and f.bodega = b.bodega\
+                    left join existencias_bodegas g on g.empresa_id = b.empresa_id and g.centro_utilidad = b.centro_utilidad and g.codigo_producto = b.codigo_producto and g.bodega = b.bodega\
                     where a.pedido_cliente_id = ?  order by e.descripcion ;";
 
     G.knex.raw(sql, [numero_pedido]).
             then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
+        console.log("error generado ", err);
         callback(err);
     });
 
@@ -1161,19 +1174,19 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
 
         }
     }
-
+   
     if (filtroAvanzado.tipoBusqueda === 1) {
         parametros["5"] = '%' + filtroAvanzado.molecula + '%';
         parametros["6"] = '%' + filtroAvanzado.descripcionProducto + '%';
         parametros["7"] = '%' + filtroAvanzado.concentracion + '%';
         parametros["8"] = '%' + filtroAvanzado.codigoProducto + '%';
         parametros["9"] = '%' + filtroAvanzado.laboratorio_id + '%';
-
+        
         sql_aux = "AND a.codigo_producto " + G.constants.db().LIKE + " :8\
                    AND b.contenido_unidad_venta " + G.constants.db().LIKE + " :7\
                    AND fc_descripcion_producto(b.codigo_producto) " + G.constants.db().LIKE + " :6\
                    AND e.descripcion " + G.constants.db().LIKE + " :5\
-                   AND f.clase_id " + G.constants.db().LIKE + " :9";
+                   AND f.clase_id " + G.constants.db().LIKE + " :9 and b.tipo_producto_id = '" + filtroAvanzado.tipo_producto + "'";
 
         //filtroAvanzado.tipoBusqueda
     }
@@ -1325,10 +1338,9 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, parametros).
-            then(function(resultado) {
+    then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
-
         callback(err);
     });
 

@@ -65,14 +65,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     <h6 style="color:red">-- {{msj}}</h6>\
                                 </div>',
                             scope: $scope,
-                            controller: function($scope, $modalInstance, msj) {
+                            controller: ["$scope", "$modalInstance", function($scope, $modalInstance, msj) {
                                 $scope.msj = msj;
                                 
                                 $scope.close = function() {
                                     $modalInstance.close();
                                 };
 
-                            },
+                            }],
                             resolve: {
                                 msj: function() {
                                     return data.msj;

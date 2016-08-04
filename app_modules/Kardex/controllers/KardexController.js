@@ -101,9 +101,8 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
     var fecha_final = args.kardex.fecha_final;
 
     // Seleccionar los Movimientos del Producto
-    G.redis.get("producto_"+codigo_producto,function(err, result){
-       if(!result){
-        console.log("no habia resultado ", result, err);
+   // G.redis.get("producto_"+codigo_producto,function(err, result){
+       //if(!result){
         that.m_kardex.obtener_movimientos_productos(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, function(err, movimientos_producto) {
 
             var i = movimientos_producto.length;
@@ -172,7 +171,7 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
 
                                                                 if (--i === 0) {
                                                                     var obj = {movimientos_producto: movimientos_producto, pendientes_farmacias: pendientes_farmacias, pendientes_clientes: pendientes_clientes, pendientes_ordenes_compra: pendientes_ordenes_compra};
-                                                                    G.redis.setex("producto_"+codigo_producto,21600, JSON.stringify(obj));
+                                                                    //G.redis.setex("producto_"+codigo_producto,21600, JSON.stringify(obj));
                                                                     console.log("guardando en redix >>>>>>>>>>>>>>>>>>>>>>>");
                                                                     res.send(G.utils.r(req.url, 'Movimientos Producto!!!!!!!!', 200, obj));
                                                                 }
@@ -183,7 +182,7 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                                             });
                                         } else {
                                             var obj = {movimientos_producto: movimientos_producto, pendientes_farmacias: pendientes_farmacias, pendientes_clientes: pendientes_clientes, pendientes_ordenes_compra: pendientes_ordenes_compra};
-                                            G.redis.setex("producto_"+codigo_producto,21600, JSON.stringify(obj));
+                                           // G.redis.setex("producto_"+codigo_producto,21600, JSON.stringify(obj));
                                             console.log("guardando en redix >>>>>>>>>>>>>>>>>>>>>>>");
                                             res.send(G.utils.r(req.url, 'Movimientos Producto', 200, obj));
                                         }
@@ -195,11 +194,11 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                 });
             }
         });
-       } else {
+       /*} else {
            console.log("result from cache for producto ",codigo_producto);
            res.send(G.utils.r(req.url, 'Movimientos Producto', 200, JSON.parse(result)));
-       }
-    });
+       }*/
+   // });
     
 };
 

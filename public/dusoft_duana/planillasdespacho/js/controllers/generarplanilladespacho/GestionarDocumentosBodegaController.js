@@ -538,13 +538,13 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Gestio
                     dialogClass: "editarproductomodal",
                     templateUrl: 'views/generarplanilladespacho/descripcionOtrasSalidas.html',
                     scope:$scope,
-                    controller: function(documento, $modalInstance){
+                    controller: ["$scope", "$modalInstance", function(documento, $modalInstance){
                         $scope.documento = documento;
                         
                         $scope.cerrar = function(){
                             $modalInstance.close();
                         };
-                    },
+                    }],
                     resolve: {
                         documento: function(){
                             return documento;

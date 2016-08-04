@@ -11,6 +11,7 @@ requirejs.config({
         models:"js/models",
         directive:"js/directive",
         bootstrap:"../../javascripts/bootstrap/bootstrap",
+        bootstrapLib:"../../javascripts/bootstrap/bootstrap.min",
         facturacion: "../facturacion/js/models/",
         nggrid:"../../javascripts/angular/ng-grid",
         jquery:"../../javascripts/jquery",
@@ -36,8 +37,11 @@ requirejs.config({
         "route": {
             deps: ["angular"]
         },
-        "bootstrap":{
+        "bootstrapLib":{
             deps:["angular"]
+        },
+        "bootstrap":{
+            deps:["angular", "bootstrapLib"]
         },
         "nggrid":{
             deps:["jquery", "angular"]

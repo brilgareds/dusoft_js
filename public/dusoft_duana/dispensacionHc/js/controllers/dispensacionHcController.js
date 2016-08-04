@@ -66,7 +66,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     callback();
                 };
                    
-                  $scope.onSeleccionFiltro = function(filtro) {
+                  $scope.onSeleccionFiltro = function(filtro){
                     $scope.root.filtro = filtro;
                     $scope.root.termino_busqueda = '';
                     $scope.root.visibleBuscador = true;

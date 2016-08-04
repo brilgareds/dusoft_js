@@ -560,6 +560,11 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
  */
 PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
+    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
+    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
+    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
+    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
+    
     var that = this;
 
     var args = req.body.data;
@@ -617,9 +622,8 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         "tercero_id":cotizacion.cliente.id
     };
     
-    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).
-    then(function(tercero) {
-        
+    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function(tercero) {
+       
         if(tercero[0].tipo_bloqueo_id !== '1'){
             throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:403};
         } else {
@@ -627,7 +631,8 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         }
 
     }).then(function(resultado){
-                /**
+       
+       /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
          */
         var precioVenta = __validarPrecioVenta(producto, resultado, 0);
@@ -635,9 +640,10 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         if (precioVenta.valido) {
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion);
         } else {
-            throw precioVenta.msj;
+            throw {msj:precioVenta.msj, status:403};
         }
     }).then(function(rows) {
+       
         /**
          * +Descripcion: Se valida si el estado de la cotizacion es
          *               1 activo
@@ -646,11 +652,11 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         if (rows[0].estado === '1' || rows[0].estado === '4') {
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'consultarProductoDetalleCotizacion', cotizacion.numero_cotizacion, producto.codigo_producto);
         } else {
-            throw 'La cotizacion debe encontrarse activa o desaprobada por cartera';
+             throw {msj:'La cotizacion debe encontrarse activa o desaprobada por cartera', status:403};
         }
 
     }).then(function(rows) {
-
+       
         /**
          * +Descripcion: Se valida si el producto es diferente al del detalle
          *               y si es asi se procede a modficar el detalle
@@ -658,20 +664,20 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         if (rows.length === 0) {
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion', cotizacion, producto);
         } else {
-            throw 'El producto ya aparece registrado en la cotizacion';
+            throw {msj:'El producto ya aparece registrado en la cotizacion', status:403};
         }
 
     }).then(function(resultado) {
-
-
+       
         if (resultado.rowCount === 0) {
-            throw 'Error Interno';
+            throw {msj:'Error al registrar el producto', status:403};;
         } else {
             res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
         }
 
     }).fail(function(err) {
-        var msj = "Erro Interno";
+        
+        var msj = "Error interno";
         var status = 500;
         
         if(err.status){

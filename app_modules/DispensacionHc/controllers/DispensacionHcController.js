@@ -858,7 +858,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
            bodegasDocId = resultado[0].valor;          
            return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);          
         }else{
-            throw 'No hay temporales'
+            throw 'El id del documento de bodega no se encuentra parametrizado'
         }
             
     }).then(function(resultado){
@@ -932,9 +932,9 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
 
 DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
    
-   console.log("**********DispensacionHc.prototype.realizarEntregaFormulaPendientes*****************");
-   console.log("**********DispensacionHc.prototype.realizarEntregaFormulaPendientes*****************");
-   console.log("**********DispensacionHc.prototype.realizarEntregaFormulaPendientes*****************");
+   console.log("**********DispensacionHc.prototype.realizarEntregaFormulaPendientes 1*****************");
+   console.log("**********DispensacionHc.prototype.realizarEntregaFormulaPendientes 1*****************");
+   console.log("**********DispensacionHc.prototype.realizarEntregaFormulaPendientes 1*****************");
    
     var that = this;
     var args = req.body.data;   
@@ -971,24 +971,34 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var variableParametrizacion;
     var numeracion;
     var temporales;
-    var todoPendiente;
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0};
     var bodegasDocTodoPendiente;                           
       //console.log("parametrosReformular:::: ", parametrosReformular);
-      
-    G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',evolucionId).then(function(resultado){
-      
-       if(resultado.length > 0){
-           bodegasDocTodoPendiente = 1;
+        G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',evolucionId).then(function(resultado){
+        console.log("1) resultado ", resultado)
+        if(resultado.length > 0){        
+           bodegasDocTodoPendiente = 1;                   
         }else{
-           bodegasDocTodoPendiente = 0;
+           bodegasDocTodoPendiente = 0;              
         };
         
-       res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
-    })/*.then(function(resultado){
-             
+        return G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular);
+       
+     }).then(function(resultado){
+        console.log("2) resultado ", resultado)
+        if(resultado.length > 0){
+           planId =  resultado[0].plan_id;
+           return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametrosReformular);
+        }else{
+            throw 'Consulta sin resultados '
+        }
+        
+       
+    }).then(function(resultado){
+        console.log("3) resultado ", resultado);
+        console.log("bodegasDocTodoPendiente ", bodegasDocTodoPendiente);
         if(resultado.length > 0){           
             var parametroBodegaDocId = {variable:"documento_dispensacion_"+empresa+"_"+bodega, tipoVariable:1, modulo:'Dispensacion' };
                 variableParametrizacion = resultado[0].valor;
@@ -999,6 +1009,86 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         }
             
     }).then(function(resultado){
+        
+        console.log("4) resultado ", resultado);
+        console.log("variableParametrizacion ", variableParametrizacion);
+        if(resultado.length > 0){           
+           bodegasDocId = resultado[0].valor;   
+           
+           return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla'); 
+                   
+        }else{
+            throw 'La variable de reformular no se encuentra parametrizada'
+        }
+    
+    }).then(function(resultado){  
+        
+        console.log("5)resultado ", resultado);
+        return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId:bodegasDocId});     
+        
+    }).then(function(resultado){
+        
+        console.log("6)resultado ", resultado);
+        if(resultado.rowCount === 0){
+            throw 'No se genero numero de despacho'
+        }else{
+            numeracion = resultado.rows[0].numeracion;    
+           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);  
+            
+        }
+        
+    }).then(function(resultado){
+        temporales = resultado.rows;
+        //console.log("6)resultado ", resultado);
+        if(resultado.rows.length > 0){
+            
+            
+            var parametrosGenerarDispensacion=
+                  {
+                    parametro1:{ bodegasDocId:bodegasDocId, 
+                     numeracion:numeracion, 
+                     observacion:observacion, 
+                     estadoPendiente:0,
+                     usuario: usuario,
+                     evolucion: evolucionId,
+                     todoPendiente: bodegasDocTodoPendiente
+                    },
+                    
+                    parametro2:{
+                            temporales: temporales, 
+                            usuario:usuario, 
+                            bodegasDocId:bodegasDocId, 
+                            numeracion:numeracion, 
+                            planId: planId}
+                  };
+            
+            /**
+             * Inserta bodegas_documentos
+             * Inserta hc_formulacion_despachos_medicamentos
+             * Actualiza existencias_bodegas_lotes_fv, 
+             * Actualiza existencias_bodegas
+             * Inserta   bodegas_documentos_d
+             * Inserta   hc_pendientes_por_dispensar
+             * Consulta  hc_dispensacion_medicamentos_tmp
+             * Consulta  Medicamentos pendientes
+             * elimina   hc_dispensacion_medicamentos_tmp
+             */        
+            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormulaPendientes',parametrosGenerarDispensacion);
+            console.log("parametrosGenerarDispensacion ", parametrosGenerarDispensacion);
+            
+        }else{
+            throw 'No se genero numero de despacho'
+        }
+        
+        
+        
+    }).then(function(resultado){
+        
+        
+        console.log("FINAL ", resultado);
+    })
+    
+/*.then(function(resultado){
         
         if(resultado.length > 0){           
            bodegasDocId = resultado[0].valor;          
@@ -1152,7 +1242,7 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
                 };
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesPorDispensar',parametros).then(function(resultado){
-       
+    
         if(resultado.rows.length > 0){ 
             
             productosPendientes = resultado.rows;
@@ -1235,9 +1325,9 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
                 };
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosDispensados',parametros).then(function(resultado){
-       console.log("1) resultado ", resultado);
+       //console.log("1) resultado ", resultado.rows);
         if(resultado.rows.length > 0){ 
-            console.log("resultado.rows ", resultado.rows);
+            //console.log("resultado.rows ", resultado.rows);
             productosDispensados = resultado.rows;
            
             return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
@@ -1247,7 +1337,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         }
       
    }).then(function(resultado){
-       console.log("2) resultado ", resultado);
+       //console.log("2) resultado ", resultado);
        if(resultado.rows.length > 0){ 
             
             detalleCabecera = resultado.rows[0];
@@ -1258,10 +1348,12 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         }
        
    }).then(function(resultado){
-        console.log("3) resultado ", resultado);   
+        //console.log("3) resultado ", resultado);   
         if(resultado.rows.length > 0){ 
             
              profesional = resultado.rows;
+             
+             //console.log("productosDispensados ", productosDispensados)
             //return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros);
             __generarPdf({productosDispensados:productosDispensados, 
                           serverUrl:req.protocol + '://' + req.get('host')+ "/", 
@@ -1308,7 +1400,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
 };
 
 function __generarPdf(datos, callback) {  
-   
+   console.log("datosdatos ", datos)
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/DispensacionHc/reports/'+datos.archivoHtml, 'utf8'),

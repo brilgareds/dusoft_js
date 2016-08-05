@@ -119,10 +119,10 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){          
-        console.log("resultado ", resultado)
+        //console.log("resultado ", resultado)
         callback(false, resultado);
     }).catch(function(err){    
-        console.log("err ", err)
+        //console.log("err ", err)
         callback("Ha ocurrido un error");      
     });
 };
@@ -990,7 +990,7 @@ DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
 DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(evolucionId,callback){
     
     var parametros = {1: evolucionId};
-    console.log("parametros ", parametros);
+    
     var sql = "SELECT   evolucion_id\
                FROM    hc_pendientes_por_dispensar\
                WHERE   todo_pendiente = 1\
@@ -999,7 +999,7 @@ DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(evoluci
 	       AND evolucion_id = :1 ";
    
     G.knex.raw(sql,parametros).then(function(resultado){ 
-        console.log("resultado ", resultado)
+        console.log(" ***///888resultado ", resultado)
         callback(false, resultado)
     }).catch(function(err){   
         console.log("err ", err);
@@ -1127,6 +1127,230 @@ DispensacionHcModel.prototype.bloquearTabla = function(callback) {
        callback(err);
     });
 
+};
+
+
+/*
+ * @autor : Cristian Ardila
+ * Descripcion : Modelo encargado de manejar los procesos de generacion de dispensacion
+ *               de una formula a traves de las transacciones, con el fin de que se
+ *               cumpla cada registro prerequisito de otro y evitar la inconsistencia
+ *               de datos
+ * @fecha: 2016-08-01 09:45 pm 
+ */
+DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(obj, callback)
+{   
+   console.log("***********generarDispensacionFormulaPendientes**************");
+   console.log("***********generarDispensacionFormulaPendientes**************");
+   console.log("***********generarDispensacionFormulaPendientes**************");
+   console.log("obj ", obj);
+    var that = this;
+    G.knex.transaction(function(transaccion) {  
+        
+        G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion
+            
+         ).then(function(resultado){
+                
+            return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion); 
+               
+        }).then(function(){
+            
+            return G.Q.ninvoke(that,'actualizarProductoPorBodega',obj.parametro1, transaccion);
+            
+        }).then(function(){
+            
+            return G.Q.ninvoke(that,'insertarDespachoMedicamentosPendientes',obj.parametro1, transaccion);
+            
+        }).then(function(){
+                return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)          
+        }).then(function(resultado){
+          
+                if(resultado.rows.length >0){                                   
+                    return G.Q.ninvoke(that,'listarMedicamentosPendientesSinDispensar',{evolucionId:obj.parametro1.evolucion});                                   
+                }                    
+        }).then(function(resultado){           
+                var def = G.Q.defer();
+                if(resultado.rows.length >0){                   
+                 
+                    return G.Q.nfcall(__insertarMedicamentosPendientesPorDispensar,that,0, resultado.rows,obj.parametro1.evolucion,transaccion);
+                }else{
+                    def.resolve();
+                }         
+            
+        })/*.then(function(){
+            
+                return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
+         
+        })*/.then(function(){  
+            console.log("COMMIT")
+                //transaccion.commit();            
+        }).fail(function(err){
+            console.log("FAIL ", err)
+                transaccion.rollback(err);
+        }).done();
+
+    }).then(function(){
+       callback(false);
+    }).catch(function(err){      
+       callback(err.msj);
+    }).done(); 
+    
+};
+
+
+
+function __insertarMedicamentosPendientesPorDispensar(that, index, parametros, evolucion,transaccion, callback) {
+    
+    console.log("******__insertarMedicamentosPendientesPorDispensar*******");
+    console.log("******__insertarMedicamentosPendientesPorDispensar*******");
+    console.log("******__insertarMedicamentosPendientesPorDispensar*******");
+    console.log("that ", that);
+    console.log("index ", index);
+    console.log("parametros ", parametros);
+    console.log("evolucion ", evolucion);
+    
+    var producto = parametros[index];
+        
+        console.log("producto ", producto);
+    if (!producto) {       
+        callback(false);
+        return;
+    }  
+    index++;
+      console.log("3 Accion : insertarBodegasDocumentosDetalle ");
+     
+  
+   /* G.Q.ninvoke(that,'actualizarProductoPorBodega',evolucion,producto, transaccion).then(function(resultado){    
+            
+       console.log("4 Accion : __actualizarExistenciasBodegasLotesFv ", resultado);
+        
+    })/*.then(function(resultado){
+            
+       console.log("5 Accion : __insertarBodegasDocumentosDetalle ");
+       return G.Q.nfcall(__insertarBodegasDocumentosDetalle,producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId,transaccion);
+   
+    */
+   /* .fail(function(err){      
+        callback(err);            
+    }).done();*/
+    
+    setTimeout(function() {
+            __insertarMedicamentosPendientesPorDispensar(that, index, parametros,evolucion,transaccion, callback);
+        }, 300);
+       
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de actualizar el estado de los pendientes como entregados
+ * @controller DispensacionHc.prototype.existenciasBodegas
+ */
+DispensacionHcModel.prototype.actualizarProductoPorBodega = function(evolucion,producto,transaccion, callback){
+   console.log("******DispensacionHcModel.prototype.actualizarProductoPorBodega*****")
+   var parametros = {1: evolucion, 2: producto};   
+   var sql = "UPDATE hc_pendientes_por_dispensar\
+		SET sw_estado='1'\
+		WHERE evolucion_id = :1 AND codigo_medicamento = :2 ;";          
+   var query = G.knex.raw(sql,parametros);
+    
+   if(transaccion) query.transacting(transaccion);     
+      query.then(function(resultado){     
+          console.log("resultado ", resultado)
+          callback(false, resultado);
+   }).catch(function(err){       
+       console.log("err ", err)
+          callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
+    });  
+};
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de consultar los medicamentos pendientes sin dispensar
+ * @controller DispensacionHc.prototype.existenciasBodegas
+ */
+DispensacionHcModel.prototype.listarMedicamentosPendientesSinDispensar = function(obj,callback){
+    
+    var parametros = {1: obj.evolucionId};
+    
+    var sql =  "Select  a.codigo_producto,\
+                      (b.cantidades - a.cantidades) as total from\
+                      ( \
+                        SELECT codigo_formulado AS codigo_producto,\
+                                SUM(cantidad_despachada) as cantidades\
+                        FROM hc_dispensacion_medicamentos_tmp\
+                        where evolucion_id= :1\
+                        group by codigo_formulado\
+              ) as a,\
+              (   select  dc.codigo_medicamento as codigo_producto,\
+                          SUM(dc.cantidad) as cantidades\
+                  FROM  hc_pendientes_por_dispensar as dc\
+                  WHERE      dc.evolucion_id = :1\
+                  and        dc.sw_estado = '0'\
+                  group by(dc.codigo_medicamento)\
+          ) as b\
+          where a.codigo_producto = b.codigo_producto\
+          UNION\
+          SELECT codigo_medicamento as codigo_producto,\
+                  cantidad as cantidades\
+          FROM hc_pendientes_por_dispensar\
+          where evolucion_id= :1\
+          and sw_estado = '0'\
+          and codigo_medicamento\
+          NOT IN( select codigo_formulado\
+          FROM hc_dispensacion_medicamentos_tmp where evolucion_id= :1)  ";
+
+     
+    G.knex.raw(sql,parametros).then(function(resultado){ 
+        
+      callback(false, resultado)
+    }).catch(function(err){         
+         console.log("err ", err);
+      callback(err)
+    });            
+};
+
+DispensacionHcModel.prototype.insertarDespachoMedicamentosPendientes = function(obj,transaccion, callback){
+    
+   var parametros = {1: obj.bodegasDocId, 2: obj.numeracion, 3: obj.evolucion, 4: obj.todoPendiente};   
+   var sql = "INSERT INTO hc_formulacion_despachos_medicamentos_pendientes\
+              (bodegas_doc_id,numeracion,evolucion_id,todo_pendiente)\
+               VALUES( :1, :2, :3, :4);"          
+   var query = G.knex.raw(sql,parametros);
+    
+   if(transaccion) query.transacting(transaccion);     
+      query.then(function(resultado){           
+          callback(false, resultado);
+   }).catch(function(err){
+            callback({err:err, msj: "Error al generar el despacho de los medicamentos pendientes"});   
+    });  
+}
+
+/**
+ * @author Cristian Manuel Ardila
+ * @fecha  2016/08/05
+ * +Descripcion Metodo encargado de actualizar los medicamentos que estaban
+ *              pendientes por ser despachados, agregandoles el bodegas_doc_id
+ *              y la numeracion, este metodo se ejecutara en una transaccion
+ * 
+ * */
+DispensacionHcModel.prototype.actualizarProductoPorBodega = function(obj,transaccion, callback){
+   
+   var parametros = {1: obj.bodegasDocId, 2: obj.numeracion, 3: obj.evolucion};   
+   var sql = "UPDATE  hc_pendientes_por_dispensar\
+		SET     bodegas_doc_id= :1,numeracion= :2\
+		WHERE   evolucion_id = :3 ;";          
+   var query = G.knex.raw(sql,parametros);
+    
+   if(transaccion) query.transacting(transaccion);     
+      query.then(function(resultado){ 
+          
+          callback(false, resultado);
+   }).catch(function(err){
+         
+          callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
+    });  
 };
 
 /*
@@ -1564,9 +1788,11 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
     var query = G.knex.raw(sql, parametros);
     
     if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){           
+        query.then(function(resultado){  
+            console.log("resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
+            console.log("err ", err);
             callback({err:err, msj: "Error al generar el documento de bodega"});   
     });
 };

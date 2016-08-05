@@ -109,7 +109,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             if(estadoEntregaFormula === 0){
                 console.log("DISPENSAR FORMULA ", obj);
-                that.dispensacionNormal(obj);
+                //that.dispensacionNormal(obj);
             }
            
            

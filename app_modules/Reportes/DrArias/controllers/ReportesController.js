@@ -124,18 +124,38 @@ function __generarDetalle(resultado,datos,that,callback) {
     var precio=0;
     var bodegas=[];  
     var detalle={};
-   for (var key in resultado){
+    var consolidado={};
+    var control=true;
+    var bodega="";
+    var i=0;
+  for (var key in resultado){
+      i++;
     var value = resultado[key];
+    
+    if(control){
+       bodega=value.nom_bode; 
+       control=false;
+       console.log("bodega: ",bodega);
+    }
     if(value.formula_id !== formula){
         countFormula++;
-        bodegas[value.nom_bode]=countFormula;
+      //  bodegas[value.nom_bode]=countFormula;
         formula=value.formula_id;
         detalle.bodega=bodegas;
+        consolidado.countformula=countFormula;
+       // console.log("consolidado: ",consolidado.countformula);
     }
     if(value.paciente_id !== paciente){
         countPaciente++;
-        bodegas[value.nom_bode].paciente=countPaciente;
+        consolidado.countpaciente=countPaciente;
         paciente=value.paciente_id;
+       // console.log("pacienta: ",consolidado.countpaciente);
+    }
+    if(value.nom_bode !== bodega || resultado.length==i){
+        bodegas[bodega]=consolidado;
+        bodega=value.nom_bode;
+        consolidado={};
+        console.log("add bodegas: ",bodegas[bodega]);
     }
     var tt=value.total.replace(",",".");
     var prc=value.precio.replace(",",".")
@@ -150,7 +170,7 @@ function __generarDetalle(resultado,datos,that,callback) {
   detalle.total=total;
   detalle.precio=precio;
   datos.detalle=detalle;
-  console.log(">>>>>>>>>>>>>>>bodegas ",detalle);
+  console.log(">>>>>>>>>>>>>>>bodegas ",bodegas);
   __editarConsolidadoReporte(that,datos);
 return;
 }

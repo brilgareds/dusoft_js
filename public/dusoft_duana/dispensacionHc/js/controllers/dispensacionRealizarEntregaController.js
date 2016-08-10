@@ -109,7 +109,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             if(estadoEntregaFormula === 0){
                 console.log("DISPENSAR FORMULA ", obj);
-                //that.dispensacionNormal(obj);
+                that.dispensacionNormal(obj);
             }
            
            
@@ -151,7 +151,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionNormal = function(obj){
-            
+            console.log("DIpsnesacion normal ");
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
                 console.log("DATA ULTIMA RESPUESTA ", data);
                 if(data.status === 200){                   

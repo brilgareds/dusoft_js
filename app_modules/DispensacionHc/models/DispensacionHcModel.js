@@ -18,7 +18,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
    **/
    var pendienteCampoEstado = "";
    var pendienteTabla = "";
-   var pendienteCondicion = "";
+  
 
   if(obj.estadoFormula === '1'){       
         pendienteCampoEstado = ",j.sw_estado";
@@ -114,7 +114,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         AND (g.rango_afiliado_atencion=h.rango)\
                         inner join planes as i ON (h.plan_id=i.plan_id)\
                         "+pendienteTabla+" WHERE a.codigo_medicamento IS NOT NULL \
-                    ) AS a WHERE  " + sqlCondicion + " " + pendienteCondicion; 
+                    ) AS a WHERE  " + sqlCondicion; 
               
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
@@ -1198,7 +1198,13 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
 };
 
 
-
+/**
+ * @author Cristian Manuel Ardila Troches  
+ * +Descripcion funcion local recursiva encargada de recorrer el arreglo
+ *              de los productos temporales que se insertaran en la tabla
+ *              pendientes por dispensar y actualizara el disponible en bodega
+ *  @fecha 08/08/2016
+ **/
 function __insertarMedicamentosPendientesPorDispensar(that, index, productos, parametros,transaccion, callback) {
     
     console.log("******__insertarMedicamentosPendientesPorDispensar*******");
@@ -1305,6 +1311,13 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesSinDispensar = functio
     });            
 };
 
+/**
+ *  
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de registrar el documento de despacho
+ *              de los pendientes de una formula
+ * @fecha 08/08/2016            
+ */
 DispensacionHcModel.prototype.insertarDespachoMedicamentosPendientes = function(obj,transaccion, callback){
     
    var parametros = {1: obj.bodegasDocId, 2: obj.numeracion, 3: obj.evolucion, 4: obj.todoPendiente};   
@@ -1388,6 +1401,10 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
             
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
          
+        }).then(function(){
+            
+                return G.Q.ninvoke(that,'actualizarDispensacionEstados',{evolucionId:obj.parametro1.evolucion,pendiente:pendiente}, transaccion); 
+         
         }).then(function(){          
                 transaccion.commit();            
         }).fail(function(err){
@@ -1400,6 +1417,51 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
        callback(err.msj);
     }).done(); 
     
+};
+
+
+/**
+ * @author Cristian Manuel Ardila
+ * @fecha  2016/08/08
+ * +Descripcion Metodo encargado de actualizar la trazabilidad de la formula
+ * 
+ * 
+ * */
+DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,transaccion, callback){
+   
+   
+   
+   
+   var parametros = {1: obj.evolucionId, 
+                     2: obj.entregaActual, 
+                     3: dateHoy,
+                     }; 
+   
+   var numeroEntrega = "";
+   
+   //Si se esta dispensando la formula en ves de un pendiente
+   if(obj.pendiente !== 1){      
+       numeroEntrega = "numero_entrega_actual = :5";
+       parametros["5"]= "numero_entrega_actual +1";
+   }
+   
+     
+   var sql = "UPDATE  dispensacion_estados\
+		SET   "+numeroEntrega+"  \
+                        fecha_registro= :2,\
+                        fecha_minima_entrega= :3,\
+                        fecha_maxima_entrega= :4,\
+              WHERE   evolucion_id = :1;";          
+   var query = G.knex.raw(sql,parametros);
+    
+   if(transaccion) query.transacting(transaccion);     
+      query.then(function(resultado){ 
+          
+          callback(false, resultado);
+   }).catch(function(err){
+         
+          callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
+    });  
 };
 
 

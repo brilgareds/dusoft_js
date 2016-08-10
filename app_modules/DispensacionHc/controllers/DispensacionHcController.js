@@ -790,7 +790,26 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
  */
 DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
    
-    var that = this;
+   console.log("***DispensacionHc.prototype.realizarEntregaFormula ***********");
+   console.log("***DispensacionHc.prototype.realizarEntregaFormula ***********");
+   console.log("***DispensacionHc.prototype.realizarEntregaFormula ***********");
+   console.log("***DispensacionHc.prototype.realizarEntregaFormula ***********");
+   
+   
+   var formato = 'DD-MM-YYYY';
+   var now = new Date(); 
+   var dateHoy = G.moment(dateHoy).format(formato);
+   
+   
+   var fechaInicial = G.moment(dateHoy, formato); 
+   console.log("now ---> ", dateHoy);
+   /*var fechaFinal   = G.moment(dateHoy, formato);
+   
+   console.log("dateHoy ", dateHoy)
+   console.log("fechaInicial ", fechaInicial);
+   var fechaFinalF   = G.moment(fechaFinal._i, formato);
+   console.log("fechaFinal ", fechaFinalF);*/
+   /* var that = this;
     var args = req.body.data;   
    
     if(!args.realizar_entrega_formula){
@@ -847,7 +866,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             /**
              *+Descripcion Se consulta el bodegas_doc_id correspondiente
              */
-            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
+            /*return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
         }else{           
             throw 'Variable reformular no se encontro';            
         }
@@ -908,7 +927,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
              * Consulta  Medicamentos pendientes
              * elimina   hc_dispensacion_medicamentos_tmp
              */        
-            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
+            /*return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
         };
             
             
@@ -924,7 +943,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         }   
     }).fail(function(err){            
        res.send(G.utils.r(req.url, err, 500, {}));
-    }).done();       
+    }).done(); */      
 };
 
 

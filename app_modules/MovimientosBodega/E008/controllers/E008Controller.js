@@ -1357,10 +1357,10 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.filtro.termino_busqueda === '') {
+    /*if (args.documento_temporal.filtro.termino_busqueda === '') {
         res.send(G.utils.r(req.url, 'termino_busqueda esta vacio', 404, {}));
         return;
-    }
+    }*/
 
 
     var numero_pedido = args.documento_temporal.numero_pedido;
@@ -1469,10 +1469,10 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.filtro.termino_busqueda === '') {
+    /*if (args.documento_temporal.filtro.termino_busqueda === '') {
         res.send(G.utils.r(req.url, 'termino_busqueda esta vacio', 404, {}));
         return;
-    }
+    }*/
 
 
     var numero_pedido = args.documento_temporal.numero_pedido;

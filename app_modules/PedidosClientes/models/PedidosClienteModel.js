@@ -163,7 +163,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                     when a.estado = '4' then 'Debe autorizar cartera'\
                     when a.estado_pedido = '10' then 'Por Autorizar' end as descripcion_estado_actual_pedido"),
         "d.estado as estado_separacion",
-        G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
+        G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro"),
         "e.empresa_id as despacho_empresa_id",
         "e.prefijo as despacho_prefijo",
         "e.numero as despacho_numero",
@@ -1480,7 +1480,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      when a.estado = '5' then 'Tiene un pedido'\
      when a.estado = '6' then 'Se solicita autorizacion'\
      when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
-     a.fecha_registro,\
+     to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro,\
      h.pedido_cliente_id as numero_pedido\
      from ventas_ordenes_pedidos_tmp a\
      inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\

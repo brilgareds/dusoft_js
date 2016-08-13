@@ -1402,18 +1402,21 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
          
         }).then(function(){
-            
-                return G.Q.ninvoke(that,'actualizarDispensacionEstados',{evolucionId:obj.parametro1.evolucion,pendiente:pendiente}, transaccion); 
+                console.log("---->>obj ", obj);
+                return G.Q.ninvoke(that,'actualizarDispensacionEstados',{evolucionId:obj.parametro1}, transaccion); 
          
-        }).then(function(){          
+        }).then(function(){  
+            console.log("TRANSACCION COMMIT ");
                 transaccion.commit();            
         }).fail(function(err){
+            console.log("TRANSACCION FAIL ", err);
                 transaccion.rollback(err);
         }).done();
 
     }).then(function(){
        callback(false);
-    }).catch(function(err){      
+    }).catch(function(err){ 
+         console.log("TRANSACCION ERROR ", err);
        callback(err.msj);
     }).done(); 
     
@@ -1429,19 +1432,18 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
  * */
 DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,transaccion, callback){
    
-   
-   
-   
-   var parametros = {1: obj.evolucionId, 
-                     2: obj.entregaActual, 
-                     3: dateHoy,
+   console.log("obj parametros 1 ", obj);
+   var parametros = {1: obj.evolucionId,  
+                     2: obj.fechaRegistro,
+                     3: obj.fechaMinima,
+                     4: obj.fechaMaxima
                      }; 
    
    var numeroEntrega = "";
    
    //Si se esta dispensando la formula en ves de un pendiente
    if(obj.pendiente !== 1){      
-       numeroEntrega = "numero_entrega_actual = :5";
+       numeroEntrega = "numero_entrega_actual = :5,";
        parametros["5"]= "numero_entrega_actual +1";
    }
    
@@ -1456,10 +1458,10 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
     
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){ 
-          
+          console.log("A QUI resultado ", resultado);
           callback(false, resultado);
    }).catch(function(err){
-         
+         console.log("err ", err);
           callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
     });  
 };

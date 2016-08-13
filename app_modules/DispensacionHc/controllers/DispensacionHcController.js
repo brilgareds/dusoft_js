@@ -798,18 +798,11 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
    
    var formato = 'DD-MM-YYYY';
    var now = new Date(); 
-   var dateHoy = G.moment(dateHoy).format(formato);
+   var dateHoy = G.moment(now).format(formato);
    
+  
    
-   var fechaInicial = G.moment(dateHoy, formato); 
-   console.log("now ---> ", dateHoy);
-   /*var fechaFinal   = G.moment(dateHoy, formato);
-   
-   console.log("dateHoy ", dateHoy)
-   console.log("fechaInicial ", fechaInicial);
-   var fechaFinalF   = G.moment(fechaFinal._i, formato);
-   console.log("fechaFinal ", fechaFinalF);*/
-   /* var that = this;
+    var that = this;
     var args = req.body.data;   
    
     if(!args.realizar_entrega_formula){
@@ -866,7 +859,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             /**
              *+Descripcion Se consulta el bodegas_doc_id correspondiente
              */
-            /*return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
+            return G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId);
         }else{           
             throw 'Variable reformular no se encontro';            
         }
@@ -893,19 +886,28 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId:bodegasDocId});            
     }).then(function(resultado){     
          
+         
         if(resultado.rowCount === 0){
             throw 'No se genero numero de despacho'
         }else{
             numeracion = resultado.rows[0].numeracion;
+            var fechaRegistro = G.moment(now).add(25, 'day').format(formato);
+            var fechaMinima   = G.moment(now).add(20, 'day').format(formato);
+            var fechaMaxima   = G.moment(now).add(33, 'day').format(formato);
+                
             var parametrosGenerarDispensacion=
                   {
                     parametro1:{ bodegasDocId:bodegasDocId, 
-                     numeracion:numeracion, 
-                     observacion:observacion, 
-                     estadoPendiente:0,
-                     usuario: usuario,
-                     evolucion: evolucionId,
-                     todoPendiente: todoPendiente
+                        numeracion:numeracion, 
+                        observacion:observacion, 
+                        estadoPendiente:0,
+                        usuario: usuario,
+                        evolucion: evolucionId,
+                        todoPendiente: todoPendiente,
+                        fechaRegistro: fechaRegistro, 
+                        fechaMinima:fechaMinima, 
+                        fechaMaxima:fechaMaxima,
+                            
                     },
                     
                     parametro2:{
@@ -913,7 +915,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                             usuario:usuario, 
                             bodegasDocId:bodegasDocId, 
                             numeracion:numeracion, 
-                            planId: planId}
+                            planId: planId},
+                       
                   };
             
             /**
@@ -927,7 +930,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
              * Consulta  Medicamentos pendientes
              * elimina   hc_dispensacion_medicamentos_tmp
              */        
-            /*return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
+            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
         };
             
             
@@ -943,7 +946,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         }   
     }).fail(function(err){            
        res.send(G.utils.r(req.url, err, 500, {}));
-    }).done(); */      
+    }).done();    
 };
 
 

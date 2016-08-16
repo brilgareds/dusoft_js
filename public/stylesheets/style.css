@@ -586,6 +586,10 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
         top:7px;
     }
     
+    .inputSearchTree{
+        min-width: 250px!important;
+    }
+    
     
 }
 

@@ -171,15 +171,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableRowSelection: false,
                 enableColumnResize:true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "150",
+                    {field: 'codigo_producto', displayName: 'Código', width: "170",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
                                                 <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
                                                 <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
                                                 <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
-                                                <span ng-cell-text >{{COL_FIELD}}</span>\
-                                                <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
+                                                <span ng-cell-text >{{COL_FIELD}} </span>\
+                                                <span class="glyphicon glyphicon-lock text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Nombre', 

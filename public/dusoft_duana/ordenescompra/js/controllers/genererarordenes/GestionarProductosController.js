@@ -285,7 +285,7 @@ define(["angular", "js/controllers",
                                             <span class="label label-primary" ng-show="row.entity.regulado == 1" >Reg</span>\
                                             <span class="label label-danger" ng-show="row.entity.tiene_valor_pactado == 0">S.C</span>\
                                             <span class="label label-success" ng-show="row.entity.tiene_valor_pactado == 1">C.C</span>\
-                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency:"$ "}}</span>\
+                                            <span ng-cell-text class="pull-right cellFloatRight" >{{COL_FIELD | currency:"$ "}}</span>\
                                         </div>'},
                     {field: 'cantidad', width: "7%", displayName: "Cantidad", enableCellEdit: true, cellFilter: "number"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center", enableCellEdit: false,

@@ -79,7 +79,7 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
-                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido', cellTemplate: "<div class='ngCellText ng-scope col1 colt1'>{{row.entity.pedido.numero_pedido}}" +
+                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido', cellTemplate: "<div class='ngCellText ng-scope col1 colt1'><span class='pull-left'>{{row.entity.pedido.numero_pedido}}</span>" +
                                 "<span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span></div>"},
                     {field: 'pedido.nombre_vendedor', displayName: 'Farmacia'},
                     {field: 'pedido.farmacia.nombre_bodega', displayName: 'Bodega'},

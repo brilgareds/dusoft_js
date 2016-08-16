@@ -200,8 +200,10 @@ define(["angular", "js/directive"], function(angular, directive) {
                            // console.log("arbol refrescado code 1");
                             scope.$emit("arbolRefrescado");
                         }).on("ready.jstree", function(){
-                           console.log("arbol cargado >>>>>>>>>>>>>"); 
-                           scope.$emit("arbolRefrescado");
+                            console.log("arbol cargado >>>>>>>>>>>>>"); 
+                            scope.$emit("arbolRefrescado");
+                                
+                            $(".jstree-anchor").attr("href", "javascript:void()");
                         });
                     }
 

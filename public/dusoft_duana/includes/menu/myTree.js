@@ -87,6 +87,9 @@ define(["angular", "js/directive", "includes/menu/treeSearch"], function(angular
                             if (selected.event) {
                                 scope.$emit("nodeSelected", selected.node.original);
                             }
+                        }).on("ready.jstree", function(){
+                                
+                            $(".jstree-anchor").attr("href", "javascript:void()");
                         });
 
                         $(".botonmenu").on("click", function(e) {

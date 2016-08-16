@@ -585,7 +585,11 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
         left: 8px;
         top:7px;
     }
+    
+    
 }
+
+.vakata-context { z-index:10052 !important; }
 
 .gridExistencias{
     height:400px;

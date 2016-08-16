@@ -64,7 +64,7 @@ define(["angular", "js/controllers",
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
                     {field: 'pedido.numero_pedido', displayName: 'Numero Pedido',
                         cellTemplate: "<div class='ngCellText ng-scope col1 colt1'>\
-                                        {{row.entity.pedido.numero_pedido}}\
+                                        <span class='pull-left'>{{row.entity.pedido.numero_pedido}}</span>\
                                         <span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span>\
                                      </div>"
                     },

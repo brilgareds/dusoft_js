@@ -573,6 +573,18 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     a{
         outline:none!important;
     }
+    
+    .cellFloatRight{
+        position: absolute;
+        right: 8px;
+        top:7px;
+    }
+    
+    .cellFloatLeft{
+        position: absolute;
+        left: 8px;
+        top:7px;
+    }
 }
 
 .gridExistencias{

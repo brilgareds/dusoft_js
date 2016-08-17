@@ -78,6 +78,14 @@ define(["angular", "js/models"], function(angular, models) {
         ReportesGenerados.prototype.getConsolidado = function(){
         	return this.consolidado;
         };
+        
+        ReportesGenerados.prototype.setBodegaDetalle = function(bodegaDetalle){
+        	this.bodegaDetalle = bodegaDetalle;
+        };
+        
+        ReportesGenerados.prototype.getBodegaDetalle = function(){
+        	return this.bodegaDetalle;
+        };
 
         this.get = function(estado_reportes_id) {
             return new ReportesGenerados(estado_reportes_id);

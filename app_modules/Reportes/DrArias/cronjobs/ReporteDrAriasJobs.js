@@ -19,7 +19,7 @@ var ReporteDrAriasJobs = function(m_drArias) {
 ReporteDrAriasJobs.prototype.iniciar = function() { //AddTemporalesReporteDrArias
     
     var that = this;
-    var job = new G.cronJob('00 00 00 * * *', function () {
+    var job = new G.cronJob('00 10 00 * * *', function () {
         G.Q.ninvoke(that.m_drArias, "borrarTemporalesReporteDrArias").then(function(result){           
             console.log("Finaliza eliminacion del primer mes en tabla temporal_reporte_dr_arias");
              return G.Q.ninvoke(that.m_drArias, "addTemporalesReporteDrArias");              

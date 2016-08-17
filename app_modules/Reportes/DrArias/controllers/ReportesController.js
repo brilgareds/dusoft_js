@@ -127,50 +127,61 @@ function __generarDetalle(resultado,datos,that,callback) {
     var consolidado={};
     var control=true;
     var bodega="";
+    var bga=[];
     var i=0;
+    var totalDetalle=0;
+    var countPaciente_2=0;
+    var countFormula_2=0;
   for (var key in resultado){
       i++;
     var value = resultado[key];
-    
     if(control){
        bodega=value.nom_bode; 
        control=false;
-       console.log("bodega: ",bodega);
+       countPaciente_2=0;
+       countFormula_2=0;
     }
     if(value.formula_id !== formula){
         countFormula++;
-      //  bodegas[value.nom_bode]=countFormula;
-        formula=value.formula_id;
-        detalle.bodega=bodegas;
-        consolidado.countformula=countFormula;
-       // console.log("consolidado: ",consolidado.countformula);
+        countFormula_2++;
+        formula=value.formula_id;        
+        consolidado.countformula=countFormula_2;        
     }
     if(value.paciente_id !== paciente){
         countPaciente++;
-        consolidado.countpaciente=countPaciente;
+        countPaciente_2++;
+        consolidado.countpaciente=countPaciente_2;
         paciente=value.paciente_id;
-       // console.log("pacienta: ",consolidado.countpaciente);
     }
-    if(value.nom_bode !== bodega || resultado.length==i){
-        bodegas[bodega]=consolidado;
-        bodega=value.nom_bode;
-        consolidado={};
-        console.log("add bodegas: ",bodegas[bodega]);
-    }
+    
     var tt=value.total.replace(",",".");
-    var prc=value.precio.replace(",",".")
+    var prc=value.precio.replace(",",".");
     total=total+parseFloat(tt);
     precio=precio+parseFloat(prc);
     cantidades += parseInt(value.cantidad);
+        totalDetalle=totalDetalle+parseFloat(tt);
+        consolidado.total=totalDetalle;
+        
+     if(value.nom_bode !== bodega || resultado.length==i){
+        consolidado.bodega=bodega;
+        bodegas[bodega]=consolidado; 
+        bga.push(consolidado);
+        bodega=value.nom_bode;
+        countPaciente_2=0;
+        countFormula_2=0;        
+        totalDetalle=0;
+        consolidado={};
+    }
+        
+        
   }
-  
   detalle.cantidadFomulas=countFormula;
   detalle.cantidadPacientes=countPaciente;
   detalle.cantidadDespachoUnidades=cantidades;
   detalle.total=total;
   detalle.precio=precio;
-  datos.detalle=detalle;
-  console.log(">>>>>>>>>>>>>>>bodegas ",bodegas);
+  datos.detalle=detalle;  
+  datos.bodegasdetalle=JSON.stringify(bga);
   __editarConsolidadoReporte(that,datos);
 return;
 }

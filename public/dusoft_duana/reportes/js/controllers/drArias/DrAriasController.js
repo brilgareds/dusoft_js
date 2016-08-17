@@ -66,7 +66,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
              $scope.abrirModalConsolidado= function(parametros) {  
                  var consolidados =parametros.consolidado;
-                 console.log("Consolidados ",consolidados);
+                 var objtBodega=parametros.bodegaDetalle;
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -79,16 +79,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                       $scope.consolidado.cantidadDespachoUnidades=consolidados.cantidadDespachoUnidades;
                       $scope.consolidado.cantidadFomulas=consolidados.cantidadFomulas;
                       $scope.consolidado.cantidadPacientes=consolidados.cantidadPacientes;
-                      $scope.consolidado.total="$ "+consolidados.total.toFixed(2);
-                      $scope.consolidado.precio="$ "+consolidados.precio.toFixed(2);
-//                      $scope.consolidado.fechafinal=parametros.fecha_final;
-//                      $scope.consolidado.empresa=parametros.empresa_seleccion;
-//                      $scope.consolidado.bodega=parametros.bodega_seleccion;
-//                      $scope.consolidado.centroUtilidad=parametros.centro_seleccion;
-//                      $scope.consolidado.documento=parametros.documento;
-//                      $scope.consolidado.codigoProducto=parametros.codigo;
-//                      $scope.consolidado.descripcion=parametros.descripcion;
-//                      $scope.consolidado.plan=parametros.plan_seleccion;
+                      $scope.consolidado.total=consolidados.total.toFixed(2);
+                      $scope.consolidado.precio=consolidados.precio.toFixed(2);
+                      $scope.consolidado.consolidadoBodegas=objtBodega;
                       $scope.close = function() {
                          modalInstancesy.close();
                       };
@@ -196,7 +189,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @returns {objeto}
              */
             that.renderReportesBloqueados = function(data) {               
-                listaReportesGenerados = [];
+                var listaReportesGenerados = [];
+                var llist = [];
                 for (var i in data.obj.reportes) {
                     var objt = data.obj.reportes[i];
                     var reportesGenerados = ReportesGenerados.get(objt.estado_reportes_id);
@@ -206,18 +200,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     reportesGenerados.setFechaFin(objt.fecha_fin);
                     reportesGenerados.setEstado(objt.estado);
                     reportesGenerados.setUsuarioId(objt.usuario_id);
-                    //var json = JSON.parse(objt.parametros_de_busqueda);
                     reportesGenerados.setParametrosBusqueda(JSON.parse(objt.parametros_de_busqueda));
                     reportesGenerados.setConsolidado(JSON.parse(objt.consolidado));
+                    reportesGenerados.setBodegaDetalle(JSON.parse(objt.bodegas));
                     listaReportesGenerados.push(reportesGenerados);
-                }              
+                }   
                 $scope.listaReportesGenerados = listaReportesGenerados;
             };
             
-            $scope.onAbrirVentana=function(json){
-                
-            };
-
+            
             /**
              * +Descripcion: objeto ng-grid
              * @author Andres M Gonzalez
@@ -262,26 +253,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'getParametrosBusqueda().centro_seleccion.nombre', displayName: 'Centro Utilidad', width: "15%"},
                     {field: 'getParametrosBusqueda().bodega_seleccion.nombre', displayName: 'Bodega', width: "13%"},                   
                     {displayName: "Busqueda", cellClass: "txt-center dropdown-button", width: "7%",
-                        cellTemplate: ' <div class="row">\n\
-                                         <button class="btn btn-default btn-xs" ng-click="abrirModalParametros(row.entity)" >\n\
+                        cellTemplate: ' <div class="row">\
+                                         <button class="btn btn-default btn-xs" ng-click="abrirModalParametros(row.entity)" >\
                                              <span class="glyphicon glyphicon-search"></span>\
                                          </button>\
                                        </div>'
                     },
                     {displayName: "Consolidado", cellClass: "txt-center dropdown-button", width: "7%",
-                        cellTemplate: ' <div class="row">\n\
-                                         <button class="btn btn-default btn-xs" ng-click="abrirModalConsolidado(row.entity)" >\n\
-                                             <span class="glyphicon glyphicon-search"></span>\
-                                         </button>\
+                        cellTemplate: '<div class="row" >\
+                                            <button class="btn btn-default btn-xs" ng-disabled="row.entity.getEstado()==3 || row.entity.getEstado()==2 || row.entity.getEstado()==0" ng-click="abrirModalConsolidado(row.entity)" >\
+                                                <span class="glyphicon glyphicon-search"></span>\
+                                            </button>\
                                        </div>'
-                    },
-                    {displayName: "Descarga", cellClass: "txt-center dropdown-button", width: "5%",
-                        cellTemplate: ' <div class="row">\n\
-                                         <button class="btn btn-default btn-xs" ng-disabled="row.entity.getEstado()==3 || row.entity.getEstado()==2 || row.entity.getEstado()==0" ng-click="onDescagarArchivo(row.entity.getNombreArchivo())" >\n\
-                                             <span class="glyphicon glyphicon-download-alt"></span>\
-                                         </button>\
+                    }, 
+                    {displayName: "Descargas", cellClass: "txt-center dropdown-button", width: "5%",
+                        cellTemplate: '<div class="row">\
+                                            <button class="btn btn-default btn-xs" ng-disabled="row.entity.getEstado()==3 || row.entity.getEstado()==2 || row.entity.getEstado()==0" ng-click="onDescagarArchivo(row.entity.getNombreArchivo())" >\
+                                                <span class="glyphicon glyphicon-download-alt"></span>\
+                                            </button>\
                                        </div>'
-                    }//ng-click="onAbrirVentana(row.entity)"ng-click="onAbrirVentana(row.entity)"
+                    }
+                    
                 ]
 
             };

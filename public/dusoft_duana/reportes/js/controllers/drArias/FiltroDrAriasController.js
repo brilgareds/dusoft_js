@@ -147,7 +147,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             that.prueba=function(){
                 var a = listaEmpresas.indexOf("FD");  
-                console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",a);
             };
 
             that.consultarCentrosUtilidadPorEmpresa = function(callback) {

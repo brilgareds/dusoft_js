@@ -5,8 +5,8 @@ var DrAriasModel = function() {
 DrAriasModel.prototype.listarDrArias = function(filtro, callback) {    
     var that = this;
     var cache;   
-    var diasDiferenciaSql=2;
-    var mesDiferenciaSql=8;    
+    var diasDiferenciaSql=1;
+    var mesDiferenciaSql=12;    
     var now = new Date();    
     var dateInicial = G.moment(filtro.fecha_inicial);
     var dateFinal = G.moment(filtro.fecha_final);
@@ -68,7 +68,7 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
         }
        
    }).fail(function(err){
-        console.log("error listarDrArias",err);
+        console.log("Error listarDrArias",err);
         callback(err);
    }).done();
     
@@ -86,10 +86,11 @@ DrAriasModel.prototype.borrarTemporalesReporteDrArias = function(callback) {
   var that = this;
     
    var query = G.knex('temporal_reporte_dr_arias');
-               query.whereBetween('fecha', [G.knex.raw("date_trunc('month',current_date - interval '3 month' )"), G.knex.raw("date_trunc('month',current_date - interval '2 month') - interval '1 sec'")])
+               query.whereBetween('fecha', [G.knex.raw("date_trunc('month',current_date - interval '12 month' )"), G.knex.raw("date_trunc('month',current_date - interval '11 month') - interval '1 sec'")])
                .del().then(function(rows) { 
                     callback(false);
                 }).catch(function(error){
+                    console.log("Error temporal_reporte_dr_arias >>>>>>>>>>>>>>",error);
                     callback(error);
                 });
 };
@@ -110,6 +111,7 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
     query.then(function(resultado) {
        callback(false, resultado.rows);
      }).catch (function(err) {
+         console.log("Error listarPlanes >>>>>>>>>>>>>>",err);
         callback(err);
      });
 };
@@ -126,10 +128,9 @@ DrAriasModel.prototype.guardarEstadoReporte = function(datos,callback) {
                ( :1 , :2 , :3 , :4 , :5 , :6 ) ";
     var query = G.knex.raw(sql,{1:datos.nombre_reporte,2:datos.nombre_archivo,3:datos.fecha_inicio,4:datos.estado,5:datos.busqueda,6:datos.usuario});
     query.then(function(resultado) {
-        console.log("guardarEstadoReporte:::::::::");
        callback(false);
      }).catch (function(err) {
-         console.log("guardarEstadoReporte:::: ",err);
+         console.log("Error guardarEstadoReporte:::: ",err);
         callback(err);
      });
 };
@@ -145,10 +146,10 @@ DrAriasModel.prototype.editarConsolidadoReporte = function(datos,callback) {
     where("nombre_reporte", datos.nombre_reporte).
     andWhere("nombre_archivo", datos.nombre_archivo).
     andWhere("usuario_id", datos.usuario).
-    update({consolidado : datos.detalle}).then(function(resultado){
+    update({consolidado : datos.detalle,bodegas : datos.bodegasdetalle}).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log(">>>>>>>>>>>>>>",err);
+        console.log("Error editarConsolidadoReporte >>>>>>>>>>>>>>",err);
         callback(err);
     });     
 };
@@ -166,7 +167,8 @@ DrAriasModel.prototype.editarEstadoReporte = function(datos,callback) {
     update({fecha_fin : datos.fecha_fin, estado:datos.estado}).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        callback(err);
+        console.log("editarEstadoReporte >>>>>>>>>>>>>>",err);
+        callback(err);        
     });     
 };
 
@@ -186,7 +188,8 @@ DrAriasModel.prototype.reportesGenerados = function (datos,callback) {
                     "estado",
                     "usuario_id",
                     "parametros_de_busqueda",
-                    "consolidado"
+                    "consolidado",
+                    "bodegas"
                  ];
 
     var query =  G.knex.column(column)
@@ -199,6 +202,7 @@ DrAriasModel.prototype.reportesGenerados = function (datos,callback) {
                        callback(false, rows);
                    })
                    .catch(function (error) {
+                       console.log("Error reportesGenerados >>>>>>>>>>>>>>",error);
                        callback(error);
                    }).done();
 };
@@ -241,24 +245,24 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         pl.plan_descripcion, \
                         case when epaten.eps_punto_atencion_nombre !='' then epaten.eps_punto_atencion_nombre else pl.plan_descripcion END as eps_punto_atencion_nombre, \
                         (case when ip.sw_generico = '1' then (bdd.total_costo *1.35) else (bdd.total_costo*1.25) end) as precio, \
-                        (case when ip.sw_generico = '1' then ((bdd.total_costo*bdd.cantidad)*1.35) else ((bdd.total_costo*bdd.cantidad)*1.25) end) as total\
+                        (case when ip.sw_generico = '1' then ((bdd.total_costo*bdd.cantidad)*1.35) else ((bdd.total_costo*bdd.cantidad)*1.25) end) as total \
                         from bodegas_doc_numeraciones dn  \
-                        INNER JOIN bodegas_documentos bd on dn.bodegas_doc_id=bd.bodegas_doc_id\
+                        INNER JOIN bodegas_documentos bd on dn.bodegas_doc_id=bd.bodegas_doc_id \
                         INNER JOIN bodegas_documentos_d bdd on bd.bodegas_doc_id = bdd.bodegas_doc_id and bd.numeracion =bdd.numeracion\
-                        INNER JOIN esm_formulacion_despachos_medicamentos fdm ON bd.bodegas_doc_id =fdm.bodegas_doc_id and bd.numeracion =fdm.numeracion\
-                        INNER JOIN inventarios_productos ip on ip.codigo_producto = bdd.codigo_producto\
-                        INNER JOIN esm_formula_externa efe on efe.formula_id  =fdm.formula_id\
+                        INNER JOIN esm_formulacion_despachos_medicamentos fdm ON bd.bodegas_doc_id =fdm.bodegas_doc_id and bd.numeracion =fdm.numeracion \
+                        INNER JOIN inventarios_productos ip on ip.codigo_producto = bdd.codigo_producto \
+                        INNER JOIN esm_formula_externa efe on efe.formula_id  =fdm.formula_id \
                         INNER JOIN system_usuarios su on (efe.usuario_id=su.usuario_id) \
                         INNER JOIN planes pl on efe.plan_id= pl.plan_id  \
-                        left JOIN eps_afiliados epa  on epa.afiliado_id=efe.paciente_id and epa.afiliado_tipo_id=efe.tipo_id_paciente\
+                        left JOIN eps_afiliados epa  on epa.afiliado_id=efe.paciente_id and epa.afiliado_tipo_id=efe.tipo_id_paciente \
                         and eps_afiliacion_id=(select epa.eps_afiliacion_id from eps_afiliados epa where epa.afiliado_id=efe.paciente_id and epa.afiliado_tipo_id=efe.tipo_id_paciente and eps_punto_atencion_id!='' order by 1 desc limit 1) \
-                        left join eps_afiliados_datos epad on efe.paciente_id=epad.afiliado_id and efe.tipo_id_paciente=epad.afiliado_tipo_id\
-                        left JOIN eps_puntos_atencion epaten on epaten.eps_punto_atencion_id = epa.eps_punto_atencion_id\
-                        inner join esm_tipos_formulas i on i.tipo_formula_id = efe.tipo_formula\
-                        inner join terceros te on efe.tipo_id_tercero = te.tipo_id_tercero and efe.tercero_id = te.tercero_id\
-                        where\
+                        left join eps_afiliados_datos epad on efe.paciente_id=epad.afiliado_id and efe.tipo_id_paciente=epad.afiliado_tipo_id \
+                        left JOIN eps_puntos_atencion epaten on epaten.eps_punto_atencion_id = epa.eps_punto_atencion_id \
+                        inner join esm_tipos_formulas i on i.tipo_formula_id = efe.tipo_formula \
+                        inner join terceros te on efe.tipo_id_tercero = te.tipo_id_tercero and efe.tercero_id = te.tercero_id \
+                        where \
                         dn.empresa_id= 'FD' and efe.sw_estado not in('2') \
-                        and cast(bd.fecha_registro as date) between (current_date - interval '2 day') and (current_date - interval '1 day' -  interval '1 sec') \
+                        and cast(bd.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '0 day' -  interval '1 sec') \
                         and bdd.total_costo >0 ) \
                     union ( \
                         select\
@@ -306,7 +310,7 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         inner JOIN profesionales prf ON efe.tercero_id =  prf.tercero_id and efe.tipo_id_tercero = prf.tipo_id_tercero\
                         where\
                         dn.empresa_id= 'FD' and  efe.sw_estado not in('2') \
-                        and cast(bd.fecha_registro as date) between (current_date - interval '2 day') and (current_date - interval '1 day' -  interval '1 sec') \
+                        and cast(bd.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '0 day' -  interval '1 sec') \
                         and bdd.total_costo >0) \
                     union( \
                         select\
@@ -316,7 +320,6 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         epad.primer_apellido||' '||epad.segundo_apellido||' '||epad.primer_nombre||' '||epad.segundo_nombre as paciente, \
                         hfc.paciente_id, \
                         w.codigo_cum, \
-                        --fc_descripcion_producto(c.codigo_producto) as producto, \\n\
                         ( \
                        SELECT (w.descripcion || ' '|| COALESCE(w.contenido_unidad_venta,'') || ' '||COALESCE((select uni.descripcion from unidades uni where w.unidad_id = uni.unidad_id),'') || ' | ' ||\
                         COALESCE((select ipre.descripcion from inv_presentacioncomercial ipre where w.presentacioncomercial_id= ipre.presentacioncomercial_id),'') ||' X '||\
@@ -340,26 +343,26 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         g.plan_descripcion, \
                         case when h.eps_punto_atencion_nombre !='' then h.eps_punto_atencion_nombre else g.plan_descripcion END as eps_punto_atencion_nombre, \
                         (case when w.sw_generico = '1' then (c.total_costo *1.35) else (c.total_costo*1.25) end) as precio, \
-                        (case when w.sw_generico = '1' then ((c.total_costo*c.cantidad)*1.35) else ((c.total_costo*c.cantidad)*1.25) end) as total\
+                        (case when w.sw_generico = '1' then ((c.total_costo*c.cantidad)*1.35) else ((c.total_costo*c.cantidad)*1.25) end) as total \
                         from bodegas_doc_numeraciones a  \
-                        inner JOIN bodegas_documentos b on a.bodegas_doc_id=b.bodegas_doc_id\
+                        inner JOIN bodegas_documentos b on a.bodegas_doc_id=b.bodegas_doc_id \
                         INNER JOIN system_usuarios su on (b.usuario_id=su.usuario_id) \
-                        inner JOIN bodegas_documentos_d c on b.bodegas_doc_id = c.bodegas_doc_id and b.numeracion =c.numeracion\
-                        inner JOIN hc_formulacion_despachos_medicamentos_pendientes d on b.bodegas_doc_id =d.bodegas_doc_id and b.numeracion =d.numeracion\
-                        inner JOIN inventarios_productos w on w.codigo_producto = c.codigo_producto\
-                        inner JOIN hc_formulacion_antecedentes_optima hfc on d.evolucion_id = hfc.evolucion_id\
-                        left join eps_afiliados e on e.afiliado_id= hfc.paciente_id and e.afiliado_tipo_id= hfc.tipo_id_paciente\
+                        inner JOIN bodegas_documentos_d c on b.bodegas_doc_id = c.bodegas_doc_id and b.numeracion =c.numeracion \
+                        inner JOIN hc_formulacion_despachos_medicamentos_pendientes d on b.bodegas_doc_id =d.bodegas_doc_id and b.numeracion =d.numeracion \
+                        inner JOIN inventarios_productos w on w.codigo_producto = c.codigo_producto \
+                        inner JOIN hc_formulacion_antecedentes_optima hfc on d.evolucion_id = hfc.evolucion_id \
+                        left join eps_afiliados e on e.afiliado_id= hfc.paciente_id and e.afiliado_tipo_id= hfc.tipo_id_paciente \
                         and e.eps_afiliacion_id=(select epa.eps_afiliacion_id from eps_afiliados epa where epa.afiliado_id=hfc.paciente_id and epa.afiliado_tipo_id=hfc.tipo_id_paciente and eps_punto_atencion_id!='' order by 1 desc limit 1) \
-                        left join eps_afiliados_datos epad on hfc.paciente_id=epad.afiliado_id and hfc.tipo_id_paciente=epad.afiliado_tipo_id\
-                        left join planes_rangos f on e.plan_atencion = f.plan_id\
-                        left join planes g on f.plan_id= g.plan_id\
-                        left join eps_puntos_atencion h on h.eps_punto_atencion_id = e.eps_punto_atencion_id\
-                        inner join hc_evoluciones he on d.evolucion_id=he.evolucion_id\
-                        inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula\
+                        left join eps_afiliados_datos epad on hfc.paciente_id=epad.afiliado_id and hfc.tipo_id_paciente=epad.afiliado_tipo_id \
+                        left join planes_rangos f on e.plan_atencion = f.plan_id \
+                        left join planes g on f.plan_id= g.plan_id \
+                        left join eps_puntos_atencion h on h.eps_punto_atencion_id = e.eps_punto_atencion_id \
+                        inner join hc_evoluciones he on d.evolucion_id=he.evolucion_id \
+                        inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula \
                         where  \
                         a.empresa_id= 'FD' \
-                        and c.total_costo >0\
-                        and cast(b.fecha_registro as date) between (current_date - interval '2 day') and (current_date - interval '1 day' -  interval '1 sec') )   \
+                        and c.total_costo >0 \
+                        and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '0 day' -  interval '1 sec') )   \
                     union(  select  \
                         distinct d.evolucion_id as formula_id,c.lote, \
                         CAST(hfc.numero_formula as text)  as formula_papel, \
@@ -367,7 +370,6 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         epad.primer_apellido||' '||epad.segundo_apellido||' '||epad.primer_nombre||' '||epad.segundo_nombre as paciente, \
                         hfc.paciente_id, \
                         w.codigo_cum, \
-                       -- fc_descripcion_producto(c.codigo_producto) as producto, \\n\
                        ( \
                        SELECT (w.descripcion || ' '|| COALESCE(w.contenido_unidad_venta,'') || ' '||COALESCE((select uni.descripcion from unidades uni where w.unidad_id = uni.unidad_id),'') || ' | ' ||\
                         COALESCE((select ipre.descripcion from inv_presentacioncomercial ipre where w.presentacioncomercial_id= ipre.presentacioncomercial_id),'') ||' X '||\
@@ -391,7 +393,7 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         g.plan_descripcion, \
                         case when h.eps_punto_atencion_nombre !='' then h.eps_punto_atencion_nombre else g.plan_descripcion END as eps_punto_atencion_nombre, \
                         (case when w.sw_generico = '1' then (c.total_costo *1.35) else (c.total_costo*1.25) end) as precio, \
-                        (case when w.sw_generico = '1' then ((c.total_costo*c.cantidad)*1.35) else ((c.total_costo*c.cantidad)*1.25) end) as total\
+                        (case when w.sw_generico = '1' then ((c.total_costo*c.cantidad)*1.35) else ((c.total_costo*c.cantidad)*1.25) end) as total \
                         from bodegas_doc_numeraciones as a  \
                         inner JOIN bodegas_documentos b on a.bodegas_doc_id=b.bodegas_doc_id  \
                         INNER JOIN system_usuarios su on (b.usuario_id=su.usuario_id)   \
@@ -409,15 +411,17 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                         inner join esm_tipos_formulas i on i.tipo_formula_id = he.tipo_formula \
                         where \
                         a.empresa_id= 'FD'   and c.total_costo >0 \
-                        and cast(b.fecha_registro as date) between (current_date - interval '2 day') and (current_date - interval '1 day' -  interval '1 sec') )) as w \
+                        and cast(b.fecha_registro as date) between (current_date - interval '1 day') and (current_date - interval '0 day' -  interval '1 sec') )) as w \
                     where \
                     true  \
                     order by paciente_id,nom_bode,plan_descripcion,descripcion_tipo_formula,producto)";
+    
+   
          var query = G.knex.raw(sql);
                query.then(function(resultado) {
                   callback(false);
-
                 }).catch (function(err) {
+                    console.log("Error addTemporalesReporteDrArias >>>>>>>>>>>>>>",err);
                    callback(err);
                 });
 };

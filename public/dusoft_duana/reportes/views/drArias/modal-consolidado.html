@@ -1,3 +1,15 @@
+ <style>
+  /* Note: Try to remove the following lines to see the effect of CSS positioning */
+ #scrollArea {
+  height: 280px;
+  overflow: auto;
+}
+
+#bottom {
+  display: block;
+  margin-top: 2000px;
+}
+  </style>
 <div class="modal-header">
     <button type="button" class="close" ng-click="close()">&times;</button>
     <h4 class="modal-title"><b>{{titulo}}</b></h4>
@@ -24,68 +36,41 @@
         <div class="col-md-3">
             <h4 class="h4MarginTopBottom"><b>Total:</b></h4> </div>
         <div class="col-md-3">    
-            <h5 class="h4MarginTopBottom">{{consolidado.total}}</h5>
+            <h5 class="h4MarginTopBottom">{{consolidado.total | currency:"$ "}}</h5>
         </div>
-    </div>   
-    <div class="row" ng-if="consolidado.fechafinal!== null">
-        <div class="col-md-6">
-            <h4 class="h4MarginTopBottom"><b>Fecha Fin:</b> </h4> </div>
-        <div class="col-md-6">    
-            <h5 class="h4MarginTopBottom">{{consolidado.fechafinal}}</h5>
-        </div>       
-    </div>   
-    <div class="row" ng-if="consolidado.empresa.codigo !== undefined">
-        <div class="col-md-6">
-            <h4 class="h4MarginTopBottom"><b>Empresa:</b> </h4> </div>
-        <div class="col-md-6">    
-            <h5 class="h4MarginTopBottom">{{consolidado.empresa.nombre}}</h5>
-        </div>       
-    </div>   
-    <div class="row" ng-if="consolidado.centroUtilidad.codigo !== undefined">
-        <div class="col-md-6">
-            <h4 class="h4MarginTopBottom"><b>Centro Utilidad: </b></h4> </div>
-        <div class="col-md-6">    
-            <h5 class="h4MarginTopBottom">{{consolidado.centroUtilidad.nombre}}</h5>
-        </div>       
-    </div>   
-    <div class="row" ng-if="consolidado.bodega.codigo !== undefined">
-        <div class="col-md-6">
-            <h4 class="h4MarginTopBottom"><b>Bodega: </b></h4> </div>
-        <div class="col-md-6">    
-            <h5 class="h4MarginTopBottom">{{consolidado.bodega.nombre}}</h5>
-        </div>       
-    </div>   
-    <div class="row" ng-if="consolidado.documento!== null">
-        <div class="col-md-6">
-            <h4 class="h4MarginTopBottom"><b>Documento del Paciente: </b></h4> </div>
-        <div class="col-md-6">    
-            <h5 class="h4MarginTopBottom">{{consolidado.documento}}</h5>
-        </div>       
-    </div>   
-    <div class="row"ng-if="consolidado.codigoProducto!== null">
-        <div class="col-md-6">
-            <h4 class="h4MarginTopBottom"><b>Codigo del Producto: </b></h4> </div>
-        <div class="col-md-6">    
-            <h5 class="h4MarginTopBottom">{{consolidado.codigoProducto}}</h5>
-        </div>       
-    </div>   
-    <div class="row" ng-if="consolidado.descripcion!== null">
-        <div class="col-md-6">
-            <h4 class="h4MarginTopBottom"><b>Descripción del Producto: </b></h4> </div>
-        <div class="col-md-6">    
-            <h5 class="h4MarginTopBottom">{{consolidado.descripcion}}</h5>
-        </div>       
-    </div>   
-    <div class="row" ng-if="consolidado.plan !== null">
-        <div class="col-md-6">
-            <h4 class="h4MarginTopBottom"><b>Plan: </b></h4> </div>
-        <div class="col-md-6">    
-            <h5 class="h4MarginTopBottom">{{consolidado.plan}}</h5>
-        </div>       
-    </div>   
+    </div>  
+       <hr />
+       <div id="scrollArea">
+            <table  class="table table-hover" width='90%' align='center'>
+                <thead>
+                    <tr>
+                      <th >NOMBRE BODEGA</th>
+                      <th ><span class="glyphicon glyphicon-user" title='Pacientes' ></span></th>
+                      <th ><span class="glyphicon glyphicon-file" title='Formulas' ></span></th>
+                      <th align='right' >TOTAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                    <tr ng-repeat="x in consolidado.consolidadoBodegas">
+                      <td align='left'>{{ x.bodega }}</td>
+                      <td >{{ x.countpaciente }}</td>
+                      <td>{{ x.countformula }}</td>
+                      <td align='right'>{{ x.total | currency:"$ "}}</td>
+                    </tr>
+               <tbody>
+            </table>
+        </div>   
 </div>   
 <div class="modal-footer">
     <button class="btn btn-warning" ng-click="close()">cerrar</button>         
 </div>
+  
+<!--  <div>
+  <h2>Basic List Group</h2>
+  <ul class="list-group" ng-repeat="x in consolidado.consolidadoBodegas" >
+    <li class="list-group-item">{{ x.bodega }}</li>
+  </ul>
+</div>-->
 
 

@@ -43,7 +43,8 @@ define(["angular", "js/services"], function(angular, services) {
                                     session: obj.session,
                                     data: obj
                                 },
-                            function(data) {     
+                            function(data) {   
+                                console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA22",data);
                                 callback(data);  
                             }
                         );

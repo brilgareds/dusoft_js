@@ -22,7 +22,6 @@ define(["angular", "js/controllers",
 
             $scope.rootEditarProducto = {};
             $scope.rootEditarProducto.producto = producto;
-
             $scope.rootEditarProducto.pedido = angular.copy(documento.getPedido());
             $scope.rootEditarProducto.documento = documento;
             $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;

@@ -1,0 +1,21 @@
+<div>
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
+                <button type="button" class="btn btn-primary" ng-click="abrirModalDrArias()" name="btnCrearPedido">
+                    <span class="glyphicon glyphicon-plus"></span> Generar
+                </button>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">    
+        <div class="col-md-12 col-lg-12">
+            <div class="table-responsive" >
+                <div class="defaultGrid grid-responsive" ng-grid="lista_reportesGenerados">
+                </div>
+            </div>
+            <visualizar-reporte></visualizar-reporte>
+        </div>
+    </div>
+</div>

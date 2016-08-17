@@ -76,6 +76,12 @@ Modulos.prototype.guardarModulo = function(req, res) {
     modulo.usuario_id = req.session.user.usuario_id;
     modulo.usuario_id_modifica = req.session.user.usuario_id;
 
+    if(modulo.swReporte===true){
+        modulo.swReporte='1';  
+      }else{
+          modulo.swReporte='0';
+      }
+        
     that.m_modulo.guardarModulo(modulo, function(err, rows) {
         if (err) {
             

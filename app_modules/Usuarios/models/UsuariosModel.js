@@ -280,6 +280,7 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
              transaccion.rollback(err);
          }).done();
      }).then(function(resultado){
+            that.borrarCacheUsuario(usuario_id);
             callback(false, login_empresa_id, modulos_ids);
      }).catch(function(err){
             console.log("error generado >>>>>>>>>>>>", err);
@@ -302,6 +303,9 @@ UsuariosModel.prototype.habilitarModulosDeUsuario = function(usuario_id, rolesMo
              transaccion.rollback(err);
          }).done();
      }).then(function(){
+            
+            that.borrarCacheUsuario(usuario_id);
+            
             callback(false, _resultado);
      }).catch(function(err){
             console.log("error generado >>>>>>>>>>>>", err);
@@ -317,6 +321,7 @@ UsuariosModel.prototype.deshabilitarBodegasUsuario = function(usuario_id, login_
     //that.m_bodegas.listar_bodegas_empresa(empresa_id, centro_utilidad_id, function(err, rows) {
 
         __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, function(err, rows) {
+            that.borrarCacheUsuario(usuario_id);
             callback(err, rows);
         });
   //  });
@@ -327,6 +332,9 @@ UsuariosModel.prototype.deshabilitarBodegasUsuario = function(usuario_id, login_
 UsuariosModel.prototype.guardarCentroUtilidadBodegaUsuario = function(usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodegas, estado, callback) {
     var that = this;
     __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodegas, estado, function(err) {
+        
+        that.borrarCacheUsuario(usuario_id);
+            
         callback(err);
     });
 };
@@ -371,76 +379,86 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
     var parametrizacion = {};
     var empresa_id = params.empresa_id;
     var usuario_id = params.usuario_id;
-    //obtiene el rol del usuario
-    that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol) {
-        //console.log("usuario obtenido ", rol);
+    var llave = G.constants.llavesCache().USURIO_PARAMETRIZACION + "_" + usuario_id; 
+    
+    G.redis.get(llave,function(err, resultado){
+        if(!resultado){
+            console.log("obtener parametrizacion de usuario sin cache");
+            //obtiene el rol del usuario
+            that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol) {
+                //console.log("usuario obtenido ", rol);
 
-        //el usuario no tiene un rol asignado como predeterminado
-        if (!rol || !rol.id) {
-            callback(err, parametrizacion);
-            return;
-        }
-
-        //obtiene los modulos del usuario
-        that.m_modulo.listarModulosUsuario(rol.id, empresa_id, usuario_id, params.modulos, function(err, modulos) {
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            parametrizacion.rol = rol;
-
-            //obtiene las opciones correspondientes de cada modulo
-            __asignarOpcionesModulo(that, modulos, 0, rol.id, empresa_id, usuario_id, function(err, modulos) {
-
-                if (err) {
-                    callback(err);
+                //el usuario no tiene un rol asignado como predeterminado
+                if (!rol || !rol.id) {
+                    callback(err, parametrizacion);
                     return;
                 }
-                __asignarVariablesModulo(that, modulos, 0, function(err, modulos) {
 
+                //obtiene los modulos del usuario
+                that.m_modulo.listarModulosUsuario(rol.id, empresa_id, usuario_id, params.modulos, function(err, modulos) {
                     if (err) {
                         callback(err);
                         return;
                     }
 
-                    parametrizacion.modulos = modulos;
+                    parametrizacion.rol = rol;
 
-                    //obtiene los centros de utilidad basado en la empresa del usuario
-                    that.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, false, undefined, "", function(err, rows) {
+                    //obtiene las opciones correspondientes de cada modulo
+                    __asignarOpcionesModulo(that, modulos, 0, rol.id, empresa_id, usuario_id, function(err, modulos) {
+
                         if (err) {
                             callback(err);
                             return;
                         }
+                        __asignarVariablesModulo(that, modulos, 0, function(err, modulos) {
 
-                        //console.log("centros utilidad usuario ", rows, empresa_id, usuario_id);
-                        //return;
-
-                        if (rows.length === 0) {
-                            if(params.convertirJSON){
-                                parametrizacion.modulos = __serializarJson(parametrizacion.modulos);
+                            if (err) {
+                                callback(err);
+                                return;
                             }
-                            callback(err, parametrizacion);
-                            return;
-                        }
 
-                        //asigna las bodegas del centro de utilidad
-                        __obtenerBodegasCentroUtilidadUsuario(that, 0, empresa_id, usuario_id, rows, function(err, centros) {
-                            if(params.convertirJSON){
-                                parametrizacion.modulos =  __serializarJson(parametrizacion.modulos);
-                            }
-                            parametrizacion.centros_utilidad = centros;
-                            callback(err, parametrizacion);
+                            parametrizacion.modulos = modulos;
+                            parametrizacion.modulosJson = __serializarJson(parametrizacion.modulos);
+                            
+                            //obtiene los centros de utilidad basado en la empresa del usuario
+                            that.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, false, undefined, "", function(err, rows) {
+                                if (err) {
+                                    callback(err);
+                                    return;
+                                }
+
+
+                                if (rows.length === 0) {
+                                    G.redis.setex(llave, G.constants.expiracionCache, JSON.stringify(parametrizacion));
+                                    callback(err, parametrizacion);
+                                    return;
+                                }
+
+                                //asigna las bodegas del centro de utilidad
+                                __obtenerBodegasCentroUtilidadUsuario(that, 0, empresa_id, usuario_id, rows, function(err, centros) {
+
+                                    parametrizacion.centros_utilidad = centros;
+                                    G.redis.setex(llave, G.constants.expiracionCache, JSON.stringify(parametrizacion));
+                                    callback(err, parametrizacion);
+                                });
+
+
+                            });
                         });
-
-
                     });
+
                 });
+
             });
-
-        });
-
+            
+        } else {
+            console.log("obteniendo parametrizacion usuario de cache con llave ", llave);  
+            callback(err, JSON.parse(resultado));
+        }
+        
     });
+    
+
 };
 
 function __serializarJson(modulos){
@@ -473,11 +491,12 @@ UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, 
     var params = {
         1:empresa_id
     };
-    
+    var that = this;
     var query = G.knex.raw(sql, params);
     if(transaccion) query.transacting(transaccion);
     
     query.then(function(resultado){
+        that.borrarCacheUsuario(usuario_id);
         callback(false, resultado);
     }).catch(function(err){
        // console.log("catch error________________________ ", err);
@@ -489,6 +508,7 @@ UsuariosModel.prototype.sobreEscribirOpcionesDelRol = function(usuario_id, rol_i
     var that = this;
     // console.log(">>>>>>>>>>>>>>>>>>> ",ids);
     __sobreEscribirOpcionesDelRol(that, usuario_id, rol_id, empresa_id, modulos_ids, transaccion, function(err) {
+        that.borrarCacheUsuario(usuario_id);
         callback(err);
     });
 
@@ -524,6 +544,7 @@ UsuariosModel.prototype.sobreEscribirModulosDelRol = function(login_id, empresa_
 
         __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresa, [], transaccion, function(err, ids) {
             //console.log("ids insertados >>>>>>> ", ids)
+            that.borrarCacheUsuario(usuario_id);
             callback(err, ids);
         });
 
@@ -544,6 +565,9 @@ UsuariosModel.prototype.guardarOpcion = function(usuario_id, opcion, login_modul
              transaccion.rollback(err);
          }).done();
      }).then(function(){
+         
+            that.borrarCacheUsuario(usuario_id);
+         
             callback(false, _resultado);
      }).catch(function(err){
             console.log("error generado >>>>>>>>>>>>", err);
@@ -644,6 +668,12 @@ UsuariosModel.prototype.borrarParametrizacionPorUsuario = function(usuario_id, c
          callback(err);
      });
      
+};
+
+UsuariosModel.prototype.borrarCacheUsuario = function(usuario_id){
+    var llave = G.constants.llavesCache().USURIO_PARAMETRIZACION + "_" + usuario_id; 
+    console.log("borrar llave de cache ", llave);
+    G.redis.del(llave);
 };
 
 

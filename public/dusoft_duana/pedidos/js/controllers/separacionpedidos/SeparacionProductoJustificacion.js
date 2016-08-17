@@ -21,12 +21,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
              
+             
                                
                 var parametros =  {
                     empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                     session:$scope.rootJustificacion.session
                 };
                 
+
                 AuditoriaDespachoService.obtenerJustificaciones(parametros,function(resultado){
                     if(resultado.status === 200){
                         $scope.rootJustificacion.justificaciones = resultado.obj.justificaciones;
@@ -35,6 +37,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                         AlertService.mostrarVentanaAlerta("Error", "Se ha generado un error");
                     }
                 });
+
       
             };
              

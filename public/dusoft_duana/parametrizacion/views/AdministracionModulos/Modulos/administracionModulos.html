@@ -14,8 +14,10 @@
                             <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</label>
                         <input-check ng-model="rootModulos.moduloAGuardar.nodo_principal" ng-change="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal"  ></input-check>
                         <label for="habilitar" style='margin-right: 5px;' >Activar</label>
-                        <input-check ng-model="rootModulos.moduloAGuardar.estado" id="habilitar"  ></input-check>
-
+                        <input-check ng-model="rootModulos.moduloAGuardar.estado" id="habilitar" style='margin-right: 20px;' ></input-check>
+                        <label ng-if="!rootModulos.moduloAGuardar.isPadre" for="reporte" style='margin-right: 5px;' >Reporte</label>
+                        <input-check ng-if="!rootModulos.moduloAGuardar.isPadre" ng-model="rootModulos.moduloAGuardar.swReporte" id="habilitarReporte"  ></input-check>
+                
                         <button type="button" class="btn btn-default  pull-right" ng-disabled="rootModulos.moduloAGuardar.id == 0"  ng-click='onHabilitarModuloEnEmpresas()'>Habilitar En Empresas</button>
 
                         </p>

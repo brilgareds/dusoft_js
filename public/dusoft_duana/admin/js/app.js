@@ -1,6 +1,6 @@
 //main app module
  define(["angular", "route", "bootstrap","js/controllers", "js/models", 
-  "controllers/Logincontroller", "controllers/ControlPanelController", "includes/classes/Usuario", "bootstrapjs", "js/directive",
+  "controllers/Logincontroller", "controllers/ControlPanelController", "controllers/ReportesController", "includes/classes/Usuario", "bootstrapjs", "js/directive",
   "directive/focus","js/services", "url",
   "loader","storage", "includes/http/Request", "includes/alert/Alert"
   
@@ -37,6 +37,11 @@
                 url: "/InicializarModulos",
                 templateUrl: "views/inicializarModulos.html",
                 controller:"SetupController"
+                
+            }).state('ControlPanel.monitoreoReporte', {
+                url: "/MonitoreoReporte",
+                templateUrl: "views/monitoreoReporte.html",
+                controller:"ReportesController"
             });
             
             

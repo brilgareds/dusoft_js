@@ -9,7 +9,8 @@
     var data = {
 	  'API': {
 	    'ADMIN':{
-                'INICIALIZAR_APLICACION': BASE_URL+"/Admin/inicializarAplicacion"
+                'INICIALIZAR_APLICACION': BASE_URL+"/Admin/inicializarAplicacion",
+                'OBTENER_CONFIGURACION_REPORTE': BASE_URL+"/Admin/ReportesAdmin/obtenerConfiguracionReporte"
 	    },
             'MODULOS':{
                 'OBTENER_CANTIDAD_MODULOS': BASE_URL+"/Modulos/obtenerCantidadModulos"

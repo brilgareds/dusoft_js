@@ -1,0 +1,101 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title">{{titulo}}</h4>
+</div>
+<div class="modal-body">
+    <alert  type="danger" close="dialog = false" ng-show="dialog"><span ng-bind="msg"></span></alert>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label>Fecha Inicio: </label>
+            <p class="input-group">
+                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="filtro.fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" 
+                       ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+
+        <div class="col-md-6">
+            <label>Fecha Fin: </label>
+            <p class="input-group">
+                <input type="text" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="filtro.fechafinal" is-open="abrirfechafinal" min="fechainicial"  readonly  close-text="Cerrar"
+                       clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p> 
+        </div>
+    </div> 
+    <div class="row">
+        <div class="col-md-12">
+            </br>
+            <label>Empresa:</label>
+            <ui-select ng-change="onEmpresaSeleccionada()" ng-model="filtro.empresa_seleccion" theme="select2" class="form-control selectgeneral pull-left">
+                <ui-select-match  placeholder="Seleccionar Empresa"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
+                <ui-select-choices repeat="empresa in  listaEmpresas | filter:$select.search">        
+                    <span ng-bind="empresa.getNombre()"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            </br>
+            <label>Centro de Utilidad:</label>
+            <ui-select ng-change="onCentroSeleccionado()" ng-model="filtro.centro_seleccion" theme="select2" class="form-control selectgeneral pull-left">
+                <ui-select-match  placeholder="Seleccionar Centro de Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
+                <ui-select-choices repeat="centro in  listaCentroUtilidad | filter:$select.search">
+                    <span ng-bind="centro.getNombre()"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+        <div class="col-md-6">
+             </br>
+            <label>Bodega:</label>
+            <ui-select  ng-model="filtro.bodega_seleccion" theme="select2" class="form-control selectgeneral pull-left">
+                <ui-select-match  placeholder="Seleccionar Bodega"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
+                <ui-select-choices repeat="bodega in  listaBodegas| filter:$select.search">
+                    <span ng-bind="bodega.getNombre()"></span>  
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            </br>
+            <label>Documento del Paciente</label>
+            <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda_documento)" ng-model="filtro.documento" name="srch-term" id="srch-term" />
+        </div>
+        <div class="col-md-4">
+            </br>
+            <label>Codigo del Producto</label>
+            <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda_codigo)" ng-model="filtro.codigo" name="srch-term" id="srch-term" />
+        </div>
+        <div class="col-md-4">
+            </br>
+            <label>Descripción del Producto</label>
+            <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda_descripcion)" ng-model="filtro.descripcion" name="srch-term" id="srch-term" />
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-12">
+            <label>Plan</label>
+            <ui-select  ng-model="filtro.plan_seleccion" theme="select2" class="form-control selectgeneral pull-left">
+                <ui-select-match  placeholder="Seleccionar Plan"><span ng-bind="$select.selected.getPlanDescripcion()"></span></ui-select-match>
+                <ui-select-choices repeat="plan in listarPlanes| filter:$select.search">
+                    <span ng-bind="plan.planDescripcion"></span>  
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>  
+</div>   
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="realizarAsignacion()" ng-disabled="operario"  >Generar</button>
+    <button class="btn btn-warning" ng-click="close()">Cancelar</button>         
+</div>                            

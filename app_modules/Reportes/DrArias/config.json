@@ -1,0 +1,33 @@
+{
+    "module": "DrArias",
+    "dependency": {
+        "controllers": [{
+                "reportes_controller": {
+                    "module": "Reportes/DrArias",
+                    "controller": "ReportesController",
+                    "alias": "c_reportes"
+                }
+            }],
+        "models": [{
+                "autorizaciones_model": {
+                    "module": "Reportes/DrArias",
+                    "model": "DrAriasModel",
+                    "alias": "m_drArias"
+                }
+            }],
+        "events": [{
+                "dr_arias_events": {
+                    "module": "Reportes/DrArias",
+                    "event": "DrAriasEvents",
+                    "alias": "e_dr_arias"
+                }
+            }],
+        "cronJobs": [{
+            "ReporteDrAriasJobs_crontab": {
+                "module": "Reportes/DrArias",
+                "cronjob": "ReporteDrAriasJobs",
+                "alias": "j_reporteDrAriasJobs"
+            }
+        }]
+    }
+}

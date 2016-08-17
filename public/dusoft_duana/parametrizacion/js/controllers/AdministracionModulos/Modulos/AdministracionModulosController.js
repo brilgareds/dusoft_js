@@ -372,7 +372,7 @@ define([
             $scope.onLimpiarFormularioVariable = function(){
                 $scope.rootModulos.moduloAGuardar.setVariableAGuardar(VariableModulo.get());
             };
-
+                      
             $scope.onGuardarModulo = function() {
                 var validacion = self.validarCreacionModulo();
 
@@ -526,12 +526,13 @@ define([
                                 modulo.nombre,
                                 modulo.url
                          );
-
                         _modulo.setIcon(modulo.icon);
                         _modulo.setState(modulo.state);
                         _modulo.setObservacion(modulo.observacion);
                         _modulo.setEstado(modulo.estado);
                         _modulo.setCarpetaRaiz(modulo.carpeta_raiz);
+                        _modulo.setSwReporte(modulo.sw_reporte);
+                        _modulo.setIsPadre(modulo.ispadre);
                         
                         //valida si tiene padres
                         if(modulos_seleccionado.padres.length > 0){

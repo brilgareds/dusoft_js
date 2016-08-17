@@ -39,7 +39,8 @@ G.Q = require('q');
 G.accounting = accounting;
 G.XlsParser =  require("./lib/XlsParser");
 G.moment = require("moment");
-
+G.jsonQuery = require('jinq');
+G.json2csv = require('json2csv');
 var events = require('events');
 G.eventEmitter = new events.EventEmitter();
 
@@ -195,8 +196,8 @@ if (cluster.isMaster) {
         threshold : 0
     }));
     
-    
     var tiempo = 10800000;
+    
     app.set('port', process.env.PORT || G.settings.server_port);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
@@ -206,6 +207,7 @@ if (cluster.isMaster) {
     app.use(express.json());
     app.use(express.urlencoded());
     app.use(express.methodOverride());
+    
     //========================================
     app.use(express.cookieParser('123Dusoft123'));
     app.use(express.session());
@@ -214,13 +216,8 @@ if (cluster.isMaster) {
     app.use(G.auth.validate());
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
-    //app.use(express.static(path.join(__dirname, 'public')));
     app.use(express.static(path.join(__dirname, 'files')));
     
-    
-   
-    
-
     /*=========================================
      * error handlers
      * development error handler

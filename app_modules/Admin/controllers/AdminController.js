@@ -29,7 +29,7 @@ Admin.prototype.inicializarAplicacion = function(req, res){
     
 };
 
-
+    
 Admin.$inject = ["m_admin", "job_temporales"];
 
 module.exports = Admin;

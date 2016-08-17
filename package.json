@@ -18,9 +18,10 @@
     "intravenous": "latest",
     "j": "^0.4.3",
     "jade": "*",
+    "jinq": "^1.6.0",
     "jsreport": "0.2.1",
     "jsreport-client": "*",
-    "knex": "^0.8.6",
+    "knex": "^0.11.5",
     "moment": "^2.13.0",
     "node-xlsx": "~0.5.1",
     "nodemailer": "^0.6.1",
@@ -30,6 +31,8 @@
     "soap": "^0.13.0",
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
-    "xls-to-json": "*"
+    "xls-to-json": "*",
+    "json2csv": "~3.4.2",
+    "promise": "~7.1.1"
   }
 }

@@ -938,7 +938,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
              * elimina   hc_dispensacion_medicamentos_tmp
              */        
             return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
-        //console.log("resultado fechaMaxima: ((( ", parametrosGenerarDispensacion );
+        
     })
             
             

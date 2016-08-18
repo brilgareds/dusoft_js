@@ -800,7 +800,6 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
    var now = new Date(); 
    var dateHoy = G.moment(now).format(formato);
    
-  
    
     var that = this;
     var args = req.body.data;   
@@ -891,10 +890,22 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             throw 'No se genero numero de despacho'
         }else{
             numeracion = resultado.rows[0].numeracion;
-            var fechaRegistro = G.moment(now).add(25, 'day').format(formato);
-            var fechaMinima   = G.moment(now).add(20, 'day').format(formato);
-            var fechaMaxima   = G.moment(now).add(33, 'day').format(formato);
-                
+            var fechaEntrega = G.moment(now).add(30, 'day').format(formato);
+            var fechaMinima   = G.moment(now).add(25, 'day').format(formato);
+            var fechaMaxima   = G.moment(now).add(30, 'day');//Dias habiles
+               
+            ///PRUEBA
+            var diasHabiles = G.moment("2016-08-11");
+            
+           // diasHabiles.agregarDiasHabiles(3);
+            
+            console.log("FECHA NORMAL ", diasHabiles);
+            console.log("diasHabiles ",  diasHabiles.get('date'));
+                /*fechaMaxima._d.addBusDays(2);
+                console.log("B - FECHA MAXIMA CON (3) DIAS HABILES", fechaMaxima._d);
+            var diasHabiles   = G.moment(fechaMaxima._d).format(formato);
+                console.log("C - FECHA MAXIMA CON DIAS HABILIES FORMATO " , diasHabiles);*/
+            
             var parametrosGenerarDispensacion=
                   {
                     parametro1:{ bodegasDocId:bodegasDocId, 
@@ -904,9 +915,9 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                         usuario: usuario,
                         evolucion: evolucionId,
                         todoPendiente: todoPendiente,
-                        fechaRegistro: fechaRegistro, 
+                        fechaEntrega: fechaEntrega, 
                         fechaMinima:fechaMinima, 
-                        fechaMaxima:fechaMaxima,
+                        fechaMaxima:diasHabiles,
                             
                     },
                     
@@ -930,7 +941,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
              * Consulta  Medicamentos pendientes
              * elimina   hc_dispensacion_medicamentos_tmp
              */        
-            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
+            //return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
         };
             
             
@@ -949,8 +960,75 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     }).done();    
 };
 
+Number.prototype.mod = function(n) {
+    return ((this%n)+n)%n;
+}
 
+Date.prototype.agregarDiasHabiles = function(dd) {
+    var wks = Math.floor(dd/5);
+    
+        console.log("wks ", wks);
+    
+    var dys = dd.mod(5);
+        console.log("dys ", dys);
+        
+    var dy = this.getDay();
+        console.log("dy ", dy);
+        
+    if (dy === 6 && dys > -1) { 
+        if (dys === 0) {
+            dys-=2; dy+=2;
+        } dys++; dy -= 6;
+    }
+    
+    if (dy === 0 && dys < 1) { 
+        if (dys === 0) {
+            dys+=2; dy-=2;
+        } dys--; dy += 6;
+    }
+    
+    if (dy + dys > 5) 
+        dys += 2;
+    
+    if (dy + dys < 1) 
+        dys -= 2;
+    
+    this.setDate(this.getDate()+wks*7+dys);
+};
 
+var diasFestivos = function(){
+    
+    var enero = [];
+        enero.push(1);
+        enero.push(11);
+        
+    var marzo = [];
+        marzo.push(21);
+        marzo.push(24);
+        marzo.push(25);
+        
+    var mayo = [];
+        mayo.push(9);
+        mayo.push(30);
+        
+        
+    var junio = [];
+        junio.push(6);
+        
+    var julio = [];
+        julio.push(4);  
+        julio.push(20); 
+        
+    var agosto = [];
+        agosto.push(15);  
+
+    var octubre = [];
+        octubre.push(17);
+        
+    var noviembre = [];
+        noviembre.push(7);
+        noviembre.push(14);
+}
 
 DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
    

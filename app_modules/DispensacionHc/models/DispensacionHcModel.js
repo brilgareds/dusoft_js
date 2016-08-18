@@ -1403,7 +1403,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
          
         }).then(function(){
                 console.log("---->>obj ", obj);
-                return G.Q.ninvoke(that,'actualizarDispensacionEstados',{evolucionId:obj.parametro1}, transaccion); 
+                return G.Q.ninvoke(that,'actualizarDispensacionEstados', obj.parametro1 , transaccion); 
          
         }).then(function(){  
             console.log("TRANSACCION COMMIT ");
@@ -1432,30 +1432,43 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
  * */
 DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,transaccion, callback){
    
-   console.log("obj parametros 1 ", obj);
-   var parametros = {1: obj.evolucionId,  
-                     2: obj.fechaRegistro,
-                     3: obj.fechaMinima,
-                     4: obj.fechaMaxima
-                     }; 
-   
-   var numeroEntrega = "";
-   
+   /* var parametros = {fecha_registro: obj.fechaRegistro,
+                     fecha_minima_entrega: obj.fechaMinima,
+                     fecha_maxima_entrega: obj.fechaMaxima};
    //Si se esta dispensando la formula en ves de un pendiente
-   if(obj.pendiente !== 1){      
-       numeroEntrega = "numero_entrega_actual = :5,";
-       parametros["5"]= "numero_entrega_actual +1";
-   }
+    if(obj.todoPendiente !== 1){          
+      parametros['numero_entrega_actual']= 'numero_entrega_actual +1';     
+    }
    
-     
-   var sql = "UPDATE  dispensacion_estados\
-		SET   "+numeroEntrega+"  \
-                        fecha_registro= :2,\
-                        fecha_minima_entrega= :3,\
-                        fecha_maxima_entrega= :4,\
-              WHERE   evolucion_id = :1;";          
-   var query = G.knex.raw(sql,parametros);
+   console.log("Parametros a qui ", parametros);
+    var query =G.knex("dispensacion_estados")
+            .where("evolucion_id", obj.evolucion)
+            .update(parametros);
     
+    if(transaccion) query.transacting(transaccion);     
+      query.then(function(resultado){ 
+        console.log("A QUI resultado ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err ", err);
+        callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
+    });  */
+
+   var parametros = {fecha_entrega: obj.fechaEntrega,
+                    fecha_minima_entrega: obj.fechaMinima,
+                    fecha_maxima_entrega: obj.fechaMaxima,
+                    evolucion_id : obj.evolucion};
+  
+   var sql = "UPDATE dispensacion_estados\
+		SET numero_entrega_actual = numero_entrega_actual+1,\
+                        fecha_entrega= :fecha_entrega,\
+                        fecha_minima_entrega= :fecha_minima_entrega,\
+                        fecha_maxima_entrega= :fecha_maxima_entrega\
+              WHERE evolucion_id = :evolucion_id ;";      
+    
+    
+    var query = G.knex.raw(sql,parametros);
+   
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){ 
           console.log("A QUI resultado ", resultado);

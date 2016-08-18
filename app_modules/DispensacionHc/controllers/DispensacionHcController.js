@@ -796,10 +796,6 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
    console.log("***DispensacionHc.prototype.realizarEntregaFormula ***********");
    
    
-   var formato = 'DD-MM-YYYY';
-   var now = new Date(); 
-   var dateHoy = G.moment(now).format(formato);
-   
    
     var that = this;
     var args = req.body.data;   
@@ -837,6 +833,11 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     var numeracion;
     var temporales;
     var todoPendiente;
+    //Variables para calcular la fecha maxima de entrega de una formula
+    var formato = 'YYYY-MM-DD';
+    var now = new Date(); 
+    var fechaEntrega;
+    var fechaMinima;
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0};
@@ -890,23 +891,18 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             throw 'No se genero numero de despacho'
         }else{
             numeracion = resultado.rows[0].numeracion;
-            var fechaEntrega = G.moment(now).add(30, 'day').format(formato);
-            var fechaMinima   = G.moment(now).add(25, 'day').format(formato);
-            var fechaMaxima   = G.moment(now).add(30, 'day');//Dias habiles
-               
-            ///PRUEBA
-            var diasHabiles = G.moment("2016-08-11");
             
-           // diasHabiles.agregarDiasHabiles(3);
+            fechaEntrega = G.moment(now).add(30, 'day').format(formato);
+            fechaMinima   = G.moment(now).add(25, 'day').format(formato);
+         
+            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:8});
+           
+        };
             
-            console.log("FECHA NORMAL ", diasHabiles);
-            console.log("diasHabiles ",  diasHabiles.get('date'));
-                /*fechaMaxima._d.addBusDays(2);
-                console.log("B - FECHA MAXIMA CON (3) DIAS HABILES", fechaMaxima._d);
-            var diasHabiles   = G.moment(fechaMaxima._d).format(formato);
-                console.log("C - FECHA MAXIMA CON DIAS HABILIES FORMATO " , diasHabiles);*/
             
-            var parametrosGenerarDispensacion=
+    }).then(function(resultado){
+        
+         var parametrosGenerarDispensacion=
                   {
                     parametro1:{ bodegasDocId:bodegasDocId, 
                         numeracion:numeracion, 
@@ -917,7 +913,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                         todoPendiente: todoPendiente,
                         fechaEntrega: fechaEntrega, 
                         fechaMinima:fechaMinima, 
-                        fechaMaxima:diasHabiles,
+                        fechaMaxima:resultado.fechaMaxima,
                             
                     },
                     
@@ -941,11 +937,12 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
              * Consulta  Medicamentos pendientes
              * elimina   hc_dispensacion_medicamentos_tmp
              */        
-            //return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
-        };
+            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
+        //console.log("resultado fechaMaxima: ((( ", parametrosGenerarDispensacion );
+    })
             
             
-    }).then(function(){          
+            .then(function(){          
          return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});            
     }).then(function(resultado){
         
@@ -959,6 +956,54 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();    
 };
+
+
+
+
+function __calcularMaximaFechaEntregaFormula(obj, callback){
+    var url =  G.constants.WS().DISPENSACION_HC.FECHA_MAXIMA ;
+    var resultado;
+    
+    console.log("url ", url);
+    obj.parametros = {
+        fecha_base:obj.fecha_base,
+        dias_vigencia:obj.dias_vigencia
+      
+    };
+    obj.error = false;
+    
+    //Se invoca el ws
+    G.Q.nfcall(G.soap.createClient, url).
+    then(function(client) {
+        
+        return G.Q.ninvoke(client, "SumarDiasHabiles", obj.parametros);
+    }).
+    spread(function(result,raw,soapHeader){
+                
+        if(!result.return.msj["$value"]){
+            throw {msj:"Se ha generado un error", status:403, obj:{}}; 
+        } else {            
+            obj.fechaMaxima = result.return.msj["$value"];
+          
+        }
+        
+    }).
+   then(function(){
+      
+        callback(false, obj);
+        
+    }).fail(function(err) {
+        
+        obj.error = true;
+        obj.tipo = '0';
+        callback(err);
+       
+    }).done();
+}
+
+
+
+
 
 Number.prototype.mod = function(n) {
     return ((this%n)+n)%n;

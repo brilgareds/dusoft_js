@@ -1164,11 +1164,13 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
         }).then(function(){
                 return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)          
         }).then(function(resultado){
-          
+            console.log("resultado Producto temporal ", resultado);
                 if(resultado.rows.length >0){                                   
                     return G.Q.ninvoke(that,'listarMedicamentosPendientesSinDispensar',{evolucionId:obj.parametro1.evolucion});                                   
                 }                    
-        }).then(function(resultado){           
+        }).then(function(resultado){     
+            
+            console.log("resultado Pendientes sin dispensar ---->>>> ", resultado);
                 var def = G.Q.defer();
                 if(resultado.rows.length >0){                   
                  
@@ -1207,16 +1209,16 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
  **/
 function __insertarMedicamentosPendientesPorDispensar(that, index, productos, parametros,transaccion, callback) {
     
-    console.log("******__insertarMedicamentosPendientesPorDispensar*******");
+   /* console.log("******__insertarMedicamentosPendientesPorDispensar*******");
     console.log("******__insertarMedicamentosPendientesPorDispensar*******");
     console.log("******__insertarMedicamentosPendientesPorDispensar*******");
     console.log("that ", that);
     console.log("index ", index);
     console.log("parametros ", productos);
-    console.log("evolucion ", parametros.evolucion);
+    console.log("evolucion ", parametros.evolucion);*/
     
     var producto = productos[index];
-        console.log("producto ", producto);
+                 
     if (!producto) {       
         callback(false);
         return;
@@ -1224,14 +1226,18 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
   
       console.log("9) Accion : insertarBodegasDocumentosDetalle ");
     
-    if(parseInt(producto.total) > 0){
-        G.Q.ninvoke(that,'actualizarProductoPorBodega',parametros.evolucion,producto, transaccion).then(function(resultado){
+     console.log("producto ", producto);  
+        G.Q.ninvoke(that,'actualizarProductoPendientePorBodega',parametros.evolucion,producto, transaccion).then(function(resultado){
             
-            return G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, parametros.evolucion, parametros.todoPendiente, parametros.usuario, transaccion);
-            
+            if(parseInt(producto.total) > 0){
+                return G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, parametros.evolucion, parametros.todoPendiente, parametros.usuario, transaccion);
+            }
          }).fail(function(err){      
-       }).done();   
-    }
+       }).done();                 
+       
+       
+       
+   
     index++;
     setTimeout(function() {
         __insertarMedicamentosPendientesPorDispensar(that, index, productos,parametros,transaccion, callback);
@@ -1246,9 +1252,9 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
  * +Descripcion Modelo encargado de actualizar el estado de los pendientes como entregados
  * @controller DispensacionHc.prototype.existenciasBodegas
  */
-DispensacionHcModel.prototype.actualizarProductoPorBodega = function(evolucion,producto,transaccion, callback){
-   console.log("******DispensacionHcModel.prototype.actualizarProductoPorBodega*****")
-   var parametros = {1: evolucion, 2: producto};   
+DispensacionHcModel.prototype.actualizarProductoPendientePorBodega = function(evolucion,producto,transaccion, callback){
+  
+   var parametros = {1: evolucion, 2: producto.codigo_producto};   
    var sql = "UPDATE hc_pendientes_por_dispensar\
 		SET sw_estado='1'\
 		WHERE evolucion_id = :1 AND codigo_medicamento = :2 ;";          
@@ -1256,7 +1262,7 @@ DispensacionHcModel.prototype.actualizarProductoPorBodega = function(evolucion,p
     
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){     
-          console.log("resultado actualizarProductoPorBodega", resultado)
+           
           callback(false, resultado);
    }).catch(function(err){       
        console.log("err ", err)
@@ -1652,6 +1658,7 @@ function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,tra
  * @fecha: 08/06/2015 2:43 pm 
  */
 DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto,evolucionId,todoPendiente,usuario,transaccion,callback) {
+   
    
    var parametros = {1: evolucionId, 2: producto.codigo_producto, 3: Math.round(producto.total),
                      4: usuario, 5: todoPendiente, 6: 'now()'};

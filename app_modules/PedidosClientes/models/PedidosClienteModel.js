@@ -2352,3 +2352,4 @@ PedidosClienteModel.$inject = ["m_productos", "m_pedidos_logs"];
 
 
 module.exports = PedidosClienteModel;
+

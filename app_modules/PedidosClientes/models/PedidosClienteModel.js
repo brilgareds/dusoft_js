@@ -1412,98 +1412,114 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
  */
 PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina, estadoCotizacion, filtros, callback) {
 
-    var filtroCotizacion = "";
-    var filtroEstadoCotizacion = "";
-    var parametros = {1: empresa_id, 2: fecha_inicial, 3: fecha_final};
-
-    /**
-     * +Descripcion Se valida si se envia el estado de cotizacion=6 cuando se
-     *              accede desde el cliente al TAB Aprobacion cotizaciones
-     *              para consultar unicamente las cotizaciones que solicitan
-     *              autorizacion añadiendo al vector de parametros el criterio
-     *              de busqueda por estado de cotizacion
-     */
-    if (estadoCotizacion) {
-        filtroEstadoCotizacion = " AND (a.estado " + G.constants.db().LIKE + " :4)";
-        parametros["4"] = '%' + estadoCotizacion + '%';
-    }
-    /**
-     * +Descripcion El criterio de busqueda para una cotizacion sera dependiento
-     *              el tipo de busqueda numero Cotizacion=0, Cliente =1, Vendedor =2
-     *              añadiendo al vector de parametros el criterio de busqueda
-     *
-     */
-    if (filtros.tipo_busqueda === 0) {
-        filtroCotizacion = " AND (a.pedido_cliente_id_tmp::varchar " + G.constants.db().LIKE + " :5) ";
-        parametros["5"] = '%' + termino_busqueda + '%';
-    }
-
-    if (filtros.tipo_busqueda === 1) {
-        filtroCotizacion = "  AND (b.nombre_tercero " + G.constants.db().LIKE + " :5 OR a.tercero_id " + G.constants.db().LIKE + " :5)";
-        parametros["5"] = '%' + termino_busqueda + '%';
-    }
-
-    if (filtros.tipo_busqueda === 2) {
-        filtroCotizacion = " AND (f.nombre " + G.constants.db().LIKE + " :5 OR f.vendedor_id " + G.constants.db().LIKE + " :5)";
-        parametros["5"] = '%' + termino_busqueda + '%';
-
-    }
-
-
-    var sql = "a.empresa_id,\
-     a.centro_destino as centro_utilidad_id,\
-     a.bodega_destino as bodega_id,\
-     a.pedido_cliente_id_tmp as numero_cotizacion,\
-     a.tipo_id_tercero,\
-     a.tercero_id,\
-     b.nombre_tercero,\
-     b.direccion,\
-     b.telefono,\
-     b.email,\
-     e.pais,\
-     d.departamento,\
-     c.municipio,\
-     f.tipo_id_vendedor,\
-     f.vendedor_id,\
-     f.nombre as nombre_vendendor,\
-     f.telefono as telefono_vendedor,\
-     a.observaciones,\
-     coalesce(a.observacion_cartera, '') as observacion_cartera,\
+    
+ var columns = ["a.empresa_id",
+     "a.centro_destino as centro_utilidad_id",
+     "a.bodega_destino as bodega_id",
+     "a.pedido_cliente_id_tmp as numero_cotizacion",
+     "a.tipo_id_tercero",
+     "a.tercero_id",
+     "b.nombre_tercero",
+     "b.direccion",
+     "b.telefono",
+     "b.email",
+     "e.pais",
+     "d.departamento",
+     "c.municipio",
+     "f.tipo_id_vendedor",
+     "f.vendedor_id",
+     "f.nombre as nombre_vendendor",
+     "f.telefono as telefono_vendedor",
+     "a.observaciones",
+     G.knex.raw("coalesce(a.observacion_cartera, '') as observacion_cartera,\
      coalesce(a.sw_aprobado_cartera, '') as sw_aprobado_cartera,\
      coalesce(a.tipo_producto,'') as tipo_producto,\
-     coalesce(g.descripcion,'') as descripcion_tipo_producto,\
-     a.estado,\
-     case when a.estado = '0' then 'Inactivo'\
-     when a.estado = '1' then 'Activo'\
-     when a.estado = '2' then 'Anulado'\
-     when a.estado = '3' then 'Aprobado cartera'\
-     when a.estado = '5' then 'Tiene un pedido'\
-     when a.estado = '6' then 'Se solicita autorizacion'\
-     when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
-     to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro,\
-     h.pedido_cliente_id as numero_pedido\
-     from ventas_ordenes_pedidos_tmp a\
-     inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
-     inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
-     inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
-     inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
-     inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
-     left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
-     left join ventas_ordenes_pedidos h on a.pedido_cliente_id_tmp = h.pedido_cliente_id_tmp \
-     where a.empresa_id= :1 and a.fecha_registro between :2 and :3 \
-     " + filtroCotizacion + " " + filtroEstadoCotizacion;
-
-
-    var query = G.knex.select(G.knex.raw(sql, parametros)).
-            limit(G.settings.limit).
-            offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").then(function(resultado) {
-        callback(false, resultado);
-    }). catch (function(err) {
-        console.log("err ", err);
-        callback(err);
-
+     coalesce(g.descripcion,'') as descripcion_tipo_producto"),
+     "a.estado",
+        G.knex.raw("case when a.estado = '0' then 'Inactivo'\
+                    when a.estado = '1' then 'Activo'\
+                    when a.estado = '2' then 'Anulado'\
+                    when a.estado = '3' then 'Aprobado cartera'\
+                    when a.estado = '5' then 'Tiene un pedido'\
+                    when a.estado = '6' then 'Se solicita autorizacion'\
+                    when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado"),
+             
+        G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro"),
+        "h.pedido_cliente_id as numero_pedido"
+       
+    ];
+    
+    var query = G.knex.column(columns).from("ventas_ordenes_pedidos_tmp as a")
+      .innerJoin("terceros as b", function() {
+        this.on("a.tipo_id_tercero", "b.tipo_id_tercero")
+            .on("a.tercero_id", "b.tercero_id")
+            
+    }).innerJoin("tipo_mpios as c", function() {
+        this.on("b.tipo_pais_id", "c.tipo_pais_id")
+            .on("b.tipo_dpto_id", "c.tipo_dpto_id")
+            .on("b.tipo_mpio_id","c.tipo_mpio_id");        
+    }).innerJoin("tipo_dptos as d", function() {
+        this.on("c.tipo_pais_id", "d.tipo_pais_id")
+            .on("c.tipo_dpto_id", "d.tipo_dpto_id")      
+    }).innerJoin("tipo_pais as e", function() {
+        this.on("d.tipo_pais_id", "e.tipo_pais_id")      
+    }).innerJoin("vnts_vendedores as f", function() {
+        this.on("a.tipo_id_vendedor", "f.tipo_id_vendedor")
+            .on("a.vendedor_id", "f.vendedor_id")   
+    }).leftJoin("inv_tipo_producto as g", function() {
+        this.on("a.tipo_producto", "g.tipo_producto_id")                    
+    }).leftJoin("ventas_ordenes_pedidos as h", function() {        
+        this.on("a.pedido_cliente_id_tmp", "h.pedido_cliente_id_tmp")           
+    }).where(function() {
+        this.where("a.empresa_id", empresa_id).andWhereBetween("a.fecha_registro",[fecha_inicial, fecha_final]);
+       
+    }).andWhere(function() {           
+        /**
+        * +Descripcion El criterio de busqueda para una cotizacion sera dependiento
+        *              el tipo de busqueda numero Cotizacion=0, Cliente =1, Vendedor =2
+        *              añadiendo al vector de parametros el criterio de busqueda
+        *
+        */
+        if (filtros) {
+            if (filtros.tipo_busqueda === 0) {
+                this.where(G.knex.raw("a.pedido_cliente_id_tmp::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            }
+            if (filtros.tipo_busqueda === 1) {
+                this.where("a.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                     orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            }
+            if (filtros.tipo_busqueda === 2) {
+                this.where("f.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+                     orWhere("f.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%")
+            }
+        }
     });
+    
+    
+    /**
+    * +Descripcion Se valida si se envia el estado de cotizacion=6 cuando se
+    *              accede desde el cliente al TAB Aprobacion cotizaciones
+    *              para consultar unicamente las cotizaciones que solicitan
+    *              autorizacion añadiendo al vector de parametros el criterio
+    *              de busqueda por estado de cotizacion
+    */
+    if (estadoCotizacion !== "") {
+           query.andWhere('a.estado', G.constants.db().LIKE, "%" + estadoCotizacion + "%");
+           
+    }
+    
+    query.limit(G.settings.limit).
+            offset((pagina - 1) * G.settings.limit);
+    //La base del 170 no responde con un orderby,  por esa razon se condiciona para produccion
+    if (G.program.prod) {
+        query.orderByRaw("a.pedido_cliente_id_tmp DESC");
+    }
 
+    query.then(function(rows) {      
+        callback(false, rows);
+    }).catch (function(err) {
+        callback(err);
+    });
 };
 
 /*

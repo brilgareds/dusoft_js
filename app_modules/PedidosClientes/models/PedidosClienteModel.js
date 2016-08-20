@@ -1504,7 +1504,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
         callback(err);
 
     });
-
+                        
 };
 
 /*

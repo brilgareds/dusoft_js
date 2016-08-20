@@ -871,11 +871,7 @@ PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
  * Descripcion : Listar Cotizaciones
  */
 PedidosCliente.prototype.listarCotizaciones = function(req, res) {
-    
-    console.log("*******PedidosCliente.prototype.listarCotizaciones**********");
-    console.log("*******PedidosCliente.prototype.listarCotizaciones**********");
-    console.log("*******PedidosCliente.prototype.listarCotizaciones**********");
-    
+
     var that = this;
 
     var args = req.body.data;
@@ -925,7 +921,7 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
 
     var estadoCotizacion = args.pedidos_clientes.estado_cotizacion;
 
-    /*that.m_pedidos_clientes.listar_cotizaciones(empresa_id,
+    that.m_pedidos_clientes.listar_cotizaciones(empresa_id,
             fecha_inicial,
             fecha_final,
             termino_busqueda,
@@ -940,25 +936,7 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
             res.send(G.utils.r(req.url, 'Lista Cotizaciones', 200, {pedidos_clientes: {lista_cotizaciones: lista_cotizaciones}}));
             return;
         }
-    });*/
-    G.Q.ninvoke(that.m_pedidos_clientes, 'listar_cotizaciones', empresa_id,
-            fecha_inicial,
-            fecha_final,
-            termino_busqueda,
-            pagina_actual,
-            estadoCotizacion,
-            filtros).then(function(resultado) {
-                
-        if (resultado.length > 0) {
-
-            res.send(G.utils.r(req.url, 'Lista Cotizaciones', 200, {pedidos_clientes: {lista_cotizaciones: resultado}}));
-        }else{
-            
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));
-            return;
-        }
-
-    })
+    });
 };
 
 

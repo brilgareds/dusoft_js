@@ -1504,7 +1504,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
         callback(err);
 
     });
-
+                        
 };
 
 /*
@@ -2352,3 +2352,4 @@ PedidosClienteModel.$inject = ["m_productos", "m_pedidos_logs"];
 
 
 module.exports = PedidosClienteModel;
+

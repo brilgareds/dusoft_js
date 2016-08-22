@@ -93,33 +93,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         };
         
         
+        /**
+         * @author Cristian Manuel Ardila Troches
+         * +Descripcion Metodo encargado de consultar los medicamentos que
+         *              quedaron pendientes en la dispensacion
+         * @fecha 22/08/2016 DD/MM/YYYY
+         */
         that.listarMedicamentosFormuladosPendientes = function(resultadoStorage){
-            var productos;            
+            var productos;
             var obj = {                   
                         session: $scope.session,
                         data: {
                            listar_medicamentos_pendientes: {
-                                evolucion: resultadoStorage.evolucionId,
-                                tipoIdPaciente:resultadoStorage.tipoIdPaciente,
-                                pacienteId: resultadoStorage.pacienteId
+                                evolucionId: resultadoStorage.evolucionId
                            }
                        }    
                     };    
-            dispensacionHcService.listarMedicamentosPendientesPorDispensar(obj,function(data){
-
+            dispensacionHcService.listarMedicamentosFormuladosPendientes(obj,function(data){
+                
                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
-                if(data.status === 200) {       
-
-                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_pendientes.resultados);
-                  
-                   $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
-                  
+                if(data.status === 200) {                          
+                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_pendientes);                 
+                   $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);                  
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                    //  $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
-                }                   
+                }               
             });
-        }
+           
+        };
         /**
          * @author Cristian Ardila
          * +Descripcion Metodo encargado de ejecutar el servicio que consultara

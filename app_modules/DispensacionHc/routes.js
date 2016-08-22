@@ -21,7 +21,7 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarTipoDocumento(req, res);
     });
     
-     // Listar las formulas medicas con pendientes
+    // Listar las formulas medicas con pendientes
     app.post("/api/DispensacionHc/listarFormulasPendientes", function(req, res){
         c_dispensacion_hc.listarFormulasPendientes(req, res);
     });
@@ -29,6 +29,11 @@ module.exports = function(app, di_container) {
     // Listar los medicamentos formulados
     app.post("/api/DispensacionHc/listarMedicamentosFormulados", function(req, res){
         c_dispensacion_hc.listarMedicamentosFormulados(req, res);
+    });
+    
+    // Listar los medicamentos formulados
+    app.post("/api/DispensacionHc/listarMedicamentosFormuladosPendientes", function(req, res){
+        c_dispensacion_hc.listarMedicamentosFormuladosPendientes(req, res);
     });
     
     // consultar los medicamentos despachados

@@ -395,7 +395,12 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
  * @controller DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar
  */
 DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = function(obj,callback){
-
+    
+    console.log("*********DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar**************");
+    console.log("*********DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar**************");
+    console.log("*********DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar**************");
+    console.log("*********DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar**************");
+    
     var parametros = {1: obj.evolucionId};
        
         var sql = "select A.codigo_medicamento,\
@@ -422,7 +427,8 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                           hc.perioricidad_entrega,\
                           hc.tiempo_total";
    
-    G.knex.raw(sql,parametros).then(function(resultado){        
+    G.knex.raw(sql,parametros).then(function(resultado){       
+        console.log("Model resultado ", resultado);
         callback(false, resultado);
     }).catch(function(err){                
         callback(err);
@@ -1209,14 +1215,6 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
  **/
 function __insertarMedicamentosPendientesPorDispensar(that, index, productos, parametros,transaccion, callback) {
     
-   /* console.log("******__insertarMedicamentosPendientesPorDispensar*******");
-    console.log("******__insertarMedicamentosPendientesPorDispensar*******");
-    console.log("******__insertarMedicamentosPendientesPorDispensar*******");
-    console.log("that ", that);
-    console.log("index ", index);
-    console.log("parametros ", productos);
-    console.log("evolucion ", parametros.evolucion);*/
-    
     var producto = productos[index];
                  
     if (!producto) {       
@@ -1225,8 +1223,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
     }  
   
       console.log("9) Accion : insertarBodegasDocumentosDetalle ");
-    
-     console.log("producto ", producto);  
+ 
         G.Q.ninvoke(that,'actualizarProductoPendientePorBodega',parametros.evolucion,producto, transaccion).then(function(resultado){
             
             if(parseInt(producto.total) > 0){

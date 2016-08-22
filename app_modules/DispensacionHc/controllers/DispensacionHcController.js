@@ -228,7 +228,48 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
     }).done();
 };
 
+/*
+ * @author Cristian Ardila
+ * @fecha 24/05/2016
+ * +Descripcion Controlador encargado de consultar la lista de los medicamentos
+ *              formulados
+ *              
+ */
+DispensacionHc.prototype.listarMedicamentosFormuladosPendientes = function(req, res){
+   
+   console.log("*DispensacionHc.prototype.listarMedicamentosFormuladosPendientes************");
+   console.log("*DispensacionHc.prototype.listarMedicamentosFormuladosPendientes************");
+   console.log("*DispensacionHc.prototype.listarMedicamentosFormuladosPendientes************");
+   
+    var that = this;
+    var args = req.body.data;
+   
+    if (args.listar_medicamentos_pendientes === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_formulados: []}));
+        return;
+    }
+   
+    if (!args.listar_medicamentos_pendientes.evolucionId || args.listar_medicamentos_pendientes.evolucionId.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_pendientes: []}));
+        return;
+    }
 
+    var parametros = {evolucionId:args.listar_medicamentos_pendientes.evolucionId};
+   
+   
+    G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesPorDispensar',parametros).then(function(resultado){
+       
+    
+        if(resultado.rows.length > 0){ 
+              res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_pendientes:resultado.rows}));
+        }else{
+           throw 'Consulta sin resultados';
+        }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 /*
  * @author Cristian Ardila
  * @fecha 25/07/2016

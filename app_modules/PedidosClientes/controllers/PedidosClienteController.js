@@ -600,7 +600,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     }
 
     if (producto.cantidad_solicitada === undefined || producto.cantidad_solicitada === '' || producto.cantidad_solicitada <= '0') {
-        res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
+        res.send(G.utils.r(req.url, 'La cantidad solicitada no puede ser menor o igual a cero', 404, {}));
         return;
     }
     if (producto.precioVentaIva === undefined || producto.precioVentaIva === '') {
@@ -735,7 +735,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
     }
 
     if (producto.cantidad_solicitada === undefined || producto.cantidad_solicitada === '' || producto.cantidad_solicitada <= '0') {
-        res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
+        res.send(G.utils.r(req.url, 'La cantidad solicitada no puede ser menor o igual a cero', 404, {}));
         return;
     }
     if (producto.precio_venta === undefined || producto.precio_venta === '') {
@@ -1948,7 +1948,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     }
 
     if (producto.cantidad_solicitada === undefined || producto.cantidad_solicitada === '' || producto.cantidad_solicitada <= '0') {
-        res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
+        res.send(G.utils.r(req.url, 'La cantidad solicitada no puede ser menor o igual a cero', 404, {}));
         return;
     }
     if (producto.precioVentaIva === undefined || producto.precioVentaIva === '') {
@@ -2553,7 +2553,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     }
 
     if (producto.cantidad_solicitada === undefined || producto.cantidad_solicitada === '' /*|| producto.cantidad_solicitada <= '0'*/) {
-        res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
+        res.send(G.utils.r(req.url, 'La cantidad solicitada no puede ser menor o igual a cero', 404, {}));
         return;
     }
     if (producto.precio_venta === undefined || producto.precio_venta === '') {

@@ -769,7 +769,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
     if (obj.principioActivo !== "") {
         condicion =" and med.cod_principio_activo =  :4 AND invp.cod_forma_farmacologica= :6 ";
     }else{
-        condicion=" and fv.codigo_producto = :5 ";
+        condicion=" and fv.codigo_producto = :5 AND invp.cod_forma_farmacologica= :6 ";
     } 
 
     var sql =  " SELECT\

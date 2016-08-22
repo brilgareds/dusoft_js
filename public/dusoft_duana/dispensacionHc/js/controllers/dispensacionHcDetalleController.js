@@ -113,7 +113,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 if(data.status === 200) {                          
-                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_pendientes);                 
+                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_pendientes,1);                 
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);                  
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -144,16 +144,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     console.log("---------consultarMedicamentosDespachados---------------");
                     console.log("DATA ", data);
             });*/
+         
             dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
+                
+                   console.log("data -+----->>>> ", data);
+                   
                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 if(data.status === 200) {       
 
-                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_formulados);
+                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_formulados,0);
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
                   
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                   //  $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
+                
                 } 
             });
               
@@ -184,7 +188,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     cantidadProducto: {
                         codigoProducto: entity.codigo_producto,
                         evolucionId: resultadoStorage.evolucionId,
-                        principioActivo: entity.principioActivo
+                        principioActivo: entity.principioActivo,
+                        
                    }
                 }    
             };
@@ -221,7 +226,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                         centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
                         bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                        autorizado: entity.autorizado
+                        autorizado: entity.autorizado,
+                        codigoFormaFarmacologica: entity.codigoFormaFarmacologica
                    }
                }    
             };
@@ -313,11 +319,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             columnDefs: [
 
                 {field: 'getCodigoProducto()', displayName: 'Codigo', width:"15%"},
-                {field: 'getDescripcion()', displayName: 'Medicamento'},
-                {field: 'getCantidadEntrega()', displayName: 'Cant. entregar', width:"10%"},
+                {field: 'getDescripcion()', displayName: 'Medicamento'},   
                 {field: 'getPerioricidadEntrega()', displayName: 'Perioricidad entrega', width:"25%"},
                 {field: 'getTiempoTotal()', displayName: 'Dias tratamiento', width:"15%"},
-                {field: 'getAutorizado()', displayName: 'Autorizado', width:"5%"},
+                {field: 'getCantidadEntrega()', displayName: 'Cant. entregar', width:"10%"},
                 {field: 'Dispensar', width: "10%",
                            displayName: "Dispensar",
                            cellClass: "txt-center",
@@ -472,8 +477,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * +Descripcion Metodo que desplegara una ventana encargada de 
           *              listar los tipos de entrega de la formula
         */
-        $scope.ventanaTipoEntregaFormula = function(){
-           
+        $scope.ventanaTipoEntregaFormula = function(todoPendiente){
+        
             $scope.opts = {
                 backdrop: true,
                 backdropClick: true,
@@ -485,7 +490,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 resolve: {
                         estadoEntregaFormula: function() {
                             return estadoEntregaFormula;
-                        }                    
+                        },
+                        estadoTodoPendiente: function(){
+                            return todoPendiente;
+                        }
                     }
                                    
             };
@@ -498,7 +506,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         };
         
         
-        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion ventana modal para registrar la autorizacion de dispensacion
+         *              de un medicamento confrontado
+         */
         that.ventanaAutorizaDispensacion = function(ultimoRegistroDispensacion, codigoProducto){
             
             $scope.opts = {

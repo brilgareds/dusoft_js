@@ -386,12 +386,20 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
         return;
     }
     
+    if (!args.existenciasBodegas.codigoFormaFarmacologica) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo de forma farmacologica', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
     var parametros={empresa: args.existenciasBodegas.empresa,
                     centroUtilidad:args.existenciasBodegas.centroUtilidad, 
                     bodega:args.existenciasBodegas.bodega,
                     codigoProducto:args.existenciasBodegas.codigoProducto,
-                    principioActivo:args.existenciasBodegas.principioActivo
+                    principioActivo:args.existenciasBodegas.principioActivo,
+                    codigoFormaFarmacologica: args.existenciasBodegas.codigoFormaFarmacologica
                     };
+       
+        
    var parametrosUltimoRegistroDispensacion = {tipoIdPaciente: 'CC', 
                                                pacienteId: '42076373', 
                                                principioActivo: args.existenciasBodegas.principioActivo, 
@@ -789,6 +797,71 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
 };
 
 
+DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
+
+    console.log("*******DispensacionHc.prototype.guardarTodoPendiente************");
+    console.log("*******DispensacionHc.prototype.guardarTodoPendiente************");
+    console.log("*******DispensacionHc.prototype.guardarTodoPendiente************");
+    console.log("*******DispensacionHc.prototype.guardarTodoPendiente************");
+    
+    var that = this;
+    var args = req.body.data;
+   
+    if (!args.realizar_entrega_formula) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {realizar_entrega_formula: []}));
+        return;
+    }
+    
+    if(!args.realizar_entrega_formula.evolucionId){
+        res.send(G.utils.r(req.url, 'La evolucion esta vacia ó indefinida', 404, {realizar_entrega_formula: []}));
+        return;
+    } 
+    
+    if(!args.realizar_entrega_formula.tipoFormula){
+        res.send(G.utils.r(req.url, 'Debe seleccionar el tipo de formula', 404, {realizar_entrega_formula: []}));
+        return;
+    } 
+    
+    var tipoFormula = args.realizar_entrega_formula.tipoFormula;
+    var evolucionId = args.realizar_entrega_formula.evolucionId;
+    var usuario = req.session.user.usuario_id;
+    var parametrosGenerarDispensacion=
+                  {evolucionId:evolucionId, tipoFormula:tipoFormula.tipo,usuario: usuario}
+                  
+    G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion).then(function(resultado){
+        
+        if(resultado.rowCount === 0){
+            
+            throw 'Error al actualizar el tipo de formula'   
+            
+        }else{           
+            
+            return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarEstadoFormula',parametrosGenerarDispensacion);
+           
+        }  
+        
+       
+    }).then(function(resultado){
+        
+        if(resultado.rowCount === 0){
+             
+           throw 'Error al actualizar el estado de la formula'  
+            
+        }else{           
+            
+           return G.Q.ninvoke(that.m_dispensacion_hc, 'guardarTodoPendiente',parametrosGenerarDispensacion);
+           
+        }  
+        
+    }).then(function(resultado){
+        
+        res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
+        
+    }).fail(function(err){
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+}
+
 /**
  * @author Cristian Ardila
  * +Descripcion Controlador encargado de generar la dispensacion total de una
@@ -980,10 +1053,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
              */        
             return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
         
-    })
-            
-            
-            .then(function(){          
+    }).then(function(){          
          return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});            
     }).then(function(resultado){
         
@@ -1270,71 +1340,9 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
     }).then(function(resultado){
         
-        
-        console.log("FINAL ", resultado);
-    })
-    
-/*.then(function(resultado){
-        
-        if(resultado.length > 0){           
-           bodegasDocId = resultado[0].valor;          
-           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);          
-        }else{
-            throw 'No hay temporales'
-        }
-            
-    }).then(function(resultado){
-          
-        if(resultado.rows.length > 0){
-             temporales = resultado.rows;
-             return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');            
-        }else{
-            throw 'No hay temporales separados'
-        }
-           
-    }).then(function(resultado){            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId:bodegasDocId});            
-    }).then(function(resultado){     
-         
-        if(resultado.rowCount === 0){
-            throw 'No se genero numero de despacho'
-        }else{
-            numeracion = resultado.rows[0].numeracion;
-            var parametrosGenerarDispensacion=
-                  {
-                    parametro1:{ bodegasDocId:bodegasDocId, 
-                     numeracion:numeracion, 
-                     observacion:observacion, 
-                     estadoPendiente:0,
-                     usuario: usuario,
-                     evolucion: evolucionId,
-                     todoPendiente: todoPendiente
-                    },
-                    
-                    parametro2:{
-                            temporales: temporales, 
-                            usuario:usuario, 
-                            bodegasDocId:bodegasDocId, 
-                            numeracion:numeracion, 
-                            planId: planId}
-                  };
-            
-              
-            return G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionFormula',parametrosGenerarDispensacion);
-        };
-            
-            
-    }).then(function(){          
-         return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});            
-    }).then(function(resultado){
-        
-        if(resultado.rowCount === 0){
-            throw 'Error al actualizar el tipo de formula'        
-        }else{           
-           res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
-           that.e_dispensacion_hc.onNotificarEntregaFormula(); 
-        }   
-    })*/.fail(function(err){            
+         res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
+        //console.log("FINAL ", resultado);
+    }).fail(function(err){            
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done(); 
 };

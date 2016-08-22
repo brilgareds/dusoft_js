@@ -102,8 +102,14 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.registrarEvento(req, res);
     });
      
-     // realizando la entrega de los pendientes de la formula
+    // realizando la entrega de los pendientes de la formula
     app.post("/api/DispensacionHc/realizarEntregaFormulaPendientes", function(req, res){
         c_dispensacion_hc.realizarEntregaFormulaPendientes(req, res);
     });
+    
+    // realizando la entrega de los pendientes de la formula
+    app.post("/api/DispensacionHc/guardarTodoPendiente", function(req, res){
+        c_dispensacion_hc.guardarTodoPendiente(req, res);
+    });
+    
 };

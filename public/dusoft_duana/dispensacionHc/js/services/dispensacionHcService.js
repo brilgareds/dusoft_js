@@ -274,7 +274,18 @@ define(["angular", "js/services"], function(angular, services) {
             };
             
             
-            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016
+              * +Descripcion Servicio encargado de guardar los medicamentos
+              *              como todo pendiente
+              */
+            self.guardarTodoPendiente = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.GUARDAR_TODO_PENDIENTES,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la
@@ -340,7 +351,7 @@ define(["angular", "js/services"], function(angular, services) {
                *              medicamentos formulados contra los modelos
                * @fecha 25/05/2016
                */
-            self.renderListarMedicamentosFormulados = function(producto){
+            self.renderListarMedicamentosFormulados = function(producto, pendiente){
                
                 var productos = [];
                 for(var i in producto){
@@ -353,6 +364,9 @@ define(["angular", "js/services"], function(angular, services) {
                         Productos.setPrincipioActivo(_productos.cod_principio_activo);
                         Productos.setCantidadEntrega(_productos.cantidad_entrega);
                         Productos.setAutorizado(_productos.sw_autorizado);
+                        if(pendiente ===0){
+                        Productos.setCodigoFormaFarmacologica(_productos.cod_forma_farmacologica);
+                        }
                     productos.push(Productos);
                 }
                      

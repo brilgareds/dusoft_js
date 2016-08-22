@@ -6,15 +6,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula",
+            "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula","estadoTodoPendiente",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,estadoEntregaFormula) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,estadoEntregaFormula, estadoTodoPendiente) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
         var seleccionTipoFormula;
         $scope.root = { observacion:''}; 
         
+     
         /*
          * Inicializacion de variables
          * @param {type} empresa
@@ -62,6 +63,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             });
 
         };
+        
         /**
          * @author Cristian Ardila
          * +Descripcion Se visualiza la tabla con los tipos de formulas
@@ -106,19 +108,52 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    }
                }    
             };  
-            
+           
             if(estadoEntregaFormula === 0){
-                console.log("DISPENSAR FORMULA ", obj);
-                that.dispensacionNormal(obj);
+                
+                if(estadoTodoPendiente === 1){
+                    console.log("DISPENSAR FORMULA ");
+                    that.dispensacionNormal(obj);
+                }else{
+                    console.log("TODO PENDIENTES ");
+                    that.guardarTodoPendiente(obj);
+                }
+                //
             }
            
            
             if(estadoEntregaFormula === 1){
-                console.log("DISPENSAR PENDIENTES FORMULA ", obj);
+                console.log("DISPENSAR PENDIENTES FORMULA ");
                 that.dispensacionPendientes(obj);
             }
-           /*  */
+            
         };
+        
+        
+        
+        /**
+         * @author Cristian Ardila
+         * @fecha  2016/08/03
+         * +Descripcion Metodo el cual invocara el servicio que permitira realizar
+         *              todo el proceso pertinente para dispensar una formula con
+         *              pendientes
+         *             
+         */
+        that.guardarTodoPendiente = function(obj){
+            
+            dispensacionHcService.guardarTodoPendiente(obj,function(data){
+                console.log("guardarTodoPendiente ", data);
+                if(data.status === 200){                   
+                    AlertService.mostrarMensaje("success", data.msj);                  
+                    //$scope.$emit('emitRealizarEntregaFormula', {response: data});
+                    $scope.cerrarVentana();
+                    //$state.go('DispensacionHc');
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+            });         
+        };
+        
         
         /**
          * @author Cristian Ardila
@@ -136,7 +171,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
-                    //$state.go('DispensacionHc');
+                    $state.go('DispensacionHc');
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
@@ -158,7 +193,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
-                    //$state.go('DispensacionHc');
+                    $state.go('DispensacionHc');
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }

@@ -104,7 +104,7 @@ define([
                                     <button class="btn btn-warning" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance, variable) {
+                    controller: ["$scope", "$modalInstance", "variable", function($scope, $modalInstance, variable) {
                         $scope.variable = variable;
                         $scope.confirmar = function() {
                             self.eliminarVariable(variable);
@@ -115,7 +115,7 @@ define([
                             $modalInstance.close();
                         };
 
-                    },
+                    }],
                     resolve: {
                         variable: function() {
                             return variable;

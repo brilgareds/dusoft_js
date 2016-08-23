@@ -182,8 +182,10 @@ Usuarios.prototype.obtenerParametrizacionUsuario = function(req, res){
         res.send(G.utils.r(req.url, 'El id de la empresa no esta definido', 404, {}));
         return;
     }
+    
+    var limpiarCache = args.parametrizacion_usuarios.limpiar_cache;
 
-    that.m_usuarios.obtenerParametrizacionUsuario({usuario_id:usuario_id, empresa_id:empresa_id, modulos:[]}, function(err, parametrizacion){
+    that.m_usuarios.obtenerParametrizacionUsuario({usuario_id:usuario_id, empresa_id:empresa_id, modulos:[], limpiarCache:limpiarCache}, function(err, parametrizacion){
 
         if(err){
             res.send(G.utils.r(req.url, 'Se genero un error', 403, {}));

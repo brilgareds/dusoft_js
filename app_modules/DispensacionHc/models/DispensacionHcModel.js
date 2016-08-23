@@ -764,7 +764,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     4: obj.principioActivo, 
                     5: obj.codigoProducto,
                     6: obj.codigoFormaFarmacologica};
-    console.log("EXIS ", parametros);
+     
     var condicion = "";
     if (obj.principioActivo !== "") {
         condicion =" and med.cod_principio_activo =  :4 AND invp.cod_forma_farmacologica= :6 ";
@@ -1372,6 +1372,8 @@ DispensacionHcModel.prototype.actualizarProductoPorBodega = function(obj,transac
     });  
 };
 
+
+var conPendientes;
 /*
  * @autor : Cristian Ardila
  * Descripcion : Modelo encargado de manejar los procesos de generacion de dispensacion
@@ -1384,7 +1386,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
 {   
    
     var that = this;
-    var conPendientes;
+
     G.knex.transaction(function(transaccion) {  
         
         G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion).then(function(resultado){        
@@ -1403,7 +1405,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                 var def = G.Q.defer();
                 console.log("resultado.rows.length TENR EN CUENTA QUE SE CALCULAR DENTRO DE __insertarMedicamentosPendientes", resultado.rows.length);
                 if(resultado.rows.length >0){
-                    conPendientes = 1;
+                    
                 /**
                  * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
                  */
@@ -1412,8 +1414,8 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                     def.resolve();
                 }         
             
-        }).then(function(){
-            
+        }).then(function(resultado){
+                console.log("estado,resultado ", resultado);
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
          
         }).then(function(){
@@ -1424,7 +1426,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
          
         }).then(function(){  
             console.log("TRANSACCION COMMIT ");
-               transaccion.commit();            
+               //transaccion.commit();            
         }).fail(function(err){
             console.log("TRANSACCION FAIL ", err);
                 transaccion.rollback(err);
@@ -1558,14 +1560,15 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
 function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback) {
    
     var producto = productos[index];   
-   
+    var productosPendientes = [];
     if (!producto) {       
         //console.log("Debe salir a qui ");
-        callback(false);
+        callback(false,productosPendientes);
         return;
     }  
      
     if(parseInt(producto.total) > 0){
+        productosPendientes.push(producto);
         G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
 
          }).fail(function(err){      

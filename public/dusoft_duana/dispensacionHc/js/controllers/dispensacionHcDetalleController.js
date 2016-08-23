@@ -277,13 +277,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             enableHighlighting: true,
             columnDefs: [
 
-                {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},
-               // {field: 'getDescripcion()', displayName: 'Producto', width:"15%"},
-                {field: 'getConcentracion()', displayName: 'Concentracion', width:"10%"},
+                {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},              
                 {field: 'getMolecula()', displayName: 'Descripcion'},
+                {field: 'getConcentracion()', displayName: 'Concentracion', width:"10%"},                
                 {field: 'getCodigoFormaFarmacologico()', displayName: 'F.Farmacologica', width:"10%"},
                 {field: 'getLaboratorio()', displayName: 'Laboratorio', width:"10%"},
-
                 {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
                 {field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
                 {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Existencia', width:"10%"},

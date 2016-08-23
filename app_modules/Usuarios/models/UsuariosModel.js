@@ -223,7 +223,8 @@ UsuariosModel.prototype.cambiarPredeterminadoEmpresa = function(empresa_id, usua
     var that = this;
 
     console.log("cambiar predeterminado predeterminad ", predeterminado, " empresa ", empresa_id, " login id ", usuario_id, " rol id ", rol_id);
-
+    
+    that.borrarCacheUsuario(usuario_id);
     __desmarcarPredeterminadoEmpresas(that, empresa_id, usuario_id, function(err, rows, result) {
 
         if (err) {
@@ -343,7 +344,7 @@ UsuariosModel.prototype.guardarCentroUtilidadBodegaUsuario = function(usuario_id
 //se encarga de asignar el rol del usuario y borrar registros del rol anterior por empresa
 UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_id, usuario_id, transaccion, callback) {
     var that = this;
-
+    that.borrarCacheUsuario(usuario_id);
     //borra los registros del modulo anterior
     var usuarioRol = that.borrarRolAsignadoUsuario(rol_id, empresa_id, login_id, transaccion, function(err) {
         if (err) {
@@ -382,7 +383,7 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
     var llave = G.constants.llavesCache().USURIO_PARAMETRIZACION + "_" + usuario_id; 
     
     G.redis.get(llave,function(err, resultado){
-        if(!resultado){
+        if(!resultado || params.limpiarCache){
             console.log("obtener parametrizacion de usuario sin cache");
             //obtiene el rol del usuario
             that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol) {
@@ -653,6 +654,7 @@ UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, c
 };
 
 UsuariosModel.prototype.borrarParametrizacionPorUsuario = function(usuario_id, callback) {
+    var that = this;
     var tablas = [
                     "roles_modulos",
                     "login_modulos_empresas",
@@ -665,6 +667,7 @@ UsuariosModel.prototype.borrarParametrizacionPorUsuario = function(usuario_id, c
                ];
      
      __borrarParametrizacionPorUsuario(tablas, usuario_id, function(err){
+         that.borrarCacheUsuario(usuario_id);
          callback(err);
      });
      

@@ -170,6 +170,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 showFilter: true,
                 enableRowSelection: false,
                 enableColumnResize:true,
+               /* groups:['existencia'],
+                aggregateTemplate: "<div ng-click='row.toggleExpand(); saveGroupState()' ng-style='rowStyle(row)' class='ngAggregate ng-scope' style='top: 0px; height: 48px; left: 0px;'>"+
+                    "<span class='ngAggregateText ng-binding'>"+
+                        "{{row.label CUSTOM_FILTERS}} ({{row.totalChildren()}} {{AggItemsLabel}})"+
+                    "</span>"+
+                    "<div ng-class=\"{ 'ngAggArrowCollapsed':row.collapsed, 'ngAggArrowExpanded':!row.collapsed}\"></div>"+
+                    "<button class='pull-right' style='margin-right:100px;' ng-click='onSelect(row)'>S</button>"+
+                "</div>",*/
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "170",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
@@ -223,6 +231,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
             
+            
+            $scope.onSelect = function(row){
+                console.log(">>>>>>>>>>>>>>>>>>", row);
+            };
+            
+            $scope.saveGroupState = function () {
+                var groups = $scope.gridOptions.$gridScope.renderedRows;
+                for (var i = 0; i < groups.length; i++) {
+                     localStorage.setItem("taskListGroup_" + groups[i].label, groups[i].collapsed);
+                }
+             }
 
             $scope.onSeleccionFiltro = function(filtro){
                 $scope.filtroProducto = filtro;

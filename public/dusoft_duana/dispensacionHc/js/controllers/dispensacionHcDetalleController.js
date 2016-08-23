@@ -108,16 +108,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 evolucionId: resultadoStorage.evolucionId
                            }
                        }    
-                    };    
+                    };   
+                    
             dispensacionHcService.listarMedicamentosFormuladosPendientes(obj,function(data){
-                
+               
                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 if(data.status === 200) {                          
-                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_pendientes,1);                 
+                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_pendientes);                 
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);                  
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                   //  $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
+                  
                 }               
             });
            
@@ -152,7 +153,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 if(data.status === 200) {       
 
-                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_formulados,0);
+                   productos = dispensacionHcService.renderListarMedicamentosFormulados(data.obj.listar_medicamentos_formulados);
                    $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].agregarProductos(productos);
                   
                 }else{
@@ -324,7 +325,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 {field: 'Dispensar', width: "10%",
                            displayName: "Dispensar",
                            cellClass: "txt-center",
-                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)" ng-disabled ="showBtnDispensar">Dispensar </button>'
+                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)" ng-disabled ="showBtnDispensar">Dispensar  </button>'
 
                 }
             ]

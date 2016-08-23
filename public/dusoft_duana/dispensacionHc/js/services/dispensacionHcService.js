@@ -364,9 +364,9 @@ define(["angular", "js/services"], function(angular, services) {
                         Productos.setPrincipioActivo(_productos.cod_principio_activo);
                         Productos.setCantidadEntrega(_productos.cantidad_entrega);
                         Productos.setAutorizado(_productos.sw_autorizado);
-                        if(pendiente ===0){
+                        
                         Productos.setCodigoFormaFarmacologica(_productos.cod_forma_farmacologica);
-                        }
+                        
                     productos.push(Productos);
                 }
                      

@@ -383,7 +383,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
     G.knex.raw(sql,parametros).then(function(resultado){    
         callback(false, resultado)
     }).catch(function(err){    
-        console.log("err ", err);
+        console.log("Error listarMedicamentosFormulados ", err);
         callback(err)
     });  
 };
@@ -397,12 +397,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
  * @controller DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar
  */
 DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = function(obj,callback){
-    
-    console.log("*********DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar**************");
-    console.log("*********DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar**************");
-    console.log("*********DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar**************");
-    console.log("*********DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar**************");
-    
+                     
     var parametros = {1: obj.evolucionId};
        
         var sql = "select A.codigo_medicamento,\
@@ -410,7 +405,8 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                    fc_descripcion_producto_alterno(A.codigo_medicamento) as descripcion_prod,\
                    med.cod_principio_activo,hc.sw_autorizado,\
                    hc.perioricidad_entrega,\
-                   hc.tiempo_total from\
+                   hc.tiempo_total ,\
+                   invp.cod_forma_farmacologica from\
                         (\
                         select\
                         dc.codigo_medicamento,\
@@ -422,17 +418,20 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                   ) as A INNER JOIN hc_formulacion_antecedentes hc ON (hc.codigo_medicamento=A.codigo_medicamento)\
                      LEFT JOIN  medicamentos med ON(A.codigo_medicamento=med.codigo_medicamento)\
                      LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
+                     LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)\
                     WHERE hc.evolucion_id = :1\
                     group by med.cod_principio_activo,\
                           A.codigo_medicamento,\
                           hc.sw_autorizado,\
                           hc.perioricidad_entrega,\
-                          hc.tiempo_total";
-   
+                          hc.tiempo_total,\
+                          invp.cod_forma_farmacologica";
+    
     G.knex.raw(sql,parametros).then(function(resultado){       
-        console.log("Model resultado ", resultado);
+       
         callback(false, resultado);
-    }).catch(function(err){                
+    }).catch(function(err){   
+          console.log("Error listarMedicamentosPendientesPorDispensar ", err);
         callback(err);
     });  
 };
@@ -540,7 +539,8 @@ DispensacionHcModel.prototype.consultarMedicamentosDespachados = function(obj,ca
                            ";  
     G.knex.raw(sql,parametros).then(function(resultado){     
         callback(false, resultado);
-    }).catch(function(err){            
+    }).catch(function(err){   
+        console.log("err consultarMedicamentosDespachados: ", err);   
         callback(err);
     });  
 };
@@ -680,7 +680,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
       //  console.log("resultado ", resultado)
         callback(false, resultado);
     }).catch(function(err){       
-      //  console.log("err ", err)
+        console.log("err consultarUltimoRegistroDispensacion: ", err);   
         callback(err);
     });  
 };
@@ -707,7 +707,7 @@ DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
         console.log("resultado ", resultado)
           callback(false, resultado)
     }).catch(function(err){   
-        console.log("err ", err);
+        console.log("err usuarioPrivilegios: ", err);    
           callback(err);
     });
     
@@ -740,7 +740,8 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
   
     G.knex.raw(sql,parametros).then(function(resultado){      
           callback(false, resultado)
-    }).catch(function(err){         
+    }).catch(function(err){     
+         console.log("err cantidadProductoTemporal: ", err);    
           callback(err)
     });
     
@@ -793,10 +794,10 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
 
      
     G.knex.raw(sql,parametros).then(function(resultado){  
-        console.log("resultado ****>>>", resultado);
+      
       callback(false, resultado)
     }).catch(function(err){ 
-        console.log("err ", err);
+        console.log("err existenciasBodegas: ", err);
       callback(err)
     });            
 };
@@ -1155,9 +1156,9 @@ DispensacionHcModel.prototype.bloquearTabla = function(callback) {
  */
 DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(obj, callback)
 {   
-   console.log("***********generarDispensacionFormulaPendientes**************");
-   console.log("***********generarDispensacionFormulaPendientes**************");
-   console.log("***********generarDispensacionFormulaPendientes**************");
+   console.log("***********generarDispensacionFormulaPendientes p**************");
+   console.log("***********generarDispensacionFormulaPendientes P**************");
+   console.log("***********generarDispensacionFormulaPendientes p**************");
    console.log("obj ", obj);
     var that = this;
     G.knex.transaction(function(transaccion) {  
@@ -1194,13 +1195,17 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                     def.resolve();
                 }         
             
-        }).then(function(){
-            
+        }).then(function(resultado){
+                obj.parametro1.conPendientes = !resultado ? 0 : 1;
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
+         
+        }).then(function(){
+                console.log("obj.parametro1.conPendientes ", obj.parametro1.conPendientes);
+                return G.Q.ninvoke(that,'actualizarDispensacionEstados', obj.parametro1 , transaccion); 
          
         }).then(function(){  
             console.log("COMMIT ----->>> ELIMINANDO")
-               transaccion.commit();            
+              // transaccion.commit();            
         }).fail(function(err){
             console.log("FAIL ", err)
                 transaccion.rollback(err);
@@ -1227,7 +1232,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
     var producto = productos[index];
                  
     if (!producto) {       
-        callback(false);
+        callback(false,rowCount);
         return;
     }  
   
@@ -1236,7 +1241,12 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
         G.Q.ninvoke(that,'actualizarProductoPendientePorBodega',parametros.evolucion,producto, transaccion).then(function(resultado){
             
             if(parseInt(producto.total) > 0){
-                return G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, parametros.evolucion, parametros.todoPendiente, parametros.usuario, transaccion);
+              
+                G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, parametros.evolucion, parametros.todoPendiente, parametros.usuario, transaccion)
+                   .then(function(resultado){                            
+                           rowCount = resultado.rowCount;
+                           console.log("resultado rowCount::::---:::: ", rowCount);
+                        })
             }
          }).fail(function(err){      
        }).done();                 
@@ -1403,30 +1413,30 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                 }        
         }).then(function(resultado){           
                 var def = G.Q.defer();
-                console.log("resultado.rows.length TENR EN CUENTA QUE SE CALCULAR DENTRO DE __insertarMedicamentosPendientes", resultado.rows.length);
+              
                 if(resultado.rows.length >0){
-                    
+                    console.log("Insertar medicamentos pendientes ");
                 /**
                  * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
-                 */
+                 */               
                     return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, obj.parametro1.evolucion,0, obj.parametro1.usuario,transaccion);
                 }else{
                     def.resolve();
                 }         
             
         }).then(function(resultado){
-                console.log("estado,resultado ", resultado);
+            
+                obj.parametro1.conPendientes = !resultado ? 0 : 1;
+             
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
          
         }).then(function(){
-                console.log("---->>obj ", obj);
-                obj.parametro1.conPendientes = conPendientes;
                 
                 return G.Q.ninvoke(that,'actualizarDispensacionEstados', obj.parametro1 , transaccion); 
          
         }).then(function(){  
             console.log("TRANSACCION COMMIT ");
-               //transaccion.commit();            
+               transaccion.commit();            
         }).fail(function(err){
             console.log("TRANSACCION FAIL ", err);
                 transaccion.rollback(err);
@@ -1548,8 +1558,8 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
           callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
     });  
 };
-
-
+                          
+var rowCount;
 /**
  * @author Cristian Ardila
  * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
@@ -1560,17 +1570,18 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
 function __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback) {
    
     var producto = productos[index];   
-    var productosPendientes = [];
+    
     if (!producto) {       
-        //console.log("Debe salir a qui ");
-        callback(false,productosPendientes);
-        return;
+        console.log("Debe salir a qui ");
+        callback(false,rowCount);
+        return;                     
     }  
-     
+    
     if(parseInt(producto.total) > 0){
-        productosPendientes.push(producto);
+        
         G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
-
+            rowCount = resultado.rowCount;
+           console.log("resultado rowCount::::---:::: ", rowCount);
          }).fail(function(err){      
        }).done();   
     }
@@ -1724,13 +1735,13 @@ function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,tra
  */
 DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto,evolucionId,todoPendiente,usuario,transaccion,callback) {
    
+   /*console.log("**DispensacionHcModel.prototype.insertarPendientesPorDispensar*******");
    console.log("**DispensacionHcModel.prototype.insertarPendientesPorDispensar*******");
-   console.log("**DispensacionHcModel.prototype.insertarPendientesPorDispensar*******");
-   console.log("**DispensacionHcModel.prototype.insertarPendientesPorDispensar*******");
+   console.log("**DispensacionHcModel.prototype.insertarPendientesPorDispensar*******");*/
    
    var parametros = {1: evolucionId, 2: producto.codigo_producto, 3: Math.round(producto.total),
                      4: usuario, 5: todoPendiente, 6: 'now()'};
-  console.log("parametros ", parametros);
+  //console.log("parametros ", parametros);
    var sql = "INSERT INTO hc_pendientes_por_dispensar\
       (hc_pendiente_dispensacion_id,evolucion_id,codigo_medicamento,cantidad,\
        usuario_id,todo_pendiente,fecha_registro)\

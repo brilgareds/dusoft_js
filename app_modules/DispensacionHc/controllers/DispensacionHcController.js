@@ -356,6 +356,8 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
     var fechaRegistro = "";
     var fechaDespacho = "";
     var def = G.Q.defer();
+    
+    console.log("args ", args);
     if (args.existenciasBodegas === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {existenciasBodegas: []}));
         return;

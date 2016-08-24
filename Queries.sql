@@ -1841,3 +1841,100 @@ ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
 
 COMMENT ON COLUMN "public"."inv_bodegas_movimiento_justificaciones_pendientes"."observacion_justificacion_auditor"
 IS 'Observacion realizada por el auditor de pedidos de clientes y farmacias';
+
+
+
+
+------------------------------- Chat 
+CREATE TABLE "public"."chat_grupos" (
+  "id" SERIAL, 
+  "nombre" VARCHAR(255), 
+  "estado" CHAR(1) DEFAULT 1, 
+  "fecha_creacion" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "chat_grupos_pkey" PRIMARY KEY("id")
+) WITH OIDS;
+
+COMMENT ON COLUMN "public"."chat_grupos"."estado"
+IS '0 = Inactivo, 1 = Activo';
+
+
+
+CREATE TABLE "public"."chat_grupos_usuarios" (
+  "id" SERIAL, 
+  "grupo_id" INTEGER, 
+  "usuario_id" INTEGER, 
+  CONSTRAINT "chat_grupos_usuarios_fk" FOREIGN KEY ("grupo_id")
+    REFERENCES "public"."chat_grupos"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "chat_grupos_usuarios_fk1" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+
+CREATE TABLE "public"."chat_conversacion" (
+  "id" SERIAL, 
+  "estado" CHAR(1) DEFAULT 1, 
+  "usuario_creador" INTEGER, 
+  "fecha_creacion" TIMESTAMP WITHOUT TIME ZONE DEFAULT now(), 
+  "fecha_modificacion" TIMESTAMP WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "chat_conversacion_idx" PRIMARY KEY("id"), 
+  CONSTRAINT "chat_conversacion_fk" FOREIGN KEY ("usuario_creador")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON COLUMN "public"."chat_conversacion"."estado"
+IS '0= inactivo , 1= activo';
+
+COMMENT ON COLUMN "public"."chat_conversacion"."fecha_modificacion"
+IS 'Se usa para ordenar las conversaciones mas recientes del usuario';
+
+
+CREATE TABLE "public"."chat_conversacion_usuarios" (
+  "id" SERIAL, 
+  "id_conversacion" INTEGER, 
+  "usuario_id" INTEGER, 
+  "estado" CHAR(1) DEFAULT 1, 
+  CONSTRAINT "chat_conversacion_usuarios_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "chat_conversacion_usuarios_fk" FOREIGN KEY ("id_conversacion")
+    REFERENCES "public"."chat_conversacion"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "chat_conversacion_usuarios_fk1" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON COLUMN "public"."chat_conversacion_usuarios"."estado"
+IS '0 = Inactivo, 1 = Activo';
+
+
+
+CREATE TABLE "public"."chat_conversacion_detalle" (
+  "id" SERIAL, 
+  "id_conversacion" INTEGER, 
+  "usuario_id" INTEGER, 
+  "mensaje" TEXT, 
+  "archivo_adjunto" VARCHAR(255), 
+  "fecha_mensaje" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "chat_conversacion_detalle_fk" FOREIGN KEY ("id_conversacion")
+    REFERENCES "public"."chat_conversacion"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "chat_conversacion_detalle_fk1" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;

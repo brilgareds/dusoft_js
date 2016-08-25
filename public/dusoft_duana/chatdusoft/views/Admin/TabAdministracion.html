@@ -1,0 +1,33 @@
+
+<div class ="padding5">    
+    <!-- End Código desplazado -->
+    <div class="row">
+        <div class="col-xs-12">
+
+            <div>
+                <br/><!--Espacio entre Tab Y título de Panel-->
+            </div>
+
+            <tabset> <!--Grupo de Tabs-->
+
+                <tab active="rootPedidoFarmaciaTemporal.tabListaPedidos">
+
+                    <tab-heading>
+                        <span></span> <b>Grupos</b>
+                    </tab-heading>
+                    
+                    <div ng-include src="'views/Grupos/ListaGrupos.html'"></div>
+
+                </tab>
+                
+                <tab  name="cargarPlano">
+                    <tab-heading>
+                        <i class="glyphicon glyphicon-cloud-upload"></i> <b> Conversaciones </b>
+                    </tab-heading>
+
+                    <chat-dusoft></chat-dusoft>
+                </tab>                    
+            </tabset>  
+        </div>    
+    </div>
+</div>

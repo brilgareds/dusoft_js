@@ -1,0 +1,23 @@
+<div class="input-group navbar-form ">
+
+    <div >
+         <button type="button" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnCrearPedido}}" ng-if="!root.pedido.get_numero_pedido()">
+            <span class="glyphicon glyphicon-plus"></span> Crear Grupo
+        </button>
+
+    </div>   
+
+</div>
+
+<div class="table-responsive">
+    <div class="auditadosGrid grid-responsive" ng-grid="root.lista_productos"></div>
+</div>
+
+<div class="table-responsive" ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true && !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()">
+    <div class="auditadosGrid grid-responsive" ng-grid="rootCreaPedidoFarmacia.detalle_pedido_generado"></div>
+</div>
+
+<!-- Grid Detalle Productos Opciones Modificación Especial-->
+<div class="table-responsive" ng-if="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()">
+    <div class="auditadosGrid grid-responsive" ng-grid="rootCreaPedidoFarmacia.detalle_pedido_modificable"></div>
+</div>

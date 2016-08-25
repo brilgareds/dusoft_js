@@ -1,0 +1,8 @@
+<div ng-controller="GuardarPedidoController" >
+    <div ng-include src="'views/generacionpedidos/pedidosfarmacias/guardarpedidobase.html'"></div>
+    
+    <div slide-content open-callback="mostrarSeleccionProducto" close-callback="cerrarSeleccionProducto"  class="slide" >
+        <div ng-include src="slideurl"  ng-controller="SeleccionProductoController" ></div>
+    </div>
+</div>
+<visualizar-reporte></visualizar-reporte>

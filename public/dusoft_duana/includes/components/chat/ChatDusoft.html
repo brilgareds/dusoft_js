@@ -1,0 +1,46 @@
+<div>
+    <div class="input-group navbar-form">
+
+        <input type="text" class="form-control pull-right" ng-keypress="onBuscarRol($event)" ng-model="rootRoles.termino_busqueda" placeholder="Buscar" />
+        <div class="input-group-btn" >
+            <button class="btn btn-default" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+        </div>
+
+    </div>
+
+
+    <div class="table-responsive" >
+
+        <div class="defaultGrid chatGrid grid-responsive" ng-grid="listado_roles">
+
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="table-responsive" >
+
+        <div class="defaultGrid chatGrid grid-responsive" ng-grid="listado_roles">
+
+        </div>
+    </div>
+    <br>
+    
+    <div class="input-group navbar-form chatPanel">
+
+        <input type="text" class="form-control pull-left" ng-keypress="onBuscarRol($event)" ng-model="rootRoles.termino_busqueda" placeholder="Buscar" />
+        <div class="input-group-btn pull-left" >
+            <button class="btn btn-default" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+        </div>
+
+    </div>
+</div>
+<!--div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootRoles.paginaactual == 1" ng-click="paginaAnterior()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootRoles.empresaSeleccionada.getRoles().length == 0" ng-click="paginaSiguiente()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div-- >
+

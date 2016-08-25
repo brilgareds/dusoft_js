@@ -2,6 +2,7 @@
 define(["angular",
     "route",
     "bootstrap",
+    "bootstrapLib",
     "js/controllers",
     "js/services",
     "js/models",

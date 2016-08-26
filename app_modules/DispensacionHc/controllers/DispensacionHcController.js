@@ -798,7 +798,11 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
     }).done();
 };
 
-
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de de registrar la formula como todo pendiente
+ * @fecha 26/08/2016
+ */
 DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
 
     console.log("*******DispensacionHc.prototype.guardarTodoPendiente************");
@@ -816,7 +820,7 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
     
     if(!args.realizar_entrega_formula.evolucionId){
         res.send(G.utils.r(req.url, 'La evolucion esta vacia ó indefinida', 404, {realizar_entrega_formula: []}));
-        return;
+        return;                                      
     } 
     
     if(!args.realizar_entrega_formula.tipoFormula){
@@ -827,12 +831,27 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
     var tipoFormula = args.realizar_entrega_formula.tipoFormula;
     var evolucionId = args.realizar_entrega_formula.evolucionId;
     var usuario = req.session.user.usuario_id;
-    var parametrosGenerarDispensacion=
-                  {evolucionId:evolucionId, tipoFormula:tipoFormula.tipo,usuario: usuario}
+    var parametrosGenerarDispensacion={evolucionId:evolucionId, tipoFormula:tipoFormula.tipo,usuario: usuario}
                   
-    G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion).then(function(resultado){
+    
+   /**
+     * +Descripcion Se valida antes de dejar la formula con todo los productos pendientes, que no existan productos
+     *              en la tabla de temporales
+    */
+    G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1).then(function(resultado){
         
-        if(resultado.rowCount === 0){
+        if(resultado.rows.length > 0){
+            
+            throw 'La formula no puede quedar -Todo pendiente- por que contiene temporales';
+          
+        }else{
+          
+            return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion)
+        }
+     
+    }).then(function(resultado){
+        
+         if(resultado.rowCount === 0){
             
             throw 'Error al actualizar el tipo de formula'   
             
@@ -841,8 +860,6 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
             return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarEstadoFormula',parametrosGenerarDispensacion);
            
         }  
-        
-       
     }).then(function(resultado){
         
         if(resultado.rowCount === 0){
@@ -850,19 +867,23 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
            throw 'Error al actualizar el estado de la formula'  
             
         }else{           
-            
+           
+           /*
+            *+Descripcion Metodo encargado de almacenar los productos de la formula
+            *             en estado --Todo pendiente-- 
+            */
            return G.Q.ninvoke(that.m_dispensacion_hc, 'guardarTodoPendiente',parametrosGenerarDispensacion);
            
         }  
         
     }).then(function(resultado){
         
-        res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
+        res.send(G.utils.r(req.url, 'La formula ha quedado con todos sus medicamentos pendientes', 200, {dispensacion: resultado}));
         
-    }).fail(function(err){
+   }) .fail(function(err){
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
-}
+};
 
 /**
  * @author Cristian Ardila
@@ -1235,8 +1256,8 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var bodegasDocTodoPendiente;                           
       //console.log("parametrosReformular:::: ", parametrosReformular);
         G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',evolucionId).then(function(resultado){
-        console.log("1) resultado ", resultado)
-        if(resultado.length > 0){        
+        console.log("1) resultado consultarProductosTodoPendiente ", resultado.rows.length)
+        if(resultado.rows.length > 0){        
            bodegasDocTodoPendiente = 1;                   
         }else{
            bodegasDocTodoPendiente = 0;              

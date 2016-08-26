@@ -699,7 +699,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
                         $scope.centroUtilidad = centroUtilidad;
 
                         $scope.confirmar = function() {
@@ -714,7 +714,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                             $modalInstance.close();
                         };
 
-                    },
+                    }],
                     resolve: {
                         centroUtilidad: function() {
                             return centroUtilidad;
@@ -744,7 +744,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
                             $scope.onSeleccionarBodega(bodega);
@@ -755,7 +755,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                             $modalInstance.close();
                         };
 
-                    },
+                    }],
                     resolve: {
                         bodega: function() {
                             return bodega;
@@ -847,7 +847,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
                             $scope.confirmarAsignarRol(rol);
@@ -858,7 +858,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                             $modalInstance.close();
                         };
 
-                    },
+                    }],
                     resolve: {
                         rol: function() {
                             return rol;

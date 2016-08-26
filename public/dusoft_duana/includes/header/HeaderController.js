@@ -143,14 +143,15 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
 
 
-            self.traerParametrizacionPorUsuario = function(empresa_id, callback) {
+            self.traerParametrizacionPorUsuario = function(empresa_id, limpiarCache, callback) {
 
                 var obj = {
                     session: session,
                     data: {
                         parametrizacion_usuarios: {
                             usuario_id: $scope.Usuario.getId(),
-                            empresa_id: empresa_id
+                            empresa_id: empresa_id,
+                            limpiar_cache:limpiarCache
                         }
                     }
                 };
@@ -384,7 +385,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
             $scope.onEmpresaSeleccionada = function(empresa) {
                 $scope.Usuario.setEmpresa(empresa);
-                self.traerParametrizacionPorUsuario($scope.Usuario.getEmpresa().getCodigo(), function(parametrizacion) {
+                self.traerParametrizacionPorUsuario($scope.Usuario.getEmpresa().getCodigo(), true, function(parametrizacion) {
 
                     var obj = localStorageService.get("session");
 
@@ -523,7 +524,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     empresa_id = $scope.Usuario.getEmpresa().getCodigo();
                 }
 
-                self.traerParametrizacionPorUsuario(empresa_id, function(parametrizacion) {
+                self.traerParametrizacionPorUsuario(empresa_id, false, function(parametrizacion) {
 
                     self.obtenerEmpresasUsuario(function() {
            

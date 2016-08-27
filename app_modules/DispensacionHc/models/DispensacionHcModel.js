@@ -1234,17 +1234,21 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
  **/
 function __insertarMedicamentosPendientesPorDispensar(that, index, productos, parametros,transaccion, callback) {
     
+    console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
+    console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
+    console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
+    
     var producto = productos[index];
                  
     if (!producto) {       
         callback(false,rowCount);
-        return;
+        return; 
     }  
   
       console.log("9) Accion : insertarBodegasDocumentosDetalle ");
  
         G.Q.ninvoke(that,'actualizarProductoPendientePorBodega',parametros.evolucion,producto, transaccion).then(function(resultado){
-            
+            console.log("producto.total > 0");
             if(parseInt(producto.total) > 0){
               
                 G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, parametros.evolucion, 0, parametros.usuario, transaccion)

@@ -1,21 +1,19 @@
 
-define(["angular","js/directive"], function(angular, directive){
+define(["angular","js/directive", "includes/components/chat/ChatController"], function(angular, directive){
 
-    directive.directive('chatDusoft', function() {
+    directive.directive('chat', function() {
 
         var directive = {};
         
         //directive.replace = true;
         directive.restrict = 'E';
-        directive.templateUrl = "../includes/components/chat/ChatDusoft.html";
+        directive.templateUrl = "../includes/components/chat/Chat.html";
 
         directive.scope = {
 
         };
 
-        directive.controller = ["$scope",function($scope){
-            $scope.checked = false;
-        }];
+        directive.controller = "ChatController";
 
         //cuando la etiqueta esta cargada en el dom
         directive.link = function(scope, element, attrs, ngModel){

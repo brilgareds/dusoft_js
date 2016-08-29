@@ -28,46 +28,47 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",
-   /* "models/pedidos/EmpresaPedido",
-    "controllers/asignarpedidos/PedidosController",
-    "controllers/asignarpedidos/PedidosClientesController",
-    "controllers/asignarpedidos/PedidosFarmaciasController",
-    "controllers/auditoriapedidos/AuditoriaPedidosController",
-    "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController",
-    "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController",
+    "controllers/Admin/AdminController",
+   /* "models/chat/EmpresaPedido",
+    "controllers/asignarchat/PedidosController",
+    "controllers/asignarchat/PedidosClientesController",
+    "controllers/asignarchat/PedidosFarmaciasController",
+    "controllers/auditoriachat/AuditoriaPedidosController",
+    "controllers/auditoriachat/DetallepedidoSeparadoClienteController",
+    "controllers/auditoriachat/DetallepedidoSeparadoFarmaciaController",
     
-    //pedidos farmacias
-    "models/generacionpedidos/pedidosfarmacias/EmpresaPedidoFarmacia",
-    "controllers/generacionpedidos/pedidosfarmacias/PedidosFarmaciaController",
-    "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoBaseController",
+    //chat farmacias
+    "models/generacionchat/chatfarmacias/EmpresaPedidoFarmacia",
+    "controllers/generacionchat/chatfarmacias/PedidosFarmaciaController",
+    "controllers/generacionchat/chatfarmacias/GuardarPedidoBaseController",
     
-    // Nuevas Urls para el proceso de pedidos clientes
-    "controllers/generacionpedidos/pedidosclientes/ReportePedidosClientesController",
-    "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
-    "controllers/generacionpedidos/pedidosclientes/PedidosClienteController",
-    "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController",
-    "controllers/separacionpedidos/ContenedorSeparacionController",
-    "controllers/separacionpedidos/SeparacionProductosController",
-    "controllers/separacionpedidos/SeparacionDetalleController",
-    "services/separacionpedidos/SeparacionService",
-    "controllers/separacionpedidos/SeparacionProductosPendientesController",
+    // Nuevas Urls para el proceso de chat clientes
+    "controllers/generacionchat/chatclientes/ReportePedidosClientesController",
+    "controllers/generacionchat/chatclientes/ListarPedidosClientesController",
+    "controllers/generacionchat/chatclientes/PedidosClienteController",
+    "controllers/generacionchat/chatclientes/GestionarProductosClientesController",
+    "controllers/separacionchat/ContenedorSeparacionController",
+    "controllers/separacionchat/SeparacionProductosController",
+    "controllers/separacionchat/SeparacionDetalleController",
+    "services/separacionchat/SeparacionService",
+    "controllers/separacionchat/SeparacionProductosPendientesController",
     
     //Nuevo modelo
-    "models/separacionpedidos/DocumentoDespacho",
+    "models/separacionchat/DocumentoDespacho",
     
     //Nuevo controlador
-    "controllers/auditoriapedidos/AuditoriaHTMLReportController",
+    "controllers/auditoriachat/AuditoriaHTMLReportController",
     
     //Service notificaciones
     
     
     //Nuevos modelos para Opcion Despachos
-     "models/auditoriapedidos/DocumentoAuditado",
-     "models/auditoriapedidos/EmpresaDespacho",
+     "models/auditoriachat/DocumentoAuditado",
+     "models/auditoriachat/EmpresaDespacho",
      
     //Nuevo Controlador para el detalle de los EFC
-    "controllers/auditoriapedidos/AuditoriaDespachosDetalle",
-    "controllers/auditoriapedidos/AuditoriaDespachos",
+    "controllers/auditoriachat/AuditoriaDespachosDetalle",
+    "controllers/auditoriachat/AuditoriaDespachos",
     
     //NUevo servicio para AUditoriaDespachos
     "services/auditoriadespacho/AuditoriaDespachoService",*/
@@ -77,7 +78,7 @@ define([
 ], function(angular) {
     /* App Module and its dependencies */
 
-    var pedidos = angular.module('pedidos', [
+    var chat = angular.module('chat', [
         'ui.router',
         'controllers',
         'models',
@@ -93,10 +94,10 @@ define([
     ]);
 
     // se debe declarar estas propiedades para tener la referencia del urlProvider
-    pedidos.urlRouterProvider;
-    pedidos.stateProvider;
+    chat.urlRouterProvider;
+    chat.stateProvider;
 
-    pedidos.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
+    chat.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
 
             // For any unmatched url, send to /route1
             //console.log($httpProvider, "http provider");
@@ -104,85 +105,86 @@ define([
             $httpProvider.interceptors.push('HttpInterceptor');
 
             //se pasa la referencia del urlRouterProvider y del stateProvider, ya no debe declararse los routers en esta parte
-            pedidos.urlRouterProvider = $urlRouterProvider;
-            pedidos.stateProvider = $stateProvider;
+            chat.urlRouterProvider = $urlRouterProvider;
+            chat.stateProvider = $stateProvider;
 
         }]).run(["$rootScope", "$location", "$state", function($rootScope, $location, $state) {
-            //$rootScope.titulo_modulo = "pedidos";
-            $rootScope.name = "pedidos";
+            //$rootScope.titulo_modulo = "chat";
+            $rootScope.name = "chat";
             var vistaDefecto = "Admin";
 
             //este evento se dispara cuando los permisos del usuario esta listos
             $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion) {
 
-                pedidos.urlRouterProvider.otherwise(vistaDefecto);
+                chat.urlRouterProvider.otherwise(vistaDefecto);
 
-                pedidos.stateProvider
+                chat.stateProvider
                 .state('Admin', {
                     url: "/Admin",
                     text: "Configuracion",
-                    templateUrl: "views/Admin/TabAdministracion.html"
+                    templateUrl: "views/Admin/TabAdministracion.html",
+                    controller:"AdminController"
                 })
                 /*.state('AuditarPedidos', {
                     url: "/AuditarPedidos",
                     text: "Auditar Pedidos",
-                    templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
+                    templateUrl: "views/auditoriachat/AuditoriaPedidos.html"
                 })                
                 .state('ListarPedidosFarmacias',{
                     url: "/ListarPedidosFarmacias",
                     text: "Pedidos Farmacias",
-                    templateUrl: "views/generacionpedidos/pedidosfarmacias/listapedidos.html"
+                    templateUrl: "views/generacionchat/chatfarmacias/listachat.html"
                 })
                 .state('GuardarPedidoTemporal',{
                     url: "/GuardarPedidoTemporal",
                     text: "Pedido Farmacia Temporal",
-                    templateUrl: "views/generacionpedidos/pedidosfarmacias/guardarpedidotemporal.html",
+                    templateUrl: "views/generacionchat/chatfarmacias/guardarpedidotemporal.html",
                     parent_name: "ListarPedidosFarmacias",
                     controller: "GuardarPedidoBaseController"
                 })
                 .state('GuardarPedido',{
                     url: "/GuardarPedido",
                     text: "Pedido Farmacia",
-                    templateUrl: "views/generacionpedidos/pedidosfarmacias/guardarpedido.html",
+                    templateUrl: "views/generacionchat/chatfarmacias/guardarpedido.html",
                     parent_name: "ListarPedidosFarmacias",
                     controller: "GuardarPedidoBaseController"
                 }).state('DocumentoDespacho',{              
                     url: "/DocumentoDespacho",
-                    templateUrl: "views/auditoriapedidos/AuditoriaHTMLReport.html",
+                    templateUrl: "views/auditoriachat/AuditoriaHTMLReport.html",
                     parent_name: "AuditarPedidos",
                     controller: "AuditoriaHTMLReportController"
                 }).state('AuditoriaDespachos', {
                     url: "/AuditoriaDespachos",
                     text: "Detalle de despachos auditados",
-                    templateUrl: "views/auditoriapedidos/AuditoriaDespachos.html",
+                    templateUrl: "views/auditoriachat/AuditoriaDespachos.html",
                     parent_name: "AuditarPedidos",
                     controller: 'AuditoriaDespachosDetalle'
                 });
                 // URL's Pedidos Clientes
-                pedidos.stateProvider.state('ListarPedidosClientes', {
+                chat.stateProvider.state('ListarPedidosClientes', {
                     url: "/ListarPedidosClientes",
                     text: "Listado Pedidos Clientes",
-                    templateUrl: "views/generacionpedidos/pedidosclientes/index.html"
+                    templateUrl: "views/generacionchat/chatclientes/index.html"
                 }).state('Cotizaciones', {
                     url: "/Cotizaciones",
                     text: "Gestionar Cotizaciones",
-                    templateUrl: "views/generacionpedidos/pedidosclientes/gestionarpedidocliente.html",
+                    templateUrl: "views/generacionchat/chatclientes/gestionarpedidocliente.html",
                     parent_name : "ListarPedidosClientes"
                 }).state('PedidoCliente', {
                     url: "/PedidoCliente",
                     text: "Gestionar Pedidos Clientes",
-                    templateUrl: "views/generacionpedidos/pedidosclientes/gestionarpedidocliente.html",
+                    templateUrl: "views/generacionchat/chatclientes/gestionarpedidocliente.html",
                     parent_name : "ListarPedidosClientes"
                 }).state('SeparacionPedidos', {
                     url: "/SeparacionPedidos",
                     text: "Separacion Pedidos",
-                    templateUrl: "views/separacionpedidos/separacionpedidos.html"
+                    templateUrl: "views/separacionchat/separacionchat.html"
                     
                 }).state('SeparacionProducto', {
                     url: "/SeparacionProducto",
                     text: "Separacion producto", 
                     parent_name: "SeparacionPedidos",
-                    templateUrl: "views/separacionpedidos/separacionProducto.html",
+                    templateUrl: "views/separacionchat/separacionProducto.html",
                     controller: "SeparacionProductosController"
                     
                 }).state('TrasladoExistencias', {
@@ -207,6 +209,6 @@ define([
 
         }]);
 
-    angular.bootstrap(document, ['pedidos']);
-    return pedidos;
+    angular.bootstrap(document, ['chat']);
+    return chat;
 });

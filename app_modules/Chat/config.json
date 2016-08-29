@@ -1,0 +1,21 @@
+{
+    "module": "Chat",
+    "dependency": {
+        "controllers": [{
+                "chat_controller": {
+                    "module": "Chat",
+                    "controller": "ChatController",
+                    "alias": "c_chat"
+                }
+            }],
+        "models": [{
+                "chat_model": {
+                    "module": "Chat",
+                    "model": "ChatModel",
+                    "alias": "m_chat"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

@@ -3,7 +3,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
     "includes/classes/Empresa", "includes/classes/Modulo",
     "includes/classes/Rol", "includes/classes/OpcionModulo",
     "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo",
-    "includes/components/chat/ChatDusoft",
+    "includes/components/chat/Chat",
     "includes/components/notificaciones/NotificacionesController"], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",

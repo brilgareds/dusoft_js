@@ -10,13 +10,13 @@
 
             <tabset> <!--Grupo de Tabs-->
 
-                <tab active="rootPedidoFarmaciaTemporal.tabListaPedidos">
+                <tab>
 
                     <tab-heading>
                         <span></span> <b>Grupos</b>
                     </tab-heading>
                     
-                    <div ng-include src="'views/Grupos/ListaGrupos.html'"></div>
+                    <div ng-include src="'views/Grupos/ListaGrupos.html'" ng-controller="GruposController"></div>
 
                 </tab>
                 
@@ -25,7 +25,7 @@
                         <i class="glyphicon glyphicon-cloud-upload"></i> <b> Conversaciones </b>
                     </tab-heading>
 
-                    <chat-dusoft></chat-dusoft>
+                    <chat></chat>
                 </tab>                    
             </tabset>  
         </div>    

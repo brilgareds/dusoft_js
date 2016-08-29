@@ -776,9 +776,9 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 b.observacion_justificacion_auditor\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
-                inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
-                inner join inventarios_productos c on f.codigo_producto = c.codigo_producto \
-                inner join inv_clases_inventarios e on c.grupo_id = e.grupo_id and c.clase_id = e.clase_id \
+                left join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
+                left join inventarios_productos c on f.codigo_producto = c.codigo_producto \
+                left join inv_clases_inventarios e on c.grupo_id = e.grupo_id and c.clase_id = e.clase_id \
                 left join (\
                     SELECT a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
                     a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega, \

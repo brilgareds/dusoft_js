@@ -1224,7 +1224,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
     
 };
 
-
+var totalInsertadosPendientes = 0;
 /**
  * @author Cristian Manuel Ardila Troches  
  * +Descripcion funcion local recursiva encargada de recorrer el arreglo
@@ -1237,26 +1237,40 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
     console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
     console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
     console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
+    console.log("totalInsertadosPendientes ****** ", totalInsertadosPendientes); 
     
     var producto = productos[index];
-                 
+         
     if (!producto) {       
-        callback(false,rowCount);
+        callback(false,totalInsertadosPendientes);
         return; 
     }  
-  
+    
+    
+            
       console.log("9) Accion : insertarBodegasDocumentosDetalle ");
  
         G.Q.ninvoke(that,'actualizarProductoPendientePorBodega',parametros.evolucion,producto, transaccion).then(function(resultado){
-            console.log("producto.total > 0");
+            console.log("producto.total > 0 ::: ", producto.total);
+            console.log("producto ", producto);
             if(parseInt(producto.total) > 0){
               
                 G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, parametros.evolucion, 0, parametros.usuario, transaccion)
                    .then(function(resultado){                            
-                           rowCount = resultado.rowCount;
-                           console.log("resultado rowCount::::---:::: ", rowCount);
-                        })
+                           totalInsertadosPendientes = 1;
+                           console.log(" -1- resultado totalInsertadosPendientes::::---:::: ", totalInsertadosPendientes);
+                           console.log(" -2- resultado resultado::::---:::: ", resultado);
+                        });
             }
+            
+             console.log("Se valida si es el ultimo producto por dispensar y si este es 0")
+            if(productos.length === 1 && parseInt(producto.total) === 0){    
+
+                        console.log("Entro se pone CERO 0")
+                    totalInsertadosPendientes=0;
+
+            }     
+            
          }).fail(function(err){      
        }).done();                 
       

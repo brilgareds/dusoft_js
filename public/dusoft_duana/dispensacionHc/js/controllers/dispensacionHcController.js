@@ -134,6 +134,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         if(data.status === 200) {       
                            $scope.root.items = data.obj.listar_formulas.length;                              
                            $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
+                           console.log("data.obj ", data.obj);                 
                         }else{
                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
@@ -284,12 +285,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                 <li><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
-                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 0"><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a></li>\
+                                                 <li ><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1"><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a></li>\
                                              </ul>\
                                        </div>'
                             },
-                            
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: 'Estado formula', width:"9%"}
                         ]
                     };
 

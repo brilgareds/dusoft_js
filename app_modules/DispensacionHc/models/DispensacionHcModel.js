@@ -18,12 +18,15 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
    **/
 
    var pendienteCampoEstado = "";
+   var pendienteValidacion = "";
    var pendienteTabla = "";
   
-
-  if(obj.estadoFormula === '1'){       
-        pendienteCampoEstado = ",j.sw_estado";
-        pendienteTabla = "INNER JOIN HC_PENDIENTES_POR_DISPENSAR j ON (a.evolucion_id=j.evolucion_id)";
+   console.log("obj ", obj);
+  if(obj.estadoFormula === '1'){     
+        pendienteCampoEstado = ",a.sw_pendiente as sw_estado";
+        pendienteValidacion = " WHERE a.sw_pendiente = '1'";
+        //pendienteCampoEstado = ",j.sw_estado";
+        //pendienteTabla = "INNER JOIN HC_PENDIENTES_POR_DISPENSAR j ON (a.evolucion_id=j.evolucion_id)";
        
    }
   
@@ -68,6 +71,52 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
    }
     
     var sql = "* FROM (\
+                      SELECT DISTINCT\
+                        '0' AS tipo_formula,\
+                        a.tipo_formula as transcripcion_medica,\
+                        CASE WHEN (a.tipo_formula='0' or a.tipo_formula ='2') THEN 'FORMULACION' ELSE 'TRANSCRIPCION' END AS descripcion_tipo_formula,\
+                        TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS fecha_registro,\
+                        a.tipo_id_paciente,\
+                        a.paciente_id,\
+                        a.fecha_registro AS registro,\
+                        CURRENT_DATE as hoy,\
+                        a.sw_refrendar as refrendar,\
+                        a.evolucion_id,\
+                        coalesce(a.formula_id, 0) AS numero_formula,\
+                        edad(b.fecha_nacimiento) as edad,\
+                        b.sexo_id,\
+                        b.primer_apellido ||' '||b.segundo_apellido AS apellidos,\
+                        b.primer_nombre||' '||b.segundo_nombre AS nombres,\
+                        b.residencia_telefono,\
+                        b.residencia_direccion,\
+                        '1' as sw_entrega_med,\
+                        a.fecha_finalizacion,\
+                        a.fecha_registro as fecha_formulacion,\
+                        e.nombre,\
+                        f.tipo_bloqueo_id,\
+                        f.descripcion AS bloqueo,\
+                        COALESCE(i.plan_id,0) as plan_id,\
+                        i.plan_descripcion, a.sw_finalizado, a.numero_total_entregas, a.numero_entrega_actual,\
+                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+                            THEN (\
+                                CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
+                                    WHEN now() > a.fecha_maxima_entrega THEN 'Vencido'\
+                                    ELSE 'Falta' END\
+                                ) ELSE 'Tramiento finalizado' END AS estado_entrega\
+                        "+pendienteCampoEstado+" FROM \
+                          dispensacion_estados AS a\
+                        inner join pacientes as b ON (a.tipo_id_paciente = b.tipo_id_paciente) AND (a.paciente_id = b.paciente_id)\
+                        left join inv_tipos_bloqueos as f ON (b.tipo_bloqueo_id=f.tipo_bloqueo_id) AND (f.estado='1')\
+                        inner join system_usuarios as e ON (a.medico_id = e.usuario_id)\
+                        inner join eps_afiliados as g ON (g.afiliado_tipo_id=b.tipo_id_paciente)\
+                        AND (g.afiliado_id=b.paciente_id)\
+                        inner join planes_rangos AS h ON (g.plan_atencion=h.plan_id)\
+                        AND (g.tipo_afiliado_atencion=h.tipo_afiliado_id)\
+                        AND (g.rango_afiliado_atencion=h.rango)\
+                        inner join planes as i ON (h.plan_id=i.plan_id)\
+                         "+pendienteValidacion+ " ) AS  a WHERE " + sqlCondicion ;
+    
+    /*var sql = "* FROM (\
                         SELECT DISTINCT\
                         '0' AS tipo_formula,\
                         a.transcripcion_medica,\
@@ -115,15 +164,15 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         AND (g.rango_afiliado_atencion=h.rango)\
                         inner join planes as i ON (h.plan_id=i.plan_id)\
                         "+pendienteTabla+" WHERE a.codigo_medicamento IS NOT NULL \
-                    ) AS a WHERE  " + sqlCondicion; 
+                    ) AS a WHERE  " + sqlCondicion;*/ 
               
     var query = G.knex.select(G.knex.raw(sql, parametros)).
     limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).orderBy("a.registro", "desc").then(function(resultado){          
-        //console.log("resultado ", resultado)
+    offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
+        console.log("resultado ", resultado)
         callback(false, resultado);
     }).catch(function(err){    
-        //console.log("err ", err)
+        console.log("err ", err)
         callback("Ha ocurrido un error");      
     });
 };
@@ -1198,7 +1247,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
             
         }).then(function(resultado){
             console.log("!resultado ? 0 : 1 ", resultado);
-                obj.parametro1.conPendientes = !resultado ? 0 : 1;
+                obj.parametro1.conPendientes = !resultado ? 0 : resultado;
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
          
         }).then(function(){
@@ -1446,7 +1495,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
             
         }).then(function(resultado){
             
-                obj.parametro1.conPendientes = !resultado ? 0 : 1;
+                obj.parametro1.conPendientes = !resultado ? 0 : resultado;
              
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
          
@@ -1589,6 +1638,8 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
     });  
 };
 
+
+  
 /**
  * +Descripcion Variable que almacena la respuesta del servidor cuando
  *              se almacena el registro de los medicamenots pendientes
@@ -1612,14 +1663,20 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
         return;                     
     }  
     
-    if(parseInt(producto.total) > 0){
-        
+    if(parseInt(producto.total) > 0){      
         G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
-            rowCount = resultado.rowCount;
+            rowCount = 1;
            console.log("resultado rowCount::::---:::: ", rowCount);
          }).fail(function(err){      
        }).done();   
     }
+    
+     console.log("Se valida si es el ultimo producto por dispensar y si este es 0")
+    if(productos.length === 1 && parseInt(producto.total) === 0){    
+        console.log("Entro se pone CERO 0")
+        rowCount=0;
+    }  
+    
     index++;
     setTimeout(function() {
         __insertarMedicamentosPendientes(that, index, productos,evolucionId,todoPendiente,usuario,transaccion, callback);
@@ -1969,7 +2026,7 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
     
     var parametros ={1: obj.bodegasDocId,2: obj.numeracion,3: 'now()',
                      4: '0',5: null,6: obj.observacion,7: obj.usuario,
-                     8: obj.estadoPendiente,9: 'now()'};
+                     8: obj.todoPendiente,9: 'now()'};
                  
     var sql = " INSERT INTO bodegas_documentos(bodegas_doc_id,numeracion,fecha,total_costo,transaccion,observacion,usuario_id,todo_pendiente,fecha_registro)\
                 VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9 );";

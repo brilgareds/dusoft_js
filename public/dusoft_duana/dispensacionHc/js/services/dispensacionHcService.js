@@ -318,8 +318,9 @@ define(["angular", "js/services"], function(angular, services) {
                                                 _formula.fecha_registro,
                                                _formula.fecha_finalizacion,
                                              _formula.fecha_formulacion);
-
+                                                
                             formula.setEstado( _formula.sw_estado);
+                            formula.setEstadoEntrega( _formula.estado_entrega);
                                 
                     }
                           
@@ -328,9 +329,11 @@ define(["angular", "js/services"], function(angular, services) {
                             paciente.setResidenciaDireccion(_formula.residencia_direccion);
                             paciente.setResidenciaTelefono(_formula.residencia_telefono);
                             paciente.setSexo(_formula.sexo);  
-                        var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');                             
+                        var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');   
+                        formula.setEstadoEntrega( _formula.estado_entrega);
                         var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);                               
-                         formula.agregarProductos(Productos);           
+                         formula.agregarProductos(Productos);  
+                         
                     }
                          //El paciente tiene su formula
                     paciente.agregarFormulas(formula);

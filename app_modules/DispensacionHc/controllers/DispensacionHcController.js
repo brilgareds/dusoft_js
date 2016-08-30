@@ -969,7 +969,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     var variableParametrizacion;
     var numeracion;
     var temporales;
-    var todoPendiente;
+       
     //Variables para calcular la fecha maxima de entrega de una formula
     var formato = 'YYYY-MM-DD';
     var now = new Date(); 
@@ -1047,7 +1047,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                         estadoPendiente:0,
                         usuario: usuario,
                         evolucion: evolucionId,
-                        todoPendiente: todoPendiente,
+                        todoPendiente: 0,
                         fechaEntrega: fechaEntrega, 
                         fechaMinima:fechaMinima, 
                         fechaMaxima:resultado.fechaMaxima,
@@ -1330,7 +1330,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                      estadoPendiente:0,
                      usuario: usuario,
                      evolucion: evolucionId,
-                     todoPendiente: bodegasDocTodoPendiente
+                     todoPendiente: bodegasDocTodoPendiente      
                     },
                     
                     parametro2:{

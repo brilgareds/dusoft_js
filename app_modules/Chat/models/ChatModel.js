@@ -10,12 +10,34 @@ var ChatModel = function() {
 */
 ChatModel.prototype.listarGrupos = function(parametros, callback) {
 
-    var sql =  "a.nombre, a.fecha_creacion, (SELECT COUNT(b.grupo_id) AS total FROM chat_grupos_usuarios b\
+    var sql =  "a.id, a.nombre, to_char(a.fecha_creacion, 'yyyy-mm-dd') as fecha_creacion, a.estado, \
+                CASE WHEN a.estado = '0' THEN 'Inactivo' WHEN a.estado = '1' THEN 'Activo' END AS descripcion_estado,\
+                (SELECT COUNT(b.grupo_id) AS total FROM chat_grupos_usuarios b\
                 WHERE b.grupo_id = a.id) AS numero_integrantes from chat_grupos a ";
     
     G.knex.select(G.knex.raw(sql)).
     limit(G.settings.limit).
     offset((parametros.pagina - 1) * G.settings.limit).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });   
+};
+
+
+/**
+* @author Eduar Garcia
+* +Descripcion consulta los grupos del chat, permite tener un termino de busqueda
+* @params obj: {pagina, termino_busqueda}
+* @fecha 2016-08-29
+*/
+ChatModel.prototype.cambiarEstado = function(parametros, callback) {
+
+    var sql =  "UPDATE chat_grupos SET estado = :1 WHERE id = :2 ";
+    
+    G.knex.raw(sql, {1:parametros.estado, 2:parametros.grupo_id}).
     then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){

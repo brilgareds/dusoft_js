@@ -14,19 +14,51 @@ ChatController.prototype.listarGrupos = function(req, res) {
     var that = this;
     var args = req.body.data;
     var termino_busqueda = {};
-    var pagina_actual = args.autorizaciones.pagina_actual;
-
-    if (!args.chat  || !args.chat.termino_busqueda  || !args.chat.pagina_actual) {
+    
+    console.log("chat args >>>>>>>>>>>>>>>", args);
+    
+    if (!args.chat  || args.chat.termino_busqueda === undefined  || !args.chat.pagina) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
 
-    if (args.chat.pagina_actual === '') {
+    if (args.chat.pagina === '') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
         
 
+    G.Q.ninvoke(this.mChat,'listarGrupos', args.chat).then(function(grupos) {
+        res.send(G.utils.r(req.url, 'Listado de grupos', 200, {grupos: grupos}));
+      
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error Listado los grupos', 500, {grupos: {}}));
+    }).done();
+
+
+};
+
+/**
+* @author Eduar Garcia
+* +Descripcion Permite modificar el estado de un grupo
+* @params obj: {pagina, termino_busqueda}
+* @fecha 2016-08-29
+*/
+ChatController.prototype.cambiarEstado = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (!args.chat  || !args.chat.grupo_id   || !args.chat.pagina) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.chat.pagina === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+        
     G.Q.ninvoke(this.mChat,'listarGrupos', args.chat).then(function(grupos) {
         res.send(G.utils.r(req.url, 'Listado de grupos', 200, {grupos: grupos}));
       

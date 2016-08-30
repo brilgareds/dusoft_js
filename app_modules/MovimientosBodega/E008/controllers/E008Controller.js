@@ -2872,7 +2872,7 @@ E008Controller.prototype.obtenerJustificaciones = function(req, res){
         res.send(G.utils.r(req.url, "Listado de justificaciones", 200, {justificaciones: resultado}));
        
     }).fail(function(err) {
-
+        console.log("err ", err);
         res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
 
     }).done();

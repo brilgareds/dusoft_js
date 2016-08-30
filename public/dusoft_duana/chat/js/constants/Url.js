@@ -9,7 +9,8 @@ define(["angular"], function(angular) {
         'API': {
             'BASE_URL': BASE_URL,
             'CHAT':{
-                'LISTAR_GRUPOS' : BASE_URL +"/Chat/listarGrupos"
+                'LISTAR_GRUPOS' : BASE_URL +"/Chat/listarGrupos",
+                'CAMBIAR_ESTADO' : BASE_URL +"/Chat/cambiarEstado"
             }
         },
         'STATIC': {

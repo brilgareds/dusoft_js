@@ -1,6 +1,6 @@
 //Controlador de la View creapedidosfarmacias.html
 
-define(["angular", "js/controllers", "controllers/Grupos/GruposController"], function(angular, controllers) {
+define(["angular", "js/controllers", "controllers/Grupos/ListaGruposController"], function(angular, controllers) {
 
     controllers.controller('AdminController', [
         '$scope', '$rootScope', 'Request',

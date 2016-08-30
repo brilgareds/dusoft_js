@@ -29,6 +29,7 @@ define([
     "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",
     "controllers/Admin/AdminController",
+    "controllers/Grupos/GuardarGruposController",
    /* "models/chat/EmpresaPedido",
     "controllers/asignarchat/PedidosController",
     "controllers/asignarchat/PedidosClientesController",
@@ -125,12 +126,13 @@ define([
                     templateUrl: "views/Admin/TabAdministracion.html",
                     controller:"AdminController"
                 })
-                /*.state('AuditarPedidos', {
-                    url: "/AuditarPedidos",
-                    text: "Auditar Pedidos",
-                    templateUrl: "views/auditoriachat/AuditoriaPedidos.html"
+                .state('GuardarGrupo', {
+                    url: "/GuardarGrupo",
+                    text: "Guardar Grupo",
+                    templateUrl: "views/Grupos/GuardarGrupo.html",
+                    parent_name: "Admin",
                 })                
-                .state('ListarPedidosFarmacias',{
+                /*.state('ListarPedidosFarmacias',{
                     url: "/ListarPedidosFarmacias",
                     text: "Pedidos Farmacias",
                     templateUrl: "views/generacionchat/chatfarmacias/listachat.html"

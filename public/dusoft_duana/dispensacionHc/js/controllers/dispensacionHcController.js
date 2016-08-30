@@ -27,9 +27,24 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     empresaSeleccionada: '',
                     termino_busqueda:'',
                     estadoSesion: true,
-                    justificacion : justificacion[0]
+                    justificacion : justificacion[0],
+                    estadoBotones : [
+                    "btn btn-danger btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-danger btn-xs",
+                    "btn btn-info btn-xs",
+                    "btn btn-warning btn-xs",
+                    "btn btn-success btn-xs",
+                    "btn btn-warning btn-xs"
+                    ],
+                    descripcionEstadosFormula:[
+                        'Entrar',
+                        'Vencido',
+                        'Falta'
+                    ]
                 }; 
                 $scope.root.estadoFormula = 0;
+                 
                     /*
                      * Inicializacion de variables
                      * @param {type} empresa
@@ -134,7 +149,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         if(data.status === 200) {       
                            $scope.root.items = data.obj.listar_formulas.length;                              
                            $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                           console.log("data.obj ", data.obj);                 
+                           console.log("$scope.root.afiliados ", $scope.root.afiliados);                 
                         }else{
                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
@@ -285,15 +300,30 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                 <li ><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
+                                                 <li ng-if="!row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 2 "><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1"><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a></li>\
                                              </ul>\
                                        </div>'
                             },
-                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: 'Estado formula', width:"9%"}
+                         
+                            //{field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: 'Estado formula', width:"9%"},
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: "Estado Actual", 
+                                    cellClass: "txt-center", width: "9%",
+                        cellTemplate: "<button type='button' \n\
+                                        ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
+                                       <span ng-class=''></span> {{descripcionEstado(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)}} </button>"}, 
+   
                         ]
                     };
-
+                    
+                    $scope.descripcionEstado = function(index){
+                        return $scope.root.descripcionEstadosFormula[index];
+                    };        
+                    // Agregar Clase de acuerdo al estado del pedido
+                    $scope.agregar_clase_formula = function(index) {
+                        return $scope.root.estadoBotones[index];
+                    };
+                    
                    /**
                       * +Descripcion Se visualiza la tabla con todas las aprobaciones
                       *              por parte del personal de seguridad

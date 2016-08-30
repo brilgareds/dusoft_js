@@ -69,7 +69,11 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
         parametros["4"]= obj.terminoBusqueda;
      
    }
-    
+    /**
+     * 0: Entrar
+     * 1: Vencido
+     * 2: Falta
+     */
     var sql = "* FROM (\
                       SELECT DISTINCT\
                         '0' AS tipo_formula,\
@@ -99,9 +103,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         i.plan_descripcion, a.sw_finalizado, a.numero_total_entregas, a.numero_entrega_actual,\
                         CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
-                                CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
-                                    WHEN now() > a.fecha_maxima_entrega THEN 'Vencido'\
-                                    ELSE 'Falta' END\
+                                CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN '0'\
+                                    WHEN now() > a.fecha_maxima_entrega THEN '1'\
+                                    ELSE '2' END\
                                 ) ELSE 'Tramiento finalizado' END AS estado_entrega\
                         "+pendienteCampoEstado+" FROM \
                           dispensacion_estados AS a\

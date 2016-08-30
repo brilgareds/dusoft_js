@@ -4,11 +4,14 @@ var TemporalesCronjob = function() {
     if(G.program.prod){
        
         that.iniciar();
+        that.backuptExistencias();
     }
+    
+
 
 };
 
-TemporalesCronjob.prototype.iniciar = function(req, res){
+TemporalesCronjob.prototype.iniciar = function(){
     var that = this;
     //El cronjob correra todos los dias a media noche
     console.log("corriendo crontab para borrar temporales code 1 >>>>>>>>>>>>>>>>>>>>>>");
@@ -23,5 +26,24 @@ TemporalesCronjob.prototype.iniciar = function(req, res){
     
 };
 
+//Proceso temporal hasta cuadrar los lapsos de cierre
+TemporalesCronjob.prototype.backuptExistencias = function(){
+    var that = this;
+    //El cronjob correra todos los dias a media noche
+    var job = new G.cronJob('00 00 00 * * *', function () {
+        
+        var sql = "INSERT INTO existencias_bodega_backup\
+                    SELECT * FROM existencias_bodegas where empresa_id in ('03', 'FD');"
+        
+        G.knex.raw(sql).then(function(){
+            console.log("backup realizado en existencias_bodegas_backup");
+        }).catch(function(err){
+            console.log("error generado en backup existencias bodega", err);
+        });
+        
+    });
+    job.start();
+    
+};
 
 module.exports = TemporalesCronjob;

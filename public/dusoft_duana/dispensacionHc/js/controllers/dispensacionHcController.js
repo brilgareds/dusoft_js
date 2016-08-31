@@ -36,12 +36,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     "btn btn-warning btn-xs",
                     "btn btn-success btn-xs",
                     "btn btn-warning btn-xs"
-                    ],
-                    descripcionEstadosFormula:[
-                        'Entrar',
-                        'Vencido',
-                        'Falta'
                     ]
+                   
                 }; 
                 $scope.root.estadoFormula = 0;
                  
@@ -280,7 +276,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableCellSelection: true,
                         enableHighlighting: true,
                         columnDefs: [
-                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()', displayName: '# Evolucion', width:"6%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"9%"}, 
                             {displayName: 'Identificacion', width:"9%",
                              cellTemplate: "<div\n\
@@ -300,7 +296,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                 <li ng-if="!row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 2 "><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
+                                                 <li  "><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1"><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a></li>\
                                              </ul>\
                                        </div>'
@@ -311,14 +307,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     cellClass: "txt-center", width: "9%",
                         cellTemplate: "<button type='button' \n\
                                         ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
-                                       <span ng-class=''></span> {{descripcionEstado(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)}} </button>"}, 
+                                       <span ng-class=''></span> {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 
    
                         ]
                     };
-                    
-                    $scope.descripcionEstado = function(index){
-                        return $scope.root.descripcionEstadosFormula[index];
-                    };        
+                        
                     // Agregar Clase de acuerdo al estado del pedido
                     $scope.agregar_clase_formula = function(index) {
                         return $scope.root.estadoBotones[index];

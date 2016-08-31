@@ -321,6 +321,7 @@ define(["angular", "js/services"], function(angular, services) {
                                                 
                             formula.setEstado( _formula.sw_estado);
                             formula.setEstadoEntrega( _formula.estado_entrega);
+                            formula.setDescripcionEstadoEntrega( _formula.descripcion_estado_entrega);
                                 
                     }
                           
@@ -330,9 +331,10 @@ define(["angular", "js/services"], function(angular, services) {
                             paciente.setResidenciaTelefono(_formula.residencia_telefono);
                             paciente.setSexo(_formula.sexo);  
                         var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');   
-                        formula.setEstadoEntrega( _formula.estado_entrega);
+                            formula.setEstadoEntrega( _formula.estado_entrega);
+                            formula.setDescripcionEstadoEntrega( _formula.descripcion_estado_entrega);
                         var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);                               
-                         formula.agregarProductos(Productos);  
+                            formula.agregarProductos(Productos);  
                          
                     }
                          //El paciente tiene su formula

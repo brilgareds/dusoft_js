@@ -16,6 +16,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.fechaFormulacion = fechaFormulacion || "";
             this.estado;
             this.estadoEntrega;
+            this.descripcionEstadoEntrega;
         };
         
         
@@ -69,6 +70,15 @@ define(["angular", "js/models"], function(angular, models) {
        
         Formula.prototype.getEstadoEntrega = function(){
             return this.estadoEntrega;
+        };
+        
+        
+        Formula.prototype.setDescripcionEstadoEntrega = function(descripcionEstadoEntrega){
+             this.descripcionEstadoEntrega = descripcionEstadoEntrega;
+        };
+       
+        Formula.prototype.getDescripcionEstadoEntrega = function(){
+            return this.descripcionEstadoEntrega;
         };
         
         this.get = function(evolucionId,numeroFormula,tipoFormula, transcripcionMedica,descripcionTipoFormula,

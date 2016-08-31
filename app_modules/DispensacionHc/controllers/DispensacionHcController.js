@@ -1084,7 +1084,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             throw 'Error al actualizar el tipo de formula'        
         }else{           
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
-           that.e_dispensacion_hc.onNotificarEntregaFormula(); 
+           //that.e_dispensacion_hc.onNotificarEntregaFormula(); 
         }   
     }).fail(function(err){            
        res.send(G.utils.r(req.url, err, 500, {}));
@@ -1250,6 +1250,14 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var variableParametrizacion;
     var numeracion;
     var temporales;
+    
+    
+    //Variables para calcular la fecha maxima de entrega de una formula
+    var formato = 'YYYY-MM-DD';
+    var now = new Date(); 
+    var fechaEntrega;
+    var fechaMinima;
+    
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0};
@@ -1319,27 +1327,41 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     }).then(function(resultado){
         temporales = resultado.rows;
         //console.log("6)resultado ", resultado);
-        if(resultado.rows.length > 0){
+          //Variables para calcular la fecha maxima de entrega de una formula
+  
+            fechaEntrega = G.moment(now).add(30, 'day').format(formato);
+            fechaMinima   = G.moment(now).add(25, 'day').format(formato);
+         
+            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:8});
+        
+        
+    }).then(function(resultado){
+        
+        if(temporales.length > 0){
             
             
             var parametrosGenerarDispensacion=
-                  {
-                    parametro1:{ bodegasDocId:bodegasDocId, 
-                     numeracion:numeracion, 
-                     observacion:observacion, 
-                     estadoPendiente:0,
-                     usuario: usuario,
-                     evolucion: evolucionId,
-                     todoPendiente: bodegasDocTodoPendiente      
-                    },
-                    
-                    parametro2:{
-                            temporales: temporales, 
-                            usuario:usuario, 
-                            bodegasDocId:bodegasDocId, 
-                            numeracion:numeracion, 
-                            planId: planId}
-                  };
+                {
+                  parametro1:{ bodegasDocId:bodegasDocId, 
+                   numeracion:numeracion, 
+                   observacion:observacion, 
+                   estadoPendiente:0,
+                   usuario: usuario,
+                   evolucion: evolucionId,
+                   todoPendiente: bodegasDocTodoPendiente,
+                   fechaEntrega: fechaEntrega, 
+                   fechaMinima:fechaMinima, 
+                   fechaMaxima:resultado.fechaMaxima
+                  },
+
+                  parametro2:{
+                    temporales: temporales, 
+                    usuario:usuario, 
+                    bodegasDocId:bodegasDocId, 
+                    numeracion:numeracion, 
+                    planId: planId
+                }
+            };
             
             /**
              * Inserta bodegas_documentos

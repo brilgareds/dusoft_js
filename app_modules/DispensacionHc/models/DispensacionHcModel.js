@@ -973,17 +973,18 @@ DispensacionHcModel.prototype.listarTipoFormula = function(callback){
  * @controller DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar
  */
 DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = function(obj,callback){
-       
+     
     var parametros = {};
         parametros["1"] = obj.evolucionId;
-    var where;
+    var where = "";
 
-    if(!obj.paciente_id){
-        where=" and a.tipo_id_paciente= :2 and a.paciente_id= :3 ";
+    if(!obj.pacienteId){
+       
         parametros["2"]= obj.tipoIdPaciente;
         parametros["3"]= obj.pacienteId;
+        where=" and a.tipo_id_paciente= :2 and a.paciente_id= :3 ";
     }
-    console.log("parametros ", parametros);
+   
     var sql = "select distinct  ON (a.evolucion_id)\
             a.evolucion_id,\
             a.numero_formula,\
@@ -1016,10 +1017,10 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
             left join esm_tipos_formulas i on h.tipo_formula = i.tipo_formula_id\
             where\
                 a.evolucion_id= :1\
-                "+where+"\
+                " + where + "\
                 and a.sw_formulado='1' \
                 and g.estado='1' ; ";
-   
+             
     G.knex.raw(sql,parametros).then(function(resultado){
        
         callback(false, resultado);

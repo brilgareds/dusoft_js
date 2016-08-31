@@ -1646,7 +1646,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
                           archivoHtml: 'medicamentosDispensados.html',
                           reporte: "Medicamentos_dispensados"
                           }, function(nombre_pdf) {
-                    
+                    console.log("nombre_pdf ", nombre_pdf);
                     res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
                     
                         listar_medicamentos_dispensados: {nombre_pdf: nombre_pdf, resultado: productosDispensados}

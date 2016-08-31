@@ -25,8 +25,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             auth_token: Usuario.getUsuarioActual().getToken()
         };
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());    
-       // Definicion variables del View
+       
+        /**
+        *+Descripcion Variables enviadas como parametros al controller encargado
+        *             de dispensar la formula
+        **/
         var estadoEntregaFormula;
+        var tipoEstadoFormula;
         that.init = function(empresa, callback) {
 
             $scope.root = {              
@@ -60,7 +65,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         fechaInicial: resultadoStorage.fechaInicial,
                         fechaFinal:resultadoStorage.fechaFinal,
                         paginaActual:resultadoStorage.paginaActual,
-                        estadoFormula : resultadoStorage.estadoFormula
+                        estadoFormula : resultadoStorage.estadoFormula,
+                        
                     }
                 }    
             };      
@@ -69,6 +75,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                 dispensacionHcService.listarFormulas(obj, function(data){
                     estadoEntregaFormula = resultadoStorage.pendientes;
+                    tipoEstadoFormula    = resultadoStorage.tipoEstadoFormula;
                     
                     if(data.status === 200) {       
                         //$scope.root.items = data.obj.listar_formulas.length;                              
@@ -164,11 +171,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
               
         };
            
-           
-           
-        
-                    
-
         /**
           * @author Cristian Manuel Ardila Troches
           * @fecha  04/03/2016
@@ -492,7 +494,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         },
                         estadoTodoPendiente: function(){
                             return todoPendiente;
-                        }
+                        },
+                        tipoEstadoFormula: function(){
+                            return tipoEstadoFormula;
+                        } 
                     }
                                    
             };

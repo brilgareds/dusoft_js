@@ -255,7 +255,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 estadoFormula : $scope.root.estadoFormula,
                                 pacienteId: dispensar.getAfiliadoId(),
                                 tipoIdPaciente: dispensar.getAfiliadoTipoId(),
-                                pendientes: pendientes
+                                pendientes: pendientes,
+                                tipoEstadoFormula: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()
                     
                             });
                              
@@ -296,7 +297,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                 <li  "><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 0 "><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1"><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a></li>\
                                              </ul>\
                                        </div>'

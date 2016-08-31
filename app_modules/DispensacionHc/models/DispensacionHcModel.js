@@ -106,7 +106,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                 CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN '0'\
                                     WHEN now() > a.fecha_maxima_entrega THEN '1'\
                                     ELSE '2' END\
-                                ) ELSE 'Tramiento finalizado' END AS estado_entrega,\
+                                ) ELSE '3' END AS estado_entrega,\
                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
                                 CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
@@ -983,7 +983,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
         parametros["2"]= obj.tipoIdPaciente;
         parametros["3"]= obj.pacienteId;
     }
-
+    console.log("parametros ", parametros);
     var sql = "select distinct  ON (a.evolucion_id)\
             a.evolucion_id,\
             a.numero_formula,\
@@ -1203,6 +1203,35 @@ DispensacionHcModel.prototype.bloquearTabla = function(callback) {
 
 };
 
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado consultar el estado de la formula
+ *              1: Entregado
+ *              0: en proceso
+ * @controller DispensacionHc.prototype.consultarNumeroTotalEntregas
+ */
+DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callback){
+    
+    var parametros = {1: obj.evolucion};
+    
+    var sql = "SELECT  (numero_total_entregas - numero_entrega_actual) as numeroEntrega\
+               FROM dispensacion_estados a \
+               WHERE \
+	        evolucion_id =  :1  ;";          
+   var query = G.knex.raw(sql,parametros);
+   
+     
+    query.then(function(resultado){    
+          
+          callback(false, resultado); 
+   }).catch(function(err){
+        console.log("err [consultarUltimaEntregaFormula]: ", err);
+        callback({err:err, msj: "Error al consultar el numero de entrega"});   
+    });
+
+}
 /**
  * @author Cristian Ardila
  * @fecha 09/06/2016 (DD-MM-YYYY)
@@ -1215,12 +1244,6 @@ DispensacionHcModel.prototype.consultarNumeroTotalEntregas = function(obj,transa
     
     var parametros = {1: obj.evolucion};
     
-   /* var sql = "SELECT\
-                CASE WHEN a.numero_entrega_actual = numero_total_entregas THEN '1'\
-                    ELSE '0' END  AS estado_entrega\
-               FROM dispensacion_estados a\
-               WHERE \
-	        evolucion_id =  :1 ";*/
     var sql = "SELECT\
                 CASE WHEN a.numero_entrega_actual = numero_total_entregas THEN '1'\
                     ELSE '0' END  AS estado_entrega\
@@ -1232,12 +1255,11 @@ DispensacionHcModel.prototype.consultarNumeroTotalEntregas = function(obj,transa
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){    
           
-          
-          console.log("Eliminar resultado ", resultado)
-          callback(false, resultado);
+        callback(false, resultado);
    }).catch(function(err){
-            callback({err:err, msj: "Error al eliminar los temporales"});   
-    });  
+        console.log("err [consultarNumeroTotalEntregas]: ", err);
+        callback({err:err, msj: "Error al consultar el numero total de entregas"});   
+});  
    
    
   /*  G.knex.raw(sql,parametros).then(function(resultado){ 
@@ -1304,8 +1326,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 return G.Q.ninvoke(that,'eliminarTemporalesDispensados',{evolucionId:obj.parametro1.evolucion}, transaccion); 
          
         }).then(function(){
-            console.log("obj ESTE AQUIIII ", obj);
-                //console.log("obj.parametro1.conPendientes ", obj.parametro1.conPendientes);
+            
                 /**
                  * +Descripcion Se valida si los pendientes han sido generados 
                  *              como todo pendiente (todoPendiente: 1) se 
@@ -1547,8 +1568,8 @@ DispensacionHcModel.prototype.actualizarEstadoFinalizoFormula = function(obj,tra
    
    var parametros = {1: obj.evolucion};   
    var sql = "UPDATE  dispensacion_estados\
-		SET     sw_finalizado= 1 \
-		WHERE   evolucion_id = :1 ;";          
+		SET sw_finalizado= 1 \
+		WHERE evolucion_id = :1 ;";          
    var query = G.knex.raw(sql,parametros);
     
    if(transaccion) query.transacting(transaccion);     
@@ -1627,11 +1648,11 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                //transaccion.commit();            
         }).then(function(resultado){  
                 console.log("TRANSACCION COMMIT ");
-                transaccion.commit(); 
+            transaccion.commit(); 
                 
         }).fail(function(err){
             console.log("TRANSACCION FAIL ", err);
-                transaccion.rollback(err);
+            transaccion.rollback(err);
         }).done();
 
     }).then(function(){
@@ -1732,23 +1753,50 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
    console.log("obj ", obj);
    
    var parametros = [];
-    var sql = "";                         
+   var sql = "";       
+    /**
+     * 
+     * +Descripcion Se valida si es una nueva entrega de la formula
+     *              actualizarCampoPendiente: 0
+     *              ó si es una dispensacion de pendientes
+     *              actualizarCampoPendiente: 1
+     **/
     if(obj.actualizarCampoPendiente === 0){
-        parametros = {fecha_entrega: obj.fechaEntrega,
+        
+        /**
+         * +Descripcion Se valida que al ser la ultima dispensacion de la formula
+         *              solo se podra actualizar la fecha de la entrega
+         *              La fecha minima y la fecha maxima solo se actualizaran
+         *              siempre y cuando la formula tenga mas entregas pendientes
+         */       
+        if(obj.actualizarFechaUltimaEntrega === 1){
+            parametros = {sw_pendiente : obj.conPendientes,
+                         evolucion_id: obj.evolucion
+                        };
+            
+            sql = "UPDATE dispensacion_estados \
+                    set fecha_entrega = now(),\
+                    numero_entrega_actual = numero_entrega_actual+1, \
+                    sw_pendiente = :sw_pendiente\
+                    WHERE evolucion_id = :evolucion_id ";
+            
+        }else{        
+            parametros = {fecha_entrega: obj.fechaEntrega,
                     fecha_minima_entrega: obj.fechaMinima,
                     fecha_maxima_entrega: obj.fechaMaxima,
                     sw_pendiente : obj.conPendientes,
                     evolucion_id: obj.evolucion
-                    //numero_entrega_actual: numero_entrega_actual+1
-                };
-        sql = "UPDATE  dispensacion_estados \
+                    };
+                
+            sql = "UPDATE  dispensacion_estados \
                 set numero_entrega_actual= numero_entrega_actual+1,\
                 fecha_entrega = :fecha_entrega,\
                 fecha_minima_entrega = :fecha_minima_entrega,\
                 fecha_maxima_entrega = :fecha_maxima_entrega, \
                 sw_pendiente = :sw_pendiente \
                 WHERE   evolucion_id = :evolucion_id ";
-    }
+            }       
+    };
     
     if(obj.actualizarCampoPendiente === 1){
         parametros = {sw_pendiente : obj.conPendientes, evolucion_id: obj.evolucion};
@@ -1758,10 +1806,8 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
                 WHERE evolucion_id = :evolucion_id ";
     }   
     
-   /*var query = G.knex("dispensacion_estados").
-            where("evolucion_id", obj.evolucion).
-            update(parametros);*/
-    
+    console.log("parametros ", parametros);
+    console.log("sql ", sql);
     var query = G.knex.raw(sql,parametros);    
     
     if(transaccion) query.transacting(transaccion);     

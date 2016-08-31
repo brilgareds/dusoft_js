@@ -6,9 +6,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula","estadoTodoPendiente",
+            "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula","estadoTodoPendiente","tipoEstadoFormula",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,estadoEntregaFormula, estadoTodoPendiente) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,estadoEntregaFormula, estadoTodoPendiente,tipoEstadoFormula) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
@@ -103,7 +103,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                         observacion: $scope.root.observacion,
                         todoPendiente:0,
-                        tipoFormula: seleccionTipoFormula
+                        tipoFormula: seleccionTipoFormula,
+                        tipoEstadoFormula: tipoEstadoFormula
                         
                    }
                }    
@@ -186,14 +187,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionNormal = function(obj){
-            console.log("DIpsnesacion normal ");
+            console.log("Dispensacion normal ");
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
                 console.log("DATA ULTIMA RESPUESTA ", data);
                 if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
-                    $state.go('DispensacionHc');
+                    //$state.go('DispensacionHc');
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }

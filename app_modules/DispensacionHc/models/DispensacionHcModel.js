@@ -103,16 +103,41 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         i.plan_descripcion, a.sw_finalizado, a.numero_total_entregas, a.numero_entrega_actual,\
                         CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
-                                CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN '0'\
-                                    WHEN now() > a.fecha_maxima_entrega THEN '1'\
-                                    ELSE '2' END\
-                                ) ELSE '3' END AS estado_entrega,\
+                                CASE \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente = '1' THEN(\
+                                        CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN '0'\
+                                             WHEN now() > a.fecha_maxima_entrega THEN '1'\
+                                             ELSE '2' END\
+                                        )\
+                                    WHEN a.sw_pendiente = '2' THEN '4' END\
+                                )\
+                        WHEN a.sw_finalizado = '1'\
+                            THEN (\
+                                 CASE \
+                                    WHEN a.sw_pendiente = '0' THEN '3' \
+                                    WHEN a.sw_pendiente = '1' THEN '3' \
+                                    WHEN a.sw_pendiente = '2' THEN '4' END\
+                                ) \
+                         END AS estado_entrega,\
+                    \
                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
-                                CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
-                                    WHEN now() > a.fecha_maxima_entrega THEN 'Vencido'\
-                                    ELSE 'Falta' END\
-                                ) ELSE 'Tramiento finalizado' END AS descripcion_estado_entrega\
+                                CASE \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente = '1' THEN(\
+                                        CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
+                                        WHEN now() > a.fecha_maxima_entrega THEN 'Vencido'\
+                                        ELSE 'Falta' END\
+                                        )\
+                                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
+                                ) \
+                        WHEN a.sw_finalizado = '1'\
+                            THEN (\
+                                 CASE \
+                                    WHEN a.sw_pendiente = '0' THEN 'Tratamiento finalizado' \
+                                    WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
+                                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
+                                ) \
+                        END AS descripcion_estado_entrega\
                         "+pendienteCampoEstado+" FROM \
                           dispensacion_estados AS a\
                         inner join pacientes as b ON (a.tipo_id_paciente = b.tipo_id_paciente) AND (a.paciente_id = b.paciente_id)\

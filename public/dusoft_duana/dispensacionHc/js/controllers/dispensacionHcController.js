@@ -297,7 +297,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 0 "><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a></li>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 0  && root.estadoFormula == 0">\n\
+                                                    <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a>\
+                                                 </li>\
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2"><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a></li>\
                                              </ul>\
                                        </div>'
@@ -308,7 +310,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     cellClass: "txt-center", width: "9%",
                         cellTemplate: "<button type='button' \n\
                                         ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
-                                       <span ng-class=''></span> {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 
+                                       <span ng-class=''></span>  {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 
    
                         ]
                     };

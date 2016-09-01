@@ -117,21 +117,70 @@ DispensacionHc.prototype.listarTipoDocumento = function(req, res){
  */
 DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
       
+    console.log("************DispensacionHc.prototype.listarFormulasPendientes*************");
+    console.log("************DispensacionHc.prototype.listarFormulasPendientes*************");
+    console.log("************DispensacionHc.prototype.listarFormulasPendientes*************");
+    
     var that = this;
     var args = req.body.data;
+  
+    if (args.listar_formulas === undefined || args.listar_formulas.paginaActual === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_formulas: []}));
+        return;
+    }
+     
+    if (args.listar_formulas.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
+        return;
+    }
 
-    G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulasPendientes').then(function(resultado){
-       
-        if(resultado.rows.length > 0){
-            res.send(G.utils.r(req.url, 'Consulta formulas pendientes', 200, {listar_formulas:resultado}));
-        }else{
-           throw 'Consulta sin resultados';
-        }
-      
+    if (args.listar_formulas.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (!args.listar_formulas.filtro ) {
+        res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
+        return;
+    }
+    
+    if (!args.listar_formulas.terminoBusqueda || args.listar_formulas.terminoBusqueda === '') {
+        res.send(G.utils.r(req.url, 'Debe diligenciar el termino de busqueda', 404, {}));
+        return;
+    }
+    
+    
+    var empresaId = args.listar_formulas.empresaId;
+    var terminoBusqueda = args.listar_formulas.terminoBusqueda;
+    var paginaActual = args.listar_formulas.paginaActual;
+    var filtro = args.listar_formulas.filtro;
+    var fechaInicial = args.listar_formulas.fechaInicial;
+    var fechaFinal = args.listar_formulas.fechaFinal;
+    var estadoFormula = args.listar_formulas.estadoFormula;
+    
+   
+   
+   var parametros={ empresaId:empresaId,
+                    terminoBusqueda: terminoBusqueda,
+                    paginaActual:paginaActual,
+                    fechaInicial: fechaInicial,
+                    fechaFinal: fechaFinal,
+                    filtro: filtro,
+                    estadoFormula: estadoFormula};
+                console.log("parametros ", parametros);
+   G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulasPendientes',parametros).then(function(resultado){
+   console.log("resultado ", resultado);
+    if(resultado.length >0){
+        res.send(G.utils.r(req.url, 'Consulta con formulas', 200, {listar_formulas:resultado}));
+    }else{
+        throw 'Consulta sin resultados';
+    }
         
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
+    
+   
 };
 
 

@@ -59,10 +59,15 @@ define(["angular", "js/services"], function(angular, services) {
               * @author Cristian Ardila
               * @fecha  21/05/2016
               * +Descripcion Consulta todas las formulas
-              */
-            self.listarFormulasPendientes = function(session, terminoBusqueda, callback){
-               
-                var obj = {
+              */                   
+             
+            self.listarFormulasPendientes = function(obj, callback){
+                
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){    
+                    console.log("data ", data);
+                    callback(data);                        
+                });
+                /*var obj = {
                     session: session,
                     data: {
                         listar_formulas: {
@@ -74,7 +79,7 @@ define(["angular", "js/services"], function(angular, services) {
                 };
                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){
                     callback(data);
-                });
+                });*/
             };
              
             /**

@@ -19,15 +19,12 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
 
    var pendienteCampoEstado = "";
    var pendienteValidacion = "";
-   var pendienteTabla = "";
+   
   
-   console.log("obj ", obj);
   if(obj.estadoFormula === '1'){     
         pendienteCampoEstado = ",a.sw_pendiente as sw_estado";
         pendienteValidacion = " WHERE a.sw_pendiente IN ('1','2')";   
-        //pendienteCampoEstado = ",j.sw_estado";
-        //pendienteTabla = "INNER JOIN HC_PENDIENTES_POR_DISPENSAR j ON (a.evolucion_id=j.evolucion_id)";
-       
+        
    }
   
    var parametros = {};
@@ -119,7 +116,6 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '2' THEN '4' END\
                                 ) \
                          END AS estado_entrega,\
-                    \
                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
                                 CASE \
@@ -387,21 +383,59 @@ DispensacionHcModel.prototype.listarTipoDocumento = function(callback){
  *              pendientes
  * @controller DispensacionHc.prototype.listarFormulasPendientes
  */
-DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
+DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
     
-    var sql = "SELECT DISTINCT HP.CODIGO_MEDICAMENTO,\
+   var parametros = {};
+   var sqlCondicion = "";
+  
+   if(obj.fechaInicial !=="" && obj.fechaFinal !=="" && obj.terminoBusqueda ==="" || obj.terminoBusqueda ===""){
+       
+       sqlCondicion = " AND HP.fecha_registro between :1 and :2 ";
+        parametros["1"]= obj.fechaInicial;
+        parametros["2"]= obj.fechaFinal;
+         
+    }
+   
+   if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
+        
+        
+        
+        sqlCondicion = " AND HP.fecha_registro between :1 and :2 AND HP.numero_formula::varchar = :3";
+        
+        parametros["1"]= obj.fechaInicial;
+        parametros["2"]= obj.fechaFinal;
+        parametros["3"]= obj.terminoBusqueda;
+       
+   }
+   if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
+       
+        sqlCondicion = " AND HP.evolucion_id = :3";
+        parametros["3"]= obj.terminoBusqueda;
+        
+   }
+   if(obj.filtro.tipo !== 'EV' && obj.filtro.tipo !== 'FO'){
+       console.log("BUSQUEDA DIFERENTE A EV o A FO")
+        sqlCondicion = " AND HP.fecha_registro between :1 and :2 AND HP.tipo_id_paciente = :3 AND HP.paciente_id::varchar = :4 ";
+        parametros["1"]= obj.fechaInicial;
+        parametros["2"]= obj.fechaFinal;
+        parametros["3"]= obj.filtro.tipo;
+        parametros["4"]= obj.terminoBusqueda;
+     
+   }
+    console.log("parametros ", parametros);
+    var sql = " DISTINCT HP.CODIGO_MEDICAMENTO,\
                   HF.NUMERO_FORMULA,\
                   HP.EVOLUCION_ID,\
-                  (P.PRIMER_APELLIDO||' '||P.SEGUNDO_APELLIDO)  NOMBRES,\
-                  (P.PRIMER_NOMBRE||' '||P.SEGUNDO_NOMBRE)  APELLIDOS,\
+                  (P.PRIMER_APELLIDO||' '||P.SEGUNDO_APELLIDO) AS NOMBRES,\
+                  (P.PRIMER_NOMBRE||' '||P.SEGUNDO_NOMBRE) AS  APELLIDOS,\
                   P.TIPO_ID_PACIENTE,\
                   P.PACIENTE_ID,\
-                  edad(P.FECHA_NACIMIENTO)  EDAD,\
-                  (CASE WHEN P.SEXO_ID='F' THEN 'FEMENINO' WHEN P.SEXO_ID='M' THEN 'MASCULINO' END)  SEXO,\
+                  edad(P.FECHA_NACIMIENTO) AS EDAD,\
+                  (CASE WHEN P.SEXO_ID='F' THEN 'FEMENINO' WHEN P.SEXO_ID='M' THEN 'MASCULINO' END)AS  SEXO,\
                   P.RESIDENCIA_DIRECCION,\
                   P.RESIDENCIA_TELEFONO,\
                   HP.CODIGO_MEDICAMENTO,\
-                  FC_DESCRIPCION_PRODUCTO_ALTERNO(HP.CODIGO_MEDICAMENTO)  DESCRIPCION,\
+                  FC_DESCRIPCION_PRODUCTO_ALTERNO(HP.CODIGO_MEDICAMENTO) AS DESCRIPCION,\
                   HP.CANTIDAD,\
                   HP.hc_pendiente_dispensacion_id\
                FROM\
@@ -409,13 +443,18 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(callback){
                   INNER JOIN HC_FORMULACION_ANTECEDENTES HF  ON (HF.EVOLUCION_ID=HP.EVOLUCION_ID AND HP.SW_ESTADO='0')\
                   INNER JOIN PACIENTES P ON (P.TIPO_ID_PACIENTE=HF.TIPO_ID_PACIENTE AND P.PACIENTE_ID=HF.PACIENTE_ID)\
                WHERE\
-                  HP.SW_ESTADO='0' AND HP.EVOLUCION_ID = '91671' ";
+                  HP.SW_ESTADO='0'  " + sqlCondicion;
   
   
-    G.knex.raw(sql).then(function(resultado){    
-        callback(false, resultado)
-    }).catch(function(err){          
-        callback(err)
+             
+    var query = G.knex.select(G.knex.raw(sql,parametros)).
+    limit(G.settings.limit).
+    offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
+        console.log("resultado ", resultado)
+        callback(false, resultado);
+    }).catch(function(err){    
+        console.log("err ", err)
+        callback("Ha ocurrido un error");      
     });
           
     

@@ -148,7 +148,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     AlertService.mostrarMensaje("success", data.msj);                  
                     //$scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
-                    //$state.go('DispensacionHc');
+                    $state.go('DispensacionHc');  
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
@@ -172,7 +172,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
-                    $state.go('DispensacionHc');
+                    //$state.go('DispensacionHc');
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }

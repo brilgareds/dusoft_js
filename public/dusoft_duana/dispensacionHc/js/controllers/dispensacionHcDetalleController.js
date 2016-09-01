@@ -71,10 +71,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }    
             };      
           
-            
+                
                 
                 dispensacionHcService.listarFormulas(obj, function(data){
-                    estadoEntregaFormula = resultadoStorage.pendientes;
+                    estadoEntregaFormula = resultadoStorage.pendientes;  
+                    $scope.showBotonTodoPendiente = resultadoStorage.pendientes;
                     tipoEstadoFormula    = resultadoStorage.tipoEstadoFormula;
                     
                     if(data.status === 200) {       

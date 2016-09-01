@@ -162,7 +162,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  */
                 that.listarFormulasMedicasPendientes = function(){
                     $scope.afiliadosFormulasPendientes;
-                    var obj = {
+                    
+                    var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           listar_formulas: {
+                                filtro:$scope.root.filtro,
+                                terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
+                                empresaId:$scope.root.empresaSeleccionada,
+                                fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                                fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
+                                paginaActual:$scope.paginaactual,
+                                estadoFormula : $scope.root.estadoFormula
+                           }
+                       }    
+                    };
+                    /*var obj = {
                         
                        session: $scope.session,
                        prefijo:$scope.root.prefijo,
@@ -173,12 +188,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        paginaactual:$scope.paginaactual,
                        registroUnico: false
                         
-                    };
-                    dispensacionHcService.listarFormulasPendientes($scope.session,$scope.root.termino_busqueda_empresa, function(data){
+                    };*/
+                    dispensacionHcService.listarFormulasPendientes(obj, function(data){
                             
                         if(data.status === 200) {       
                            $scope.root.items = data.obj.listar_formulas.length;                               
-                          $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicas(data.obj,0);
+                           $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicas(data.obj,0);
 
                         }else{
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -196,15 +211,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  *              listara todos los despachos aprobados por parte
                  *              de la persona de seguridad
                  */ 
-                $scope.buscarFormulas = function(event){
+                $scope.buscarFormulas = function(event,pendiente){
 
                    if (event.which === 13) {  
-
+                       
+                        if(pendiente === 0){
                          //if($scope.root.estadoFormula === '0'){
                         that.listarFormulasMedicas();
                             // that.listarFormulasMedicasPendientes();
                          //}
-
+                     }else{
+                         that.listarFormulasMedicasPendientes();
+                     }
                          /* if($scope.root.estadoFormula === '1'){
                              that.listarFormulasMedicasPendientes();
                          }
@@ -290,9 +308,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()', displayName: 'F. Finalizacion', width:"9%"},                              
                             {field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
                             {field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
-                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"}, 
-                               
-                            
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"},                            
                             {displayName: "Opcion", cellClass: "txt-center dropdown-button",
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\

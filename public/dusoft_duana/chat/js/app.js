@@ -30,6 +30,7 @@ define([
     "includes/validation/NgValidateEvents",
     "controllers/Admin/AdminController",
     "controllers/Grupos/GuardarGruposController",
+    "includes/classes/GrupoChat",
    /* "models/chat/EmpresaPedido",
     "controllers/asignarchat/PedidosController",
     "controllers/asignarchat/PedidosClientesController",
@@ -131,6 +132,7 @@ define([
                     text: "Guardar Grupo",
                     templateUrl: "views/Grupos/GuardarGrupo.html",
                     parent_name: "Admin",
+                    controller:"GuardarGruposController"
                 })                
                 /*.state('ListarPedidosFarmacias',{
                     url: "/ListarPedidosFarmacias",

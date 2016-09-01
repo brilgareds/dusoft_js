@@ -10,7 +10,10 @@ define(["angular"], function(angular) {
             'BASE_URL': BASE_URL,
             'CHAT':{
                 'LISTAR_GRUPOS' : BASE_URL +"/Chat/listarGrupos",
-                'CAMBIAR_ESTADO' : BASE_URL +"/Chat/cambiarEstado"
+                'CAMBIAR_ESTADO' : BASE_URL +"/Chat/cambiarEstado",
+                'LISTAR_USUARIOS' : BASE_URL +"/Chat/listarUsuariosPorGrupo",
+                'INSERTAR_USUARIO_GRUPO' : BASE_URL + "/Chat/insertarUsuariosEnGrupo",
+                'GUARDAR_GRUPO' : BASE_URL + "/Chat/guardarGrupo",
             }
         },
         'STATIC': {

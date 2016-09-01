@@ -32,6 +32,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.objetoModulos = {};
                 this.empresasFarmacias = [];
                 this.empresasUsuario = [];
+                this.seleccionado = false;
             }
             
                                  
@@ -94,6 +95,15 @@ define(["angular", "js/models"], function(angular, models) {
             
             Usuario.prototype.setEstado = function(estado){
                 this.estado = estado;
+            };
+            
+            Usuario.prototype.setSeleccionado = function(seleccionado){
+                this.seleccionado = seleccionado;
+                return this;
+            };
+            
+            Usuario.prototype.getSeleccionado = function(){
+               return  this.seleccionado ;
             };
             
             Usuario.prototype.setFechaCaducidad = function(fechaCaducidad){

@@ -4,11 +4,11 @@ define(["angular", "js/models"], function(angular, models) {
     models.factory('GrupoChat',  function() {
 
         function GrupoChat(id, nombre, fechaCreacion, numeroIntegrantes) {
-            this.id = id;
-            this.nombre = nombre;
+            this.id = id || 0;
+            this.nombre = nombre || "";
             this.fechaCreacion = fechaCreacion;
             this.numeroIntegrantes = numeroIntegrantes || 0;
-            this.estado = "";
+            this.estado = "1";
             this.descripcionEstado = "";
         };
         

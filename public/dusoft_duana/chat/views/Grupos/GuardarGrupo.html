@@ -1,23 +1,61 @@
-<div class="input-group navbar-form ">
+<div class="row">
+    
+    <!--div class="input-group navbar-form row">
 
-    <div >
-         <button type="button" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnCrearPedido}}" ng-if="!root.pedido.get_numero_pedido()">
-            <span class="glyphicon glyphicon-plus"></span> Crear Grupo
-        </button>
+        <input type="text" class="form-control" ng-model="root.grupo.nombre" placeholder="Nombre del grupo" style="margin-right: 20px;" />  
+        <label for="grupoEstado" style="margin-top: 5px;">Estado </label> 
+        <input-check id="grupoEstado" ng-model="root.grupo.estado" style="margin-right: 30px;" ></input-check>
+        <button class="btn btn-success pull-right" ng-click="onBtnGuardarGrupo()">Guardar</button>
+    </div-->
+    
+    <div class="col-md-12">
+        <div class="input-group  navbar-form"   style="width:200px;">
 
-    </div>   
+            <input type="text" class="form-control pull-right" ng-model="root.grupo.nombre" placeholder="Nombre del grupo" style="min-width: 100px;"  />
+            <div class="input-group-btn" >
+                <button class="btn btn-default" type="submit" ng-click="onBtnCambiarEstado()">
+                    <span ng-if="root.grupo.getEstado() == 0">Activar</span>
+                    <span ng-if="root.grupo.getEstado() == 1">Inactivar</span>
+                    <i class="glyphicon glyphicon-file"></i>
+                </button>
+                <button class="btn btn-success" type="submit" ng-click="onBtnGuardarGrupo()">Guardar <i class="glyphicon glyphicon-ok"></i></button>
+            </div>
 
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+
+
+        <div class="input-group  navbar-form buscadorgeneral">
+
+            <input type="text" class="form-control pull-right" ng-validate-events="{{validaciones.buscador}}" ng-keypress="onBuscarUsuario($event)" ng-model="rootUsuarios.termino_busqueda" placeholder="Usuarios en el grupo" />
+            <div class="input-group-btn" >
+                <button class="btn btn-default" type="submit" ng-click="onBuscarUsuario({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+            </div>
+
+        </div>
+
+
+
+        <div class="table-responsive" >
+
+            <div class="defaultGrid grid-responsive" ng-grid="listaUsuarios">
+
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="col-md-6">
+
+        <usuarios  btn-seleccionar="true" btn-detalle="false"></usuarios>
+    </div>
+    
+
+    
+    
 </div>
 
-<div class="table-responsive">
-    <div class="defaultGrid grid-responsive" ng-grid="root.listaGrupos"></div>
-</div>
 
-<div class="table-responsive" ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true && !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()">
-    <div class="auditadosGrid grid-responsive" ng-grid="rootCreaPedidoFarmacia.detalle_pedido_generado"></div>
-</div>
 
-<!-- Grid Detalle Productos Opciones Modificación Especial-->
-<div class="table-responsive" ng-if="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()">
-    <div class="auditadosGrid grid-responsive" ng-grid="rootCreaPedidoFarmacia.detalle_pedido_modificable"></div>
-</div>

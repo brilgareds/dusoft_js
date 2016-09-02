@@ -21,10 +21,10 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  * @apiDescription Proporciona un listado de Pedidos de Clientes, permite filtrar lo pedidos por los siguientes campos,
  * numero del pedido, identificacion o nombre del tercero, direccion, telefono, identificacion o nombre del vendedor.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} auth_token  Token de AutenticaciÃ³n, este define si el usuario esta autenticado o no.
  * @apiParam {Number} empresa_id Identificacion de la empresa de la cual se requieren los pedidos.
  * @apiParam {String} termino_busqueda Termino por el cual desea filtrar los pedidos.
  * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion.
@@ -83,14 +83,14 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
  * @apiGroup PedidosClientes
  * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} auth_token  Token de AutenticaciÃ³n, este define si el usuario esta autenticado o no.
  * @apiParam {String[]} pedidos Lista de pedidos
  * @apiParam {Number} estado_pedido ID del estado a asignar
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request.
+ * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
 PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
@@ -170,14 +170,14 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  * @apiGroup PedidosClientes
  * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} auth_token  Token de AutenticaciÃ³n, este define si el usuario esta autenticado o no.
  * @apiParam {String[]} pedidos Lista de pedidos
  * @apiParam {Number} estado_pedido ID del estado a asignar
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request.
+ * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
 PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
@@ -192,7 +192,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
     }
 
     if (args.pedidos_clientes.numero_pedido === '' || args.pedidos_clientes.numero_pedido === 0) {
-        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacío', 404, {}));
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacÃ­o', 404, {}));
         return;
     }
 
@@ -247,7 +247,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
                                             that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
                                         }
 
-                                        res.send(G.utils.r(req.url, 'El Pedido cambió de estado correctamente', 200, {}));
+                                        res.send(G.utils.r(req.url, 'El Pedido cambiÃ³ de estado correctamente', 200, {}));
                                     }
                                 });
                             }
@@ -267,14 +267,14 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
  * @apiGroup PedidosClientes
  * @apiDescription Proporciona una lista con todos los pedidos de clientes asignados a un operario de bodega
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} auth_token  Token de AutenticaciÃ³n, este define si el usuario esta autenticado o no.
  * @apiParam {Number} operario_id Identificador asignado al operario de Bodega.
  * @apiParam {Number} pagina_actual Numero de la pagina que requiere.
  * @apiParam {Number} [limite] Cantidad de registros por cada pagina.
- * @apiSuccessExample Ejemplo Válido del Request.
+ * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
 PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
@@ -373,12 +373,12 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     }
 
     if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacÃ­os', 404, {}));
         return;
     }
 
     if (args.pedidos_clientes.contrato_cliente_id === '') {
-        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacío', 404, {}));
+        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacÃ­o', 404, {}));
         return;
     }
 
@@ -540,7 +540,6 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
         
     }).fail(function(err){
-        console.log("err [insertarCotizacion]:: ", err);
         var msj = "Erro Interno";
         var status = 500;
         
@@ -561,6 +560,11 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
  */
 PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
+    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
+    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
+    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
+    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
+    
     var that = this;
 
     var args = req.body.data;
@@ -963,7 +967,7 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
     var cotizacion = args.pedidos_clientes.cotizacion;
 
     if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
-        res.send(G.utils.r(req.url, 'el numero de cotizacion no esta definido o esta vacío', 404, {}));
+        res.send(G.utils.r(req.url, 'el numero de cotizacion no esta definido o esta vacÃ­o', 404, {}));
         return;
     }
 
@@ -1970,8 +1974,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     };
     /**
      * +Descripcion: Proceso para validar que al modificar las cantidades de los
-     *               productos o añadirle mas productos a un pedido el total es
-     *               mayor > igual = ó menor < al actual y en base a esto modificar
+     *               productos o aÃ±adirle mas productos a un pedido el total es
+     *               mayor > igual = Ã³ menor < al actual y en base a esto modificar
      *               el estado del pedido, si el nuevo valor total del pedido es
      *               mayor al actual se actualizara el estado de 1 a estado_pedido =4
      *               y el pedido debera ser autorizado nuevamente por cartera
@@ -2028,7 +2032,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 
         } else {
-            throw 'El pedido debe encontrarse activo ó para autorizar nuevamente por cartera';
+            throw 'El pedido debe encontrarse activo Ã³ para autorizar nuevamente por cartera';
         }
     }).then(function(rows) {
 
@@ -2077,10 +2081,10 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             if (estado_pedido === 4) {
 
                 that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-                res.send(G.utils.r(req.url, 'Producto añadido correctamente ', 200, {pedidos_clientes: {}}));
+                res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
                 return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
             } else {
-                res.send(G.utils.r(req.url, 'Producto añadido correctamente ', 200, {pedidos_clientes: {}}));
+                res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
             }
 
         } else {
@@ -2198,25 +2202,25 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
 
     // Pedido
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
-        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
 
     // Pedido
     if (args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
-        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
     // Producto
     if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
-        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
     // Estado
     if (args.pedidos_clientes.estado === undefined || args.pedidos_clientes.estado === '') {
-        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
@@ -2307,25 +2311,25 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
 
     // Pedidos
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
-        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
 
     // Pedido
     if (args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
-        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
     // Producto
     if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
-        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
     // Estado
     if (args.pedidos_clientes.estado === undefined || args.pedidos_clientes.estado === '') {
-        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
@@ -2558,7 +2562,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     }
 	
 	if (!producto.cantidadPendienteDespachar  || producto.cantidadPendienteDespachar.length === 0) {
-        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacÃ­a', 404, {}));
         return;
     }  
 	
@@ -2567,8 +2571,8 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
 
     /**
      * +Descripcion: Proceso para validar que al modificar las cantidades de los
-     *               productos o añadirle mas productos a un pedido el total es
-     *               mayor > igual = ó menor < al actual y en base a esto modificar
+     *               productos o aÃ±adirle mas productos a un pedido el total es
+     *               mayor > igual = Ã³ menor < al actual y en base a esto modificar
      *               el estado del pedido, si el nuevo valor total del pedido es
      *               mayor al actual se actualizara el estado de 1 a estado_pedido =4
      *               y el pedido debera ser autorizado nuevamente por cartera
@@ -2755,8 +2759,8 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     };
     /**
      * +Descripcion: Proceso para validar que al modificar las cantidades de los
-     *               productos o añadirle mas productos a un pedido el total es
-     *               mayor > igual = ó menor < al actual y en base a esto modificar
+     *               productos o aÃ±adirle mas productos a un pedido el total es
+     *               mayor > igual = Ã³ menor < al actual y en base a esto modificar
      *               el estado del pedido, si el nuevo valor total del pedido es
      *               mayor al actual se actualizara el estado de 1 a estado_pedido =4
      *               y el pedido debera ser autorizado nuevamente por cartera
@@ -3122,7 +3126,7 @@ function __subir_archivo_plano(files, callback) {
 
 /*
  * Autor : Eduar Garcia
- * Descripcion : Validar que los códigos de los productos del archivo plano sean validos.
+ * Descripcion : Validar que los cÃ³digos de los productos del archivo plano sean validos.
  *
  */
 function __validar_productos_archivo_plano(contexto, filas, callback) {
@@ -3257,7 +3261,7 @@ function __validarPrecioVenta(producto, resultado, tipo) {
 
         /**
          * +Descripcion: Si precio de venta es mayor al precio regulado
-         *              ó el precio pactado es mayor al regulado
+         *              Ã³ el precio pactado es mayor al regulado
          *              cancele la accion
          */
         if (precioVenta > precioRegulado || precioPactado > precioRegulado) {

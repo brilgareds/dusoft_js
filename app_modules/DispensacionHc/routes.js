@@ -112,4 +112,11 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.guardarTodoPendiente(req, res);
     });
     
+    
+    
+    // realizando el descarte de los productos pendientes
+    app.post("/api/DispensacionHc/descartarProductoPendiente", function(req, res){
+        c_dispensacion_hc.descartarProductoPendiente(req, res);
+    });
+    
 };

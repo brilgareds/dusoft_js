@@ -16,8 +16,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.paginaactual = 1;
                 var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
                 var fecha_actual = new Date();
-                var justificacion = ['Error de formulacion', 'Error de digitacion', 'Confrontado'];
-               
+                
                 $scope.root = {
                     termino_busqueda_proveedores: "",
                     fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
@@ -27,7 +26,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     empresaSeleccionada: '',
                     termino_busqueda:'',
                     estadoSesion: true,
-                    justificacion : justificacion[0],
+                   
                     estadoBotones : [
                     "btn btn-danger btn-xs",
                     "btn btn-primary btn-xs",
@@ -348,69 +347,63 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'mostrarPacientes()[0].getEdad()', displayName: 'Edad', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].getSexo()', displayName: 'Sexo', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getCodigoProducto()', displayName: 'Codigo', width:"9%"},
-                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getDescripcion()', displayName: 'Descripcion', width:"9%"},
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getDescripcion()', displayName: 'Descripcion'},
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getExistencia()', displayName: 'Cantidad', width:"9%"},        
-                            /*{displayName: "Justificacion", cellClass: "txt-center dropdown-button",
-                             cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">{{root.justificacion}}<span class="caret"></span></button>\
-                                            <ul class="dropdown-menu dropdown-options">\
-                                            <li><a href="javascript:void(0);" ng-click="seleccionarJustificacion(0)" >Error Formulaci&oacute;n</a></li>\
-                                            <li><a href="javascript:void(0);" ng-click="seleccionarJustificacion(1)" >Error de Digitaci&oacute;n</a></li>\
-                                            <li><a href="javascript:void(0);" ng-click="seleccionarJustificacion(2)" >Confrontado</a></li>\
-                                           </ul>\
-                                       </div>'
-                             },*/
+                             
                              {field: 'detalle', width: "6%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="descartarFormula(row.entity)"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="descartarFormula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getIdentificadorDePendiente())"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
 
                             }
                         ]               
                     };
+                     
                     
-                   
-                    $scope.seleccionarJustificacion = function(index){
-                        
-                        $scope.root.justificacion = justificacion[index];
-                    };
-                    
+                    /*
+                     * @author Cristian Manuel Ardila
+                     * +Descripcion Metodo invocado desde el grid de pendientes
+                     *              el cual desplegara la ventana modal con 
+                     *              las justificaciones para descartar un producto
+                     *              pendiente
+                     * @fecha 02/09/2016 DD/MM/YYYY
+                     */
                     $scope.descartarFormula = function(entity){
-                        
-                        console.log("entity ", entity);
+                         
                         that.ventanaDescartarPendientesFormula(entity);
+                        
                     };
                     
-        /**
-          * @author Cristian Ardila
-          * +Descripcion Metodo que desplegara una ventana encargada de 
-          *              listar los tipos de entrega de la formula
-        */
-        that.ventanaDescartarPendientesFormula = function(entity){
-        
-            $scope.opts = {
-                backdrop: true,
-                backdropClick: true,
-                dialogFade: true,
-                keyboard: true,
-                templateUrl: 'views/dispensacionHc/descartarPendientesFormula.html',
-                scope: $scope,                  
-                controller: "descartarPendientesFormulaController",
-                windowClass: 'app-modal-window-smlg',
-                resolve: {
-                        productoDescartado: function() {
-                            return entity;
-                        }
-                    }
-                                   
-            };
-            var modalInstance = $modal.open($scope.opts);   
-           
-                modalInstance.result.then(function(){
-                    that.consultarMedicamentosTemporales();
-                },function(){});                          
-                
-        };
+                    /**
+                      * @author Cristian Ardila
+                      * +Descripcion Metodo que desplegara una ventana encargada de 
+                      *              listar los tipos de entrega de la formula
+                    */
+                    that.ventanaDescartarPendientesFormula = function(entity){
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: true,
+                            keyboard: true,
+                            templateUrl: 'views/dispensacionHc/descartarPendientesFormula.html',
+                            scope: $scope,                  
+                            controller: "descartarPendientesFormulaController",
+                            windowClass: 'app-modal-window-smlg',
+                            resolve: {
+                                    identificadorProductoPendiente: function() {
+                                        return entity;
+                                    }
+                                }
+
+                        };
+                        var modalInstance = $modal.open($scope.opts);   
+
+                            modalInstance.result.then(function(){
+                                that.listarFormulasMedicasPendientes();
+                            },function(){});                          
+
+                    };
                     /**
                      * @author Cristian Ardila
                      * @fecha 04/02/2016

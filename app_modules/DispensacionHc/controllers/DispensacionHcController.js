@@ -1218,79 +1218,64 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
     }).done();
 }
 
+ 
 
 
-
-
-Number.prototype.mod = function(n) {
-    return ((this%n)+n)%n;
-}
-
-Date.prototype.agregarDiasHabiles = function(dd) {
-    var wks = Math.floor(dd/5);
+/*
+ * @author Cristian Ardila
+ * @fecha 07/06/2016
+ * +Descripcion Controlador autorizar una dispensacion de un medicamento en caso
+ *              de este ser confrontado
+ *              
+ */
+DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
     
-        console.log("wks ", wks);
-    
-    var dys = dd.mod(5);
-        console.log("dys ", dys);
-        
-    var dy = this.getDay();
-        console.log("dy ", dy);
-        
-    if (dy === 6 && dys > -1) { 
-        if (dys === 0) {
-            dys-=2; dy+=2;
-        } dys++; dy -= 6;
+    console.log("DispensacionHc.prototype.descartarProductoPendiente  ");
+    console.log("DispensacionHc.prototype.descartarProductoPendiente  ");
+    console.log("DispensacionHc.prototype.descartarProductoPendiente  ");
+    var that = this;
+    var args = req.body.data;
+    var usuario = req.session.user.usuario_id;
+    if (args.realizar_descarate_producto === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {realizar_descarate_producto: []}));
+        return;
+    }
+   
+    if (!args.realizar_descarate_producto.identificadorProductoPendiente || args.realizar_descarate_producto.identificadorProductoPendiente.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere identificador del producto pendiente', 404, {realizar_descarate_producto: []}));
+        return;
     }
     
-    if (dy === 0 && dys < 1) { 
-        if (dys === 0) {
-            dys+=2; dy-=2;
-        } dys--; dy += 6;
+    if (!args.realizar_descarate_producto.tipoJustificacion || args.realizar_descarate_producto.tipoJustificacion.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de justificacion', 404, {realizar_descarate_producto: []}));
+        return;
     }
     
-    if (dy + dys > 5) 
-        dys += 2;
     
-    if (dy + dys < 1) 
-        dys -= 2;
-    
-    this.setDate(this.getDate()+wks*7+dys);
+    var parametros={identificadorProductoPendiente:args.realizar_descarate_producto.identificadorProductoPendiente, 
+                    usuario:usuario, 
+                    tipoJustificacion: args.realizar_descarate_producto.tipoJustificacion};
+      
+    G.Q.ninvoke(that.m_dispensacion_hc,'descartarProductoPendiente',parametros).then(function(resultado){
+        
+        if(resultado.rowCount === 0){
+            throw {msj:'No se descarto el pendiente',status:403}
+        }else{
+            res.send(G.utils.r(req.url, 'Se descarta el producto satisfactoriamente', 200, {realizar_descarate_producto:resultado}));           
+        }
+        
+   }).fail(function(err){   
+       
+        if(!err.status){
+                err = {};
+                err.status = 500;
+                err.msj = "Se ha generado un error..";
+            }
+       console.log("err ", err);
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done();
 };
 
-var diasFestivos = function(){
-    
-    var enero = [];
-        enero.push(1);
-        enero.push(11);
-        
-    var marzo = [];
-        marzo.push(21);
-        marzo.push(24);
-        marzo.push(25);
-        
-    var mayo = [];
-        mayo.push(9);
-        mayo.push(30);
-        
-        
-    var junio = [];
-        junio.push(6);
-        
-    var julio = [];
-        julio.push(4);  
-        julio.push(20); 
-        
-    var agosto = [];
-        agosto.push(15);  
-
-    var octubre = [];
-        octubre.push(17);
-        
-    var noviembre = [];
-        noviembre.push(7);
-        noviembre.push(14);
-}
 
 DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
    

@@ -67,19 +67,7 @@ define(["angular", "js/services"], function(angular, services) {
                    
                     callback(data);                        
                 });
-                /*var obj = {
-                    session: session,
-                    data: {
-                        listar_formulas: {
-                            pagina: 1,
-                            empresaName: terminoBusqueda
-                        }
-                    }
-                     
-                };
-                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){
-                    callback(data);
-                });*/
+               
             };
              
             /**
@@ -291,6 +279,22 @@ define(["angular", "js/services"], function(angular, services) {
                     callback(data);
                 });
             };
+            
+            
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  09/02/2016
+              * +Descripcion descarta los productos pendientes
+              */
+            self.descartarProductoPendiente = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.DESCARTAR_PRODUCTO_PENDIENTE,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
+            
+            
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la
@@ -298,7 +302,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016
                */
             self.renderListarFormulasMedicas = function(formulas, estadoFormula){
-                    console.log("formulas ", formulas);
+                   
                 var resultado = [];
                      
                 for(var i in formulas.listar_formulas) {

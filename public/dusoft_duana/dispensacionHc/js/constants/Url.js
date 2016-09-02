@@ -29,7 +29,8 @@ define(["angular"], function (angular) {
                 "AUTORIZAR_DISPENSACION_MEDICAMENTO": BASE_URL + "/DispensacionHc/autorizarDispensacionMedicamento",
                 "REGISTRAR_EVENTO": BASE_URL + "/DispensacionHc/registrarEvento",
                 "REALIZAR_ENTREGA_FORMULA_PENDIENTES": BASE_URL + "/DispensacionHc/realizarEntregaFormulaPendientes",
-                "GUARDAR_TODO_PENDIENTES": BASE_URL + "/DispensacionHc/guardarTodoPendiente"
+                "GUARDAR_TODO_PENDIENTES": BASE_URL + "/DispensacionHc/guardarTodoPendiente",
+                "DESCARTAR_PRODUCTO_PENDIENTE": BASE_URL + "/DispensacionHc/descartarProductoPendiente"
               
                
             }

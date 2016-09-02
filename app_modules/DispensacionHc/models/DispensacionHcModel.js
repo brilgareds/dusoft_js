@@ -1633,11 +1633,6 @@ DispensacionHcModel.prototype.actualizarProductoPorBodega = function(obj,transac
  * */
 DispensacionHcModel.prototype.actualizarEstadoFinalizoFormula = function(obj,transaccion, callback){
    
-   console.log("***actualizarEstadoFinalizoFormula********");
-   console.log("***actualizarEstadoFinalizoFormula********");
-   console.log("***actualizarEstadoFinalizoFormula********");
-   
-   
    var parametros = {1: obj.evolucion};   
    var sql = "UPDATE  dispensacion_estados\
 		SET sw_finalizado= 1 \
@@ -1649,8 +1644,39 @@ DispensacionHcModel.prototype.actualizarEstadoFinalizoFormula = function(obj,tra
           
           callback(false, resultado);
    }).catch(function(err){
-         console.log("EL error ", err);
+         console.log("error [actualizarEstadoFinalizoFormula]:", err);
           callback({err:err, msj: "Error al actualizar la formula a estado finalizado"});   
+    });  
+};
+ 
+ 
+
+
+ /**
+ * @author Cristian Manuel Ardila
+ * @fecha  2016/08/31
+ * +Descripcion Metodo encargado de actualizar el estado de un producto pendiente
+ *              para posteriormente descartarlo
+ * 
+ * */
+DispensacionHcModel.prototype.descartarProductoPendiente = function(obj, callback){
+   
+   console.log("obj ", obj);
+   var parametros = {1: obj.usuario, 2:obj.tipoJustificacion, 3:obj.identificadorProductoPendiente};   
+   var sql = "UPDATE hc_pendientes_por_dispensar\
+		SET sw_estado= '2', \
+		usurio_reg_pendiente= :1,\
+                fecha_noreclama = now(),\
+                justificacion_pendiente = :2\
+              WHERE hc_pendiente_dispensacion_id = :3 ;";          
+   var query = G.knex.raw(sql,parametros);
+      
+      query.then(function(resultado){ 
+          console.log("resultado ", resultado);
+          callback(false, resultado);
+   }).catch(function(err){
+         console.log("error [descartarProductoPendiente]: ", err);
+          callback({status:403, msj: "Error al actualizar el estado del producto pendiente"});   
     });  
 };
  

@@ -1805,7 +1805,7 @@ DispensacionHcModel.prototype.guardarTodoPendiente = function(obj, callback)
     }).then(function(){
        callback(false);
     }).catch(function(err){ 
-         console.log("TRANSACCION ERROR ", err);
+         console.log("err [guardarTodoPendiente]: ", err);
        callback(err.msj);
     }).done(); 
     
@@ -1826,10 +1826,10 @@ DispensacionHcModel.prototype.actualizarEstadoFormula = function(obj, callback) 
    
     G.knex.raw(sql, {1: obj.evolucionId}).
     then(function(resultado){ 
-        console.log("resultado --->>>", resultado);
+       
        callback(false, resultado);
     }).catch(function(err){    
-        console.log("err ", err);
+        console.log("err [actualizarEstadoFormula]:", err);
        callback(err);
     });
 };
@@ -1913,7 +1913,7 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
           console.log("A QUI resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
-         console.log("err actualizarDispensacionEstados ", err);
+         console.log("err [actualizarDispensacionEstados]: ", err);
             callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
     });  
 };

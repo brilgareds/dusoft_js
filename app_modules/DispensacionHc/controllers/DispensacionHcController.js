@@ -1230,9 +1230,6 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
  */
 DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
     
-    console.log("DispensacionHc.prototype.descartarProductoPendiente  ");
-    console.log("DispensacionHc.prototype.descartarProductoPendiente  ");
-    console.log("DispensacionHc.prototype.descartarProductoPendiente  ");
     var that = this;
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;
@@ -1271,7 +1268,7 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
                 err.status = 500;
                 err.msj = "Se ha generado un error..";
             }
-       console.log("err ", err);
+      
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 };

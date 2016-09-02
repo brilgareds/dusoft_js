@@ -108,7 +108,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };   
            
             dispensacionHcService.descartarProductoPendiente(obj,function(data){
-                         console.log("respuesta del servidor  -----> ", data);
+                     
                 if(data.status === 200) {       
                     AlertService.mostrarMensaje("success", data.msj);
                     $scope.cerrarVentana();

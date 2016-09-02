@@ -400,7 +400,7 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
         
         
         
-        sqlCondicion = " AND HP.fecha_registro between :1 and :2 AND HP.numero_formula::varchar = :3";
+        sqlCondicion = " AND HP.fecha_registro between :1 and :2 AND HF.numero_formula::varchar = :3";
         
         parametros["1"]= obj.fechaInicial;
         parametros["2"]= obj.fechaFinal;
@@ -409,13 +409,13 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
    }
    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
        
-        sqlCondicion = " AND HP.evolucion_id = :3";
+        sqlCondicion = " AND HF.evolucion_id = :3";
         parametros["3"]= obj.terminoBusqueda;
         
    }
    if(obj.filtro.tipo !== 'EV' && obj.filtro.tipo !== 'FO'){
        console.log("BUSQUEDA DIFERENTE A EV o A FO")
-        sqlCondicion = " AND HP.fecha_registro between :1 and :2 AND HP.tipo_id_paciente = :3 AND HP.paciente_id::varchar = :4 ";
+        sqlCondicion = " AND HF.fecha_registro between :1 and :2 AND HF.tipo_id_paciente = :3 AND HF.paciente_id::varchar = :4 ";
         parametros["1"]= obj.fechaInicial;
         parametros["2"]= obj.fechaFinal;
         parametros["3"]= obj.filtro.tipo;

@@ -64,7 +64,7 @@ define(["angular", "js/services"], function(angular, services) {
             self.listarFormulasPendientes = function(obj, callback){
                 
                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_FORMULAS_PENDIENTES,"POST", obj, function(data){    
-                    console.log("data ", data);
+                   
                     callback(data);                        
                 });
                 /*var obj = {
@@ -298,7 +298,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016
                */
             self.renderListarFormulasMedicas = function(formulas, estadoFormula){
-                    
+                    console.log("formulas ", formulas);
                 var resultado = [];
                      
                 for(var i in formulas.listar_formulas) {
@@ -338,7 +338,8 @@ define(["angular", "js/services"], function(angular, services) {
                         var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');   
                             formula.setEstadoEntrega( _formula.estado_entrega);
                             formula.setDescripcionEstadoEntrega( _formula.descripcion_estado_entrega);
-                        var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad);                               
+                        var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad); 
+                            Productos.setIdentificadorDePendiente(_formula.hc_pendiente_dispensacion_id);
                             formula.agregarProductos(Productos);  
                          
                     }
@@ -352,6 +353,8 @@ define(["angular", "js/services"], function(angular, services) {
                      //Se almacenan los afiliados
                     resultado.push(afiliados);
                 }
+                
+                  console.log("resultado ---> ", resultado);
                 return resultado;
                 
             };

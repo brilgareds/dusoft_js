@@ -412,6 +412,12 @@ button.btnTipo{
     height: 400px
 }
 
+.gridStyle3 {
+    border: 1px solid rgb(212,212,212);
+    width: 585px;
+    height: 200px;
+}
+
 .checkbox-listarproductos{
     
         margin: 5px;

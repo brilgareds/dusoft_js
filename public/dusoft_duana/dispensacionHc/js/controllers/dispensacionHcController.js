@@ -7,10 +7,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 "$filter",
                 "localStorageService",
                 "$state",
-                "dispensacionHcService",
+                "dispensacionHcService","$modal",
                 function($scope, $rootScope, Request, API, AlertService, Usuario,
                         EmpresaDispensacionHc,
-                        $timeout, $filter,localStorageService,$state,dispensacionHcService) {
+                        $timeout, $filter,localStorageService,$state,dispensacionHcService,$modal) {
 
                 var that = this;
                 $scope.paginaactual = 1;
@@ -177,20 +177,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                            }
                        }    
                     };
-                    /*var obj = {
-                        
-                       session: $scope.session,
-                       prefijo:$scope.root.prefijo,
-                       numero: $scope.root.numero,//$scope.root.numero,
-                       empresa_id:$scope.root.empresaSeleccionada,
-                       fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                       fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                       paginaactual:$scope.paginaactual,
-                       registroUnico: false
-                        
-                    };*/
+                    
                     dispensacionHcService.listarFormulasPendientes(obj, function(data){
-                            
+                         
                         if(data.status === 200) {       
                            $scope.root.items = data.obj.listar_formulas.length;                               
                            $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicas(data.obj,0);
@@ -361,7 +350,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getCodigoProducto()', displayName: 'Codigo', width:"9%"},
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getDescripcion()', displayName: 'Descripcion', width:"9%"},
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getExistencia()', displayName: 'Cantidad', width:"9%"},        
-                            {displayName: "Justificacion", cellClass: "txt-center dropdown-button",
+                            /*{displayName: "Justificacion", cellClass: "txt-center dropdown-button",
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">{{root.justificacion}}<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
@@ -370,14 +359,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <li><a href="javascript:void(0);" ng-click="seleccionarJustificacion(2)" >Confrontado</a></li>\
                                            </ul>\
                                        </div>'
-                             },
+                             },*/
                              {field: 'detalle', width: "6%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="dispensacionFormula(row.entity)"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="descartarFormula(row.entity)"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
 
                             }
-                        ]
+                        ]               
                     };
                     
                    
@@ -386,6 +375,42 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         $scope.root.justificacion = justificacion[index];
                     };
                     
+                    $scope.descartarFormula = function(entity){
+                        
+                        console.log("entity ", entity);
+                        that.ventanaDescartarPendientesFormula(entity);
+                    };
+                    
+                    /**
+          * @author Cristian Ardila
+          * +Descripcion Metodo que desplegara una ventana encargada de 
+          *              listar los tipos de entrega de la formula
+        */
+        that.ventanaDescartarPendientesFormula = function(entity){
+        
+            $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: true,
+                keyboard: true,
+                templateUrl: 'views/dispensacionHc/descartarPendientesFormula.html',
+                scope: $scope,                  
+                controller: "descartarPendientesFormulaController",
+                windowClass: 'app-modal-window-smlg',
+                resolve: {
+                        productoDescartado: function() {
+                            return entity;
+                        }
+                    }
+                                   
+            };
+            var modalInstance = $modal.open($scope.opts);   
+           
+                modalInstance.result.then(function(){
+                    that.consultarMedicamentosTemporales();
+                },function(){});                          
+                
+        };
                     /**
                      * @author Cristian Ardila
                      * @fecha 04/02/2016

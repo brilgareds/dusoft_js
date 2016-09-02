@@ -12,7 +12,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 this.cantidadEntrega;
                 this.productosHc = [];
                 this.codigoFormaFarmacologica;
-                
+                this.identificadorDePendiente;
             }
             
             ProductosFOFO.prototype = Object.create(Producto.getClass().prototype);
@@ -58,9 +58,16 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 return this.codigoFormaFarmacologica;              
             };
             
-            
-            
-            
+        
+            ProductosFOFO.prototype.setIdentificadorDePendiente = function(identificadorDePendiente){
+                this.identificadorDePendiente = identificadorDePendiente;
+            };
+
+            ProductosFOFO.prototype.getIdentificadorDePendiente = function(){
+                return this.identificadorDePendiente;
+            };
+        
+        
             
             ProductosFOFO.prototype.agregarProductosHc = function(productoHc){
                 this.productosHc.push(productoHc);

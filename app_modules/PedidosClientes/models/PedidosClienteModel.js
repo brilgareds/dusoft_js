@@ -1340,9 +1340,10 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, parametros).
     then(function(resultado) {
-        callback(false, resultado.rows, resultado);
+        callback(false, resultado.rows);
     }). catch (function(err) {
-        callback(err);
+        console.log("err [insertar_cotizacion]", err);
+        callback({msj:'Error al registrar la cotizacion', status: true});
     });
 
 };
@@ -1366,8 +1367,9 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
             then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-
-        callback(err);
+        console.log("err [insertar_detalle_cotizacion]::", err);
+        callback({msj:'Error al registrar el producto', status: true});
+       
     });
 
 };

@@ -540,6 +540,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
         
     }).fail(function(err){
+        console.log("err [insertarCotizacion]:: ", err);
         var msj = "Erro Interno";
         var status = 500;
         
@@ -560,11 +561,6 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
  */
 PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    
     var that = this;
 
     var args = req.body.data;

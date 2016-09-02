@@ -81,6 +81,7 @@ ClientesModel.prototype.obtenterClientePorId = function(parametros, callback) {
     query.then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(err){
+         console.log(" err [obtenterClientePorId] ", err);
         callback(err);
     });
     

@@ -606,6 +606,6 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 
 .app-modal-window-smlg .modal-dialog{
    
-    width: 560px;
-    height: 180px;
+    width: 600px;
+    height: 100px;
 }

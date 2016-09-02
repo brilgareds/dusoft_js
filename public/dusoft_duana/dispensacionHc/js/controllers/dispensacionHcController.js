@@ -381,7 +381,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         that.ventanaDescartarPendientesFormula(entity);
                     };
                     
-                    /**
+        /**
           * @author Cristian Ardila
           * +Descripcion Metodo que desplegara una ventana encargada de 
           *              listar los tipos de entrega de la formula

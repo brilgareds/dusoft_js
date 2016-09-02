@@ -97,6 +97,10 @@ define(["angular", "js/models"], function(angular, models) {
                 this.estado = estado;
             };
             
+            Usuario.prototype.getEstado = function(){
+                return this.estado;
+            };
+            
             Usuario.prototype.setSeleccionado = function(seleccionado){
                 this.seleccionado = seleccionado;
                 return this;
@@ -120,11 +124,7 @@ define(["angular", "js/models"], function(angular, models) {
             
             Usuario.prototype.getEmail = function(){
                 return this.email;
-            };
-            
-            Usuario.prototype.getEstado = function(){
-                return this.estado;
-            };
+            };         
             
             Usuario.prototype.getDescripcion = function(){
                 return this.descripcion;

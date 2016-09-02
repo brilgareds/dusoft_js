@@ -18,4 +18,14 @@ module.exports = function(app, di_container) {
     app.post('/api/Chat/guardarGrupo', function(req, res) {
         c_Chat.guardarGrupo(req, res);
     });
+    
+    app.post('/api/Chat/obtenerGrupoPorId', function(req, res) {
+        c_Chat.obtenerGrupoPorId(req, res);
+    });
+    
+    app.post('/api/Chat/cambiarEstadoUsuarioGrupo', function(req, res) {
+        c_Chat.cambiarEstadoUsuarioGrupo(req, res);
+    });
+    
+    
 };

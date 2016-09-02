@@ -69,10 +69,18 @@ define(["angular", "js/models"], function(angular, models) {
             return this.id;
         };
         
+        GrupoChat.prototype.setNumeroIntegrantes = function(numeroIntegrantes) {
+            this.numeroIntegrantes = numeroIntegrantes;
+            return this;
+        };
+        
+        GrupoChat.prototype.geNumeroIntegrantes = function() {
+            return this.numeroIntegrantes;
+        };
 
-        this.get = function(nombre, fechaCreacion, numeroIntegrantes) {
+        this.get = function(id,nombre, fechaCreacion, numeroIntegrantes) {
 
-            return new GrupoChat(nombre, fechaCreacion, numeroIntegrantes);
+            return new GrupoChat(id, nombre, fechaCreacion, numeroIntegrantes);
         };
 
         this.getClass = function(){

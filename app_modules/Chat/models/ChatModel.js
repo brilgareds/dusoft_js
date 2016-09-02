@@ -29,21 +29,24 @@ ChatModel.prototype.listarGrupos = function(parametros, callback) {
 
 /**
 * @author Eduar Garcia
-* +Descripcion consulta los grupos del chat, permite tener un termino de busqueda
+* +Descripcion Cambie el estado de un usuario en un grupo
 * @params obj: {pagina, termino_busqueda}
 * @fecha 2016-08-29
 */
-ChatModel.prototype.cambiarEstado = function(parametros, callback) {
-
-    var sql =  "UPDATE chat_grupos SET estado = :1 WHERE id = :2 ";
+ChatModel.prototype.cambiarEstadoUsuarioGrupo = function(parametros, callback) {
     
-    G.knex.raw(sql, {1:parametros.estado, 2:parametros.grupo_id}).
-    then(function(resultado){
+    G.knex("chat_grupos_usuarios").
+    where('grupo_id', parametros.grupo_id).
+    andWhere("usuario_id", parametros.usuario_id).
+    update({
+        estado:Number(parametros.estado),
+    }).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
         console.log("error sql",err);
         callback(err);       
-    });   
+    }); 
+    
 };
 
 
@@ -83,23 +86,33 @@ ChatModel.prototype.guardarGrupo = function(parametros, callback) {
 */
 ChatModel.prototype.modificarGrupo = function(parametros, callback) {
     
-    G.knex("chat_grupos").
-    where('id', parametros.grupo_id).
-    update({
-        estado:parametros.estado,
-        nombre:parametros.nombre
+    var that = this;
+    G.Q.ninvoke(that, "obtenerGrupoPorNombre", parametros).
+    then(function(resultado){
+        
+        if(resultado.length > 0 && parametros.grupo_id !== resultado[0].id){
+            throw { msj:"El nombre del grupo no esta disponible", status:403 };
+        } else {            
+            return G.knex("chat_grupos").
+            where('id', parametros.grupo_id).
+            update({
+                estado:parametros.estado,
+                nombre:parametros.nombre
+            });
+        }
+        
     }).then(function(resultado){
         callback(false, resultado);
-    }).catch(function(err){
-        console.log("error sql",err);
-        callback(err);       
-    });   
+    }).fail(function(err){
+        callback(err); 
+    });
+    
 };
 
 
 /**
 * @author Eduar Garcia
-* +Descripcion Modifica un grupo
+* +Descripcion Inserta un grupo
 * @params obj: {grupo_id, estado}
 * @fecha 2016-09-01
 */
@@ -109,7 +122,7 @@ ChatModel.prototype.insertarGrupo = function(parametros, callback) {
     G.Q.ninvoke(that, "obtenerGrupoPorNombre", parametros).
     then(function(resultado){
         
-        if(resultado.length > 0){
+        if(resultado.length > 0 && parametros.grupo_id !== resultado[0].id){
             throw { msj:"El nombre del grupo no esta disponible", status:403 };
         } else {            
             return G.knex("chat_grupos").returning("id").insert({"estado":parametros.estado, "nombre":parametros.nombre});
@@ -122,6 +135,7 @@ ChatModel.prototype.insertarGrupo = function(parametros, callback) {
     });
 
 }
+
 /**
 * @author Eduar Garcia
 * +Descripcion Permite obtener un grupo por nombre, se utiliza para validar que no hallan nombres repetidos
@@ -140,6 +154,23 @@ ChatModel.prototype.obtenerGrupoPorNombre = function(parametros, callback) {
     });   
 };
 
+/**
+* @author Eduar Garcia
+* +Descripcion Permite obtener un grupo por id
+* @params obj: {nombre}
+* @fecha 2016-09-01
+*/
+ChatModel.prototype.obtenerGrupoPorId = function(parametros, callback) {
+    
+    G.knex.select('*').from("chat_grupos").
+    where("id", parseInt(parametros.grupo_id)).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });   
+};
 
 /**
 * @author Eduar Garcia
@@ -148,14 +179,30 @@ ChatModel.prototype.obtenerGrupoPorNombre = function(parametros, callback) {
 * @fecha 2016-08-30
 */
 ChatModel.prototype.listarUsuariosPorGrupo = function(parametros, callback) {
-
-    var sql =  "SELECT c.nombre, a.grupo_id, b.usuario, b.usuario_id from chat_grupos_usuarios a\
-                INNER JOIN system_usuarios b ON b.usuario_id = a.usuario_id\
-                INNER JOIN chat_grupos c ON a.grupo_id = c.id\
-                WHERE a.grupo_id = :1 ";
     
-    G.knex.raw(sql, {1:parametros.grupo_id}).
-    then(function(resultado){
+    var columns = [
+        "c.nombre",
+        "a.grupo_id",
+        "b.usuario",
+        "b.usuario_id",
+        "b.nombre",
+        "a.estado"
+    ];
+    
+    var query = G.knex.column(columns).
+    from("chat_grupos_usuarios as a").
+    innerJoin("system_usuarios as b", "b.usuario_id", "a.usuario_id").
+    innerJoin("chat_grupos as c", "a.grupo_id", "c.id").
+    where("a.grupo_id", parametros.grupo_id);
+    
+    if(parametros.termino_busqueda.length > 0){
+        query.andWhere(function() {
+           this.orWhere("b.usuario", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%").
+           orWhere("b.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+        });
+    }
+       
+    query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
         console.log("error sql",err);

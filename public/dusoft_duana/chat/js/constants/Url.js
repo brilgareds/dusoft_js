@@ -14,6 +14,9 @@ define(["angular"], function(angular) {
                 'LISTAR_USUARIOS' : BASE_URL +"/Chat/listarUsuariosPorGrupo",
                 'INSERTAR_USUARIO_GRUPO' : BASE_URL + "/Chat/insertarUsuariosEnGrupo",
                 'GUARDAR_GRUPO' : BASE_URL + "/Chat/guardarGrupo",
+                'OBTENER_GRUPO_POR_ID' : BASE_URL + "/Chat/obtenerGrupoPorId",
+                'CAMBIAR_ESTADO_USUARIO_GRUPO' : BASE_URL + "/Chat/cambiarEstadoUsuarioGrupo"
+                
             }
         },
         'STATIC': {

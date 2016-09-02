@@ -41,7 +41,7 @@ define(["angular", "js/controllers", "includes/classes/GrupoChat"], function(ang
                      cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
-                                            <li ng-click="onGuardarGrupo()"><a href="javascript:void(0);" >Ver</a></li>\
+                                            <li ng-click="onGuardarGrupo(row.entity)"><a href="javascript:void(0);" >Ver</a></li>\
                                             <li>\
                                                 <a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">\
                                                     <span ng-if="row.entity.getEstado() == \'0\'">Activar</span>\
@@ -60,6 +60,7 @@ define(["angular", "js/controllers", "includes/classes/GrupoChat"], function(ang
              * +Descripcion: Hace peticion para obtener grupos
              */
             self.onTraerGrupos = function(callback){
+                
                 var obj = {
                     session: $scope.root.session,
                     data: {
@@ -73,6 +74,7 @@ define(["angular", "js/controllers", "includes/classes/GrupoChat"], function(ang
                 Request.realizarRequest(API.CHAT.LISTAR_GRUPOS, "POST", obj, function(data) {
                     
                     if (data.status === 200) {
+                        $scope.root.grupos = [];
                         var grupos = data.obj.grupos || [];
 
                         //se hace el set correspondiente para el plugin de jstree
@@ -88,18 +90,24 @@ define(["angular", "js/controllers", "includes/classes/GrupoChat"], function(ang
                 });
             };
             
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de cambiar estado
+            * @fecha 2016-09-02
+            */
             self.cambiarEstado = function(grupo){
                 var obj = {
                     session: $scope.root.session,
                     data: {
                         chat: {
                             grupo_id: grupo.getId(),
+                            nombre: grupo.getNombre(),
                             estado: (grupo.getEstado() === '1') ? '0' : '1' 
                         }
                     }
                 };
 
-                Request.realizarRequest(API.CHAT.CAMBIAR_ESTADO, "POST", obj, function(data) {
+                Request.realizarRequest(API.CHAT.GUARDAR_GRUPO, "POST", obj, function(data) {
                     
                     if (data.status === 200) {
                        self.onTraerGrupos(function(){
@@ -110,6 +118,20 @@ define(["angular", "js/controllers", "includes/classes/GrupoChat"], function(ang
                 });
             };
             
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de cambiar estado
+            * @fecha 2016-09-02
+            */
+            self.cambiarVistaGuardarGrupo = function(id){
+                localStorageService.set("grupoId", id);
+                $state.go("GuardarGrupo");
+            };
+            
+            $scope.onBtnCrearGrupo = function(){
+                self.cambiarVistaGuardarGrupo(0);
+            };
+            
             $scope.onCambiarEstado = function(grupo){
                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Seguro que desea cambiar el estado del grupo?", function(accion){
                     if(accion){
@@ -118,8 +140,8 @@ define(["angular", "js/controllers", "includes/classes/GrupoChat"], function(ang
                 });
             };
             
-            $scope.onGuardarGrupo = function(){
-                $state.go("GuardarGrupo");
+            $scope.onGuardarGrupo = function(grupo){
+                self.cambiarVistaGuardarGrupo(grupo.getId());
             };
             
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

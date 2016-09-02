@@ -604,8 +604,23 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     width:98%;
 }
 
-.app-modal-window-smlg .modal-dialog{
+
+
+
+
+.app-modal-window-smlg.modal-dialog{
    
     width: 600px;
     height: 100px;
 }
+.app-modal-window-smlg.modal-content {
+    padding: 5px;
+    height: 400px;
+}
+
+.app-modal-window-smlg.panel-info {
+    border-color: #bce8f1;
+    height: 300px;
+}
+
+

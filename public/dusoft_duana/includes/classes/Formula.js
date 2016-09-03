@@ -17,6 +17,9 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado;
             this.estadoEntrega;
             this.descripcionEstadoEntrega;
+            this.numeroEntregaActual;
+            this.numeroTotalEntregas;
+            this.fechaEntrega;
         };
         
         
@@ -71,6 +74,38 @@ define(["angular", "js/models"], function(angular, models) {
         Formula.prototype.getEstadoEntrega = function(){
             return this.estadoEntrega;
         };
+        
+        
+        
+        Formula.prototype.setNumeroEntregaActual = function(numeroEntregaActual){
+             this.numeroEntregaActual = numeroEntregaActual;
+        };
+       
+        Formula.prototype.getNumeroEntregaActual = function(){
+            return this.numeroEntregaActual;
+        };
+        
+        
+        
+        
+        Formula.prototype.setNumeroTotalEntregas = function(numeroTotalEntregas){
+             this.numeroTotalEntregas = numeroTotalEntregas;
+        };
+       
+        Formula.prototype.getNumeroTotalEntregas = function(){
+            return this.numeroTotalEntregas;
+        };
+        
+        
+        
+        Formula.prototype.setFechaEntrega = function(fechaEntrega){
+             this.fechaEntrega = fechaEntrega;
+        };
+       
+        Formula.prototype.getFechaEntrega = function(){
+            return this.fechaEntrega;
+        };
+        
         
         
         Formula.prototype.setDescripcionEstadoEntrega = function(descripcionEstadoEntrega){

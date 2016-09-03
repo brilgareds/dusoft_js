@@ -293,8 +293,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              cellTemplate: "<div\n\
                                             <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }} </div>"},   
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()', displayName: 'F. Formulacion', width:"9%"}, 
-                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()', displayName: 'F. Finalizacion', width:"9%"},                              
-                            {field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()', displayName: 'F. Finalizacion', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()', displayName: 'F. Entrega', width:"9%"}, 
+                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()', displayName: '# Total entregas', width:"9%"}, 
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()', displayName: '# Entrega actual', width:"9%"}, 
+                           
+                            
+                            
+                            //{field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
                             {field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"},                            
                             {displayName: "Opcion", cellClass: "txt-center dropdown-button",
@@ -369,9 +375,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @fecha 02/09/2016 DD/MM/YYYY
                      */
                     $scope.descartarFormula = function(entity){
-                         //console.log("identificadorPendiente ", entity.getEvolucionId());
-                         //console.log("asasa ", entity.mostrarProductos()[0].getIdentificadorDePendiente());
-                         //.mostrarFormulas()[0].mostrarProductos()[0].getIdentificadorDePendiente()
+                        
                         that.ventanaDescartarPendientesFormula(entity);
                         
                     };

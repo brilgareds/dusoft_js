@@ -94,6 +94,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         a.fecha_finalizacion,\
                         a.fecha_registro as fecha_formulacion,\
                         e.nombre,\
+                        a.numero_entrega_actual,\
+                        a.numero_total_entregas,\
+                        a.fecha_entrega,\
                         f.tipo_bloqueo_id,\
                         f.descripcion AS bloqueo,\
                         COALESCE(i.plan_id,0) as plan_id,\
@@ -122,7 +125,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente = '1' THEN(\
                                         CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
                                         WHEN now() > a.fecha_maxima_entrega THEN 'Vencido'\
-                                        ELSE 'Falta' END\
+                                        ELSE 'Falta' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()') || 'Dias' END\
                                         )\
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \

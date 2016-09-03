@@ -353,7 +353,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                              {field: 'detalle', width: "6%",
                                 displayName: "Opciones",
                                 cellClass: "txt-center",
-                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="descartarFormula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].mostrarProductos()[0].getIdentificadorDePendiente())"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="descartarFormula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0])"><span class="glyphicon glyphicon-zoom-in">Descatar</span></button></div>'
 
                             }
                         ]               
@@ -369,7 +369,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      * @fecha 02/09/2016 DD/MM/YYYY
                      */
                     $scope.descartarFormula = function(entity){
-                         
+                         //console.log("identificadorPendiente ", entity.getEvolucionId());
+                         //console.log("asasa ", entity.mostrarProductos()[0].getIdentificadorDePendiente());
+                         //.mostrarFormulas()[0].mostrarProductos()[0].getIdentificadorDePendiente()
                         that.ventanaDescartarPendientesFormula(entity);
                         
                     };
@@ -392,7 +394,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             windowClass: 'app-modal-window-smlg',
                             resolve: {
                                     identificadorProductoPendiente: function() {
-                                        return entity;
+                                        return entity.mostrarProductos()[0].getIdentificadorDePendiente();
+                                    },
+                                    evolucion: function(){
+                                        return entity.getEvolucionId();
                                     }
                                 }
 

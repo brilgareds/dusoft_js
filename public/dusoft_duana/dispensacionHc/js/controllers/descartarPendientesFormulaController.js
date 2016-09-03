@@ -6,9 +6,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService","$modalInstance","socket","identificadorProductoPendiente",
+            "dispensacionHcService","$modalInstance","socket","identificadorProductoPendiente","evolucion",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,identificadorProductoPendiente) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,identificadorProductoPendiente,evolucion) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
@@ -100,6 +100,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 session: $scope.session,
                 data: {
                    realizar_descarate_producto: {
+                        evolucion: evolucion,
                         identificadorProductoPendiente: identificadorProductoPendiente,
                         tipoJustificacion: seleccionTipoJustificacion.tipo
                        

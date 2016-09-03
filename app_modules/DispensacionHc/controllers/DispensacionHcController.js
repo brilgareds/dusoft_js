@@ -1233,6 +1233,7 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
     var that = this;
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;
+    var def = G.Q.defer();         
     if (args.realizar_descarate_producto === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {realizar_descarate_producto: []}));
         return;
@@ -1248,19 +1249,45 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
         return;
     }
     
+    if (!args.realizar_descarate_producto.evolucion || args.realizar_descarate_producto.evolucion.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {realizar_descarate_producto: []}));
+        return;
+    }
+    
     
     var parametros={identificadorProductoPendiente:args.realizar_descarate_producto.identificadorProductoPendiente, 
                     usuario:usuario, 
-                    tipoJustificacion: args.realizar_descarate_producto.tipoJustificacion};
+                    tipoJustificacion: args.realizar_descarate_producto.tipoJustificacion,
+                    evolucion: args.realizar_descarate_producto.evolucion};
       
     G.Q.ninvoke(that.m_dispensacion_hc,'descartarProductoPendiente',parametros).then(function(resultado){
-        
-        if(resultado.rowCount === 0){
+        console.log("1) descartarProductoPendiente :: ", resultado);
+        if(resultado.rowCount === 0){                                          
             throw {msj:'No se descarto el pendiente',status:403}
         }else{
-            res.send(G.utils.r(req.url, 'Se descarta el producto satisfactoriamente', 200, {realizar_descarate_producto:resultado}));           
+            
+            return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente', {evolucionId:parametros.evolucion, estado:0} );
+            //    
         }
         
+   }).then(function(resultado){
+        console.log("2)  :: ", resultado.rows);
+       
+         if(resultado.rows.length === 0){
+            return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarEstadoFormulaSinPendientes', {evolucion:parametros.evolucion, estado:0} );
+             
+        }else{
+            
+            def.resolve();
+        }
+             
+             
+   
+       
+   }).then(function(resultado){
+      console.log("3 actualizarEstadoFormulaSinPendientes) ", resultado);
+      res.send(G.utils.r(req.url, 'Se descarta el producto satisfactoriamente', 200, {realizar_descarate_producto:[]}));       
+      
    }).fail(function(err){   
        
         if(!err.status){
@@ -1329,7 +1356,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                                 observacion: observacion,tipoVariable : 0};
     var bodegasDocTodoPendiente;                           
       //console.log("parametrosReformular:::: ", parametrosReformular);
-        G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',evolucionId).then(function(resultado){
+        G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',{evolucionId:evolucionId, estado: 1}).then(function(resultado){
         console.log("1) resultado consultarProductosTodoPendiente ", resultado.rows.length)
         if(resultado.rows.length > 0){        
            bodegasDocTodoPendiente = 1;                   

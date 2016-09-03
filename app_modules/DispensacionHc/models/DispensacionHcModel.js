@@ -1127,18 +1127,30 @@ DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
  * +Descripcion Modelo encargado consultar las formulas 
  *              las cuales se han dejado con estado todo_pendiente
  * @controller DispensacionHc.prototype.consultarProductosTodoPendiente
+ *             DispensacionHc.prototype.descartarProductoPendiente
  */
-DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(evolucionId,callback){
-    
-    var parametros = {1: evolucionId};
+DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(obj,callback){
+     
+    var parametros = {1: obj.evolucionId, 2: obj.estado};
+    var campo = "";
+    console.log("parametros ", parametros);
+    /**
+     * +Descripcion El estado 0 (Cero) se envia desde el controlador descartarProductoPendiente
+     *              El estado 1 (Uno)  Se envia desde el controlador consultarProductosTodoPendiente
+     */
+    if(obj.estado === 0){
+        campo = "sw_estado";
+    }else{
+        campo = "todo_pendiente";
+    }
     
     var sql = "SELECT   evolucion_id\
                FROM    hc_pendientes_por_dispensar\
-               WHERE   todo_pendiente = 1\
+               WHERE   "+campo+" = :2\
 	       AND bodegas_doc_id is null\
 	       AND numeracion is null\
 	       AND evolucion_id = :1 ";
-   
+               console.log("sql ", sql);
     G.knex.raw(sql,parametros).then(function(resultado){ 
         console.log(" ***///888resultado ", resultado)
         callback(false, resultado)
@@ -1670,7 +1682,7 @@ DispensacionHcModel.prototype.descartarProductoPendiente = function(obj, callbac
                 justificacion_pendiente = :2\
               WHERE hc_pendiente_dispensacion_id = :3 ;";          
    var query = G.knex.raw(sql,parametros);
-      
+     
       query.then(function(resultado){ 
           console.log("resultado ", resultado);
           callback(false, resultado);
@@ -1679,6 +1691,43 @@ DispensacionHcModel.prototype.descartarProductoPendiente = function(obj, callbac
           callback({status:403, msj: "Error al actualizar el estado del producto pendiente"});   
     });  
 };
+ 
+ 
+DispensacionHcModel.prototype.actualizarEstadoFormulaSinPendientes = function(obj, callback)
+{   
+   console.log("********DispensacionHcModel.prototype.descartarProductoPendiente****************");
+   console.log("********DispensacionHcModel.prototype.descartarProductoPendiente****************");
+   console.log("********DispensacionHcModel.prototype.descartarProductoPendiente****************");
+   console.log("obj ", obj);
+    var that = this;
+    var def = G.Q.defer();                          
+    G.knex.transaction(function(transaccion) {        
+                
+    /**
+    * +Descripcion se actualiza la tabla de estados evidenciando
+    *              que la formula ya no tiene pendientes
+    */          
+    return G.Q.ninvoke(that,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:0, evolucion:obj.evolucion},transaccion).then(function(){
+            
+            
+             console.log("TRANSACCION COMMIT ");
+            transaccion.commit(); 
+        }).fail(function(err){
+            console.log("TRANSACCION FAIL ", err);
+            transaccion.rollback(err);
+        }).done();
+         
+    }).then(function(){
+       callback(false);
+    }).catch(function(err){ 
+         console.log("TRANSACCION ERROR ", err);
+       callback(err.msj);
+    }).done(); 
+};
+
+
+
+
  
 /*
  * @autor : Cristian Ardila

@@ -1040,8 +1040,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0};
                               
-     that.e_dispensacion_hc.onNotificarEntregaFormula(parametrosReformular); 
-    return res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: []}));
+   
     
     G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular).then(function(resultado){
         

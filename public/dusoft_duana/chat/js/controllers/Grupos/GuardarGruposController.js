@@ -45,12 +45,7 @@ define(["angular", "js/controllers",
                                    </div>'
                     },
                     {field: 'getNombre()', displayName: 'Nombre'},
-                    {field: 'getNombreUsuario()', displayName: 'Usuario'},
-                    {field: 'accion', displayName: '', width: '70',
-                        cellTemplate: '<div class="ngCellText txt-center">\
-                                      <button class="btn btn-default btn-xs" ng-validate-events="{{opcionesModulo.btnEditarUsuario}}" ng-click="onEditarUsuario(row.entity)"><span class="glyphicon glyphicon-zoom-in"></span></button>\
-                                   </div>'
-                    }
+                    {field: 'getNombreUsuario()', displayName: 'Usuario'}
                 ]
 
             };
@@ -135,7 +130,8 @@ define(["angular", "js/controllers",
                     data: {
                         chat: {
                             grupo_id: $scope.root.grupo.getId(),
-                            termino_busqueda:$scope.root.terminoBusqueda
+                            termino_busqueda:$scope.root.terminoBusqueda,
+                            pagina:1
                         }
                     }
                 };

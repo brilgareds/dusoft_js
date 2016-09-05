@@ -4,7 +4,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
     "includes/classes/Rol", "includes/classes/OpcionModulo",
     "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo",
     "includes/components/chat/Chat","includes/components/usuarios/Usuarios",
-    "includes/components/notificaciones/NotificacionesController"], function(angular, controllers) {
+    "includes/components/notificaciones/NotificacionesController",
+    "includes/components/gruposChat/GruposChatController"], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
@@ -376,6 +377,24 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         window.location = "../pages/401.html";
                     });
                 }
+            };
+            
+          /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de chat
+            * @fecha 2016-09-05
+            */
+            $scope.onBtnChat = function(){
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    size: 'lg',
+                    keyboard: true,
+                    templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                    controller: 'GruposChatController'
+                };
+                var modalInstance = $modal.open($scope.opts);
             };
             
             

@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.numeroIntegrantes = numeroIntegrantes || 0;
             this.estado = "1";
             this.descripcionEstado = "";
+            this.usuarios = [];
         };
         
         
@@ -76,6 +77,28 @@ define(["angular", "js/models"], function(angular, models) {
         
         GrupoChat.prototype.geNumeroIntegrantes = function() {
             return this.numeroIntegrantes;
+        };
+        
+        GrupoChat.prototype.agregarUsuario = function(usuario) {
+            
+            for(var i in this.usuarios){
+                if(usuario.getId() === usuarios[i].getId()){
+                    return;
+                }
+            }
+            
+            this.usuarios.push(usuario);
+            
+        };
+        
+        GrupoChat.prototype.getUsuarios = function() {
+            
+            return this.usuarios;
+            
+        };
+        
+        GrupoChat.prototype.vaciarUsuarios = function() {
+            this.usuarios = [];
         };
 
         this.get = function(id,nombre, fechaCreacion, numeroIntegrantes) {

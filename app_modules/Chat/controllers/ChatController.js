@@ -49,7 +49,7 @@ ChatController.prototype.listarUsuariosPorGrupo = function(req, res) {
     var args = req.body.data;
     
     
-    if (!args.chat  || !args.chat.grupo_id ) {
+    if (!args.chat) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }

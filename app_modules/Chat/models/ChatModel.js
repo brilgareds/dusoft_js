@@ -181,7 +181,7 @@ ChatModel.prototype.obtenerGrupoPorId = function(parametros, callback) {
 ChatModel.prototype.listarUsuariosPorGrupo = function(parametros, callback) {
     
     var columns = [
-        "c.nombre",
+        "c.nombre as nombre_grupo",
         "a.grupo_id",
         "b.usuario",
         "b.usuario_id",
@@ -192,8 +192,11 @@ ChatModel.prototype.listarUsuariosPorGrupo = function(parametros, callback) {
     var query = G.knex.column(columns).
     from("chat_grupos_usuarios as a").
     innerJoin("system_usuarios as b", "b.usuario_id", "a.usuario_id").
-    innerJoin("chat_grupos as c", "a.grupo_id", "c.id").
-    where("a.grupo_id", parametros.grupo_id);
+    innerJoin("chat_grupos as c", "a.grupo_id", "c.id");
+    
+    if(parametros.grupo_id){
+        query.where("a.grupo_id", parametros.grupo_id);
+    }
     
     if(parametros.termino_busqueda.length > 0){
         query.andWhere(function() {
@@ -201,7 +204,10 @@ ChatModel.prototype.listarUsuariosPorGrupo = function(parametros, callback) {
            orWhere("b.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
         });
     }
-       
+    
+    query.orderBy("c.nombre", "ASC").limit(G.settings.limit).
+    offset((parametros.pagina - 1) * G.settings.limit);
+    
     query.then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){

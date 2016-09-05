@@ -13,10 +13,13 @@ var DispensacionHcModel = function() {
  */
 DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     
+    console.log("-************DispensacionHcModel.prototype.listarFormulas*************");
+    console.log("-************DispensacionHcModel.prototype.listarFormulas*************");
+    console.log("-************DispensacionHcModel.prototype.listarFormulas*************");
  /**Campos exclusivos para cuando se envie la peticion 
    *solo para consultar las formulas pendientes
    **/
-
+  console.log("PARAMETROS ", obj);
    var pendienteCampoEstado = "";
    var pendienteValidacion = "";
    

@@ -302,7 +302,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016
                */
             self.renderListarFormulasMedicas = function(formulas, estadoFormula){
-                   console.log("formulas ", formulas);
+                  // console.log("formulas ", formulas);
                 var resultado = [];
                      
                 for(var i in formulas.listar_formulas) {
@@ -334,7 +334,6 @@ define(["angular", "js/services"], function(angular, services) {
                             formula.setNumeroEntregaActual( _formula.numero_entrega_actual);
                             formula.setNumeroTotalEntregas( _formula.numero_total_entregas);
                             formula.setFechaEntrega( _formula.fecha_entrega);
-                            formula.setDiasFaltantes( _formula.dias_faltantes);
                                 
                     }
                     
@@ -365,7 +364,7 @@ define(["angular", "js/services"], function(angular, services) {
                     resultado.push(afiliados);
                 }
                 
-                  console.log("resultado ---> ", resultado);
+                 // console.log("resultado ---> ", resultado);
                 return resultado;
                 
             };

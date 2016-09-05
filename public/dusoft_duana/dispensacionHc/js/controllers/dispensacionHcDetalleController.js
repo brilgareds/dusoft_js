@@ -302,21 +302,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="temporalLotes(row.entity)">Dispensar'
 
                   }
-                  
-                   /*  {field: 'Sel', width: "10%",
-                        displayName: "Dispensar",
-                        cellClass: "txt-center",
-                        cellTemplate: '<label class="checkbox-inline">\
-                <input type="checkbox" id="checkboxEnLinea1" value="opcion_1"> 1\
-              </label>\
-              <label class="checkbox-inline">\
-                <input type="checkbox" id="checkboxEnLinea2" value="opcion_2"> 2\
-              </label>\
-              <label class="checkbox-inline">\
-                <input type="checkbox" id="checkboxEnLinea3" value="opcion_3"> 3\
-              </label>'
-
-                  }*/
             ]
         };
         
@@ -485,7 +470,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @fecha 09/06/2016 (DD-MM-YYYY)
          */
         $scope.regresarListaFormulas = function() {
-            $state.go('DispensacionHc');
+            $state.go('DispensacionHc');           
         };
         
         
@@ -520,7 +505,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var modalInstance = $modal.open($scope.opts);   
            
                 modalInstance.result.then(function(){
-                    that.consultarMedicamentosTemporales();
+                    //that.consultarMedicamentosTemporales();
                 },function(){});                          
                 
         };

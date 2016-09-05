@@ -187,19 +187,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionNormal = function(obj){
-            console.log("Dispensacion normal ");
+            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
+           
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
-                console.log("DATA ULTIMA RESPUESTA ", data);
+              
                 if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
-                    //$state.go('DispensacionHc');
+                    $state.go('DispensacionHc');   
+                    
+                    localStorageService.add("consultarFormula",{
+                                evolucion: evolucionStorage.evolucionId,
+                                filtro:{tipo:'EV'},
+                                empresa: 'FD'                  
+                                  
+                            });
+                             
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
             });         
         };
+        
         
         
         

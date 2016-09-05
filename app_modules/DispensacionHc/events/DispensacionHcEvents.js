@@ -18,17 +18,17 @@ var DispensacionHcEvents = function(socket, dispensacion) {
  *  --PedidosCliente.prototype.solicitarAutorizacion
  *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  */
-DispensacionHcEvents.prototype.onNotificarEntregaFormula = function() {
+DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(obj) {
   
   console.log("*******************NOTIFICAR ENTREGA FORMULA ************");
     var that = this;
-    var response = G.utils.r('onActualizarGridTemporal', 'nuevo estado de cotizacion Actualizado', 200,
+    var response = G.utils.r('onNotificarEntregaFormula', 'nuevo estado de cotizacion Actualizado', 200,
                     {
-                        evolucionId: '352974',
-                        numeroCotizacion: '',
-                        estado: ''
+                        evolucionId: obj.terminoBusqueda,
+                        filtro: obj.filtro,
+                        empresa: obj.empresa,
                     });
-    that.io.sockets.emit('onActualizarGridTemporal', response);
+    that.io.sockets.emit('onNotificarEntregaFormula', response);
     /*this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {
       
         if (!err) {

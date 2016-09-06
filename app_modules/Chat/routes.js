@@ -27,5 +27,10 @@ module.exports = function(app, di_container) {
         c_Chat.cambiarEstadoUsuarioGrupo(req, res);
     });
     
+    app.post('/api/Chat/guardarConversacion', function(req, res) {
+        c_Chat.guardarConversacion(req, res);
+    });
+    
+    
     
 };

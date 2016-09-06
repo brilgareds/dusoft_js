@@ -28,7 +28,7 @@ ChatController.prototype.listarGrupos = function(req, res) {
     }
         
 
-    G.Q.ninvoke(this.mChat,'listarGrupos', args.chat).then(function(grupos) {
+    G.Q.ninvoke(that.mChat,'listarGrupos', args.chat).then(function(grupos) {
         res.send(G.utils.r(req.url, 'Listado de grupos', 200, {grupos: grupos}));
       
     }).fail(function(err) {
@@ -54,7 +54,7 @@ ChatController.prototype.listarUsuariosPorGrupo = function(req, res) {
         return;
     }
     
-    G.Q.ninvoke(this.mChat,'listarUsuariosPorGrupo', args.chat).then(function(usuarios) {
+    G.Q.ninvoke(that.mChat,'listarUsuariosPorGrupo', args.chat).then(function(usuarios) {
         res.send(G.utils.r(req.url, 'Listado de grupos', 200, {usuarios: usuarios}));
       
     }).fail(function(err) {
@@ -81,7 +81,7 @@ ChatController.prototype.insertarUsuariosEnGrupo = function(req, res) {
         return;
     }
   
-    G.Q.ninvoke(this.mChat,'insertarUsuariosEnGrupo', args.chat).then(function(grupos) {
+    G.Q.ninvoke(that.mChat,'insertarUsuariosEnGrupo', args.chat).then(function(grupos) {
         res.send(G.utils.r(req.url, 'Listado de usuarios', 200, {}));
       
     }).fail(function(err) {
@@ -106,7 +106,7 @@ ChatController.prototype.guardarGrupo = function(req, res) {
         return;
     }
   
-    G.Q.ninvoke(this.mChat,'guardarGrupo', args.chat).then(function(resultado) {
+    G.Q.ninvoke(that.mChat,'guardarGrupo', args.chat).then(function(resultado) {
         res.send(G.utils.r(req.url, 'Listado de grupos', 200, {grupo_id: resultado}));
       
     }).fail(function(err) {
@@ -142,7 +142,7 @@ ChatController.prototype.obtenerGrupoPorId = function(req, res) {
         return;
     }
   
-    G.Q.ninvoke(this.mChat,'obtenerGrupoPorId', args.chat).then(function(resultado) {
+    G.Q.ninvoke(that.mChat,'obtenerGrupoPorId', args.chat).then(function(resultado) {
         res.send(G.utils.r(req.url, 'Listado de grupos', 200, {grupo: resultado}));
       
     }).fail(function(err) {
@@ -177,7 +177,7 @@ ChatController.prototype.cambiarEstadoUsuarioGrupo = function(req, res) {
         return;
     }
   
-    G.Q.ninvoke(this.mChat,'cambiarEstadoUsuarioGrupo', args.chat).then(function(resultado) {
+    G.Q.ninvoke(that.mChat,'cambiarEstadoUsuarioGrupo', args.chat).then(function(resultado) {
         res.send(G.utils.r(req.url, 'Eliminar usuario', 200, {grupo: resultado}));
       
     }).fail(function(err) {
@@ -195,6 +195,42 @@ ChatController.prototype.cambiarEstadoUsuarioGrupo = function(req, res) {
     }).done();
 
 };
+
+/**
+* @author Eduar Garcia
+* +Descripcion Permite guardar una conversacion
+* @params obj: {usuarios, usuario_id}
+* @fecha 2016-09-06
+*/
+ChatController.prototype.guardarConversacion = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (!args.chat  || !args.chat.usuarios || !args.chat.usuario_id ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+  
+    G.Q.ninvoke(that.mChat,'guardarConversacion', args.chat).then(function(conversacionId) {
+        res.send(G.utils.r(req.url, 'Crear conversacion', 200, {conversacionId: conversacionId}));
+      
+    }).fail(function(err) {
+        
+        var msj = err;
+        var status = 500;
+        
+        if(err.status){
+            status = err.status;
+            msj = err.msj;
+        }
+        
+        
+        res.send(G.utils.r(req.url, msj , status, {}));
+    }).done();
+
+};
+
 
 ChatController.$inject = [
                           "m_chat", 

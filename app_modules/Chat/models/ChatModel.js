@@ -236,6 +236,69 @@ ChatModel.prototype.insertarUsuariosEnGrupo = function(parametros, callback) {
     });
 };
 
+/**
+* @author Eduar Garcia
+* +Descripcion Permite insertar usuarios en los grupos
+* @params obj: {usuarios}
+* @fecha 2016-09-06
+*/
+ChatModel.prototype.guardarConversacion = function(parametros, callback) {
+    var that = this;
+    G.knex("chat_conversacion").
+    returning("id").
+    insert({"usuario_creador":parametros.usuario_id}).
+    then(function(resultado){
+        parametros.conversacionId = resultado[0];
+        return G.Q.ninvoke(that, "insertarUsuariosEnConversacion", parametros);
+        
+    }).then(function(){
+        callback(false, parametros.conversacionId);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });  
+};
+
+
+/**
+* @author Eduar Garcia
+* +Descripcion Permite insertar usuarios en una conversacion
+* @params obj: {id, usuarios}
+* @fecha 2016-09-06
+*/
+ChatModel.prototype.insertarUsuariosEnConversacion = function(parametros, callback) {
+    G.Q.nfcall(__insertarUsuariosEnConversacion, parametros).
+    then(function(){
+        callback(false);
+    }).fail(function(err){
+       callback(err); 
+    });
+};
+
+
+function __insertarUsuariosEnConversacion(parametros, callback){
+    
+    var usuario = parametros.usuarios[0];
+    
+    if(!usuario){
+        callback(false);
+        return;
+    }
+    
+    G.knex("chat_conversacion_usuarios").
+    insert({"id_conversacion":parametros.conversacionId, "usuario_id":usuario.id}).
+    then(function(resultado){
+        
+        var time = setTimeout(function(){
+            parametros.usuarios.splice(0,1);
+            __insertarUsuariosEnConversacion(parametros, callback);
+            clearTimeout(time);
+        },0);
+        
+    }).catch(function(err){
+        callback(err);       
+    });  
+}
 
 function __insertarUsuariosEnGrupo(parametros, callback){
     

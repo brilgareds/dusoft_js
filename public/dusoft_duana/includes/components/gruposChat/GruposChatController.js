@@ -99,7 +99,6 @@ define(["angular",
                 }
                 
                 $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
-                console.log("grupo ", $scope.root.usuariosSeleccionados, " length ",$scope.root.usuariosSeleccionados.length);
                 
             };
             
@@ -208,6 +207,40 @@ define(["angular",
             };
             
             
+            self.iniciarConversacion = function(){
+                
+                if($scope.root.usuariosSeleccionados.length === 0){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se han seleccionado usuarios para la conversación");
+                    return;
+                }
+                
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        chat:{
+                            usuario_id:Usuario.getUsuarioActual().getId(),
+                            usuarios:$scope.root.usuariosSeleccionados
+                        }
+                    }
+                };
+                Request.realizarRequest(URL.CONSTANTS.API.CHAT.GUARDAR_CONVERSACION, "POST", obj, function(data) {
+                    console.log("data ", data );
+                    if(data.status === 200){
+                       
+                        
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error iniciando la conversación");
+                    }
+                });
+            };
+            
+            
+            $scope.onIniciarConversacion = function(){
+                self.iniciarConversacion();
+            };
+            
+            
+            
           /**
             * @author Eduar Garcia
             * +Descripcion Evento de la directiva de usuarios al seleccionarse uno
@@ -306,9 +339,9 @@ define(["angular",
             
 
             $modalInstance.result.then(function() {
-               self.finalizar();
+              // self.finalizar();
             }, function() {
-                self.finalizar();
+                //self.finalizar();
             });
 
 

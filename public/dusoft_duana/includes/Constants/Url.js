@@ -35,7 +35,8 @@
                     'CONSULTAR_LOGS' : BASE_URL+"/Pedidos/consultarLogs",
                 },
                 'CHAT':{
-                    'CONSULTAR_GRUPOS' : BASE_URL+"/Chat/listarUsuariosPorGrupo"
+                    'CONSULTAR_GRUPOS' : BASE_URL+"/Chat/listarUsuariosPorGrupo",
+                    'GUARDAR_CONVERSACION': BASE_URL+"/Chat/guardarConversacion"
                 }
               },
               'STATIC' :{

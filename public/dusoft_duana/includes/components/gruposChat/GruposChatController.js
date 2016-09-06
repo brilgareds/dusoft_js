@@ -30,7 +30,8 @@ define(["angular",
                 filtro:{
                     usuarios:false,
                     grupos:true
-                }
+                },
+                usuariosSeleccionados:[]
             };
             
             $scope.listaGrupos = {
@@ -41,20 +42,124 @@ define(["angular",
                 enableHighlighting: true,
                 showFilter:true,
                 groups:['getNombre()'],
+                aggregateTemplate: "<div ng-init='row.seleccionado = !row.collapsed' ng-click='row.toggleExpand(); onSeleccionarGrupo(row)' ng-style='rowStyle(row)' class='ngAggregate ng-scope' style='top: 0px; height: 48px; left: 0px;'>\
+                    <span class='ngAggregateText ng-binding'>\
+                        {{row.label CUSTOM_FILTERS}} ({{row.totalChildren()}} {{AggItemsLabel}})\
+                    </span>\
+                    <div ng-class=\"{ 'ngAggArrowCollapsed':row.collapsed, 'ngAggArrowExpanded':!row.collapsed}\"></div>\
+                    <input-check ng-model='row.seleccionado'  type='checkbox' class='pull-right' style='margin:4px 40px 0px 0px;' ng-click='onSeleccionarGrupo(row)' />\
+                </div>",
                 columnDefs: [
-                    {
-                        field: 'accion', displayName: '', width: '70',
-                        cellTemplate: '<div class="ngCellText txt-center">\
-                                        <button class="btn btn-default btn-xs"  ng-click="onBtnCambiarEstadoUsuarioGrupo(row.entity)">\
-                                            <span  class="glyphicon glyphicon-check"></span>\
-                                        </button>\
-                                   </div>'
-                    },
                     {field: 'getUsuarios()[0].getNombre()', displayName: 'Nombre'},
                     {field: 'getUsuarios()[0].getNombreUsuario()', displayName: 'Usuario'},
-                    {field: 'getNombre()', displayName:'Grupo', visible:false}
+                    {field: 'getNombre()', displayName:'Grupo'}
                 ]
 
+            };
+            
+            $scope.listaUsuariosSeleccionados = {
+                data: 'root.usuariosSeleccionados',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                showFilter:true,
+                columnDefs: [
+                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: "6%",
+                        cellTemplate: ' <div class="row">\
+                                                <button  class="btn btn-default btn-xs" ng-click="onRemoverUsuario(row.entity)"\  ">\
+                                                    <span class="glyphicon glyphicon-trash"></span>\
+                                                </button>\
+                                            </div>'
+                    },
+                    {field: 'getNombre()', displayName: 'Nombre'},
+                    {field: 'getNombreUsuario()', displayName: 'Usuario'}
+                ]
+
+            };
+            
+            $scope.onRemoverUsuario = function(usuario){
+                self.removerUsuarios([usuario]);
+                
+                $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
+            };
+            
+            $scope.onSeleccionarGrupo = function(row){
+                row.seleccionado = !row.seleccionado;
+                var usuarios = [];
+                
+                for(var i in row.children){
+                    usuarios.push(row.children[i].entity.getUsuarios()[0]);
+                }
+                
+                if(row.seleccionado){
+                    self.agregarUsuarios(usuarios);
+                } else {
+                    self.removerUsuarios(usuarios);
+                }
+                
+                $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
+                console.log("grupo ", $scope.root.usuariosSeleccionados, " length ",$scope.root.usuariosSeleccionados.length);
+                
+            };
+            
+            
+            self.agregarUsuarios = function(_usuarios){
+                var usuarios = $scope.root.usuariosSeleccionados;
+                var _usuario = _usuarios[0];
+                var agregar = true;
+                
+                if(!_usuario){
+                    return;
+                }
+                
+                for(var i in usuarios){
+                    var usuario = usuarios[i];
+                    if(usuario.getId() === _usuario.getId()){
+                        agregar = false;
+                        break;
+                    }
+                }
+                
+                //var timer = setTimeout(function(){
+                    
+                    if(agregar){
+                        $scope.root.usuariosSeleccionados.push(_usuario);
+                    }
+                    
+                    _usuarios.splice(0,1);
+                    self.agregarUsuarios(_usuarios);
+                //},0);
+
+            };
+            
+            self.removerUsuarios = function(_usuarios){
+                var usuarios = $scope.root.usuariosSeleccionados;
+                var _usuario = _usuarios[0];
+                var index = -1;
+                
+                if(!_usuario){
+                    return;
+                }
+                
+                for(var i in usuarios){
+                    var usuario = usuarios[i];
+                    if(usuario.getId() === _usuario.getId()){
+                        index = i;
+                        break;
+                    }
+                }
+                
+                //var timer = setTimeout(function(){
+                    
+                    if(index !== -1){
+                        $scope.root.usuariosSeleccionados.splice(index,1);
+                    }
+                    
+                    _usuarios.splice(0,1);
+                    
+                    self.removerUsuarios(_usuarios);
+                //},0);
             };
 
             /*
@@ -71,7 +176,10 @@ define(["angular",
                     data: {
                         chat:{
                             termino_busqueda:$scope.root.terminoBusqueda,
-                            pagina:$scope.root.paginaactual
+                            pagina:$scope.root.paginaactual,
+                            filtro:{
+                                busquedaGrupo:true
+                            }
                         }
                     }
                 };
@@ -98,6 +206,29 @@ define(["angular",
                 });
 
             };
+            
+            
+          /**
+            * @author Eduar Garcia
+            * +Descripcion Evento de la directiva de usuarios al seleccionarse uno
+            * @params Event e, Usuario usuario
+            * @fecha 2016-09-06
+            */
+            $scope.$on("onBtnSeleccionarUsuario", function(e, usuario){
+
+                self.agregarUsuarios([usuario]);
+                
+            });
+            
+          /**
+            * @author Eduar Garcia
+            * +Descripcion Evento de la directiva de usuarios al presionar el boton de remover
+            * @params Event e, Usuario usuario
+            * @fecha 2016-09-06
+            */
+            $scope.$on("onBtnRemoverUsuario", function(e, usuario){
+                self.removerUsuarios([usuario]);
+            });
             
             $scope.onBuscarUsuario = function(event){
                 

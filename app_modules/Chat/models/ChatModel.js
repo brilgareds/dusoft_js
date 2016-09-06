@@ -200,8 +200,13 @@ ChatModel.prototype.listarUsuariosPorGrupo = function(parametros, callback) {
     
     if(parametros.termino_busqueda.length > 0){
         query.andWhere(function() {
-           this.orWhere("b.usuario", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%").
-           orWhere("b.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+           if(parametros.filtro.busquedaGrupo){
+               this.orWhere("c.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+           } else {
+               this.orWhere("b.usuario", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+           }
+           
+           this.orWhere("b.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
         });
     }
     

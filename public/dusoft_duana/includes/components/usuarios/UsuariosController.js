@@ -15,8 +15,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.rootUsuarios = {
                 usuarios:[],
                 termino_busqueda:"",
-                paginaactual:1
-                //usuariosSeleccionados:[]
+                paginaactual:1,
+                usuariosSeleccionados:[]
             };
 
             $scope.rootUsuarios.session = {
@@ -34,7 +34,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var item = {
                         field: 'accion', displayName: '', width: '70',
                         cellTemplate: '<div class="ngCellText txt-center">\
-                                      <input-check ng-model="row.entity.seleccionado" ng-click="onBtnSeleccionar(row.entity)"></input-check>\
+                                      <input-check ng-if="!row.entity.seleccionado" ng-model="row.entity.seleccionado" ng-click="onBtnSeleccionar(row.entity)"></input-check>\
+                                      <button class="btn btn-warning btn-xs" ng-if="row.entity.seleccionado"  ng-click="removerUsuario(row.entity)"><span class="glyphicon glyphicon-trash"></span></button>\
                                    </div>'
                 };
                 
@@ -92,7 +93,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     usuarios[i].usuario,
                                     usuarios[i].nombre
                             );
-
+                            
+                            usuario.setSeleccionado(self.verificarSeleccion(usuario));
+                                                        
                             $scope.rootUsuarios.usuarios.push(usuario);
 
                         }
@@ -105,8 +108,68 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             };
             
-            $scope.onBtnSeleccionar = function(usuario){
+            self.agregarUsuario = function(_usuario){
                 
+                var usuarios =  $scope.rootUsuarios.usuariosSeleccionados;
+                
+                for(var i in usuarios){
+                    var usuario = usuarios[i];
+                    
+                    
+                    if(_usuario.getId() === usuario.getId()){
+                        console.log("usuario existente usuario ", _usuario, _usuario.getSeleccionado());
+                        return;
+                    
+                    }
+                    
+                }
+                
+                $scope.rootUsuarios.usuariosSeleccionados.push(_usuario);
+                
+            };
+            
+            $scope.removerUsuario = function(_usuario){
+                var usuarios =  $scope.rootUsuarios.usuariosSeleccionados;
+                
+                for(var i in usuarios){
+                    var usuario = usuarios[i];
+                    
+                    
+                     if(_usuario.getId() === usuario.getId()){
+                        $scope.rootUsuarios.usuariosSeleccionados.splice(i,1);
+                        _usuario.setSeleccionado(false);
+                        $scope.$emit("onBtnRemoverUsuario",usuario);
+                        return;
+                    }
+                    
+                }
+                
+            };
+            
+            self.verificarSeleccion = function(_usuario){
+                var usuarios =  $scope.rootUsuarios.usuariosSeleccionados;
+                
+                for(var i in usuarios){
+                    var usuario = usuarios[i];
+                    
+                    if(_usuario.getId() === usuario.getId()){
+                        
+                       return true;
+                        
+                    }
+                    
+                }
+                
+                return false;
+            };
+            
+            $scope.$on("onActualizarUsuariosSeleccionados", function(e, usuarios){
+                $scope.rootUsuarios.usuariosSeleccionados = usuarios;
+                self.traerUsuarios();
+            });
+            
+            $scope.onBtnSeleccionar = function(usuario){
+                self.agregarUsuario(usuario);
                 $scope.$emit("onBtnSeleccionarUsuario",usuario);
                 
             };

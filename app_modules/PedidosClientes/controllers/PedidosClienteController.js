@@ -1284,7 +1284,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     cotizacion.usuario_id = req.session.user.usuario_id;
 
     var cantidad_productos = 0;
-    var limite_productos = 25;
+    var limite_productos = 60;
     var usuario = req.session.user;
 
 

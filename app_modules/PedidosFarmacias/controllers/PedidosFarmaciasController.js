@@ -1492,8 +1492,8 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
                             return;
                         }
 
-                        if ((cantidad + _productosAgrupados.length) > 25) {
-                            res.send(G.utils.r(req.url, 'La cantidad de productos no puede ser mayor a 25', 401, {}));
+                        if ((cantidad + _productosAgrupados.length) > 60) {
+                            res.send(G.utils.r(req.url, 'La cantidad de productos no puede ser mayor a 60', 401, {}));
 
                         } else {
 

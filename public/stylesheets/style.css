@@ -614,3 +614,8 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 .chatPanel{
     padding-left: 0px!important;
 }
+
+.contenedorChat{
+    height: 300px;
+    width: 300px;
+}

@@ -78,12 +78,24 @@ define(["angular",
 
             };
             
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de remover usuario
+            * @params Usuario usuario
+            * @fecha 2016-09-06
+            */
             $scope.onRemoverUsuario = function(usuario){
                 self.removerUsuarios([usuario]);
                 
                 $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Permite determinar si un grupo de usuarios debe agregarse o removerse del arreglo de usuarios seleccionados
+            * @params Row
+            * @fecha 2016-09-06
+            */
             $scope.onSeleccionarGrupo = function(row){
                 row.seleccionado = !row.seleccionado;
                 var usuarios = [];
@@ -102,7 +114,12 @@ define(["angular",
                 
             };
             
-            
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Permite agregar un usuario al arreglo de usuarios seleccionados
+            * @params Usuario usuario
+            * @fecha 2016-09-06
+            */
             self.agregarUsuarios = function(_usuarios){
                 var usuarios = $scope.root.usuariosSeleccionados;
                 var _usuario = _usuarios[0];
@@ -132,6 +149,12 @@ define(["angular",
 
             };
             
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Permite remover un usuario del arreglo de usuarios seleccionados
+            * @params Usuario usuario
+            * @fecha 2016-09-06
+            */
             self.removerUsuarios = function(_usuarios){
                 var usuarios = $scope.root.usuariosSeleccionados;
                 var _usuario = _usuarios[0];
@@ -206,7 +229,11 @@ define(["angular",
 
             };
             
-            
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Hace peticion al API para guardar conversacion
+            * @fecha 2016-09-06
+            */
             self.iniciarConversacion = function(){
                 
                 if($scope.root.usuariosSeleccionados.length === 0){
@@ -224,9 +251,10 @@ define(["angular",
                     }
                 };
                 Request.realizarRequest(URL.CONSTANTS.API.CHAT.GUARDAR_CONVERSACION, "POST", obj, function(data) {
-                    console.log("data ", data );
+                    
                     if(data.status === 200){
                        
+                       $modalInstance.close();
                         
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error iniciando la conversación");
@@ -234,14 +262,25 @@ define(["angular",
                 });
             };
             
-            
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de iniciar conversacion
+            * @fecha 2016-09-06
+            */
             $scope.onIniciarConversacion = function(){
                 self.iniciarConversacion();
+            };       
+            
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Handler para el boton de cerrar la ventana
+            * @fecha 2016-09-06
+            */
+            $scope.onCerrarVentana = function(){
+                $modalInstance.close();
             };
             
-            
-            
-          /**
+           /*
             * @author Eduar Garcia
             * +Descripcion Evento de la directiva de usuarios al seleccionarse uno
             * @params Event e, Usuario usuario
@@ -253,7 +292,7 @@ define(["angular",
                 
             });
             
-          /**
+           /*
             * @author Eduar Garcia
             * +Descripcion Evento de la directiva de usuarios al presionar el boton de remover
             * @params Event e, Usuario usuario
@@ -263,6 +302,12 @@ define(["angular",
                 self.removerUsuarios([usuario]);
             });
             
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Handler del textinput para filtrar usuarios
+            * @params Event e
+            * @fecha 2016-09-06
+            */
             $scope.onBuscarUsuario = function(event){
                 
                 if(event.which === 13){
@@ -291,6 +336,12 @@ define(["angular",
                 });
             };
             
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Handler del dropdown 
+            * @params Object seleccion
+            * @fecha 2016-09-06
+            */
             $scope.onCambiarFiltro = function(seleccion){
                 
                 if(seleccion === 0){
@@ -316,7 +367,6 @@ define(["angular",
                 }
                 
             };
-            
             
             /*
              * @Author: Eduar

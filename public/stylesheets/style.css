@@ -606,16 +606,46 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 
 
 
-.chatGrid{
-    height: 200px;
+.chatGrid, .panelConversacion{
+    height: 150px;
+    margin-bottom: 5px;
 }
-
 
 .chatPanel{
     padding-left: 0px!important;
 }
 
 .contenedorChat{
-    height: 300px;
-    width: 300px;
+    height: 470px;
+    width: 350px;
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    top:initial!important;
+    left:initial!important;
+    /*background-color: white;
+    overflow-y: auto;
+    border: solid #428bca;*/
+    z-index: 5000;
+    overflow-y: hidden!important;
+    padding-bottom: 10px;
+}
+
+.contenedorChat .modal-dialog {
+    width: 350px;
+}
+
+.topBarChat{
+    text-align: right;
+    background-color:#428bca;
+    padding:5px;
+}
+
+.chatBody{
+    padding: 5px;
+}
+
+.chatBackground{
+    background-color: transparent!important;
+    display:none!important;
 }

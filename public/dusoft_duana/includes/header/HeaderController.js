@@ -4,8 +4,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
     "includes/classes/Rol", "includes/classes/OpcionModulo",
     "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo",
     "includes/components/chat/Chat","includes/components/usuarios/Usuarios",
-    "includes/components/notificaciones/NotificacionesController",
-    "includes/components/gruposChat/GruposChatController"], function(angular, controllers) {
+    "includes/components/notificaciones/NotificacionesController"], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
@@ -391,8 +390,16 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     dialogFade: false,
                     size: 'lg',
                     keyboard: true,
-                    templateUrl: '../includes/components/gruposChat/GrupoChat.html',
-                    controller: 'GruposChatController'
+                    animation:false,
+                    template:'<chat></chat>', 
+                    windowClass:"contenedorChat",
+                    backdropClass:"chatBackground",
+                    controller:function($scope, $modalInstance){
+                        $scope.onCerrarChat = function(){
+                            $modalInstance.close();
+                        };
+                        
+                    }
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

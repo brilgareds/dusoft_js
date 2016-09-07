@@ -231,6 +231,79 @@ ChatController.prototype.guardarConversacion = function(req, res) {
 
 };
 
+/**
+* @author Eduar Garcia
+* +Descripcion Permite consultar conversaciones
+* @params obj: {usuario_id}
+* @fecha 2016-09-07
+*/
+ChatController.prototype.obtenerConversaciones = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (!args.chat  || !args.chat.usuario_id ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+  
+    G.Q.ninvoke(that.mChat,'obtenerConversaciones', args.chat).then(function(conversaciones) {
+        res.send(G.utils.r(req.url, 'Conversaciones usuario', 200, {conversaciones: conversaciones}));
+      
+    }).fail(function(err) {
+        
+        var msj = err;
+        var status = 500;
+        
+        if(err.status){
+            status = err.status;
+            msj = err.msj;
+        }
+        
+        
+        res.send(G.utils.r(req.url, msj , status, {}));
+    }).done();
+
+};
+
+
+/**
+* @author Eduar Garcia
+* +Descripcion Permite consultar detalle de una conversacion
+* @params obj: {usuario_id}
+* @fecha 2016-09-07
+*/
+ChatController.prototype.obtenerDetalleConversacion = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (!args.chat  || !args.chat.conversacion_id ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+  
+    G.Q.ninvoke(that.mChat,'obtenerDetalleConversacion', args.chat).then(function(conversaciones) {
+        res.send(G.utils.r(req.url, 'Conversaciones usuario', 200, {conversaciones: conversaciones}));
+      
+    }).fail(function(err) {
+        
+        var msj = err;
+        var status = 500;
+        
+        if(err.status){
+            status = err.status;
+            msj = err.msj;
+        }
+        
+        
+        res.send(G.utils.r(req.url, msj , status, {}));
+    }).done();
+
+};
+
+
+
 
 ChatController.$inject = [
                           "m_chat", 

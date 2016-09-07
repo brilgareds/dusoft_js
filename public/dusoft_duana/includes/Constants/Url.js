@@ -36,7 +36,9 @@
                 },
                 'CHAT':{
                     'CONSULTAR_GRUPOS' : BASE_URL+"/Chat/listarUsuariosPorGrupo",
-                    'GUARDAR_CONVERSACION': BASE_URL+"/Chat/guardarConversacion"
+                    'GUARDAR_CONVERSACION': BASE_URL+"/Chat/guardarConversacion",
+                    'OBTENER_CONVERSACIONES':BASE_URL+"/Chat/obtenerConversaciones",
+                    'OBTENER_DETALLE_CONVERSACION':BASE_URL+"/Chat/obtenerDetalleConversacion"
                 }
               },
               'STATIC' :{

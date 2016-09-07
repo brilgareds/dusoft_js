@@ -30,7 +30,7 @@ define([
     "includes/validation/NgValidateEvents",
     "controllers/Admin/AdminController",
     "controllers/Grupos/GuardarGruposController",
-    "includes/classes/GrupoChat",
+    "includes/classes/Chat/GrupoChat",
    /* "models/chat/EmpresaPedido",
     "controllers/asignarchat/PedidosController",
     "controllers/asignarchat/PedidosClientesController",

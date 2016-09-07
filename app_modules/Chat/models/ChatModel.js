@@ -259,6 +259,130 @@ ChatModel.prototype.guardarConversacion = function(parametros, callback) {
     });  
 };
 
+/**
+* @author Eduar Garcia
+* +Descripcion Consulta las conversaciones de un usuario
+* @params obj: {usuario_id}
+* @fecha 2016-09-01
+*/
+ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
+    var that = this;
+    var columns = [
+        "a.id_conversacion",
+        "b.id",
+        "a.usuario_id",
+        "b.fecha_creacion",
+        "a.estado AS estado_usuario_conversacion"
+    ];
+    
+    var query = G.knex.column(columns).
+    from("chat_conversacion_usuarios as a").
+    innerJoin("chat_conversacion as b", "b.id", "a.id_conversacion");
+    
+    if(parametros.usuario_id){
+        query.where("a.usuario_id", parametros.usuario_id);
+    }
+    
+    /*query.orderBy("c.nombre", "ASC").limit(G.settings.limit).
+    offset((parametros.pagina - 1) * G.settings.limit);*/
+    
+    query.then(function(resultado){
+        
+        var parametros = {
+            conversaciones:resultado,
+            contexto:that,
+            index:0
+        };
+        
+        return G.Q.nfcall(__obtenerTituloConversaciones, parametros);
+    }).then(function(resultado){
+       
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });   
+};
+
+
+/**
+* @author Eduar Garcia
+* +Descripcion Permite armar el titulo de una conversacion con el nombre de los usuarios participantes ej: Lina, Marcela, Rafael etc
+* @params obj: Object conversaciones {conversacion}
+* @fecha 2016-09-07
+*/
+ChatModel.prototype.obtenerTituloConversacion = function(conversacion, callback) {
+
+    var that = this;
+    var columns = [
+        "b.usuario",
+        "a.*"
+    ];
+    
+    var query = G.knex.column(columns).
+    from("chat_conversacion_usuarios as a").
+    innerJoin("system_usuarios as b", "b.usuario_id", "a.usuario_id");
+    
+    query.where("a.id_conversacion", conversacion.id_conversacion).
+    then(function(usuarios){
+        var titulos = [];
+        
+        for(var i in usuarios){
+            var usuario = usuarios[i];
+            
+            titulos.push(usuario.usuario);
+            
+        }
+        
+        callback(false, titulos.join());
+        
+    }).then(function(resultado){
+        
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });
+    
+};
+
+
+/**
+* @author Eduar Garcia
+* +Descripcion Permite obtener el detalle de una conversacion
+* @params obj: Object conversaciones {conversacion}
+* @fecha 2016-09-07
+*/
+ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) {
+   /* SELECT a.id, b.usuario, a.mensaje, a.archivo_adjunto, a.fecha_mensaje FROM chat_conversacion_detalle a 
+    INNER JOIN system_usuarios b ON b.usuario_id = a.usuario_id
+    WHERE a.id_conversacion = 2 ORDER BY a.fecha_mensaje ASC LIMIT 5 OFFSET 0*/
+    
+    var that = this;
+    var columns = [
+        "a.id",
+        "b.usuario",
+        "a.mensaje",
+        "a.archivo_adjunto",
+        "a.fecha_mensaje"
+    ];
+    
+    var query = G.knex.column(columns).
+    from("chat_conversacion_detalle as a").
+    innerJoin("system_usuarios as b", "b.usuario_id", "a.usuario_id").
+    where("a.id_conversacion", parametros.conversacion_id).
+    then(function(resultado){
+        
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });
+    
+};
 
 /**
 * @author Eduar Garcia
@@ -275,6 +399,33 @@ ChatModel.prototype.insertarUsuariosEnConversacion = function(parametros, callba
     });
 };
 
+/**
+* @author Eduar Garcia
+* +Descripcion Funcion recursiva para obtener titulo de un arreglo de conversaciones
+* @params obj: Object conversaciones {conversaciones, index, contexto}
+* @fecha 2016-09-07
+*/
+function __obtenerTituloConversaciones(parametros, callback){
+    var conversacion = parametros.conversaciones[parametros.index];
+    
+    if(!conversacion){
+        callback(false, parametros.conversaciones);
+        return;
+    }
+    
+    setTimeout(function(){
+        G.Q.ninvoke(parametros.contexto, "obtenerTituloConversacion", conversacion).
+        then(function(titulo){
+            parametros.conversaciones[parametros.index].titulo = titulo;
+            parametros.index ++;
+            __obtenerTituloConversaciones(parametros, callback);
+        }).fail(function(err){
+            //console.log("error generado ", err);
+            callback(err);
+        });
+    },0);
+    
+}
 
 function __insertarUsuariosEnConversacion(parametros, callback){
     

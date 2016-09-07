@@ -1,6 +1,6 @@
 //Controlador de la View creapedidosfarmacias.html
 
-define(["angular", "js/controllers", "includes/classes/GrupoChat"], function(angular, controllers) {
+define(["angular", "js/controllers", "includes/classes/Chat/GrupoChat"], function(angular, controllers) {
 
     controllers.controller('ListaGruposController', [
         '$scope', '$rootScope', 'Request',

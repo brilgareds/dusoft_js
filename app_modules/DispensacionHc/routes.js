@@ -87,6 +87,12 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarMedicamentosDispensados(req, res);
     });
     
+    //REPORTE PDF
+    app.post("/api/DispensacionHc/listarTodoMedicamentosDispensados", function(req, res){
+        c_dispensacion_hc.listarTodoMedicamentosDispensados(req, res);
+    });
+    
+    
     // consultando los privilegios de dispensacion del usuario de session
     app.post("/api/DispensacionHc/usuarioPrivilegios", function(req, res){
         c_dispensacion_hc.usuarioPrivilegios(req, res);

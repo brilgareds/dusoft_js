@@ -361,6 +361,100 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
     console.log("sql ----->>>>>>>>>> ", sql);*/
 };
 
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener quien realiza la formula
+ * @controller DispensacionHc.prototype.listarTodoMedicamentosDispensados
+ */
+DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,callback){
+    
+   
+     
+    var parametros = {1: obj.evolucionId};
+    var sql = "SELECT\
+       k.fecha_registro,\
+       k.fecha,\
+       round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30)+1 as Entrega,\
+       k.codigo_producto,\
+       k.numero_unidades,\
+       k.fecha_vencimiento,\
+       k.lote,\
+       k.descripcion_prod,\
+       k.usuario_id,\
+       k.sistema,\
+       k.dias_de_entregado\
+        FROM(   SELECT   dd.codigo_producto,\
+                        dd.cantidad as numero_unidades,\
+                        dd.fecha_vencimiento ,\
+                        dd.lote,\
+                        fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+                        d.usuario_id,\
+                        'dispensacion_hc' as sistema,\
+                        to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
+                        to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,\
+                                (\
+                                	SELECT min(hcf.fecha_formulacion) \
+                                    FROM hc_formulacion_antecedentes hcf \
+                                    WHERE hcf.evolucion_id = :1 \
+                                    )as fecha,\
+                                d.fecha_registro\
+			FROM  hc_formulacion_despachos_medicamentos_pendientes hc\
+                        INNER JOIN bodegas_documentos d\
+                         ON hc.bodegas_doc_id = d.bodegas_doc_id AND hc.numeracion = d.numeracion\
+                        INNER JOIN bodegas_documentos_d dd ON\
+                            dd.bodegas_doc_id = d.bodegas_doc_id\
+                            AND dd.numeracion     = d.numeracion\
+                            WHERE hc.evolucion_id = :1 AND d.todo_pendiente = 1 \
+			UNION \
+			select\
+                                dd.codigo_producto,\
+                                dd.cantidad as numero_unidades,\
+                                dd.fecha_vencimiento ,\
+                                dd.lote,\
+                                fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+                                d.usuario_id,\
+                                'dispensacion_hc' as sistema,\
+                                to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
+                                to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,\
+                                (\
+                                	SELECT min(hcf.fecha_formulacion) \
+                                    FROM hc_formulacion_antecedentes hcf \
+                                    WHERE hcf.evolucion_id = :1 \
+                                    )as fecha,\
+                                d.fecha_registro\
+                                FROM\
+                                  hc_formulacion_despachos_medicamentos as dc,\
+                                  bodegas_documentos as d,\
+                                  bodegas_documentos_d AS dd\
+                                WHERE\
+                                     dc.bodegas_doc_id = d.bodegas_doc_id\
+                                and        dc.numeracion = d.numeracion\
+                                and        dc.evolucion_id = :1 \
+                                and        d.bodegas_doc_id = dd.bodegas_doc_id\
+                                and        d.numeracion = dd.numeracion\
+                           )as k\
+                           order by fecha_entrega asc";
+    //console.log("sql ----->>>>>>>>>> ", sql);
+    G.knex.raw(sql,parametros).then(function(resultado){    
+      
+        callback(false, resultado)
+    }).catch(function(err){        
+      
+        callback(err);
+    });
+}
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016

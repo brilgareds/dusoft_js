@@ -1743,6 +1743,136 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
     }).done();
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 15/06/2016
+ * +Descripcion Controlador encargado listar los medicamentos Dispensados
+ *              
+ */
+DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
+   
+   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
+   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
+   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
+   
+    var that = this;
+    var args = req.body.data;
+  
+    if (args.listar_medicamentos_dispensados === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_dispensados: []}));
+        return;
+    }
+   
+    if (!args.listar_medicamentos_dispensados.evolucion || args.listar_medicamentos_dispensados.evolucion.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {listar_medicamentos_dispensados: []}));
+        return;
+    }
+   var productosDispensados;
+   var profesional;
+   var detalleCabecera;
+   
+   var parametros = {evolucionId:args.listar_medicamentos_dispensados.evolucion,
+                    tipoIdPaciente: args.listar_medicamentos_dispensados.tipoIdPaciente,
+                    pacienteId: args.listar_medicamentos_dispensados.pacienteId,
+                    ultimo: 1 
+                };
+   
+    G.Q.ninvoke(that.m_dispensacion_hc,'listarTodoMedicamentosDispensados',parametros).then(function(resultado){
+       console.log("1) resultado ", resultado.rows);
+        if(resultado.rows.length > 0){ 
+            //console.log("resultado.rows ", resultado.rows);
+            productosDispensados = resultado.rows;
+           
+            return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
+          
+        }else{
+           throw 'No hay pendientes por dispensar';
+        }
+      
+   }).then(function(resultado){
+       console.log("2) resultado ", resultado.rows);
+       if(resultado.rows.length > 0){ 
+            
+            detalleCabecera = resultado.rows[0];
+            return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros)
+                
+        }else{
+            throw 'Consulta sin resultados';
+        }
+       
+   }).then(function(resultado){
+        console.log("3) resultado ", resultado.rows);   
+        if(resultado.rows.length > 0){ 
+            
+             profesional = resultado.rows;
+             
+             //console.log("productosDispensados ", productosDispensados)
+            //return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros);
+            __generarPdf({productosDispensados:productosDispensados, 
+                          serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+                          detalle: detalleCabecera, 
+                          profesional:profesional,
+                          archivoHtml: 'medicamentosDispensados.html',
+                          reporte: "Medicamentos_dispensados"
+                          }, function(nombre_pdf) {
+                    console.log("nombre_pdf ", nombre_pdf);
+                    res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
+                    
+                        listar_medicamentos_dispensados: {nombre_pdf: nombre_pdf, resultado: productosDispensados}
+                    }));
+                    
+                  });
+        }else{
+            throw 'Consulta sin resultados';
+        }
+           
+    })./*.then(function(resultado){
+        console.log("4) resultado ", resultado);
+        if(resultado.rows.length > 0){ 
+              console.log("Medicamentos pendientes dispensaods ", resultado.rows);
+              
+             /* __generarPdf({productosDispensados:productosDispensados, 
+                          serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+                          detalle: detalleCabecera, 
+                          profesional:profesional,
+                          archivoHtml: 'medicamentosDispensados.html',
+                          reporte: "Medicamentos_dispensados"
+                          }, function(nombre_pdf) {
+                    
+                    res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
+                    
+                        listar_medicamentos_dispensados: {nombre_pdf: nombre_pdf, resultado: productosDispensados}
+                    }));
+                });*/
+        
+     /*   };
+        
+    }).*/fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
+
+
+
+
+
+
+
 function __generarPdf(datos, callback) {  
    console.log("datosdatos ", datos)
     G.jsreport.render({

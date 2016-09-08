@@ -394,7 +394,8 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
        k.descripcion_prod,\
        k.usuario_id,\
        k.sistema,\
-       k.dias_de_entregado\
+       k.dias_de_entregado,\
+       K.fecha_entrega as fecha_entrega\
         FROM(   SELECT   dd.codigo_producto,\
                         dd.cantidad as numero_unidades,\
                         dd.fecha_vencimiento ,\
@@ -451,7 +452,7 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
       
         callback(false, resultado)
     }).catch(function(err){        
-      
+      console.log("err [listarTodoMedicamentosDispensados] ", err);
         callback(err);
     });
 }
@@ -2089,7 +2090,7 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
     if (!producto) {       
         console.log("Debe salir a qui ");
         sumaTotalDispensados = 0;
-        callback(false,rowCount);
+        callback(false,rowCount);  
         return;                     
     }  
     

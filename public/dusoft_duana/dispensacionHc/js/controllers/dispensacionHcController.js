@@ -341,7 +341,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 0  && root.estadoFormula == 0">\n\
                                                     <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a>\
                                                  </li>\
-                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2"><a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a></li>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2">\
+                                                    <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a>\
+                                                 </li>\
+                                                 <li >\
+                                                    <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" >Todo </a>\
+                                                 </li>\
                                              </ul>\
                                        </div>'
                             },
@@ -476,7 +481,39 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
                     
                               
-                  
+                    /**
+                    * @author Cristian Ardila
+                    * +Descripcion Metodo encargado de imprimir el reporte de todas las 
+                    *              entregas que ha tenido la formula
+                    * @fecha 16/06/2016
+                    */
+                    $scope.listarTodoMedicamentosDispensados = function(entity){
+                        
+                        var obj = {                   
+                                   session: $scope.session,
+                                   data: {
+                                      listar_medicamentos_dispensados: {
+                                           evolucion: entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),
+                                           tipoIdPaciente:entity.mostrarPacientes()[0].getTipoIdPaciente(),
+                                           pacienteId: entity.mostrarPacientes()[0].getPacienteId()
+                                      }
+                                  }    
+                               };
+                          
+                       
+                        dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
+                            console.log("data ", data);
+                            if (data.status === 200) {
+                                   var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
+                                   console.log("registros ", data);
+                                   console.log("nombre ", nombre);
+                                   $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                            }
+                        });  
+
+                    };          
+                   
+                   
                     that.init(empresa, function() {
 
                         if(!Usuario.getUsuarioActual().getEmpresa()) {

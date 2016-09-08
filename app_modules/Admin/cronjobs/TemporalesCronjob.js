@@ -33,7 +33,7 @@ TemporalesCronjob.prototype.backuptExistencias = function(){
     var job = new G.cronJob('00 00 00 * * *', function () {
         
         var sql = "INSERT INTO existencias_bodega_backup\
-                    SELECT * FROM existencias_bodegas where empresa_id in ('03', 'FD');"
+                    SELECT * FROM existencias_bodegas where empresa_id in ('03', 'FD') AND existencia > 0;"
         
         G.knex.raw(sql).then(function(){
             console.log("backup realizado en existencias_bodegas_backup");

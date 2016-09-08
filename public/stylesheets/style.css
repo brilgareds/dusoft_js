@@ -607,9 +607,10 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 
 
 .chatGrid, .panelConversacion{
-    height: 150px;
+    height: 263px;
     margin-bottom: 5px;
 }
+
 
 .chatPanel{
     padding-left: 0px!important;
@@ -636,16 +637,46 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 }
 
 .topBarChat{
-    text-align: right;
     background-color:#428bca;
     padding:5px;
 }
 
 .chatBody{
     padding: 5px;
+    height: 385px;
 }
 
 .chatBackground{
     background-color: transparent!important;
     display:none!important;
 }
+
+.panelConversacion{
+    overflow-y: auto;
+}
+
+.contenedorDetalle{
+    margin-right: 5px;
+}
+
+.textAreaChat{
+    padding:4px!important;
+    height: 50px!important;
+}
+
+/*
+::-webkit-scrollbar
+{
+  width: 3px;  
+  height: 3px; 
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
+}*/

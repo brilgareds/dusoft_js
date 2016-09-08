@@ -49,7 +49,8 @@ define(["angular",
                     
                 },
                 columnDefs: [
-                    {field: 'getNombre()', displayName: 'Otras Conversaciones'}
+                    {field: 'getNombre()', displayName: 'Participantes'},
+                    {field: 'getFechaCreacion()', displayName: 'Fecha', width:100}
 
                 ]
 
@@ -73,6 +74,59 @@ define(["angular",
                 var modalInstance = $modal.open($scope.opts);
             };
             
+            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del textinput para guardar el mensaje
+            * @fecha 2016-09-05
+            */
+            $scope.onGuardarMensaje = function(event){
+                if(event.which === 13){                    
+                    self.guardarMensaje();
+                }
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Realiza peticion al API guardar mensaje del usuario
+            * @fecha 2016-09-05
+            */
+            self.guardarMensaje = function(){
+                
+                if($scope.root.mensaje.length === 0){
+                    return;
+                }
+                
+                var conversacion = $scope.root.conversacionSeleccionada;
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        chat: {
+                            id_conversacion: conversacion.getId(),
+                            usuario_id:Usuario.getUsuarioActual().getId(),
+                            mensaje:$scope.root.mensaje
+                        }
+                    }
+                };
+
+                Request.realizarRequest(URL.CONSTANTS.API.CHAT.GUARDAR_MENSAJE, "POST", obj, function(data) {
+                                        
+                    if(data.status === 200){
+                        /*var _conversacion = data.obj.conversacion[0];
+                        self.agregarDetalleConversacion(_conversacion);*/
+                        $scope.root.mensaje = "";
+                    }
+                    
+
+                });
+            };
+            
+           socket.on("onNotificarMensaje", function(data){
+               console.log("onNotificarMensaje",data);
+               self.agregarDetalleConversacion(data.mensaje);
+               $scope.$emit("onMensajeNuevo");
+           });
+            
           /**
             * @author Eduar Garcia
             * +Descripcion Realiza peticion al API para traer el detalle de una conversacion
@@ -80,11 +134,12 @@ define(["angular",
             */
             self.listarDetalleConversacion = function(conversacion){
                $scope.root.conversacionSeleccionada = conversacion;
+               $scope.root.conversacionSeleccionada.vaciarDetalle();
                var obj = {
                     session: $scope.root.session,
                     data: {
                         chat: {
-                            conversacion_id: conversacion.getId()
+                            id_conversacion: conversacion.getId()
                         }
                     }
                 };
@@ -96,17 +151,28 @@ define(["angular",
                         
                         for(var i in _conversaciones){
                             var _conversacion = _conversaciones[i];
-                            var conversacion = ConversacionDetalle.get(
-                                    _conversacion.id_conversacion, _conversacion.usuario, _conversacion.mensaje, _conversacion.fecha_mensaje
-                            );
-                            
-                           $scope.root.conversacionSeleccionada.agregarDetalle(conversacion);
+                            self.agregarDetalleConversacion(_conversacion);
                         }
                         
                     }
                     
 
                 });
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Agrega un mensaje insertado por el usuario
+            * @fecha 2016-09-08
+            */ 
+            self.agregarDetalleConversacion = function(_conversacion){
+                var conversacion = ConversacionDetalle.get(
+                        _conversacion.id_conversacion, _conversacion.usuario,
+                        _conversacion.mensaje, _conversacion.archivo_adjunto,
+                        _conversacion.fecha_mensaje
+                );
+
+               $scope.root.conversacionSeleccionada.agregarDetalle(conversacion);
             };
             
             /*

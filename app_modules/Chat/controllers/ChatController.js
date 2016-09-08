@@ -1,6 +1,7 @@
 
-var ChatController = function(mChat) {
+var ChatController = function(mChat, eventChat) {
     this.mChat = mChat;
+    this.eventChat = eventChat;
 
 };
 
@@ -15,7 +16,6 @@ ChatController.prototype.listarGrupos = function(req, res) {
     var args = req.body.data;
     var termino_busqueda = {};
     
-    console.log("chat args >>>>>>>>>>>>>>>", args);
     
     if (!args.chat  || args.chat.termino_busqueda === undefined  || !args.chat.pagina) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -278,7 +278,7 @@ ChatController.prototype.obtenerDetalleConversacion = function(req, res) {
     var args = req.body.data;
     
     
-    if (!args.chat  || !args.chat.conversacion_id ) {
+    if (!args.chat  || !args.chat.id_conversacion ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -303,10 +303,50 @@ ChatController.prototype.obtenerDetalleConversacion = function(req, res) {
 };
 
 
+/**
+* @author Eduar Garcia
+* +Descripcion Ingresa un mensaje a la conversacion
+* @params obj: {usuario_id}
+* @fecha 2016-09-07
+*/
+ChatController.prototype.guardarMensajeConversacion = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var mensajeGuardado = {};
+    
+    if (!args.chat  || !args.chat.id_conversacion || !args.chat.usuario_id || !args.chat.mensaje ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+  
+    G.Q.ninvoke(that.mChat,'guardarMensajeConversacion', args.chat).then(function(_mensajeGuardado) {
+        mensajeGuardado = _mensajeGuardado;
+        return G.Q.ninvoke(that.mChat, "obtenerUsuariosConversacion", {conversacion:{id_conversacion:args.chat.id_conversacion}, titulo:false});
+      
+    }).then(function(usuarios){
+        
+        that.eventChat.onNotificarMensaje(mensajeGuardado[0], usuarios, args.chat.usuario_id);
+        res.send(G.utils.r(req.url, 'Conversaciones usuario', 200, {conversacion: mensajeGuardado}));
+        
+    }).fail(function(err) {
+        var msj = err;
+        var status = 500;
+        
+        if(err.status){
+            status = err.status;
+            msj = err.msj;
+        }
+        
+        res.send(G.utils.r(req.url, msj , status, {}));
+    }).done();
+
+};
+
 
 
 ChatController.$inject = [
                           "m_chat", 
+                          "e_chat"
                          ];
 
 module.exports = ChatController;

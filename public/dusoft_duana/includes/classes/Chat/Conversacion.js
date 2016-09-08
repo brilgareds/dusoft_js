@@ -91,13 +91,19 @@ define(["angular", "js/models"], function(angular, models) {
         
         Conversacion.prototype.agregarDetalle = function(mensaje) {
             
-            for(var i in this.detalle){
+            /*for(var i in this.detalle){
                 if(mensaje.getId() === this.detalle[i].getId()){
                     return;
                 }
-            }
+            }*/
             
             this.detalle.push(mensaje);
+            
+        };
+        
+        Conversacion.prototype.vaciarDetalle = function(mensaje) {
+
+            this.detalle = [];
             
         };
         

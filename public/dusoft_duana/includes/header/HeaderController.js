@@ -539,7 +539,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                    socket_id: socketid
                 };
                 
-
+                localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });
             

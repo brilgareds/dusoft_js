@@ -39,6 +39,11 @@ module.exports = function(app, di_container) {
         c_Chat.obtenerDetalleConversacion(req, res);
     });
     
+    app.post('/api/Chat/guardarMensajeConversacion', function(req, res) {
+        c_Chat.guardarMensajeConversacion(req, res);
+    });
+    
+    
     
     
 };

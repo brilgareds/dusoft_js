@@ -271,7 +271,7 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
         "a.id_conversacion",
         "b.id",
         "a.usuario_id",
-        "b.fecha_creacion",
+        G.knex.raw("to_char(b.fecha_creacion, 'yyyy-dd-mm') as fecha_creacion"),
         "a.estado AS estado_usuario_conversacion"
     ];
     
@@ -286,7 +286,7 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
     /*query.orderBy("c.nombre", "ASC").limit(G.settings.limit).
     offset((parametros.pagina - 1) * G.settings.limit);*/
     
-    query.then(function(resultado){
+    query.orderBy("b.fecha_creacion", "DESC").then(function(resultado){
         
         var parametros = {
             conversaciones:resultado,
@@ -312,7 +312,7 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
 * @params obj: Object conversaciones {conversacion}
 * @fecha 2016-09-07
 */
-ChatModel.prototype.obtenerTituloConversacion = function(conversacion, callback) {
+ChatModel.prototype.obtenerUsuariosConversacion = function(parametros, callback) {
 
     var that = this;
     var columns = [
@@ -324,19 +324,24 @@ ChatModel.prototype.obtenerTituloConversacion = function(conversacion, callback)
     from("chat_conversacion_usuarios as a").
     innerJoin("system_usuarios as b", "b.usuario_id", "a.usuario_id");
     
-    query.where("a.id_conversacion", conversacion.id_conversacion).
+    query.where("a.id_conversacion", parametros.conversacion.id_conversacion).
     then(function(usuarios){
-        var titulos = [];
         
-        for(var i in usuarios){
-            var usuario = usuarios[i];
-            
-            titulos.push(usuario.usuario);
-            
+        if(parametros.titulo){
+            var titulos = [];
+        
+            for(var i in usuarios){
+                var usuario = usuarios[i];
+
+                titulos.push(usuario.usuario);
+
+            }
+
+            callback(false, titulos.join());
+        } else {
+            callback(false, usuarios);
         }
-        
-        callback(false, titulos.join());
-        
+
     }).then(function(resultado){
         
         callback(false, resultado);
@@ -356,9 +361,6 @@ ChatModel.prototype.obtenerTituloConversacion = function(conversacion, callback)
 * @fecha 2016-09-07
 */
 ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) {
-   /* SELECT a.id, b.usuario, a.mensaje, a.archivo_adjunto, a.fecha_mensaje FROM chat_conversacion_detalle a 
-    INNER JOIN system_usuarios b ON b.usuario_id = a.usuario_id
-    WHERE a.id_conversacion = 2 ORDER BY a.fecha_mensaje ASC LIMIT 5 OFFSET 0*/
     
     var that = this;
     var columns = [
@@ -366,19 +368,25 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
         "b.usuario",
         "a.mensaje",
         "a.archivo_adjunto",
-        "a.fecha_mensaje"
+        G.knex.raw("to_char(a.fecha_mensaje, 'HH:MM am') as fecha_mensaje")
     ];
     
     var query = G.knex.column(columns).
     from("chat_conversacion_detalle as a").
     innerJoin("system_usuarios as b", "b.usuario_id", "a.usuario_id").
-    where("a.id_conversacion", parametros.conversacion_id).
-    then(function(resultado){
+    where("a.id_conversacion", parametros.id_conversacion);
+    
+
+    if(parametros.detalle_id){
+        query.where("id", parametros.detalle_id);
+    }
+    
+    query.then(function(resultado){
         
         callback(false, resultado);
         
     }).catch(function(err){
-        console.log("error sql",err);
+        
         callback(err);       
     });
     
@@ -399,6 +407,31 @@ ChatModel.prototype.insertarUsuariosEnConversacion = function(parametros, callba
     });
 };
 
+
+/**
+* @author Eduar Garcia
+* +Descripcion Permite insertar usuarios en una conversacion
+* @params obj: {id_conversacion, usuario_id}
+* @fecha 2016-09-06
+*/
+ChatModel.prototype.guardarMensajeConversacion = function(parametros, callback) {
+    var that = this;
+    G.knex("chat_conversacion_detalle").
+    insert({"id_conversacion":parametros.id_conversacion, "usuario_id":parametros.usuario_id, "mensaje":parametros.mensaje}).
+    returning("id").
+    then(function(resultado){
+        console.log("ultimo insertado ", resultado);
+        return G.Q.ninvoke(that, "obtenerDetalleConversacion",{id_conversacion:parametros.id_conversacion, detalle_id:resultado[0]});
+        
+    }).then(function(resultado){
+        console.log("ultimo registro ", resultado);
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        callback(err);       
+    }); 
+};
+
 /**
 * @author Eduar Garcia
 * +Descripcion Funcion recursiva para obtener titulo de un arreglo de conversaciones
@@ -414,7 +447,7 @@ function __obtenerTituloConversaciones(parametros, callback){
     }
     
     setTimeout(function(){
-        G.Q.ninvoke(parametros.contexto, "obtenerTituloConversacion", conversacion).
+        G.Q.ninvoke(parametros.contexto, "obtenerUsuariosConversacion", {conversacion:conversacion, titulo:true}).
         then(function(titulo){
             parametros.conversaciones[parametros.index].titulo = titulo;
             parametros.index ++;

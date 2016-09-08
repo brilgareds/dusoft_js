@@ -15,7 +15,13 @@
                     "alias": "m_chat"
                 }
             }],
-        "events": [],
+        "events": [{
+                "auth_events": {
+                    "module": "Chat",
+                    "event": "ChatEvents",
+                    "alias": "e_chat"
+                }
+            }],
         "cronJobs": []
     }
 }

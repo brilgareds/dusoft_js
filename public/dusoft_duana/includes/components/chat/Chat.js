@@ -1,7 +1,7 @@
 
 define(["angular","js/directive", "includes/components/chat/ChatController"], function(angular, directive){
 
-    directive.directive('chat', function() {
+    directive.directive('chat', [function() {
 
         var directive = {};
         
@@ -27,6 +27,11 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
             $(".btnCloseChat").on("click",function(){
                 
             });
+            
+            scope.$on("onMensajeNuevo",function(){
+                console.log("on mensaje nuevo");
+            });
+            
             
             console.log("chat loaded >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
            /* element.on("click",function(){
@@ -58,6 +63,6 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
 
         return directive;
             
-    });
+    }]);
 
 });

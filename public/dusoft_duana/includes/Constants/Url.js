@@ -32,13 +32,14 @@
                     'ACTUALIZAR_EXISTENCIAS' : BASE_URL+"/Productos/actualizarExistenciasProducto"
                 },
                 'PEDIDOS':{
-                    'CONSULTAR_LOGS' : BASE_URL+"/Pedidos/consultarLogs",
+                    'CONSULTAR_LOGS' : BASE_URL+"/Pedidos/consultarLogs"
                 },
                 'CHAT':{
                     'CONSULTAR_GRUPOS' : BASE_URL+"/Chat/listarUsuariosPorGrupo",
                     'GUARDAR_CONVERSACION': BASE_URL+"/Chat/guardarConversacion",
                     'OBTENER_CONVERSACIONES':BASE_URL+"/Chat/obtenerConversaciones",
-                    'OBTENER_DETALLE_CONVERSACION':BASE_URL+"/Chat/obtenerDetalleConversacion"
+                    'OBTENER_DETALLE_CONVERSACION':BASE_URL+"/Chat/obtenerDetalleConversacion",
+                    'GUARDAR_MENSAJE':BASE_URL+"/Chat/guardarMensajeConversacion"
                 }
               },
               'STATIC' :{

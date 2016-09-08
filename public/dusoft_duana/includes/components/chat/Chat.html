@@ -1,44 +1,69 @@
 <div>
-    <!--div class="input-group navbar-form">
 
-        <input type="text" class="form-control pull-right" ng-keypress="onBuscarRol($event)" ng-model="rootRoles.termino_busqueda" placeholder="Buscar" />
-        <div class="input-group-btn" >
-            <button class="btn btn-default" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-search"></i></button>
-        </div>
-
-    </div-->
     <p class="input-btn-group topBarChat ">
+        <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-user" ng-click="onMostrarVentanaGrupos()"></span></button>
+        <button class="btn btn-default btn-xs" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-paperclip"></i></button>
+        <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-phone"></span></button>
+
         <!--button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span></button-->
         <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-resize-full" "></span></button>
-        <button class="btn btn-default btn-xs btnCloseChat" ng-click="$parent.onCerrarChat()"><span class="glyphicon glyphicon-remove"></span></button>
+        <button class="btn btn-default btn-xs btnCloseChat pull-right" ng-click="$parent.onCerrarChat()"><span class="glyphicon glyphicon-remove"></span></button>
         
     </p>
     <div class="chatBody">
         
-        <p class="input-btn-group ">
-            <!--button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span></button-->
-            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-user" ng-click="onMostrarVentanaGrupos()"></span></button>
-            <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-phone-alt"></span></button>
+        <tabset>
 
-        </p>
+            <tab>
+                <tab-heading>
+                    <i class="glyphicon glyphicon-list"></i> <b></b>
+                </tab-heading>
+                <br>
+                <div class="input-group navbar-form">
 
-        <div class="defaultGrid chatGrid" ng-grid="root.listaConversaciones">
+                    <input type="text" class="form-control pull-right" ng-keypress="onBuscarRol($event)" ng-model="rootRoles.termino_busqueda" placeholder="Buscar" />
+                    <div class="input-group-btn" >
+                        <button class="btn btn-default" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
 
-        </div>
+                </div>
+                <div class="defaultGrid chatGrid" ng-grid="root.listaConversaciones">
+
+                </div>
+
+            </tab>
+
+            <tab > 
+                <tab-heading >
+                   <i class="glyphicon glyphicon-comment"></i> <b> </b>
+                </tab-heading>
+                <br>
+                <div class="panelConversacion">
+                    <div ng-repeat="detalle in root.conversacionSeleccionada.detalle" class="contenedorDetalle">
+                        <div>
+                            <label >{{detalle.getUsuario()}}</label>
+                            <span class="pull-right" style="font-size: 11px">{{detalle.getFechaCreacion()}}</span>
+                        </div>
+                        <p>
+                            {{detalle.getMensaje()}}  
+                        </p>
+
+                    </div>
+                   
+                </div>
+                <div class="input-group navbar-form chatPanel" style="width: 100%; padding: 0px; margin-bottom: 0px;">
+
+                    <textarea  placeholder="Escribir..." class="form-control textAreaChat" ng-keypress="onGuardarMensaje($event)" ng-model="root.mensaje" style="width: 100%"></textarea>
+      
+
+                </div>
+
+            </tab>                
+
+        </tabset>
         
-        <div class="panelConversacion">
-            
-        </div>
-
-        <div class="input-group navbar-form chatPanel">
-
-            <input type="text" class="form-control pull-left" ng-keypress="onBuscarRol($event)" ng-model="rootRoles.termino_busqueda"  />
-            <div class="input-group-btn pull-left" >
-                <!--button class="btn btn-default" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-search"></i></button-->
-                <button class="btn btn-default" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-paperclip"></i></button>
-            </div>
-
-        </div>
+        
+       
     </div>
 </div>
 <!--div class="row text-center">

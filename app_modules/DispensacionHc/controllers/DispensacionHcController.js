@@ -1797,29 +1797,15 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
             //console.log("resultado.rows ", resultado.rows);
             productosDispensados = resultado.rows;
              
-          // console.log("resultado.rows (productosDispensados) ", productosDispensados);
-             return G.Q.nfcall(__clasificarEntregas,that,0, productosDispensados);
+           console.log("resultado.rows (productosDispensados) ", productosDispensados);
            
-             //return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
+            return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
           
         }else{
            throw 'No hay pendientes por dispensar';
         }
       
    }).then(function(resultado){
-       var entregas = resultado.unique();
-       
-           G.Q.nfcall(__ennumerarEntregas,that,0, productosDispensados,entregas);
-       
-   }).then(function(resultado){
-        
-        
-        //console.log("resultado productosDispensados ", resultado);
-      
-   })
-           
-            
-            .then(function(resultado){
        //console.log("2) resultado ", resultado.rows);
        if(resultado.rows.length > 0){ 
             
@@ -1860,106 +1846,10 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
+
 Array.prototype.unique=function(a){
   return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
 });
-var numeroEntregas = [];
-var entregas = [];
-var arregloEntrega =[];
-function __clasificarEntregas(that, index, productos, callback) {
-   
-    var producto = productos[index];   
-    
-    if (!producto) {       
-        //console.log("Debe salir a qui --->");
-        //console.log(arregloEntrega);
-        callback(false,numeroEntregas);
-        return;                     
-    }  
-    
-    numeroEntregas.push(producto.entrega);
-    //if(parseInt(producto.entrega) === 1){      
-          //entregas.push(producto.codigo_producto);
-          //arregloEntrega['Entrega '+producto.entrega] = entregas;
-    //}*/
-    
-    /*if(parseInt(producto.entrega) === 2){      
-          entregas.push(producto.codigo_producto);
-          arregloEntrega['entrega2'] = entregas;
-    } */ 
-    /* G.Q.nfcall(__ennumerarEntregas,0, productos.length, producto.entrega).then(function(resultado){
-                
-         
-         console.log("-------------------------------------");
-         console.log("resultado ", resultado);
-     });*/
-    index++;
-    setTimeout(function() {
-        __clasificarEntregas(that, index, productos, callback);
-    }, 300);
-   
-};
-
-function __ennumerarEntregas(that, index, productos, numeroEntrega, callback){
-    
-    
-    var productos_validos = [];
-    var productos_invalidos = [];
-
-    if (productos.length === 0) {
-        callback(productos_validos, productos_invalidos);
-        return;
-    }
-
-    var productos_agrupados = {};
-    
-    for(var i=0; i<numeroEntrega.length; i++){
-    productos.forEach(function(producto) {
-       if (numeroEntrega[i] === producto.entrega) {
-        console.log("numeroEntrega " + numeroEntrega[i] + " === " +  producto.entrega + " producto.entrega " + " producto " + producto.codigo_producto);
-        
-         entregas.push(producto.codigo_producto);
-        //arregloEntrega['Entrega '+producto.entrega] = entregas;
-        
-        }
-        
-       // console.log("entregas ", entregas);
-       // console.log("row ", producto.entrega);
-        //}
-        /*
-            productos_agrupados[row.tipo_producto].push(row);
-        } else {
-            productos_agrupados[row.tipo_producto] = [row];
-        }*/
-    });
-    console.log("entregas ---> ", entregas);
-    }
-    //callback(productos_agrupados);
-    //var producto = productos[index];   
-       
-      
-    /*if (!producto) {       
-        console.log("Debe salir a qui ");
-         console.log("producto ", producto);
-         //console.log("numeroEntrega ", arregloEntrega);
-        
-        callback(false);
-        return;                     
-    }  */
-    //console.log("__ennumerarEntregas ");
-    
-    /*if(numeroEntrega === producto.entrega){
-        console.log("numeroEntrega " + numeroEntrega + " === " +  producto.entrega + " producto.entrega " + " producto " + producto.codigo_producto);
-        entregas.push(producto.codigo_producto);
-        arregloEntrega[numeroEntrega] = entregas;
-        // console.log("arregloEntrega ", arregloEntrega);
-    }*/
-    //console.log("arregloEntrega F ", arregloEntrega);
-    /*index++;
-    setTimeout(function() {
-        __ennumerarEntregas(that,index, productos,numeroEntrega,callback);
-    }, 300);*/
-}
 
 
 function __generarPdf(datos, callback) {  

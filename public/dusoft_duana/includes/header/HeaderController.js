@@ -536,10 +536,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 var socket_session = {
                    usuario_id: obj_session.usuario_id,
                    auth_token: obj_session.auth_token,
-                   socket_id: socketid
+                   socket_id: socketid,
+                   device:"web"
                 };
                 
-                localStorageService.set("socketid", socketid);
+                //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });
             

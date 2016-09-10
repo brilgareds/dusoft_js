@@ -15,30 +15,65 @@
         </tab-heading>
             
         <br>
-        <div class="btn-group">
-            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >
-                Filtrar por: <span ng-if="root.filtro.usuarios">Usuarios</span><span ng-if="root.filtro.grupos">Grupos</span>
-               <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu dropdown-options">
-                <li >
-                    <a href="javascript:void(0);" ng-click="onCambiarFiltro(0)"  >Usuarios</a>
-                </li>
-                <li><a href="javascript:void(0);" ng-click="onCambiarFiltro(1)" >Grupos</a></li>
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" class="form-control" ng-keypress="onBuscarUsuario($event)" ng-model="root.terminoBusqueda" placeholder="Tema de la conversación" />
+            </div>
+            
+            <!--div class="btn-group col-md-3">
+                <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >
+                    Filtrar por: <span ng-if="root.filtro.usuarios">Usuarios</span><span ng-if="root.filtro.grupos">Grupos</span>
+                   <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-options">
+                    <li >
+                        <a href="javascript:void(0);" ng-click="onCambiarFiltro(0)"  >Usuarios</a>
+                    </li>
+                    <li><a href="javascript:void(0);" ng-click="onCambiarFiltro(1)" >Grupos</a></li>
 
-            </ul>
+                </ul>
+            </div-->
+            
+            
         </div>
+        
+        
         <div ng-if="root.filtro.grupos">
-            <div class="input-group navbar-form">
+            
+            <div class="input-group col-md-3 pull-right" style="margin-bottom: 10px;">
+
+                <div class="input-group-btn">
+                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >
+                        Filtrar por: <span ng-if="root.filtro.usuarios">Usuarios</span><span ng-if="root.filtro.grupos">Grupos</span>
+                       <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-optionsc">
+                        <li >
+                            <a href="javascript:void(0);" ng-click="onCambiarFiltro(0)"  >Usuarios</a>
+                        </li>
+                        <li><a href="javascript:void(0);" ng-click="onCambiarFiltro(1)" >Grupos</a></li>
+                    </ul>
+                </div>
+
+                <input type="text" class="form-control pull-right ng-pristine ng-untouched ng-valid" ng-keypress="onCampoBuscarPedidos($event)" ng-model="rootPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+
+                <div class="input-group-btn">
+                    <button class="btn btn-default pull-right" type="submit" ng-click="onCampoBuscarPedidos({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div>
+            
+            
+            
+            
+            <!--div class="input-group navbar-form">
 
                 <input type="text" class="form-control pull-right" ng-keypress="onBuscarUsuario($event)" ng-model="root.terminoBusqueda" placeholder="Buscar grupo" />
                 <div class="input-group-btn" >
                     <button class="btn btn-default" type="submit" ng-click="onBuscarUsuario({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                 </div>
 
-            </div>
-
-            <div class="defaultGrid " ng-grid="listaGrupos" >
+            </div-->
+            <div class="defaultGrid gridGruposChat"  ng-grid="listaGrupos" >
 
             </div>
 
@@ -56,10 +91,6 @@
         </div>
 
         <usuarios  btn-seleccionar="true" btn-detalle="false" ng-if="root.filtro.usuarios"></usuarios>
-
-
-
-
 
         </tab>
 

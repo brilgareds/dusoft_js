@@ -286,7 +286,7 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
     /*query.orderBy("c.nombre", "ASC").limit(G.settings.limit).
     offset((parametros.pagina - 1) * G.settings.limit);*/
     
-    query.orderBy("b.fecha_creacion", "DESC").then(function(resultado){
+    query.orderBy("b.fecha_modificacion", "DESC").then(function(resultado){
         
         var parametros = {
             conversaciones:resultado,
@@ -368,7 +368,7 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
         "b.usuario",
         "a.mensaje",
         "a.archivo_adjunto",
-        G.knex.raw("to_char(a.fecha_mensaje, 'HH:MM am') as fecha_mensaje")
+        G.knex.raw("to_char(a.fecha_mensaje, 'HH:MI am') as fecha_mensaje")
     ];
     
     var query = G.knex.column(columns).
@@ -415,13 +415,27 @@ ChatModel.prototype.insertarUsuariosEnConversacion = function(parametros, callba
 * @fecha 2016-09-06
 */
 ChatModel.prototype.guardarMensajeConversacion = function(parametros, callback) {
+    
     var that = this;
+    var id;
+    
     G.knex("chat_conversacion_detalle").
     insert({"id_conversacion":parametros.id_conversacion, "usuario_id":parametros.usuario_id, "mensaje":parametros.mensaje}).
-    returning("id").
-    then(function(resultado){
+    returning("id").then(function(resultado){
+        
+        id = resultado[0];
+        var obj = {
+            campos:{
+                fecha_modificacion:'now()'
+            },
+            id_conversacion:parametros.id_conversacion
+        };
+        
+        return G.Q.ninvoke(that, "modificarConversacion", obj );
+        
+    }).then(function(resultado){
         console.log("ultimo insertado ", resultado);
-        return G.Q.ninvoke(that, "obtenerDetalleConversacion",{id_conversacion:parametros.id_conversacion, detalle_id:resultado[0]});
+        return G.Q.ninvoke(that, "obtenerDetalleConversacion",{id_conversacion:parametros.id_conversacion, detalle_id:id});
         
     }).then(function(resultado){
         console.log("ultimo registro ", resultado);
@@ -431,6 +445,25 @@ ChatModel.prototype.guardarMensajeConversacion = function(parametros, callback) 
         callback(err);       
     }); 
 };
+
+/**
+* @author Eduar Garcia
+* +Descripcion Modifica el tiempo de modificacion de una conversacion al guardar un mensaje
+* @params obj: {id_conversacion, usuario_id}
+* @fecha 2016-09-06
+*/
+ChatModel.prototype.modificarConversacion = function(parametros, callback) {
+    G.knex("chat_conversacion").
+    where('id', parametros.id_conversacion).
+    update(parametros.campos).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    });
+ 
+};
+
 
 /**
 * @author Eduar Garcia

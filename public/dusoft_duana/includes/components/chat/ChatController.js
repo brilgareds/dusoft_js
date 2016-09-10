@@ -29,7 +29,9 @@ define(["angular",
                     auth_token: Usuario.getUsuarioActual().getToken()
                 },
                 conversaciones:[],
-                conversacionSeleccionada:Conversacion.get()
+                conversacionSeleccionada:Conversacion.get(),
+                conversacionSeleccioanda: false,
+                usuarioActual:Usuario.getUsuarioActual()
             };
             
             
@@ -86,6 +88,17 @@ define(["angular",
                 }
             };
             
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del tab de conversaciones
+            * @fecha 2016-09-09
+            */
+            $scope.onTraerConversaciones = function(){
+                self.onTraerConversaciones();
+                $scope.$emit("onTabConversaciones");
+            };
+            
            /**
             * @author Eduar Garcia
             * +Descripcion Realiza peticion al API guardar mensaje del usuario
@@ -117,14 +130,25 @@ define(["angular",
                         $scope.root.mensaje = "";
                     }
                     
-
                 });
             };
             
            socket.on("onNotificarMensaje", function(data){
-               console.log("onNotificarMensaje",data);
-               self.agregarDetalleConversacion(data.mensaje);
-               $scope.$emit("onMensajeNuevo");
+               
+               var conversacion = $scope.root.conversacionSeleccionada;
+               console.log("conversacion ", data.mensaje.id_conversacion, " conversacion ", conversacion.getId());
+               
+                //Conversacion actual
+                if(data.mensaje.id_conversacion === conversacion.getId()){
+                    self.agregarDetalleConversacion(data.mensaje);
+                    
+                } else {
+                   
+                }
+                
+                self.onTraerConversaciones();
+                $scope.$emit("onMensajeNuevo", data.mensaje, Usuario.getUsuarioActual());
+
            });
             
           /**
@@ -153,6 +177,13 @@ define(["angular",
                             var _conversacion = _conversaciones[i];
                             self.agregarDetalleConversacion(_conversacion);
                         }
+                        
+                        $scope.root.conversacionSeleccioanda = true;
+                        
+                        $timeout(function(){
+                            $scope.$emit("realizarScrollInferior");
+                        },500);
+                        
                         
                     }
                     
@@ -194,6 +225,7 @@ define(["angular",
                 Request.realizarRequest(URL.CONSTANTS.API.CHAT.OBTENER_CONVERSACIONES, "POST", obj, function(data) {
                                         
                     if(data.status === 200){
+                        $scope.root.conversaciones = [];
                         var _conversaciones = data.obj.conversaciones;
                         
                         for(var i in _conversaciones){
@@ -203,7 +235,7 @@ define(["angular",
                             $scope.root.conversaciones.push(conversacion);
                         }
                         
-                    }
+                    } 
                     
 
                 });

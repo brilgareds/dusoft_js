@@ -324,8 +324,12 @@ ChatController.prototype.guardarMensajeConversacion = function(req, res) {
         return G.Q.ninvoke(that.mChat, "obtenerUsuariosConversacion", {conversacion:{id_conversacion:args.chat.id_conversacion}, titulo:false});
       
     }).then(function(usuarios){
+        var detalle = mensajeGuardado[0];
+        detalle.id_conversacion = args.chat.id_conversacion;
+        return G.Q.ninvoke(that.eventChat,"onNotificarMensaje",detalle, usuarios, args.chat.usuario_id);
         
-        that.eventChat.onNotificarMensaje(mensajeGuardado[0], usuarios, args.chat.usuario_id);
+        
+    }).then(function(){
         res.send(G.utils.r(req.url, 'Conversaciones usuario', 200, {conversacion: mensajeGuardado}));
         
     }).fail(function(err) {

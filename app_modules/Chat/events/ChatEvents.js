@@ -7,7 +7,7 @@ var ChatEvents = function(socket) {
 };
 
 
-ChatEvents.prototype.onNotificarMensaje = function(mensaje, usuarios, usuarioEmite) {    
+ChatEvents.prototype.onNotificarMensaje = function(mensaje, usuarios, usuarioEmite, callback) {    
     /*console.log('== SocletConectado == ' + socket_id);
     this.io.sockets.socket(socket_id).emit('onConnected', {socket_id: socket_id});*/
     var that = this;
@@ -24,14 +24,17 @@ ChatEvents.prototype.onNotificarMensaje = function(mensaje, usuarios, usuarioEmi
                 
                 if(_session.usuario_id === _usuario.usuario_id /*&& _session.usuario_id !== usuarioEmite*/){
                     that.io.sockets.socket(_session.socket_id).emit('onNotificarMensaje', {mensaje: mensaje});
-                    console.log("enviando notificacion ", _session);
+                    //console.log("enviando notificacion ", _session);
                 }
                 
             }
             
         }
         
+        callback(false);
         
+    }).fail(function(err){
+        callback(err);
     });
 };
 

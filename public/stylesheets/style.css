@@ -657,11 +657,51 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 
 .contenedorDetalle{
     margin-right: 5px;
+    padding: 7px 0 7px 0;
 }
 
 .textAreaChat{
     padding:4px!important;
     height: 50px!important;
+}
+
+.chatBody .indicadorScrollChat{
+    position: absolute;
+    right: 25px;
+    bottom: 58px;
+    padding:3px!important;
+}
+
+.detallePar{
+    
+    background-color: #fdfdfd;
+}
+
+.detalleInpar{
+    background-color: #ffffff;
+}
+
+
+
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+    color:red;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+.gridGruposChat{
+    clear:both;
+    margin-top: 10px;
 }
 
 /*

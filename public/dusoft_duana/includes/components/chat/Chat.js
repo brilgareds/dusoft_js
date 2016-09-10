@@ -8,7 +8,8 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
         //directive.replace = true;
         directive.restrict = 'E';
         directive.templateUrl = "../includes/components/chat/Chat.html";
-
+        var self = this;
+        
         directive.scope = {
 
         };
@@ -23,42 +24,60 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                 console.log("kfjdkfjdkfdjkfjk")
             });
             
+            $(document).on("click",".indicadorScrollChat",function(){
+                self.realizarScrollInferior();
+            });
             
-            $(".btnCloseChat").on("click",function(){
+            scope.$on("onTabConversaciones",function(){
+                var tab = $(".headerConversaciones");
+                
+                if(tab.hasClass("blink")){
+                    tab.removeClass("blink");
+                }
+            });
+            
+            scope.$on("onMensajeNuevo",function(e, mensaje, usuario){
+                console.log("on mensaje nuevo >>>>>>>>>>>>>>>>>>>>", mensaje, usuario);
+                self.realizarScrollSiEsNecesario();
+                
+                //Valida que no sea el usuario que emitio el mensaje
+                if(mensaje.usuario !== usuario.getNombreUsuario()){
+                    
+                    if(!$(".tabConversaciones").hasClass("active")){
+                        $(".headerConversaciones").addClass("blink");
+                    }
+                }
+                
+            });
+                 
+            scope.$on("realizarScrollInferior",function(){
+                self.realizarScrollInferior();
                 
             });
             
-            scope.$on("onMensajeNuevo",function(){
-                console.log("on mensaje nuevo");
-            });
+            self.realizarScrollInferior = function(){
+                var panel = $(".panelConversacion");
+                panel.animate({ scrollTop: panel.prop("scrollHeight")}, 200);
+            };
+            
+            self.realizarScrollSiEsNecesario = function(){
+                var panel = $(".panelConversacion");
+                if (self.obtenerDiferenciaScroll() <= 4) {
+                    panel.animate({ scrollTop: panel.prop("scrollHeight")}, 500);
+                }
+            };
+            
+            self.obtenerDiferenciaScroll = function(){
+                var panel = $(".panelConversacion");
+                var scrollActual =  panel.outerHeight();
+                var total = panel[0].scrollHeight - panel.scrollTop();
+                var diferencia = total / scrollActual;
+                                
+                return diferencia;
+            };
             
             
-            console.log("chat loaded >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-           /* element.on("click",function(){
-                //console.log("init with ",scope.checked)
-                //console.log("on click" ,!scope.checked )
-                scope.checked = !scope.checked;
-                directive.setClass(element, scope);
-               // ngModel.$setViewValue(scope.checked);
-                scope.$apply(function(){
-                  ngModel.$setViewValue(scope.checked);
-                  //ngModel.$render();
-                });                
-            });
 
-           //watch para revisar el cambio del modelo en tiempo real
-           scope.$watch(function () {
-              return ngModel.$modelValue;
-           }, function(newValue) {
-              console.log("on model change "+newValue)
-               scope.checked = newValue;
-               directive.setClass(element, scope);
-           });
-            ngModel.$formatters.push(function(newValue) {
-
-               scope.checked = newValue;
-               directive.setClass(element, scope);
-           });*/
         };
 
         return directive;

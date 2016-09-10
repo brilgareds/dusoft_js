@@ -1754,7 +1754,42 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
 
 
 
-
+DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
+    
+  
+    var that = this;
+    var args = req.body.data;
+    
+    
+    if (args.listar_medicamentos_dispensados === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_dispensados: []}));
+        return;
+    }
+   
+    if (!args.listar_medicamentos_dispensados.evolucion || args.listar_medicamentos_dispensados.evolucion.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {listar_medicamentos_dispensados: []}));
+        return;
+    }
+    
+    
+    var parametros = {evolucionId:args.listar_medicamentos_dispensados.evolucion}
+    
+    
+    G.Q.ninvoke(that.m_dispensacion_hc, 'listarTodoMedicamentosDispensados', parametros).then(function(resultado){
+        
+        if(resultado.rows.length > 0){ 
+        
+            res.send(G.utils.r(req.url, 'Evento registrado satisfactoriamente', 200, {listar_medicamentos_dispensados: resultado.rows}));  
+        }else{
+            throw 'Consulta sin resultados';
+        }
+        
+    }).fail(function(err){
+        
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+    
+};
 
 /*
  * @author Cristian Ardila

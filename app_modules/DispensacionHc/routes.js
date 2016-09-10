@@ -92,6 +92,11 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarTodoMedicamentosDispensados(req, res);
     });
     
+    app.post("/api/DispensacionHc/listarTotalDispensacionesFormula", function(req, res){
+        c_dispensacion_hc.listarTotalDispensacionesFormula(req, res);
+    })
+    
+    
     
     // consultando los privilegios de dispensacion del usuario de session
     app.post("/api/DispensacionHc/usuarioPrivilegios", function(req, res){

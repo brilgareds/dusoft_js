@@ -4,10 +4,14 @@ define(["angular", "js/services"], function(angular, services) {
     services.factory('dispensacionHcService', 
                     ['$rootScope', 'Request', 'API',
                      "Usuario","$modal","localStorageService",
-                     "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc","PlanesHc","TipoDocumentoHc","ProductosFOFO","LoteHc","ProductosHc","TipoDocumentoHc",
+                     "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc",
+                     "PlanesHc","TipoDocumentoHc","ProductosFOFO","LoteHc","ProductosHc","TipoDocumentoHc",
+                     "EntregaHc",
         function($rootScope, Request, API,
                 $modal,Usuario,localStorageService,
-                FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,PlanesHc,TipoDocumentoHc,ProductosFOFO,LoteHc,ProductosHc,TipoDocumentoHc) {
+                FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,
+                PlanesHc,TipoDocumentoHc,ProductosFOFO,LoteHc,ProductosHc,TipoDocumentoHc,
+                EntregaHc) {
 
             var self = this;
             
@@ -239,6 +243,15 @@ define(["angular", "js/services"], function(angular, services) {
                     callback(data);
                 });
             };
+            
+            self.listarTotalDispensacionesFormula = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TOTAL_DISPENSACIONES_FORMULA,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
+            
+            
             
             
             /**
@@ -475,6 +488,82 @@ define(["angular", "js/services"], function(angular, services) {
                 }                  
                 return tipoDocumentos;
             };
+            
+            
+            
+            /*
+             * @author Cristian Manuel Ardila
+             * +Descripcion Funcion encargada de serializar el resultado
+             *              de la consulta de todas las dispensaciones de la formula
+             *              con el fin de clasificarlas en entregas
+             * @fecha 10/09/2016
+             */
+            /**
+               * @author Cristian Ardila
+               * +Descripcion Funcion encargada de serializar los datos de los
+               *              medicamentos formulados contra los modelos
+               * @fecha 25/05/2016
+               */
+            self.renderListartotalDispensacionesFormula = function(numeroEntrega,entrega){
+                
+             
+                var entregas = [];
+                var Entrega;
+                
+            for(var i=0; i<numeroEntrega.length; i++){
+                
+                for(var j in entrega){
+                    
+                    var _entrega = entrega[j];
+                    
+                                   
+                                  
+                        
+                        if( numeroEntrega[i] === _entrega.entrega ){
+                            
+                            Entrega  = EntregaHc.get(_entrega.entrega); 
+                            Entrega.setNumeroEntrega(_entrega.entrega);
+                            
+                        }
+                        
+                        console.log("Entrega.getNumeroEntrega() === "+Entrega.getNumeroEntrega()+" _entrega.entrega === " + Entrega.getNumeroEntrega());
+                        if(Entrega.getNumeroEntrega() === _entrega.entrega){
+                             //Entrega.agregarProductos({producto:[_entrega.codigo_producto], entrega:[_entrega.entrega]});
+                             Entrega.agregarProductos(_entrega);
+                        }
+                        
+                        //if(_entrega.entrega === numeroEntrega[i]){
+                         
+                          
+                         // }
+                    /*var Producto = ProductosHc.get(_entrega.codigo_producto,_entrega.descripcion_prod, 0);  
+                        Producto.setSerialId(Lote.hc_dispen_tmp_id)
+                        Producto.agregarLotes(Lote); */                      
+                        
+                    /*
+                   // console.log("_productos ", _productos)
+                    var Productos  = ProductosFOFO.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
+                        Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
+                        Productos.setTiempoTotal(_productos.tiempo_total);
+                        Productos.setPrincipioActivo(_productos.cod_principio_activo);
+                        Productos.setCantidadEntrega(_productos.cantidad_entrega);
+                        Productos.setAutorizado(_productos.sw_autorizado);
+                        
+                        Productos.setCodigoFormaFarmacologica(_productos.cod_forma_farmacologica);
+                        
+                    productos.push(Productos);*/
+                        
+                }
+                     
+                    entregas.push(Entrega);
+                }
+                
+               console.log("entregas ", entregas);
+                    return entregas;
+                
+            };
+            
+            
             
         return this;
     }]);

@@ -38,6 +38,7 @@ define([
     "models/ProductosFOFO",
     "models/LoteHc",
     "models/ProductosHc",
+    "models/EntregaHc",
     "controllers/dispensacionHcController",
     "controllers/dispensacionHcDetalleController",
     "controllers/dispensacionRealizarEntregaController",

@@ -499,9 +499,58 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                       }
                                   }    
                                };
-                          
+                        
+                        /*var entregas = {
+                            
+                            entregas:{
+                                    0:{
+                                        0:'PRODUCTO 1',
+                                        1:'PRODUCTO 2'
+                                    },
+                                    1:{
+                                        0:'PRODUCTO 1',
+                                        1:'PRODUCTO 2'
+                                    }
+                            }
+                        };
+                        console.log("entregas ", entregas);*/
+                        Array.prototype.unique=function(a){
+                            return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
+                        });
+                        var arregloEntregas = [];
+                        
+                        dispensacionHcService.listarTotalDispensacionesFormula(obj, function(data){
+                            
+                            var totalDispensaciones = data.obj.listar_medicamentos_dispensados;
+                               // console.log("totalDispensaciones ", totalDispensaciones);
+                                totalDispensaciones.forEach(function(entregas){
+                                    
+                                    arregloEntregas.push(entregas.entrega);
+                                   
+                                });
+                                
+                                var numeroDeEntregas = arregloEntregas.unique();
+                           
+                                /*for(var i=0; i<numeroDeEntregas.length; i++){
+
+                                    console.log("entregas ", numeroDeEntregas[i]);
+                                    dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas[i],data.obj.listar_medicamentos_dispensados);
+                                 }*/
+                                var result = dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas,data.obj.listar_medicamentos_dispensados);
+                                
+                                //console.log("result ", result);
+                                
+                        });
+                         
+                       // */
                        
-                        dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
+                            
+                            //var entregas = dispensacionHcService.renderListartotalDispensacionesFormula(data.obj.listar_medicamentos_dispensados);
+                            
+                           //console.log("entregas ", entregas);
+                            
+                        
+                        /*dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
                             console.log("data ", data);
                             if (data.status === 200) {
                                    var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
@@ -509,7 +558,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                    console.log("nombre ", nombre);
                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                             }
-                        });  
+                        });  */
 
                     };          
                    

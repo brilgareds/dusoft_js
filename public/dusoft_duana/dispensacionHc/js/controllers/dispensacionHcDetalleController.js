@@ -237,13 +237,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
              
             dispensacionHcService.existenciasBodegas(obj, function(data){
-            
+                console.log("data ", data);
                 entity.vaciarProductosHc();
                 if(data.status === 200) {                                          
                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
                     $scope.lotes = entity.mostrarProductosHc();
                     that.ventanaDispensacionFormula();
-                }if(data.status === 204) {  
+                }
+                
+                if(data.status === 204) {  
                     
                     dispensacionHcService.usuarioPrivilegios(obj, function(privilegio){
                             

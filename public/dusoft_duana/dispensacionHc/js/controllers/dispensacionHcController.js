@@ -522,14 +522,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         dispensacionHcService.listarTotalDispensacionesFormula(obj, function(data){
                             
                             var totalDispensaciones = data.obj.listar_medicamentos_dispensados;
-                               // console.log("totalDispensaciones ", totalDispensaciones);
-                                totalDispensaciones.forEach(function(entregas){
+                                console.log("totalDispensaciones ", totalDispensaciones);
+                                /*totalDispensaciones.forEach(function(entregas){
                                     
                                     arregloEntregas.push(entregas.entrega);
                                    
                                 });
                                 
-                                var numeroDeEntregas = arregloEntregas.unique();
+                                var numeroDeEntregas = arregloEntregas.unique();*/
                                 
                                 //console.log("entrega ", data.obj.listar_medicamentos_dispensados);
                                 /*for(var i=0; i<numeroDeEntregas.length; i++){
@@ -537,7 +537,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     console.log("entregas ", numeroDeEntregas[i]);
                                     dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas[i],data.obj.listar_medicamentos_dispensados);
                                  }*/
-                                var result = dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas,data.obj.listar_medicamentos_dispensados);
+                                //var result = dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas,data.obj.listar_medicamentos_dispensados);
                                 
                                 //console.log("result ", result);
                                 

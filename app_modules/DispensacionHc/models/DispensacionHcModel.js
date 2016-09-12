@@ -417,7 +417,7 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
                         INNER JOIN bodegas_documentos_d dd ON\
                             dd.bodegas_doc_id = d.bodegas_doc_id\
                             AND dd.numeracion     = d.numeracion\
-                            WHERE hc.evolucion_id = :1 AND d.todo_pendiente = 1 \
+                            WHERE hc.evolucion_id = :1 AND d.todo_pendiente = '1' \
 			UNION \
 			select\
                                 dd.codigo_producto,\
@@ -778,7 +778,12 @@ DispensacionHcModel.prototype.consultarMedicamentosDespachados = function(obj,ca
  * -- Pertenece a la funcion ConsultarUltimoResg_Dispens_
  */
 DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj,callback){
-
+    
+    console.log(" ***** consultarUltimoRegistroDispensacion ****** ");
+    console.log(" ***** consultarUltimoRegistroDispensacion ****** ");
+    console.log(" ***** consultarUltimoRegistroDispensacion ****** ");
+    
+    console.log("obj ", obj);
     var sql = "";
     var sql2 = "";
     var parametros = {1: obj.tipoIdPaciente, 2: obj.pacienteId};
@@ -948,7 +953,7 @@ DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
 DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
 
     var parametros = {1: obj.codigoProducto, 2: obj.evolucionId, 3: obj.principioActivo};
-
+        
     var condicion = "";
         if (obj.principioActivo !== "") {
             condicion =" and med.cod_principio_activo = :3 ";

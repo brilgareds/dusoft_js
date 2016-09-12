@@ -472,18 +472,21 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
         
         
         
-        if(today >= fechaRegistro){
+         if(today >= fechaRegistro){
             console.log("2) Validacion ");
             console.log("today ", today);
             console.log("fechaRegistro ", fechaRegistro);
-            fechaDespacho = sumaFecha(25,fechaRegistro);
+            
+            if(fechaRegistro){
+                fechaDespacho = sumaFecha(25,fechaRegistro);
+            }
          }
          
          
             console.log("today ", today);
             console.log("fechaDespacho ", fechaDespacho);
             console.log("authorizado ", args.existenciasBodegas.autorizado);
-        if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1'){
+        if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1' || args.existenciasBodegas.autorizado === ""){
             console.log("3) Validacion ");
             
             return G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros);

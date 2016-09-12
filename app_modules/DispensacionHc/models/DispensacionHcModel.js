@@ -107,7 +107,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
                                 CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente = '1' THEN(\
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL OR a.sw_pendiente = '1' THEN(\
                                         CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN '0'\
                                              WHEN now() > a.fecha_maxima_entrega THEN '1'\
                                              ELSE '2' END\
@@ -117,7 +117,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         WHEN a.sw_finalizado = '1'\
                             THEN (\
                                  CASE \
-                                    WHEN a.sw_pendiente = '0' THEN '3' \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN '3' \
                                     WHEN a.sw_pendiente = '1' THEN '3' \
                                     WHEN a.sw_pendiente = '2' THEN '4' END\
                                 ) \
@@ -125,7 +125,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
                                 CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente = '1' THEN(\
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
                                         CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
                                         WHEN now() > a.fecha_maxima_entrega THEN 'Vencido'\
                                         ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
@@ -135,7 +135,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         WHEN a.sw_finalizado = '1'\
                             THEN (\
                                  CASE \
-                                    WHEN a.sw_pendiente = '0' THEN 'Tratamiento finalizado' \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tratamiento finalizado' \
                                     WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \

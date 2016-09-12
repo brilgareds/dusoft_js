@@ -4,16 +4,16 @@ define(["angular", "js/models", "includes/classes/Entrega"], function (angular, 
     models.factory('EntregaHc', ["Entrega", function (Entrega) {
 
 
-            function EntregaHc(numeroEntrega) {                           
-                Entrega.getClass().call(numeroEntrega); 
+            function EntregaHc() {                           
+                Entrega.getClass().call(); 
                 this.productos = [];
             }
             
             EntregaHc.prototype = Object.create(Entrega.getClass().prototype);
             
             
-            this.get = function (numeroEntrega) {
-                return new EntregaHc(numeroEntrega);
+            this.get = function () {
+                return new EntregaHc();
             };
             
             

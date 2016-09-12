@@ -530,7 +530,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 });
                                 
                                 var numeroDeEntregas = arregloEntregas.unique();
-                           
+                                
+                                //console.log("entrega ", data.obj.listar_medicamentos_dispensados);
                                 /*for(var i=0; i<numeroDeEntregas.length; i++){
 
                                     console.log("entregas ", numeroDeEntregas[i]);

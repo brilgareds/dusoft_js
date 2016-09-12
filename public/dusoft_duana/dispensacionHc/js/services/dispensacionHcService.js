@@ -509,27 +509,31 @@ define(["angular", "js/services"], function(angular, services) {
              
                 var entregas = [];
                 var Entrega;
-                
-            for(var i=0; i<numeroEntrega.length; i++){
-                
-                for(var j in entrega){
+                //console.log("entrega ", entrega[0]);
+            for(var i=0; i<numeroEntrega.length ; i++){
+                 Entrega  = EntregaHc.get();
+                  for(var j=0; j<entrega.length; j++){  //for(var j in entrega){
                     
                     var _entrega = entrega[j];
                     
-                                   
+                            
                                   
-                        
+                        //console.log("numeroEntrega[i]: " + numeroEntrega[i] +" === " + " _entrega.entrega: " +  _entrega.entrega)
                         if( numeroEntrega[i] === _entrega.entrega ){
                             
-                            Entrega  = EntregaHc.get(_entrega.entrega); 
-                            Entrega.setNumeroEntrega(_entrega.entrega);
+                               
                             
+                            Entrega.setNumeroEntrega(_entrega.entrega);
                         }
                         
-                        console.log("Entrega.getNumeroEntrega() === "+Entrega.getNumeroEntrega()+" _entrega.entrega === " + Entrega.getNumeroEntrega());
-                        if(Entrega.getNumeroEntrega() === _entrega.entrega){
+                        console.log("Entrega ", Entrega);
+                        //console.log("Entrega.getNumeroEntrega() === "+Entrega.getNumeroEntrega()+" _entrega.entrega === " + Entrega.getNumeroEntrega());
+                        if(Entrega.getNumeroEntrega() === _entrega.entrega  ){
+                            //console.log("Entrega.getNumeroEntrega(): " + Entrega.getNumeroEntrega() + " entrega: "+ _entrega.entrega);    
                              //Entrega.agregarProductos({producto:[_entrega.codigo_producto], entrega:[_entrega.entrega]});
                              Entrega.agregarProductos(_entrega);
+                             
+                            
                         }
                         
                         //if(_entrega.entrega === numeroEntrega[i]){
@@ -558,7 +562,7 @@ define(["angular", "js/services"], function(angular, services) {
                     entregas.push(Entrega);
                 }
                 
-               console.log("entregas ", entregas);
+                console.log("entregas ", entregas);
                     return entregas;
                 
             };

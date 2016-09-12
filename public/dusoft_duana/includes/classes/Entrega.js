@@ -3,8 +3,8 @@ define(["angular", "js/models"], function(angular, models) {
 
     models.factory('Entrega', function() {
 
-        function Entrega (numeroEntrega) {
-            this.numeroEntrega = numeroEntrega || "";
+        function Entrega () {
+           
           
             //this.clientes = []; 
             //this.proveedores = [];

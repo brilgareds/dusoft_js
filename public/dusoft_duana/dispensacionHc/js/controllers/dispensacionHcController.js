@@ -349,7 +349,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             //{field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
                             {field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"},                            
-                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstado()', displayName: 'ESTADO', width:"2%"},                                    
+                                                          
                             {displayName: "Opcion", cellClass: "txt-center dropdown-button",
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\

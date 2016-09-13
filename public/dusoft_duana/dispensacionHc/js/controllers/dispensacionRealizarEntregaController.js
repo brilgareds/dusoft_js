@@ -165,14 +165,23 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionPendientes = function(obj){
+            console.log("*********dispensacionPendientes*************");
             
+            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
             dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
                 console.log("DATA ULTIMA RESPUESTA ", data);
                 if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
-                    //$state.go('DispensacionHc');
+                    $state.go('DispensacionHc');
+                    
+                    localStorageService.add("consultarFormulaPendientes",{
+                                evolucion: evolucionStorage.evolucionId,
+                                filtro:{tipo:'EV'},
+                                empresa: 'FD'                  
+                                  
+                            });
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
@@ -187,6 +196,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionNormal = function(obj){
+            console.log("*********dispensacionNormal*************");
+            
             var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
            
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
@@ -203,7 +214,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 empresa: 'FD'                  
                                   
                             });
-                             
+                                                      
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }

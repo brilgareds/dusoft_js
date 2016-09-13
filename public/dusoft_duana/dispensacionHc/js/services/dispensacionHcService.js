@@ -526,7 +526,7 @@ define(["angular", "js/services"], function(angular, services) {
                             Entrega.setNumeroEntrega(_entrega.entrega);
                         }
                         
-                        console.log("Entrega ", Entrega);
+                        //console.log("Entrega ", Entrega);
                         //console.log("Entrega.getNumeroEntrega() === "+Entrega.getNumeroEntrega()+" _entrega.entrega === " + Entrega.getNumeroEntrega());
                         if(Entrega.getNumeroEntrega() === _entrega.entrega  ){
                             //console.log("Entrega.getNumeroEntrega(): " + Entrega.getNumeroEntrega() + " entrega: "+ _entrega.entrega);    

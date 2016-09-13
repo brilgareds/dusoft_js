@@ -127,11 +127,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  */
                 
                 that.listarFormulasMedicas = function(parametro){
-                  
+               
+                    //$scope.root.afiliados = null;
                      var obj = {};                               
+                    console.log("parametro ", parametro);
                     
                     if(parametro.estado === 1){
                         
+                        $scope.root.termino_busqueda = parametro.evolucion;
                          obj = {                   
                             session: $scope.session,
                             data: {
@@ -142,13 +145,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     fechaInicial: $filter('date')($filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"), "yyyy-MM-dd") + " 00:00:00",
                                     fechaFinal:$filter('date')($filter('date')(fecha_actual, "yyyy-MM-dd"), "yyyy-MM-dd") + " 23:59:00",
                                     paginaActual:1,
-                                    estadoFormula : 0
+                                    estadoFormula : parametro.estadoFormula
                                }
                            }    
                         };    
                                        
                     }
-                       
+                       //console.log(" ****** ==== obj ==== ", obj);
                     
                     if(parametro.estado === 0){
                     
@@ -168,14 +171,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             };    
                         
                     }
+                    
+                         
+                       
                      //console.log("objobjobjobj  ", obj);
                     dispensacionHcService.listarFormulas(obj, function(data){
-                     
-                        if(data.status === 200) {      
-                           console.log("data.obj.listar_formulas ", data.obj.listar_formulas);
+                        $scope.root.afiliados = [];
+                        if(data.status === 200) {  
+                            console.log(" ****** ==== obj ==== ", obj);
+                           console.log("RESULTADO ", data.obj.listar_formulas);
                            $scope.root.items = data.obj.listar_formulas.length;                              
                            $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                           localStorageService.add("consultarFormula", null);               
+                           
+                           /**
+                            * +Descripcion: Se elimina el criterio de consulta de la formula que se
+                            *               envia por memoria cuando se dispensa la entrega
+                            *               y se dispensa pendientes
+                            */
+                           localStorageService.add("consultarFormula", null); 
+                           localStorageService.add("consultarFormulaPendientes", null); 
+                           
                         }else{
                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
@@ -191,7 +206,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  *              listara todas las formulas medicas pendientes
                  */
                 that.listarFormulasMedicasPendientes = function(){
-                    $scope.afiliadosFormulasPendientes;
+                    //$scope.afiliadosFormulasPendientes = null;
                     
                     var obj = {                   
                         session: $scope.session,
@@ -334,6 +349,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             //{field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
                             {field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()', displayName: 'Plan', width:"9%"}, 
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()', displayName: 'Tipo', width:"9%"},                            
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstado()', displayName: 'ESTADO', width:"2%"},                                    
                             {displayName: "Opcion", cellClass: "txt-center dropdown-button",
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
@@ -582,13 +598,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     that.listarTipoDocumentos(function(){});    
                                    
                                     var resultadoStorage = localStorageService.get("consultarFormula");      
-                                      
+                                    var resultadoStoragePendientes = localStorageService.get("consultarFormulaPendientes");      
+                                                    
+                                   
                                     if(resultadoStorage){
                                         that.listarFormulasMedicas({estado:1, 
                                                                     evolucion:resultadoStorage.evolucion, 
                                                                     filtro:resultadoStorage.filtro, 
-                                                                    empresa: resultadoStorage.empresa});
+                                                                    empresa: resultadoStorage.empresa,
+                                                                    estadoFormula: '0'});
+                                                                
                                     }
+                                    
+                                   
+                                    if(resultadoStoragePendientes){
+                                        $scope.root.estadoFormula = 1;
+                                        that.listarFormulasMedicas({estado:1, 
+                                                                    evolucion:resultadoStoragePendientes.evolucion, 
+                                                                    filtro:resultadoStoragePendientes.filtro, 
+                                                                    empresa: resultadoStoragePendientes.empresa,
+                                                                    estadoFormula: '1'});
+                                        
+                                    }  
+                                    
                                 }
                             }
                         }

@@ -21,7 +21,7 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
     
     var that = this;
     var args = req.body.data;
-  
+    
     if (args.listar_formulas === undefined || args.listar_formulas.paginaActual === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_formulas: []}));
         return;
@@ -65,7 +65,8 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
                     fechaFinal: fechaFinal,
                     filtro: filtro,
                     estadoFormula: estadoFormula};
-  
+                
+                console.log("LOS PARAMETROS ", parametros);
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametros).then(function(resultado){
    

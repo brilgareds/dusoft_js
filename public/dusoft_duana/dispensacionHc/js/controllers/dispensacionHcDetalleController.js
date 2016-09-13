@@ -472,6 +472,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @fecha 09/06/2016 (DD-MM-YYYY)
          */
         $scope.regresarListaFormulas = function() {
+            localStorageService.add("consultarFormula", null);
+            localStorageService.add("consultarFormulaPendientes", null);
             $state.go('DispensacionHc');           
         };
         

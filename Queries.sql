@@ -1938,3 +1938,24 @@ CREATE TABLE "public"."chat_conversacion_detalle" (
     ON UPDATE NO ACTION
     NOT DEFERRABLE
 ) WITH OIDS;
+
+
+
+
+CREATE TABLE "public"."tipo_pedido" (
+  "id" SERIAL, 
+  "descripcion" VARCHAR(255), 
+  CONSTRAINT "tipo_pedido_pkey" PRIMARY KEY("id")
+) WITH OIDS;
+
+
+ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
+  ADD COLUMN "descripcion_tipo_pedido" INTEGER;
+
+
+ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
+  ADD CONSTRAINT "solicitud_productos_a_bodega_principal_fk1" FOREIGN KEY ("descripcion_tipo_pedido")
+    REFERENCES "public"."tipo_pedido"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;

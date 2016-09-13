@@ -149,7 +149,8 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
 
                                                         //Calcular stock del producto en un determinado movimiento.
                                                         var cantidad = parseInt(movimiento.cantidad);
-                                                        if (movimiento.tipo_movimiento === "E") {
+                                                        //if (movimiento.tipo_movimiento === "E") {
+                                                        if (movimiento.tipo === "EGRESO") {
                                                             stock_actual -= cantidad;
 
                                                         } else {

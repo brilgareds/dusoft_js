@@ -12,9 +12,9 @@ var PedidosClienteModel = function(productos, m_pedidos_logs) {
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Lista todos los pedidos realizados a clientes.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
- * @apiParam {String} empresa_id Identificador de la Empresa que realizó el pedido
+ * @apiParam {String} empresa_id Identificador de la Empresa que realizÃ³ el pedido
  * @apiParam {String} termino_busqueda Termino por el cual desea filtrar lo pedidos.
  *                    Se puede filtrar por:
  *                    numero del pedido
@@ -272,9 +272,9 @@ PedidosClienteModel.prototype.borrarReservas = function(callback) {
  * @api {sql} consultar_pedido Consultar Pedido
  * @apiName Consultar Pedido
  * @apiGroup PedidosClientes (sql)
- * @apiDescription Consulta la información principal del pedido seleccionado.
+ * @apiDescription Consulta la informaciÃ³n principal del pedido seleccionado.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del Pedido
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -392,7 +392,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Consulta toda la informacion detallada del pedido como productos, cantidades, precios, iva etc.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del Pedido
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -501,10 +501,10 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Listar los pedidos asignados a un operario de bodega.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} responsable Nombre del Operario
- * @apiParam {Number} pagina Número de la pagina que requiere traer registros
+ * @apiParam {Number} pagina NÃºmero de la pagina que requiere traer registros
  * @apiParam {Number} limite Cantidad de resgistros por pagina, si no se envia el limite default es 1000
  * @apiParam {Function} callback Funcion de retorno de informacion.
  * @apiSuccessExample Este SQL se usa en:
@@ -674,7 +674,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Se le asignan pedidos a un operario de bodega para ser separados.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {String} estado_pedido Estado del pedido
@@ -730,7 +730,7 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Ingresar el responsable del pedido asignado
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {String} estado_pedido Estado del pedido
@@ -769,7 +769,7 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Asigna el Pedido a otro operario de bodega.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {String} estado_pedido Estado del pedido
@@ -810,7 +810,7 @@ PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Permite eliminar el / los responsable de un pedido
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -848,7 +848,7 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pe
  * 5 = Despachado, Cuando el pedido ha sido despachado en su total al lugar de destino.
  * 6 = Despachado con Pendientes, Cuando el pedido ha sido despachado en su total al lugar de destino.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {String} estado_pedido Estado del pedido
@@ -921,7 +921,7 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes 
 
 /**
  * @author Eduar Garcia
- * +Descripcion: Calcula la cantidad TOTAL de un producto que está reservada en cotizaciones de Clientes por fecha
+ * +Descripcion: Calcula la cantidad TOTAL de un producto que estÃ¡ reservada en cotizaciones de Clientes por fecha
  * @param {type} codigo_producto
  * @param {type} fecha_registro_pedido
  * @param {type} callback
@@ -1078,7 +1078,7 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
  * @apiGroup PedidosCliente (sql)
  * @apiDescription se actualiza la cantidad despachada del pedido al genear el despacho
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -1339,9 +1339,10 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, parametros).
-    then(function(resultado) {
+    then(function(resultado) { 
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
+        console.log("err [insertar_cotizacion]", err);
         callback(err);
     });
 
@@ -1366,7 +1367,7 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
             then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-
+        console.log("err [insertar_detalle_cotizacion]", err)
         callback(err);
     });
 
@@ -1405,7 +1406,7 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
 /*
  * @author : Camilo Orozco
  * +Descripcion :  Modelo que consultara las cotizaciones segun el criterio de busqueda,
- *                 Numero, Nombre ó ID de Cliente, Nombre ó ID de Vendedor
+ *                 Numero, Nombre Ã³ ID de Cliente, Nombre Ã³ ID de Vendedor
  * @Funciones que hacen uso del modelo:
  *  --PedidosCliente.prototype.listarCotizaciones
  * Modificacion: Se migra a KNEX.js
@@ -1421,7 +1422,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      * +Descripcion Se valida si se envia el estado de cotizacion=6 cuando se
      *              accede desde el cliente al TAB Aprobacion cotizaciones
      *              para consultar unicamente las cotizaciones que solicitan
-     *              autorizacion añadiendo al vector de parametros el criterio
+     *              autorizacion aÃ±adiendo al vector de parametros el criterio
      *              de busqueda por estado de cotizacion
      */
     if (estadoCotizacion) {
@@ -1431,7 +1432,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     /**
      * +Descripcion El criterio de busqueda para una cotizacion sera dependiento
      *              el tipo de busqueda numero Cotizacion=0, Cliente =1, Vendedor =2
-     *              añadiendo al vector de parametros el criterio de busqueda
+     *              aÃ±adiendo al vector de parametros el criterio de busqueda
      *
      */
     if (filtros.tipo_busqueda === 0) {
@@ -1971,10 +1972,10 @@ PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto,
 };
 /*
  * Autor : Camilo Orozco
- * Descripcion : Transaccion para la generación del pedido
+ * Descripcion : Transaccion para la generaciÃ³n del pedido
  * +Modificacion 1: Se modifica la funcion reemplazando la funcion interna (__actualizar_estado_cotizacion)
  *                por la siguiente (__CambioEstadoCotizacionCreacionProducto)
- *                esto con el objetivo de añadirle un nuevo estado = 5 el cual consiste en indicar
+ *                esto con el objetivo de aÃ±adirle un nuevo estado = 5 el cual consiste en indicar
  *                que la cotizacion ya tiene un pedido asignado
  * @fecha: 04/11/2015
  * +Modificacion 2: Se migra a KNEX.js

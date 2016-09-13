@@ -711,6 +711,8 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     overflow: hidden;
     margin: 0px;
 }
+
+
 .fileUploadChat input.uploadChat {
     position: absolute;
     top: 0;
@@ -721,6 +723,15 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     cursor: pointer;
     opacity: 0;
     filter: alpha(opacity=0);
+}
+
+
+.chatImg{
+    max-width:280px ;
+    display:block;
+    margin:0 auto;
+    margin-top:5px;
+    
 }
 
 /*

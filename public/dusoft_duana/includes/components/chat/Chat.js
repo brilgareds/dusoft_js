@@ -77,6 +77,14 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
             };
             
             
+            scope.onErrorImagen = function(img){
+                var time = setTimeout(function(){
+                    img.src = "/images/noImage.gif";
+                    clearTimeout(time);
+                }, 0);
+                
+            };
+            
 
         };
 

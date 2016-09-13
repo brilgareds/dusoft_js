@@ -420,7 +420,7 @@ ChatModel.prototype.guardarMensajeConversacion = function(parametros, callback) 
     var id;
     
     G.knex("chat_conversacion_detalle").
-    insert({"id_conversacion":parametros.id_conversacion, "usuario_id":parametros.usuario_id, "mensaje":parametros.mensaje}).
+    insert({"id_conversacion":parametros.id_conversacion, "usuario_id":parametros.usuario_id, "mensaje":parametros.mensaje, "archivo_adjunto":parametros.archivoAdjunto}).
     returning("id").then(function(resultado){
         
         id = resultado[0];

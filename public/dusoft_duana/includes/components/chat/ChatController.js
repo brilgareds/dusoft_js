@@ -87,13 +87,14 @@ define(["angular",
                         {
                             chat: {
                                     id_conversacion: conversacion.getId(),
-                                    usuario_id:Usuario.getUsuarioActual().getId()
+                                    usuario_id:Usuario.getUsuarioActual().getId(),
+                                    mensaje:Usuario.getUsuarioActual().getNombreUsuario()+ " Envio un archivo"
                                 }
                         }
                 ));
                 
                 
-                Request.subirArchivo(URL.CONSTANTS.API.CHAT.SUBIR_ARCHIVO, fd, function(completo) {
+                Request.subirArchivo(URL.CONSTANTS.API.CHAT.GUARDAR_MENSAJE, fd, function(completo) {
                                         
                     if(completo){
                      
@@ -122,6 +123,25 @@ define(["angular",
             $scope.onTraerConversaciones = function(){
                 self.onTraerConversaciones();
                 $scope.$emit("onTabConversaciones");
+            };
+            
+            
+          /**
+            * @author Eduar Garcia
+            * +Descripcion Por medio de la extension del archivo valida si es imagen
+            * @fecha 2016-09-13
+            */
+            $scope.esImagen = function(archivo){
+                var extensiones = ["gif", "png", "jpg", "jpeg"];
+                var extension =  archivo.substr(archivo.lastIndexOf('.')+1)
+                
+                if(extensiones.indexOf(extension.toLowerCase()) === -1){
+                    return false;
+                } else {
+                    return true;
+                }
+                
+                
             };
             
            /**

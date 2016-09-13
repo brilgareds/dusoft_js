@@ -76,7 +76,7 @@
         
         
         
-        <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-phone"></span></button>
+        <!--button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-phone"></span></button-->
 
         <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-resize-full" "></span></button>
         <button class="btn btn-default btn-xs btnCloseChat pull-right" ng-click="$parent.onCerrarChat()"><span class="glyphicon glyphicon-remove"></span></button>
@@ -117,8 +117,15 @@
                             <label ng-if="detalle.getUsuario() != root.usuarioActual.getNombreUsuario()">{{detalle.getUsuario()}}</label>
                             <span class="pull-right" style="font-size: 11px">{{detalle.getFechaCreacion()}}</span>
                         </div>
-                        <p>
+                        <p ng-if="detalle.getArchivo().length == 0">
                             {{detalle.getMensaje()}}  
+                        </p>
+                        <p ng-if="detalle.getArchivo().length > 0">
+                            <a href="/tmp/{{detalle.getArchivo()}}" target="_blank"> <i class="glyphicon glyphicon-file"></i> {{detalle.getArchivo()}}
+                                <span ng-if="esImagen(detalle.getArchivo())">
+                                    <img class="chatImg" onerror="angular.element(this).scope().onErrorImagen(this)" ng-src="/tmp/{{detalle.getArchivo()}}"/>
+                                </span>
+                            </a>
                         </p>
 
                     </div>

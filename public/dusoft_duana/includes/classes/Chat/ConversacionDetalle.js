@@ -8,6 +8,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.usuario = usuario || "";
             this.mensaje = mensaje;
             this.fechaCreacion = fechaCreacion;
+            this.archivo = archivo || "";
         };
         
         
@@ -18,6 +19,15 @@ define(["angular", "js/models"], function(angular, models) {
         
         ConversacionDetalle.prototype.getUsuario = function() {
             return this.usuario;
+        };
+        
+        ConversacionDetalle.prototype.setArchivo = function(archivo) {
+            this.archivo = archivo;
+            return this;
+        };
+        
+        ConversacionDetalle.prototype.getArchivo = function() {
+            return this.archivo;
         };
         
         ConversacionDetalle.prototype.setFechaCreacion = function(fechaCreacion) {

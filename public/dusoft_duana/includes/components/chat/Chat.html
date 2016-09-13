@@ -1,15 +1,87 @@
 <div>
 
-    <p class="input-btn-group topBarChat ">
+    <div class="input-btn-group topBarChat ">
         <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-user" ng-click="onMostrarVentanaGrupos()"></span></button>
-        <button class="btn btn-default btn-xs" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-paperclip"></i></button>
+        <!--button class="btn btn-default btn-xs" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-paperclip"></i></button-->
+        <!--div flow-init="rootPedidoFarmaciaTemporal.opcionesArchivo"  
+            flow-file-success="respuestaArchivoPlano($file, $message);" 
+            flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]" 
+            flow-progress="onProgresoArchivo( $file, $flow )"
+            flow-files-submitted="cargarArchivoPlano($flow)"  flow-prevent-drop=""  
+            flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''"
+            ng-click="subirArchivoPlano()">
+            
+            <input type="file" flow-btn class="btn btn-default btn-xs ng-scope" title=""/>
+            <span class="btn" flow-btn></span>
+        </div -->
+        
+        <div class="fileUploadChat btn btn-default btn-xs" >
+            <i class="glyphicon glyphicon-paperclip"></i>
+            <input type="file" class="uploadChat" onchange="angular.element(this).scope().subirArchivo(this.files)" />
+        </div>
+
+  
+        <!--button
+            flow-init="rootPedidoFarmaciaTemporal.opcionesArchivo"  
+            flow-file-success="respuestaArchivoPlano($file, $message);" 
+            flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]" 
+            flow-progress="onProgresoArchivo( $file, $flow )"
+            flow-files-submitted="cargarArchivoPlano($flow)"  flow-prevent-drop=""  
+            flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''"
+            class="btn btn-default btn-xs ng-scope" type="submit" 
+            ng-click="subirArchivoPlano()"><i class="glyphicon glyphicon-paperclip"></i></button>
+        
+        
+        <!--div flow-init="rootPedidoFarmaciaTemporal.opcionesArchivo"  
+            flow-file-success="respuestaArchivoPlano($file, $message);" 
+            flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]" 
+            flow-progress="onProgresoArchivo( $file, $flow )"
+            flow-files-submitted="cargarArchivoPlano($flow)" class="ng-scope" flow-prevent-drop=""  
+            flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+           <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
+
+               <div class="col-md-12">
+                   <img  ng-hide="$flow.files.length" src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                   <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+               </div>
+               <div ng-hide="$flow.files.length">
+                    Arrastrar y Soltar el archivo AQUI!!                                                   
+               </div>
+               <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
+                   Nombre Archivo : <label><span ng-bind="file.name"></span></label>    
+
+                   <div class="progress progress-striped" ng-class="{active: file.isUploading()}">
+                       <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                            aria-valuemax="100" ng-style="{width: rootPedidoFarmaciaTemporal.progresoArchivo + '%'}">
+                       </div>
+                       <span class="sr-only ng-binding"><span ng-bind="rootPedidoFarmaciaTemporal.progresoArchivo"></span>% Completado</span>
+                   </div>
+
+               </div>
+           </div>
+
+           <br>
+
+           <div class="well txt-center">
+               <span class="btn btn-default" flow-btn=""  ng-hide="$flow.files.length" >
+                   <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
+                   <input type="file" style="visibility: hidden; position: absolute;">
+               </span>                                                
+
+               <button class="btn btn-default" ng-click="subirArchivoPlano()" ng-show="$flow.files.length">
+                   <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
+               </button>
+           </div>
+       </div-->
+        
+        
+        
         <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-phone"></span></button>
 
-        <!--button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span></button-->
         <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-resize-full" "></span></button>
         <button class="btn btn-default btn-xs btnCloseChat pull-right" ng-click="$parent.onCerrarChat()"><span class="glyphicon glyphicon-remove"></span></button>
         
-    </p>
+    </div>
     <div class="chatBody">
         
         <tabset>

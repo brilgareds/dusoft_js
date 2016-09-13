@@ -43,6 +43,9 @@ module.exports = function(app, di_container) {
         c_Chat.guardarMensajeConversacion(req, res);
     });
     
+    app.post('/api/Chat/subirArchivo', function(req, res) {
+        c_Chat.subirArchivo(req, res);
+    });
     
     
     

@@ -439,8 +439,18 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
 
                 Request.realizarRequest('/api/logout', "POST", {session: $scope.session, data: {}}, function(data) {
-                    //console.log(data)
-                    localStorage.removeItem("ls.session");
+                    localStorageService.remove("session");
+                    var llavesMemoria = localStorageService.keys();
+                    var llavesPermanentes = ["centro_utilidad_usuario", "bodega_usuario"];
+                    
+                    for(var i in llavesMemoria){
+                        var key = llavesMemoria[i];
+                        
+                        if(llavesPermanentes.indexOf(key) === -1){
+                            localStorageService.remove(key);
+                        }
+                    }    
+                    
                     callback();
 
                 });

@@ -39,7 +39,8 @@
                     'GUARDAR_CONVERSACION': BASE_URL+"/Chat/guardarConversacion",
                     'OBTENER_CONVERSACIONES':BASE_URL+"/Chat/obtenerConversaciones",
                     'OBTENER_DETALLE_CONVERSACION':BASE_URL+"/Chat/obtenerDetalleConversacion",
-                    'GUARDAR_MENSAJE':BASE_URL+"/Chat/guardarMensajeConversacion"
+                    'GUARDAR_MENSAJE':BASE_URL+"/Chat/guardarMensajeConversacion",
+                    'SUBIR_ARCHIVO':BASE_URL+"/Chat/subirArchivo"
                 }
               },
               'STATIC' :{

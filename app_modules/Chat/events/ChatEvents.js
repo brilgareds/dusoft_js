@@ -16,7 +16,7 @@ ChatEvents.prototype.onNotificarMensaje = function(mensaje, usuarios, usuarioEmi
         //console.log("sessiones de los usuarios ", sessiones);
        // console.log("usurios de la conversacion ", usuarios);
         
-        for(var i in sessiones){
+        for(var i in sessiones){    
             var _session = sessiones[i];
             
             for(var ii in usuarios){

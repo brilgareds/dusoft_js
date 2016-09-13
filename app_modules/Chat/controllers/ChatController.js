@@ -347,6 +347,63 @@ ChatController.prototype.guardarMensajeConversacion = function(req, res) {
 };
 
 
+/**
+* @author Eduar Garcia
+* +Descripcion Permite subir un archivo en el chat
+* @params obj: {usuario_id}
+* @fecha 2016-09-07
+*/
+ChatController.prototype.subirArchivo = function(req, res) {
+    var args = req.body.data;
+    var that = this;
+    console.log("files  ", args);
+    
+    G.Q.ninvoke(G.utils, "subirArchivo", req.files, true).then(function(_rutaNueva) {
+        console.log("file was moved to ", _rutaNueva, " original ", req.files.file.name);
+    }).fail(function(err){
+        console.log("a ocurrido un error ", err);
+    })
+    
+    /*var that = this;
+    var args = req.body.data;
+    var mensajeGuardado = {};
+    
+    if (!args.chat  || !args.chat.id_conversacion || !args.chat.usuario_id || !args.chat.mensaje ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+  
+    G.Q.ninvoke(that.mChat,'guardarMensajeConversacion', args.chat).then(function(_mensajeGuardado) {
+        mensajeGuardado = _mensajeGuardado;
+        return G.Q.ninvoke(that.mChat, "obtenerUsuariosConversacion", {conversacion:{id_conversacion:args.chat.id_conversacion}, titulo:false});
+      
+    }).then(function(usuarios){
+        var detalle = mensajeGuardado[0];
+        detalle.id_conversacion = args.chat.id_conversacion;
+        return G.Q.ninvoke(that.eventChat,"onNotificarMensaje",detalle, usuarios, args.chat.usuario_id);
+        
+        
+    }).then(function(){
+        res.send(G.utils.r(req.url, 'Conversaciones usuario', 200, {conversacion: mensajeGuardado}));
+        
+    }).fail(function(err) {
+        var msj = err;
+        var status = 500;
+        
+        if(err.status){
+            status = err.status;
+            msj = err.msj;
+        }
+        
+        res.send(G.utils.r(req.url, msj , status, {}));
+    }).done();*/
+
+};
+
+
+
+
+
 
 ChatController.$inject = [
                           "m_chat", 

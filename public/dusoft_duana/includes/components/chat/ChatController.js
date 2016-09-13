@@ -77,6 +77,31 @@ define(["angular",
             };
             
             
+            
+            $scope.subirArchivo = function(files) {
+                var conversacion = $scope.root.conversacionSeleccionada;
+                var fd = new FormData();
+                fd.append("file", files[0]);
+                fd.append("session", JSON.stringify($scope.root.session));
+                fd.append("data", JSON.stringify( 
+                        {
+                            chat: {
+                                    id_conversacion: conversacion.getId(),
+                                    usuario_id:Usuario.getUsuarioActual().getId()
+                                }
+                        }
+                ));
+                
+                
+                Request.subirArchivo(URL.CONSTANTS.API.CHAT.SUBIR_ARCHIVO, fd, function(completo) {
+                                        
+                    if(completo){
+                     
+                    }
+                    
+                });
+            };
+            
             /**
             * @author Eduar Garcia
             * +Descripcion Handler del textinput para guardar el mensaje

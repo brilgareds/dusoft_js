@@ -179,7 +179,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     localStorageService.add("consultarFormulaPendientes",{
                                 evolucion: evolucionStorage.evolucionId,
                                 filtro:{tipo:'EV'},
-                                empresa: 'FD'                  
+                                empresa: 'FD',
+                                pacienteId: evolucionStorage.pacienteId,
+                                tipoIdPaciente: evolucionStorage.tipoIdPaciente
                                   
                             });
                 }else{
@@ -211,7 +213,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     localStorageService.add("consultarFormula",{
                                 evolucion: evolucionStorage.evolucionId,
                                 filtro:{tipo:'EV'},
-                                empresa: 'FD'                  
+                                empresa: 'FD',
+                                pacienteId: evolucionStorage.pacienteId,
+                                tipoIdPaciente: evolucionStorage.tipoIdPaciente
                                   
                             });
                                                       

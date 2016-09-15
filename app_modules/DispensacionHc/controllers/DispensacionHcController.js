@@ -1721,28 +1721,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
             throw 'Consulta sin resultados';
         }
            
-    })./*.then(function(resultado){
-        console.log("4) resultado ", resultado);
-        if(resultado.rows.length > 0){ 
-              console.log("Medicamentos pendientes dispensaods ", resultado.rows);
-              
-             /* __generarPdf({productosDispensados:productosDispensados, 
-                          serverUrl:req.protocol + '://' + req.get('host')+ "/", 
-                          detalle: detalleCabecera, 
-                          profesional:profesional,
-                          archivoHtml: 'medicamentosDispensados.html',
-                          reporte: "Medicamentos_dispensados"
-                          }, function(nombre_pdf) {
-                    
-                    res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
-                    
-                        listar_medicamentos_dispensados: {nombre_pdf: nombre_pdf, resultado: productosDispensados}
-                    }));
-                });*/
-        
-     /*   };
-        
-    }).*/fail(function(err){      
+    }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -1908,7 +1887,7 @@ function __generarPdf(datos, callback) {
         
         response.body(function(body) {
            var fecha = new Date();
-           var nombreTmp = datos.reporte + fecha.toFormat('DD-MM-YYYY') + ".html";
+           var nombreTmp = datos.reporte + fecha.getTime() + ".html";
              
            G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
                 if(err) {

@@ -579,7 +579,69 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     };          
                    
-                   
+                   /**
+                    * @author Cristian Ardila
+                    * +Descripcion Metodo encargado de imprimir el reporte de los medicamentos
+                    *              pendientes para dispensar
+                    * @fecha 16/06/2016
+                    */
+                    that.imprimirMedicamentosPendientes = function(obj){
+
+                        var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
+                            console.log("imprimirMedicamentosPendientes ", resultadoStorage);
+                        var obj = {                   
+                                    session: $scope.session,
+                                    data: {
+                                       listar_medicamentos_pendientes: {
+                                            evolucion: obj.evolucion,
+                                            tipoIdPaciente:obj.tipoIdPaciente,
+                                            pacienteId: obj.pacienteId
+                                       }
+                                   }    
+                                };    
+                        dispensacionHcService.listarMedicamentosPendientesPorDispensar(obj,function(data){
+                            
+                            if (data.status === 200) {
+                                    var nombre = data.obj.listar_medicamentos_pendientes.nombre_pdf;
+                                    console.log("nombre ", nombre);
+                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                            }
+                        });  
+
+                    };
+        
+        
+                    /**
+                     * @author Cristian Ardila
+                     * +Descripcion Metodo encargado de imprimir el reporte de los medicamentos
+                     *              que quedaron pendientes para dispensar
+                     * @fecha 16/06/2016
+                     */
+                    that.imprimirMedicamentosDispensados = function(obj){
+
+                        var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
+                            console.log("imprimirMedicamentosDispensados ", resultadoStorage);
+                        var obj = {                   
+                                    session: $scope.session,
+                                    data: {
+                                       listar_medicamentos_dispensados: {
+                                            evolucion: obj.evolucion,
+                                            tipoIdPaciente:obj.tipoIdPaciente,
+                                            pacienteId: obj.pacienteId
+                                       }
+                                   }    
+                                };    
+                        dispensacionHcService.listarMedicamentosDispensados(obj,function(data){
+
+                            if (data.status === 200) {
+                                    var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
+                                    console.log("nombre ", nombre);
+                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                            }
+                        });  
+
+                    };
+
                     that.init(empresa, function() {
 
                         if(!Usuario.getUsuarioActual().getEmpresa()) {
@@ -600,17 +662,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     var resultadoStorage = localStorageService.get("consultarFormula");      
                                     var resultadoStoragePendientes = localStorageService.get("consultarFormulaPendientes");      
                                                     
-                                   
+                                    console.log("Dispensacion norma ", resultadoStorage);
                                     if(resultadoStorage){
                                         that.listarFormulasMedicas({estado:1, 
                                                                     evolucion:resultadoStorage.evolucion, 
                                                                     filtro:resultadoStorage.filtro, 
                                                                     empresa: resultadoStorage.empresa,
                                                                     estadoFormula: '0'});
+                                        that.imprimirMedicamentosPendientes(resultadoStorage);
+                                        that.imprimirMedicamentosDispensados(resultadoStorage);
                                                                 
                                     }
                                     
-                                   
+                                   console.log("Dispensacion PENDINETES ", resultadoStoragePendientes);
                                     if(resultadoStoragePendientes){
                                         $scope.root.estadoFormula = 1;
                                         that.listarFormulasMedicas({estado:1, 
@@ -618,15 +682,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                     filtro:resultadoStoragePendientes.filtro, 
                                                                     empresa: resultadoStoragePendientes.empresa,
                                                                     estadoFormula: '1'});
+                                                                
+                                        that.imprimirMedicamentosPendientes(resultadoStoragePendientes);
+                                        that.imprimirMedicamentosDispensados(resultadoStoragePendientes);
                                         
                                     }  
                                     
                                 }
                             }
-                        }
+                        }                                           
                     });
 
                      
+                      
                      $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                         
                      $scope.$$watchers = null;

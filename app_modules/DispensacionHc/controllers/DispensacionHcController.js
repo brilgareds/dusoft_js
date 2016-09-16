@@ -1590,7 +1590,7 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
                 };
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesPorDispensar',parametros).then(function(resultado){
-    
+         
         if(resultado.rows.length > 0){ 
             
             productosPendientes = resultado.rows;
@@ -1613,9 +1613,9 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
         }
        
    }).then(function(resultado){
-           
+        
         if(resultado.rows.length > 0){ 
-            console.log("resultado profesionales ", resultado.rows[0]);
+            
             __generarPdf({productosPendientes:productosPendientes, 
                             serverUrl:req.protocol + '://' + req.get('host')+ "/", 
                             detalle: detalleCabecera, 
@@ -1671,8 +1671,17 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
                     pacienteId: args.listar_medicamentos_dispensados.pacienteId,
                     ultimo: 1 
                 };
+    
+    var medicamentosDispensados = "";
+    
+    if(args.listar_medicamentos_dispensados.pendientes === 1){
+        medicamentosDispensados = 'listarMedicamentosPendientesDispensados';
+        
+    }else{
+        medicamentosDispensados = 'listarMedicamentosDispensados';
+    }
    
-    G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosDispensados',parametros).then(function(resultado){
+    G.Q.ninvoke(that.m_dispensacion_hc,medicamentosDispensados,parametros).then(function(resultado){
        console.log("1) resultado ", resultado.rows);
         if(resultado.rows.length > 0){ 
             //console.log("resultado.rows ", resultado.rows);

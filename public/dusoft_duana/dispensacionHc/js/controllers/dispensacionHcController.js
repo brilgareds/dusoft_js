@@ -617,7 +617,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *              que quedaron pendientes para dispensar
                      * @fecha 16/06/2016
                      */
-                    that.imprimirMedicamentosDispensados = function(obj){
+                    that.imprimirMedicamentosDispensados = function(obj, estado){
 
                         var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
                             console.log("imprimirMedicamentosDispensados ", resultadoStorage);
@@ -627,7 +627,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                        listar_medicamentos_dispensados: {
                                             evolucion: obj.evolucion,
                                             tipoIdPaciente:obj.tipoIdPaciente,
-                                            pacienteId: obj.pacienteId
+                                            pacienteId: obj.pacienteId,
+                                            pendientes: estado
                                        }
                                    }    
                                 };    
@@ -670,7 +671,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                     empresa: resultadoStorage.empresa,
                                                                     estadoFormula: '0'});
                                         that.imprimirMedicamentosPendientes(resultadoStorage);
-                                        that.imprimirMedicamentosDispensados(resultadoStorage);
+                                        that.imprimirMedicamentosDispensados(resultadoStorage,0);
                                                                 
                                     }
                                     
@@ -684,7 +685,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                     estadoFormula: '1'});
                                                                 
                                         that.imprimirMedicamentosPendientes(resultadoStoragePendientes);
-                                        that.imprimirMedicamentosDispensados(resultadoStoragePendientes);
+                                        that.imprimirMedicamentosDispensados(resultadoStoragePendientes,1);
                                         
                                     }  
                                     

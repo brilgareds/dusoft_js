@@ -363,6 +363,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                  <li >\
                                                     <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" >Todo </a>\
                                                  </li>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() == 0 ">\n\
+                                                    <a href="javascript:void(0);" ng-click="imprimirMedicamentosPendientes({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), \n\
+                                                                                            tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
+                                                                                            pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()})" class = "glyphicon glyphicon-print" > Pendientes</a>\
+                                                 </li>\
                                              </ul>\
                                        </div>'
                             },
@@ -585,10 +590,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     *              pendientes para dispensar
                     * @fecha 16/06/2016
                     */
-                    that.imprimirMedicamentosPendientes = function(obj){
-
+                    $scope.imprimirMedicamentosPendientes = function(obj){
+                        console.log("obj ", obj);
                         var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
-                            console.log("imprimirMedicamentosPendientes ", resultadoStorage);
+                           
                         var obj = {                   
                                     session: $scope.session,
                                     data: {

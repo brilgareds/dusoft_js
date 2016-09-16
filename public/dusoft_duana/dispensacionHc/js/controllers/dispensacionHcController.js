@@ -333,7 +333,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: '# Formula', width:"4%"}, 
                             {displayName: 'Identificacion', width:"7%",
                              cellTemplate: "<div\n\
-                                            <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente() }} {{ row.entity.mostrarPacientes()[0].getPacienteId() }} </div>"}, 
+                                            <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente() }} {{ row.entity.mostrarPacientes()[0].getPacienteId() }}  </div>"}, 
                            
                             {displayName: 'Paciente', width:"9%",
                              cellTemplate: "<div\n\
@@ -355,18 +355,24 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 0  && root.estadoFormula == 0">\n\
-                                                    <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n</a>\
+                                                    <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n </a>\
                                                  </li>\
-                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2">\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 && root.estadoFormula == 1 || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2 && root.estadoFormula == 1">\
                                                     <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a>\
                                                  </li>\
-                                                 <li >\
-                                                    <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" >Todo </a>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
+                                                    <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print">Todo </a>\
                                                  </li>\
-                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() == 0 ">\n\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0\
+                                                         && row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 ">\n\
                                                     <a href="javascript:void(0);" ng-click="imprimirMedicamentosPendientes({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), \n\
                                                                                             tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
                                                                                             pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()})" class = "glyphicon glyphicon-print" > Pendientes</a>\
+                                                 </li>\
+                                                 <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
+                                                    <a href="javascript:void(0);" ng-click="imprimirMedicamentosDispensados({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), \n\
+                                                                                            tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
+                                                                                            pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Ultima entrega</a>\
                                                  </li>\
                                              </ul>\
                                        </div>'
@@ -380,7 +386,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                        <span ng-class=''></span>  {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 
    
                         ]
-                    };
+                    }; 
                         
                     // Agregar Clase de acuerdo al estado del pedido
                     $scope.agregar_clase_formula = function(index) {
@@ -622,7 +628,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *              que quedaron pendientes para dispensar
                      * @fecha 16/06/2016
                      */
-                    that.imprimirMedicamentosDispensados = function(obj, estado){
+                    $scope.imprimirMedicamentosDispensados = function(obj, estado){
 
                         var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
                             console.log("imprimirMedicamentosDispensados ", resultadoStorage);
@@ -668,19 +674,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     var resultadoStorage = localStorageService.get("consultarFormula");      
                                     var resultadoStoragePendientes = localStorageService.get("consultarFormulaPendientes");      
                                                     
-                                    console.log("Dispensacion norma ", resultadoStorage);
+                                    console.log("Dispensacion normal ", resultadoStorage);
                                     if(resultadoStorage){
                                         that.listarFormulasMedicas({estado:1, 
                                                                     evolucion:resultadoStorage.evolucion, 
                                                                     filtro:resultadoStorage.filtro, 
                                                                     empresa: resultadoStorage.empresa,
                                                                     estadoFormula: '0'});
-                                        that.imprimirMedicamentosPendientes(resultadoStorage);
-                                        that.imprimirMedicamentosDispensados(resultadoStorage,0);
+                                        $scope.imprimirMedicamentosPendientes(resultadoStorage);
+                                        $scope.imprimirMedicamentosDispensados(resultadoStorage,0);
                                                                 
                                     }
                                     
-                                   console.log("Dispensacion PENDINETES ", resultadoStoragePendientes);
+                                   console.log("Dispensacion PENDIENTES ", resultadoStoragePendientes);
                                     if(resultadoStoragePendientes){
                                         $scope.root.estadoFormula = 1;
                                         that.listarFormulasMedicas({estado:1, 
@@ -689,8 +695,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                     empresa: resultadoStoragePendientes.empresa,
                                                                     estadoFormula: '1'});
                                                                 
-                                        that.imprimirMedicamentosPendientes(resultadoStoragePendientes);
-                                        that.imprimirMedicamentosDispensados(resultadoStoragePendientes,1);
+                                        $scope.imprimirMedicamentosPendientes(resultadoStoragePendientes);
+                                        $scope.imprimirMedicamentosDispensados(resultadoStoragePendientes,1);
                                         
                                     }  
                                     

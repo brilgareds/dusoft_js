@@ -331,7 +331,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016
                */
             self.renderListarFormulasMedicas = function(formulas, estadoFormula){
-                  // console.log("formulas ", formulas);
+                   console.log("formulas ", formulas);
                 var resultado = [];
                      
                 for(var i in formulas.listar_formulas) {
@@ -377,6 +377,7 @@ define(["angular", "js/services"], function(angular, services) {
                         var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');   
                             formula.setEstadoEntrega( _formula.estado_entrega);
                             formula.setDescripcionEstadoEntrega( _formula.descripcion_estado_entrega);
+                            formula.setEstado( _formula.sw_estado);
                         var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad); 
                             Productos.setIdentificadorDePendiente(_formula.hc_pendiente_dispensacion_id);
                             formula.agregarProductos(Productos);  

@@ -1646,10 +1646,6 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
  */
 DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
    
-   console.log("*****DispensacionHc.prototype.listarMedicamentosDispensados ********");
-   console.log("*****DispensacionHc.prototype.listarMedicamentosDispensados ********");
-   console.log("*****DispensacionHc.prototype.listarMedicamentosDispensados ********");
-   
     var that = this;
     var args = req.body.data;
   
@@ -1680,7 +1676,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
     }else{
         medicamentosDispensados = 'listarMedicamentosDispensados';
     }
-   
+    console.log("medicamentosDispensados ", medicamentosDispensados);
     G.Q.ninvoke(that.m_dispensacion_hc,medicamentosDispensados,parametros).then(function(resultado){
        console.log("1) resultado ", resultado.rows);
         if(resultado.rows.length > 0){ 

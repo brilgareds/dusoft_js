@@ -25,7 +25,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
    
   
   if(obj.estadoFormula === '1'){     
-        pendienteCampoEstado = ",a.sw_pendiente as sw_estado";
+        //pendienteCampoEstado = ",a.sw_pendiente as sw_estado";
         pendienteValidacion = " WHERE a.sw_pendiente IN ('1','2')";   
         
    }
@@ -140,7 +140,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \
                         END AS descripcion_estado_entrega\
-                        "+pendienteCampoEstado+" FROM \
+                        ,a.sw_pendiente as sw_estado FROM \
                           dispensacion_estados AS a\
                         inner join pacientes as b ON (a.tipo_id_paciente = b.tipo_id_paciente) AND (a.paciente_id = b.paciente_id)\
                         left join inv_tipos_bloqueos as f ON (b.tipo_bloqueo_id=f.tipo_bloqueo_id) AND (f.estado='1')\
@@ -224,7 +224,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
 DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function(obj,callback){
     
     var parametros = {1: obj.evolucionId};
-    
+                            
+                            
+                            
     var sql =  "SELECT dd.codigo_producto,\
                 dd.cantidad as numero_unidades,\
                 dd.fecha_vencimiento,\
@@ -263,7 +265,85 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
  */
 DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callback){
     
-   
+    
+    var parametros = {1: obj.evolucionId};
+    var sql= "SELECT k.codigo_producto,\
+       k.numero_unidades,\
+       k.fecha_vencimiento, \
+       k.lote,  \
+       k.descripcion_prod, \
+       fc_descripcion_producto_alterno(k.codigo_producto) as molecula,\
+       k.usuario_id, \
+       k.nombre,\
+       k.descripcion,\
+       k.sw_pactado,\
+       k.total_costo,\
+       k.fecha, \
+       k.grupo_id,\
+       round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30)+1 as entrega, \
+       k.sistema, \
+       k.dias_de_entregado, \
+       K.fecha_entrega as fecha_entrega,\
+       k.grupo_id\
+ FROM(   \
+            SELECT dd.codigo_producto, \
+                   dd.cantidad as numero_unidades, \
+                   dd.fecha_vencimiento, \
+                   dd.lote, \
+                   dd.sw_pactado,\
+                   dd.total_costo,\
+                   fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod, \
+                   sys.usuario_id, \
+                   sys.nombre,\
+                   sys.descripcion,\
+                   'dispensacion_hc' as sistema, \
+                   to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega, \
+                   to_char(now()- d.fecha_registro,'dd') as dias_de_entregado, \
+                   ( \
+                   SELECT min(hcf.fecha_formulacion)  \
+                   FROM hc_formulacion_antecedentes hcf  \
+                   WHERE hcf.evolucion_id = :1 \
+                   )as fecha, \
+                   d.fecha_registro,\
+                   inv.grupo_id\
+      		 FROM  hc_formulacion_despachos_medicamentos_pendientes hc \
+                   INNER JOIN bodegas_documentos d ON hc.bodegas_doc_id = d.bodegas_doc_id AND hc.numeracion = d.numeracion \
+                   INNER JOIN bodegas_documentos_d dd ON dd.bodegas_doc_id = d.bodegas_doc_id AND dd.numeracion = d.numeracion\
+                   INNER JOIN system_usuarios sys ON sys.usuario_id = d.usuario_id\
+                   INNER JOIN inventarios_productos inv ON inv.codigo_producto  = dd.codigo_producto\
+             WHERE hc.evolucion_id = :1 AND d.todo_pendiente = '1' \
+      UNION  \
+      SELECT dd.codigo_producto, \
+             dd.cantidad as numero_unidades, \
+             dd.fecha_vencimiento,\
+             dd.lote, \
+             dd.sw_pactado,\
+             dd.total_costo,\
+      	     fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,  \
+             sys.usuario_id, \
+             sys.nombre,\
+             sys.descripcion,\
+             'dispensacion_hc' as sistema,\
+             to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega, \
+             to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,\
+             (SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf WHERE hcf.evolucion_id = :1 )as fecha, \
+             d.fecha_registro,\
+             inv.grupo_id\
+       FROM hc_formulacion_despachos_medicamentos as dc,   \
+            bodegas_documentos as d,\
+            bodegas_documentos_d AS dd,\
+            system_usuarios  sys,\
+            inventarios_productos inv  \
+       WHERE dc.bodegas_doc_id = d.bodegas_doc_id\
+             and dc.numeracion = d.numeracion \
+             and dc.evolucion_id = :1\
+             and d.bodegas_doc_id = dd.bodegas_doc_id\
+             and d.numeracion = dd.numeracion\
+             and d.usuario_id=sys.usuario_id \
+             and inv.codigo_producto  = dd.codigo_producto\
+  )as k \
+ WHERE round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30)+1 = (SELECT numero_entrega_actual from dispensacion_estados where evolucion_id = :1 )";
+   /*console.log("obj ", obj);
     var fecha=" to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega ";
     var group;
     if(obj.ultimo ===1){
@@ -297,10 +377,10 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
         and d.bodegas_doc_id = dd.bodegas_doc_id\
         and d.numeracion = dd.numeracion\
         and d.usuario_id=sys.usuario_id\
-        and inv.codigo_producto  = dd.codigo_producto " + group;
+        and inv.codigo_producto  = dd.codigo_producto " + group;*/
     //console.log("sql ----->>>>>>>>>> ", sql);
     G.knex.raw(sql,parametros).then(function(resultado){    
-      
+      console.log("---->>) resultado ", resultado.rows);
         callback(false, resultado)
     }).catch(function(err){        
       

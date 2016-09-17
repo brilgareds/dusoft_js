@@ -43,14 +43,15 @@ define(["angular",
                 showFilter: true,
                 multiSelect:false,
                 enableHighlighting:true,
-                afterSelectionChange:function(row){
-                    
+                afterSelectionChange:function(row, $event){
                     if(row.selected){
                         self.listarDetalleConversacion(row.entity);
                     }
                     
                 },
                 columnDefs: [
+                    {field: 'getNombre()', displayName: '', cellClass: "txt-center", width:"40",
+                        cellTemplate: '<button class="btn btn-default btn-xs" ng-click="onMostrarVentanaGrupos($event, row.entity)"><span class="glyphicon glyphicon-user" ></span></button>'},
                     {field: 'getNombre()', displayName: 'Participantes'},
                     {field: 'getFechaCreacion()', displayName: 'Fecha', width:100}
 
@@ -63,7 +64,8 @@ define(["angular",
             * +Descripcion Handler del boton de chat
             * @fecha 2016-09-05
             */
-            $scope.onMostrarVentanaGrupos = function(){
+            $scope.onMostrarVentanaGrupos = function(event, conversacion){
+                event.stopPropagation();
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -71,13 +73,22 @@ define(["angular",
                     size: 'lg',
                     keyboard: true,
                     templateUrl: '../includes/components/gruposChat/GrupoChat.html',
-                    controller: 'GruposChatController'
+                    controller: 'GruposChatController',
+                    resolve: {
+                        conversacion: function() {
+                            return conversacion;
+                        }
+                    }
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
             
             
-            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de subir archivo
+            * @fecha 2016-09-13
+            */
             $scope.subirArchivo = function(files) {
                 var conversacion = $scope.root.conversacionSeleccionada;
                 var fd = new FormData();
@@ -102,6 +113,15 @@ define(["angular",
                     
                 });
             };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del evento emitido por la ventana de grupos
+            * @fecha 2016-09-15
+            */
+            var onVentanaGruposCerrada = $rootScope.$on("onVentanaGruposCerrada",function(){
+               self.onTraerConversaciones();
+            });
             
             /**
             * @author Eduar Garcia
@@ -178,10 +198,15 @@ define(["angular",
                 });
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Evento socket al recibir un menssaje
+            * @fecha 2016-09-15
+            */
            socket.on("onNotificarMensaje", function(data){
                
                var conversacion = $scope.root.conversacionSeleccionada;
-               console.log("conversacion ", data.mensaje.id_conversacion, " conversacion ", conversacion.getId());
+               //console.log("conversacion ", data.mensaje.id_conversacion, " conversacion ", conversacion.getId());
                
                 //Conversacion actual
                 if(data.mensaje.id_conversacion === conversacion.getId()){
@@ -195,6 +220,14 @@ define(["angular",
                 $scope.$emit("onMensajeNuevo", data.mensaje, Usuario.getUsuarioActual());
 
            });
+           
+           
+            $scope.$on('$destroy', function() {
+                console.log("on destroy chat controller");
+                onVentanaGruposCerrada();
+                $scope.$$watchers = null;
+                socket.removeAllListeners();
+            });
             
           /**
             * @author Eduar Garcia

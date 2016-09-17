@@ -244,19 +244,34 @@ ChatModel.prototype.insertarUsuariosEnGrupo = function(parametros, callback) {
 */
 ChatModel.prototype.guardarConversacion = function(parametros, callback) {
     var that = this;
-    G.knex("chat_conversacion").
-    returning("id").
-    insert({"usuario_creador":parametros.usuario_id}).
-    then(function(resultado){
-        parametros.conversacionId = resultado[0];
-        return G.Q.ninvoke(that, "insertarUsuariosEnConversacion", parametros);
+    var promesa;
+    
+    if(parametros.id_conversacion === 0){
+        promesa = G.Q.ninvoke(that, "insertarConversacion", parametros);
+    } else {
+        var obj = {
+            campos:{
+                estado:'1'
+            },
+            id_conversacion:parametros.id_conversacion
+        };
         
+        promesa = G.Q.ninvoke(that, "modificarConversacion", obj);
+    }
+    
+    promesa.then(function(resultado){
+        parametros.conversacionId = (parametros.id_conversacion === 0) ? resultado[0] : parametros.id_conversacion;
+        return G.Q.ninvoke(that, "insertarUsuariosEnConversacion", parametros);
+         
     }).then(function(){
-        callback(false, parametros.conversacionId);
-    }).catch(function(err){
-        console.log("error sql",err);
-        callback(err);       
-    });  
+        callback(false);
+        
+    }).fail(function(err){
+        callback(err);
+    })
+    
+    
+    
 };
 
 /**
@@ -317,6 +332,7 @@ ChatModel.prototype.obtenerUsuariosConversacion = function(parametros, callback)
     var that = this;
     var columns = [
         "b.usuario",
+        "b.nombre",
         "a.*"
     ];
     
@@ -324,8 +340,14 @@ ChatModel.prototype.obtenerUsuariosConversacion = function(parametros, callback)
     from("chat_conversacion_usuarios as a").
     innerJoin("system_usuarios as b", "b.usuario_id", "a.usuario_id");
     
-    query.where("a.id_conversacion", parametros.conversacion.id_conversacion).
-    then(function(usuarios){
+    query.where("a.id_conversacion", parametros.conversacion.id_conversacion);
+    
+    
+    if(parametros.usuario_id){
+        query.where("a.usuario_id", parametros.usuario_id);
+    }
+    
+    query.then(function(usuarios){
         
         if(parametros.titulo){
             var titulos = [];
@@ -399,6 +421,7 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
 * @fecha 2016-09-06
 */
 ChatModel.prototype.insertarUsuariosEnConversacion = function(parametros, callback) {
+    parametros.contexto = this;
     G.Q.nfcall(__insertarUsuariosEnConversacion, parametros).
     then(function(){
         callback(false);
@@ -467,6 +490,44 @@ ChatModel.prototype.modificarConversacion = function(parametros, callback) {
 
 /**
 * @author Eduar Garcia
+* +Descripcion Crea una conversacion
+* @params obj: {id_conversacion, usuario_id}
+* @fecha 2016-09-06
+*/
+ChatModel.prototype.insertarConversacion = function(parametros, callback) {
+    G.knex("chat_conversacion").
+    returning("id").   
+    insert({"usuario_creador":parametros.usuario_id}).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });  
+ 
+};
+
+
+/**
+* @author Eduar Garcia
+* +Descripcion Remueve un usuario de una conversacion
+* @params obj: {id_conversacion, usuario_id}
+* @fecha 2016-09-15
+*/
+ChatModel.prototype.removerUsuarioConversacion = function(parametros, callback) {
+    G.knex("chat_conversacion_usuarios").
+    where('id_conversacion', parametros.id_conversacion).
+    andWhere('usuario_id', parametros.usuario_id).
+    del().
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });  
+};
+
+/**
+* @author Eduar Garcia
 * +Descripcion Funcion recursiva para obtener titulo de un arreglo de conversaciones
 * @params obj: Object conversaciones {conversaciones, index, contexto}
 * @fecha 2016-09-07
@@ -496,13 +557,37 @@ function __obtenerTituloConversaciones(parametros, callback){
 function __insertarUsuariosEnConversacion(parametros, callback){
     
     var usuario = parametros.usuarios[0];
+    var def = G.Q.defer();
     
     if(!usuario){
         callback(false);
         return;
     }
     
-    G.knex("chat_conversacion_usuarios").
+    G.Q.ninvoke(parametros.contexto, "obtenerUsuariosConversacion",{usuario_id:usuario.id, conversacion:{id_conversacion:parametros.conversacionId}}).then(function(resultado){
+        //Inserta el usuario solo si no existe en la conversacion
+        console.log("buscando usuario ", resultado);
+        if(resultado.length === 0){
+            return G.knex("chat_conversacion_usuarios").
+                   insert({"id_conversacion":parametros.conversacionId, "usuario_id":usuario.id});
+        } else {
+            def.resolve();
+        }
+        
+    }).then(function(){
+        
+        var time = setTimeout(function(){
+            parametros.usuarios.splice(0,1);
+            __insertarUsuariosEnConversacion(parametros, callback);
+            clearTimeout(time);
+        },0);
+        
+    }).fail(function(err){
+        callback(err);
+    }).done();
+    
+    
+    /*G.knex("chat_conversacion_usuarios").
     insert({"id_conversacion":parametros.conversacionId, "usuario_id":usuario.id}).
     then(function(resultado){
         
@@ -514,7 +599,7 @@ function __insertarUsuariosEnConversacion(parametros, callback){
         
     }).catch(function(err){
         callback(err);       
-    });  
+    });  */
 }
 
 function __insertarUsuariosEnGrupo(parametros, callback){

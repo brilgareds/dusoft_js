@@ -66,6 +66,11 @@
         <div class="btn-group contenedorEmpresaUsuario" ng-if="Usuario.empresa.getNombre() != ''">    
             
             <div class="btn-group selectTopBar" role="group"     >
+                <button class="btn btn-default btnOpenChatPanel" ng-click="onMostrarVentanaGrupos()">
+                    <span class="glyphicon glyphicon-user" >
+                       
+                    </span>
+                </button>
                 <button type="button" class="btn btn-default btnOpenChatPanel" ng-click="onBtnChat()">
                     <i class="glyphicon glyphicon-comment"></i>
                 </button>

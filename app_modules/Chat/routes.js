@@ -47,6 +47,14 @@ module.exports = function(app, di_container) {
         c_Chat.subirArchivoMensaje(req, res);
     });
     
+    app.post('/api/Chat/listarUsuariosConversacion', function(req, res) {
+        c_Chat.listarUsuariosConversacion(req, res);
+    });
+    
+    app.post('/api/Chat/removerUsuarioConversacion', function(req, res) {
+        c_Chat.removerUsuarioConversacion(req, res);
+    });
     
     
+
 };

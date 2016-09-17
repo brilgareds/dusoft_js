@@ -7,12 +7,12 @@ define(["angular",
         'Empresa', 'CentroUtilidad', 'Bodega',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", 'URL',
-        '$filter', '$timeout', '$modalInstance', 'GrupoChat',
+        '$filter', '$timeout', '$modalInstance', 'GrupoChat', 'conversacion',
         function($scope, $rootScope, Request,
                 Empresa, CentroUtilidad, Bodega,
                 API, socket, AlertService, $state, Usuario,
                 localStorageService, URL, 
-                $filter, $timeout, $modalInstance, GrupoChat) {
+                $filter, $timeout, $modalInstance, GrupoChat, conversacion) {
 
             var self = this;
             /*
@@ -31,7 +31,8 @@ define(["angular",
                     usuarios:false,
                     grupos:true
                 },
-                usuariosSeleccionados:[]
+                usuariosSeleccionados:[],
+                conversacionSeleccionada:conversacion
             };
             
             $scope.listaGrupos = {
@@ -85,9 +86,14 @@ define(["angular",
             * @fecha 2016-09-06
             */
             $scope.onRemoverUsuario = function(usuario){
-                self.removerUsuarios([usuario]);
                 
-                $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Desea eliminar el usuario del grupo?",function(continuar){
+                    if(continuar){
+                        self.removerUsuarios([usuario]);
+
+                        $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
+                    }
+                });
             };
             
            /**
@@ -121,6 +127,7 @@ define(["angular",
             * @fecha 2016-09-06
             */
             self.agregarUsuarios = function(_usuarios){
+                //console.log("$scope.root.usuariosSeleccionados ", $scope.root.usuariosSeleccionados, _usuarios);
                 var usuarios = $scope.root.usuariosSeleccionados;
                 var _usuario = _usuarios[0];
                 var agregar = true;
@@ -143,6 +150,7 @@ define(["angular",
                         $scope.root.usuariosSeleccionados.push(_usuario);
                     }
                     
+                    
                     _usuarios.splice(0,1);
                     self.agregarUsuarios(_usuarios);
                 //},0);
@@ -156,6 +164,7 @@ define(["angular",
             * @fecha 2016-09-06
             */
             self.removerUsuarios = function(_usuarios){
+                var conversacion = $scope.root.conversacionSeleccionada;
                 var usuarios = $scope.root.usuariosSeleccionados;
                 var _usuario = _usuarios[0];
                 var index = -1;
@@ -180,8 +189,44 @@ define(["angular",
                     
                     _usuarios.splice(0,1);
                     
-                    self.removerUsuarios(_usuarios);
+                    if(conversacion.getId() !== 0){
+                        self.removerUsuario(_usuario, function(continuar){
+                            if(continuar){
+                                self.removerUsuarios(_usuarios);
+                            }
+                        });
+                    } else {
+                        self.removerUsuarios(_usuarios);
+                    }
+                    
                 //},0);
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: Realiza peticion al API para remover usuario de la conversacion
+             */
+            self.removerUsuario = function(usuario, callback){
+
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        chat:{
+                            usuario_id:usuario.getId(),
+                            id_conversacion:$scope.root.conversacionSeleccionada.getId()
+                        }
+                    }
+                };
+                Request.realizarRequest(URL.CONSTANTS.API.CHAT.REMOVER_USUARIO_CONVERSACION, "POST", obj, function(data) {
+                    
+                    if(data.status === 200){                        
+                        callback(true);
+                        
+                    } else {
+                        callback(false);
+                    }
+                });
             };
 
             /*
@@ -229,12 +274,46 @@ define(["angular",
 
             };
             
+            
+            self.listarUsuariosConversacion = function(callback){
+                
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        chat:{
+                            id_conversacion:$scope.root.conversacionSeleccionada.getId()
+                        }
+                    }
+                };
+                Request.realizarRequest(URL.CONSTANTS.API.CHAT.LISTAR_USUARIOS_CONVERSACION, "POST", obj, function(data) {
+                    
+                    if(data.status === 200){
+                       
+                        var usuarios = data.obj.usuarios || [];
+                        var _usuarios = [];
+
+                        for (var i in usuarios) {
+                            var usuario = Usuario.get(usuarios[i].usuario_id, usuarios[i].usuario, usuarios[i].nombre);
+                            _usuarios.push(usuario);
+                        }
+                        
+                        self.agregarUsuarios(_usuarios);
+                        callback(true);
+                        
+                    } else {
+                       // AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error listando los usuarios de la conversación");
+                        callback(false);
+                    }
+                });
+            };
+            
+            
            /*
             * @author Eduar Garcia
             * +Descripcion Hace peticion al API para guardar conversacion
             * @fecha 2016-09-06
             */
-            self.iniciarConversacion = function(){
+            self.iniciarConversacion = function(idConversacion){
                 
                 if($scope.root.usuariosSeleccionados.length === 0){
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se han seleccionado usuarios para la conversación");
@@ -246,7 +325,8 @@ define(["angular",
                     data: {
                         chat:{
                             usuario_id:Usuario.getUsuarioActual().getId(),
-                            usuarios:$scope.root.usuariosSeleccionados
+                            usuarios:$scope.root.usuariosSeleccionados,
+                            id_conversacion:idConversacion
                         }
                     }
                 };
@@ -255,6 +335,7 @@ define(["angular",
                     if(data.status === 200){
                        
                        $modalInstance.close();
+                       
                         
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error iniciando la conversación");
@@ -265,10 +346,24 @@ define(["angular",
            /*
             * @author Eduar Garcia
             * +Descripcion Handler del boton de iniciar conversacion
+            * @fecha 2016-09-15
+            */
+            $scope.onNuevaConversacion = function(){
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Desea crear una nueva conversacion?",function(confirmado){
+                    if(confirmado){
+                        self.iniciarConversacion(0);
+                    }
+                });
+                
+            };
+            
+           /*
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de iniciar conversacion
             * @fecha 2016-09-06
             */
             $scope.onIniciarConversacion = function(){
-                self.iniciarConversacion();
+                self.iniciarConversacion($scope.root.conversacionSeleccionada.getId());
             };       
             
            /*
@@ -375,10 +470,12 @@ define(["angular",
             $modalInstance.opened.then(function() {
                 //Timer para permitir que la animacion termine
                 $timeout(function(){
-                    console.log(">>>>>>>>>>>>>>>>>>>>>>>>> traer grupos");
+                    
                     self.consultarGrupos(function(valido){
                         if(valido){
-
+                            self.listarUsuariosConversacion(function(){
+                  
+                            });
                         } else {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error consultando los grupos");
                         }
@@ -389,9 +486,10 @@ define(["angular",
             
 
             $modalInstance.result.then(function() {
-              // self.finalizar();
+               $rootScope.$emit("onVentanaGruposCerrada");
+                
             }, function() {
-                //self.finalizar();
+                $rootScope.$emit("onVentanaGruposCerrada");
             });
 
 

@@ -4,16 +4,17 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
     "includes/classes/Rol", "includes/classes/OpcionModulo",
     "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo",
     "includes/components/chat/Chat","includes/components/usuarios/Usuarios",
-    "includes/components/notificaciones/NotificacionesController"], function(angular, controllers) {
+    "includes/components/notificaciones/NotificacionesController",
+    "includes/components/gruposChat/GruposChatController", 'includes/classes/Chat/Conversacion'], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
         "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
-        "$timeout","$modal",
+        "$timeout","$modal", "Conversacion",
         function($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
                 Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo,
-                $timeout, $modal) {
+                $timeout, $modal, Conversacion) {
 
             var self = this;
            
@@ -217,6 +218,30 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     }
                 }
                 
+            };
+            
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de chat
+            * @fecha 2016-09-14
+            */
+            $scope.onMostrarVentanaGrupos = function(){
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    size: 'lg',
+                    keyboard: true,
+                    templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                    controller: 'GruposChatController',
+                    resolve: {
+                        conversacion: function() {
+                            return Conversacion.get();
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
             };
             
             

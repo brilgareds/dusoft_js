@@ -249,7 +249,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
 
      
     G.knex.raw(sql,parametros).then(function(resultado){ 
-        console.log("resultado Pendientes por dispensar::: ", resultado);
+        //console.log("resultado Pendientes por dispensar::: ", resultado);
       callback(false, resultado)
     }).catch(function(err){         
          console.log("err ", err);
@@ -342,7 +342,7 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
              and d.usuario_id=sys.usuario_id \
              and inv.codigo_producto  = dd.codigo_producto\
   )as k \
- WHERE round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30)+1 = (SELECT numero_entrega_actual from dispensacion_estados where evolucion_id = :1 )";
+ WHERE k.numero_unidades = (SELECT numero_entrega_actual from dispensacion_estados where evolucion_id = :1 )";
    /*console.log("obj ", obj);
     var fecha=" to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega ";
     var group;
@@ -1649,7 +1649,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
     console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
     console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
     console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
-    console.log("totalInsertadosPendientes ****** ", totalInsertadosPendientes); 
+    //console.log("totalInsertadosPendientes ****** ", totalInsertadosPendientes); 
     
     var producto = productos[index];
     
@@ -1659,7 +1659,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
         return; 
     }  
     
-    
+       
             
       console.log("9) Accion : insertarBodegasDocumentosDetalle ");
  
@@ -1683,10 +1683,18 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
              sumaTotalDispensados += parseInt(producto.total);
              console.log("sumaTotalDispensados ", sumaTotalDispensados);
             if( sumaTotalDispensados === 0){    
-
+                    
                     console.log("Entro se pone CERO 0")
-                    totalInsertadosPendientes=0;
-
+                    G.Q.ninvoke(that,'consultarEstadoCotizacion',parametros.evolucion).then(function(resultado){  
+                         console.log("resultado ----->>>>> ", resultado);
+                        if(resultado.rows.length > 0){
+                            totalInsertadosPendientes = 1;
+                        }
+                            totalInsertadosPendientes=0;
+                           
+                        });
+                              
+                    console.log("[totalInsertadosPendientes] ----->>>>> ", totalInsertadosPendientes);
             }   
             
          }).fail(function(err){      
@@ -1699,7 +1707,33 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
    
        
 };
+             
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar el estado de una cotizacion
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model :
+ *  --PedidosCliente.prototype.consultarEstadoCotizacion
+ *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
+ *  --PedidosCliente.prototype.generarPedido
+ *  --PedidosCliente.prototype.eliminarCotizacion
+ */
+DispensacionHcModel.prototype.consultarEstadoCotizacion = function(evolucion, callback) {
+    
+   
+    G.knex('hc_pendientes_por_dispensar').where({
+        evolucion_id: evolucion,
+        sw_estado: '0'
+        
+    }).select('evolucion_id').then(function(resultado) {
 
+        callback(false, resultado);
+    }). catch (function(error) {
+
+        callback(error);
+    });
+};             
+             
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016

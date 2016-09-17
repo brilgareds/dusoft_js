@@ -1676,9 +1676,9 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
     }else{
         medicamentosDispensados = 'listarMedicamentosDispensados';
     }
-    console.log("medicamentosDispensados ", medicamentosDispensados);
+    //console.log("medicamentosDispensados ", medicamentosDispensados);
     G.Q.ninvoke(that.m_dispensacion_hc,medicamentosDispensados,parametros).then(function(resultado){
-       console.log("1) resultado ", resultado.rows);
+       //console.log("1) resultado ", resultado.rows);
         if(resultado.rows.length > 0){ 
             //console.log("resultado.rows ", resultado.rows);
             productosDispensados = resultado.rows;
@@ -1690,7 +1690,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         }
       
    }).then(function(resultado){
-       console.log("2) resultado ", resultado.rows);
+       //console.log("2) resultado ", resultado.rows);
        if(resultado.rows.length > 0){ 
             
             detalleCabecera = resultado.rows[0];
@@ -1701,7 +1701,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         }
        
    }).then(function(resultado){
-        console.log("3) resultado ", resultado.rows);   
+        //console.log("3) resultado ", resultado.rows);   
         if(resultado.rows.length > 0){ 
             
              profesional = resultado.rows;
@@ -1715,7 +1715,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
                           archivoHtml: 'medicamentosDispensados.html',
                           reporte: "Medicamentos_dispensados"
                           }, function(nombre_pdf) {
-                    console.log("nombre_pdf ", nombre_pdf);
+                    //console.log("nombre_pdf ", nombre_pdf);
                     res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
                     
                         listar_medicamentos_dispensados: {nombre_pdf: nombre_pdf, resultado: productosDispensados}
@@ -1787,9 +1787,9 @@ DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
  */
 DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
    
-   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
-   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
-   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
+   //console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
+   //console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
+   //console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
    
     var that = this;
     var args = req.body.data;
@@ -1820,7 +1820,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
             //console.log("resultado.rows ", resultado.rows);
             productosDispensados = resultado.rows;
              
-           console.log("resultado.rows (productosDispensados) ", productosDispensados);
+           //console.log("resultado.rows (productosDispensados) ", productosDispensados);
            
             return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
           
@@ -1876,7 +1876,7 @@ Array.prototype.unique=function(a){
 
 
 function __generarPdf(datos, callback) {  
-   console.log("datosdatos ", datos)
+   //console.log("datosdatos ", datos)
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/DispensacionHc/reports/'+datos.archivoHtml, 'utf8'),
@@ -1898,7 +1898,7 @@ function __generarPdf(datos, callback) {
                 if(err) {
                     console.log("err ",err);
                 } else {
-                    console.log("nombreTmp ", nombreTmp);
+                    //console.log("nombreTmp ", nombreTmp);
                     callback(nombreTmp);
                 }
             });

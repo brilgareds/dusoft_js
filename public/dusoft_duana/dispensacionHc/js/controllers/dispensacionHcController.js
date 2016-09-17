@@ -361,7 +361,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                     <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a>\
                                                  </li>\
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
-                                                    <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print">Todo </a>\
+                                                    <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Todo </a>\
                                                  </li>\
                                                  <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0\
                                                          && row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 ">\n\

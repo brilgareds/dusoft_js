@@ -267,7 +267,8 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
     
     
     var parametros = {1: obj.evolucionId};
-    var sql= "SELECT k.codigo_producto,\
+    var sql= " SELECT todo.* FROM ( \
+    SELECT k.codigo_producto,\
        k.numero_unidades,\
        k.fecha_vencimiento, \
        k.lote,  \
@@ -342,7 +343,7 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
              and d.usuario_id=sys.usuario_id \
              and inv.codigo_producto  = dd.codigo_producto\
   )as k \
- WHERE k.numero_unidades = (SELECT numero_entrega_actual from dispensacion_estados where evolucion_id = :1 )";
+  )as todo WHERE todo.entrega = (SELECT numero_entrega_actual from dispensacion_estados where evolucion_id = :1 )";
    /*console.log("obj ", obj);
     var fecha=" to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega ";
     var group;

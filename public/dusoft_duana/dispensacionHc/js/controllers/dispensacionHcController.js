@@ -550,7 +550,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 for(var i=0; i<numeroDeEntregas.length; i++){
                                     listaEntregasFormulas.push(dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas[i],data.obj.listar_medicamentos_dispensados));
                                 }
-                                console.log("listaEntregasFormulas ", listaEntregasFormulas);
+                                /**
+                                * +descripcion Se almacenan todas las entregas de la formula
+                                */
                                 obj.data.lista_total_dispensaciones = listaEntregasFormulas;
                                 
                                 dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
@@ -565,22 +567,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 
                         });
                        
-                         /**
-                          * +descripcion Se almacenan todas las entregas de la formula
-                          */
-                        /*obj.data.lista_total_dispensaciones = listaEntregasFormulas;
-                        console.log("obj ", obj.data.lista_total_dispensaciones);*/
-                       
-                        //dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
-                            
-                           /* if (data.status === 200) {
-                                   var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
-                                   console.log("registros ", data);
-                                   console.log("nombre ", nombre);
-                                   $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                            }*/
-                        //});  
-
                     };          
                    
                    /**

@@ -60,8 +60,10 @@
             </tr>
         </table>
 
-    <center><h3>- Medicamento Dispensados -</h3></center><p class="normal_10AN">MEDICAMENTOS DISPENSADOS</p>
     
+    
+    {{for productosDispensados}}
+    <center><h3>- Medicamento Dispensados -Entrega No {{:numeroEntrega}} </h3></center><p class="normal_10AN">MEDICAMENTOS DISPENSADOS</p>
     <table width="100%" cellspacing="2">
       <tr>
           <td align="center">
@@ -75,23 +77,26 @@
                       <td width="13%" ><U>FECHA VENC</U></td>
                       <td width="13%" ><U>LOTE</U></td>
                   </tr>
-
-              {{for productosDispensados}}
+                    
+                            {{for productos}}
                             <tr>
-                                <td >{{:fecha_entrega}}</td>
+                                  
+                                <td >{{:fecha_entrega}}</td> 
                                 <td >{{:codigo_producto}}</td>
-                                <td  >{{:descripcion_prod}}</td>
+                                <td >{{:descripcion_prod}}</td>
                                 <td >{{:numero_unidades}}</td>
+                            
                                 <td >{{:fecha_vencimiento}}</td>
-                                <td >{{:lote}}</td>
-                                <td>{{:total}}</td>
+                                 <td >{{:lote}}</td>
+                                
+                                 
                             </tr>
                             {{/for}}
               </table>
           </td>
       </tr>
   </table>
-
+{{/for}}
         <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
             <tr class="label"  valign="bottom" >
                 <td align="LEFT" height="50">________________________________________</td>

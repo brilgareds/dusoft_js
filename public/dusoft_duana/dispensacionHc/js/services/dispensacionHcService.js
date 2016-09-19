@@ -499,78 +499,55 @@ define(["angular", "js/services"], function(angular, services) {
              *              de la consulta de todas las dispensaciones de la formula
              *              con el fin de clasificarlas en entregas
              * @fecha 10/09/2016
-             */
-            /**
-               * @author Cristian Ardila
-               * +Descripcion Funcion encargada de serializar los datos de los
-               *              medicamentos formulados contra los modelos
-               * @fecha 25/05/2016
-               */
-            self.renderListartotalDispensacionesFormula = function(numeroEntrega,entrega){
-                
+             */          
+            self.renderListartotalDispensacionesFormula = function(numeroEntrega,entrega){               
              
                 var entregas = [];
                 var Entrega;
-                //console.log("entrega ", entrega[0]);
-            for(var i=0; i<numeroEntrega.length ; i++){
-                 Entrega  = EntregaHc.get();
-                  for(var j=0; j<entrega.length; j++){  //for(var j in entrega){
+                /**
+                 * +Descripcion Se recorre la cantidad de entregas que puede
+                 *              tener la formula
+                 */
+                for(var i=0; i<numeroEntrega.length ; i++){
+                    /*
+                     * +Descripcion Se crea un objeto de la clase Entrega
+                     */
+                    Entrega  = EntregaHc.get();
                     
-                    var _entrega = entrega[j];
-                    
-                            
-                                  
-                        //console.log("numeroEntrega[i]: " + numeroEntrega[i] +" === " + " _entrega.entrega: " +  _entrega.entrega)
-                        if( numeroEntrega[i] === _entrega.entrega ){
-                            
-                               
-                            
+                    /**
+                     * +Descripcion Se recorre el arreglo con las entregas de la
+                     *              formula
+                     */
+                    for(var j=0; j<entrega.length; j++){ 
+                        
+                        var _entrega = entrega[j];
+                        
+                        /**
+                         * +Descripcion Se valida si el numero de entrega (numeroEntrega[i])
+                         *              coincide con el numero de entrega de la formula (_entrega.entrega)  
+                         *              y si es asi se crea la primera entrega            
+                         */
+                        if(numeroEntrega[i] === _entrega.entrega){
                             Entrega.setNumeroEntrega(_entrega.entrega);
                         }
                         
-                        //console.log("Entrega ", Entrega);
-                        //console.log("Entrega.getNumeroEntrega() === "+Entrega.getNumeroEntrega()+" _entrega.entrega === " + Entrega.getNumeroEntrega());
+                        /**
+                         * +Descripcion Se valida si la entrega creada coincide
+                         *              con el numero de entrega del producto de la formula
+                         *              y si es asi se almacena en el arreglo
+                         */
                         if(Entrega.getNumeroEntrega() === _entrega.entrega  ){
-                            //console.log("Entrega.getNumeroEntrega(): " + Entrega.getNumeroEntrega() + " entrega: "+ _entrega.entrega);    
-                             //Entrega.agregarProductos({producto:[_entrega.codigo_producto], entrega:[_entrega.entrega]});
-                             Entrega.agregarProductos(_entrega);
-                             
-                            
+                            Entrega.agregarProductos(_entrega);
                         }
-                        
-                        //if(_entrega.entrega === numeroEntrega[i]){
-                         
-                          
-                         // }
-                    /*var Producto = ProductosHc.get(_entrega.codigo_producto,_entrega.descripcion_prod, 0);  
-                        Producto.setSerialId(Lote.hc_dispen_tmp_id)
-                        Producto.agregarLotes(Lote); */                      
-                        
-                    /*
-                   // console.log("_productos ", _productos)
-                    var Productos  = ProductosFOFO.get(_productos.codigo_medicamento,_productos.descripcion_prod, _productos.cantidad);  
-                        Productos.setPerioricidadEntrega(_productos.perioricidad_entrega);
-                        Productos.setTiempoTotal(_productos.tiempo_total);
-                        Productos.setPrincipioActivo(_productos.cod_principio_activo);
-                        Productos.setCantidadEntrega(_productos.cantidad_entrega);
-                        Productos.setAutorizado(_productos.sw_autorizado);
-                        
-                        Productos.setCodigoFormaFarmacologica(_productos.cod_forma_farmacologica);
-                        
-                    productos.push(Productos);*/
-                        
-                }
-                     
-                    entregas.push(Entrega);
-                }
-                
-                console.log("entregas ", entregas);
-                    return entregas;
-                
-            };
-            
-            
-            
+
+                    }
+                   /**
+                    * +Descripcion Cada entrega se almacena en este arreglo 
+                    **/
+                    //entregas.push(Entrega);
+                }                                 
+                return Entrega;                
+            };                                  
         return this;
     }]);
          

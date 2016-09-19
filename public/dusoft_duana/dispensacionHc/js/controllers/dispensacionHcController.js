@@ -523,70 +523,63 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                            evolucion: entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),
                                            tipoIdPaciente:entity.mostrarPacientes()[0].getTipoIdPaciente(),
                                            pacienteId: entity.mostrarPacientes()[0].getPacienteId()
-                                      }
+                                      },
+                                      lista_total_dispensaciones :{}
+                                      
                                   }    
                                };
-                        
-                        /*var entregas = {
-                            
-                            entregas:{
-                                    0:{
-                                        0:'PRODUCTO 1',
-                                        1:'PRODUCTO 2'
-                                    },
-                                    1:{
-                                        0:'PRODUCTO 1',
-                                        1:'PRODUCTO 2'
-                                    }
-                            }
-                        };
-                        console.log("entregas ", entregas);*/
+                      
                         Array.prototype.unique=function(a){
                             return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
                         });
                         var arregloEntregas = [];
-                        
+                        var listaEntregasFormulas =[];
+                        var totalDispensaciones;
                         dispensacionHcService.listarTotalDispensacionesFormula(obj, function(data){
                             
-                            var totalDispensaciones = data.obj.listar_medicamentos_dispensados;
-                                console.log("totalDispensaciones ", totalDispensaciones);
-                                /*totalDispensaciones.forEach(function(entregas){
-                                    
-                                    arregloEntregas.push(entregas.entrega);
-                                   
+                            if (data.status === 200) {
+                                
+                                totalDispensaciones = data.obj.listar_medicamentos_dispensados;
+                            
+                                totalDispensaciones.forEach(function(entregas){                                    
+                                    arregloEntregas.push(entregas.entrega);                                 
                                 });
                                 
-                                var numeroDeEntregas = arregloEntregas.unique();*/
+                                var numeroDeEntregas = arregloEntregas.unique();
+                                 
+                                for(var i=0; i<numeroDeEntregas.length; i++){
+                                    listaEntregasFormulas.push(dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas[i],data.obj.listar_medicamentos_dispensados));
+                                }
+                                console.log("listaEntregasFormulas ", listaEntregasFormulas);
+                                obj.data.lista_total_dispensaciones = listaEntregasFormulas;
                                 
-                                //console.log("entrega ", data.obj.listar_medicamentos_dispensados);
-                                /*for(var i=0; i<numeroDeEntregas.length; i++){
-
-                                    console.log("entregas ", numeroDeEntregas[i]);
-                                    dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas[i],data.obj.listar_medicamentos_dispensados);
-                                 }*/
-                                //var result = dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas,data.obj.listar_medicamentos_dispensados);
-                                
-                                //console.log("result ", result);
+                                dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
+                                    var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
+                                    console.log("registros ", data);
+                                    console.log("nombre ", nombre);
+                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                                });
+                                 
+                            }
+                               //console.log("listaEntregasFormulas ", listaEntregasFormulas);
                                 
                         });
-                         
-                       // */
                        
+                         /**
+                          * +descripcion Se almacenan todas las entregas de la formula
+                          */
+                        /*obj.data.lista_total_dispensaciones = listaEntregasFormulas;
+                        console.log("obj ", obj.data.lista_total_dispensaciones);*/
+                       
+                        //dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
                             
-                            //var entregas = dispensacionHcService.renderListartotalDispensacionesFormula(data.obj.listar_medicamentos_dispensados);
-                            
-                           //console.log("entregas ", entregas);
-                            
-                        
-                        /*dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
-                            console.log("data ", data);
-                            if (data.status === 200) {
+                           /* if (data.status === 200) {
                                    var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
                                    console.log("registros ", data);
                                    console.log("nombre ", nombre);
                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                            }
-                        });  */
+                            }*/
+                        //});  
 
                     };          
                    

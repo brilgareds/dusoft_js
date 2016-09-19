@@ -355,7 +355,7 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
     var sql = "SELECT\
         dd.codigo_producto,\
         dd.cantidad as numero_unidades,\
-        dd.fecha_vencimiento ,\
+        dd.fecha_vencimiento ,\ 
         dd.lote,\
         fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
         fc_descripcion_producto_alterno(dd.codigo_producto) as molecula,\
@@ -381,10 +381,10 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
         and inv.codigo_producto  = dd.codigo_producto " + group;*/
     //console.log("sql ----->>>>>>>>>> ", sql);
     G.knex.raw(sql,parametros).then(function(resultado){    
-      console.log("---->>) resultado ", resultado.rows);
+      
         callback(false, resultado)
     }).catch(function(err){        
-      
+      console.log(" err [listarMedicamentosDispensados]: ", err);
         callback(err);
     });
           

@@ -5,6 +5,16 @@
         <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css >
         <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print">
         
+        <script>
+            
+          
+           var imprimir = function(){
+               
+               document.getElementById("btnImprimir").style.display = 'none';
+               window.print();
+              
+           }
+            </script>
     </head>
     <body>
         <br>
@@ -63,13 +73,18 @@
     
     
     {{for productosDispensados}}
-    <center><h3>- Medicamento Dispensados -Entrega No {{:numeroEntrega}} </h3></center><p class="normal_10AN">MEDICAMENTOS DISPENSADOS</p>
+    
+    
+     {{for productos[0]}}
+        <center><h3>- Medicamento Entregados </h3></center><p class="normal_10AN">MEDICAMENTOS DISPENSADOS FECHA. {{:fecha_entrega}} -ENTREGA No. {{:numeroEntrega}} </p>
+    
+     {{/for}}
     <table width="100%" cellspacing="2">
       <tr>
           <td align="center">
               <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
                   <tr >
-                      <td width="13%" ><U>FECHA ENTREGA</U></td>
+                      <!--<td width="13%" ><U>FECHA ENTREGA</U></td>//-->
 
                       <td width="13%" ><U>CODIGO</U></td>
                       <td width="35%" ><U>MEDICAMENTO</U></td>
@@ -81,7 +96,7 @@
                             {{for productos}}
                             <tr>
                                   
-                                <td >{{:fecha_entrega}}</td> 
+                                <!--<td >{{:fecha_entrega}}</td> //-->
                                 <td >{{:codigo_producto}}</td>
                                 <td >{{:descripcion_prod}}</td>
                                 <td >{{:numero_unidades}}</td>
@@ -116,8 +131,10 @@
             </tr>
 
         </table>
+        <div id = "btnImprimir"><input type="button" name="imprimir" value="Imprimir" onclick="imprimir()" ></div>
     </BODY>
 </HTML>
+
 
 
 

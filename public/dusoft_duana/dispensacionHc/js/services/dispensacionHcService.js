@@ -502,7 +502,7 @@ define(["angular", "js/services"], function(angular, services) {
              */          
             self.renderListartotalDispensacionesFormula = function(numeroEntrega,entrega){               
              
-                var entregas = [];
+                //var entregas = [];
                 var Entrega;
                 /**
                  * +Descripcion Se recorre la cantidad de entregas que puede

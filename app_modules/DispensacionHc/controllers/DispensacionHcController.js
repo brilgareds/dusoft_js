@@ -1676,11 +1676,11 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
     }else{
         medicamentosDispensados = 'listarMedicamentosDispensados';
     }
-    //console.log("medicamentosDispensados ", medicamentosDispensados);
+    console.log("medicamentosDispensados ", medicamentosDispensados);
     G.Q.ninvoke(that.m_dispensacion_hc,medicamentosDispensados,parametros).then(function(resultado){
-       //console.log("1) resultado ", resultado.rows);
+       console.log("1) resultado ", resultado.rows);
         if(resultado.rows.length > 0){ 
-            //console.log("resultado.rows ", resultado.rows);
+            console.log("resultado.rows ", resultado.rows);
             productosDispensados = resultado.rows;
            
             return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
@@ -1690,7 +1690,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         }
       
    }).then(function(resultado){
-       //console.log("2) resultado ", resultado.rows);
+       console.log("2) resultado ", resultado.rows);
        if(resultado.rows.length > 0){ 
             
             detalleCabecera = resultado.rows[0];
@@ -1701,7 +1701,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         }
        
    }).then(function(resultado){
-        //console.log("3) resultado ", resultado.rows);   
+        console.log("3) resultado ", resultado.rows);   
         if(resultado.rows.length > 0){ 
             
              profesional = resultado.rows;
@@ -1731,17 +1731,12 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
     }).done();
 };
 
-
-
-
-
-
-
-
-
-
-
-
+ 
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo que consulta todas las dispensaciones de la formula
+ * @fecha 20/09/2016 DD/MM/YYYY
+ */
 DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
     
   

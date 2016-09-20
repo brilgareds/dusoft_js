@@ -294,15 +294,15 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
                    dd.sw_pactado,\
                    dd.total_costo,\
                    fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod, \
-                   sys.usuario_id, \
+                   sys.usuario_id,\
                    sys.nombre,\
                    sys.descripcion,\
-                   'dispensacion_hc' as sistema, \
+                   'dispensacion_hc' as sistema,\
                    to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega, \
                    to_char(now()- d.fecha_registro,'dd') as dias_de_entregado, \
                    ( \
-                   SELECT min(hcf.fecha_formulacion)  \
-                   FROM hc_formulacion_antecedentes hcf  \
+                   SELECT min(hcf.fecha_formulacion)\
+                   FROM hc_formulacion_antecedentes hcf\
                    WHERE hcf.evolucion_id = :1 \
                    )as fecha, \
                    d.fecha_registro,\
@@ -314,23 +314,23 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
                    INNER JOIN inventarios_productos inv ON inv.codigo_producto  = dd.codigo_producto\
              WHERE hc.evolucion_id = :1 AND d.todo_pendiente = '1' \
       UNION  \
-      SELECT dd.codigo_producto, \
-             dd.cantidad as numero_unidades, \
+      SELECT dd.codigo_producto,\
+             dd.cantidad as numero_unidades,\
              dd.fecha_vencimiento,\
              dd.lote, \
              dd.sw_pactado,\
              dd.total_costo,\
-      	     fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,  \
+      	     fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
              sys.usuario_id, \
              sys.nombre,\
              sys.descripcion,\
              'dispensacion_hc' as sistema,\
              to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega, \
              to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,\
-             (SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf WHERE hcf.evolucion_id = :1 )as fecha, \
+             (SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf WHERE hcf.evolucion_id = :1 )as fecha,\
              d.fecha_registro,\
              inv.grupo_id\
-       FROM hc_formulacion_despachos_medicamentos as dc,   \
+       FROM hc_formulacion_despachos_medicamentos as dc,\
             bodegas_documentos as d,\
             bodegas_documentos_d AS dd,\
             system_usuarios  sys,\
@@ -343,7 +343,7 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
              and d.usuario_id=sys.usuario_id \
              and inv.codigo_producto  = dd.codigo_producto\
   )as k \
-  )as todo WHERE todo.entrega = (SELECT numero_entrega_actual from dispensacion_estados where evolucion_id = :1 )";
+  )as todo WHERE todo.entrega = (SELECT max(numero_entrega_actual) from dispensacion_estados where evolucion_id = :1 )";
    /*console.log("obj ", obj);
     var fecha=" to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega ";
     var group;

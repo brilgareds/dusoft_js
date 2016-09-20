@@ -112,6 +112,54 @@
       </tr>
   </table>
 {{/for}}
+
+
+
+
+
+
+<center><h3>- Medicamento Pendientes Dispensados -</h3></center><p class="normal_10AN">MEDICAMENTOS PENDIENTES DISPENSADOS</p>
+    <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+        <table width="100%" cellspacing="2">
+            <tr>
+                <td align="center">
+                    <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+                        <tr>
+                            <td><U>CODIGO</U></td>
+                            <td colspan="2" ><U>MEDICAMENTO</U></td>
+                            <td><U>CANTIDAD</U></td>
+                        </tr>
+                        
+                            {{for productosDispensadosPendientes}}
+                            <tr>
+                                <td colspan="1">{{:codigo_producto}}</td>
+                                <td colspan="2" >{{:descripcion_prod}}</td>
+                                <td>{{:numero_unidades}}</td>
+                            </tr>
+                            {{/for}}
+                        
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
             <tr class="label"  valign="bottom" >
                 <td align="LEFT" height="50">________________________________________</td>

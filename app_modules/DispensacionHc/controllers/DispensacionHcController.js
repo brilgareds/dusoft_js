@@ -1806,6 +1806,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
     
    var productosDispensados;
    var profesional;
+   var productosDispensadosPendientes;
    var detalleCabecera;
    
    var parametros = {evolucionId:args.listar_medicamentos_dispensados.evolucion,
@@ -1823,17 +1824,29 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
             
             detalleCabecera = resultado.rows[0];
             productosDispensados = args.lista_total_dispensaciones;
-            return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros)
+            return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros);
                 
         }else{
             throw 'Consulta sin resultados';
         }
        
    }).then(function(resultado){
+       
+       if(resultado.rows.length > 0){ 
+            
+            profesional = resultado.rows;
+            return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros)
+       }else{
+           
+           throw 'Consulta sin resultados';
+           
+       }
+       //
+   }).then(function(resultado){
         //console.log("3) resultado ", resultado.rows);   
         if(resultado.rows.length > 0){ 
             
-             profesional = resultado.rows;
+             productosDispensadosPendientes = resultado.rows;
              
          
              console.log("productosDispensados[0][0] TODOS ", productosDispensados);
@@ -1842,6 +1855,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
                           serverUrl:req.protocol + '://' + req.get('host')+ "/", 
                           detalle: detalleCabecera, 
                           profesional:profesional,
+                          productosDispensadosPendientes:productosDispensadosPendientes,
                           archivoHtml: 'medicamentosDispensadosTodo.html',
                           reporte: "todo_dispensados"
                           }, function(nombre_pdf) {

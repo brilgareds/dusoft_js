@@ -1390,7 +1390,7 @@ DispensacionHcModel.prototype.actualizarTipoFormula = function(obj, callback) {
         console.log("resultado --->>>", resultado);
        callback(false, resultado);
     }).catch(function(err){    
-        console.log("err ", err);
+        console.log("err (/catch) [actualizarTipoFormula]: ", err);
        callback(err);
     });
 };
@@ -1421,7 +1421,7 @@ DispensacionHcModel.prototype.autorizarDispensacionMedicamento = function(obj, c
         console.log("resultado --->>>", resultado);
        callback(false, resultado);
     }).catch(function(err){    
-        console.log("err ", err);
+        console.log("err (/catch) [autorizarDispensacionMedicamento]: ", err);
        callback(err);
     });
 };
@@ -1439,7 +1439,9 @@ DispensacionHcModel.prototype.asignacionNumeroDocumentoDespacho = function(obj, 
     G.knex.raw(sql, {1: obj.bodegasDocId}).
     then(function(resultado){   
        callback(false, resultado);
-    }).catch(function(err){    
+    }).catch(function(err){  
+        console.log("err (/catch) [asignacionNumeroDocumentoDespacho]: ", err);
+        console.log("parametros: ", obj);
        callback(err);
     });
 
@@ -1461,7 +1463,8 @@ DispensacionHcModel.prototype.bloquearTabla = function(callback) {
     G.knex.raw(sql).
     then(function(resultado){     
        callback(false, resultado);
-    }).catch(function(err){       
+    }).catch(function(err){  
+        console.log("err (/catch) [bloquearTabla]: ", err);
        callback(err);
     });
 
@@ -1491,7 +1494,8 @@ DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callb
           
           callback(false, resultado); 
    }).catch(function(err){
-        console.log("err [consultarUltimaEntregaFormula]: ", err);
+        console.log("err (/catch) [consultarUltimaEntregaFormula]: ", err);
+        console.log("parametros: ", parametros);
         callback({err:err, msj: "Error al consultar el numero de entrega"});   
     });
 
@@ -1521,18 +1525,11 @@ DispensacionHcModel.prototype.consultarNumeroTotalEntregas = function(obj,transa
           
         callback(false, resultado);
    }).catch(function(err){
-        console.log("err [consultarNumeroTotalEntregas]: ", err);
+        console.log("err (/catch) [consultarNumeroTotalEntregas]: ", err);
+        console.log("parametros: ", parametros);
         callback({err:err, msj: "Error al consultar el numero total de entregas"});   
 });  
    
-   
-  /*  G.knex.raw(sql,parametros).then(function(resultado){ 
-        
-        callback(false, resultado)
-    }).catch(function(err){   
-        console.log("err ", err);
-        callback(err)
-    });  */ 
 };
 /*
  * @autor : Cristian Ardila
@@ -1624,7 +1621,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
             console.log("COMMIT ----->>> ELIMINANDO TODO PENDIENTE **********")
             transaccion.commit();            
         }).fail(function(err){
-            console.log("FAIL ", err)
+            console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
                 transaccion.rollback(err);
         }).done();
 
@@ -1698,7 +1695,8 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
                     console.log("[totalInsertadosPendientes] ----->>>>> ", totalInsertadosPendientes);
             }   
             
-         }).fail(function(err){      
+         }).fail(function(err){
+             console.log("err (/fail) [__insertarMedicamentosPendientesPorDispensar]: ", err);
        }).done();                 
       
     index++;
@@ -1730,7 +1728,8 @@ DispensacionHcModel.prototype.consultarEstadoCotizacion = function(evolucion, ca
 
         callback(false, resultado);
     }). catch (function(error) {
-
+        console.log("err (/catch) [actualizarProductoPendientePorBodega]: ", error)
+        console.log("parametros [evolucion]: ", evolucion);
         callback(error);
     });
 };             
@@ -1754,8 +1753,9 @@ DispensacionHcModel.prototype.actualizarProductoPendientePorBodega = function(ev
            
           callback(false, resultado);
    }).catch(function(err){       
-       console.log("err ", err)
-          callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
+        console.log("err (/catch) [actualizarProductoPendientePorBodega]: ", err);
+        console.log("parametros ", parametros);
+        callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
     });  
 };
 
@@ -1799,10 +1799,11 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesSinDispensar = functio
      
     G.knex.raw(sql,parametros).then(function(resultado){ 
         
-      callback(false, resultado)
+        callback(false, resultado)
     }).catch(function(err){         
-         console.log("err ", err);
-      callback(err)
+         console.log("err (/catch) [listarMedicamentosPendientesSinDispensar]: ", err);
+         console.log("parametros ", parametros);
+        callback(err);
     });            
 };
 
@@ -1825,7 +1826,9 @@ DispensacionHcModel.prototype.insertarDespachoMedicamentosPendientes = function(
       query.then(function(resultado){           
           callback(false, resultado);
    }).catch(function(err){
-            callback({err:err, msj: "Error al generar el despacho de los medicamentos pendientes"});   
+        console.log("err (/catch) [insertarDespachoMedicamentosPendientes]: ", err);
+        console.log("parametros ", parametros);
+        callback({err:err, msj: "Error al generar el despacho de los medicamentos pendientes"});   
     });  
 }
 
@@ -1850,8 +1853,10 @@ DispensacionHcModel.prototype.actualizarProductoPorBodega = function(obj,transac
           
           callback(false, resultado);
    }).catch(function(err){
-         
-          callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
+        
+        console.log("err (/catch) [actualizarProductoPorBodega]: ", err); 
+        console.log("parametros ", parametros);
+        callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
     });  
 };
  
@@ -2183,8 +2188,9 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
           console.log("A QUI resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
-         console.log("err [actualizarDispensacionEstados]: ", err);
-            callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
+        console.log("err [actualizarDispensacionEstados]: ", err);
+        console.log("parametros ", parametros);
+        callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
     });  
 };
 
@@ -2278,7 +2284,9 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
             __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback);
         }, 300);
         
-    }).fail(function(err){      
+    }).fail(function(err){ 
+        console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
+        console.log("parametros: ", parametros);
         callback(err);            
     }).done();
 }
@@ -2312,7 +2320,9 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
         query.then(function(resultado){     
             callback(false, resultado);
     }).catch(function(err){
-            callback({err:err, msj: "Error al actualizar las existencias de los lotes por que no pueden ser menores a 0"});   
+        console.log("err (/catch) [__actualizarExistenciasBodegasLotesFv]: ", err);
+        console.log("parametros: ", parametros);
+        callback({err:err, msj: "Error al actualizar las existencias de los lotes por que no pueden ser menores a 0"});   
     });  
 
 };
@@ -2339,6 +2349,8 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
         query.then(function(resultado){    
             callback(false, resultado);
     }).catch(function(err){
+        console.log("err (/catch) [__actualizarExistenciasBodegas]: ", err);
+        console.log("parametros: ", parametros);
             callback({err:err, msj: "Error al actualizar las existencias de bodega por que no pueden ser menores a 0"});   
     });  
 };
@@ -2368,7 +2380,9 @@ function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,tra
           
             callback(false, resultado);
     }).catch(function(err){
-            callback({err:err, msj: "Error al guardar el detalle de los productos dispensados"});   
+        console.log("err (/catch) [__insertarBodegasDocumentosDetalle]: ", err);
+        console.log("parametros: ", parametros);
+        callback({err:err, msj: "Error al guardar el detalle de los productos dispensados"});   
     });
 };
 
@@ -2394,10 +2408,12 @@ DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto
     
    if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){ 
-          console.log("resultado >>> ", resultado);
+          
             callback(false, resultado);
     }).catch(function(err){
-            callback({err:err, msj: "Error al guardar los medicamentos pendientes"});   
+        console.log("err (/catch) [insertarPendientesPorDispensar]: ", err);
+        console.log("parametros: ", parametros);
+        callback({err:err, msj: "Error al guardar los medicamentos pendientes"});   
     });
 };
 
@@ -2417,7 +2433,9 @@ DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,trans
           console.log("Eliminar resultado ", resultado)
           callback(false, resultado);
    }).catch(function(err){
-            callback({err:err, msj: "Error al eliminar los temporales"});   
+        console.log("err (/catch) [eliminarTemporalesDispensados]: ", err);
+        console.log("parametros: ", parametros);
+        callback({err:err, msj: "Error al eliminar los temporales"});   
     });  
 };
 
@@ -2444,8 +2462,10 @@ DispensacionHcModel.prototype.registrarEvento = function(parametro, callback)
         
     }).then(function(){     
             callback(false);
-    }).catch(function(err){       
-            callback(err);       
+    }).catch(function(err){
+        console.log("err (/catch) [registrarEvento]: ", err);
+        console.log("parametros: ", parametro);
+        callback(err);       
     }).done(); 
     
 };
@@ -2469,7 +2489,9 @@ function __actualizarDespachoMedicamentoEvento(parametro, transaccion, callback)
         query.then(function(resultado){          
             callback(false, resultado);
     }).catch(function(err){   
-           callback({err:err, msj: "Error al actualizar el evento"});
+        console.log("err (/catch) [__actualizarDespachoMedicamentoEvento]: ", err);
+        console.log("parametros: ", parametro);
+        callback({err:err, msj: "Error al actualizar el evento"});
     });  
 };
 
@@ -2505,8 +2527,9 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
             console.log(" resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
-        console.log(" err ", err);
-           callback({err:err, msj: "Error al guardar el evento"});
+        console.log("err (/catch) [__insertarDespachoMedicamentoEvento]: ", err);
+        console.log("parametros: ", parametro);
+        callback({err:err, msj: "Error al guardar el evento"});
     });  
 };
 
@@ -2527,7 +2550,9 @@ function __eliminarTemporalFormula(producto, transaccion, callback) {
         query.then(function(resultado){          
             callback(false, resultado);
     }).catch(function(err){
-            callback(err);   
+        console.log("err (/catch) [__eliminarTemporalFormula]: ", err);
+        console.log("parametros: ", producto);
+        callback(err);   
     });  
 };
 
@@ -2564,7 +2589,9 @@ function __insertarTemporalFarmacia(producto, transaccion, callback) {
         query.then(function(resultado){           
             callback(false, resultado);
     }).catch(function(err){
-            callback(err);   
+        console.log("err (/catch) [__insertarTemporalFarmacia]: ", err);
+        console.log("parametros: ", producto);
+        callback(err);   
     });
    
 };
@@ -2592,8 +2619,9 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
             console.log("resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
-            console.log("err ", err);
-            callback({err:err, msj: "Error al generar el documento de bodega"});   
+        console.log("err (/catch) [__insertarBodegasDocumentos]: ", err);
+        console.log("parametros: ", obj);
+        callback({err:err, msj: "Error al generar el documento de bodega"});   
     });
 };
 
@@ -2614,7 +2642,9 @@ function __insertarDespachoMedicamentos(obj, transaccion, callback){
         query.then(function(resultado){           
             callback(false, resultado);
     }).catch(function(err){
-            callback({err:err, msj: "Error al generar el despacho del medicamento"});  
+        console.log("err (/catch) [__insertarDespachoMedicamentos]: ", err);
+        console.log("parametros: ", obj);
+        callback({err:err, msj: "Error al generar el despacho del medicamento"});  
     });
 }
 

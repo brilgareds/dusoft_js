@@ -294,15 +294,15 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
                    dd.sw_pactado,\
                    dd.total_costo,\
                    fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod, \
-                   sys.usuario_id,\
+                   sys.usuario_id, \
                    sys.nombre,\
                    sys.descripcion,\
-                   'dispensacion_hc' as sistema,\
+                   'dispensacion_hc' as sistema, \
                    to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega, \
                    to_char(now()- d.fecha_registro,'dd') as dias_de_entregado, \
                    ( \
-                   SELECT min(hcf.fecha_formulacion)\
-                   FROM hc_formulacion_antecedentes hcf\
+                   SELECT min(hcf.fecha_formulacion)  \
+                   FROM hc_formulacion_antecedentes hcf  \
                    WHERE hcf.evolucion_id = :1 \
                    )as fecha, \
                    d.fecha_registro,\
@@ -314,20 +314,20 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
                    INNER JOIN inventarios_productos inv ON inv.codigo_producto  = dd.codigo_producto\
              WHERE hc.evolucion_id = :1 AND d.todo_pendiente = '1' \
       UNION  \
-      SELECT dd.codigo_producto,\
-             dd.cantidad as numero_unidades,\
+      SELECT dd.codigo_producto, \
+             dd.cantidad as numero_unidades, \
              dd.fecha_vencimiento,\
              dd.lote, \
              dd.sw_pactado,\
              dd.total_costo,\
-      	     fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+      	     fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,  \
              sys.usuario_id, \
              sys.nombre,\
              sys.descripcion,\
              'dispensacion_hc' as sistema,\
              to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega, \
              to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,\
-             (SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf WHERE hcf.evolucion_id = :1 )as fecha,\
+             (SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf WHERE hcf.evolucion_id = :1 )as fecha, \
              d.fecha_registro,\
              inv.grupo_id\
        FROM hc_formulacion_despachos_medicamentos as dc,\
@@ -864,7 +864,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     console.log(" ***** consultarUltimoRegistroDispensacion ****** ");
     console.log(" ***** consultarUltimoRegistroDispensacion ****** ");
     
-    console.log("obj ", obj);
+    
     var sql = "";
     var sql2 = "";
     var parametros = {1: obj.tipoIdPaciente, 2: obj.pacienteId};
@@ -883,13 +883,14 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                 A.fecha_registro,\
                 A.unidades,\
                 A.nombre,\
-                A.razon_social\
+                (SELECT bode.descripcion FROM bodegas as bode WHERE bode.empresa_id = A.empresa_id AND bode.centro_utilidad=A.centro_utilidad AND bode.bodega = A.bodega) AS razon_social,\
+                A.bodega,A.centro_utilidad\
                 FROM (\
                     SELECT to_char(d.fecha_registro,'YYYY-mm-dd') AS fecha_registro,\
                     '1' as resultado,\
                     SUM(dd.cantidad) as unidades,\
                     SYS.nombre,\
-                    EMPRE.razon_social\
+                    EMPRE.razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id\
                     FROM hc_formulacion_despachos_medicamentos as dc\
                     JOIN hc_formulacion_antecedentes hc ON(dc.evolucion_id=hc.evolucion_id),\
                     bodegas_documentos as d,\
@@ -908,13 +909,13 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                     and NUME.empresa_id=EMPRE.empresa_id " + sql + "and hc.tipo_id_paciente= :1\
                     and hc.paciente_id= :2\
                     and dc.sw_estado='1'\
-                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social\
+                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id\
                     UNION\
                    SELECT to_char(d.fecha_registro,'YYYY-mm-dd') AS fecha_registro,\
                     '0' as resultado,\
                     SUM(dd.cantidad) as unidades,\
                     SYS.nombre,\
-                    EMPRE.razon_social\
+                    EMPRE.razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id\
                     FROM hc_formulacion_despachos_medicamentos_pendientes as dc\
                     JOIN hc_formulacion_antecedentes hc ON(dc.evolucion_id=hc.evolucion_id) ,\
                     bodegas_documentos as d,\
@@ -932,14 +933,14 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                     and d.bodegas_doc_id=NUME.bodegas_doc_id\
                     and NUME.empresa_id=EMPRE.empresa_id  " + sql +  "and hc.tipo_id_paciente= :1\
                     and hc.paciente_id= :2\
-                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social\
+                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id\
                     UNION\
                 SELECT\
                 MAX(to_char(a.fecha_registro,'YYYY-MM-DD')) AS fecha_registro,\
                 '1' as resultado,\
                 SUM(b.cantidad) as unidades,\
                 g.nombre,\
-                f.descripcion||'-'||i.razon_social as razon_social\
+                f.descripcion||'-'||i.razon_social as razon_social,e.bodega,e.centro_utilidad, e.empresa_id \
                 FROM\
                 bodegas_documentos as a\
                 JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id)\
@@ -959,14 +960,14 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                 and d.sw_estado IN ('0','1')\
                 and d.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
 		and d.fecha_registro >= '" +obj.fechaDia+ "'::date\
-                GROUP BY 2,4,5\
+                GROUP BY 2,4,5,e.bodega,e.centro_utilidad,e.empresa_id \
                 union\
                 SELECT\
                             MAX(to_char(a.fecha_registro,'YYYY-MM-DD')) AS fecha_registro,\
                             '0' as resultado,\
                             SUM(b.cantidad) as unidades,\
                             g.nombre,\
-                            f.descripcion||'-'||i.razon_social as razon_social\
+                            f.descripcion||'-'||i.razon_social as razon_social,e.bodega,e.centro_utilidad,e.empresa_id \
                             FROM\
                            bodegas_documentos as a\
                             JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id)\
@@ -985,12 +986,13 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             and d.sw_estado IN ('0','1')\
                             and d.fecha_registro <= ('" +obj.today + "'::date +'1 day' ::interval)::date\
                             and d.fecha_registro >= '" +obj.fechaDia+ "'::date\
-                            GROUP BY 2,4,5\
+                            GROUP BY 2,4,5,e.bodega,e.centro_utilidad,e.empresa_id \
                        ) AS A ORDER BY  A.resultado ASC ";  
     G.knex.raw(sql,parametros).then(function(resultado){     
-      //  console.log("resultado ", resultado)
+     
         callback(false, resultado);
-    }).catch(function(err){       
+    }).catch(function(err){      
+        console.log("parametros: ", parametros);
         console.log("err consultarUltimoRegistroDispensacion: ", err);   
         callback(err);
     });  
@@ -1015,7 +1017,7 @@ DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
                   AND usuario_id = :4 AND sw_activo = '1' ";
   
     G.knex.raw(sql,parametros).then(function(resultado){ 
-        console.log("resultado ", resultado)
+        //console.log("resultado ", resultado)
           callback(false, resultado)
     }).catch(function(err){   
         console.log("err usuarioPrivilegios: ", err);    

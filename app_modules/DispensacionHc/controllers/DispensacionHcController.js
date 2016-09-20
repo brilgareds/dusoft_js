@@ -443,6 +443,15 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
         return;
     }
     
+    if (!args.existenciasBodegas.pacienteId || args.existenciasBodegas.pacienteId.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere el documento del paciente', 404, {existenciasBodegas: []}));
+        return;
+    }
+    if (!args.existenciasBodegas.tipoPacienteId || args.existenciasBodegas.tipoPacienteId.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de documento del paciente', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
     var parametros={empresa: args.existenciasBodegas.empresa,
                     centroUtilidad:args.existenciasBodegas.centroUtilidad, 
                     bodega:args.existenciasBodegas.bodega,
@@ -452,8 +461,8 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
                     };
        
         
-   var parametrosUltimoRegistroDispensacion = {tipoIdPaciente: 'CC', 
-                                               pacienteId: '42076373', 
+   var parametrosUltimoRegistroDispensacion = {tipoIdPaciente: args.existenciasBodegas.tipoPacienteId, 
+                                               pacienteId: args.existenciasBodegas.pacienteId,
                                                principioActivo: args.existenciasBodegas.principioActivo, 
                                                producto: args.existenciasBodegas.codigoProducto,
                                                fechaDia: fechaDias,
@@ -471,23 +480,33 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
             fechaRegistro = resultado.rows[0].fecha_registro;
         }
         
-        
+        console.log("[fechaRegistro]: ",fechaRegistro);
+        console.log("[today]: ",today);
         
          if(today >= fechaRegistro){
-            console.log("2) Validacion ");
+            console.log("2) Validacion ");                    
             console.log("today ", today);
             console.log("fechaRegistro ", fechaRegistro);
             
-            if(fechaRegistro){
+            if(!fechaRegistro){
                 fechaDespacho = sumaFecha(25,fechaRegistro);
+            }else{
+                fechaDespacho = fechaRegistro;
             }
          }
          
          
+            
+      
+        var fechaActual = G.moment(today);
+        var fechaUltimaEntregaProducto  = G.moment(fechaDespacho);
+        var diferenciaDeDias = fechaActual.diff(fechaUltimaEntregaProducto, 'days');
+            console.log(" [diferenciaDeDias]: ", diferenciaDeDias);
             console.log("today ", today);
             console.log("fechaDespacho ", fechaDespacho);
             console.log("authorizado ", args.existenciasBodegas.autorizado);
-        if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1' || args.existenciasBodegas.autorizado === ""){
+        //if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1' || args.existenciasBodegas.autorizado === ""){
+        if(diferenciaDeDias > 23 || args.existenciasBodegas.autorizado === '1' || args.existenciasBodegas.autorizado === ""){
             console.log("3) Validacion ");
             
             return G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros);
@@ -498,7 +517,7 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
          }
    
    }).then(function(resultado){
-       console.log("AQUI QUE PASO ", resultado)
+       //console.log("AQUI QUE PASO ", resultado)
        if(resultado || resultado.rows.length > 0){ 
              res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado.rows}));
        }else{
@@ -1115,7 +1134,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             fechaEntrega = G.moment(now).add(30, 'day').format(formato);
             fechaMinima  = G.moment(now).add(25, 'day').format(formato);
             
-            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:8});
+            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
             
     }).then(function(resultado){
         
@@ -1441,7 +1460,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         fechaEntrega = G.moment(now).add(30, 'day').format(formato);
         fechaMinima   = G.moment(now).add(25, 'day').format(formato);
 
-        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:8});
+        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
         
     }).then(function(resultado){
         
@@ -1814,7 +1833,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
           
        
     G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros).then(function(resultado){
-       //console.log("2) resultado ", resultado.rows);
+       console.log("1) resultado ", resultado.rows);
        if(resultado.rows.length > 0){ 
             
             detalleCabecera = resultado.rows[0];
@@ -1826,7 +1845,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
         }
        
    }).then(function(resultado){
-       
+       console.log("2) resultado ", resultado.rows);
        if(resultado.rows.length > 0){ 
             
             profesional = resultado.rows;
@@ -1837,14 +1856,16 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
            
        }
        //
-   }).then(function(resultado){
-        //console.log("3) resultado ", resultado.rows);   
+   }).then(function(resultado){                                      
+        console.log("3) resultado ---> ", resultado.rows.length);   
         if(resultado.rows.length > 0){ 
             
-             productosDispensadosPendientes = resultado.rows;
-             
+            productosDispensadosPendientes = resultado.rows;
+        }else{
+            productosDispensadosPendientes = null;
+        }    
          
-             console.log("productosDispensados[0][0] TODOS ", productosDispensados);
+             console.log("productosDispensados[0][0] TODOS ", productosDispensadosPendientes);
             //return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros);
             __generarPdf({productosDispensados:productosDispensados, 
                           serverUrl:req.protocol + '://' + req.get('host')+ "/", 
@@ -1861,9 +1882,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
                     }));
                     
                   });
-        }else{
-            throw 'Consulta sin resultados';
-        }
+       
            
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));

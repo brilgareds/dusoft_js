@@ -115,49 +115,40 @@
 
 
 
+  <center><h3>- Medicamentos Pendientes Dispensados -</h3></center><p class="normal_10AN">MEDICAMENTOS PENDIENTES DISPENSADOS</p>
+    
+  <table width="100%" cellspacing="2">
+      <tr>
+          <td align="center">
+              <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+                  <tr >
+                      <!--<td width="13%" ><U>FECHA ENTREGA</U></td>//-->
 
-
-
-<center><h3>- Medicamento Pendientes Dispensados -</h3></center><p class="normal_10AN">MEDICAMENTOS PENDIENTES DISPENSADOS</p>
-    <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
-        <table width="100%" cellspacing="2">
-            <tr>
-                <td align="center">
-                    <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
-                        <tr>
-                            <td><U>CODIGO</U></td>
-                            <td colspan="2" ><U>MEDICAMENTO</U></td>
-                            <td><U>CANTIDAD</U></td>
-                        </tr>
-                        
+                      <td width="13%" ><U>CODIGO</U></td>
+                      <td width="35%" ><U>MEDICAMENTO</U></td>
+                      <td width="13%" ><U>CANTIDAD</U></td>
+                      <td width="13%" ><U>FECHA VENC</U></td>
+                      <td width="13%" ><U>LOTE</U></td>
+                  </tr>
+                    
                             {{for productosDispensadosPendientes}}
                             <tr>
-                                <td colspan="1">{{:codigo_producto}}</td>
-                                <td colspan="2" >{{:descripcion_prod}}</td>
-                                <td>{{:numero_unidades}}</td>
+                                  
+                                <!--<td >{{:fecha_entrega}}</td> //-->
+                                <td >{{:codigo_producto}}</td>
+                                <td >{{:descripcion_prod}}</td>
+                                <td >{{:numero_unidades}}</td>
+                            
+                                <td >{{:fecha_vencimiento}}</td>
+                                 <td >{{:lote}}</td>
+                                
+                                 
                             </tr>
                             {{/for}}
-                        
-
-                    </table>
-
-                </td>
-            </tr>
-        </table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+              </table>
+          </td>
+      </tr>
+  </table>
 
 
         <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">

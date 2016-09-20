@@ -220,7 +220,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * @fecha 26/05/2016
           */
         that.consultarExistenciasBodegas = function(entity){
-           
+           var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
             var obj = {                   
                 session: $scope.session,
                 data: {
@@ -231,13 +231,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
                         bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                         autorizado: entity.autorizado,
-                        codigoFormaFarmacologica: entity.codigoFormaFarmacologica
+                        codigoFormaFarmacologica: entity.codigoFormaFarmacologica,
+                        pacienteId: resultadoStorage.pacienteId,
+                        tipoPacienteId: resultadoStorage.tipoIdPaciente
                    }
                }    
             };
-             
+                console.log("obj ", obj);                                       
+                console.log("entity ", entity);                                       
             dispensacionHcService.existenciasBodegas(obj, function(data){
-                console.log("data ", data);
+                console.log("data [consultarExistenciasBodegas] ", data);
                 entity.vaciarProductosHc();
                 if(data.status === 200) {                                          
                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   

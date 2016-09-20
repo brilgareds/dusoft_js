@@ -90,7 +90,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         callback(false, rows);
     }).
     catch(function(err){
-        console.log("error generado ", err);
+       console.log("err (/catch) [listar_ordenes_compra]: ", err);
        callback(err);
     });
     
@@ -173,9 +173,9 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
         "a.cantidad",
         "f.descripcion as presentacion",
         "a.sw_regulado"
-    ];
+    ];                  
     
-    G.knex.column(columns).
+   var query = G.knex.column(columns).
     from("inventarios_productos  as a").
 
     innerJoin("inventarios as b", "a.codigo_producto", "b.codigo_producto").
@@ -215,18 +215,18 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
         } else if (filtro && filtro.molecula){
             this.where("c.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
         } else if (filtro && filtro.unidadVenta){
-            this.where("a.contenido_unidad_venta", G.constants.db().LIKE, "%" + termino_busqueda + "%");
-            
+            this.where("a.contenido_unidad_venta", G.constants.db().LIKE, "%" + termino_busqueda + "%");            
         } else {
             this.where("a.codigo_producto", G.constants.db().LIKE, "%" + termino_busqueda + "%");  
         }
 
-    }).
-    limit(G.settings.limit).
+    })
+    query.limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).then(function(rows){
+      
         callback(false, rows);
     }).catch(function(err){
-      
+      console.log("err (/catch) [listar_productos]: ", err);
        callback(err);
     });
     
@@ -342,6 +342,7 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
     G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+       console.log("err (/catch) [consultar_detalle_orden_compra]: ", err);
        callback(err);
     });
 };
@@ -393,7 +394,7 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
     G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
-        console.log("erro generado ", err);
+        console.log("err [consultarDetalleOrdenCompraConNovedades]: ", err);
        callback(err);
     });
 
@@ -412,6 +413,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
     query.then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(err){
+       console.log("erro (/catch) [insertar_orden_compra]: ", err);
        callback(err);
     });
      
@@ -534,6 +536,7 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
     query.then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+       console.log("err (/catch) [insertar_detalle_orden_compra]: ", err);
        callback(err);
     });
 };
@@ -661,7 +664,7 @@ OrdenesCompraModel.prototype.eliminarRegistroNovedad = function(parametros, call
     }).then(function(){
         callback(false);
     }).fail(function(err){
-        console.log(">>>>>>>>>>>>>> error controlado ", err);
+        console.log("err (/fail) [eliminarRegistroNovedad]: ", err);
         callback(err);
     });
    
@@ -679,7 +682,7 @@ OrdenesCompraModel.prototype.eliminarNovedad = function(parametros, callback){
     G.knex.raw(sql, {1:parametros.novedadId}).then(function(resultado){
        callback(false);
     }).catch(function(err){
-       console.log("error borrando novedad ", err);
+       console.log("err (/catch) [eliminarNovedad]: ", err);
        callback(err);
     });
 };
@@ -706,7 +709,7 @@ OrdenesCompraModel.prototype.eliminarArchivosNovedad = function(archivos, callba
        archivos.splice(0,1);
        that.eliminarArchivosNovedad(archivos, callback);
     }).catch(function(err){
-       console.log("error borrando novedad ", err);
+        console.log("err (/catch) [eliminarArchivosNovedad]: ", err);
        callback(err);
     });
     
@@ -722,7 +725,7 @@ OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, obser
     G.knex.raw(sql, {1:item_id, 2:observacion_id, 3:descripcion_novedad, 4:usuario_id, 5:descripcionEntrada}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
-       console.log("error generando novedad ", err);
+       console.log("err (/catch) [insertar_novedad_producto]: ", err);
        callback(err);
     });
 };
@@ -763,13 +766,14 @@ OrdenesCompraModel.prototype.gestionarArchivoOrdenes = function(params, callback
          }).then(function(pdf){
             transaccion.commit(pdf); 
          }).fail(function(err){
-             console.log("error generado ", err);
+             console.log("error (/fail) [gestionarArchivoOrdenes]: ", err);
              transaccion.rollback(err);
          }).done();
      }).then(function(pdf){
          def.notify();
          callback(false, pdf);
      }).catch(function(err){
+         console.log("error (/catch) [gestionarArchivoOrdenes]: ", err);
             callback(err);
      }).done();   
 };
@@ -815,7 +819,7 @@ OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(noved
        //console.log("archivos encontrados ", resultado);
        callback(false, resultado.rows);
     }).catch(function(err){
-       //console.log("error eliminando novedad ", err);
+       console.log("err (/catch) [consultar_archivo_novedad_producto]: ", err);
        callback(err);
     });
     
@@ -887,7 +891,7 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
     then(function(resultado){
        callback(false, resultado);
     }).catch(function(err){
-       console.log("error generado ", err);
+       console.log("err (/catch) [listar_recepciones_mercancia]: ", err);
        callback(err);
     });
     
@@ -1253,10 +1257,10 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
     };
 
     G.knex.raw(sql, parametros).then(function(resultado) {
-        console.log("resultado", resultado);
+      
         callback(false, resultado.rows, resultado);
     }).catch (function(err) {
-        console.log("error", err);
+        console.log("err (/catch) [ingresarBodegaMovimientoTmp]: ", err);
         callback(err);
     });
 };
@@ -1453,6 +1457,7 @@ function _generarReporteOrdenes(obj, callback) {
             var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
             G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body, "binary", function(err) {
                 if (err) {
+                    console.log("err [_generarReporteOrdenes]: ", err);
                     callback(err);
                 } else {
                     callback(false, nombreTmp);
@@ -1503,6 +1508,7 @@ function __gestionarOrdenesAgrupadas(params, callback){
             def.resolve();
        }, 0);
     }).fail(function(err){
+       console.log("err (/fail) [__gestionarOrdenesAgrupadas]: ", err);
        callback(err);
     });
 
@@ -1521,15 +1527,15 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
        callback(false);
        return;
    }
-   
+      
    G.Q.ninvoke(params.contexto, "listar_productos", params.encabezado.empresa_id, params.encabezado.codigo_proveedor, params.encabezado.ordenId,
                producto.codigo_producto, null, 1, null).then(function(_producto){
-      
+           
       if(_producto.length === 0){
-         throw "El producto no pudo ser registrado "+(producto.__rownum__ + 1);
+         throw "El producto no pudo ser registrado " + producto.codigo_producto + "-"+(producto.__rownum__ + 1);
       } else {
           producto.iva = _producto[0].iva;
-          //console.log("producto insertado ", producto);
+          
           return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, producto.codigo_producto, producto.cantidad,
                              producto.costo, producto.iva, params.transaccion);
       }
@@ -1543,6 +1549,7 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
        },0);
        
    }).fail(function(err){
+      console.log("err (/fail) [__gestionarDetalleOrdenesAgrupadas]: ", err);
        callback(err);
    });
 }

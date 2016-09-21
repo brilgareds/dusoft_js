@@ -133,13 +133,18 @@
                     
                 </div>
                 
-                <button class="btn btn-success btn-xs indicadorScrollChat" ><i class="glyphicon glyphicon-arrow-down"></i></button>
-                
-                <div class="input-group navbar-form chatPanel" style="width: 100%; padding: 0px; margin-bottom: 0px;">
+                <div class="row">
+                    
+                    
 
-                    <textarea  placeholder="Escribir..." class="form-control textAreaChat" ng-keypress="onGuardarMensaje($event)" ng-model="root.mensaje" style="width: 100%"></textarea>
-      
+                    <div class="chatPanel col-xs-11">
 
+                        <textarea  placeholder="Escribir..." class="textAreaChat" ng-keypress="onGuardarMensaje($event)" ng-model="root.mensaje" style="width: 100%"></textarea>
+
+
+                    </div>
+                    <button class="btn btn-success btn-xs col-xs-1 indicadorScrollChat" ><i class="glyphicon glyphicon-arrow-down"></i></button>
+                    
                 </div>
 
             </tab>                

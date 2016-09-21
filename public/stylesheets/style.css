@@ -615,11 +615,6 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     width:337px;
 }
 
-
-.chatPanel{
-    padding-left: 0px!important;
-}
-
 .contenedorChat{
     height: 470px;
     width: 350px;
@@ -664,6 +659,11 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 .contenedorDetalle{
     margin-right: 5px;
     padding: 7px 0 7px 0;
+    word-break: break-all;
+}
+
+.chatPanel{
+    padding-right: 5px!important;
 }
 
 .textAreaChat{
@@ -672,10 +672,15 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 }
 
 .chatBody .indicadorScrollChat{
+    background-color: transparent!important;
+    border: 0px!important;
+    color: green!important;
+    z-index: 1000;
+    width: 20px;
+    height: 20px;
     position: absolute;
-    right: 25px;
-    bottom: 58px;
-    padding:3px!important;
+    bottom: 6px;
+    right: 4px;
 }
 
 .detallePar{

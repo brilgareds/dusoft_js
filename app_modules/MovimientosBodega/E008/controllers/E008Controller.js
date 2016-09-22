@@ -1797,15 +1797,24 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     }).then(function(rows){
                            
         var def = G.Q.defer();
+        var bodega = "BD";
+        
         if((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
            (pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
            (pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
        
+           
+            if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+               bodega = "BD";
+            } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){
+               bodega = "BC";
+            }
+           
             var obj = {
                 documentoId:418,
                 prefijoDocumento : prefijo_documento,
                 numeroDocumento : numero_documento,
-                bodegasDoc : "BD",
+                bodegasDoc : bodega,
                 empresa: empresa_id,
                 tipoPedido:"1",
                 contexto:that,
@@ -2027,6 +2036,14 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
            (pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
            (pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
            (pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+       
+           
+           if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+               bodega = "BD";
+           } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){
+               bodega = "BC";
+           }
+       
             
             var obj = {
                   documentoId:418,
@@ -2206,10 +2223,7 @@ function __sincronizarDetalleDocumento(obj, callback){
         valorUnitario:producto.valor_unitario_iva,
         descuento:0
     };
-    
-    console.log("parametros a enviar ***************************** ", obj.parametros);
-    
-        
+            
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
         return G.Q.ninvoke(client, "bodegasMovimientoTmpD", obj.parametros);

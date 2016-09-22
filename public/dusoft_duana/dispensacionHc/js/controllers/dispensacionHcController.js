@@ -172,17 +172,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         
                     }
                     
-                         
-                       
                      //console.log("objobjobjobj  ", obj);
                     dispensacionHcService.listarFormulas(obj, function(data){
                         $scope.root.afiliados = [];
+                        
+                        
                         if(data.status === 200) {  
-                            console.log(" ****** ==== obj ==== ", obj);
-                           console.log("RESULTADO ", data.obj.listar_formulas);
+                           
+                            //console.log(" ****** ==== obj ==== ", obj);
+                           //console.log("RESULTADO ", data.obj.listar_formulas);
                            $scope.root.items = data.obj.listar_formulas.length;                              
                            $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                           
+                           //console.log("$scope.root.afiliados ", $scope.root.afiliados);
                            /**
                             * +Descripcion: Se elimina el criterio de consulta de la formula que se
                             *               envia por memoria cuando se dispensa la entrega
@@ -529,9 +530,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                   }    
                                };
                       
-                        Array.prototype.unique=function(a){
-                            return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
-                        });
+                        
                         var arregloEntregas = [];
                         var listaEntregasFormulas =[];
                         var totalDispensaciones;
@@ -540,13 +539,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             if (data.status === 200) {
                                 
                                 totalDispensaciones = data.obj.listar_medicamentos_dispensados;
-                            
+                                console.log("totalDispensaciones Normal ", totalDispensaciones);
                                 totalDispensaciones.forEach(function(entregas){                                    
                                     arregloEntregas.push(entregas.entrega);                                 
                                 });
-                                
-                                var numeroDeEntregas = arregloEntregas.unique();
                                  
+                                var unique=function(a){                                  
+                                    return function(){
+                                        return arregloEntregas.filter(a)
+                                    };
+                                }(function(a,b,c){
+                                       
+                                    return c.indexOf(a,b+1)<0
+                                  });
+                                
+                                
+                                   
+                                    
+                                          
+                                var numeroDeEntregas = unique(arregloEntregas);
+                                    console.log("arregloEntregas unique ", numeroDeEntregas);
                                 for(var i=0; i<numeroDeEntregas.length; i++){
                                     listaEntregasFormulas.push(dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas[i],data.obj.listar_medicamentos_dispensados));
                                 }
@@ -557,8 +569,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 
                                 dispensacionHcService.listarTodoMedicamentosDispensados(obj,function(data){
                                     var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
-                                    console.log("registros ", data);
-                                    console.log("nombre ", nombre);
+                                    //console.log("registros ", data);
+                                    //console.log("nombre ", nombre);
                                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                                 });
                                  

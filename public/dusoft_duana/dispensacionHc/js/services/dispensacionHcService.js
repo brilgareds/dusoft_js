@@ -331,16 +331,16 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016
                */
             self.renderListarFormulasMedicas = function(formulas, estadoFormula){
-                   console.log("formulas ", formulas);
+                  
                 var resultado = [];
-                     
+                    
                 for(var i in formulas.listar_formulas) {
                     var _formula = formulas.listar_formulas[i];
                     //Se crea el objeto afiliados
                     var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
                     //Se crea el objeto paciente
                     var paciente = PacienteHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.apellidos,_formula.nombres)
-                            
+                           
                             //Se crea el objeto formula
                     if(estadoFormula === 1){
                            
@@ -357,7 +357,7 @@ define(["angular", "js/services"], function(angular, services) {
                                                _formula.fecha_finalizacion,
                                              _formula.fecha_formulacion);
                                                 
-                            formula.setEstado( _formula.sw_estado);
+                            formula.setEstado( _formula.sw_estado);            
                             formula.setEstadoEntrega( _formula.estado_entrega);
                             formula.setDescripcionEstadoEntrega( _formula.descripcion_estado_entrega);
                             formula.setNumeroEntregaActual( _formula.numero_entrega_actual);
@@ -389,7 +389,8 @@ define(["angular", "js/services"], function(angular, services) {
                      //debe ser afiliado el paciente
                     afiliados.agregarPacientes(paciente);
                     afiliados.agregarPlanAtencion(planesAtencion);
-
+                    
+                    
                      //Se almacenan los afiliados
                     resultado.push(afiliados);
                 }

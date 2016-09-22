@@ -281,7 +281,7 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
        k.total_costo,\
        k.fecha, \
        k.grupo_id,\
-       round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30)+1 as entrega, \
+       round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30) as entrega, \
        k.sistema, \
        k.dias_de_entregado, \
        K.fecha_entrega as fecha_entrega,\
@@ -444,13 +444,42 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
 
 
 
-
-
-
-
-
-
-
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar el estado de una cotizacion
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model :
+ *  --PedidosCliente.prototype.consultarPendientesFormula
+ *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
+ *  --PedidosCliente.prototype.generarPedido
+ *  --PedidosCliente.prototype.eliminarCotizacion
+ */
+DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion,transaccion, callback) {
+    
+    var parametros = {1: evolucion};   
+   var sql = "SELECT * FROM hc_pendientes_por_dispensar\
+		WHERE evolucion_id = :1 AND sw_estado='0';";          
+   var query = G.knex.raw(sql,parametros);
+   
+   /* var query = G.knex('hc_pendientes_por_dispensar').where({
+        evolucion_id: evolucion,
+        sw_estado: 0
+        
+    }).select('evolucion_id');*/
+    
+    if(transaccion) query.transacting(transaccion); 
+    query.then(function(resultado) {
+        console.log("----resultado-----", resultado.rows);
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("err (/catch) [actualizarProductoPendientePorBodega]: ", error)
+        console.log("parametros [evolucion]: ", evolucion);
+        callback(error);
+    });
+    
+    
+   
+}; 
 
 
 /**
@@ -467,7 +496,7 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
     var sql = "SELECT\
        k.fecha_registro,\
        k.fecha,\
-       round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30)+1 as Entrega,\
+       round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30) as Entrega,\
        k.codigo_producto,\
        k.numero_unidades,\
        k.fecha_vencimiento,\
@@ -1685,8 +1714,8 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
             if( sumaTotalDispensados === 0){    
                     
                     console.log("Entro se pone CERO 0")
-                    G.Q.ninvoke(that,'consultarEstadoCotizacion',parametros.evolucion).then(function(resultado){  
-                         console.log("resultado ----->>>>> ", resultado);
+                    G.Q.ninvoke(that,'consultarPendientesFormula',parametros.evolucion).then(function(resultado){  
+                         console.log("resultado ----->>>>> ", resultado.rows);
                         if(resultado.rows.length > 0){
                             totalInsertadosPendientes = 1;
                         }
@@ -1714,12 +1743,12 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
  * Descripcion : Funcion encargada de consultar el estado de una cotizacion
  * @fecha: 05/11/2015
  * @Funciones que hacen uso del model :
- *  --PedidosCliente.prototype.consultarEstadoCotizacion
+ *  --PedidosCliente.prototype.consultarPendientesFormula
  *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
  *  --PedidosCliente.prototype.generarPedido
  *  --PedidosCliente.prototype.eliminarCotizacion
  */
-DispensacionHcModel.prototype.consultarEstadoCotizacion = function(evolucion, callback) {
+DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion, callback) {
     
    
     G.knex('hc_pendientes_por_dispensar').where({
@@ -2179,7 +2208,8 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
         sql = "UPDATE dispensacion_estados \
                 set sw_pendiente = :sw_pendiente \
                 WHERE evolucion_id = :evolucion_id ";
-    }                            
+    }                                      
+    
     
     console.log("parametros ", parametros);
     console.log("sql ", sql);

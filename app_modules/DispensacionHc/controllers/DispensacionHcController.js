@@ -1513,6 +1513,38 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
     }).then(function(resultado){
         
+        /**
+         * +Descripcion Se valida si la formula despues de dispensada se encuentra con productos pendientes
+         *              
+         */
+        return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesSinDispensar',{evolucionId:evolucionId});
+        
+    
+    }).then(function(resultado){
+         var def = G.Q.defer();
+           
+            if(resultado.rows.length === 0){
+                
+                G.knex.transaction(function(transaccion) {        
+                
+            /**
+            * +Descripcion se actualiza la tabla de estados evidenciando
+            *              que la formula ya no tiene pendientes
+            */          
+            return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:0, evolucion:evolucionId},transaccion);
+
+                });
+                
+            }else{
+                 console.log("CONTINUA COMO PENDIENTE EL ESTADO DE LA FORMULA::: ", resultado);
+                 def.resolve();    
+            }
+            
+    }).
+            
+            
+            then(function(resultado){
+        
          res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
         //console.log("FINAL ", resultado);
     }).fail(function(err){            
@@ -1857,24 +1889,32 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
        }
        //
    }).then(function(resultado){                                      
-        console.log("3) resultado ---> ", resultado.rows.length);   
+        console.log("3) resultado ---> ", resultado.rows.length);  
+        var parametrosPdf = {};
         if(resultado.rows.length > 0){ 
             
-            productosDispensadosPendientes = resultado.rows;
+            parametrosPdf = {productosDispensados:productosDispensados, 
+                            serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+                            detalle: detalleCabecera, 
+                            profesional:profesional,
+                            productosDispensadosPendientes:resultado.rows,
+                            archivoHtml: 'medicamentosDispensadosTodo.html',
+                            reporte: "todo_dispensados"
+                          };
+            
         }else{
-            productosDispensadosPendientes = null;
+            parametrosPdf = {productosDispensados:productosDispensados, 
+                            serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+                            detalle: detalleCabecera, 
+                            profesional:profesional,                           
+                            archivoHtml: 'medicamentosDispensadosTodo.html',
+                            reporte: "todo_dispensados"
+                          };
         }    
          
              console.log("productosDispensados[0][0] TODOS ", productosDispensadosPendientes);
             //return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros);
-            __generarPdf({productosDispensados:productosDispensados, 
-                          serverUrl:req.protocol + '://' + req.get('host')+ "/", 
-                          detalle: detalleCabecera, 
-                          profesional:profesional,
-                          productosDispensadosPendientes:productosDispensadosPendientes,
-                          archivoHtml: 'medicamentosDispensadosTodo.html',
-                          reporte: "todo_dispensados"
-                          }, function(nombre_pdf) {
+            __generarPdf(parametrosPdf, function(nombre_pdf) {
                     //console.log("nombre_pdf ", nombre_pdf);
                     res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
                     

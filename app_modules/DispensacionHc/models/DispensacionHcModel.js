@@ -217,9 +217,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
- * +Descripcion Modelo encargado de obtener los lotes relacionados con los productos    
- *              de los FOFO
- * @controller DispensacionHc.prototype.existenciasBodegas
+ * +Descripcion Modelo encargado de obtener los medicamentos pendientes dispensados  
+ * @controller DispensacionHc.prototype.listarTodoMedicamentosDispensados
+ * @controller DispensacionHc.prototype.listarMedicamentosDispensados
  */
 DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function(obj,callback){
     
@@ -256,6 +256,71 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
       callback(err)
     });            
 };
+ 
+/**
+ * @author Cristian Ardila
+ * @fecha 23/09/2016
+ * +Descripcion Modelo encargado de obtener la ultima dispensacion de pendientes
+ * @controller DispensacionHc.prototype.listarUltimaDispensacionPendientes
+ */
+DispensacionHcModel.prototype.listarUltimaDispensacionPendientes = function(obj,callback){
+    
+    
+    console.log("---obj-- ", obj);
+    var parametros = {1: obj.evolucionId};
+                                                       
+    var sql ="SELECT * FROM (\
+                SELECT dd.codigo_producto as codigo_medicamento,\
+                                dd.cantidad as cantidad_entrega,\
+                                dd.fecha_vencimiento,\
+                                dd.lote,\
+                                fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
+                                dd.sw_pactado,\
+                                fc_descripcion_producto_molecula(dd.codigo_producto) as molecula,\
+                                dd.total_costo,\
+                                d.fecha_registro as fecha_entrega,\
+                                '1' as pendiente_dispensado,\
+                                (select fecha_registro as fecha_entrega\
+                                  from\
+                                  hc_pendientes_por_dispensar  AS e \
+                                  where \
+                                  e.evolucion_id  = :1 and sw_estado='1' limit 1\
+                                ) as fecha_pendiente\
+                          FROM hc_formulacion_despachos_medicamentos_pendientes tmp\
+                          inner join bodegas_documentos as d on (tmp.bodegas_doc_id = d.bodegas_doc_id and tmp.numeracion = d.numeracion)\
+                          inner join bodegas_documentos_d AS dd on (d.bodegas_doc_id = dd.bodegas_doc_id and d.numeracion = dd.numeracion)\
+                          WHERE \
+                          tmp.evolucion_id = :1 AND d.todo_pendiente != 1 \
+                          )as a WHERE a.fecha_entrega = ( \
+                          	SELECT distinct(max(d2.fecha_registro))\
+                            FROM hc_formulacion_despachos_medicamentos_pendientes tmp2\
+                            inner join bodegas_documentos as d2 on \
+                            (tmp2.bodegas_doc_id = d2.bodegas_doc_id and tmp2.numeracion = d2.numeracion)\
+                          	WHERE tmp2.evolucion_id = :1 AND d2.todo_pendiente != 1 \
+                          )";
+
+                      
+    G.knex.raw(sql,parametros).then(function(resultado){ 
+        //console.log("resultado Pendientes por dispensar::: ", resultado);
+      callback(false, resultado)
+    }).catch(function(err){         
+         console.log("err [listarUltimaDispensacionPendientes]: ", err);
+      callback(err)
+    });            
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * @author Cristian Ardila

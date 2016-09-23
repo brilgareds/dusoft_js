@@ -252,6 +252,12 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
+            self.listarUltimaDispensacionPendiente = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_ULTIMA_DISPENSACIONE_PENDIENTES,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
             
             
             

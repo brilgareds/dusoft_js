@@ -87,7 +87,7 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarMedicamentosDispensados(req, res);
     });
     
-    //REPORTE PDF
+    //===============================================================REPORTE PDF
     app.post("/api/DispensacionHc/listarTodoMedicamentosDispensados", function(req, res){
         c_dispensacion_hc.listarTodoMedicamentosDispensados(req, res);
     });
@@ -96,7 +96,10 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarTotalDispensacionesFormula(req, res);
     })
     
-    
+    app.post("/api/DispensacionHc/listarUltimaDispensacionPendientes", function(req, res){
+        c_dispensacion_hc.listarUltimaDispensacionPendientes(req, res);
+    })
+    //==========================================================================
     
     // consultando los privilegios de dispensacion del usuario de session
     app.post("/api/DispensacionHc/usuarioPrivilegios", function(req, res){
@@ -129,5 +132,8 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/descartarProductoPendiente", function(req, res){
         c_dispensacion_hc.descartarProductoPendiente(req, res);
     });
+    
+    
+    
     
 };

@@ -1963,9 +1963,92 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
     }).done();
 };
 
-Array.prototype.unique=function(a){
-  return function(){return this.filter(a)}}(function(a,b,c){return c.indexOf(a,b+1)<0
-});
+/*
+ * @author Cristian Ardila
+ * @fecha 15/06/2016
+ * +Descripcion Controlador encargado listar los medicamentos Dispensados
+ *              
+ */
+DispensacionHc.prototype.listarUltimaDispensacionPendientes = function(req, res){
+   
+   console.log("*********DispensacionHc.prototype.listarUltimaDispensacionPendientes************");
+   console.log("*********DispensacionHc.prototype.listarUltimaDispensacionPendientes************");
+   console.log("*********DispensacionHc.prototype.listarUltimaDispensacionPendientes************");
+   
+    var that = this;
+    var args = req.body.data;
+  
+    if (args.listar_medicamentos_dispensados === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_dispensados: []}));
+        return;
+    }
+   
+    if (!args.listar_medicamentos_dispensados.evolucion || args.listar_medicamentos_dispensados.evolucion.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {listar_medicamentos_dispensados: []}));
+        return;
+    }
+   var productosPendienteDispensados;
+   var profesional;
+   var detalleCabecera;
+   
+   var parametros = {evolucionId:args.listar_medicamentos_dispensados.evolucion,
+                    tipoIdPaciente: args.listar_medicamentos_dispensados.tipoIdPaciente,
+                    pacienteId: args.listar_medicamentos_dispensados.pacienteId,
+                    ultimo: 1 
+                };
+    
+   
+    G.Q.ninvoke(that.m_dispensacion_hc,'listarUltimaDispensacionPendientes',parametros).then(function(resultado){
+      
+        if(resultado.rows.length > 0){ 
+            console.log("resultado.rows ", resultado.rows);
+            productosPendienteDispensados = resultado.rows;
+           
+            return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
+          
+        }else{
+           throw 'No hay pendientes por dispensar';
+        }
+      
+   }).then(function(resultado){
+        
+       if(resultado.rows.length > 0){ 
+            
+            detalleCabecera = resultado.rows[0];
+            return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros)
+                
+        }else{
+            throw 'Consulta sin resultados';
+        }
+       
+   }).then(function(resultado){
+        console.log("3) resultado ", resultado.rows);   
+        if(resultado.rows.length > 0){ 
+            
+             profesional = resultado.rows;
+           
+            __generarPdf({productosPendientes:productosPendienteDispensados, 
+                          serverUrl:req.protocol + '://' + req.get('host')+ "/", 
+                          detalle: detalleCabecera, 
+                          profesional:profesional,
+                          archivoHtml: 'medicamentosPendientesPorDispensar.html',
+                          reporte: "Medicamentos_pendientes_dispensados"
+                          }, function(nombre_pdf) {
+                    //console.log("nombre_pdf ", nombre_pdf);
+                    res.send(G.utils.r(req.url, 'Consulta exitosa con medicamentos pendientes', 200,{
+                    
+                        listar_medicamentos_dispensados: {nombre_pdf: nombre_pdf, resultado: productosPendienteDispensados}
+                    }));
+                    
+                  });
+        }else{
+            throw 'Consulta sin resultados';
+        }
+           
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 
 
 function __generarPdf(datos, callback) {  

@@ -28,6 +28,7 @@ define(["angular"], function (angular) {
                 //PDF
                 "LISTAR_TODOS_MEDICAMENTOS_DISPENSADOS": BASE_URL + "/DispensacionHc/listarTodoMedicamentosDispensados",
                 "LISTAR_TOTAL_DISPENSACIONES_FORMULA": BASE_URL + "/DispensacionHc/listarTotalDispensacionesFormula",
+                "LISTAR_ULTIMA_DISPENSACIONE_PENDIENTES": BASE_URL + "/DispensacionHc/listarUltimaDispensacionPendientes",
                  
                 
                 "USUARIO_PRIVILEGIOS": BASE_URL + "/DispensacionHc/usuarioPrivilegios",

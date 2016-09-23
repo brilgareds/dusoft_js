@@ -133,9 +133,6 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
         });
     });
 
-
-
-
 };
 
 // Generar Cabecera del Documento Temporal de FARMACIAS
@@ -199,7 +196,7 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
  * del pedido por parte del operario logistico a traves de DusotfMovil,
  * este proceso es almacenado en un temporal cambiandole el estado al pedido
  * como Separacion finalizada.
- * @author Camilo Garcia Orozco
+ * @author Camilo  Orozco
  * @param {type} req
  * @param {type} res
  * @returns {void}
@@ -1745,7 +1742,6 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
         return G.Q.nfcall(__validar_productos_pedidos_clientes, that, numero_pedido, documento_temporal_id, usuario_id);
         
     }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias){
-        console.log("spread 1 >>>>>>>>>>>>>>>>>>>>");
         if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
             throw {msj:"Hay productos sin auditar o pendientes sin justificación.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
@@ -2333,27 +2329,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     var tipo = args.documento_temporal.tipo;
     var tipoPedido = args.documento_temporal.tipo_pedido;
-    
-    /**
-     * +Descripcion: funcion que consulta el numero mayor de rotulo en la tabla 
-     * inv_rotulo_caja
-     * @param {String} documento_temporal_id Es el id documento
-     * @param {String} numero_pedido Es el numero de pedido
-     * @param {integer} tipo si es caja o nevera
-     */
-    
-    /*that.m_e008.validarTemporal(numero_pedido, tipoPedido, function(err, temporal){
-        if(err || temporal.length === 0){
-            var msj = "Error consultado el temporal del usuario";
             
-            if(temporal.length === 0){
-                msj = "No se encontro el temporal del usuario";
-            }
-            
-            res.send(G.utils.r(req.url, msj, 500, {movimientos_bodegas: {}}));
-            return;
-        }*/
-        
     that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, tipoPedido, function(err, rotuloMayor){
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -3010,15 +2986,6 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                     productos_no_auditados.push(producto_pedido);
 
                                 }
-                                
-                                //Valida si los productos se han quedado sin existencias, debido al traslado de lotes
-                               /*console.log("producto_pedido.existencia_actua ", producto_pedido.existencia_actual, " producto_pedido.cantidad_ingresada ", producto_pedido.cantidad_ingresada, 
-                                            " producto_pedido.existencia_bodega ", parseInt(producto_pedido.existencia_bodega), 
-                                           "producto_pedido.cantidad_ingresada ", producto_pedido.cantidad_ingresada);*/
-                               /* if((parseInt(producto_pedido.existencia_actual) <  parseInt(producto_pedido.cantidad_ingresada)) ||
-                                   (parseInt(producto_pedido.existencia_bodega) <  parseInt(producto_pedido.cantidad_ingresada))){
-                                    productosSinExistencias.push(producto_pedido);
-                                }*/
                             }
                         }
 

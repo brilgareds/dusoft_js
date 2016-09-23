@@ -390,6 +390,7 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
         "b.usuario",
         "a.mensaje",
         "a.archivo_adjunto",
+        "a.fecha_mensaje as fecha_registro",
         G.knex.raw("to_char(a.fecha_mensaje, 'HH:MI am') as fecha_mensaje")
     ];
     

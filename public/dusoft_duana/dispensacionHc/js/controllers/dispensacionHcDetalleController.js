@@ -271,7 +271,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                       
         };
          
-           
+       
         /**
         * @author Cristian Ardila
         * +Descripcion Se visualiza la tabla con los medicamentos listos
@@ -304,8 +304,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 {field: 'Sel', width: "10%",
                         displayName: "Dispensar",
                         cellClass: "txt-center",
-                        cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="temporalLotes(row.entity)">Dispensar'
-
+                        //cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="temporalLotes(row.entity)">Dispensar'
+                        cellTemplate : '<input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)"></input-check>'
+                                                        
                   }
             ]
         };
@@ -372,7 +373,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(data.status === 200) {                                          
                     AlertService.mostrarMensaje("success", data.msj);   
                 }else{
+                    
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    $scope.modelocheck = false;
+                    console.log("$scope.modelocheck ", $scope.modelocheck);
                 }            
             });            
         };

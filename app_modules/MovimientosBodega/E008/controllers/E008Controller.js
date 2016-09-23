@@ -133,9 +133,6 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
         });
     });
 
-
-
-
 };
 
 // Generar Cabecera del Documento Temporal de FARMACIAS
@@ -199,7 +196,7 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
  * del pedido por parte del operario logistico a traves de DusotfMovil,
  * este proceso es almacenado en un temporal cambiandole el estado al pedido
  * como Separacion finalizada.
- * @author Camilo Garcia Orozco
+ * @author Camilo  Orozco
  * @param {type} req
  * @param {type} res
  * @returns {void}
@@ -1745,7 +1742,6 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
         return G.Q.nfcall(__validar_productos_pedidos_clientes, that, numero_pedido, documento_temporal_id, usuario_id);
         
     }).spread(function(productos_no_auditados, productos_pendientes, productosSinExistencias){
-        console.log("spread 1 >>>>>>>>>>>>>>>>>>>>");
         if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {            
             throw {msj:"Hay productos sin auditar o pendientes sin justificación.", status:404,
                    obj:{movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}};
@@ -1795,21 +1791,31 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     }).then(function(rows){
         return G.Q.ninvoke(that.m_e008, "marcar_cajas_como_despachadas", documento_temporal_id, numero_pedido, '1');
     }).then(function(rows){
-        that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-        res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
-                           {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
                            
         var def = G.Q.defer();
-        if(pedido.tercero_id === '10490' && pedido.tipo_id_tercero === "CE" ){
+        var bodega = "BD";
+        
+        if((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
+           (pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
+           (pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+       
+           
+            if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+               bodega = "BD";
+            } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){
+               bodega = "BC";
+            }
+           
             var obj = {
                 documentoId:418,
                 prefijoDocumento : prefijo_documento,
                 numeroDocumento : numero_documento,
-                bodegasDoc : "BD",
+                bodegasDoc : bodega,
                 empresa: empresa_id,
                 tipoPedido:"1",
                 contexto:that,
-                numeroPedido:pedido.numero_pedido
+                numeroPedido:pedido.numero_pedido,
+                pedido:pedido
             };
 
             return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
@@ -1819,6 +1825,11 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
         
     }).then(function(rows){
         console.log("proceso de sincronizacion terminado");
+        
+        that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+        res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
+                           {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
+        
     }).fail(function(err){
         console.log("errorr aqui >>>>>>>>>>>>>>> ",err);
         if(err.status){
@@ -2015,9 +2026,20 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
     
     G.Q.ninvoke(modeloPedido, "consultar_pedido", numeroPedido).then(function(resultado){
         pedido = resultado[0];
+        //console.log("pedido a sincronizar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", pedido.tipo_id_cliente, pedido.identificacion_cliente, pedido)
         
-        
-        if((pedido.farmacia_id && pedido.farmacia_id === '01') || (pedido.tercero_id === '10490' && pedido.tipo_id_tercero === "CE" )){
+        if((pedido.farmacia_id && pedido.farmacia_id === '01') || 
+           (pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
+           (pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
+           (pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+       
+           
+           if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+               bodega = "BD";
+           } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){
+               bodega = "BC";
+           }
+       
             
             var obj = {
                   documentoId:418,
@@ -2027,7 +2049,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                   empresa: empresaId,
                   contexto:that,
                   tipoPedido:tipoPedido,
-                  numeroPedido:pedido.numero_pedido
+                  numeroPedido:pedido.numero_pedido,
+                  pedido:pedido
              };
 
              return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
@@ -2089,7 +2112,22 @@ function __sincronizarDocumentoDespacho(obj, callback){
 
 
 function __sincronizarEncabezadoDocumento(obj, callback){
-    var url = (obj.tipoPedido === '1')? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
+    //var url = (obj.tipoPedido === '1')? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008; 
+    
+    var url = "";
+    //Clinica Rey David
+    if(parseInt(obj.tipoPedido) !== 1){
+        url = G.constants.WS().DOCUMENTOS.COSMITET.E008;
+        
+    } else if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
+        url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
+        
+    } else if((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+              (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
+        
+        url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
+    }
+        
     var resultado;
     
     obj.parametros = {
@@ -2109,7 +2147,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
 
         obj.resultadoEncabezado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
-           throw {msj:/*result.return.descripcion["$value"]*/"Se ha generado un error", status:403, obj:{}}; 
+           throw {msj:/*result.return.descripcion["$value"]*/"Se ha generado un error sincronizando el documento", status:403, obj:{}}; 
         } else {            
             obj.temporal = result.return.docTmpId["$value"];
             obj.tipo = '0';
@@ -2142,7 +2180,24 @@ function __sincronizarDetalleDocumento(obj, callback){
         return;
     }
     
-    var url = (obj.tipoPedido === 1)? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
+    //var url = (obj.tipoPedido === 1)? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
+    var url = "";
+    var soloPrecioVenta = true;
+    
+        //Clinica Rey David
+    if(parseInt(obj.tipoPedido) !== 1){
+        url = G.constants.WS().DOCUMENTOS.COSMITET.E008;
+        
+    } else if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
+        url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
+        soloPrecioVenta = false;
+        
+    } else if((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+              (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
+        
+        url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
+    }
+    
     
     obj.parametros = {
         usuarioId:"4608",
@@ -2164,19 +2219,21 @@ function __sincronizarDetalleDocumento(obj, callback){
         valorUnitario:producto.valor_unitario_iva,
         descuento:0
     };
-    
-        
+            
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
         return G.Q.ninvoke(client, "bodegasMovimientoTmpD", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
         obj.resultadoDetalle = result.return.descripcion["$value"];
+        obj.error = false;
+        //Asi fallen los productos se debe continuar con el proceso
         if(!result.return.estado["$value"]){
-           throw {msj:result.return.descripcion["$value"], status:403, obj:{}}; 
-        } else {
-            def.resolve();
-        }
+           //throw {msj:"Resultado sincronización: "+result.return.descripcion["$value"], status:403, obj:{}}; 
+           obj.error = true;
+        } 
+        
+        def.resolve();
         
     }).fail(function(err) {
         console.log("error generado __sincronizarDetalleDocumento ", err);
@@ -2272,27 +2329,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     var tipo = args.documento_temporal.tipo;
     var tipoPedido = args.documento_temporal.tipo_pedido;
-    
-    /**
-     * +Descripcion: funcion que consulta el numero mayor de rotulo en la tabla 
-     * inv_rotulo_caja
-     * @param {String} documento_temporal_id Es el id documento
-     * @param {String} numero_pedido Es el numero de pedido
-     * @param {integer} tipo si es caja o nevera
-     */
-    
-    /*that.m_e008.validarTemporal(numero_pedido, tipoPedido, function(err, temporal){
-        if(err || temporal.length === 0){
-            var msj = "Error consultado el temporal del usuario";
             
-            if(temporal.length === 0){
-                msj = "No se encontro el temporal del usuario";
-            }
-            
-            res.send(G.utils.r(req.url, msj, 500, {movimientos_bodegas: {}}));
-            return;
-        }*/
-        
     that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, tipoPedido, function(err, rotuloMayor){
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -2949,15 +2986,6 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                     productos_no_auditados.push(producto_pedido);
 
                                 }
-                                
-                                //Valida si los productos se han quedado sin existencias, debido al traslado de lotes
-                               /*console.log("producto_pedido.existencia_actua ", producto_pedido.existencia_actual, " producto_pedido.cantidad_ingresada ", producto_pedido.cantidad_ingresada, 
-                                            " producto_pedido.existencia_bodega ", parseInt(producto_pedido.existencia_bodega), 
-                                           "producto_pedido.cantidad_ingresada ", producto_pedido.cantidad_ingresada);*/
-                               /* if((parseInt(producto_pedido.existencia_actual) <  parseInt(producto_pedido.cantidad_ingresada)) ||
-                                   (parseInt(producto_pedido.existencia_bodega) <  parseInt(producto_pedido.cantidad_ingresada))){
-                                    productosSinExistencias.push(producto_pedido);
-                                }*/
                             }
                         }
 

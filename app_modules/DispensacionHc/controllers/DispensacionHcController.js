@@ -665,6 +665,11 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
         return;
     }
     
+    if(args.temporalLotes.detalle.cantidadDispensada <= 0){
+        res.send(G.utils.r(req.url, 'La cantidad dispensada no debe ser menor ó igual a Cero (0)', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
     if (!args.temporalLotes.empresa || args.temporalLotes.empresa.length === 0 ) {
         res.send(G.utils.r(req.url, 'La empresa esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
         return;
@@ -1525,14 +1530,12 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
            
             if(resultado.rows.length === 0){
                 
-                G.knex.transaction(function(transaccion) {        
-                
-            /**
-            * +Descripcion se actualiza la tabla de estados evidenciando
-            *              que la formula ya no tiene pendientes
-            */          
-            return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:0, evolucion:evolucionId},transaccion);
-
+                G.knex.transaction(function(transaccion) {                       
+                    /**
+                    * +Descripcion se actualiza la tabla de estados evidenciando
+                    *              que la formula ya no tiene pendientes
+                    */          
+                    return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:0, evolucion:evolucionId},transaccion);
                 });
                 
             }else{
@@ -1540,11 +1543,8 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                  def.resolve();    
             }
             
-    }).
-            
-            
-            then(function(resultado){
-        
+    }).then(function(resultado){
+           
          res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
         //console.log("FINAL ", resultado);
     }).fail(function(err){            

@@ -350,7 +350,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * @fecha 07/06/2016
           */
         $scope.temporalLotes = function(entity){
-           
+            
+            
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");           
             var obj = {                   
                 session: $scope.session,

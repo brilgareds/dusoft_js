@@ -1189,7 +1189,41 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             
         }
         
-    }).then(function(){          
+    }).then(function(resultado){
+        
+        /**
+         * +Descripcion Se valida si la formula despues de dispensada se encuentra con productos pendientes
+         *              
+         */
+        return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesSinDispensar',{evolucionId:evolucionId});
+        
+    
+    }).then(function(resultado){
+         var def = G.Q.defer();
+        
+        G.knex.transaction(function(transaccion) {  
+            if(resultado.rows.length === 0){
+
+
+                /**
+                * +Descripcion se actualiza la tabla de estados evidenciando
+                *              que la formula ya no tiene pendientes
+                */          
+                return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:0, evolucion:evolucionId},transaccion);
+
+
+            }else{
+                return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:1, evolucion:evolucionId},transaccion);
+                console.log("CONTINUA COMO PENDIENTE EL ESTADO DE LA FORMULA::: ", resultado);
+                //def.resolve();    
+            }
+        });  
+    })
+    
+    
+            
+            
+            .then(function(){          
          return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});            
     }).then(function(resultado){
         

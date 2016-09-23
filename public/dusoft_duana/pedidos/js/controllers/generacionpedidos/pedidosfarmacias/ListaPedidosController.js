@@ -303,7 +303,7 @@ define(["angular",
 
             $scope.agregarClase = function(estado) {
 
-                return estados[estado];
+                return estados[parseInt(estado)];
             };
 
             /*

@@ -127,7 +127,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                 CASE \
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
                                         CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
-                                        WHEN now() > a.fecha_maxima_entrega THEN 'Vencido'\
+                                        WHEN now() > a.fecha_maxima_entrega THEN 'Refrendar'\
                                         ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
                                         )\
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\

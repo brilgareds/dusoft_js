@@ -488,8 +488,16 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
             console.log("today ", today);
             console.log("fechaRegistro ", fechaRegistro);
             
+            /**
+              *+Descripcion: Si no hay ninguna dispensacion del producto anteriormente
+              *              Se le descuentan a la fecha despacho 23 dias sobre la fecha actual
+              *              para que permita cumplir la condicion de que la diferencia de dias
+              *              supera los 23 y posteriormente continue con la seleccion del lote
+              *              de lo contrario debe confrontar contra la ultima fecha de registro
+              *              del producto
+              **/
             if(!fechaRegistro){
-                fechaDespacho = sumaFecha(25,fechaRegistro);
+                 fechaDespacho = sumaFecha(-23,today);
             }else{
                 fechaDespacho = fechaRegistro;
             }
@@ -2041,7 +2049,7 @@ DispensacionHc.prototype.listarUltimaDispensacionPendientes = function(req, res)
                     }));
                     
                   });
-        }else{
+        }else{                                             
             throw 'Consulta sin resultados';
         }
            

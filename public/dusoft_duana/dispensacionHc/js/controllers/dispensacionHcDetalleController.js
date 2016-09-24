@@ -156,7 +156,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          
             dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
                 
-                   console.log("data -+----->>>> ", data);
+                   console.log("data Medicamentos formulados -+----->>>> ", data);
                    
                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 if(data.status === 200) {       

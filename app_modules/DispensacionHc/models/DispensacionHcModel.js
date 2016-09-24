@@ -265,8 +265,6 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
  */
 DispensacionHcModel.prototype.listarUltimaDispensacionPendientes = function(obj,callback){
     
-    
-    console.log("---obj-- ", obj);
     var parametros = {1: obj.evolucionId};
                                                        
     var sql ="SELECT * FROM (\

@@ -102,13 +102,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
           
           //$scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId:352974});
           //  $scope.cerrarVentana();
+          /*  var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+                $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: 352974, 
+                                                                      pendientes: resultadoStorage.pendientes});
+                                                                  $scope.cerrarVentana();*/
             dispensacionHcService.autorizarDispensacionMedicamento(obj,function(data){
-                console.log("RESPONDIENDO Y ACTUALIZANDO " );
+                var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");            
                 if(data.status === 200){
                      
                     AlertService.mostrarMensaje("success", data.msj);
                     //console.log("data.obj.autorizar_dispensacion.rows ", data.obj.autorizar_dispensacion.evolucion_id)
-                    $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id});
+                    $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id, 
+                                                                      pendientes: resultadoStorage.pendientes});
                     $scope.cerrarVentana();
                     //$state.go('DispensacionHc');
                 }else{

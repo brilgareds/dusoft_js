@@ -636,13 +636,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             console.log("AQUI AUTORIZA LA ENTREGA DE MEDICAMENTO ---------------");
             console.log("e ", e);
             console.log("parametros ", parametros);
-            that.listarMedicamentosFormulados(parametros);
+            
+            if(parametros.pendientes === 0){
+                that.listarMedicamentosFormulados(parametros);
+            }else{
+                that.listarMedicamentosFormuladosPendientes(parametros);
+            }
             
            // $scope.listaMedicamentosFormulados.refreshView();
             //console.log("$scope.listaMedicamentosFormulados ", $scope.listaMedicamentosFormulados)
             //$scope.listaMedicamentosFormulados.api.refreshView();
 
-
+              
 
         }); 
         

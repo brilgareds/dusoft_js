@@ -294,7 +294,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
-                            producto.setCantidadPendiente(data.cantidadPendiente);
+                            producto.setCantidadPendiente(data.cantidadpendiente);
                             producto.set_politicas(data.politicas_producto);
                             producto.setTieneValorPactado(data.tiene_valor_pactado);
 

@@ -12,6 +12,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.presentacion = presentacion || "";
                 this.cantidad_presentacion = cantidad_presentacion || "";
                 this.cantidad_recibida = 0;
+                this.cantidadPendiente = 0;
                 this.novedad = null;
                 this.lote = [];
                 this.nombreUsuarioIngreso = '';
@@ -74,11 +75,20 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoOrdenCompra.prototype.set_cantidad_seleccionada = function(cantidad_seleccionada) {
                 this.cantidad_seleccionada = cantidad_seleccionada;
             };
-
+            
             ProductoOrdenCompra.prototype.get_cantidad_seleccionada = function() {
 
                 return this.cantidad_seleccionada;
             };
+            
+             //Cantdad cantidad_pendiente            
+            ProductoOrdenCompra.prototype.getCantidadPendiente = function() {
+                return this.cantidadPendiente;
+            };
+            
+            ProductoOrdenCompra.prototype.setCantidadPendiente = function(cantidadPendiente) {
+                this.cantidadPendiente=cantidadPendiente;
+            }; 
             
             //Set Item id -> Identificador en el detalle de la Orden de Compra          
             ProductoOrdenCompra.prototype.set_id = function(id) {

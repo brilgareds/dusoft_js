@@ -554,8 +554,6 @@ DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion,tr
  */
 DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,callback){
     
-   
-     
     var parametros = {1: obj.evolucionId};
     var sql = "SELECT\
        TO_CHAR(k.fecha_registro,'YYYY-MM-DD') AS fecha_registro,\

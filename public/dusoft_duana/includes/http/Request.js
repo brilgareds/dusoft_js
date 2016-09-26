@@ -31,8 +31,8 @@ define(["angular","js/services"], function(angular, services){
                     withCredentials: true,
                     headers: {'Content-Type': undefined },
                     transformRequest: angular.identity
-                }).success(function(){
-                    callback(true);
+                }).success(function(response){
+                    callback(response);
                 }).error(function(){
                     callback(false);
                 });

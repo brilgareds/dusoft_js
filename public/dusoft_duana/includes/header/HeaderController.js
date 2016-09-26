@@ -539,7 +539,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 var chat =  localStorageService.get("chat");
                 console.log("estado chat ", chat);
                 
-                if((chat && parseInt(chat.estado) === 1) || (chat && parseInt(chat.estado) === 2)){
+                if(chat && chat.estado === '1'){
                     return;
                 }
                 
@@ -592,7 +592,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
                 var chat =  localStorageService.get("chat");
                 
-                if(chat && parseInt(chat.estado) === 1){
+                if(chat && chat.estado === '1'){
                     return;
                 }
                 

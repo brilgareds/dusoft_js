@@ -9,17 +9,6 @@
             </div>
 
             <tabset> <!--Grupo de Tabs-->
-
-                <tab>
-
-                    <tab-heading>
-                        <span></span> <b>Grupos</b>
-                    </tab-heading>
-                    
-                    <div ng-include src="'views/Grupos/ListaGrupos.html'" ng-controller="ListaGruposController"></div>
-
-                </tab>
-                
                 <tab  name="cargarPlano">
                     <tab-heading>
                         <i class="glyphicon glyphicon-cloud-upload"></i> <b> Conversaciones </b>
@@ -29,7 +18,16 @@
                         
                         <chat></chat>
                     </div>
-                </tab>                    
+                </tab>     
+                <tab>
+
+                    <tab-heading>
+                        <span></span> <b>Grupos</b>
+                    </tab-heading>
+                    
+                    <div ng-include src="'views/Grupos/ListaGrupos.html'" ng-controller="ListaGruposController"></div>
+
+                </tab>
             </tabset>  
         </div>    
     </div>

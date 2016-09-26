@@ -17,7 +17,7 @@
         
         <div class="fileUploadChat btn btn-default btn-xs" ng-if="root.conversacionSeleccioanda"  >
             <i class="glyphicon glyphicon-paperclip"></i>
-            <input type="file" class="uploadChat" onchange="angular.element(this).scope().subirArchivo(this.files)" />
+            <input title="Adjuntar archivo" type="file" class="uploadChat" onchange="angular.element(this).scope().subirArchivo(this.files)" />
         </div>
 
   
@@ -78,8 +78,8 @@
         
         <!--button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-phone"></span></button-->
 
-        <button class="btn btn-default btn-xs btnCloseChat pull-right" ng-click="$parent.onCerrarChat()"><span class="glyphicon glyphicon-remove"></span></button>
-        <button class="btn btn-default btn-xs pull-right btnVentanaCompletaChat"><span class="glyphicon glyphicon-resize-full" "></span></button>
+        <button title="Cerrar" class="btn btn-default btn-xs btnCloseChat pull-right" ng-click="$parent.onCerrarChat()"><span class="glyphicon glyphicon-remove"></span></button>
+        <button title="Ventana completa" class="btn btn-default btn-xs pull-right btnVentanaCompletaChat" ng-click="onAbrirVentanaCompleta()"><span class="glyphicon glyphicon-resize-full" "></span></button>
         
         
     </div>

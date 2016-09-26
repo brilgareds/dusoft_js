@@ -438,14 +438,24 @@ ChatController.prototype.subirArchivoMensaje = function(parametros, callback) {
         return;
     }
     
-    G.Q.ninvoke(G.utils, "subirArchivo", parametros.req.files, true).then(function(_rutaNueva) {
+    G.Q.ninvoke(G.utils, "obtenerTamanoArchivo", parametros.req.files.file.path ).then(function(mb){
+        
+        if(mb > 3){
+            throw {status:403, msj:"El archivo no fue enviado, el peso sobrepasa el limite"};
+            return;
+        }
+        
+        return  G.Q.ninvoke(G.utils, "subirArchivo", parametros.req.files, true);
+        
+    }).then(function(_rutaNueva) {
         console.log("file was moved to ", _rutaNueva, " original ", parametros.req.files.file.name);
         
         callback(false, {rutaNueva:'_rutaNueva', nombreArchivo:parametros.req.files.file.name});
         
     }).fail(function(err){
+        console.log("error ",err);
         callback(err);
-    })
+    });
     
 
 };

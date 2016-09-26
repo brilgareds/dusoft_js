@@ -12,7 +12,6 @@ define(["angular", "js/controllers", "includes/classes/Chat/GrupoChat"], functio
                  $state, Usuario, localStorageService, $modal,
                  $timeout, GrupoChat) {
                      
-            localStorageService.set("chat", {estado:2});
             
             var self = this;
             $scope.root = {
@@ -149,7 +148,6 @@ define(["angular", "js/controllers", "includes/classes/Chat/GrupoChat"], functio
 
                 $scope.$$watchers = null;
                 $scope.root = {};
-                localStorageService.remove("chat");
 
             });
             

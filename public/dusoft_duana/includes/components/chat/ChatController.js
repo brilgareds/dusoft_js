@@ -92,6 +92,21 @@ define(["angular",
             };
             
             
+            $scope.onAbrirVentanaCompleta = function(){
+                var conversacion = $scope.root.conversacionSeleccionada;
+                
+                if(conversacion.getId() !== 0){
+                    localStorageService.set("mensajeNotificacion", {id_conversacion:conversacion.getId()});
+                }
+                
+                
+                window.open(
+                    '/dusoft_duana/chat/#/Admin',
+                    '_blank' // <- This is what makes it open in a new window.
+                );
+            };
+            
+            
            /**
             * @author Eduar Garcia
             * +Descripcion Handler del boton de subir archivo
@@ -113,10 +128,21 @@ define(["angular",
                 ));
                 
                 
-                Request.subirArchivo(URL.CONSTANTS.API.CHAT.GUARDAR_MENSAJE, fd, function(completo) {
-                                        
-                    if(completo){
+                Request.subirArchivo(URL.CONSTANTS.API.CHAT.GUARDAR_MENSAJE, fd, function(respuesta) {
+                    
+                    if(respuesta.status === 200){
                      
+                    } else {
+                        var mensaje =  {
+                            id_conversacion:conversacion.getId(), usuario:Usuario.getUsuarioActual().getNombreUsuario(),
+                            mensaje:respuesta.msj, archivo_adjunto:null,
+                            fecha_mensaje:"",
+                            error:true
+                        };
+                                
+                        self.agregarDetalleConversacion(mensaje);
+                        
+                        $scope.$emit("onMensajeNuevo", mensaje, Usuario.getUsuarioActual());
                     }
                     
                 });
@@ -151,6 +177,7 @@ define(["angular",
             $scope.onTraerConversaciones = function(){
                 self.onTraerConversaciones();
                 $scope.$emit("onTabConversaciones");
+                localStorageService.remove("mensajeNotificacion");
             };
             
             
@@ -224,6 +251,16 @@ define(["angular",
                         /*var _conversacion = data.obj.conversacion[0];
                         self.agregarDetalleConversacion(_conversacion);*/
                         $scope.root.mensaje = "";
+                    } else {
+                        var mensaje =  {
+                            id_conversacion:conversacion.getId(), usuario:Usuario.getUsuarioActual().getNombreUsuario(),
+                            mensaje:"El mensaje no se envio", archivo_adjunto:null,
+                            fecha_mensaje:"",
+                            error:true
+                        };
+                        
+                        self.agregarDetalleConversacion(mensaje);
+                        $scope.$emit("onMensajeNuevo", mensaje, Usuario.getUsuarioActual());
                     }
                     
                 });
@@ -326,6 +363,10 @@ define(["angular",
                         _conversacion.mensaje, _conversacion.archivo_adjunto,
                         _conversacion.fecha_mensaje
                 );
+        
+                if(_conversacion.error){
+                    conversacion.setMensaje("<span style='color:red'>"+conversacion.getMensaje()+"</span>");
+                }
 
                $scope.root.conversacionSeleccionada.agregarDetalle(conversacion);
             };

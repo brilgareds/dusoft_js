@@ -10,11 +10,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
         "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
-        "$timeout","$modal", "Conversacion",
+        "$timeout","$modal", "Conversacion",  "webNotification",
         function($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
                 Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo,
-                $timeout, $modal, Conversacion) {
+                $timeout, $modal, Conversacion, webNotification) {
 
             var self = this;
            
@@ -138,6 +138,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                         self.setUsuarioActual(obj);
                         callback(obj);
+                        
                     }
 
                 });
@@ -168,6 +169,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         self.asignarModulosUsuario(modulos);
 
                         self.asignarEmpresasFarmacias(obj.centros_utilidad);
+                        localStorageService.set("chat", {estado:'0'});
                         //console.log("empresa usuario ", $scope.Usuario.getEmpresa())
                         callback(obj);
                     } else {
@@ -403,33 +405,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 }
             };
             
-          /**
-            * @author Eduar Garcia
-            * +Descripcion Handler del boton de chat
-            * @fecha 2016-09-05
-            */
-            $scope.onBtnChat = function(){
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    size: 'lg',
-                    keyboard: true,
-                    animation:false,
-                    template:'<chat></chat>', 
-                    windowClass:"contenedorChat",
-                    backdropClass:"chatBackground",
-                    controller:function($scope, $modalInstance){
-                        $scope.onCerrarChat = function(){
-                            $modalInstance.close();
-                        };
-                        
-                    }
-                };
-                var modalInstance = $modal.open($scope.opts);
-            };
-            
-            
             $scope.onVerPerfilUsuario = function(){
                  localStorageService.set("usuarioo_id", $scope.Usuario.getId());
                  window.location = "../parametrizacion/#/AdministracionUsuarios";
@@ -548,6 +523,53 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
 
             });
+            
+                        
+          /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de chat
+            * @fecha 2016-09-05
+            */
+            $scope.onBtnChat = function(){
+                self.abrirChat();
+            };
+            
+            self.abrirChat = function(){
+                
+                var chat =  localStorageService.get("chat");
+                console.log("estado chat ", chat);
+                
+                if((chat && parseInt(chat.estado) === 1) || (chat && parseInt(chat.estado) === 2)){
+                    return;
+                }
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    size: 'lg',
+                    keyboard: true,
+                    animation:false,
+                    template:'<chat></chat>', 
+                    windowClass:"contenedorChat",
+                    backdropClass:"chatBackground",
+                    controller:["$scope", "$modalInstance",function($scope, $modalInstance){
+                        $scope.onCerrarChat = function(){
+                            $modalInstance.close();
+                        };
+                        
+                    }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    localStorageService.set("chat", {estado:'0'});
+                }, function() {
+                    localStorageService.set("chat", {estado:'0'});
+                });
+                
+                localStorageService.set("chat", {estado:'1'});
+            };
 
             self.obtenerModuloActual = function(state) {
                 var obj = $scope.Usuario.getObjetoModulos();
@@ -562,6 +584,39 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 console.log("onCerrarSesion");
                 $scope.cerraSesion(function() {
                     window.location = "../pages/403.html";
+                });
+            });
+            
+            socket.on("onNotificacionChat", function(data){
+                var mensaje = data.mensaje;
+                
+                var chat =  localStorageService.get("chat");
+                
+                if(chat && parseInt(chat.estado) === 1){
+                    return;
+                }
+                
+                var onHide;
+                               
+                webNotification.showNotification(mensaje.usuario+ " dice: ", {
+                    body: mensaje.mensaje,
+                    icon: '/images/logo.png',
+                    onClick: function onNotificationClicked() {
+                        localStorageService.set("mensajeNotificacion", mensaje);
+                        self.abrirChat();
+                        onHide();
+                    },
+                    autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+                }, function onShow(error, hide) {
+                    if (error) {
+                        console.log('Error interno: al mostrar ventana de web notifications ' + error.message);
+                    } else {
+                         onHide =  hide;
+                        setTimeout(function hideNotification() {
+                           onHide();
+                           //manually close the notification (you can skip this if you use the autoClose option)
+                        }, 30000);
+                    }
                 });
             });
 

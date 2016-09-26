@@ -285,7 +285,7 @@ ChatController.prototype.obtenerConversaciones = function(req, res) {
         res.send(G.utils.r(req.url, 'Conversaciones usuario', 200, {conversaciones: conversaciones}));
       
     }).fail(function(err) {
-        
+        console.log("errror ", err);
         var msj = err;
         var status = 500;
         

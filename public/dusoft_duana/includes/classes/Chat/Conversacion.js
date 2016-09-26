@@ -9,6 +9,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.fechaCreacion = fechaCreacion;
             this.usuarios = [];
             this.detalle = [];
+            this.notificacion = false;
         };
         
         
@@ -25,6 +26,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.fechaCreacion = fechaCreacion;
             return this;
         };
+        
         
         Conversacion.prototype.getFechaCreacion = function() {
             
@@ -116,7 +118,17 @@ define(["angular", "js/models"], function(angular, models) {
         Conversacion.prototype.vaciarUsuarios = function() {
             this.usuarios = [];
         };
-
+        
+        Conversacion.prototype.setNotificacion = function(notificacion) {
+            this.notificacion = notificacion;
+            return this;
+        };
+        
+        Conversacion.prototype.tieneNotificacion = function() {
+            return this.notificacion;
+        };
+        
+        
         this.get = function(id, nombre, fechaCreacion) {
 
             return new Conversacion(id, nombre, fechaCreacion);

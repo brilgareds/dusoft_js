@@ -15,7 +15,7 @@
             <span class="btn" flow-btn></span>
         </div -->
         
-        <div class="fileUploadChat btn btn-default btn-xs" ng-if="root.conversacionSeleccioanda" >
+        <div class="fileUploadChat btn btn-default btn-xs" ng-if="root.conversacionSeleccioanda"  >
             <i class="glyphicon glyphicon-paperclip"></i>
             <input type="file" class="uploadChat" onchange="angular.element(this).scope().subirArchivo(this.files)" />
         </div>
@@ -79,7 +79,7 @@
         <!--button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-phone"></span></button-->
 
         <button class="btn btn-default btn-xs btnCloseChat pull-right" ng-click="$parent.onCerrarChat()"><span class="glyphicon glyphicon-remove"></span></button>
-        <button class="btn btn-default btn-xs pull-right"><span class="glyphicon glyphicon-resize-full" "></span></button>
+        <button class="btn btn-default btn-xs pull-right btnVentanaCompletaChat"><span class="glyphicon glyphicon-resize-full" "></span></button>
         
         
     </div>
@@ -92,11 +92,11 @@
                     <i class="glyphicon glyphicon-list" ></i> <b></b>
                 </tab-heading>
                 <br>
-                <div class="input-group navbar-form">
+                <div class="input-group navbar-form" style="padding-right: 0px;">
 
-                    <input type="text" class="form-control pull-right" ng-keypress="onBuscarRol($event)" ng-model="rootRoles.termino_busqueda" placeholder="Buscar" />
+                    <input type="text" class="form-control pull-right" ng-keypress="onBuscarConversaciones($event)" ng-model="root.terminoBusqueda" placeholder="Buscar" />
                     <div class="input-group-btn" >
-                        <button class="btn btn-default" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                        <button class="btn btn-default" type="submit" ng-click="onBuscarConversaciones({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                     </div>
 
                 </div>
@@ -119,10 +119,18 @@
                             <span class="pull-right" style="font-size: 11px">{{detalle.getFechaCreacion()}}</span>
                         </div>
                         <p ng-if="detalle.getArchivo().length == 0">
-                            {{detalle.getMensaje()}}  
+                           <span ng-bind-html="highlight(detalle.getMensaje(), root.terminoBusqueda)" ng-if="detalle.getArchivo().length == 0">
+
+                                 {{detalle.getMensaje()}}  
+                           </span>
                         </p>
                         <p ng-if="detalle.getArchivo().length > 0">
-                            <a href="/tmp/{{detalle.getArchivo()}}" target="_blank"> <i class="glyphicon glyphicon-file"></i> {{detalle.getArchivo()}}
+                            <a href="/tmp/{{detalle.getArchivo()}}" target="_blank"> <i class="glyphicon glyphicon-file"></i>
+ 
+                                <span ng-bind-html="highlight(detalle.getArchivo(), root.terminoBusqueda)" >
+                                    {{detalle.getArchivo()}}
+                                </span>
+
                                 <span ng-if="esImagen(detalle.getArchivo())">
                                     <img class="chatImg" onerror="angular.element(this).scope().onErrorImagen(this)" ng-src="/tmp/{{detalle.getArchivo()}}"/>
                                 </span>
@@ -137,7 +145,7 @@
                     
                     
 
-                    <div class="chatPanel col-xs-11">
+                    <div class="chatPanel col-xs-12">
 
                         <textarea  placeholder="Escribir..." class="textAreaChat" ng-keypress="onGuardarMensaje($event)" ng-model="root.mensaje" style="width: 100%"></textarea>
 

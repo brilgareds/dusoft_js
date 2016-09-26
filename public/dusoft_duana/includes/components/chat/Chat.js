@@ -18,11 +18,6 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
 
         //cuando la etiqueta esta cargada en el dom
         directive.link = function(scope, element, attrs, ngModel){
-           // ng-click="onBtnChat()"
-           
-            $(document).on("click", ".btnOpenChatPanel", function(){
-                console.log("kfjdkfjdkfdjkfjk")
-            });
             
             $(document).on("click",".indicadorScrollChat",function(){
                 self.realizarScrollInferior();

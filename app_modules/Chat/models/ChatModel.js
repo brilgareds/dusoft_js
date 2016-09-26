@@ -290,6 +290,8 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
         "a.estado AS estado_usuario_conversacion"
     ];
     
+    var conversaciones = [];
+        
     var query = G.knex.column(columns).
     from("chat_conversacion_usuarios as a").
     innerJoin("chat_conversacion as b", "b.id", "a.id_conversacion");
@@ -310,15 +312,58 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
         };
         
         return G.Q.nfcall(__obtenerTituloConversaciones, parametros);
-    }).then(function(resultado){
+    }).then(function(_conversaciones){
+        var def = G.Q.defer();
+        conversaciones = _conversaciones;
+        
+        if(parametros.termino_busqueda && parametros.termino_busqueda.length > 0){
+            return G.Q.nfcall(__filtrarDetalleConversaciones, {conversaciones:conversaciones, index:0, contexto:that, termino_busqueda:parametros.termino_busqueda});
+        }
        
-        callback(false, resultado);
+        
+    }).then(function(_conversaciones){
+        
+        if(_conversaciones){
+            conversaciones = _conversaciones;
+        }
+        
+        callback(false, conversaciones);
         
     }).catch(function(err){
         console.log("error sql",err);
         callback(err);       
     });   
 };
+
+
+function __filtrarDetalleConversaciones(parametros, callback){
+    var conversacion = parametros.conversaciones[parametros.index];
+    
+    if(!conversacion){
+        
+        callback(false, parametros.conversaciones);
+        return;
+    }
+    
+    conversacion.termino_busqueda = parametros.termino_busqueda;
+    
+    G.Q.ninvoke(parametros.contexto, "obtenerDetalleConversacion", conversacion).then(function(resultado){
+        
+        //Filtra solo las conversaciones con resultados
+        if(resultado.length === 0){
+            parametros.conversaciones.splice(parametros.index, 1);
+        } else {
+            parametros.conversaciones[parametros.index]["detalle"] = resultado;
+            parametros.index++;
+        }
+             
+        __filtrarDetalleConversaciones(parametros, callback);
+        
+    }).fail(function(err){
+        callback(err);
+    });
+       
+}
 
 
 /**
@@ -391,7 +436,7 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
         "a.mensaje",
         "a.archivo_adjunto",
         "a.fecha_mensaje as fecha_registro",
-        G.knex.raw("to_char(a.fecha_mensaje, 'HH:MI am') as fecha_mensaje")
+        G.knex.raw("to_char(a.fecha_mensaje, 'dd-Mon HH:MI am') as fecha_mensaje")
     ];
     
     var query = G.knex.column(columns).
@@ -402,6 +447,15 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
 
     if(parametros.detalle_id){
         query.where("id", parametros.detalle_id);
+    }
+    
+    if(parametros.termino_busqueda && parametros.termino_busqueda.length > 0){
+        query.andWhere(function() {
+
+            this.where(G.knex.raw("a.mensaje"), G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+            //orWhere("b.usuario", G.constants.db().LIKE, "%" + parametros.terminoBusqueda + "%");
+
+        });
     }
     
     query.then(function(resultado){

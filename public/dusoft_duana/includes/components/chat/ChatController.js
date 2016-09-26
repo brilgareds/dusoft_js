@@ -9,16 +9,17 @@ define(["angular",
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", 'URL',
         '$filter', '$timeout','$modal','Conversacion',
-        'ConversacionDetalle',
+        'ConversacionDetalle','$sce',
         function($scope, $rootScope, Request,
                 Empresa, CentroUtilidad, Bodega,
                 API, socket, AlertService, $state, Usuario,
                 localStorageService, URL, 
                 $filter, $timeout, $modal, Conversacion,
-                ConversacionDetalle) {
+                ConversacionDetalle,$sce) {
 
             var self = this;
-
+                        
+            
             /*
              * @Author: Eduar
              * +Descripcion: Definicion del objeto que contiene los parametros del controlador
@@ -31,7 +32,9 @@ define(["angular",
                 conversaciones:[],
                 conversacionSeleccionada:Conversacion.get(),
                 conversacionSeleccioanda: false,
-                usuarioActual:Usuario.getUsuarioActual()
+                usuarioActual:Usuario.getUsuarioActual(),
+                terminoBusqueda:"",
+                mensajeNotificacion: localStorageService.get("mensajeNotificacion") || undefined
             };
             
             
@@ -44,6 +47,9 @@ define(["angular",
                 multiSelect:false,
                 enableHighlighting:true,
                 afterSelectionChange:function(row, $event){
+                    
+                    row.entity.setNotificacion(false);
+                    
                     if(row.selected){
                         self.listarDetalleConversacion(row.entity);
                     }
@@ -52,8 +58,10 @@ define(["angular",
                 columnDefs: [
                     {field: 'getNombre()', displayName: '', cellClass: "txt-center", width:"40",
                         cellTemplate: '<button class="btn btn-default btn-xs" ng-click="onMostrarVentanaGrupos($event, row.entity)"><span class="glyphicon glyphicon-user" ></span></button>'},
-                    {field: 'getNombre()', displayName: 'Participantes'},
-                    {field: 'getFechaCreacion()', displayName: 'Fecha', width:100}
+                    {field: 'getNombre()', displayName: 'Participantes', cellClass:"ngCellText",
+                        cellTemplate:"<div ng-class=\"{'blink' : row.entity.tieneNotificacion()}\">{{row.entity.getNombre()}}</div>"},
+                    {field: 'getFechaCreacion()', cellClass:"ngCellText", displayName: 'Fecha', width:100, 
+                        cellTemplate:"<div ng-class=\"{'blink' : row.entity.tieneNotificacion()}\">{{row.entity.getFechaCreacion()}}</div>"}
 
                 ]
 
@@ -166,6 +174,29 @@ define(["angular",
             
            /**
             * @author Eduar Garcia
+            * +Descripcion Subraya resultado de busqueda
+            * @fecha 2016-09-23
+            */
+            $scope.highlight = function(text, search) {
+                if (!search) {
+                    return $sce.trustAsHtml(text);
+                }
+                return $sce.trustAsHtml(text.replace(new RegExp(search, 'gi'), '<span class="highlightedText">$&</span>'));
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del textinput para buscar coincidencias en las conversaciones
+            * @fecha 2016-09-23
+            */
+            $scope.onBuscarConversaciones = function(event){
+                if(event.which === 13){
+                    self.onTraerConversaciones();
+                }
+            };
+            
+           /**
+            * @author Eduar Garcia
             * +Descripcion Realiza peticion al API guardar mensaje del usuario
             * @fecha 2016-09-05
             */
@@ -198,6 +229,18 @@ define(["angular",
                 });
             };
             
+            
+            self.marcarConversacionConNotificacion = function(id){
+                
+                for(var i in  $scope.root.conversaciones){
+                    var conversacion =  $scope.root.conversaciones[i];
+                    
+                    if(id ===  conversacion.getId()){
+                        conversacion.setNotificacion(true);
+                    }
+                }
+            };
+            
            /**
             * @author Eduar Garcia
             * +Descripcion Evento socket al recibir un menssaje
@@ -206,6 +249,7 @@ define(["angular",
            socket.on("onNotificarMensaje", function(data){
                
                var conversacion = $scope.root.conversacionSeleccionada;
+              
                //console.log("conversacion ", data.mensaje.id_conversacion, " conversacion ", conversacion.getId());
                
                 //Conversacion actual
@@ -216,17 +260,19 @@ define(["angular",
                    
                 }
                 
-                self.onTraerConversaciones();
+                self.onTraerConversaciones(function(){
+                    self.marcarConversacionConNotificacion(data.mensaje.id_conversacion);
+                });
+                
                 $scope.$emit("onMensajeNuevo", data.mensaje, Usuario.getUsuarioActual());
 
            });
            
            
             $scope.$on('$destroy', function() {
-                console.log("on destroy chat controller");
                 onVentanaGruposCerrada();
                 $scope.$$watchers = null;
-                socket.removeAllListeners();
+                socket.remove(["onNotificarMensaje"]);
             });
             
           /**
@@ -295,7 +341,8 @@ define(["angular",
                     session: $scope.root.session,
                     data: {
                         chat: {
-                            usuario_id: Usuario.getUsuarioActual().getId()
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            termino_busqueda:$scope.root.terminoBusqueda
                         }
                     }
                 };
@@ -311,7 +358,18 @@ define(["angular",
                             var conversacion = Conversacion.get(_conversacion.id_conversacion, _conversacion.titulo, _conversacion.fecha_creacion);
                             
                             $scope.root.conversaciones.push(conversacion);
+                            
+                            //Verifica si hay un mensaje pendiente al dar click en la notificacion web
+                            if($scope.root.mensajeNotificacion && $scope.root.mensajeNotificacion.id_conversacion === conversacion.getId()){
+                                self.listarDetalleConversacion(conversacion);
+                                localStorageService.remove("mensajeNotificacion");
+                                $scope.root.mensajeNotificacion = undefined;
+                            }
+                            
                         }
+                        
+                        if(callback)
+                            callback();
                         
                     } 
                     

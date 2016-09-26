@@ -301,7 +301,7 @@ if (cluster.isMaster) {
 
     });
     
-    //Si el servidro esta en modo produccion se sobreescribe el mand-dev.js por el de produccion
+    //Si el servidor esta en modo produccion se sobreescribe el mand-dev.js por el de produccion
     app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
         
         if(!G.program.prod ) {

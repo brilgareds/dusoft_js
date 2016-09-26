@@ -1558,7 +1558,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
         
         
-    }).then(function(resultado){
+    }).then(function(){
         
         /**
          * +Descripcion Se valida si la formula despues de dispensada se encuentra con productos pendientes
@@ -1570,22 +1570,31 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     }).then(function(resultado){
          var def = G.Q.defer();
            
+           
+                
+        G.knex.transaction(function(transaccion) {  
+
             if(resultado.rows.length === 0){
-                
-                G.knex.transaction(function(transaccion) {                       
-                    /**
-                    * +Descripcion se actualiza la tabla de estados evidenciando
-                    *              que la formula ya no tiene pendientes
-                    */          
-                    return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:0, evolucion:evolucionId},transaccion);
-                });
-                
-            }else{
-                 console.log("CONTINUA COMO PENDIENTE EL ESTADO DE LA FORMULA::: ", resultado);
-                 def.resolve();    
+            /**
+            * +Descripcion se actualiza la tabla de estados evidenciando
+            *              que la formula ya no tiene pendientes
+            */          
+            return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', 
+            {actualizarCampoPendiente:1, conPendientes:0, evolucion:evolucionId},transaccion);
+
+
+        }else{
+             console.log("CONTINUA COMO PENDIENTE EL ESTADO DE LA FORMULA::: ", resultado);
+             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', 
+             {actualizarCampoPendiente:1, conPendientes:1, evolucion:evolucionId},transaccion);
+            //def.resolve(); 
+             //def.resolve();    
             }
+        });
             
     }).then(function(resultado){
+           
+         console.log("Listar medicamentos pendientes sin dispensar ", resultado);  
            
          res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));
         //console.log("FINAL ", resultado);

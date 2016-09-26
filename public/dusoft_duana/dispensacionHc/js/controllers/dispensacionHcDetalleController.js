@@ -70,33 +70,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 }    
             };      
-          
-                
-                
-                dispensacionHcService.listarFormulas(obj, function(data){
-                    estadoEntregaFormula = resultadoStorage.pendientes;  
-                    $scope.showBotonTodoPendiente = resultadoStorage.pendientes;
-                    tipoEstadoFormula    = resultadoStorage.tipoEstadoFormula;
-                    
-                    if(data.status === 200) {       
-                        //$scope.root.items = data.obj.listar_formulas.length;                              
-                        $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                        if(resultadoStorage.pendientes === 0){
-                            
-                            that.listarMedicamentosFormulados(resultadoStorage);
-                        }
-                                                  
-                        if(resultadoStorage.pendientes === 1){    
-                            $scope.showBotonRegistrarEvento = resultadoStorage.pendientes;
-                            that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
-                        }
-                              
-                     }else{
-                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                     }
+                                      
+            dispensacionHcService.listarFormulas(obj, function(data){
+                estadoEntregaFormula = resultadoStorage.pendientes;  
+                $scope.showBotonTodoPendiente = resultadoStorage.pendientes;
+                tipoEstadoFormula    = resultadoStorage.tipoEstadoFormula;
 
-                });
-        
+                if(data.status === 200) {       
+                    console.log("data [[]]][[[]] ", data);
+                    //$scope.root.items = data.obj.listar_formulas.length;                              
+                    $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
+                    if(resultadoStorage.pendientes === 0){
+
+                        that.listarMedicamentosFormulados(resultadoStorage);
+                    }
+
+                    if(resultadoStorage.pendientes === 1){    
+                        $scope.showBotonRegistrarEvento = resultadoStorage.pendientes;
+                        that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
+                    }
+
+                 }else{
+                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                 }
+
+            });        
              
         };
         

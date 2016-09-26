@@ -82,7 +82,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS fecha_registro,\
                         a.tipo_id_paciente,\
                         a.paciente_id,\
-                        a.fecha_registro AS registro,\
+                        TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS registro,\
                         CURRENT_DATE as hoy,\
                         a.sw_refrendar as refrendar,\
                         a.evolucion_id,\
@@ -94,12 +94,12 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         b.residencia_telefono,\
                         b.residencia_direccion,\
                         '1' as sw_entrega_med,\
-                        a.fecha_finalizacion,\
-                        a.fecha_registro as fecha_formulacion,\
+                        TO_CHAR(a.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion,\
+                        TO_CHAR(a.fecha_registro,'YYYY-MM-DD') as fecha_formulacion,\
                         e.nombre,\
                         a.numero_entrega_actual,\
                         a.numero_total_entregas,\
-                        a.fecha_entrega,\
+                        TO_CHAR(a.fecha_entrega,'YYYY-MM-DD') as fecha_entrega,\
                         f.tipo_bloqueo_id,\
                         f.descripcion AS bloqueo,\
                         COALESCE(i.plan_id,0) as plan_id,\
@@ -229,18 +229,19 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
                             
     var sql =  "SELECT dd.codigo_producto,\
                 dd.cantidad as numero_unidades,\
-                dd.fecha_vencimiento,\
+                TO_CHAR(dd.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento,\
                 dd.lote,\
                 fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
                 dd.sw_pactado,\
                 fc_descripcion_producto_molecula(dd.codigo_producto) as molecula,\
                 dd.total_costo,\
                 to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
-                '1' as pendiente_dispensado,(select fecha_registro as fecha_entrega\
+                '1' as pendiente_dispensado,\
+                TO_CHAR((select fecha_registro as fecha_entrega\
 		from\
 		hc_pendientes_por_dispensar  AS e \
 		where \
-		e.evolucion_id  = :1 and sw_estado='1' limit 1) as fecha_pendiente\
+		e.evolucion_id  = :1 and sw_estado='1' limit 1),'YYYY-MM-DD') as fecha_pendiente\
                 FROM hc_formulacion_despachos_medicamentos_pendientes tmp\
                 inner join bodegas_documentos as d on (tmp.bodegas_doc_id = d.bodegas_doc_id and tmp.numeracion = d.numeracion)\
                 inner join bodegas_documentos_d AS dd on (d.bodegas_doc_id = dd.bodegas_doc_id and d.numeracion = dd.numeracion)\
@@ -333,7 +334,7 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
     var sql= " SELECT todo.* FROM ( \
     SELECT k.codigo_producto,\
        k.numero_unidades,\
-       k.fecha_vencimiento, \
+       TO_CHAR(k.fecha_vencimiento,'YYYY-MM-DD')AS fecha_vencimiento, \
        k.lote,  \
        k.descripcion_prod, \
        fc_descripcion_producto_alterno(k.codigo_producto) as molecula,\
@@ -557,12 +558,12 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
      
     var parametros = {1: obj.evolucionId};
     var sql = "SELECT\
-       k.fecha_registro,\
+       TO_CHAR(k.fecha_registro,'YYYY-MM-DD') AS fecha_registro,\
        k.fecha,\
        round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30) as Entrega,\
        k.codigo_producto,\
        k.numero_unidades,\
-       k.fecha_vencimiento,\
+       TO_CHAR(k.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento,\
        k.lote,\
        k.descripcion_prod,\
        k.usuario_id,\
@@ -1199,7 +1200,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
 
      
     G.knex.raw(sql,parametros).then(function(resultado){  
-      
+      //console.log(" resultado [existenciasBodegas]: ", resultado);
       callback(false, resultado)
     }).catch(function(err){ 
         console.log("err existenciasBodegas: ", err);
@@ -1604,6 +1605,10 @@ DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callb
  */
 DispensacionHcModel.prototype.consultarNumeroTotalEntregas = function(obj,transaccion,callback){
     
+    console.log("*****DispensacionHcModel.prototype.consultarNumeroTotalEntregas*********");
+    console.log("*****DispensacionHcModel.prototype.consultarNumeroTotalEntregas*********");
+    console.log("*****DispensacionHcModel.prototype.consultarNumeroTotalEntregas*********");
+    
     var parametros = {1: obj.evolucion};
     
     var sql = "SELECT\
@@ -1611,12 +1616,12 @@ DispensacionHcModel.prototype.consultarNumeroTotalEntregas = function(obj,transa
                     ELSE '0' END  AS estado_entrega\
                FROM dispensacion_estados a\
                WHERE \
-	        evolucion_id =  :1  ;";          
+	        evolucion_id = :1;";          
    var query = G.knex.raw(sql,parametros);
    
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){    
-          
+       console.log("resultado [consultarNumeroTotalEntregas]: ", resultado);   
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [consultarNumeroTotalEntregas]: ", err);
@@ -1704,11 +1709,11 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
             return G.Q.ninvoke(that,'consultarNumeroTotalEntregas', obj.parametro1 , transaccion);
                 
         }).then(function(resultado){  
-             
+                console.log("resultado.rows[0].estado_entrega ", resultado.rows[0].estado_entrega);
             if(resultado.rows[0].estado_entrega === '1'){                
                 return G.Q.ninvoke(that,'actualizarEstadoFinalizoFormula', obj.parametro1 , transaccion);
             }else{
-                def.resolve();
+                def.resolve();    
             }  
                     
         }).then(function(){  
@@ -1782,7 +1787,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
                         if(resultado.rows.length > 0){
                             totalInsertadosPendientes = 1;
                         }
-                            totalInsertadosPendientes=0;
+                            totalInsertadosPendientes = 0;
                            
                         });
                               

@@ -1612,7 +1612,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
 DispensacionHc.prototype.registrarEvento = function(req, res){
 
     var that = this;
-    var args = req.body.data;
+    var args = req.body.data;                  
     var usuario = req.session.user.usuario_id;
     
     
@@ -1663,6 +1663,45 @@ DispensacionHc.prototype.registrarEvento = function(req, res){
         res.send(G.utils.r(req.url, err.msj, 500, {}));
     }).done(); 
 };
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 26/09/2016
+ * +Descripcion Controlador encargado de consultar los registros de los eventos 
+ */
+DispensacionHc.prototype.listarRegistroDeEventos = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;
+   
+    if (!args.registrar_evento) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_registro_eventos: []}));
+        return;
+    }
+    
+    if (!args.registrar_evento.evolucion || args.registrar_evento.evolucion.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {registrar_evento: []}));
+        return;
+    }
+    
+    var parametros = {evolucion:args.registrar_evento.evolucion};
+                
+                
+    G.Q.ninvoke(that.m_dispensacion_hc,'listarRegistroDeEventos',parametros).then(function(resultado){
+       
+        if(resultado.rows.length > 0){ 
+              res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {listar_registro_eventos:resultado.rows}));
+        }else{
+           throw 'Consulta sin resultados';
+        }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
 /*
  * @author Cristian Ardila
  * @fecha 15/06/2016

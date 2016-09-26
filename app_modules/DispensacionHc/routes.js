@@ -115,6 +115,11 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/registrarEvento", function(req, res){
         c_dispensacion_hc.registrarEvento(req, res);
     });
+    
+    //COnsultando los eventos registrados
+    app.post("/api/DispensacionHc/listarRegistroDeEventos", function(req, res){
+        c_dispensacion_hc.listarRegistroDeEventos(req, res);
+    });
      
     // realizando la entrega de los pendientes de la formula
     app.post("/api/DispensacionHc/realizarEntregaFormulaPendientes", function(req, res){

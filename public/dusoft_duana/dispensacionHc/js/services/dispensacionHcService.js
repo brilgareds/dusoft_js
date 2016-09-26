@@ -59,6 +59,22 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
              
+             
+            /**
+              * @author Cristian Ardila
+              * @fecha  20/05/2016
+              * +Descripcion Servicio que lista los registros de los eventos que
+              *              describen la razon por la cual el paciente no reclamo
+              *              los medicamentos pendientes
+              */
+            self.listarRegistroDeEventos = function(obj, callback){
+              
+                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_REGISTRO_DE_EVENTOS,"POST", obj, function(data){
+                    
+                        callback(data);
+                });
+            }; 
+             
              /**
               * @author Cristian Ardila
               * @fecha  21/05/2016

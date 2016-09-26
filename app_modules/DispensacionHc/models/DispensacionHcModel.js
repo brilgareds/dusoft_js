@@ -2631,6 +2631,28 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
     });  
 };
 
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener los diferentes tipos de formula
+ * @controller DispensacionHc.prototype.listarTipoFormula
+ */
+DispensacionHcModel.prototype.listarRegistroDeEventos = function(obj,callback){
+                            
+    var sql = "SELECT a.observacion as descripcion\
+                FROM hc_despacho_medicamentos_eventos a \
+                WHERE a.evolucion_id = :1;";
+   
+    G.knex.raw(sql,{1: obj.evolucion}).then(function(resultado){    
+        callback(false, resultado)
+    }).catch(function(err){          
+        callback(err)
+    });
+          
+    
+};
+
+
 /*
  * @autor : Cristian Ardila
  * Descripcion : SQL para eliminar el producto de la tabla temporal

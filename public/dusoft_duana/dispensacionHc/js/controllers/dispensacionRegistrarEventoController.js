@@ -104,6 +104,70 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         $scope.cerrarVentana = function(){            
             $modalInstance.close();
         };
+        
+        
+        
+        
+        
+        
+        /**
+        * @author Cristian Ardila
+        * @fecha 09/06/2016 (MM/DD/YYYY)
+        * +Descripcion Metodo el cual invocara el servicio que consulta
+        *              todos los registros de los eventos de esta formula
+        * */
+        that.listarRegistroDeEventos = function(){
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
+            
+            var obj = {
+                session: $scope.session,
+                data: {
+                    registrar_evento:{
+                        evolucion: resultadoStorage.evolucionId, 
+                    }
+                }
+            };
+
+            dispensacionHcService.listarRegistroDeEventos(obj,function(data){
+                
+                console.log("<<<|||||||>>>> ", data);
+                if(data.status === 200){                        
+                   $scope.registroDeEventos =  dispensacionHcService.renderListarTipoDocumento(data.obj.listar_registro_eventos);
+                  
+                }else{                         
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                }
+               
+            });
+
+        };
+        
+        /**
+         * @author Cristian Ardila
+         * +Descripcion Se visualiza la tabla con los tipos de formulas
+         * @fecha 25/05/2016
+         */
+        $scope.listaRegistroDeEventos = {
+            data: 'registroDeEventos',
+            /*afterSelectionChange: function(rowItem) {
+                    if (rowItem.selected) {
+                        that.onSeleccionTipoFormula(rowItem.entity);
+                    }
+                },*/
+            enableColumnResize: true,
+            enableRowSelection: true,
+            keepLastSelected: false,
+            multiSelect: false,
+            columnDefs: [
+                {field: 'descripcion', displayName: 'Descripcion'},              
+            ],
+            
+        };
+        
+        
+        
+        that.listarRegistroDeEventos();
+        
         that.init(empresa, function() {
 
             if(!Usuario.getUsuarioActual().getEmpresa()) {

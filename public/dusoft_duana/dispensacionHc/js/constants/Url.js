@@ -36,7 +36,8 @@ define(["angular"], function (angular) {
                 "REGISTRAR_EVENTO": BASE_URL + "/DispensacionHc/registrarEvento",
                 "REALIZAR_ENTREGA_FORMULA_PENDIENTES": BASE_URL + "/DispensacionHc/realizarEntregaFormulaPendientes",
                 "GUARDAR_TODO_PENDIENTES": BASE_URL + "/DispensacionHc/guardarTodoPendiente",
-                "DESCARTAR_PRODUCTO_PENDIENTE": BASE_URL + "/DispensacionHc/descartarProductoPendiente"
+                "DESCARTAR_PRODUCTO_PENDIENTE": BASE_URL + "/DispensacionHc/descartarProductoPendiente",
+                "LISTAR_REGISTRO_DE_EVENTOS": BASE_URL + "/DispensacionHc/listarRegistroDeEventos",
               
                
             }

@@ -210,7 +210,8 @@ ChatModel.prototype.listarUsuariosPorGrupo = function(parametros, callback) {
         });
     }
     
-    query.orderBy("c.nombre", "ASC").limit(G.settings.limit).
+    query.where("c.estado", "1").
+    orderBy("c.nombre", "ASC").limit(G.settings.limit).
     offset((parametros.pagina - 1) * G.settings.limit);
     
     query.then(function(resultado){

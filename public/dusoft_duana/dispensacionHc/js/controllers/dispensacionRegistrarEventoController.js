@@ -142,6 +142,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
         };
         
+        that.onDescripcionCompletaObservacion = function (entity){
+            
+            $scope.root.observacion = entity.descripcion;
+        };
         /**
          * @author Cristian Ardila
          * +Descripcion Se visualiza la tabla con los tipos de formulas
@@ -149,17 +153,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          */
         $scope.listaRegistroDeEventos = {
             data: 'registroDeEventos',
-            /*afterSelectionChange: function(rowItem) {
+            afterSelectionChange: function(rowItem) {
                     if (rowItem.selected) {
-                        that.onSeleccionTipoFormula(rowItem.entity);
+                        that.onDescripcionCompletaObservacion(rowItem.entity);
                     }
-                },*/
+                },
             enableColumnResize: true,
             enableRowSelection: true,
             keepLastSelected: false,
             multiSelect: false,
             columnDefs: [
-                {field: 'descripcion', displayName: 'Descripcion'},              
+                             
+                {field: 'tipo', displayName: 'Fecha registro', width: '20%'},
+                {field: 'descripcion', displayName: 'Descripcion'}
             ],
             
         };

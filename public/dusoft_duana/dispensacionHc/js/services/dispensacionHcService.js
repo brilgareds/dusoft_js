@@ -507,7 +507,8 @@ define(["angular", "js/services"], function(angular, services) {
             self.renderListarTipoDocumento = function(tipoDocumento){
                 
                 var tipoDocumentos = [];                
-                for(var i in tipoDocumento){                
+                for(var i in tipoDocumento){    
+                 
                      var _tipoDocumento = TipoDocumentoHc.get(tipoDocumento[i].id, tipoDocumento[i].descripcion);
                      tipoDocumentos.push(_tipoDocumento);
                 }                  

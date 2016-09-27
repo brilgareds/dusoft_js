@@ -2639,7 +2639,7 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
  */
 DispensacionHcModel.prototype.listarRegistroDeEventos = function(obj,callback){
                             
-    var sql = "SELECT a.observacion as descripcion\
+    var sql = "SELECT a.observacion as descripcion,  TO_CHAR(a.fecha_registro,'YYYY-MM-DD')as id\
                 FROM hc_despacho_medicamentos_eventos a \
                 WHERE a.evolucion_id = :1;";
    

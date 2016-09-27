@@ -1,3 +1,5 @@
+<!--
+
 <div class="row paddingToptZero">
         <div class="col-sm-12 col-md-12">
 
@@ -10,7 +12,11 @@
                 <div class="table-responsive" style="height: 400px;">
                     <div class="gridStyle2" ng-grid="listaTiposFormulas" > </div>
                 </div>
-
+                
+                
+                <div class="table-responsive" style="height: 400px;">
+                    <div class="gridStyle2" ng-grid="medicamentosTemporales" > </div>
+                </div>
 
                 <div class="row">
 
@@ -32,7 +38,7 @@
                             </div> 
                         </div>
 
-                    </div>
+                    </div> 
 
                 </div>
 
@@ -43,4 +49,44 @@
                 <button type="button" class="btn btn-primary" ng-click="cerrarVentana()">Cancelar</button>
             </div>
         </div>
+    </div>  //-->
+
+
+<div class="row paddingToptZero">
+        <div class="col-sm-12 col-md-12">
+
+            <div class="panel panel-info ">
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom"><span >Entrega medicamentos</span> </h4>
+                </div>
+                
+                <br>
+                <div class="table-responsive" style="height: 400px;">
+                    <div class="gridStyle2" ng-grid="listaTiposFormulas" > </div>
+                </div>
+                
+                
+                
+
+                <div class="row">                   
+                    <div class="form-group">
+                        <label class="col-sm-12" for="inputBody">Observacion</label>
+                        <div class="col-sm-12"><textarea class="form-control" ng-model="root.observacion" id="inputBody" rows="8"></textarea></div>
+                    </div>                
+                </div>
+                
+                <div class="table-responsive" >
+                    <div class="gridStyle3" ng-grid="medicamentosTemporales" > </div>
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer">
+                
+                <button type="button" class="btn btn-warning" ng-click="realizarEntregaFormula()" ng-disabled="">Aceptar</button>
+                <button type="button" class="btn btn-primary" ng-click="cerrarVentana()">Cancelar</button>
+            </div>
+        </div>
     </div> 
+

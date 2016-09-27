@@ -593,6 +593,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 templateUrl: 'views/dispensacionHc/dispensacionRegistrarEvento.html',
                 scope: $scope,                  
                 controller: "dispensacionRegistrarEventoController",
+                
                 /*resolve: {
                         estadoEntregaFormula: function() {
                             return estadoEntregaFormula;

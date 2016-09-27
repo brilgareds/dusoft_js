@@ -355,7 +355,7 @@ define(["angular", "js/controllers",
                         }
                     };
                 }
-
+                console.log("EL OBJETO DE TODO ", obj);
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
 

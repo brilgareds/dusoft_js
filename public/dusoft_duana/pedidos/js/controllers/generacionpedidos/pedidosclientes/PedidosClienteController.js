@@ -1232,8 +1232,56 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             $scope.generar_pedido_cliente = function() {
-
+                
+                //$scope.Pedido.productos.forEach(function(row) {
+               
                 var obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
+                                pagina_actual: 1,
+                                productos: $scope.Pedido.productos,//'0104030001', 
+                                tipo_producto: '',
+                                numero_cotizacion: '',
+                                numero_pedido: '',
+                                filtro: {nombre: 'codigo', tipo_busqueda: 2},
+                                //nuevo campos
+                                molecula: '',
+                                laboratorio_id: '',
+                                codigoProducto: '',
+                                descripcionProducto: '',
+                                concentracion: '',
+                                tipoBusqueda: 0
+                            }
+                        }
+                    };
+                    
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
+                    
+                    /*if (data.status === 200) {
+                        
+                        if(row.cantidad_solicitada > data.obj.pedidos_clientes.lista_productos[0].cantidad_disponible || 
+                           data.obj.pedidos_clientes.lista_productos[0].cantidad_disponible === 0){
+                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Hay productos que no cuentan con disponibilidad por esto no se puede autorizar el pedido");
+                              
+                          
+                           
+                          
+                         }else{
+                           
+                           
+                         }
+                        
+                    }*/
+                });
+               
+            //});
+            
+                /*var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
@@ -1255,7 +1303,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         AlertService.mostrarMensaje("warning", data.msj);
                         //$scope.volver_cotizacion();
                     }
-                });
+                });*/
             };
             $scope.habilitar_generacion_reporte = function() {
 

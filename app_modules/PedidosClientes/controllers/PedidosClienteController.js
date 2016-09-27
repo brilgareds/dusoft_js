@@ -3124,6 +3124,27 @@ function __subir_archivo_plano(files, callback) {
 ;
 
 
+PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
+
+
+    var that = this;
+
+    var args = req.body.data;
+    
+    var productos = args.pedidos_clientes;
+        
+        console.log("productos ", productos);
+        
+        
+        //listarProductosClientes
+        
+     //termino_busqueda   
+    res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {nombre_reporte: []}}));
+    return;
+    
+};
+
+
 /*
  * Autor : Eduar Garcia
  * Descripcion : Validar que los cÃ³digos de los productos del archivo plano sean validos.

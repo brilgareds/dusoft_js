@@ -142,10 +142,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
         };
         
-        that.onDescripcionCompletaObservacion = function (entity){
+        /*that.onDescripcionCompletaObservacion = function (entity){
             
             $scope.root.observacion = entity.descripcion;
-        };
+        };*/
         /**
          * @author Cristian Ardila
          * +Descripcion Se visualiza la tabla con los tipos de formulas
@@ -153,11 +153,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          */
         $scope.listaRegistroDeEventos = {
             data: 'registroDeEventos',
-            afterSelectionChange: function(rowItem) {
+            /*afterSelectionChange: function(rowItem) {
                     if (rowItem.selected) {
                         that.onDescripcionCompletaObservacion(rowItem.entity);
                     }
-                },
+                },*/
             enableColumnResize: true,
             enableRowSelection: true,
             keepLastSelected: false,

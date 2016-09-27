@@ -3131,11 +3131,12 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
 
     var args = req.body.data;
     
-    var productos = args.pedidos_clientes;
+    var productos = args.pedidos_clientes.productos;
         
-        console.log("productos ", productos);
-        
-       G.Q.ninvoke(that,'__disponibilidadProductos',productos).then(function(resultado){
+      // console.log("productos ", productos);
+       
+      G.Q.nfcall(__disponibilidadProductos,that,0, productos).then(function(resultado){
+     
            
            //console.log("resultado ", resultado);
        });
@@ -3168,7 +3169,7 @@ function __disponibilidadProductos(that, index, productos, callback) {
     
     console.log("producto ----->>>> ", producto);
     /*if(parseInt(producto.total) > 0){      
-        G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
+        G.Q.ninvoke(that,'listar_productos',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
             rowCount = 1;
            console.log("resultado rowCount::::---:::: ", rowCount);
          }).fail(function(err){      

@@ -319,6 +319,8 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     a.codigo_producto,\
                     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                     a.numero_unidades::integer as cantidad_solicitada,\
+                    a.numero_unidades_recibidas::integer as cantidad_recibida,\
+                    (a.numero_unidades - coalesce(a.numero_unidades_recibidas, 0))::integer as cantidadPendiente,\
                     a.valor,\
                     a.porc_iva,\
                     (a.numero_unidades::integer * a.valor) as subtotal,\

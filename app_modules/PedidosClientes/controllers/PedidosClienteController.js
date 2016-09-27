@@ -3135,7 +3135,10 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
         
         console.log("productos ", productos);
         
-        
+       G.Q.ninvoke(that,'__disponibilidadProductos',productos).then(function(resultado){
+           
+           //console.log("resultado ", resultado);
+       });
         //listarProductosClientes
         
      //termino_busqueda   
@@ -3144,6 +3147,49 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
     
 };
 
+var rowCount;
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
+ *              temporales que se almacenaran como pendientes
+ * @fecha 2016-08-01
+ * @Funcion local
+ */
+function __disponibilidadProductos(that, index, productos, callback) {
+   
+    var producto = productos[index];   
+    
+    if (!producto) {       
+        console.log("Debe salir a qui ");
+        //sumaTotalDispensados = 0;
+        callback(false,rowCount);  
+        return;                     
+    }  
+    
+    console.log("producto ----->>>> ", producto);
+    /*if(parseInt(producto.total) > 0){      
+        G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
+            rowCount = 1;
+           console.log("resultado rowCount::::---:::: ", rowCount);
+         }).fail(function(err){      
+       }).done();   
+    }
+    
+     console.log("Se valida si es el ultimo producto por dispensar y si este es 0");
+     console.log("productos.length ", productos.length);
+     console.log("parseInt(producto.total) ", parseInt(producto.total));
+     sumaTotalDispensados += parseInt(producto.total);
+    if( sumaTotalDispensados === 0){    
+        console.log("Entro se pone CERO 0")
+        rowCount=0;
+    }  */
+    
+    index++;
+    setTimeout(function() {
+        __disponibilidadProductos(that, index, productos, callback);
+    }, 300);
+   
+};
 
 /*
  * Autor : Eduar Garcia

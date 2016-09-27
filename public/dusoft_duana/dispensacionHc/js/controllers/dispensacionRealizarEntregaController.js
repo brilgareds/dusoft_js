@@ -280,11 +280,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         
         
         /**
-           * @author Cristian Ardila
-           * +Descripcion Se visualiza la tabla con los medicamentos listos
-           *              para dispensar
-           * @fecha 25/05/2016
-           */
+        * @author Cristian Ardila
+        * +Descripcion Se visualiza la tabla con los medicamentos listos
+        *              para dispensar
+        * @fecha 27/09/2016
+        **/
         $scope.medicamentosTemporales = {
             data: 'Temporales[0]',
             enableColumnResize: true,
@@ -293,55 +293,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             enableHighlighting: true,
             columnDefs: [
 
-                //{field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},
                 {field: 'getDescripcion()', displayName: 'Medicamento'},
                 {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Cantidad', width:"20%"}
-                
-                          
-               /* {field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
-                {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
-
-                {field: 'Sel', width: "10%",
-                    displayName: "Dispensar",
-                    cellClass: "txt-center",
-                    cellTemplate: '<button class="btn btn-default btn-xs" ng-click="eliminarTemporal(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>'
-
-                }*/
+               
             ]
         };
         
-        /**
-         * @author Cristian Ardila
-         * +Descripcion Metodo encargado de invocar el servicio para eliminar
-         *              un producto de la lista de los temporales de la formula
-         * @fecha 08/06/2016 (DD-MM-YYYY)
-         */
-        /*$scope.eliminarTemporal = function(entity){
-            
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
-            var obj = {                   
-                        session: $scope.session,
-                        data: {
-                           eliminar_medicamentos_temporales: {
-                                evolucion: resultadoStorage.evolucionId,
-                                serialId : entity.serialId,
-                                codigoProducto : entity.codigo_producto
-                           }
-                       }    
-                    };    
-                    
-         
-            dispensacionHcService.eliminarMedicamentosTemporales(obj,function(data){
-               
-                if(data.status === 200){                     
-                    AlertService.mostrarMensaje("success", data.msj); 
-                    that.consultarMedicamentosTemporales();
-                         
-                }      
-            });
-            
-        };*/
-        
+       
         /**
          * @author Cristian Ardila
          * +Descripcion Metodo encargado de cerrar la ventana actual

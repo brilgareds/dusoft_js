@@ -55,6 +55,8 @@ module.exports = function(app, di_container) {
         c_Chat.removerUsuarioConversacion(req, res);
     });
     
+    app.post('/api/Chat/validarUsuarioConversacion', function(req, res) {
+        c_Chat.validarUsuarioConversacion(req, res);
+    });
     
-
 };

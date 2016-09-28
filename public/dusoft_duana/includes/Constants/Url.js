@@ -42,7 +42,8 @@
                     'GUARDAR_MENSAJE':BASE_URL+"/Chat/guardarMensajeConversacion",
                     'SUBIR_ARCHIVO':BASE_URL+"/Chat/subirArchivo",
                     'LISTAR_USUARIOS_CONVERSACION':BASE_URL+"/Chat/listarUsuariosConversacion",
-                    'REMOVER_USUARIO_CONVERSACION':BASE_URL+"/Chat/removerUsuarioConversacion"
+                    'REMOVER_USUARIO_CONVERSACION':BASE_URL+"/Chat/removerUsuarioConversacion",
+                    'VALIDAR_USUARIO_CONVERSACION':BASE_URL+"/Chat/validarUsuarioConversacion"
                 }
               },
               'STATIC' :{

@@ -10,6 +10,7 @@ define(["angular",
         '$state', "Usuario", "localStorageService", 'URL',
         '$filter', '$timeout','$modal','Conversacion',
         'ConversacionDetalle','$sce',
+        
         function($scope, $rootScope, Request,
                 Empresa, CentroUtilidad, Bodega,
                 API, socket, AlertService, $state, Usuario,

@@ -1,7 +1,8 @@
 
-var ChatController = function(mChat, eventChat) {
+var ChatController = function(mChat, eventChat, mUsuarios) {
     this.mChat = mChat;
     this.eventChat = eventChat;
+    this.mUsuarios = mUsuarios;
 
 };
 
@@ -461,13 +462,67 @@ ChatController.prototype.subirArchivoMensaje = function(parametros, callback) {
 };
 
 
+/**
+* @author Eduar Garcia
+* +Descripcion Permite verificar si el usuario tiene permisos para conversar uno a uno
+* @params obj: {usuario_id}
+* @fecha 2016-09-27
+*/
+ChatController.prototype.validarUsuarioConversacion = function(req, res) {
+    
+    var that = this;
+    var args = req.body.data;
+    
+    if (!args.chat  || !args.chat.usuario_id ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    var parametrosPermisos = { 
+        usuario_id:args.chat.usuario_id, 
+        empresa_id:req.session.user.empresa, 
+        modulos:['configuracion_chat'], 
+        convertirJSON:true,
+        limpiarCache:true
+    };
+    
+    G.Q.ninvoke(that.mUsuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){
+        
+        var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.configuracion_chat) ? parametrizacion.modulosJson.configuracion_chat.opciones : undefined;
+       
+        if(opciones && opciones.sw_conversacion_individual){
+            
+            res.send(G.utils.r(req.url, 'Conversaciones usuario', 200, {conversacionIndividual: true}));
+            
+        } else {
+            
+            throw {status:403, msj:"El usuario no puede ser seleccionado o removido individualmente"};
+        }
+      
+   }).fail(function(err){
+       console.log("error generado ", err);
+        var msj = err;
+        var status = 500;
+        
+        if(err.status){
+            status = err.status;
+            msj = err.msj;
+        }
+        
+        res.send(G.utils.r(req.url, msj , status, {}));
+      
+   });
+    
+
+};
 
 
 
 
 ChatController.$inject = [
                           "m_chat", 
-                          "e_chat"
+                          "e_chat",
+                          "m_usuarios"
                          ];
 
 module.exports = ChatController;

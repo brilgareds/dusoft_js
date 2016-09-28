@@ -13,6 +13,11 @@
                     "module": "Chat",
                     "model": "ChatModel",
                     "alias": "m_chat"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
                 }
             }],
         "events": [{

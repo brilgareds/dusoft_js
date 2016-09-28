@@ -89,9 +89,20 @@ define(["angular",
                 
                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Desea eliminar el usuario del grupo?",function(continuar){
                     if(continuar){
-                        self.removerUsuarios([usuario]);
+                        
+                        
+                        self.validarUsuarioConversacion(usuario, function(valido){
+                            if(valido){
+                                self.removerUsuarios([usuario]);
 
-                        $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
+                            } else {
+                                self.agregarUsuarios([usuario]);
+                            }
+
+                            $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
+
+                        }); 
+
                     }
                 });
             };
@@ -345,6 +356,34 @@ define(["angular",
             
            /*
             * @author Eduar Garcia
+            * +Descripcion Permite validar si un usuario tiene permisos de uno a uno
+            * @fecha 2016-09-27
+            */
+            self.validarUsuarioConversacion = function(usuario, callback){
+                
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        chat:{
+                            usuario_id:usuario.getId()
+                        }
+                    }
+                };
+                Request.realizarRequest(URL.CONSTANTS.API.CHAT.VALIDAR_USUARIO_CONVERSACION, "POST", obj, function(data) {
+                    console.log("usuario ", data);
+                    if(data.status === 200){
+                       
+                       callback(true);
+                        
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        callback(false);
+                    }
+                });
+            };
+            
+           /*
+            * @author Eduar Garcia
             * +Descripcion Handler del boton de iniciar conversacion
             * @fecha 2016-09-15
             */
@@ -382,8 +421,18 @@ define(["angular",
             * @fecha 2016-09-06
             */
             $scope.$on("onBtnSeleccionarUsuario", function(e, usuario){
-
-                self.agregarUsuarios([usuario]);
+                
+                self.validarUsuarioConversacion(usuario, function(valido){
+                    if(valido){
+                        self.agregarUsuarios([usuario]);
+                    } else {
+                        self.removerUsuarios([usuario]);
+                    }
+                    
+                    $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
+                    
+                });
+                
                 
             });
             
@@ -394,7 +443,20 @@ define(["angular",
             * @fecha 2016-09-06
             */
             $scope.$on("onBtnRemoverUsuario", function(e, usuario){
-                self.removerUsuarios([usuario]);
+                
+                self.validarUsuarioConversacion(usuario, function(valido){
+                    if(valido){
+                        self.removerUsuarios([usuario]);
+                        
+                    } else {
+                        self.agregarUsuarios([usuario]);
+                    }
+                    
+                    $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
+                    
+                });
+                
+                
             });
             
            /*

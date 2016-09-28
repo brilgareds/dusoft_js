@@ -1236,7 +1236,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 //$scope.Pedido.productos.forEach(function(row) {
                
                 var obj = {
-                        session: $scope.session,
+                        session: $scope.session,                                 
                         data: {
                             pedidos_clientes: {
                                 empresa_id: $scope.Pedido.get_empresa_id(),
@@ -1255,7 +1255,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 codigoProducto: '',
                                 descripcionProducto: '',
                                 concentracion: '',
-                                tipoBusqueda: 0
+                                tipoBusqueda: 0,
+                                termino_busqueda: ''
                             }
                         }
                     };

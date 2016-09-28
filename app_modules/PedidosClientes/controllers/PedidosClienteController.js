@@ -3132,13 +3132,85 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
     var args = req.body.data;
     
     var productos = args.pedidos_clientes.productos;
-        
+    
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.contrato_cliente_id === undefined) {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+     if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacÃ­os', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.contrato_cliente_id === '') {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacÃ­o', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.pagina_actual === '' || parseInt(args.pedidos_clientes.pagina_actual) <= 0) {
+        res.send(G.utils.r(req.url, 'pagina_actual esta vacio o es 0', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.molecula === undefined) {
+        args.pedidos_clientes.molecula = '';
+    }
+
+    var empresa_id = args.pedidos_clientes.empresa_id;
+    var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
+    var bodega = args.pedidos_clientes.bodega_id;
+    var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
+    
+    var filtro = {
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
+        termino_busqueda: args.pedidos_clientes.termino_busqueda,
+        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
+        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
+    };
+
+     var filtroAvanzado = {
+        molecula: args.pedidos_clientes.molecula,
+        laboratorio_id: args.pedidos_clientes.laboratorio_id,
+        codigoProducto: args.pedidos_clientes.codigoProducto,
+        descripcionProducto: args.pedidos_clientes.descripcionProducto,
+        concentracion: args.pedidos_clientes.concentracion,
+        tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
+    };
+
+
+    var filtros = args.pedidos_clientes.filtro;
+    var pagina = args.pedidos_clientes.pagina_actual;
+    
+    var parametros = {empresa_id:empresa_id,
+        centro_utilidad:centro_utilidad,
+        bodega:bodega,
+        contrato_cliente:contrato_cliente,
+        filtro:filtro,
+        pagina:pagina,
+        filtros:filtros, 
+        filtroAvanzado:filtroAvanzado
+    };
+   /* that.m_pedidos_clientes.listar_productos(empresa_id,
+        centro_utilidad,
+        bodega,
+        contrato_cliente,
+        filtro,
+        pagina,
+        filtros, filtroAvanzado,*/
       // console.log("productos ", productos);
        
-      G.Q.nfcall(__disponibilidadProductos,that,0, productos).then(function(resultado){
+      G.Q.nfcall(__disponibilidadProductos,that,0,productos,parametros).then(function(resultado){
      
            
-           //console.log("resultado ", resultado);
+           console.log("resultado ", resultado);
        });
         //listarProductosClientes
         
@@ -3156,25 +3228,45 @@ var rowCount;
  * @fecha 2016-08-01
  * @Funcion local
  */
-function __disponibilidadProductos(that, index, productos, callback) {
+function __disponibilidadProductos(that, index, productos,parametros, callback) {
    
     var producto = productos[index];   
     
     if (!producto) {       
         console.log("Debe salir a qui ");
         //sumaTotalDispensados = 0;
-        callback(false,rowCount);  
+        callback(false);//rowCount  
         return;                     
     }  
+                                           
+     parametros.filtro.termino_busqueda =  producto.codigo_producto;           
     
-    console.log("producto ----->>>> ", producto);
-    /*if(parseInt(producto.total) > 0){      
-        G.Q.ninvoke(that,'listar_productos',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
-            rowCount = 1;
-           console.log("resultado rowCount::::---:::: ", rowCount);
+     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
+        parametros.empresa_id,
+        parametros.centro_utilidad,
+        parametros.bodega,
+        parametros.contrato_cliente,
+        parametros.filtro,
+        parametros.pagina,
+        parametros.filtros, 
+        parametros.filtroAvanzado).then(function(resultado){
+            //rowCount = 1;
+            if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){
+                           
+                          
+                           
+                          
+                         }else{
+                             
+            }
+            console.log("producto --> ", producto.codigo_producto);                                          
+            console.log("cantidad --> ", producto.cantidad_solicitada);
+            console.log(" (codigo_producto) ::::---:::: ", resultado[0].codigo_producto);
+            console.log(" (disponible) ::::---:::: ", resultado[0].cantidad_disponible);
+          
          }).fail(function(err){      
-       }).done();   
-    }
+       }).done();  
+    /*}
     
      console.log("Se valida si es el ultimo producto por dispensar y si este es 0");
      console.log("productos.length ", productos.length);
@@ -3183,11 +3275,11 @@ function __disponibilidadProductos(that, index, productos, callback) {
     if( sumaTotalDispensados === 0){    
         console.log("Entro se pone CERO 0")
         rowCount=0;
-    }  */
+    }  */               
     
     index++;
     setTimeout(function() {
-        __disponibilidadProductos(that, index, productos, callback);
+        __disponibilidadProductos(that, index, productos,parametros, callback);
     }, 300);
    
 };

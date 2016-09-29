@@ -1263,21 +1263,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
                     
-                    /*if (data.status === 200) {
+                    if (data.status === 200) {
                         
-                        if(row.cantidad_solicitada > data.obj.pedidos_clientes.lista_productos[0].cantidad_disponible || 
-                           data.obj.pedidos_clientes.lista_productos[0].cantidad_disponible === 0){
-                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Hay productos que no cuentan con disponibilidad por esto no se puede autorizar el pedido");
-                              
-                          
-                           
-                          
-                         }else{
-                           
-                           
-                         }
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Existen productos que no tienen la disponibilidad suficiente");
+                        console.log("|||||| sin disponible ", data.obj.pedidos_clientes);
                         
-                    }*/
+                    }
                 });
                
             //});

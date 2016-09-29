@@ -3123,7 +3123,15 @@ function __subir_archivo_plano(files, callback) {
 }
 ;
 
-
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de validar la disponibilidad de un producto
+ *              invocando a la vez una funcion recursiva la cual se encargara
+ *              de todo el proceso
+ * @fecha 29/09/2016 DD/MM/YYYY
+ */
+var productosSinDisponible = [];
+var productosDisponibles = [];
 PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
 
 
@@ -3131,7 +3139,7 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
 
     var args = req.body.data;
     
-    var productos = args.pedidos_clientes.productos;
+    productosSinDisponible = [];
     
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
@@ -3198,29 +3206,22 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
         filtros:filtros, 
         filtroAvanzado:filtroAvanzado
     };
-   /* that.m_pedidos_clientes.listar_productos(empresa_id,
-        centro_utilidad,
-        bodega,
-        contrato_cliente,
-        filtro,
-        pagina,
-        filtros, filtroAvanzado,*/
-      // console.log("productos ", productos);
-       
-      G.Q.nfcall(__disponibilidadProductos,that,0,productos,parametros).then(function(resultado){
-     
-           
-           console.log("resultado ", resultado);
-       });
-        //listarProductosClientes
+   
+      var productos = args.pedidos_clientes.productos;
+      
+    G.Q.nfcall(__disponibilidadProductos,that,0,productos,parametros).then(function(resultado){
+
+        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto:resultado}}));
+
+        console.log("resultado (Sin disponibles)", resultado);
         
-     //termino_busqueda   
-    res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {nombre_reporte: []}}));
-    return;
-    
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
+    }).done();
+      
 };
 
-var rowCount;
 /**
  * @author Cristian Ardila
  * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
@@ -3231,11 +3232,11 @@ var rowCount;
 function __disponibilidadProductos(that, index, productos,parametros, callback) {
    
     var producto = productos[index];   
-    
+        
     if (!producto) {       
         console.log("Debe salir a qui ");
-        //sumaTotalDispensados = 0;
-        callback(false);//rowCount  
+      
+        callback(false,productosSinDisponible);//rowCount  
         return;                     
     }  
                                            
@@ -3251,36 +3252,27 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
         parametros.filtros, 
         parametros.filtroAvanzado).then(function(resultado){
             //rowCount = 1;
-            if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){
-                           
+            if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){                          
+                         
+                productosSinDisponible.push(producto.codigo_producto);           
                           
-                           
-                          
-                         }else{
-                             
+            }else{
+                productosDisponibles.push(producto.codigo_producto);               
             }
-            console.log("producto --> ", producto.codigo_producto);                                          
+            /*console.log("producto --> ", producto.codigo_producto);                                          
             console.log("cantidad --> ", producto.cantidad_solicitada);
             console.log(" (codigo_producto) ::::---:::: ", resultado[0].codigo_producto);
-            console.log(" (disponible) ::::---:::: ", resultado[0].cantidad_disponible);
-          
+            console.log(" (disponible) ::::---:::: ", resultado[0].cantidad_disponible);*/
+            
          }).fail(function(err){      
-       }).done();  
-    /*}
-    
-     console.log("Se valida si es el ultimo producto por dispensar y si este es 0");
-     console.log("productos.length ", productos.length);
-     console.log("parseInt(producto.total) ", parseInt(producto.total));
-     sumaTotalDispensados += parseInt(producto.total);
-    if( sumaTotalDispensados === 0){    
-        console.log("Entro se pone CERO 0")
-        rowCount=0;
-    }  */               
+       }).done(); 
+       console.log("productosSinDisponible --> ", productosSinDisponible); 
+             
     
     index++;
     setTimeout(function() {
         __disponibilidadProductos(that, index, productos,parametros, callback);
-    }, 300);
+    }, 800);
    
 };
 

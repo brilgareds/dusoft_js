@@ -3254,10 +3254,10 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
             //rowCount = 1;
             if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){                          
                          
-                productosSinDisponible.push(producto.codigo_producto);           
+                productosSinDisponible.push(producto);           
                           
             }else{
-                productosDisponibles.push(producto.codigo_producto);               
+                productosDisponibles.push(producto);               
             }
             /*console.log("producto --> ", producto.codigo_producto);                                          
             console.log("cantidad --> ", producto.cantidad_solicitada);

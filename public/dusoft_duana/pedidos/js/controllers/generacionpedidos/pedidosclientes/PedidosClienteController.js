@@ -1264,38 +1264,71 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
                     
                     if (data.status === 200) {
+                        $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
+                       
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Lista productos sin disponibilidad.</h4>\
+                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                    <div class="list-group">\
+                                                        <a ng-repeat="producto in datos_view.productos_no_disponible" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                            {{ producto.codigo_producto}}\
+                                                        </a>\
+                                                    </div>\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $scope.datos_view.progresoArchivo = 0;
+                                    $modalInstance.close();
+                                };
+                            }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                        //AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Existen productos que no tienen la disponibilidad suficiente");
+                        //console.log("|||||| sin disponible ", data.obj.pedidos_clientes);
                         
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Existen productos que no tienen la disponibilidad suficiente");
-                        console.log("|||||| sin disponible ", data.obj.pedidos_clientes);
+                    }else{
+                        
+                        var obj2 = {
+                            session: $scope.session,
+                            data: {
+                                pedidos_clientes: {
+                                    cotizacion: $scope.Pedido
+                                }
+                            }
+                        };
+
+                        Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj2, function(data) {
+
+                            if (data.status === 200) {
+                                AlertService.mostrarMensaje("warning", "Se atendio la solicitud satisfactoriamente");
+                                $scope.volver_cotizacion();
+                            }
+
+                            if (data.status === 500) {
+                                AlertService.mostrarMensaje("warning", data.msj);
+                                //$scope.volver_cotizacion();
+                            }
+                        });
                         
                     }
                 });
-               
-            //});
-            
-                /*var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            cotizacion: $scope.Pedido
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
-
-                    console.log("data ", data)
-
-                    if (data.status === 200) {
-                        AlertService.mostrarMensaje("warning", "Se atendio la solicitud satisfactoriamente");
-                        $scope.volver_cotizacion();
-                    }
-
-                    if (data.status === 500) {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                        //$scope.volver_cotizacion();
-                    }
-                });*/
+             
             };
             $scope.habilitar_generacion_reporte = function() {
 

@@ -435,45 +435,44 @@ define(["angular", "js/controllers",
              * @param {type} producto
              */
             $scope.solicitar_producto = function(producto) {
-               console.log("producto ", producto.get_cantidad_solicitada());
-               console.log("producto ", producto.get_cantidad_disponible());
-            if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
-                
-                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
-            }else{
-                if(producto.precio_venta > 0){
-                    /*  var val = producto.precio_venta;
-                     /*   var clean = val.replace(/[^0-9\.]/g, '');
-                     var decimalCheck = clean.split('');*/
-
-                    // if (!angular.isUndefined(decimalCheck[1])) {
-                    // decimalCheck[1] = decimalCheck[1].slice(0, 4);
-                    //  clean = decimalCheck[0] + '.' + decimalCheck[1];
-
-                        $scope.datos_form.producto_seleccionado = producto;
-
-                        $scope.Pedido.set_productos(producto);
-
-                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
-
-                        if ($scope.datos_form.tipo_producto === '') {
-                            $scope.datos_form.tipo_producto = producto.get_tipo_producto();
-                            $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
-                        }
-
-                        if ($scope.Pedido.get_numero_pedido() > 0) {
-
-                            that.gestionar_pedidos();
-                        } else {
-
-                            that.gestionar_cotizaciones();
-                        }
-
-                   }else{
-                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta debe ser mayor a cero (0)");
-                   }
                
-                }
+               
+            if(producto.precio_venta > 0){
+                /*  var val = producto.precio_venta;
+                 /*   var clean = val.replace(/[^0-9\.]/g, '');
+                 var decimalCheck = clean.split('');*/
+
+                // if (!angular.isUndefined(decimalCheck[1])) {
+                // decimalCheck[1] = decimalCheck[1].slice(0, 4);
+                //  clean = decimalCheck[0] + '.' + decimalCheck[1];
+
+                    $scope.datos_form.producto_seleccionado = producto;
+
+                    $scope.Pedido.set_productos(producto);
+
+                    $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+
+                    if ($scope.datos_form.tipo_producto === '') {
+                        $scope.datos_form.tipo_producto = producto.get_tipo_producto();
+                        $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
+                    }
+
+                    if ($scope.Pedido.get_numero_pedido() > 0) {
+                        console.log("producto ", producto.get_cantidad_solicitada());
+                        console.log("producto ", producto.get_cantidad_disponible());
+               
+                        if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
+                        }else{
+                            that.gestionar_pedidos();
+                        }
+                    }else{
+                        that.gestionar_cotizaciones();
+                    }
+
+               }else{
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El precio de venta debe ser mayor a cero (0)");
+               }
             };
 
             $scope.validarHtml = function(html) {

@@ -3213,7 +3213,7 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
 
         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto:resultado}}));
 
-        console.log("resultado (Sin disponibles)", resultado);
+        //console.log("resultado (Sin disponibles)", resultado);
         
     }).fail(function(err) {
 
@@ -3253,20 +3253,21 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
         parametros.filtroAvanzado).then(function(resultado){
             //rowCount = 1;
             if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){                          
-                         
-                productosSinDisponible.push(producto);           
+                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                productosSinDisponible.push(resultado[0]);           
                           
             }else{
-                productosDisponibles.push(producto);               
+                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                productosDisponibles.push(resultado[0]);               
             }
-            /*console.log("producto --> ", producto.codigo_producto);                                          
+            console.log("producto --> ", producto.codigo_producto);                                          
             console.log("cantidad --> ", producto.cantidad_solicitada);
             console.log(" (codigo_producto) ::::---:::: ", resultado[0].codigo_producto);
-            console.log(" (disponible) ::::---:::: ", resultado[0].cantidad_disponible);*/
+            console.log(" (disponible) ::::---:::: ", resultado[0].cantidad_disponible);
             
          }).fail(function(err){      
        }).done(); 
-       console.log("productosSinDisponible --> ", productosSinDisponible); 
+       //console.log("productosSinDisponible --> ", productosSinDisponible); 
              
     
     index++;

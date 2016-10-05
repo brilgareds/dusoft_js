@@ -382,6 +382,9 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
     var usuario_id = params.usuario_id;
     var llave = G.constants.llavesCache().USURIO_PARAMETRIZACION + "_" + usuario_id; 
     
+    //Guardar resultado en cache por defecto es true
+    params.guardarResultadoEnCache = (params.guardarResultadoEnCache === undefined || params.guardarResultadoEnCache === null) ?  true : false;
+    
     G.redis.get(llave,function(err, resultado){
         if(!resultado || params.limpiarCache){
             console.log("obtener parametrizacion de usuario sin cache");
@@ -430,7 +433,11 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
 
 
                                 if (rows.length === 0) {
-                                    G.redis.setex(llave, G.constants.expiracionCache, JSON.stringify(parametrizacion));
+                                    
+                                    if(params.guardarResultadoEnCache){
+                                        G.redis.setex(llave, G.constants.expiracionCache, JSON.stringify(parametrizacion));
+                                    }
+                                    
                                     callback(err, parametrizacion);
                                     return;
                                 }
@@ -439,7 +446,11 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
                                 __obtenerBodegasCentroUtilidadUsuario(that, 0, empresa_id, usuario_id, rows, function(err, centros) {
 
                                     parametrizacion.centros_utilidad = centros;
-                                    G.redis.setex(llave, G.constants.expiracionCache, JSON.stringify(parametrizacion));
+                                    
+                                    if(params.guardarResultadoEnCache){
+                                        G.redis.setex(llave, G.constants.expiracionCache, JSON.stringify(parametrizacion));
+                                    }
+                                    
                                     callback(err, parametrizacion);
                                 });
 

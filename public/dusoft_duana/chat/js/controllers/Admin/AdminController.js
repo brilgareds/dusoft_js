@@ -12,7 +12,7 @@ define(["angular", "js/controllers", "controllers/Grupos/ListaGruposController"]
                  $state, Usuario, localStorageService, $modal,
                  $timeout) {
                      
-            
+            $rootScope.$emit("onDeshabilitarBtnChat");
             
         }]);
 });

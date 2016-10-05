@@ -7,7 +7,16 @@
     
     
     <tabset> <!--Grupo de Tabs-->
+    <tab>
+        <tab-heading>
+            <i class="glyphicon glyphicon-cloud-upload"></i> <b> Usuarios en la conversación </b>
+        </tab-heading>
+        <br>
+        <div class="defaultGrid " ng-grid="listaUsuariosSeleccionados" >
 
+        </div>
+
+    </tab>  
     <tab active="rootPedidoFarmaciaTemporal.tabListaPedidos">
 
         <tab-heading>
@@ -93,17 +102,7 @@
         <usuarios  btn-seleccionar="true" btn-detalle="false" ng-if="root.filtro.usuarios"></usuarios>
 
         </tab>
-
-        <tab>
-            <tab-heading>
-                <i class="glyphicon glyphicon-cloud-upload"></i> <b> Usuarios seleccionados </b>
-            </tab-heading>
-            <br>
-            <div class="defaultGrid " ng-grid="listaUsuariosSeleccionados" >
-
-            </div>
-
-        </tab>                    
+                  
     </tabset> 
     
     <div class="modal-footer" style="padding-left: 0px; padding-right: 0px;">

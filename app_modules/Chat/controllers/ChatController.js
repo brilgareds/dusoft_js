@@ -348,6 +348,7 @@ ChatController.prototype.guardarMensajeConversacion = function(req, res) {
     var that = this;
     var args = req.body.data;
     var mensajeGuardado = {};
+    var usuarios = [];
     
     if (!args.chat  || !args.chat.id_conversacion || !args.chat.usuario_id || !args.chat.mensaje ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -355,7 +356,25 @@ ChatController.prototype.guardarMensajeConversacion = function(req, res) {
     }
     
     
-    G.Q.ninvoke(that, "subirArchivoMensaje", {req:req}).then(function(archivo){
+    G.Q.ninvoke(that.mChat, "obtenerUsuariosConversacion",{conversacion:{id_conversacion:args.chat.id_conversacion}, titulo:false}).
+    then(function(_usuarios){
+        var usuarioEnConversacion = false;
+        
+        for(var i in _usuarios){
+            if(args.chat.usuario_id === _usuarios[i].usuario_id){
+                usuarioEnConversacion = true;
+                break;
+            }
+        }
+        
+        if(usuarioEnConversacion){
+            usuarios = _usuarios;
+            return G.Q.ninvoke(that, "subirArchivoMensaje", {req:req});
+        } else {
+            throw { msj:"Ya no estas en la conversación", status:403 };
+        }
+        
+    }).then(function(archivo){
         
         if(archivo.nombreArchivo){
             args.chat.archivoAdjunto = archivo.nombreArchivo;
@@ -366,18 +385,16 @@ ChatController.prototype.guardarMensajeConversacion = function(req, res) {
         
     }).then(function(_mensajeGuardado) {
         mensajeGuardado = _mensajeGuardado;
-        return G.Q.ninvoke(that.mChat, "obtenerUsuariosConversacion", {conversacion:{id_conversacion:args.chat.id_conversacion}, titulo:false});
-      
-    }).then(function(usuarios){
+        
         var detalle = mensajeGuardado[0];
         detalle.id_conversacion = args.chat.id_conversacion;
         return G.Q.ninvoke(that.eventChat,"onNotificarMensaje",detalle, usuarios, args.chat.usuario_id);
-        
         
     }).then(function(){
         res.send(G.utils.r(req.url, 'Conversaciones usuario', 200, {conversacion: mensajeGuardado}));
         
     }).fail(function(err) {
+        console.log("error generado ", err);
         var msj = err;
         var status = 500;
         
@@ -483,7 +500,8 @@ ChatController.prototype.validarUsuarioConversacion = function(req, res) {
         empresa_id:req.session.user.empresa, 
         modulos:['configuracion_chat'], 
         convertirJSON:true,
-        limpiarCache:true
+        limpiarCache:true,
+        guardarResultadoEnCache:false
     };
     
     G.Q.ninvoke(that.mUsuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){

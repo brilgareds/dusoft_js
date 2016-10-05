@@ -498,6 +498,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 self.irAlHome(mensaje);
 
             });
+            
+            $rootScope.$on("onDeshabilitarBtnChat", function(){
+               $scope.deshabilitarBtnChat = true; 
+            });
 
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 

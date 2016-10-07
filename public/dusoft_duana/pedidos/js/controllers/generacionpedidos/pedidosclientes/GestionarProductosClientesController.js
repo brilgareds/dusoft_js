@@ -355,7 +355,7 @@ define(["angular", "js/controllers",
                         }
                     };
                 }
-
+                console.log("EL OBJETO DE TODO ", obj);
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
 
@@ -436,6 +436,7 @@ define(["angular", "js/controllers",
              */
             $scope.solicitar_producto = function(producto) {
                
+               
             if(producto.precio_venta > 0){
                 /*  var val = producto.precio_venta;
                  /*   var clean = val.replace(/[^0-9\.]/g, '');
@@ -457,10 +458,15 @@ define(["angular", "js/controllers",
                     }
 
                     if ($scope.Pedido.get_numero_pedido() > 0) {
-
-                        that.gestionar_pedidos();
-                    } else {
-
+                        console.log("producto ", producto.get_cantidad_solicitada());
+                        console.log("producto ", producto.get_cantidad_disponible());
+               
+                        if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
+                        }else{
+                            that.gestionar_pedidos();
+                        }
+                    }else{
                         that.gestionar_cotizaciones();
                     }
 

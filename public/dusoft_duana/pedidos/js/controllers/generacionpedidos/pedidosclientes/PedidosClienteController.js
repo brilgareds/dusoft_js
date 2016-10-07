@@ -1,4 +1,3 @@
-
 define(["angular", "js/controllers", 'includes/slide/slideContent'
 ], function(angular, controllers) {
     //probando branch de pedidos clientes
@@ -655,44 +654,56 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
+            
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de modificar el producto de un pedido
+             * 
+             */
             $scope.confirmar_modificar_producto = function(producto) {
+                var productos = [];               
+                productos.push(producto);
+                $scope.ocultarOpciones = 1;
+                that.validarDisponibleProductosCotizacion(productos,function(estado){
+                    if(estado){
 
-
-                $scope.datos_view.producto_seleccionado = producto;
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea modificar el producto?</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <h4>Codigo.</h4>\
-                                    <h5> {{ datos_view.producto_seleccionado.getCodigoProducto() }}</h5>\
-                                    <h4>Descripcion.</h4>\
-                                    <h5> {{ datos_view.producto_seleccionado.getDescripcion() }} </h5>\
-                                    <h4>Cantidad.</h4>\
-                                    <h5> {{ datos_view.producto_seleccionado.get_cantidad_solicitada() }} </h5>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="close()">No</button>\
-                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: ["$scope","$modalInstance", function($scope, $modalInstance) {
-
-                        $scope.confirmar = function() {
-                            $scope.modificar_producto();
-                            $modalInstance.close();
+                        $scope.datos_view.producto_seleccionado = producto;
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Desea modificar el producto?</h4>\
+                                        </div>\
+                                        <div class="modal-body">\
+                                            <h4>Codigo.</h4>\
+                                            <h5> {{ datos_view.producto_seleccionado.getCodigoProducto() }}</h5>\
+                                            <h4>Descripcion.</h4>\
+                                            <h5> {{ datos_view.producto_seleccionado.getDescripcion() }} </h5>\
+                                            <h4>Cantidad.</h4>\
+                                            <h5> {{ datos_view.producto_seleccionado.get_cantidad_solicitada() }} </h5>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-warning" ng-click="close()">No</button>\
+                                            <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: ["$scope","$modalInstance", function($scope, $modalInstance) {
+                         
+                                $scope.confirmar = function() {
+                                    $scope.modificar_producto();
+                                    $modalInstance.close();
+                                };
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }]
                         };
-                        $scope.close = function() {
-                            $modalInstance.close();
-                        };
-                    }]
-                };
-                var modalInstance = $modal.open($scope.opts);
+                        var modalInstance = $modal.open($scope.opts);
+                    }
+                });
             };
 
             /**
@@ -1134,10 +1145,144 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
 
             };
-
-
+            
+            
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de validar la disponibilidad de los
+             *              productos
+             * @fecha 30/09/2016 DD/MM/YYYY
+             * 
+             **/
+            that.validarDisponibleProductosCotizacion = function(producto,callback) {
+                
+                var obj = {
+                        session: $scope.session,                                 
+                        data: {
+                            pedidos_clientes: {
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
+                                pagina_actual: 1,
+                                productos: producto.length > 0 ? producto : $scope.Pedido.productos,//'0104030001', 
+                                tipo_producto: '',
+                                numero_cotizacion: '',
+                                numero_pedido: '',
+                                filtro: {nombre: 'codigo', tipo_busqueda: 2},
+                                //nuevo campos
+                                molecula: '',
+                                laboratorio_id: '',
+                                codigoProducto: '',
+                                descripcionProducto: '',
+                                concentracion: '',
+                                tipoBusqueda: 0,
+                                termino_busqueda: ''
+                            }
+                        }
+                    };
+                 
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
+                    
+                    if (data.status === 200) {
+                      
+                        $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
+                       if(data.obj.pedidos_clientes.producto.length > 0){
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Lista productos sin disponibilidad.</h4>\
+                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                    <div class="list-group">\
+                                                        <a ng-repeat="producto in datos_view.productos_no_disponible" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                        Cantidad solicitada ({{ producto.cantidad_solicitada}})  Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
+                                                        </a>\
+                                                    </div>\
+                                                </div>\
+                                            </div>\
+                                            <div class="col-md-12" ng-if = "ocultarOpciones == 0">\
+                                                <fieldset>\
+                                                    <legend>Observación Cartera</legend>\
+                                                    <div class="row">\
+                                                        <div class="col-md-12">\
+                                                            <textarea  ng-model="Pedido.observacion_cartera" \
+                                                            ng-disabled="!datos_view.cartera" class="col-lg-12 col-md-12 col-sm-12" \
+                                                            rows="4" name="" placeholder="Ingresar Observación Cartera"></textarea>\
+                                                        </div>\
+                                                    </div>\
+                                                </fieldset>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
+                                            <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">\
+                                                Denegado Cartera\
+                                            </button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $scope.datos_view.progresoArchivo = 0;
+                                    $modalInstance.close();
+                                };
+                            }]
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                        
+                       }else{
+                           
+                           callback(true);
+                       }
+                       
+                    }else{
+                        
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error en la consulta");
+                        
+                    }
+                });
+             
+            };
+            
+           /**
+            * @author Cristian Ardila
+            * +Descripcion Metodo que se invoca desde la ventana que valida si
+            *              hay disponibles con el proposito de desaprobar la
+            *              cotizacion
+            * @fecha 30/09/2016
+            */
+           $scope.desaprobarCartera = function(aprobado){
+               that.generarPedidoCartera(aprobado);
+             
+           };
+            
             // Gestiona la aprobacion o no del departamento de cartera
-            $scope.gestion_cartera = function(aprobado) {
+            $scope.gestion_cartera = function(aprobado, denegar) {
+                $scope.ocultarOpciones = 0;
+                var productos = [];
+                if(denegar === 1){
+                   
+                    that.generarPedidoCartera(aprobado);
+                }else{
+                    that.validarDisponibleProductosCotizacion(productos,function(estado){
+                        if(estado){
+                            that.generarPedidoCartera(aprobado);
+                          
+                        }
+                    });
+                }
+               
+            };
+
+            that.generarPedidoCartera = function(aprobado){
+                
                 var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);
@@ -1178,7 +1323,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                             var parametros = {busqueda: cotizacion.busqueda,
                                 pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
-                            }
+                            };
 
                             localStorageService.add("terminoBusqueda", parametros);
 
@@ -1187,14 +1332,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         if ($scope.Pedido.get_numero_pedido() > 0) {
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             $scope.volver_cotizacion();
-                        }
+                        }                                 
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        //$scope.volver_cotizacion();
                     }
                 });
+                
             };
-
-
             // Gestionar la creacion del pedido
             $scope.gestionar_pedido = function() {
 

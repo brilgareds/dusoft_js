@@ -184,7 +184,7 @@ module.exports = function(app, di_container) {
     });
     
     
-       /**
+    /**
      * @author Cristian Ardila
      * +Descripcion: Servicio para insertar la cantidad en un producto
      */
@@ -193,31 +193,12 @@ module.exports = function(app, di_container) {
     });
     
     
-     // Events 
- 
-  /* io.sockets.on('connection', function(socket) {
-        
-        e_pedidos_clientes.onConnected(socket.id);
-        
-        socket.on('onEnviarNotificacionPedidosClientes', function(datos) {
-           
-            
-           
-            var args = datos.data;
-           
-            var numeroPedido  = args.pedidos_clientes.pedido.numero_pedido;
-          
-            var estado = args.pedidos_clientes.estado;
-          
-            e_pedidos_clientes.onNotificarEstadoPedido(
-                numeroPedido,
-                estado
-            );
-                 e_pedidos_clientes.onActualizarSesion(datos);
-      
+    /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para insertar la cantidad en un producto
+     */
+    app.post('/api/PedidosClientes/validarDisponibilidad', function(req, res) {
+        c_pedidos_clientes.validarDisponibilidad(req, res);
     });
-    });*/
-    
-    
     
 };

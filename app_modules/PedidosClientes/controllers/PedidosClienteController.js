@@ -3123,6 +3123,159 @@ function __subir_archivo_plano(files, callback) {
 }
 ;
 
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de validar la disponibilidad de un producto
+ *              invocando a la vez una funcion recursiva la cual se encargara
+ *              de todo el proceso
+ * @fecha 29/09/2016 DD/MM/YYYY
+ */
+var productosSinDisponible = [];
+var productosDisponibles = [];
+PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
+
+
+    var that = this;
+
+    var args = req.body.data;
+    
+    productosSinDisponible = [];
+    
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.contrato_cliente_id === undefined) {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+     if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacÃ­os', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.contrato_cliente_id === '') {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacÃ­o', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.pagina_actual === '' || parseInt(args.pedidos_clientes.pagina_actual) <= 0) {
+        res.send(G.utils.r(req.url, 'pagina_actual esta vacio o es 0', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.molecula === undefined) {
+        args.pedidos_clientes.molecula = '';
+    }
+
+    var empresa_id = args.pedidos_clientes.empresa_id;
+    var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
+    var bodega = args.pedidos_clientes.bodega_id;
+    var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
+    
+    var filtro = {
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
+        termino_busqueda: args.pedidos_clientes.termino_busqueda,
+        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
+        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
+    };
+
+     var filtroAvanzado = {
+        molecula: args.pedidos_clientes.molecula,
+        laboratorio_id: args.pedidos_clientes.laboratorio_id,
+        codigoProducto: args.pedidos_clientes.codigoProducto,
+        descripcionProducto: args.pedidos_clientes.descripcionProducto,
+        concentracion: args.pedidos_clientes.concentracion,
+        tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
+    };
+
+
+    var filtros = args.pedidos_clientes.filtro;
+    var pagina = args.pedidos_clientes.pagina_actual;
+    
+    var parametros = {empresa_id:empresa_id,
+        centro_utilidad:centro_utilidad,
+        bodega:bodega,
+        contrato_cliente:contrato_cliente,
+        filtro:filtro,
+        pagina:pagina,
+        filtros:filtros, 
+        filtroAvanzado:filtroAvanzado
+    };
+   
+      var productos = args.pedidos_clientes.productos;
+      
+    G.Q.nfcall(__disponibilidadProductos,that,0,productos,parametros).then(function(resultado){
+
+        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto:resultado}}));
+
+        //console.log("resultado (Sin disponibles)", resultado);
+        
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
+    }).done();
+      
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
+ *              temporales que se almacenaran como pendientes
+ * @fecha 2016-08-01
+ * @Funcion local
+ */
+function __disponibilidadProductos(that, index, productos,parametros, callback) {
+   
+    var producto = productos[index];   
+        
+    if (!producto) {       
+        console.log("Debe salir a qui ");
+      
+        callback(false,productosSinDisponible);//rowCount  
+        return;                     
+    }  
+                                           
+     parametros.filtro.termino_busqueda =  producto.codigo_producto;           
+    
+     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
+        parametros.empresa_id,
+        parametros.centro_utilidad,
+        parametros.bodega,
+        parametros.contrato_cliente,
+        parametros.filtro,
+        parametros.pagina,
+        parametros.filtros, 
+        parametros.filtroAvanzado).then(function(resultado){
+            //rowCount = 1;
+            if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){                          
+                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                productosSinDisponible.push(resultado[0]);           
+                          
+            }else{
+                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                productosDisponibles.push(resultado[0]);               
+            }
+            console.log("producto --> ", producto.codigo_producto);                                          
+            console.log("cantidad --> ", producto.cantidad_solicitada);
+            console.log(" (codigo_producto) ::::---:::: ", resultado[0].codigo_producto);
+            console.log(" (disponible) ::::---:::: ", resultado[0].cantidad_disponible);
+            
+         }).fail(function(err){      
+       }).done(); 
+       //console.log("productosSinDisponible --> ", productosSinDisponible); 
+             
+    
+    index++;
+    setTimeout(function() {
+        __disponibilidadProductos(that, index, productos,parametros, callback);
+    }, 800);
+   
+};
 
 /*
  * Autor : Eduar Garcia

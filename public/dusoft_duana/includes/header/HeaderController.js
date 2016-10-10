@@ -596,9 +596,9 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
                 var chat =  localStorageService.get("chat");
                 
-                //console.log("documento is hidden ", document.hidden)
+                console.log("documento is hidden ", document.hidden, chat)
                 
-                if(!document.hidden){
+                if(chat && chat.estado === '1' && !document.hidden){
                     return;
                 }
                 
@@ -609,11 +609,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     icon: '/images/logo.png',
                     onClick: function onNotificationClicked() {
                         localStorageService.set("mensajeNotificacion", mensaje);
-                        
-                        if(chat && chat.estado === '1'){
-                           self.abrirChat();
-                        }
-                        
+                        self.abrirChat();
                         onHide();
                         window.focus();
                     },

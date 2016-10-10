@@ -14,5 +14,11 @@ define(["angular", "js/controllers", "controllers/Grupos/ListaGruposController"]
                      
             $rootScope.$emit("onDeshabilitarBtnChat");
             
+            localStorageService.set("chat", {estado:'1'});
+            
+            $scope.$on('$destroy', function() {
+                localStorageService.set("chat", {estado:'0'});
+            });
+            
         }]);
 });

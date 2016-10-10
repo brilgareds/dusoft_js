@@ -333,6 +333,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              */
 
             $scope.onIngresarProducto = function(event, producto) {
+                //validación para verificar la disponibilidad.
+            if (parseInt(producto.getCantidadSolicitada()) > parseInt(producto.getDisponibilidadBodega())) {
+                self.mostrarAlertaSeleccionProducto("Diponibilidad del Producto", "LA CANTIDAD INGRESADA " + producto.getCantidadSolicitada() + " ES MAYOR A LA DISPONIBLE " + producto.getDisponibilidadBodega());
+                producto.setCantidadSolicitada('');
+            }
                 if (event.which === 13) {
                     if (parseInt(producto.getCantidadSolicitada()) > 0) {
                         var pedido = $scope.root.pedido;

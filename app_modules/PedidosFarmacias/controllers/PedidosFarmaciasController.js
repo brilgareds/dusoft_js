@@ -2073,7 +2073,15 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                     __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
                     return;
                 }
-
+                
+                if (productoAgrupado.cantidad_solicitada > productos[0].disponibilidad_bodega) {
+                    productoAgrupado.mensajeError = "La cantidad ingresada "+productoAgrupado.cantidad_solicitada+" es superior a la disponible "+productos[0].disponibilidad_bodega;
+                    productoAgrupado.enFarmaciaOrigen = false;
+                    productosInvalidosArchivo.push(productoAgrupado);
+                    index++;
+                    __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+                    return;
+                }                
                 __consultarStockProducto(that, datos.empresa_destino_id, productoAgrupado, function(err, _productoStock) {
                     if (err) {
                         callback(err);

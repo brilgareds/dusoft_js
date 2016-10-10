@@ -458,14 +458,12 @@ define(["angular", "js/controllers",
                     }
 
                     if ($scope.Pedido.get_numero_pedido() > 0) {
-                        console.log("producto ", producto.get_cantidad_solicitada());
-                        console.log("producto ", producto.get_cantidad_disponible());
-               
-                        if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
+                       //OJO VOLVER A PONER
+                        /*if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
-                        }else{
+                        }else{*/
                             that.gestionar_pedidos();
-                        }
+                        //}
                     }else{
                         that.gestionar_cotizaciones();
                     }

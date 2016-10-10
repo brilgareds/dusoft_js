@@ -1393,7 +1393,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
       
      if(filtro.pedidosNoIncluirDisponibilidad){
       parametros['8']=  filtro.pedidosNoIncluirDisponibilidad.join(); 
-      noIncluir=" and a.solicitud_prod_a_bod_ppal_id not in(:8) ";
+      noIncluir=" and a.solicitud_prod_a_bod_ppal_id not in( :8 ) ";
      }
     /***
     * +Descripcion Campos para obtener la fecha actual

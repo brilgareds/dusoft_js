@@ -598,7 +598,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
                 //console.log("documento is hidden ", document.hidden)
                 
-                if(chat && chat.estado === '1' && !document.hidden){
+                if(!document.hidden){
                     return;
                 }
                 
@@ -609,7 +609,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     icon: '/images/logo.png',
                     onClick: function onNotificationClicked() {
                         localStorageService.set("mensajeNotificacion", mensaje);
-                        self.abrirChat();
+                        
+                        if(chat && chat.estado === '1'){
+                           self.abrirChat();
+                        }
+                        
                         onHide();
                         window.focus();
                     },

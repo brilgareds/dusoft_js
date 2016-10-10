@@ -664,8 +664,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var productos = [];               
                 productos.push(producto);
                 $scope.ocultarOpciones = 1;
-                that.validarDisponibleProductosCotizacion(productos,function(estado){
-                    if(estado){
+                
+                //OJO VOLVER A DEJAR
+                /*that.validarDisponibleProductosCotizacion(productos,function(estado){
+                    if(estado){*/
 
                         $scope.datos_view.producto_seleccionado = producto;
                         $scope.opts = {
@@ -693,7 +695,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             controller: ["$scope","$modalInstance", function($scope, $modalInstance) {
                          
                                 $scope.confirmar = function() {
-                                    $scope.modificar_producto();
+                                    $scope.modificar_producto(); 
+                                    
+                                    
                                     $modalInstance.close();
                                 };
                                 $scope.close = function() {
@@ -702,8 +706,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }]
                         };
                         var modalInstance = $modal.open($scope.opts);
-                    }
-                });
+                    //}
+                //});
             };
 
             /**
@@ -717,11 +721,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var producto = $scope.datos_view.producto_seleccionado;
 
-                if (producto.getCantidadPendienteDespachar() > producto.getCantidadPendiente() || producto.getCantidadPendienteDespachar() < 0) {
+               /* if (producto.getCantidadPendienteDespachar() > producto.getCantidadPendiente() || producto.getCantidadPendienteDespachar() < 0) {
 
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cantidad ingresada no debe ser mayor a la cantidad pendiente");
                     return;
-                }
+                }*/
 
 
                 var obj = {};
@@ -1267,22 +1271,29 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.gestion_cartera = function(aprobado, denegar) {
                 $scope.ocultarOpciones = 0;
                 var productos = [];
-                if(denegar === 1){
+               
+                if(denegar === 1){    
+                    
+                    
+                    
                    
                     that.generarPedidoCartera(aprobado);
                 }else{
-                    that.validarDisponibleProductosCotizacion(productos,function(estado){
+                    
+                    //OJO VOLVER A DEJAR
+                    that.generarPedidoCartera(aprobado);
+                    /*that.validarDisponibleProductosCotizacion(productos,function(estado){
                         if(estado){
                             that.generarPedidoCartera(aprobado);
                           
                         }
-                    });
+                    });*/
                 }
                
             };
 
             that.generarPedidoCartera = function(aprobado){
-                
+               
                 var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);

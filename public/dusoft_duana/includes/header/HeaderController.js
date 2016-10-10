@@ -596,7 +596,9 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
                 var chat =  localStorageService.get("chat");
                 
-                if(chat && chat.estado === '1'){
+                //console.log("documento is hidden ", document.hidden)
+                
+                if(chat && chat.estado === '1' && !document.hidden){
                     return;
                 }
                 
@@ -609,6 +611,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         localStorageService.set("mensajeNotificacion", mensaje);
                         self.abrirChat();
                         onHide();
+                        window.focus();
                     },
                     autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
                 }, function onShow(error, hide) {

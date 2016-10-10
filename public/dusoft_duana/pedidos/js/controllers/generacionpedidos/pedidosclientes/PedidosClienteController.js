@@ -1271,6 +1271,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.gestion_cartera = function(aprobado, denegar) {
                 $scope.ocultarOpciones = 0;
                 var productos = [];
+               
                 if(denegar === 1){    
                     
                     
@@ -1292,7 +1293,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.generarPedidoCartera = function(aprobado){
-                
+               
                 var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);

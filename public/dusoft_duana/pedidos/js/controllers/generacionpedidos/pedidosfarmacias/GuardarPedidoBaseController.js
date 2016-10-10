@@ -536,7 +536,7 @@ define(["angular", "js/controllers",
              */
             self.buscarProductos = function(callback) {
                
-                $scope.root.filtro={'termino_busqueda' : $scope.root.codigo_producto};
+                $scope.root.filtro={'termino_busqueda' : $scope.root.codigo_producto,'pedidosNoIncluirDisponibilidad': [$scope.root.pedido.get_numero_pedido()]};
                 //$scope.rootSeleccionProductoFarmacia.filtro.tipo_producto = $scope.rootSeleccionProductoFarmacia.tipoProducto;
                 var empresa = Usuario.getUsuarioActual().getEmpresa();
                 var obj = {

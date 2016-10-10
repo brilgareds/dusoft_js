@@ -108,8 +108,7 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
     var args = req.body.data;
     var numero_pedido = args.autorizarProductos.numeroPedido;
     var tipoPedido = args.autorizarProductos.tipoPedido;
-    var modelo;
-    var estado_pedido='0';
+    var modelo;    
     var evento;
     var termino = {};
     var envio=false;
@@ -182,21 +181,22 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
             }else{
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoCliente",numero_pedido);
             } 
-     }).then(function(resultado){         
+     }).then(function(resultado){       
+         var estado_pedido='0';
          console.log(" resultado de autorizar pedido ", resultado, " numero de pedido ", numero_pedido, " tipo pedido ", tipoPedido);
          if(resultado[0].numero_productos !== resultado[0].numero_denegados ){
              if(resultado[0].numero_pendientes === '0' || resultado[0].numero_pendientes === null){
                   envio=true;
-                  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> actualizar_estado_actual_pedido "); 
+                  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> actualizar_estado_actual_pedido (estado_pedido=0) "); 
                   return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
-             }else{
+             }else{                 
                  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resolve 001 numero_pendientes ",resultado[0].numero_pendientes ); 
                 def.resolve(); 
              }
          }else{
              estado_pedido=10;
              envio=true;
-             console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> actualizar_estado_actual_pedido "); 
+             console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> actualizar_estado_actual_pedido (estado_pedido=10) "); 
              return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
         } 
      }).then(function(){

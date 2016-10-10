@@ -752,7 +752,6 @@ PedidosFarmacias.prototype.buscarProductos = function(req, res) {
 
     var filtro = args.productos.filtro;
 
-console.log("filtro  ",filtro);
     if (filtro.tipo_producto === undefined) {
         filtro.tipo_producto = '0';
     }

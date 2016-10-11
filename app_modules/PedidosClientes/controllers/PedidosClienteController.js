@@ -3234,8 +3234,7 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
     var producto = productos[index];   
         
     if (!producto) {       
-        console.log("Debe salir a qui ");
-      
+        
         callback(false,productosSinDisponible);//rowCount  
         return;                     
     }  
@@ -3246,7 +3245,7 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
         parametros.empresa_id,
         parametros.centro_utilidad,
         parametros.bodega,
-        parametros.contrato_cliente,
+        parametros.contrato_cliente,                          
         parametros.filtro,
         parametros.pagina,
         parametros.filtros, 
@@ -3260,10 +3259,7 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
                 resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                 productosDisponibles.push(resultado[0]);               
             }
-            console.log("producto --> ", producto.codigo_producto);                                          
-            console.log("cantidad --> ", producto.cantidad_solicitada);
-            console.log(" (codigo_producto) ::::---:::: ", resultado[0].codigo_producto);
-            console.log(" (disponible) ::::---:::: ", resultado[0].cantidad_disponible);
+            
             
          }).fail(function(err){      
        }).done(); 

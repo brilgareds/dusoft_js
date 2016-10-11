@@ -664,10 +664,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var productos = [];               
                 productos.push(producto);
                 $scope.ocultarOpciones = 1;
-                
+               
                 //OJO VOLVER A DEJAR
-                /*that.validarDisponibleProductosCotizacion(productos,function(estado){
-                    if(estado){*/
+                that.validarDisponibleProductosCotizacion(productos,function(estado){
+                    if(estado){
 
                         $scope.datos_view.producto_seleccionado = producto;
                         $scope.opts = {
@@ -706,8 +706,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }]
                         };
                         var modalInstance = $modal.open($scope.opts);
-                    //}
-                //});
+                    }
+                });
             };
 
             /**
@@ -789,7 +789,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 enableCellSelection: true,
                 enableHighlighting: true,
                 showFooter: true,
-                showFilter: true,
+                showFilter: true,         
                 filterOptions: $scope.filtroGrid,
                 footerTemplate: '<div class="row col-md-12">\
                                     <div class="col-md-3 pull-right">\
@@ -1160,6 +1160,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              **/
             that.validarDisponibleProductosCotizacion = function(producto,callback) {
                 
+                console.log("$scope.Pedido ", $scope.Pedido);
+                var numeroPedidoCot;
+                var tipoPedidoCot;
+                if($scope.Pedido.get_numero_cotizacion() >0){
+                    numeroPedidoCot = $scope.Pedido.get_numero_cotizacion();
+                    tipoPedidoCot = 1;
+                }
+                
+                if($scope.Pedido.get_numero_pedido() >0){
+                    numeroPedidoCot = $scope.Pedido.get_numero_pedido();
+                    tipoPedidoCot = 2;
+                }
                 var obj = {
                         session: $scope.session,                                 
                         data: {
@@ -1173,7 +1185,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 tipo_producto: '',
                                 numero_cotizacion: '',
                                 numero_pedido: '',
-                                filtro: {nombre: 'codigo', tipo_busqueda: 2},
+                                filtro: {nombre: 'codigo', tipo_busqueda: 2, numero: [numeroPedidoCot], tipo:tipoPedidoCot},
                                 //nuevo campos
                                 molecula: '',
                                 laboratorio_id: '',
@@ -1185,9 +1197,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
                     };
-                 
+                   
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
-                    
+                        
+                        
                     if (data.status === 200) {
                       
                         $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
@@ -1280,13 +1293,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }else{
                     
                     //OJO VOLVER A DEJAR
-                    that.generarPedidoCartera(aprobado);
-                    /*that.validarDisponibleProductosCotizacion(productos,function(estado){
+                    
+                    that.validarDisponibleProductosCotizacion(productos,function(estado){
                         if(estado){
                             that.generarPedidoCartera(aprobado);
                           
                         }
-                    });*/
+                    });
                 }
                
             };

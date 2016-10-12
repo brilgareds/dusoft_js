@@ -1404,11 +1404,11 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     var yyyy = fechaActual.getFullYear();
     
     if(dd<10) {
-        dd='0'+dd
+        dd='0'+dd;
     } 
 
     if(mm<10) {
-        mm='0'+mm
+        mm='0'+mm;
     } 
     
     fechaActual = yyyy+'-'+ mm +'-'+ dd;

@@ -316,39 +316,48 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
 
     that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, cabecera_pedido) {
 
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
-        } else {
+    if (err) {
+        res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
+    } else {
 
-            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
-                cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '10') {
+    if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
+        cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '10') {
 
-                that.m_pedidos_farmacias.eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, cabecera_pedido[0].empresa_destino, function(err, rows) {
+    that.m_pedidos_farmacias.eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, cabecera_pedido[0].empresa_destino, function(err, rows) {
 
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'No se pudo eliminar el producto', 500, {error: err}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Eliminación del producto exitosa', 200, {}));
-                        G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoFarmacia",numero_pedido).then(function(resultado){
-                            if(resultado[0].numero_pendientes === null || resultado[0].numero_pendientes === '0'){
-                              var estado_pedido=0;
-                              return G.Q.ninvoke(that.m_pedidos_farmacias,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
-                            }else{
-                                def.resolve(); 
-                            }
-                        });                        
-                    }
-                });
-            } else {
-                res.send(G.utils.r(req.url, 'El estado actual del pedido no permite modificarlo', 403, {}));
-                return;
-            }
+    if (err) {
+        console.log("error");
+        res.send(G.utils.r(req.url, 'No se pudo eliminar el producto', 500, {error: err}));
+        return;
+    } else {
+            //elimina el producto del pedido de la tabla autorizacion
+    var parametrosAutorizacion = {"pedidoId": numero_pedido, "codigoProducto": codigo_producto};
+    G.Q.ninvoke(that.m_autorizaciones, "eliminarProductoDeAutorizaciones", parametrosAutorizacion).then(function() {
+    res.send(G.utils.r(req.url, 'Eliminación del producto exitosa', 200, {}));
+    //verifica si se debe modificar el estado del pedido
+    G.Q.ninvoke(that.m_autorizaciones, "verificarProductoAutorizadoFarmacia", numero_pedido).then(function(resultado) {
 
-        }
-
+    if (resultado[0].numero_pendientes === null || resultado[0].numero_pendientes === '0') {
+        var estado_pedido = 0;
+        //modifica el estado del pedido
+        return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_estado_actual_pedido", numero_pedido, estado_pedido);
+    } else {
+        def.resolve();
+    }});
+    }).fail(function(err) {
+    if (!err.estado) {
+        err = {estado: 500, mensaje: err};
+    }
+    res.send(G.utils.r(req.url, err.mensaje, err.estado, {}));
+    }).done();
+    }});
+    } else {
+        res.send(G.utils.r(req.url, 'El estado actual del pedido no permite modificarlo', 403, {}));
+        return;
+    }
+    }
     });
-};
+    };
 
 /**
  * @api {post} /api/PedidosFarmacias/listaPedidosOperarioBodega Asignar Responsables
@@ -1906,7 +1915,7 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
         if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null ||
             cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '10') {
-                    
+   console.log("insertar_producto_detalle_pedido_farmacia->>>>>>>>>>>>>>>>>>>amg");                 
             return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia", numero_pedido, empresa_id, centro_utilidad_id,
                     bodega_id, codigo_producto, cantidad_solic,
                     tipo_producto_id, usuario_id, cantidad_pendiente);
@@ -1915,11 +1924,13 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
             throw {msj: "El estado actual del pedido no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
         }
     }).then(function(resultado){
+        console.log("1 insertar_producto_detalle_pedido_farmacia->>>>>>>>>>>>>>>>>>>amg");
         return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);  
                     
     }).then(function(notificar) {
-        
+        console.log("2 onRealizarNotificacionWeb->>>>>>>>>>>>>>>>>>>amg: ",notificar);
         if(notificar){
+            console.log(" 3 onRealizarNotificacionWeb->>>>>>>>>>>>>>>>>>>amg: ",numero_pedido);
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion); 
         }

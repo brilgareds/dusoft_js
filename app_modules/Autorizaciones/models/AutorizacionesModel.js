@@ -94,6 +94,26 @@ AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback
 
 /**
 * @author Andres M Gonzalez
+* +Descripcion elimina los productos de la tabla autorizaciones_productos_pedidos 
+* @params obj: pedidoId
+* @fecha 2016-10-12
+*/
+AutorizacionesModel.prototype.eliminarProductoDeAutorizaciones = function(obj, callback) {
+
+    var sql = " DELETE \
+                 FROM \
+                autorizaciones_productos_pedidos\
+                WHERE pedido_id = :1 AND codigo_producto = :2 ; ";
+     var query = G.knex.raw(sql, {1: obj.pedidoId,2: obj.codigoProducto});
+    query.then(function(resultado) {
+       callback(false, resultado.rows);
+     }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+     })
+};
+/**
+* @author Andres M Gonzalez
 * +Descripcion consulta todas las autorizaciones que esten en estado 0
 * @params obj: pedidoId
 * @fecha 2016-05-25

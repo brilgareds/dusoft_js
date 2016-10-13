@@ -580,7 +580,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 });
                                  
                             }
-                               //console.log("listaEntregasFormulas ", listaEntregasFormulas);
                                 
                         });
                        
@@ -592,17 +591,31 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     *              pendientes para dispensar
                     * @fecha 16/06/2016
                     */
-                    $scope.imprimirMedicamentosPendientes = function(obj){
-                        console.log("obj ", obj);
-                        var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
-                           
+                    $scope.imprimirMedicamentosPendientes = function(entity){
+                        console.log("obj ----->>> ", entity);
+                        //var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");                            
+                        that.imprimirMedicamentosPendientesLocalStorage(entity);
+                    };
+                    
+                    that.imprimirMedicamentosPendientesLocalStorage = function(parametro){                      
+                        that.consultaMedicamentosPendientes(parametro);
+                    };
+                    
+                    /*
+                     * @author Cristian Manuel Ardila
+                     * +Descripcion Metodo encargado generar el reporte
+                     * para consultar los medicamentos pendientes           
+                     * @fecha  2016-10-12
+                     */
+                    that.consultaMedicamentosPendientes = function(parametro){
+                       
                         var obj = {                   
                                     session: $scope.session,
                                     data: {
                                        listar_medicamentos_pendientes: {
-                                            evolucion: obj.evolucion,
-                                            tipoIdPaciente:obj.tipoIdPaciente,
-                                            pacienteId: obj.pacienteId
+                                            evolucion: parametro.evolucion,
+                                            tipoIdPaciente:parametro.tipoIdPaciente,
+                                            pacienteId: parametro.pacienteId
                                        }
                                    }    
                                 };    
@@ -614,9 +627,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                             }
                         });  
-
+                        
                     };
-        
         
                     /**
                      * @author Cristian Ardila
@@ -624,32 +636,44 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      *              que quedaron pendientes para dispensar
                      * @fecha 16/06/2016
                      */
-                    $scope.imprimirMedicamentosDispensados = function(obj, estado){
-
-                        var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
-                            console.log("imprimirMedicamentosDispensados ", resultadoStorage);
+                    $scope.imprimirMedicamentosDispensados = function(entity, estado){
+                        that.consultaMedicamentosDispensados(entity,estado);              
+                    };
+                     
+                    /*
+                     * @author Cristian Manuel Ardila
+                     * +Descripcion Metodo encargado generar el reporte
+                     * para consultar los medicamentos dispensados           
+                     * @fecha  2016-10-12
+                     */
+                    that.consultaMedicamentosDispensados = function(parametro,estado){
+                       
                         var obj = {                   
                                     session: $scope.session,
                                     data: {
                                        listar_medicamentos_dispensados: {
-                                            evolucion: obj.evolucion,
-                                            tipoIdPaciente:obj.tipoIdPaciente,
-                                            pacienteId: obj.pacienteId,
+                                            evolucion: parametro.evolucion,
+                                            tipoIdPaciente:parametro.tipoIdPaciente,
+                                            pacienteId: parametro.pacienteId,
                                             pendientes: estado
                                        }
                                    }    
                                 };    
                         dispensacionHcService.listarMedicamentosDispensados(obj,function(data){
-
+                                console.log("data ---****----*****---", data);
                             if (data.status === 200) {
                                     var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
                                     console.log("nombre ", nombre);
                                     $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                             }
                         });  
-
+                        
                     };
                     
+                    that.imprimirMedicamentosDispensadosLocalStorage = function(parametro, estado){
+                       
+                            that.consultaMedicamentosDispensados(parametro, estado);
+                    };
                     
                     
                     /**
@@ -711,8 +735,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                     filtro:resultadoStorage.filtro, 
                                                                     empresa: resultadoStorage.empresa,
                                                                     estadoFormula: '0'});
-                                        $scope.imprimirMedicamentosPendientes(resultadoStorage);
-                                        $scope.imprimirMedicamentosDispensados(resultadoStorage,0);
+                                        that.imprimirMedicamentosPendientesLocalStorage(resultadoStorage);
+                                        that.imprimirMedicamentosDispensadosLocalStorage(resultadoStorage,0);
                                                                 
                                     }
                                     
@@ -725,8 +749,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                     empresa: resultadoStoragePendientes.empresa,
                                                                     estadoFormula: '1'});
                                                                 
-                                        $scope.imprimirMedicamentosPendientes(resultadoStoragePendientes);
-                                        $scope.imprimirMedicamentosDispensados(resultadoStoragePendientes,1);
+                                        that.imprimirMedicamentosPendientesLocalStorage(resultadoStoragePendientes);
+                                        that.imprimirMedicamentosDispensadosLocalStorage(resultadoStoragePendientes,1);
                                         
                                     }  
                                     

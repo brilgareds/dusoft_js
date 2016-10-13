@@ -1226,12 +1226,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                 //def.resolve();    
             }
         });  
-    })
-    
-    
-            
-            
-            .then(function(){          
+    }).then(function(){          
          return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});            
     }).then(function(resultado){
         
@@ -1817,6 +1812,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
     }else{
         medicamentosDispensados = 'listarMedicamentosDispensados';
     }
+    console.log("parametros ", parametros);
     console.log("medicamentosDispensados ", medicamentosDispensados);
     G.Q.ninvoke(that.m_dispensacion_hc,medicamentosDispensados,parametros).then(function(resultado){
        console.log("1) resultado ", resultado.rows);
@@ -1901,6 +1897,8 @@ DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
     
     G.Q.ninvoke(that.m_dispensacion_hc, 'listarTodoMedicamentosDispensados', parametros).then(function(resultado){
         
+        console.log("resultado TODO TODO TODO ", resultado);
+        
         if(resultado.rows.length > 0){ 
         
             res.send(G.utils.r(req.url, 'Evento registrado satisfactoriamente', 200, {listar_medicamentos_dispensados: resultado.rows}));  
@@ -1920,7 +1918,7 @@ DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
  * @fecha 15/06/2016
  * +Descripcion Controlador encargado listar los medicamentos Dispensados
  *              
- */
+ */      
 DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
    
    console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");

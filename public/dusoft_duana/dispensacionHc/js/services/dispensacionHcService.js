@@ -264,6 +264,7 @@ define(["angular", "js/services"], function(angular, services) {
             self.listarTotalDispensacionesFormula = function(obj,callback){
                
                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TOTAL_DISPENSACIONES_FORMULA,"POST", obj, function(data){     
+                    
                     callback(data);
                 });
             };

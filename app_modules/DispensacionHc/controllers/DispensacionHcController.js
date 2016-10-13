@@ -377,6 +377,94 @@ var sumaFecha = function(d, fechaP){
 
         return (fechaFinal) === "NaN-NaN-NaN" ? "" : (fechaFinal);
     };
+    
+    
+    
+/*
+ * @author Cristian Ardila
+ * @fecha 24/05/2016
+ * +Descripcion Controlador encargado de consultar la lista los lotes de cada 
+ *              codigo del producto del FOFO
+ *              
+ */
+DispensacionHc.prototype.consultarLotesDispensarFormula = function(req, res){
+   console.log("*********DispensacionHc.prototype.consultarLotesDispensarFormula*************");
+   console.log("*********DispensacionHc.prototype.consultarLotesDispensarFormula*************");
+   console.log("*********DispensacionHc.prototype.consultarLotesDispensarFormula*************");
+   
+   
+    var that = this;
+    var args = req.body.data;
+  
+    console.log("args ", args);
+    if (args.existenciasBodegas === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {existenciasBodegas: []}));
+        return;
+    }
+   
+    if (!args.existenciasBodegas.codigoProducto) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo de producto', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.principioActivo || args.existenciasBodegas.principioActivo.length === 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.empresa || args.existenciasBodegas.empresa.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La empresa esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.centroUtilidad || args.existenciasBodegas.centroUtilidad.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El centro de utilidad esta llegando vacio ó nulo', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.bodega || args.existenciasBodegas.bodega.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La bodega esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.codigoFormaFarmacologica) {
+        res.send(G.utils.r(req.url, 'Se requiere el codigo de forma farmacologica', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if (!args.existenciasBodegas.pacienteId || args.existenciasBodegas.pacienteId.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere el documento del paciente', 404, {existenciasBodegas: []}));
+        return;
+    }
+    if (!args.existenciasBodegas.tipoPacienteId || args.existenciasBodegas.tipoPacienteId.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de documento del paciente', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    var parametros={empresa: args.existenciasBodegas.empresa,
+                    centroUtilidad:args.existenciasBodegas.centroUtilidad, 
+                    bodega:args.existenciasBodegas.bodega,
+                    codigoProducto:args.existenciasBodegas.codigoProducto,
+                    principioActivo:args.existenciasBodegas.principioActivo,
+                    codigoFormaFarmacologica: args.existenciasBodegas.codigoFormaFarmacologica
+                    };
+       
+       
+            
+    G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros).then(function(resultado){
+       //console.log("AQUI QUE PASO ", resultado)
+       if(resultado || resultado.rows.length > 0){ 
+             res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado.rows}));
+       }else{
+           throw {msj: "Consulta sin resultado", codigo: 500};
+       }
+           
+   }).fail(function(err){     
+      res.send(G.utils.r(req.url, err.msj, err.codigo, {existenciasBodegas: []}));
+      // res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
 /*
  * @author Cristian Ardila
  * @fecha 24/05/2016

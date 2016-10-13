@@ -52,6 +52,13 @@ module.exports = function(app, di_container) {
     });
     
     // lotes de los productos de cada FOFO
+    app.post("/api/DispensacionHc/consultarLotesDispensarFormula", function(req, res){
+        c_dispensacion_hc.consultarLotesDispensarFormula(req, res);
+    });
+    
+    
+    
+    // lotes de los productos de cada FOFO
     app.post("/api/DispensacionHc/temporalLotes", function(req, res){
         c_dispensacion_hc.temporalLotes(req, res);
     });

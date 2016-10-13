@@ -21,7 +21,7 @@ define(["angular", "js/services"], function(angular, services) {
               
              /**
               * @author Cristian Ardila
-              * @fecha  21/05/2016
+              * @fecha  21/05/2016 DD/MM/YYYYY
               * +Descripcion Consulta todas las formulas
               */
             self.listarFormulas = function(obj, callback){
@@ -34,7 +34,7 @@ define(["angular", "js/services"], function(angular, services) {
              
              /**
               * @author Cristian Ardila
-              * @fecha  20/05/2016
+              * @fecha  20/05/2016 DD/MM/YYYYY
               * +Descripcion Servicio que lista los tipos de documentos
               */
             self.listarTipoDocumentos = function(obj, callback){
@@ -48,7 +48,7 @@ define(["angular", "js/services"], function(angular, services) {
              
             /**
               * @author Cristian Ardila
-              * @fecha  20/05/2016
+              * @fecha  20/05/2016 DD/MM/YYYYY
               * +Descripcion Servicio que lista los tipos de documentos
               */
             self.listarTipoFormula = function(obj, callback){
@@ -130,8 +130,10 @@ define(["angular", "js/services"], function(angular, services) {
             
              /**
               * @author Cristian Ardila
-              * @fecha  21/05/2016
-              * +Descripcion Consulta los lotes disponibles para el FOFO
+              * @fecha  21/05/2016 DD/MM/YYYYY
+              * +Descripcion Consulta los lotes disponibles para el FOFO pero previamente
+              *              confrontara el medicamento si este ya ha sido dispensado
+              *              al paciente en un periodo menor de 25 dias
               */
             self.existenciasBodegas = function(obj,callback){
                
@@ -142,7 +144,20 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  13/10/2016 DD/MM/YYYYY
+              * +Descripcion Consulta los lotes disponibles para el FOFO
+              */
+            self.consultarLotesDispensarFormula = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.CONSULTAR_LOTES_DISPENSAR_FORMULA,"POST", obj, function(data){
+                    callback(data);
+                });
+            };
+            
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Consulta los lotes disponibles para el FOFO
               */
             self.temporalLotes = function(obj,callback){
@@ -154,7 +169,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Consulta los medicamentos separados que se encuentran
               *              en las tablas de temporales
               */
@@ -167,7 +182,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Consulta los medicamentos separados que se encuentran
               *              en las tablas de temporales
               */
@@ -182,7 +197,7 @@ define(["angular", "js/services"], function(angular, services) {
             
            /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado de realizar la dispensacion de
               *              los medicamentos
               */
@@ -195,7 +210,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado de realizar la dispensacion de
               *              los medicamentos pendientes
               */
@@ -208,7 +223,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado de obtener los medicamentos que
               *              quedaron pendientes por dispensar en la entrega
               */
@@ -221,7 +236,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado de obtener los medicamentos que
               *              quedaron pendientes por dispensar para visualizarlos en 
               *              en reporte
@@ -235,7 +250,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado de obtener los medicamentos
               *              dispensados
               */
@@ -250,7 +265,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado de obtener todas las dispensaciones
               *              de la formula
               */
@@ -261,14 +276,25 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016 DD/MM/YYYYY
+              * +Descripcion Servicio encargado de obtener todas las dispensaciones
+              *              de la formula
+              */
             self.listarTotalDispensacionesFormula = function(obj,callback){
                
                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_TOTAL_DISPENSACIONES_FORMULA,"POST", obj, function(data){     
-                    
                     callback(data);
                 });
             };
             
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016 DD/MM/YYYYY
+              * +Descripcion Servicio encargado de obtener la ultima dispensacion
+              *              de la formula tratandose de medicamentos pendientes
+              */
             self.listarUltimaDispensacionPendiente = function(obj,callback){
                
                 Request.realizarRequest(API.DISPENSACIONHC.LISTAR_ULTIMA_DISPENSACIONE_PENDIENTES,"POST", obj, function(data){     
@@ -280,7 +306,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  27/07/2016
+              * @fecha  27/07/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado de consultar los privilegios de
               *              dispensacion del usuario de la session
               */
@@ -293,7 +319,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado autorizar la dispensacion de un
               *              medicamento
               */
@@ -321,7 +347,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  07/06/2016
+              * @fecha  07/06/2016 DD/MM/YYYYY
               * +Descripcion Servicio encargado de guardar los medicamentos
               *              como todo pendiente
               */
@@ -336,7 +362,7 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
               * @author Cristian Ardila
-              * @fecha  09/02/2016
+              * @fecha  09/02/2016 DD/MM/YYYYY
               * +Descripcion descarta los productos pendientes
               */
             self.descartarProductoPendiente = function(obj,callback){
@@ -351,7 +377,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la
                *              formula medica contra los modelos
-               * @fecha 25/05/2016
+               * @fecha 25/05/2016 DD/MM/YYYYY
                */
             self.renderListarFormulasMedicas = function(formulas, estadoFormula){
                   
@@ -422,11 +448,12 @@ define(["angular", "js/services"], function(angular, services) {
                 return resultado;
                 
             };
+            
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de los
                *              medicamentos formulados contra los modelos
-               * @fecha 25/05/2016
+               * @fecha 25/05/2016 DD/MM/YYYYY
                */
             self.renderListarMedicamentosFormulados = function(producto, pendiente){
                
@@ -449,11 +476,12 @@ define(["angular", "js/services"], function(angular, services) {
                      
                   return productos;
             };
+            
              /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de los
                *              lotes formulados contra los modelos
-               * @fecha 25/05/2016
+               * @fecha 25/05/2016 DD/MM/YYYYY
                */
             self.renderListarProductosLotes = function(productoLote){
                    
@@ -482,7 +510,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de los
                *              lotes formulados contra los modelos
-               * @fecha 08/06/2016 (DD-MM-YYYY)
+               * @fecha 08/06/2016 (DD/MM/YYYY)
                */
             self.renderMedicamentosTemporales = function(productoLote){
                 
@@ -503,7 +531,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar el resultado de la
                *              consulta que ontiene los tipos de documentos
-               * @fecha 08/06/2016 (DD-MM-YYYY)
+               * @fecha 08/06/2016 DD/MM/YYYYY
                */
             self.renderListarTipoDocumento = function(tipoDocumento){
                 
@@ -523,7 +551,7 @@ define(["angular", "js/services"], function(angular, services) {
              * +Descripcion Funcion encargada de serializar el resultado
              *              de la consulta de todas las dispensaciones de la formula
              *              con el fin de clasificarlas en entregas
-             * @fecha 10/09/2016
+             * @fecha 10/09/2016 DD/MM/YYYYY
              */          
             self.renderListartotalDispensacionesFormula = function(numeroEntrega,entrega){               
              

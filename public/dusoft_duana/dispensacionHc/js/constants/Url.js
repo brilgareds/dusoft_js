@@ -18,6 +18,7 @@ define(["angular"], function (angular) {
                 "CONSULTAR_MEDICAMENTOS_DESPACHADOS": BASE_URL + "/DispensacionHc/consultarMedicamentosDespachados",
                 "CANTIDAD_PRODUCTO_TEMPORAL": BASE_URL + "/DispensacionHc/cantidadProductoTemporal",
                 "EXISTENCIAS_BODEGAS": BASE_URL + "/DispensacionHc/existenciasBodegas",
+                "CONSULTAR_LOTES_DISPENSAR_FORMULA": BASE_URL + "/DispensacionHc/consultarLotesDispensarFormula",
                 "TEMPORAL_LOTES": BASE_URL + "/DispensacionHc/temporalLotes",
                 "LISTAR_MEDICAMENTOS_TEMPORALES": BASE_URL + "/DispensacionHc/listarMedicamentosTemporales",
                 "ELIMINAR_MEDICAMENTOS_TEMPORALES": BASE_URL + "/DispensacionHc/eliminarTemporalFormula",

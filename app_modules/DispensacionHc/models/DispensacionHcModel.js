@@ -108,8 +108,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                             THEN (\
                                 CASE \
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL OR a.sw_pendiente = '1' THEN(\
-                                        CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN '0'\
-                                             WHEN now() > a.fecha_maxima_entrega THEN '1'\
+                                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
+                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '0'\
+                                             WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '1'\
                                              ELSE '2' END\
                                         )\
                                     WHEN a.sw_pendiente = '2' THEN '4' END\
@@ -126,8 +127,9 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                             THEN (\
                                 CASE \
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
-                                        CASE WHEN a.fecha_minima_entrega <= now() and  now() <= a.fecha_maxima_entrega THEN 'Entrar'\
-                                        WHEN now() > a.fecha_maxima_entrega THEN 'Refrendar'\
+                                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
+                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Entrar'\
+                                        WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Refrendar'\
                                         ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
                                         )\
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
@@ -1149,7 +1151,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             GROUP BY 2,4,5,e.bodega,e.centro_utilidad,e.empresa_id \
                        ) AS A ORDER BY  A.resultado ASC ";  
     G.knex.raw(sql,parametros).then(function(resultado){     
-     
+        console.log("resultado ------///*****++++ : ", resultado);
         callback(false, resultado);
     }).catch(function(err){      
         console.log("parametros: ", parametros);

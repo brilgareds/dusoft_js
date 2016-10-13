@@ -235,10 +235,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    }
                }    
             };
-                console.log("obj ", obj);                                       
-                console.log("entity ", entity);                                       
+                /*console.log("obj ", obj);                                       
+                console.log("entity ", entity);    */                                   
             dispensacionHcService.existenciasBodegas(obj, function(data){
-                console.log("data [consultarExistenciasBodegas] ", data);
+                //console.log("data [consultarExistenciasBodegas] ", data);
                 entity.vaciarProductosHc();
                 if(data.status === 200) {                                          
                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
@@ -253,7 +253,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         if(privilegio.status === 200){
                            
                             if(privilegio.obj.privilegios[0].sw_privilegios === '1'){
-                               that.ventanaAutorizaDispensacion(data, entity.codigo_producto);                         
+                                
+                               that.ventanaAutorizaDispensacion(data, entity);                         
                             }else{
                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no posee privilegios para autorizar la dispensacion");   
                             }
@@ -269,7 +270,51 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                       
         };
          
-       
+        /**
+         *  @author Cristian Manuel Ardila
+         * +Descripcion Evento que se activa al momento de que se autoriza el 
+         *              medicamento confrontado para ser dispensado posteriormente
+         *              y de esta forma abrir inmediatamente la ventana con los
+         *              los lotes respectivos
+         * @fecha 2016-13-10 YYYY-DD-MM
+         */
+        $scope.$on('emitLotesProductosFormula', function(e, parametros) { 
+            
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                    existenciasBodegas: {
+                        codigoProducto: parametros.entity.codigo_producto,
+                        principioActivo: parametros.entity.principioActivo,
+                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        centroUtilidad: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                        autorizado: "1",
+                        codigoFormaFarmacologica: parametros.entity.codigoFormaFarmacologica,
+                        pacienteId: resultadoStorage.pacienteId,
+                        tipoPacienteId: resultadoStorage.tipoIdPaciente
+                    }
+                }    
+            };
+            
+            dispensacionHcService.consultarLotesDispensarFormula(obj, function(data){
+                
+                parametros.entity.vaciarProductosHc();
+                if(data.status === 200) {                                          
+                    parametros.entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
+                    $scope.lotes = parametros.entity.mostrarProductosHc();                  
+                    that.ventanaDispensacionFormula();
+                }                 
+            });
+            
+            
+            /*console.log("AQUI ABRE LA VENTANA PARA DISPENSAR ---------------");
+            console.log("e ", e);
+            console.log("obj SON LOS PARAMETROS ", obj);*/
+          
+         
+        }); 
         /**
         * @author Cristian Ardila
         * +Descripcion Se visualiza la tabla con los medicamentos listos
@@ -526,7 +571,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * +Descripcion ventana modal para registrar la autorizacion de dispensacion
          *              de un medicamento confrontado
          */
-        that.ventanaAutorizaDispensacion = function(ultimoRegistroDispensacion, codigoProducto){
+        that.ventanaAutorizaDispensacion = function(ultimoRegistroDispensacion, entity){
             
             $scope.opts = {
                 backdrop: true,
@@ -539,10 +584,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 resolve: {
                         detalleRegistroDispensacion: function() {
                             return ultimoRegistroDispensacion;
-                        },
-                        codigoProducto: function() {
-                            return codigoProducto;
-                        }                       
+                        },                     
+                        detalleFormula: function(){
+                            return entity;
+                        }
                     }           
             };
             var modalInstance = $modal.open($scope.opts);   

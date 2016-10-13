@@ -6,9 +6,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService","$modalInstance","socket","detalleRegistroDispensacion","codigoProducto",
+            "dispensacionHcService","$modalInstance","socket","detalleRegistroDispensacion","detalleFormula",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,detalleRegistroDispensacion, codigoProducto) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,detalleRegistroDispensacion, detalleFormula) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
@@ -86,7 +86,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             console.log("entity ", seleccionTipoObservacion);
         };
         
+        /*
+         * +Descripcion Metodo encargado de realizar la autorizacion del producto
+         *              confrontado y emitir un evento para que se desplegue la ventana
+         *              con los lotes
+         * @fecha 2016-10-13 YYYY-MM-DD
+         */
         that.realizarEntregaFormula = function(){
+            
+            if(seleccionTipoObservacion === undefined){
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el tipo de observacion");
+                return;
+            }
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
             var obj = {                   
                 session: $scope.session,
@@ -94,7 +105,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    autorizar_dispensacion: {
                         evolucion: resultadoStorage.evolucionId,                    
                         observacion: seleccionTipoObservacion.descripcion,
-                        producto: codigoProducto
+                        producto: detalleFormula.codigo_producto
                         
                    }
                }    
@@ -106,6 +117,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: 352974, 
                                                                       pendientes: resultadoStorage.pendientes});
                                                                   $scope.cerrarVentana();*/
+            //console.log("obj ", obj);
+            
             dispensacionHcService.autorizarDispensacionMedicamento(obj,function(data){
                 var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");            
                 if(data.status === 200){
@@ -114,7 +127,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     //console.log("data.obj.autorizar_dispensacion.rows ", data.obj.autorizar_dispensacion.evolucion_id)
                     $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id, 
                                                                       pendientes: resultadoStorage.pendientes});
-                    $scope.cerrarVentana();
+                    
+                    that.cerrarVentana(data);
                     //$state.go('DispensacionHc');
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -143,7 +157,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         $scope.cerrarVentana = function(){
             
             $modalInstance.close();
+            
         };
+        
+        that.cerrarVentana = function(data){
+            //console.log("cerrarVentana ", data);
+            if(data.status === 200){              
+                    /*$modalInstance.close();
+                    $scope.$emit('emitLotesProductosFormula', {entity: detalleFormula});*/
+                if($modalInstance.close() === undefined){
+                   $scope.$emit('emitLotesProductosFormula', {entity: detalleFormula});
+                }
+            }
+        };
+        
         that.init(empresa, function() {
 
             if(!Usuario.getUsuarioActual().getEmpresa()) {

@@ -21,10 +21,10 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  * @apiDescription Proporciona un listado de Pedidos de Clientes, permite filtrar lo pedidos por los siguientes campos,
  * numero del pedido, identificacion o nombre del tercero, direccion, telefono, identificacion o nombre del vendedor.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} auth_token  Token de AutenticaciÃ³n, este define si el usuario esta autenticado o no.
  * @apiParam {Number} empresa_id Identificacion de la empresa de la cual se requieren los pedidos.
  * @apiParam {String} termino_busqueda Termino por el cual desea filtrar los pedidos.
  * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion.
@@ -83,14 +83,14 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
  * @apiGroup PedidosClientes
  * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} auth_token  Token de AutenticaciÃ³n, este define si el usuario esta autenticado o no.
  * @apiParam {String[]} pedidos Lista de pedidos
  * @apiParam {Number} estado_pedido ID del estado a asignar
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request.
+ * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
 PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
@@ -170,14 +170,14 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  * @apiGroup PedidosClientes
  * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} auth_token  Token de AutenticaciÃ³n, este define si el usuario esta autenticado o no.
  * @apiParam {String[]} pedidos Lista de pedidos
  * @apiParam {Number} estado_pedido ID del estado a asignar
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request.
+ * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
 PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
@@ -192,7 +192,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
     }
 
     if (args.pedidos_clientes.numero_pedido === '' || args.pedidos_clientes.numero_pedido === 0) {
-        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacío', 404, {}));
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacÃ­o', 404, {}));
         return;
     }
 
@@ -247,7 +247,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
                                             that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
                                         }
 
-                                        res.send(G.utils.r(req.url, 'El Pedido cambió de estado correctamente', 200, {}));
+                                        res.send(G.utils.r(req.url, 'El Pedido cambiÃ³ de estado correctamente', 200, {}));
                                     }
                                 });
                             }
@@ -267,14 +267,14 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
  * @apiGroup PedidosClientes
  * @apiDescription Proporciona una lista con todos los pedidos de clientes asignados a un operario de bodega
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} auth_token  Token de AutenticaciÃ³n, este define si el usuario esta autenticado o no.
  * @apiParam {Number} operario_id Identificador asignado al operario de Bodega.
  * @apiParam {Number} pagina_actual Numero de la pagina que requiere.
  * @apiParam {Number} [limite] Cantidad de registros por cada pagina.
- * @apiSuccessExample Ejemplo Válido del Request.
+ * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
 PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
@@ -373,12 +373,12 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     }
 
     if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacÃ­os', 404, {}));
         return;
     }
 
     if (args.pedidos_clientes.contrato_cliente_id === '') {
-        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacío', 404, {}));
+        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacÃ­o', 404, {}));
         return;
     }
 
@@ -967,7 +967,7 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
     var cotizacion = args.pedidos_clientes.cotizacion;
 
     if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
-        res.send(G.utils.r(req.url, 'el numero de cotizacion no esta definido o esta vacío', 404, {}));
+        res.send(G.utils.r(req.url, 'el numero de cotizacion no esta definido o esta vacÃ­o', 404, {}));
         return;
     }
 
@@ -1284,7 +1284,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     cotizacion.usuario_id = req.session.user.usuario_id;
 
     var cantidad_productos = 0;
-    var limite_productos = 25;
+    var limite_productos = 60;
     var usuario = req.session.user;
 
 
@@ -1974,8 +1974,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     };
     /**
      * +Descripcion: Proceso para validar que al modificar las cantidades de los
-     *               productos o añadirle mas productos a un pedido el total es
-     *               mayor > igual = ó menor < al actual y en base a esto modificar
+     *               productos o aÃ±adirle mas productos a un pedido el total es
+     *               mayor > igual = Ã³ menor < al actual y en base a esto modificar
      *               el estado del pedido, si el nuevo valor total del pedido es
      *               mayor al actual se actualizara el estado de 1 a estado_pedido =4
      *               y el pedido debera ser autorizado nuevamente por cartera
@@ -2032,7 +2032,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 
         } else {
-            throw 'El pedido debe encontrarse activo ó para autorizar nuevamente por cartera';
+            throw 'El pedido debe encontrarse activo Ã³ para autorizar nuevamente por cartera';
         }
     }).then(function(rows) {
 
@@ -2081,10 +2081,10 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             if (estado_pedido === 4) {
 
                 that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-                res.send(G.utils.r(req.url, 'Producto añadido correctamente ', 200, {pedidos_clientes: {}}));
+                res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
                 return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
             } else {
-                res.send(G.utils.r(req.url, 'Producto añadido correctamente ', 200, {pedidos_clientes: {}}));
+                res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
             }
 
         } else {
@@ -2202,25 +2202,25 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
 
     // Pedido
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
-        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
 
     // Pedido
     if (args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
-        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
     // Producto
     if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
-        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
     // Estado
     if (args.pedidos_clientes.estado === undefined || args.pedidos_clientes.estado === '') {
-        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
@@ -2311,25 +2311,25 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
 
     // Pedidos
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
-        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable pedidos_clientes no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
 
     // Pedido
     if (args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
-        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable pedido no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
     // Producto
     if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
-        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable producto no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
     // Estado
     if (args.pedidos_clientes.estado === undefined || args.pedidos_clientes.estado === '') {
-        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'La variable estado no esta definida o esta vacÃ­a', 404, {}));
         return;
     }
 
@@ -2562,7 +2562,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     }
 	
 	if (!producto.cantidadPendienteDespachar  || producto.cantidadPendienteDespachar.length === 0) {
-        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacía', 404, {}));
+        res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacÃ­a', 404, {}));
         return;
     }  
 	
@@ -2571,8 +2571,8 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
 
     /**
      * +Descripcion: Proceso para validar que al modificar las cantidades de los
-     *               productos o añadirle mas productos a un pedido el total es
-     *               mayor > igual = ó menor < al actual y en base a esto modificar
+     *               productos o aÃ±adirle mas productos a un pedido el total es
+     *               mayor > igual = Ã³ menor < al actual y en base a esto modificar
      *               el estado del pedido, si el nuevo valor total del pedido es
      *               mayor al actual se actualizara el estado de 1 a estado_pedido =4
      *               y el pedido debera ser autorizado nuevamente por cartera
@@ -2759,8 +2759,8 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     };
     /**
      * +Descripcion: Proceso para validar que al modificar las cantidades de los
-     *               productos o añadirle mas productos a un pedido el total es
-     *               mayor > igual = ó menor < al actual y en base a esto modificar
+     *               productos o aÃ±adirle mas productos a un pedido el total es
+     *               mayor > igual = Ã³ menor < al actual y en base a esto modificar
      *               el estado del pedido, si el nuevo valor total del pedido es
      *               mayor al actual se actualizara el estado de 1 a estado_pedido =4
      *               y el pedido debera ser autorizado nuevamente por cartera
@@ -3123,10 +3123,159 @@ function __subir_archivo_plano(files, callback) {
 }
 ;
 
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de validar la disponibilidad de un producto
+ *              invocando a la vez una funcion recursiva la cual se encargara
+ *              de todo el proceso
+ * @fecha 29/09/2016 DD/MM/YYYY
+ */
+var productosSinDisponible = [];
+var productosDisponibles = [];
+PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
+
+
+    var that = this;
+
+    var args = req.body.data;
+    
+    productosSinDisponible = [];
+    
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.contrato_cliente_id === undefined) {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+     if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacÃ­os', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.contrato_cliente_id === '') {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacÃ­o', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.pagina_actual === '' || parseInt(args.pedidos_clientes.pagina_actual) <= 0) {
+        res.send(G.utils.r(req.url, 'pagina_actual esta vacio o es 0', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.molecula === undefined) {
+        args.pedidos_clientes.molecula = '';
+    }
+
+    var empresa_id = args.pedidos_clientes.empresa_id;
+    var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
+    var bodega = args.pedidos_clientes.bodega_id;
+    var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
+    
+    var filtro = {
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
+        termino_busqueda: args.pedidos_clientes.termino_busqueda,
+        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
+        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
+    };
+
+     var filtroAvanzado = {
+        molecula: args.pedidos_clientes.molecula,
+        laboratorio_id: args.pedidos_clientes.laboratorio_id,
+        codigoProducto: args.pedidos_clientes.codigoProducto,
+        descripcionProducto: args.pedidos_clientes.descripcionProducto,
+        concentracion: args.pedidos_clientes.concentracion,
+        tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
+    };
+
+
+    var filtros = args.pedidos_clientes.filtro;
+    var pagina = args.pedidos_clientes.pagina_actual;
+    
+    var parametros = {empresa_id:empresa_id,
+        centro_utilidad:centro_utilidad,
+        bodega:bodega,
+        contrato_cliente:contrato_cliente,
+        filtro:filtro,
+        pagina:pagina,
+        filtros:filtros, 
+        filtroAvanzado:filtroAvanzado
+    };
+   
+      var productos = args.pedidos_clientes.productos;
+      
+    G.Q.nfcall(__disponibilidadProductos,that,0,productos,parametros).then(function(resultado){
+
+        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto:resultado}}));
+
+        //console.log("resultado (Sin disponibles)", resultado);
+        
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
+    }).done();
+      
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion recursiva encargada de recorrer el arreglo de los productos
+ *              temporales que se almacenaran como pendientes
+ * @fecha 2016-08-01
+ * @Funcion local
+ */
+function __disponibilidadProductos(that, index, productos,parametros, callback) {
+   
+    var producto = productos[index];   
+        
+    if (!producto) {       
+        
+        callback(false,productosSinDisponible);//rowCount  
+        return;                     
+    }  
+                                           
+     parametros.filtro.termino_busqueda =  producto.codigo_producto;           
+    
+     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
+        parametros.empresa_id,
+        parametros.centro_utilidad,
+        parametros.bodega,
+        parametros.contrato_cliente,                          
+        parametros.filtro,
+        parametros.pagina,
+        parametros.filtros, 
+        parametros.filtroAvanzado).then(function(resultado){
+            //rowCount = 1;
+            if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){                          
+                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                productosSinDisponible.push(resultado[0]);           
+                          
+            }else{
+                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                productosDisponibles.push(resultado[0]);               
+            }
+            
+            
+         }).fail(function(err){      
+       }).done(); 
+       //console.log("productosSinDisponible --> ", productosSinDisponible); 
+             
+    
+    index++;
+    setTimeout(function() {
+        __disponibilidadProductos(that, index, productos,parametros, callback);
+    }, 800);
+   
+};
 
 /*
  * Autor : Eduar Garcia
- * Descripcion : Validar que los códigos de los productos del archivo plano sean validos.
+ * Descripcion : Validar que los cÃ³digos de los productos del archivo plano sean validos.
  *
  */
 function __validar_productos_archivo_plano(contexto, filas, callback) {
@@ -3261,7 +3410,7 @@ function __validarPrecioVenta(producto, resultado, tipo) {
 
         /**
          * +Descripcion: Si precio de venta es mayor al precio regulado
-         *              ó el precio pactado es mayor al regulado
+         *              Ã³ el precio pactado es mayor al regulado
          *              cancele la accion
          */
         if (precioVenta > precioRegulado || precioPactado > precioRegulado) {

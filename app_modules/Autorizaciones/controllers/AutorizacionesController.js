@@ -103,12 +103,12 @@ Autorizaciones.prototype.verificarAutorizacionProductos = function(req, res) {
  * @fecha 2016-05-25
  */
 Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     var that = this;
     var args = req.body.data;
     var numero_pedido = args.autorizarProductos.numeroPedido;
     var tipoPedido = args.autorizarProductos.tipoPedido;
-    var modelo;
-    var estado_pedido='0';
+    var modelo;    
     var evento;
     var termino = {};
     var envio=false;
@@ -170,30 +170,37 @@ Autorizaciones.prototype.modificarAutorizacionProductos = function(req, res) {
         }
 
     }). then(function(resultados){  
-        
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> verificarPedidoAutorizado "); 
        return G.Q.ninvoke(that.m_autorizaciones, 'verificarPedidoAutorizado', numero_pedido);        
         
      }).then(function(resultado){
+         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tipoPedido ",tipoPedido); 
             if(tipoPedido===1){
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> verificarProductoAutorizadoFarmacia "); 
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoFarmacia",numero_pedido);
             }else{
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoCliente",numero_pedido);
             } 
-     }).then(function(resultado){         
+     }).then(function(resultado){       
+         var estado_pedido='0';
          console.log(" resultado de autorizar pedido ", resultado, " numero de pedido ", numero_pedido, " tipo pedido ", tipoPedido);
          if(resultado[0].numero_productos !== resultado[0].numero_denegados ){
-             if(resultado[0].numero_pendientes === '0' ){
+             if(resultado[0].numero_pendientes === '0' || resultado[0].numero_pendientes === null){
                   envio=true;
+                  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> actualizar_estado_actual_pedido (estado_pedido=0) "); 
                   return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
-             }else{
+             }else{                 
+                 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resolve 001 numero_pendientes ",resultado[0].numero_pendientes ); 
                 def.resolve(); 
              }
          }else{
              estado_pedido=10;
              envio=true;
+             console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> actualizar_estado_actual_pedido (estado_pedido=10) "); 
              return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
         } 
      }).then(function(){
+         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> envio ",envio); 
          if(envio){
            evento.onNotificarPedidosActualizados({numero_pedido: numero_pedido});  
          }
@@ -267,8 +274,9 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
          *               8 activo (desaprobado por cartera)
          *               10 (por autorizar)
          *               y el estado de la autorizacion del producto
-         *               1 aprovado 
-         *               1 denegado 
+         *               0 pendiente 
+         *               1 aprobado 
+         *               2 denegado 
          */
         estado_actual_pedido=resultado[0].estado_actual_pedido;
        if (((resultado[0].estado_actual_pedido === '8' || resultado[0].estado_actual_pedido === '0' || resultado[0].estado_actual_pedido === '10') 
@@ -289,19 +297,22 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
                 return G.Q.ninvoke(that.m_autorizaciones,"verificarProductoAutorizadoCliente",numero_pedido);
             } 
      }).then(function(resultado){
-         console.log(" resultado de autorizar pedido ", resultado, " numero de pedido ", numero_pedido, " tipo pedido ", tipoPedido);
+         console.log(" resultado de autorizar pedido ", resultado, " numero de pedido ", numero_pedido, " tipo pedido ", tipoPedido," estado_actual_pedido ",estado_actual_pedido);
           if(resultado[0].numero_productos !== resultado[0].numero_denegados){
-            if(resultado[0].numero_pendientes === '0' ){
+            if(resultado[0].numero_pendientes === '0' || resultado[0].numero_pendientes === null){
                 envio=true;
                if(estado_actual_pedido === '8' || estado_actual_pedido === '0' || estado_actual_pedido === '10'){
                 return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
                }else{
+                  console.log(" def.resolve 1, estado_actual_pedido: ",estado_actual_pedido);
                   def.resolve(); 
-               }
+              }
             }else{
+                console.log(" def.resolve 2, numero_pendientes: ",resultado[0].numero_pendientes," resultado:: ",resultado[0]," estado_actual_pedido ",estado_actual_pedido);
                 def.resolve();
             }
          }else{
+             console.log("1-) estado_pedido: ",estado_pedido," resultado:: ",resultado[0]," estado_actual_pedido ",estado_actual_pedido);
              estado_pedido=10;
              envio=true;
             if(estado_actual_pedido === '8' || estado_actual_pedido === '0' ){

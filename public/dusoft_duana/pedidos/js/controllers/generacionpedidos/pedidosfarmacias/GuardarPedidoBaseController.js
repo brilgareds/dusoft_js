@@ -472,21 +472,107 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * @param {String} titulo
+             * @param {String} mensaje
+             * +Descripcion: Mensaje de alerta
+             */
+            self.mostrarAlertaSeleccionProducto = function(titulo, mensaje) {
+            $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: false,
+                keyboard: true,
+                template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">' + titulo + '</h4>\
+                                    </div>\
+                                    <div class="modal-body row">\
+                                    <div class="col-md-12">\
+                                    <h4>' + mensaje + '</h4>\
+                                    </div>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                    </div>',
+                scope: $scope,
+                controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }]
+            };
+
+            var modalInstance = $modal.open($scope.opts);
+         };
+            
+            /*
+             * @Author: Eduar
              * @param {$event} ev
              * @param {Row} row 
              * +Descripcion: Handler del text input para modificar cantidad
              */
             $scope.onModificarCantidad = function(ev, row) {
-                if (ev.which === 13) {
+            $scope.root.codigo_producto = row.entity.codigo_producto;
+
+            if (ev.which === 13)
+            {
+                self.buscarProductos(function(disponible) {
+                    console.log("$scope.root.disponibilidad  ", disponible);
+                    if (row.entity.getCantidadIngresada() > disponible) {
+                        self.mostrarAlertaSeleccionProducto("Diponibilidad del Producto", "<p align='justify'> La cantidad ingresada " + row.entity.getCantidadIngresada() + " es mayor a <br> la disponible " + disponible + "</p>");
+                        row.entity.setCantidadIngresada(0);
+                        return;
+                    }
                     var cantidad = parseInt(row.entity.getCantidadIngresada());
-                    //Se comenta validacion por solicitud de guardar registro de logs cuando se modifique las cantidades
-                    //if (cantidad > 0) {
-                        //Emite el evento al controlador GuardarPedidoController
-                        $scope.$broadcast("onEditarCantidad", row.entity);
-                    //} else if(cantidad === 0 && $scope.root.pedido.getProductosSeleccionados().length === 1 ){
-                      //  $scope.$broadcast("onAnularPendiente", row.entity);
-                    //}
+                    $scope.$broadcast("onEditarCantidad", row.entity);
+                    });
                 }
+            };
+            
+ /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: metodo que hace la peticion para traer los productos de la empresa seleccionada en el pedido
+             */
+            self.buscarProductos = function(callback) {
+               
+                $scope.root.filtro={'termino_busqueda' : $scope.root.codigo_producto,'pedidosNoIncluirDisponibilidad': [$scope.root.pedido.get_numero_pedido()]};
+                //$scope.rootSeleccionProductoFarmacia.filtro.tipo_producto = $scope.rootSeleccionProductoFarmacia.tipoProducto;
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        productos: {
+                            pagina_actual: 1,
+                            empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                            centro_utilidad_id: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            empresa_destino_id: $scope.root.pedido.getFarmaciaDestino().getCodigo(),
+                            centro_utilidad_destino_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_destino_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            filtro: $scope.root.filtro
+                        }
+                    }
+                };
+
+                var url = API.PEDIDOS.FARMACIAS.LISTAR_PRODUCTOS_FARMACIAS;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {    
+                    console.log("",data.obj.lista_productos[0].disponibilidad_bodega);
+                    if (data.status === 200) {
+                         if (callback) {
+                             callback(data.obj.lista_productos[0].disponibilidad_bodega);
+                            }
+                        //    $scope.root.disponibilidad=data.obj.lista_productos[0].disponibilidad_bodega;
+                      //self.renderPendiente(data.obj.lista_productos[0].disponibilidad_bodega);
+                    }else{
+                         $scope.root.disponibilidad=0;
+                    }
+                });
+            };
+            
+            self.renderPendiente = function(data) {
+               $scope.root.disponibilidad=data;
             };
             
            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

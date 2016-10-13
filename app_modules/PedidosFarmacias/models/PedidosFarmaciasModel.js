@@ -776,9 +776,9 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 b.observacion_justificacion_auditor\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
-                inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
-                inner join inventarios_productos c on f.codigo_producto = c.codigo_producto \
-                inner join inv_clases_inventarios e on c.grupo_id = e.grupo_id and c.clase_id = e.clase_id \
+                left join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
+                left join inventarios_productos c on f.codigo_producto = c.codigo_producto \
+                left join inv_clases_inventarios e on c.grupo_id = e.grupo_id and c.clase_id = e.clase_id \
                 left join (\
                     SELECT a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
                     a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado, a.empresa_id, a.centro_utilidad, a.bodega, \
@@ -1373,6 +1373,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     
     
     var sql_aux = "";
+    var noIncluir="";
     var parametros = {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:empresa_destino, 
                             5:centro_destino, 6:bodega_destino, 7:"%" + filtro.termino_busqueda + "%"};
     var sql_filtro = "";
@@ -1389,7 +1390,11 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     } else {
         sql_filtro =  " and a.codigo_producto "+G.constants.db().LIKE+" :7 ";
     }
-    
+      
+     if(filtro.pedidosNoIncluirDisponibilidad){
+        parametros['8']=  filtro.pedidosNoIncluirDisponibilidad.join(); 
+        noIncluir=" and a.solicitud_prod_a_bod_ppal_id not in( :8 ) ";
+     }
     /***
     * +Descripcion Campos para obtener la fecha actual
     */
@@ -1399,11 +1404,11 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     var yyyy = fechaActual.getFullYear();
     
     if(dd<10) {
-        dd='0'+dd
+        dd='0'+dd;
     } 
 
     if(mm<10) {
-        mm='0'+mm
+        mm='0'+mm;
     } 
     
     fechaActual = yyyy+'-'+ mm +'-'+ dd;
@@ -1457,7 +1462,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                           select a.empresa_destino as empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente\
                           from solicitud_productos_a_bodega_principal a\
                           inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
-                          where b.cantidad_pendiente > 0\
+                          where b.cantidad_pendiente > 0 "+ noIncluir+" \
                           group by 1, 2\
                           union\
                           SELECT\

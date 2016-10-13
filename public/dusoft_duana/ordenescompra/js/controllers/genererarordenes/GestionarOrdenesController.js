@@ -294,6 +294,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
+                            producto.setCantidadPendiente(data.cantidadpendiente);
                             producto.set_politicas(data.politicas_producto);
                             producto.setTieneValorPactado(data.tiene_valor_pactado);
 
@@ -633,8 +634,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion'},
-                    {field: 'politicas', displayName: 'Políticas', width: "20%"},
-                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad", enableCellEdit:that.opciones.sw_modificar_orden},
+                    {field: 'politicas', displayName: 'Políticas', width: "10%"},
+                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad Solicitada", enableCellEdit:that.opciones.sw_modificar_orden},
+                    {field: 'cantidadPendiente', displayName: 'Cantidad Pendiente', width: "10%"},                    
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
                    // {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden, editableCellTemplate: '<input ng-readonly="row.entity.tiene_valor_pactado == 1" placeholder="Costo ultima compra" ng-input="COL_FIELD" ng-model="COL_FIELD" />'},
                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden},

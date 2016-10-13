@@ -12,9 +12,9 @@ var PedidosClienteModel = function(productos, m_pedidos_logs) {
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Lista todos los pedidos realizados a clientes.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
- * @apiParam {String} empresa_id Identificador de la Empresa que realizó el pedido
+ * @apiParam {String} empresa_id Identificador de la Empresa que realizÃ³ el pedido
  * @apiParam {String} termino_busqueda Termino por el cual desea filtrar lo pedidos.
  *                    Se puede filtrar por:
  *                    numero del pedido
@@ -222,7 +222,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     query.then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
-
+        console.log("err [listar_pedidos_clientes]: ", err);
         callback(err);
     });
 };
@@ -240,6 +240,7 @@ PedidosClienteModel.prototype.eliminarTemporalesClientes = function(callback) {
     G.knex.raw(sql).then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("err [eliminarTemporalesClientes]: ", err);
         callback(err);
     });
 };
@@ -264,6 +265,7 @@ PedidosClienteModel.prototype.borrarReservas = function(callback) {
     G.knex.raw(sql).then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("err [borrarReservas]: ", err);
         callback(err);
     });
 };
@@ -272,9 +274,9 @@ PedidosClienteModel.prototype.borrarReservas = function(callback) {
  * @api {sql} consultar_pedido Consultar Pedido
  * @apiName Consultar Pedido
  * @apiGroup PedidosClientes (sql)
- * @apiDescription Consulta la información principal del pedido seleccionado.
+ * @apiDescription Consulta la informaciÃ³n principal del pedido seleccionado.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del Pedido
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -374,6 +376,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
             .where("a.pedido_cliente_id", numero_pedido).orderByRaw("1 desc").then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
+        console.log("err [consultar_pedido]: ", err);
         callback(err);
     }).done();
 };
@@ -392,7 +395,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Consulta toda la informacion detallada del pedido como productos, cantidades, precios, iva etc.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del Pedido
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -489,7 +492,8 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
             then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
-        console.log("error generado ", err);
+       
+        console.log("err [consultar_detalle_pedido]: ", err);
         callback(err);
     });
 
@@ -501,10 +505,10 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Listar los pedidos asignados a un operario de bodega.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} responsable Nombre del Operario
- * @apiParam {Number} pagina Número de la pagina que requiere traer registros
+ * @apiParam {Number} pagina NÃºmero de la pagina que requiere traer registros
  * @apiParam {Number} limite Cantidad de resgistros por pagina, si no se envia el limite default es 1000
  * @apiParam {Function} callback Funcion de retorno de informacion.
  * @apiSuccessExample Este SQL se usa en:
@@ -662,7 +666,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     }).then(function(rows) {
         callback(false, rows, query.totalRegistros);
     }). catch (function(err) {
-
+        console.log("err [listar_pedidos_del_operario]: ", err);
         callback(err);
     }).done();
 };
@@ -674,7 +678,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Se le asignan pedidos a un operario de bodega para ser separados.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {String} estado_pedido Estado del pedido
@@ -717,10 +721,9 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
         }
 
     }). catch (function(err) {
+        console.log("err [asignar_responsables_pedidos]: ", err);
         callback(err);
     });
-
-
 };
 
 
@@ -730,7 +733,7 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Ingresar el responsable del pedido asignado
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {String} estado_pedido Estado del pedido
@@ -757,7 +760,7 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
 
         callback(false, resultado);
     }). catch (function(err) {
-
+        console.log("err [insertar_responsables_pedidos]: ", err);
         callback(err);
     }).done();
 
@@ -769,7 +772,7 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Asigna el Pedido a otro operario de bodega.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {String} estado_pedido Estado del pedido
@@ -797,7 +800,7 @@ PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_
 
         callback(false, resultado);
     }). catch (function(err) {
-
+        console.log("err [actualizar_responsables_pedidos]: ", err);
         callback(err);
     });
 
@@ -810,7 +813,7 @@ PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Permite eliminar el / los responsable de un pedido
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -828,7 +831,7 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pe
             then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
-
+         console.log("err [eliminar_responsables_pedidos]: ", err);
         callback(err);
     }).done();
 
@@ -848,7 +851,7 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pe
  * 5 = Despachado, Cuando el pedido ha sido despachado en su total al lugar de destino.
  * 6 = Despachado con Pendientes, Cuando el pedido ha sido despachado en su total al lugar de destino.
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {String} estado_pedido Estado del pedido
@@ -868,6 +871,7 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_
 
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("err [actualizar_estado_actual_pedido]: ", err);
         callback(err);
     });
 
@@ -892,8 +896,8 @@ PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = funct
     G.knex.raw(sql, {1: empresa_id, 2: codigo_producto}).then(function(err, resultado) {
 
         callback(err, resultado.rows, resultado);
-    }).
-            catch (function(err) {
+    }).catch (function(err) {
+        console.log("err [calcular_cantidad_total_pendiente_producto]: ", err);
         callback(err);
     });
 };
@@ -908,11 +912,10 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes 
                 WHERE b.codigo_producto = :1 and a.estado = '1'\
                 GROUP BY b.codigo_producto";
 
-    G.knex.raw(sql, {1: codigo_producto}).
-            then(function(resultado) {
+    G.knex.raw(sql, {1: codigo_producto}).then(function(resultado) {
         callback(false, resultado.rows);
-    }).
-            catch (function(err) {
+    }).catch (function(err) {
+        console.log("err [calcular_cantidad_reservada_cotizaciones_clientes]: ", err);
         callback(err);
     });
 };
@@ -921,7 +924,7 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes 
 
 /**
  * @author Eduar Garcia
- * +Descripcion: Calcula la cantidad TOTAL de un producto que está reservada en cotizaciones de Clientes por fecha
+ * +Descripcion: Calcula la cantidad TOTAL de un producto que estÃ¡ reservada en cotizaciones de Clientes por fecha
  * @param {type} codigo_producto
  * @param {type} fecha_registro_pedido
  * @param {type} callback
@@ -938,6 +941,7 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes_
     G.knex.raw(sql, {1: codigo_producto, 2: fecha_registro_pedido}).then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
+        console.log("err [calcular_cantidad_reservada_cotizaciones_clientes_por_fecha]: ", err);
         callback(err);
     });
 
@@ -980,7 +984,7 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
             then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
-
+        console.log("err [obtener_responsables_del_pedido]: ", err);
         callback(err);
     }).done();
 
@@ -996,7 +1000,8 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido, e
 
     G.knex.raw(sql, {1: numero_pedido, 2: terminado}).then(function(resultado) {
         callback(false, resultado.rows, resultado);
-    }). catch (function(err) {
+    }).catch(function(err){
+        console.log("err [terminar_estado_pedido]: ", err);
         callback(err);
     });
 
@@ -1021,6 +1026,7 @@ PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, num
     G.knex.raw(sql, {1: numero_pedido, 2: numero_caja, 3: tipo}).then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
+        console.log("err [obtenerDetalleRotulo]: ", err);
         callback(err);
     });
 
@@ -1065,6 +1071,7 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
     G.knex.raw(sql, {1: empresa, 2: codigo_producto}).then(function(resultado) {
         callback(false, resultado.rows);
     }). catch (function(err) {
+        console.log("err [listar_pedidos_pendientes_by_producto]: ", err);
         callback(err);
     });
 
@@ -1078,7 +1085,7 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
  * @apiGroup PedidosCliente (sql)
  * @apiDescription se actualiza la cantidad despachada del pedido al genear el despacho
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -1121,6 +1128,7 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
         });
 
     }). catch (function(err) {
+         console.log("err [actualizar_despachos_pedidos_cliente]: ", err);
         callback(err);
     });
 };
@@ -1139,12 +1147,14 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
 
 
     var filtroProducto = "";
+    var filtroNumeroCotizacion = "";
+    var filtroNumeroPedido = "";
     var sql_aux = "";
     var termino_busqueda = filtro.termino_busqueda;
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1: empresa, 2: centro_utilidad_id, 3: bodega_id, 4: contrato_cliente_id};
-
+    
     if (filtroAvanzado.tipoBusqueda === 0) {
 
         if (tipo_producto !== undefined && tipo_producto !== '') {
@@ -1166,7 +1176,19 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         if (filtros.tipo_busqueda === 2) {
             filtroProducto = "AND (a.codigo_producto " + G.constants.db().LIKE + " :5)";
             parametros["5"] = '%' + termino_busqueda + '%';
+             //console.log("EL ARREGLO ", filtros.numero[0]);
+            if(filtros.numero[0] !== null){
+                if(filtros.tipo === 1){
+                    filtroNumeroCotizacion = "AND a.pedido_cliente_id_tmp NOT IN ( :6 )";
+                    parametros["6"] = filtros.numero.join() ;
+                }
 
+                if(filtros.tipo === 2){
+                    filtroNumeroPedido = "AND a.pedido_cliente_id NOT IN ( :6 )";
+                    parametros["6"] = filtros.numero.join() ;
+                }
+            }
+        
         }
 
         if (filtros === '') {
@@ -1174,9 +1196,12 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
             parametros["5"] = '%' + termino_busqueda + '%';
 
         }
+        
+        
     }
-   
-    if (filtroAvanzado.tipoBusqueda === 1) {
+       
+        
+    if (filtroAvanzado.tipoBusqueda === 1){
         parametros["5"] = '%' + filtroAvanzado.molecula + '%';
         parametros["6"] = '%' + filtroAvanzado.descripcionProducto + '%';
         parametros["7"] = '%' + filtroAvanzado.concentracion + '%';
@@ -1210,7 +1235,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
 
     fechaActual = yyyy + '-' + mm + '-' + dd;
 
-    //Se agregar un nuevo campo llamado contrato que retornara FALSE si no tiene
+    //Se agrega un nuevo campo llamado contrato que retornara FALSE si no tiene
     //contrato con la empresa y TRUE si lo tiene
     var sql = "a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
@@ -1249,7 +1274,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                       select a.empresa_id, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
                       from ventas_ordenes_pedidos a\
                       inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                      where (b.numero_unidades - b.cantidad_despachada) > 0  and a.estado='1' \
+                      where (b.numero_unidades - b.cantidad_despachada) > 0  and a.estado='1' "+filtroNumeroPedido+" \
                       group by 1,2 \
                       UNION\
                       select a.empresa_destino as empresa_id, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
@@ -1268,7 +1293,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                         union\
                         SELECT b.codigo_producto, a.empresa_id, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
                         INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
-                        WHERE  a.estado = '1'\
+                        WHERE  a.estado = '1' "+filtroNumeroCotizacion+" \
                         GROUP BY 1,2\
                     ) aa group by 1,2\
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
@@ -1278,9 +1303,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).then(function(resultado) {
+            
         callback(false, resultado);
     }). catch (function(err) {
-
+            console.log("err [listar_productos]: ", err);
         callback(err);
     });
 
@@ -1339,9 +1365,10 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, parametros).
-    then(function(resultado) {
+    then(function(resultado) { 
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
+        console.log("err [insertar_cotizacion]", err);
         callback(err);
     });
 
@@ -1366,7 +1393,7 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
             then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-
+        console.log("err [insertar_detalle_cotizacion]", err);
         callback(err);
     });
 
@@ -1397,6 +1424,7 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
     }).then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
+        console.log("err [modificar_detalle_cotizacion]: ", error);
         callback(error);
     });
 
@@ -1405,7 +1433,7 @@ PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion
 /*
  * @author : Camilo Orozco
  * +Descripcion :  Modelo que consultara las cotizaciones segun el criterio de busqueda,
- *                 Numero, Nombre ó ID de Cliente, Nombre ó ID de Vendedor
+ *                 Numero, Nombre Ã³ ID de Cliente, Nombre Ã³ ID de Vendedor
  * @Funciones que hacen uso del modelo:
  *  --PedidosCliente.prototype.listarCotizaciones
  * Modificacion: Se migra a KNEX.js
@@ -1421,7 +1449,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      * +Descripcion Se valida si se envia el estado de cotizacion=6 cuando se
      *              accede desde el cliente al TAB Aprobacion cotizaciones
      *              para consultar unicamente las cotizaciones que solicitan
-     *              autorizacion añadiendo al vector de parametros el criterio
+     *              autorizacion aÃ±adiendo al vector de parametros el criterio
      *              de busqueda por estado de cotizacion
      */
     if (estadoCotizacion) {
@@ -1431,7 +1459,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
     /**
      * +Descripcion El criterio de busqueda para una cotizacion sera dependiento
      *              el tipo de busqueda numero Cotizacion=0, Cliente =1, Vendedor =2
-     *              añadiendo al vector de parametros el criterio de busqueda
+     *              aÃ±adiendo al vector de parametros el criterio de busqueda
      *
      */
     if (filtros.tipo_busqueda === 0) {
@@ -1500,7 +1528,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
             offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-        console.log("err ", err);
+        console.log("err [listar_cotizaciones]: ", err);
         callback(err);
 
     });
@@ -1568,7 +1596,7 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
 
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
-
+        console.log("err [consultar_cotizacion]: ", err);
         callback(err);
     });
 };
@@ -1606,6 +1634,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
     G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 2: '%' + termino_busqueda + '%'}).then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
+        console.log("err [consultar_detalle_cotizacion]: ", err);
         callback(err);
     });
 };
@@ -1628,6 +1657,7 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion
             .del().then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
+         console.log("err [eliminar_producto_cotizacion]: ", error);
         callback(error);
     });
 };
@@ -1660,7 +1690,7 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizaci
 
         callback(false, resultado.rows, resultado);
     }). catch (function(error) {
-
+         console.log("err [observacion_cartera_cotizacion]: ", error);
         callback(error);
     });
 };
@@ -1684,6 +1714,7 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
     }).then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
+        console.log("err [actualizarPedidoCarteraEstadoNoAsigando]: ", error);
         callback(error);
     });
 };
@@ -1707,6 +1738,7 @@ PedidosClienteModel.prototype.solicitarAutorizacion = function(cotizacion, callb
     }).then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [solicitarAutorizacion]: ", error);
         callback(error);
     });
 
@@ -1971,10 +2003,10 @@ PedidosClienteModel.prototype.insertarDetallePedido = function(pedido, producto,
 };
 /*
  * Autor : Camilo Orozco
- * Descripcion : Transaccion para la generación del pedido
+ * Descripcion : Transaccion para la generaciÃ³n del pedido
  * +Modificacion 1: Se modifica la funcion reemplazando la funcion interna (__actualizar_estado_cotizacion)
  *                por la siguiente (__CambioEstadoCotizacionCreacionProducto)
- *                esto con el objetivo de añadirle un nuevo estado = 5 el cual consiste en indicar
+ *                esto con el objetivo de aÃ±adirle un nuevo estado = 5 el cual consiste en indicar
  *                que la cotizacion ya tiene un pedido asignado
  * @fecha: 04/11/2015
  * +Modificacion 2: Se migra a KNEX.js

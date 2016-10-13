@@ -34,7 +34,7 @@ AutorizacionesModel.prototype.insertarAutorizacionProductos = function(obj, call
 * @fecha 2016-05-25
 */
 AutorizacionesModel.prototype.modificarAutorizacionProductos = function(obj, callback) {
-
+    console.log("se modifica modificarAutorizacionProductos>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
     var sql = " UPDATE \
                 autorizaciones_productos_pedidos SET \
 		estado = :1 ,fecha_verificacion=NOW(),usuario_id = :2	\
@@ -74,7 +74,7 @@ AutorizacionesModel.prototype.verificarAutorizacionProducto = function(obj, call
 
 /**
 * @author Andres M Gonzalez
-* +Descripcion consulta todas las atorizacioes que esten en estado 0
+* +Descripcion consulta todas las autorizaciones que esten en estado 0
 * @params obj: pedidoId
 * @fecha 2016-05-25
 */
@@ -94,7 +94,7 @@ AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback
 
 /**
 * @author Andres M Gonzalez
-* +Descripcion consulta todas las atorizacioes que esten en estado 0
+* +Descripcion consulta todas las autorizaciones que esten en estado 0
 * @params obj: pedidoId
 * @fecha 2016-05-25
 */
@@ -130,7 +130,7 @@ AutorizacionesModel.prototype.verificarProductoAutorizadoFarmacia = function(obj
 };
 /**
 * @author Andres M Gonzalez
-* +Descripcion consulta todas las atorizacioes que esten en estado 0
+* +Descripcion consulta todas las atorizaciones que esten en estado 0
 * @params obj: pedidoId
 * @fecha 2016-05-25
 */
@@ -304,7 +304,7 @@ AutorizacionesModel.prototype.listarProductosBloqueadosfarmacia = function(termi
 };
 
 /**
-* @author Andres M Gonzalez
+* @author Andres M. Gonzalez
 * +Descripcion consulta todas los productos bloqueados de un pedido de farmacia
 * @params obj: pedidoId, tipoPedido, empresaId, codigoProducto
 * @fecha 2016-05-25

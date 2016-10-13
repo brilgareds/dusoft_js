@@ -292,12 +292,13 @@ define(["angular", "js/controllers",
             };
 
             that.buscar_productos_clientes = function() {
-
+                //numero_cotizacion: [$scope.Pedido.get_numero_cotizacion()], tipo:1
                 var obj = {};
-
+                $scope.rootSeleccionProducto.filtro.numero = [$scope.Pedido.get_numero_pedido()];
+                $scope.rootSeleccionProducto.filtro.tipo = 2;
                 if ($scope.datos_form.tipoBusqueda === 1) {
 
-                    obj = {
+                    obj = {                                 
                         session: $scope.session,
                         data: {
                             pedidos_clientes: {
@@ -344,18 +345,20 @@ define(["angular", "js/controllers",
                                 numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
                                 numero_pedido: $scope.Pedido.get_numero_pedido(),
                                 filtro: $scope.rootSeleccionProducto.filtro,
-                                //nuevo campos
+                                //nuevo campos    
                                 molecula: '',
                                 laboratorio_id: $scope.datos_form.laboratorio.get_id(),
                                 codigoProducto: '',
                                 descripcionProducto: '',
                                 concentracion: '',
                                 tipoBusqueda: $scope.datos_form.tipoBusqueda
+                                
+                                
                             }
                         }
                     };
                 }
-
+                console.log("EL OBJETO DE TODO ", obj);
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
 
@@ -436,6 +439,7 @@ define(["angular", "js/controllers",
              */
             $scope.solicitar_producto = function(producto) {
                
+               
             if(producto.precio_venta > 0){
                 /*  var val = producto.precio_venta;
                  /*   var clean = val.replace(/[^0-9\.]/g, '');
@@ -457,10 +461,13 @@ define(["angular", "js/controllers",
                     }
 
                     if ($scope.Pedido.get_numero_pedido() > 0) {
-
-                        that.gestionar_pedidos();
-                    } else {
-
+                        //OJO VOLVER A PONER
+                        if(producto.get_cantidad_solicitada() > producto.get_cantidad_disponible() || producto.get_cantidad_disponible() === 0){
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No hay disponibilidad suficiente para el producto");
+                        }else{
+                            that.gestionar_pedidos();
+                        }
+                    }else{
                         that.gestionar_cotizaciones();
                     }
 

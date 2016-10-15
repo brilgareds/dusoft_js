@@ -231,6 +231,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                            $scope.afiliadosFormulasPendientes =  dispensacionHcService.renderListarFormulasMedicas(data.obj,0);
 
                         }else{
+                            $scope.afiliadosFormulasPendientes = null;
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         }
                     });

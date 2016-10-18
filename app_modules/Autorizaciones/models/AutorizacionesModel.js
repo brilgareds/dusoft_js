@@ -90,8 +90,129 @@ AutorizacionesModel.prototype.verificarPedidoAutorizado = function(obj, callback
         console.log("error sql",err);
         callback(err);
     });
-}
+};
 
+/**
+* @author Andres M Gonzalez
+* +Descripcion consulta todas las autorizaciones
+* @params obj: pedidoId
+* @return : rows 
+* @fecha 2016-05-25
+*/
+AutorizacionesModel.prototype.verificarNumeroAutorizaciones = function(obj, callback) {
+
+    var sql = "select \
+                codigo_producto,pedido_id, count(*) \
+                from \
+                autorizaciones_productos_pedidos \
+                where \
+                pedido_id = :1 \
+                GROUP BY codigo_producto,pedido_id \
+                HAVING count(*) > 1 \
+                  ;";
+    //console.log("verificarPedido >>>>>>>>>>>>>>",sql);
+    G.knex.raw(sql, {1: obj.pedido_id}).then(function(resultado) {
+        callback(false, resultado.rows);
+    }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+    });
+};
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion consulta todas las autorizaciones
+* @params obj: pedidoId
+* @return : rows 
+* @fecha 2016-05-25
+*/
+AutorizacionesModel.prototype.verificarPedido = function(obj, callback) {
+
+    var sql = "SELECT * \
+               FROM \
+               autorizaciones_productos_pedidos \
+               WHERE pedido_id = :1 ;";
+   // console.log("verificarPedido >>>>>>>>>>>>>>",sql);
+    G.knex.raw(sql, {1: obj.pedido_id}).then(function(resultado) {
+        callback(false, resultado.rows);
+    }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+    });
+};
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion modifica la farmacia y coloca el estado de los productos en 0-pendinte 
+* @params obj: estado,usuario_id,empresa_id,pedido_id
+* @return : rows 
+* @fecha 2016-10-13
+*/
+AutorizacionesModel.prototype.modificaProductoDeAutorizaciones = function(obj, callback) {
+
+    var sql = " UPDATE \
+                autorizaciones_productos_pedidos SET \
+		estado = :1 ,fecha_verificacion = null,usuario_id = null ,	\
+		empresa_id = :2 	\
+                WHERE pedido_id = :3 ; ";
+     var query = G.knex.raw(sql, {1: obj.estado,2: obj.empresa_id, 3: obj.pedido_id});
+    query.then(function(resultado) {
+       callback(false, resultado.rows);
+     }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+     });
+};
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion elimina los productos de un pedido que tengan solo varios registros
+* @params obj[]: pedidoId , codigo_producto, limit
+* @fecha 2016-10-14
+*/
+AutorizacionesModel.prototype.eliminaProductosRepetidosAutorizados = function(obj, callback) {
+    var sql ="";    
+    obj.forEach(function (item) {
+       //     console.log("QQQQQQQQQQQQQQQQQQ ",item);
+                sql += " delete from autorizaciones_productos_pedidos \
+                         where autorizaciones_productos_pedidos_id in ( \
+                         select \
+                         autorizaciones_productos_pedidos_id \
+                         from \
+                         autorizaciones_productos_pedidos \
+                         where \
+                         pedido_id = "+item.pedido_id+" and codigo_producto = '"+item.codigo_producto+"' limit "+(item.count-1)+" ); ";
+//            console.log("222QQQQQQQQQQQQQQQQQQ ",sql);
+          });
+//console.log("33QQQQQQQQQQQQQQQQQQ ",sql);
+     var query = G.knex.raw(sql);
+    query.then(function(resultado) {
+       callback(false, resultado.rows);
+     }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+     });
+};
+/**
+* @author Andres M Gonzalez
+* +Descripcion elimina los productos de la tabla autorizaciones_productos_pedidos 
+* @params obj: pedidoId
+* @fecha 2016-10-12
+*/
+AutorizacionesModel.prototype.eliminarProductoDeAutorizaciones = function(obj, callback) {
+
+    var sql = " DELETE \
+                 FROM \
+                autorizaciones_productos_pedidos\
+                WHERE pedido_id = :1 AND codigo_producto = :2 ; ";
+     var query = G.knex.raw(sql, {1: obj.pedidoId,2: obj.codigoProducto});
+    query.then(function(resultado) {
+       callback(false, resultado.rows);
+     }).catch (function(err) {
+        console.log("error sql",err);
+        callback(err);
+     });
+};
 /**
 * @author Andres M Gonzalez
 * +Descripcion consulta todas las autorizaciones que esten en estado 0

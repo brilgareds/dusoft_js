@@ -1610,11 +1610,12 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedido = function(req, res
  * +Descripcion: Llama los metodos del modelo m_pedidos_farmacias, que permite actualizar la farmacia destino del encabezado y el detalle, de igual forma la observacion
  */
 PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
-
+console.log("1>>>>>>>>>>>>>>>>>>AMG>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
     var that = this;
 
     var args = req.body.data;
-
+    var usuario = req.body.session.usuario_id;
+    var def = G.Q.defer();
 
     if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numero_pedido === undefined) {
         res.send(G.utils.r(req.url, 'numero_pedido no está definido', 404, {}));
@@ -1669,6 +1670,8 @@ PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
 
                         var i = detalle.length;
                         var productosNoEncontrados = [];
+                        var productosBloqueados=0;
+                        var def = G.Q.defer();
 
                         //Antes de realizar la modificacion especial se debe validar que cada producto este en la empresa destino
                         detalle.forEach(function(detalle) {
@@ -1692,9 +1695,55 @@ PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
                                                         res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Actualización', 500, {error: err}));
                                                         return;
                                                     }
-
-                                                    res.send(G.utils.r(req.url, 'Actualización exitosa!', 200, {productosNoEncontrados: []}));
-                                                    return;
+                                                    //se consulta si se encuentran productos que necesiten aprobacion
+                                                    var parametro ={"pedido_id":numero_pedido};
+                                                    G.Q.ninvoke(that.m_autorizaciones, "verificarPedido", parametro).then(function(resultado) {
+                                                         console.log("0>>>>>>>>>>>>>>>>>> ",parametro);
+                                                         productosBloqueados=resultado.length;
+                                                            if(productosBloqueados > 0){
+                                                                console.log("1>>>>>>>>>>>>>>>>>> ",resultado.length);
+                                                                var parametros={"estado":'0',"empresa_id":farmacia_id,"usuario_id":usuario,"pedido_id":numero_pedido};
+                                                                //obj.estado,2: obj.usuario_id,3: obj.empresa_id, 3: obj.pedido_id
+                                                                return G.Q.ninvoke(that.m_autorizaciones, "modificaProductoDeAutorizaciones",parametros);
+                                                                
+                                                            }else{
+                                                                def.resolve();
+                                                            }
+                                                        }).then(function(resultado){
+                                                             var parametro ={"pedido_id":numero_pedido};
+                                                             if(productosBloqueados > 0){
+                                                               return G.Q.ninvoke(that.m_autorizaciones, "verificarNumeroAutorizaciones",parametro);
+                                                             }else{
+                                                                 console.log("11111>>>>>>>>>>>>>>>>");
+                                                                def.resolve();
+                                                              //  return;
+                                                             }
+                                                        }).then(function(resultado){
+                                                            console.log("1111222>>>>>>>>>>>>>>>>");
+                                                            if(resultado && resultado.length > 0 ){
+                                                               return G.Q.ninvoke(that.m_autorizaciones, "eliminaProductosRepetidosAutorizados",resultado);
+                                                            }else{
+                                                                console.log("222>>>>>>>>>>>>>>>>");
+                                                               def.resolve();  
+                                                             //  return;
+                                                            }                                                            
+                                                        }).then(function(resultado){
+                                                            console.log("33333222>>>>>>>>>>>>>>>>");
+                                                            if(productosBloqueados > 0){
+                                                               var estado_pedido = 10;
+                                                               return G.Q.ninvoke(that.m_pedidos_farmacias, "actualizar_estado_actual_pedido", numero_pedido, estado_pedido);
+                                                               }else{
+                                                                   console.log("33333>>>>>>>>>>>>>>>>");
+                                                               def.resolve();
+                                                             //  return;
+                                                            } 
+                                                        }).then(function(resultado){
+                                                            console.log("4444>>>>>>>>>>>>>>>>");
+                                                            that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+                                                            res.send(G.utils.r(req.url, 'Actualización exitosa!', 200, {productosNoEncontrados: []}));
+                                                            return;
+                                                        });
+                                                        
                                                 });
 
                                             }
@@ -1914,8 +1963,8 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
     
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
         if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null ||
-            cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '10') {
-   console.log("insertar_producto_detalle_pedido_farmacia->>>>>>>>>>>>>>>>>>>amg");                 
+            cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '10') { 
+        
             return G.Q.ninvoke(that.m_pedidos_farmacias, "insertar_producto_detalle_pedido_farmacia", numero_pedido, empresa_id, centro_utilidad_id,
                     bodega_id, codigo_producto, cantidad_solic,
                     tipo_producto_id, usuario_id, cantidad_pendiente);
@@ -1924,13 +1973,10 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
             throw {msj: "El estado actual del pedido no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
         }
     }).then(function(resultado){
-        console.log("1 insertar_producto_detalle_pedido_farmacia->>>>>>>>>>>>>>>>>>>amg");
         return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);  
                     
     }).then(function(notificar) {
-        console.log("2 onRealizarNotificacionWeb->>>>>>>>>>>>>>>>>>>amg: ",notificar);
         if(notificar){
-            console.log(" 3 onRealizarNotificacionWeb->>>>>>>>>>>>>>>>>>>amg: ",numero_pedido);
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion); 
         }

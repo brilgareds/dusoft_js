@@ -16,13 +16,27 @@ define(["angular","js/services"], function(angular, services){
 
 
                 $http(requestObj).
-                    success(function(data, status, headers, config) {
+                success(function(data, status, headers, config) {
                     callback(data);
                 }).
                 error(function(data, status, headers, config) {
                     callback(data);
                 }); 
 
+            };
+            
+            this.subirArchivo = function(url, parametros, callback){
+                
+                $http.post(url, parametros, {
+                    withCredentials: true,
+                    headers: {'Content-Type': undefined },
+                    transformRequest: angular.identity
+                }).success(function(response){
+                    callback(response);
+                }).error(function(){
+                    callback(false);
+                });
+                
             };
 
             return this;

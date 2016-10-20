@@ -1,0 +1,28 @@
+<div class="input-group  navbar-form buscadorgeneral">
+
+    <input type="text" class="form-control pull-right" ng-validate-events="{{validaciones.buscador}}" ng-keypress="onBuscarUsuario($event)" ng-model="rootUsuarios.termino_busqueda" placeholder="Buscar" />
+    <div class="input-group-btn" >
+        <button class="btn btn-default" type="submit" ng-click="onBuscarUsuario({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+    </div>
+
+</div>
+
+
+
+<div class="table-responsive" >
+
+    <div class="defaultGrid grid-responsive" ng-grid="listaUsuarios">
+
+    </div>
+</div>
+
+<br/>
+
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuarios.paginaactual == 1" ng-click="paginaAnterior()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuarios.usuarios.length == 0" ng-click="paginaSiguiente()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>

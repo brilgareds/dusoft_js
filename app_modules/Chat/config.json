@@ -1,0 +1,32 @@
+{
+    "module": "Chat",
+    "dependency": {
+        "controllers": [{
+                "chat_controller": {
+                    "module": "Chat",
+                    "controller": "ChatController",
+                    "alias": "c_chat"
+                }
+            }],
+        "models": [{
+                "chat_model": {
+                    "module": "Chat",
+                    "model": "ChatModel",
+                    "alias": "m_chat"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+        "events": [{
+                "auth_events": {
+                    "module": "Chat",
+                    "event": "ChatEvents",
+                    "alias": "e_chat"
+                }
+            }],
+        "cronJobs": []
+    }
+}

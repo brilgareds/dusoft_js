@@ -32,6 +32,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.objetoModulos = {};
                 this.empresasFarmacias = [];
                 this.empresasUsuario = [];
+                this.seleccionado = false;
             }
             
                                  
@@ -96,6 +97,19 @@ define(["angular", "js/models"], function(angular, models) {
                 this.estado = estado;
             };
             
+            Usuario.prototype.getEstado = function(){
+                return this.estado;
+            };
+            
+            Usuario.prototype.setSeleccionado = function(seleccionado){
+                this.seleccionado = seleccionado;
+                return this;
+            };
+            
+            Usuario.prototype.getSeleccionado = function(){
+               return  this.seleccionado ;
+            };
+            
             Usuario.prototype.setFechaCaducidad = function(fechaCaducidad){
                 this.fechaCaducidad = fechaCaducidad;
             };
@@ -110,11 +124,7 @@ define(["angular", "js/models"], function(angular, models) {
             
             Usuario.prototype.getEmail = function(){
                 return this.email;
-            };
-            
-            Usuario.prototype.getEstado = function(){
-                return this.estado;
-            };
+            };         
             
             Usuario.prototype.getDescripcion = function(){
                 return this.descripcion;

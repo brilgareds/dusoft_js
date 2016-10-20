@@ -19,7 +19,6 @@ define(["angular",
                 ConversacionDetalle,$sce) {
 
             var self = this;
-                        
             
             /*
              * @Author: Eduar
@@ -35,10 +34,10 @@ define(["angular",
                 conversacionSeleccioanda: false,
                 usuarioActual:Usuario.getUsuarioActual(),
                 terminoBusqueda:"",
-                mensajeNotificacion: localStorageService.get("mensajeNotificacion") || undefined
+                mensajeNotificacion: localStorageService.get("mensajeNotificacion") || undefined,
+                moduloChat : Usuario.getUsuarioActual().objetoModulos["ChatDusoft"].opciones
             };
-            
-            
+                        
             $scope.root.listaConversaciones = {
                 data: 'root.conversaciones',
                 enableColumnResize: true,
@@ -58,7 +57,13 @@ define(["angular",
                 },
                 columnDefs: [
                     {field: 'getNombre()', displayName: '', cellClass: "txt-center", width:"40",
-                        cellTemplate: '<button class="btn btn-default btn-xs" ng-click="onMostrarVentanaGrupos($event, row.entity)"><span class="glyphicon glyphicon-user" ></span></button>'},
+                        cellTemplate: '<button ng-if="root.moduloChat.sw_guardar_conversacion" class="btn btn-default btn-xs" ng-click="onMostrarVentanaGrupos($event, row.entity)">\
+                                            <span class="glyphicon glyphicon-user" ></span>\n\
+                                        </button>\
+                                        <button ng-if="!root.moduloChat.sw_guardar_conversacion" class="btn btn-default btn-xs" ng-disabled="true">\
+                                            <span class="glyphicon glyphicon-user" ></span>\n\
+                                        </button>'
+                    },
                     {field: 'getNombre()', displayName: 'Participantes', cellClass:"ngCellText",
                         cellTemplate:"<div ng-class=\"{'blink' : row.entity.tieneNotificacion()}\">{{row.entity.getNombre()}}</div>"},
                     {field: 'getFechaCreacion()', cellClass:"ngCellText", displayName: 'Fecha', width:100, 

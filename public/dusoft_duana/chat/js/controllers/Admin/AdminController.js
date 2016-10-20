@@ -12,8 +12,13 @@ define(["angular", "js/controllers", "controllers/Grupos/ListaGruposController"]
                  $state, Usuario, localStorageService, $modal,
                  $timeout) {
                      
+            var self = this;
             $rootScope.$emit("onDeshabilitarBtnChat");
             
+            $scope.root = {
+                opciones:Usuario.getUsuarioActual().getModuloActual().opciones
+            };
+                                    
             localStorageService.set("chat", {estado:'1'});
             
             $scope.$on('$destroy', function() {

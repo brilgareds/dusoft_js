@@ -679,6 +679,13 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         }
                         
                         $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
+                        
+                        var moduloChat = Usuario.getUsuarioActual().objetoModulos["ChatDusoft"];
+                        
+                        if(moduloChat){
+                            $scope.permisoGuardarConversacion = moduloChat.opciones["sw_guardar_conversacion"];
+                        }
+                        
 
                     });
 

@@ -386,7 +386,9 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(params, callbac
     params.guardarResultadoEnCache = (params.guardarResultadoEnCache === undefined || params.guardarResultadoEnCache === null) ?  true : false;
     
     G.redis.get(llave,function(err, resultado){
-        if(!resultado || params.limpiarCache){
+        //Mientras se arregla el bug de la cache
+        if(true){
+        //if(!resultado || params.limpiarCache){
             console.log("obtener parametrizacion de usuario sin cache");
             //obtiene el rol del usuario
             that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol) {

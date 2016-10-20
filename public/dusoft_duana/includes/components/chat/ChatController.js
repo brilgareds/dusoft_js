@@ -24,6 +24,8 @@ define(["angular",
              * @Author: Eduar
              * +Descripcion: Definicion del objeto que contiene los parametros del controlador
              */
+            var moduloChat =  Usuario.getUsuarioActual().objetoModulos["ChatDusoft"];
+            
             $scope.root = {
                 session: {
                     usuario_id: Usuario.getUsuarioActual().getId(),
@@ -35,7 +37,7 @@ define(["angular",
                 usuarioActual:Usuario.getUsuarioActual(),
                 terminoBusqueda:"",
                 mensajeNotificacion: localStorageService.get("mensajeNotificacion") || undefined,
-                moduloChat : Usuario.getUsuarioActual().objetoModulos["ChatDusoft"].opciones
+                moduloChat : (moduloChat)? moduloChat.opciones : {}  
             };
                         
             $scope.root.listaConversaciones = {

@@ -7,9 +7,9 @@ define(["angular","js/services"], function(angular, services){
 
                     //el usuario actual no esta autenticado en el api, el token no es valido
                     if(response.data.status === 401){
-
-                         window.location = "../pages/"+response.data.status+".html";
-                         return;
+                        localStorage.removeItem("ls.session");
+                        window.location = "../pages/"+response.data.status+".html";
+                        return;
                     }
 
                 }

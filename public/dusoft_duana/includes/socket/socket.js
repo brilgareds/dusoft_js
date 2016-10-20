@@ -4,7 +4,9 @@ define(["angular","js/services"], function(angular, services){
       
       var listenersPrivados = [
           "onRealizarNotificacionWeb",
-          "onCerrarSesion"          
+          "onCerrarSesion",
+          "onNotificarMensaje",
+          "onNotificacionChat"
       ];
       
       function esEventoPrivado(evento){
@@ -61,6 +63,23 @@ define(["angular","js/services"], function(angular, services){
                       callback.apply(socket, args);
                     });
                 });
+            },
+            
+            remove:function(listeners){
+                
+                for(var i in listeners){
+                    
+                    for(var ii in socket.$events){
+                        
+                        if(ii === listeners[i]){
+                            
+                            socket.$events[ii] = null;
+                            delete  socket.$events[ii];
+                        }
+                        
+                    }
+                }
+                
             }
       };
     }]);

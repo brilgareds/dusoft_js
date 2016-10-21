@@ -244,51 +244,47 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  * @author Cristian Ardila
                  * @fecha 04/02/2016
                  * +Descripcion Metodo encargado de invocar el servicio que
-                 *              listara todos los despachos aprobados por parte
-                 *              de la persona de seguridad
+                 *              listara las formulas para dispensar
+                 *  @parametros ($event = eventos del teclado)
+                 *              (pendiente = 0 Formulas sin pendientes)
+                 *              (pendiente = 1 Formulas con pendientes)
                  */ 
                 $scope.buscarFormulas = function(event,pendiente){
-
-                   if (event.which === 13) {  
+                  
+                    if (event.which === 13 || event.which === 1){     
                        
-                        if(pendiente === 0){
-                         //if($scope.root.estadoFormula === '0'){
-                        that.listarFormulasMedicas({estado:0});
-                            // that.listarFormulasMedicasPendientes();
-                         //}
-                     }else{
-                         that.listarFormulasMedicasPendientes();
-                     }
-                         /* if($scope.root.estadoFormula === '1'){
-                             that.listarFormulasMedicasPendientes();
-                         }
-                       */
+                        if(pendiente === 0){                    
+                            that.listarFormulasMedicas({estado:0});                         
+                        }else{
+                            that.listarFormulasMedicasPendientes();                        
+                        }                         
+                     
                     }
                 };
                      
                   
 
                    
-                    /*
-                     * funcion para paginar anterior
-                     * @returns {lista datos}
-                     */
-                    $scope.paginaAnterior = function() {
-                        if ($scope.paginaactual === 1)
-                            return;
-                        $scope.paginaactual--;
-                        that.listarFormulasMedicas({estado:0});
-                    };
-                    
-                    
-                    /*
-                     * funcion para paginar siguiente
-                     * @returns {lista datos}
-                     */
-                    $scope.paginaSiguiente = function() {
-                        $scope.paginaactual++;
-                        that.listarFormulasMedicas({estado:0});
-                    };
+                /*
+                 * funcion para paginar anterior
+                 * @returns {lista datos}
+                 */
+                $scope.paginaAnterior = function() {
+                    if ($scope.paginaactual === 1)
+                        return;
+                    $scope.paginaactual--;
+                    that.listarFormulasMedicas({estado:0});
+                };
+
+
+                /*
+                 * funcion para paginar siguiente
+                 * @returns {lista datos}
+                 */
+                $scope.paginaSiguiente = function() {
+                    $scope.paginaactual++;
+                    that.listarFormulasMedicas({estado:0});
+                };
                     
                     /*
                      * @author Cristian Ardila

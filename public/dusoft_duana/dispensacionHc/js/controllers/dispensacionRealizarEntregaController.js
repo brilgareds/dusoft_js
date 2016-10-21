@@ -92,6 +92,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         };
         
         that.realizarEntregaFormula = function(){
+            
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
             var obj = {                   
                 session: $scope.session,
@@ -120,7 +121,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     that.guardarTodoPendiente(obj);
                 }
                 //
-            }
+            }         
            
            
             if(estadoEntregaFormula === 1){
@@ -227,9 +228,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         
         
         
-        
+        /**
+         * @author Cristian Manuel Ardila
+         * +Descripcion Metodo encargado de sugerir al usuario dos tipos de confirmacion
+         *              antes de dispensar la formula
+         *   
+         */
         $scope.realizarEntregaFormula = function(){
-            
+            /**
+             * +Descripcion Se valida si el usuario selecciono el tipo de formula
+             */
+            if(!seleccionTipoFormula || seleccionTipoFormula === undefined){
+                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el tipo de formula");
+                return;
+            }
             AlertService.mostrarVentanaAlerta("IMPORTANTE",  "UNA VEZ REALIZADA LA ENTREGA DE LOS MEDICAMENTOS\n NO SE PODRA MODIFICAR (POR FAVOR VERIFIQUE!!!)",
                 function(estado){               
                     if(estado){                    

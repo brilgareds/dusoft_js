@@ -360,12 +360,14 @@ define(["angular",
             * @fecha 2016-09-27
             */
             self.validarUsuarioConversacion = function(usuario, callback){
+                //console.log("usuario ", Usuario.getUsuarioActual().getEmpresa())
                 
                 var obj = {
                     session: $scope.root.session,
                     data: {
                         chat:{
-                            usuario_id:usuario.getId()
+                            usuario_id:usuario.getId(),
+                            empresa:Usuario.getUsuarioActual().getEmpresa().getCodigo()
                         }
                     }
                 };

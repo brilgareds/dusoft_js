@@ -1,6 +1,6 @@
 define(["angular",
     "js/controllers",
-    'includes/Constants/Url', 'includes/classes/Chat/GrupoChat'], function(angular, controllers) {
+    'includes/Constants/Url', 'includes/classes/Chat/GrupoChat', "includes/widgets/InputCheck",], function(angular, controllers) {
 
     controllers.controller('GruposChatController', [
         '$scope', '$rootScope', 'Request',

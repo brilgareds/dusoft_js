@@ -195,6 +195,10 @@ DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
  */
 DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
    
+   console.log("*********DispensacionHc.prototype.cantidadProductoTemporal**************");
+   console.log("*********DispensacionHc.prototype.cantidadProductoTemporal**************");
+   console.log("*********DispensacionHc.prototype.cantidadProductoTemporal**************");
+   
     var that = this;
     var args = req.body.data;
    
@@ -213,10 +217,10 @@ DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
         return;
     }
     
-    if (!args.cantidadProducto.principioActivo || args.cantidadProducto.principioActivo.length === 0) {
+    /*if (!args.cantidadProducto.principioActivo || args.cantidadProducto.principioActivo.length === 0) {
         res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {cantidadProducto: []}));
         return;
-    }
+    }*/
     
     var parametros={codigoProducto:args.cantidadProducto.codigoProducto,
                     evolucionId:args.cantidadProducto.evolucionId,
@@ -225,7 +229,7 @@ DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
    
    
     G.Q.ninvoke(that.m_dispensacion_hc,'cantidadProductoTemporal',parametros).then(function(resultado){
-      
+        //console.log("resultado [cantidadProductoTemporal]::", resultado);
         if(resultado.rows.length > 0){
             res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {cantidadProducto:resultado.rows}));
         }else{
@@ -407,10 +411,10 @@ DispensacionHc.prototype.consultarLotesDispensarFormula = function(req, res){
         return;
     }
     
-    if (!args.existenciasBodegas.principioActivo || args.existenciasBodegas.principioActivo.length === 0) {
+    /*if (!args.existenciasBodegas.principioActivo || args.existenciasBodegas.principioActivo.length === 0) {
         res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {existenciasBodegas: []}));
         return;
-    }
+    }*/
     
     if (!args.existenciasBodegas.empresa || args.existenciasBodegas.empresa.length === 0 ) {
         res.send(G.utils.r(req.url, 'La empresa esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
@@ -506,10 +510,10 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
         return;
     }
     
-    if (!args.existenciasBodegas.principioActivo || args.existenciasBodegas.principioActivo.length === 0) {
+    /*if (!args.existenciasBodegas.principioActivo || args.existenciasBodegas.principioActivo.length === 0) {
         res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {existenciasBodegas: []}));
         return;
-    }
+    }*/
     
     if (!args.existenciasBodegas.empresa || args.existenciasBodegas.empresa.length === 0 ) {
         res.send(G.utils.r(req.url, 'La empresa esta llegando vacia ó nula', 404, {existenciasBodegas: []}));

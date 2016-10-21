@@ -128,7 +128,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                 CASE \
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
                                         CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
-                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Entrar'\
+                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Activa'\
                                         WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Refrendar'\
                                         ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
                                         )\
@@ -812,7 +812,10 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
  * --- equivale a la funcion  Consultar_Medicamentos_Detalle_ (VIEJO)
  */
 DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callback){
-
+    
+    console.log("***********DispensacionHcModel.prototype.listarMedicamentosFormulados*****************");
+    console.log("***********DispensacionHcModel.prototype.listarMedicamentosFormulados*****************");
+    console.log("***********DispensacionHcModel.prototype.listarMedicamentosFormulados*****************");
     var parametros = {1: obj.evolucionId};
        
         var sql = "SELECT  hc.codigo_medicamento,\
@@ -840,7 +843,12 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                 TO_CHAR(hc.fecha_formulacion,'YYYY-MM-DD') AS fecha_formulacion,\
                 refrendar,\
                 hc.numero_formula,\
-                invp.cod_forma_farmacologica\
+                invp.cod_forma_farmacologica,\
+                CASE WHEN (\
+                 	SELECT sum(tmp.cantidad_despachada) FROM hc_dispensacion_medicamentos_tmp tmp\
+                 	WHERE tmp.evolucion_id = hc.evolucion_id AND tmp.codigo_formulado = hc.codigo_medicamento \
+                    GROUP BY tmp.codigo_formulado \
+                    ) = a.cantidad THEN '1' ELSE '0' END  AS sw_seleccionar_tmp\
                 FROM   hc_formulacion_antecedentes hc\
                 LEFT JOIN  medicamentos med ON(hc.codigo_medicamento=med.codigo_medicamento)\
                 LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
@@ -848,12 +856,15 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                 JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
                 WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";
    
-    G.knex.raw(sql,parametros).then(function(resultado){    
+    G.knex.raw(sql,parametros).then(function(resultado){ 
+        console.log("ESTA ES LA LISTA DE PRODUCTOS ", resultado.rows);
         callback(false, resultado)
     }).catch(function(err){    
-        console.log("Error listarMedicamentosFormulados ", err);
-        callback(err)
-    });  
+        console.log("Error [listarMedicamentosFormulados]: ", err);
+        callback(err);
+    });                   
+    
+    
 };
 
 
@@ -1198,14 +1209,16 @@ DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
 DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
 
     var parametros = {1: obj.codigoProducto, 2: obj.evolucionId, 3: obj.principioActivo};
-        
+        console.log("parametros ", parametros);
     var condicion = "";
-        if (obj.principioActivo !== "") {
-            condicion =" and med.cod_principio_activo = :3 ";
-        }else{
+        if (!obj.principioActivo || obj.principioActivo === null) {
             condicion=" and invp.codigo_producto = :1 ";
+            
+        }else{
+            condicion =" and med.cod_principio_activo = :3 ";
         } 
-
+        
+        console.log("condicion ", condicion);
         var sql = "SELECT COALESCE(sum(tmp.cantidad_despachada),0) as total,tmp.codigo_formulado\
                   FROM hc_dispensacion_medicamentos_tmp tmp\
                        LEFT JOIN medicamentos med ON(tmp.codigo_formulado=med.codigo_medicamento)\
@@ -1234,21 +1247,31 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
  *             DispensacionHc.prototype.consultarLotesDispensarFormula
  */
 DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
-
+    
+    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ******");
+    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ******");
+    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ******");
+    
     var parametros = {1: obj.empresa, 
                     2: obj.centroUtilidad, 
                     3: obj.bodega, 
                     4: obj.principioActivo, 
                     5: obj.codigoProducto,
                     6: obj.codigoFormaFarmacologica};
-     
+     console.log("**parametros** ", parametros);
     var condicion = "";
-    if (obj.principioActivo !== "") {
-        condicion =" and med.cod_principio_activo =  :4 AND invp.cod_forma_farmacologica= :6 ";
+    if (!obj.principioActivo || obj.principioActivo === null) { 
+        //if (obj.principioActivo !== "") { G.constants.db().LIKE,"%" + obj.variable + "%"
+        condicion=" and fv.codigo_producto = :5 AND invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'";
+        
     }else{
-        condicion=" and fv.codigo_producto = :5 AND invp.cod_forma_farmacologica= :6 ";
+        condicion =" and med.cod_principio_activo =  :4 AND invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'";
     } 
-
+                              
+                              
+                              
+                              
+    console.log("condicion ", condicion);
     var sql =  " SELECT\
                 invp.contenido_unidad_venta as concentracion,\
                 invsinv.descripcion as molecula,\
@@ -1270,7 +1293,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
 
      
     G.knex.raw(sql,parametros).then(function(resultado){  
-      //console.log(" resultado [existenciasBodegas]: ", resultado);
+      console.log(" resultado [existenciasBodegas]: ", resultado.rows);
       callback(false, resultado)
     }).catch(function(err){ 
         console.log("err existenciasBodegas: ", err);
@@ -2443,6 +2466,7 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
      console.log("Se valida si es el ultimo producto por dispensar y si este es 0");
      console.log("productos.length ", productos.length);
      console.log("parseInt(producto.total) ", parseInt(producto.total));
+     console.log("(producto) ", (producto));
      sumaTotalDispensados += parseInt(producto.total);
     if( sumaTotalDispensados === 0){    
         console.log("Entro se pone CERO 0")

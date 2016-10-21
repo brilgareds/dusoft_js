@@ -456,7 +456,7 @@ define(["angular", "js/services"], function(angular, services) {
                * @fecha 25/05/2016 DD/MM/YYYYY
                */
             self.renderListarMedicamentosFormulados = function(producto, pendiente){
-               
+              
                 var productos = [];
                 for(var i in producto){
                     
@@ -470,10 +470,11 @@ define(["angular", "js/services"], function(angular, services) {
                         Productos.setAutorizado(_productos.sw_autorizado);
                         
                         Productos.setCodigoFormaFarmacologica(_productos.cod_forma_farmacologica);
-                        
+                        Productos.setSepararTemporal(_productos.sw_seleccionar_tmp);
                     productos.push(Productos);
                 }
-                     
+                      
+              
                   return productos;
             };
             

@@ -198,6 +198,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
             dispensacionHcService.cantidadProductoTemporal(obj,function(data){
                 
+                console.log("data ", data);
                 that.cantidadPendiente = 0;
                 if(data.status === 200) {       
                     if (entity.codigo_producto === data.obj.cantidadProducto[0].codigo_formulado) {
@@ -238,13 +239,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 /*console.log("obj ", obj);                                       
                 console.log("entity ", entity);    */                                   
             dispensacionHcService.existenciasBodegas(obj, function(data){
-                //console.log("data [consultarExistenciasBodegas] ", data);
+                console.log("data [consultarExistenciasBodegas] ", data);
                 entity.vaciarProductosHc();
                 if(data.status === 200) {                                          
                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
                     $scope.lotes = entity.mostrarProductosHc();
-                    that.ventanaDispensacionFormula();
-                }
+                    that.ventanaDispensacionFormula();   
+                    
+                    /**
+                     * +Descripcion Se recorre los lotes y se les setean la cantidad solicitada
+                     *              a cada uno de ellos
+                     */
+                    $scope.lotes[0].forEach(function(producto) {                        
+                         producto.cantidadDispensada = $scope.cantidadEntrega;                      
+                    });
+
+                };         
                 
                 if(data.status === 204) {  
                     
@@ -305,7 +315,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     parametros.entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
                     $scope.lotes = parametros.entity.mostrarProductosHc();                  
                     that.ventanaDispensacionFormula();
-                }                 
+                }       
+               
             });
             
             
@@ -321,13 +332,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         *              para dispensar
         * @fecha 25/05/2016
         **/
-        $scope.listaLotes = {
+        $scope.listaLotes = {                  
             data: 'lotes[0]',
             enableColumnResize: true,
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
-            columnDefs: [
+            columnDefs: [                            
 
                 {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},              
                 {field: 'getMolecula()', displayName: 'Descripcion'},
@@ -347,12 +358,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 {field: 'Sel', width: "10%",
                         displayName: "Dispensar",
                         cellClass: "txt-center",
-                        //cellTemplate: '<input type="radio"  class="btn btn-default btn-xs" ng-click="temporalLotes(row.entity)">Dispensar'
-                        cellTemplate : '<input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)"></input-check>'
-                                                        
-                  }
+                        
+                        //cellTemplate : '<input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)"></input-check>'
+                         cellTemplate : '<div class="row">\
+  <input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)"></input-check>\
+  <button class="btn btn-default btn-xs" ng-click="cerrarVentanaDispensacionFormula()" ng-disabled ="showBtnDispensar">Cerrar  </button>\
+</div>'                               
+                  },
+                /* {field: 'Cerrar', width: "10%",
+                           displayName: "Opcion",
+                           cellClass: "txt-center",
+                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="cerrarVentanaDispensacionFormula()" ng-disabled ="showBtnDispensar">Cerrar  </button>'
+
+                }*/
             ]
-        };
+        };                   
         
         
         /**
@@ -377,7 +397,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 {field: 'Dispensar', width: "10%",
                            displayName: "Dispensar",
                            cellClass: "txt-center",
-                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)" ng-disabled ="showBtnDispensar">Dispensar  </button>'
+                           
+                           cellTemplate: '<button class="btn btn-default btn-xs" ng-click="detalleLotesProductoFormula(row.entity)" ng-disabled ="row.entity.separarTemporal == 1 ">Dispensar  </button>'
 
                 }
             ]
@@ -395,6 +416,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           */
         $scope.temporalLotes = function(entity){
             
+            // that.listarMedicamentosFormulados(resultadoStorage);
             
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");           
             var obj = {                   
@@ -415,6 +437,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             dispensacionHcService.temporalLotes(obj, function(data){              
                 if(data.status === 200) {                                          
                     AlertService.mostrarMensaje("success", data.msj);   
+                  
                 }else{
                     
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -511,8 +534,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(data.status === 200){                     
                     AlertService.mostrarMensaje("success", data.msj); 
                     that.consultarMedicamentosTemporales();
-                         
-                }      
+                    that.listarMedicamentosFormulados(resultadoStorage);
+                }              
+                
             });
             
         };
@@ -602,7 +626,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           *              listar los lotes de la formula a traves de un formulario
         */
         that.ventanaDispensacionFormula = function() {
-               
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");     
             $scope.opts = {
                     backdrop: 'static',
                     backdropClick: true,
@@ -614,6 +638,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller:['$scope', '$modalInstance', function($scope, $modalInstance) {
                         $scope.cerrarVentanaDispensacionFormula = function() {
                             that.consultarMedicamentosTemporales();
+                            that.listarMedicamentosFormulados(resultadoStorage);
                             $modalInstance.close();
                         };
                     }]                 

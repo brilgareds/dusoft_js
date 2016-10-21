@@ -331,11 +331,17 @@ define(["angular",
                     return;
                 }
                 
+                var usuarioActual = Usuario.getUsuarioActual();
+                
+                //Agrega el usuario que inicia la conversacion
+                console.log("agregar usuario actual ", usuarioActual);
+                self.agregarUsuarios([usuarioActual])
+                
                 var obj = {
                     session: $scope.root.session,
                     data: {
                         chat:{
-                            usuario_id:Usuario.getUsuarioActual().getId(),
+                            usuario_id:usuarioActual.getId(),
                             usuarios:$scope.root.usuariosSeleccionados,
                             id_conversacion:idConversacion
                         }
@@ -346,7 +352,7 @@ define(["angular",
                     if(data.status === 200){
                        
                        $modalInstance.close();
-                       
+                       $rootScope.$emit("onAbrirChat");
                         
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error iniciando la conversación");
@@ -360,7 +366,6 @@ define(["angular",
             * @fecha 2016-09-27
             */
             self.validarUsuarioConversacion = function(usuario, callback){
-                //console.log("usuario ", Usuario.getUsuarioActual().getEmpresa())
                 
                 var obj = {
                     session: $scope.root.session,

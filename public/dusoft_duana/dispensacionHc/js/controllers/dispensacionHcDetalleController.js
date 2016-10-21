@@ -146,7 +146,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    }
                 }    
             };
-            
+            //console.log("medicamentosTemporales[0] ", $scope.medicamentosTemporales[0]);
             /*dispensacionHcService.consultarMedicamentosDespachados(obj,function(data){
                     console.log("---------consultarMedicamentosDespachados---------------");
                     console.log("DATA ", data);
@@ -455,8 +455,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          *              los medicamentos temporales
          * @fecha 08/06/2016
          * @returns {undefined}
-         */      
+         */                                          
         that.consultarMedicamentosTemporales = function(){
+            console.log("*********medicamentosTemporales*************");
+            console.log("*********medicamentosTemporales*************");
+            console.log("*********medicamentosTemporales*************");
+            
+            
             $scope.medicamentosTemporales = [];
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
             var obj = {                   
@@ -469,12 +474,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };      
             
             dispensacionHcService.medicamentosTemporales(obj, function(data){
-                    
+                console.log("data (Medicamentos temporales siii )", data);
+                
                 if(data.status === 200){                     
                     $scope.medicamentosTemporales.push(dispensacionHcService.renderMedicamentosTemporales(data.obj.listar_medicamentos_temporales));    
-
+                   
                 }      
-                    
+                    console.log("data (Medicamentos temporales siii )", $scope.medicamentosTemporales.length);
             });  
         };
         
@@ -798,6 +804,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if(!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
                         $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                         
                     }
                 }
             }

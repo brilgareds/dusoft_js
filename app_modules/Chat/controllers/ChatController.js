@@ -519,7 +519,7 @@ ChatController.prototype.validarUsuarioConversacion = function(req, res) {
       
    }).fail(function(err){
        console.log("error generado ", err);
-        var msj = err;
+        var msj = "Ha ocurrido un error";
         var status = 500;
         
         if(err.status){

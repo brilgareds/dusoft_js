@@ -1279,7 +1279,16 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                 invci.descripcion as laboratorio,\
                 fc_descripcion_producto_alterno(fv.codigo_producto) as producto,\
                 med.cod_principio_activo,\
-                fv.*\
+                fv.empresa_id,\n\
+                fv.centro_utilidad, \n\
+                fv.codigo_producto,fv.bodega,\
+                fv.estado, \
+                fv.existencia_actual, \
+                fv.existencia_inicial, \
+                to_char(fv.fecha_registro,'YYYY-MM-DD') AS fecha_registro, \
+                to_char(fv.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento,\
+                fv.lote, \
+                fv.ubicacion_id\
                 FROM existencias_bodegas_lote_fv AS fv\
                 JOIN existencias_bodegas as ext ON (fv.empresa_id = ext.empresa_id) and (fv.centro_utilidad = ext.centro_utilidad) and (fv.bodega = ext.bodega) and (fv.codigo_producto = ext.codigo_producto)\
                 JOIN inventarios as inv ON (ext.empresa_id = inv.empresa_id) and (ext.codigo_producto = inv.codigo_producto)\

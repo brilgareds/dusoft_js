@@ -80,11 +80,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     console.log("data [[]]][[[]] ", data);
                     //$scope.root.items = data.obj.listar_formulas.length;                              
                     $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
+                    
                     if(resultadoStorage.pendientes === 0){
 
                         that.listarMedicamentosFormulados(resultadoStorage);
                     }
-
+                    
                     if(resultadoStorage.pendientes === 1){    
                         $scope.showBotonRegistrarEvento = resultadoStorage.pendientes;
                         that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
@@ -540,7 +541,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(data.status === 200){                     
                     AlertService.mostrarMensaje("success", data.msj); 
                     that.consultarMedicamentosTemporales();
-                    that.listarMedicamentosFormulados(resultadoStorage);
+                    
+                    /**
+                     * +Descripcion Se valida si los productos formulados son pendientes
+                     */
+                    if(resultadoStorage.pendientes === 1){    
+                     
+                        that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
+                    }
+                    if(resultadoStorage.pendientes === 0){
+
+                        that.listarMedicamentosFormulados(resultadoStorage);
+                    }
+                  
                 }              
                 
             });
@@ -644,7 +657,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller:['$scope', '$modalInstance', function($scope, $modalInstance) {
                         $scope.cerrarVentanaDispensacionFormula = function() {
                             that.consultarMedicamentosTemporales();
-                            that.listarMedicamentosFormulados(resultadoStorage);
+                            /**
+                            * +Descripcion Se valida si los productos formulados son pendientes
+                            */
+                           if(resultadoStorage.pendientes === 1){    
+
+                               that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
+                           }
+                           if(resultadoStorage.pendientes === 0){
+
+                               that.listarMedicamentosFormulados(resultadoStorage);
+                           }
+                            
                             $modalInstance.close();
                         };
                     }]                 

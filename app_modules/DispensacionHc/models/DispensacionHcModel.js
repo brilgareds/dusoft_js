@@ -818,7 +818,7 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
     console.log("***********DispensacionHcModel.prototype.listarMedicamentosFormulados*****************");
     var parametros = {1: obj.evolucionId};
        
-        var sql = "SELECT  hc.codigo_medicamento,\
+        /*var sql = "SELECT  hc.codigo_medicamento,\
                    ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30)  as numero_entregas,\
                (hc.fecha_finalizacion - hc.fecha_registro)  as diferencia_final_inicio,\
                 hc.fecha_registro,\
@@ -854,7 +854,47 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                 LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
                 LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)\
                 JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
-                WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";
+                WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";*/
+        
+        var sql = "SELECT * FROM (\
+                SELECT  hc.codigo_medicamento,  \
+                ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30)  as numero_entregas,\
+               (hc.fecha_finalizacion - hc.fecha_registro)  as diferencia_final_inicio,  \
+                hc.fecha_registro,   \
+                hc.fecha_finalizacion,   \
+                hc.dosis,  \
+                hc.unidad_dosificacion,   \
+                hc.frecuencia,  \
+                hc.tiempo_total,  \
+                hc.perioricidad_entrega,   \
+                hc.descripcion,  \
+                hc.tiempo_perioricidad_entrega,  \
+                hc.unidad_perioricidad_entrega,  \
+                hc.cantidad,  \
+                a.cantidad as  cantidad_entrega,  \
+                hc.fecha_modificacion,  \
+                pric.descripcion as principio_activo,  \
+                pric.cod_principio_activo,  \
+                fc_descripcion_producto_alterno(hc.codigo_medicamento) as descripcion_prod,  \
+                hc.sw_autorizado,  \
+                hc.tipo_id_paciente,  \
+                hc.paciente_id,  \
+                TO_CHAR(hc.fecha_formulacion,'YYYY-MM-DD') AS fecha_formulacion,  \
+                refrendar,  \
+                hc.numero_formula,  \
+                invp.cod_forma_farmacologica, \
+                CASE WHEN (  \
+                  SELECT sum(tmp.cantidad_despachada) FROM hc_dispensacion_medicamentos_tmp tmp  \
+                  WHERE tmp.evolucion_id = hc.evolucion_id AND tmp.codigo_formulado = hc.codigo_medicamento   \
+                    GROUP BY tmp.codigo_formulado   \
+                    ) = a.cantidad THEN '1' ELSE '0' END  AS sw_seleccionar_tmp  \
+                FROM   hc_formulacion_antecedentes hc  \
+                LEFT JOIN  medicamentos med ON(hc.codigo_medicamento=med.codigo_medicamento)   \
+                LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)   \
+                LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)  \
+                JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id  \
+                WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30)                \
+          )AS A WHERE A.numero_entregas > (SELECT es.numero_entrega_actual FROM dispensacion_estados es WHERE es.evolucion_id = :1 )";
    
     G.knex.raw(sql,parametros).then(function(resultado){ 
         console.log("ESTA ES LA LISTA DE PRODUCTOS ", resultado.rows);
@@ -878,14 +918,15 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
 DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = function(obj,callback){
                      
     var parametros = {1: obj.evolucionId};
-       
-        var sql = "select A.codigo_medicamento,\
+     
+        /*var sql = "select A.codigo_medicamento,\
                     SUM(numero_unidades) as cantidad_entrega,\
                    fc_descripcion_producto_alterno(A.codigo_medicamento) as descripcion_prod,\
                    med.cod_principio_activo,hc.sw_autorizado,\
                    hc.perioricidad_entrega,\
                    hc.tiempo_total ,\
-                   invp.cod_forma_farmacologica from\
+                   invp.cod_forma_farmacologica\
+                    from\
                         (\
                         select\
                         dc.codigo_medicamento,\
@@ -904,7 +945,51 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                           hc.sw_autorizado,\
                           hc.perioricidad_entrega,\
                           hc.tiempo_total,\
-                          invp.cod_forma_farmacologica";
+                          invp.cod_forma_farmacologica";*/
+    var sql = "SELECT B.codigo_medicamento,\
+       B.cantidad_entrega,\
+       B.descripcion_prod, \
+       B.cod_principio_activo,\
+       B.sw_autorizado,  \
+       B.perioricidad_entrega,\
+       B.tiempo_total ,  \
+       B.cod_forma_farmacologica,\
+       B.evolucion_id,\
+       CASE WHEN(\
+                 SELECT sum(tmp.cantidad_despachada) FROM hc_dispensacion_medicamentos_tmp tmp\
+                 WHERE tmp.evolucion_id = B.evolucion_id AND tmp.codigo_formulado = B.codigo_medicamento \
+                 GROUP BY tmp.codigo_formulado \
+                 ) = B.cantidad_entrega THEN '1' ELSE '0' END  AS sw_seleccionar_tmp \
+ FROM (\
+		SELECT A.codigo_medicamento,  \
+               SUM(numero_unidades) as cantidad_entrega,  \
+               fc_descripcion_producto_alterno(A.codigo_medicamento) as descripcion_prod,  \
+               med.cod_principio_activo,hc.sw_autorizado,  \
+               hc.perioricidad_entrega,  \
+               hc.tiempo_total,  \
+               invp.cod_forma_farmacologica,\
+               hc.evolucion_id\
+         FROM (  \
+                SELECT dc.codigo_medicamento,\
+                       SUM(dc.cantidad) as numero_unidades  \
+                FROM  hc_pendientes_por_dispensar as dc  \
+                WHERE dc.evolucion_id = :1 \
+                 AND dc.sw_estado = '0'  \
+                GROUP BY(dc.codigo_medicamento)  \
+                  )as A INNER JOIN hc_formulacion_antecedentes hc ON (hc.codigo_medicamento=A.codigo_medicamento)   \
+                     LEFT JOIN  medicamentos med ON(A.codigo_medicamento=med.codigo_medicamento)   \
+                     LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)  \
+                     LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)   \
+           WHERE hc.evolucion_id = :1  \
+           GROUP BY med.cod_principio_activo,  \
+                    A.codigo_medicamento,  \
+                    hc.sw_autorizado,  \
+                    hc.perioricidad_entrega,  \
+                    hc.tiempo_total,  \
+                    invp.cod_forma_farmacologica,\
+                    hc.evolucion_id\
+   )AS B";
+                        
     
     G.knex.raw(sql,parametros).then(function(resultado){       
        
@@ -925,8 +1010,38 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
 DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callback){
 
     var parametros = {1: obj.evolucionId};
-       
-        var sql = "SELECT  a.codigo_producto,\
+    
+    var sql = "SELECT  a.codigo_producto,\
+                          (b.cantidades - a.cantidades) as total\
+                  from\
+                  (\
+                        SELECT codigo_formulado AS codigo_producto,\
+                              SUM(cantidad_despachada) as cantidades\
+                        FROM hc_dispensacion_medicamentos_tmp\
+                        where evolucion_id= :1\
+                        group by  codigo_formulado\
+                  ) as a,\
+                  (\
+                  SELECT codigo_medicamento as codigo_producto,  \
+                            SUM(cantidad_entrega) as cantidades  \
+                            FROM hc_formulacion_antecedentes  \
+                            where evolucion_id= :1 \
+                            AND numero_total_entregas > (SELECT es.numero_entrega_actual FROM dispensacion_estados es WHERE es.evolucion_id = :1)\
+                      group by codigo_medicamento  \
+                  ) as b  \
+                 where  \
+                          a.codigo_producto = b.codigo_producto  \
+                UNION  \
+                    SELECT codigo_medicamento as codigo_producto,  \
+                          cantidad_entrega as cantidades  \
+                          FROM hc_formulacion_antecedentes\
+                          where evolucion_id= :1 and sw_mostrar='1'  \
+                          AND numero_total_entregas > (SELECT es.numero_entrega_actual FROM dispensacion_estados es WHERE es.evolucion_id = :1 )\
+                     and codigo_medicamento NOT IN( select  \
+                                                      codigo_formulado  \
+                                                      FROM hc_dispensacion_medicamentos_tmp  \
+                                                      where evolucion_id= :1 )";
+        /*var sql = "SELECT  a.codigo_producto,\
                           (b.cantidades - a.cantidades) as total\
                   from\
                   (\
@@ -953,7 +1068,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callba
                      and codigo_medicamento NOT IN( select\
                                                       codigo_formulado\
                                                       FROM hc_dispensacion_medicamentos_tmp\
-                                                      where evolucion_id= :1 )";
+                                                      where evolucion_id= :1 )";*/
    
     G.knex.raw(sql,parametros).then(function(resultado){    
        
@@ -1671,32 +1786,43 @@ DispensacionHcModel.prototype.bloquearTabla = function(callback) {
 /**
  * @author Cristian Ardila
  * @fecha 09/06/2016 (DD-MM-YYYY)
- * +Descripcion Modelo encargado consultar el estado de la formula
- *              1: Entregado
- *              0: en proceso
+ * +Descripcion Modelo encargado consultar el numero de la ultima entrega de la
+ *              formula
  * @controller DispensacionHc.prototype.consultarNumeroTotalEntregas
  */
 DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callback){
     
-    var parametros = {1: obj.evolucion};
+    console.log("********DispensacionHcModel.prototype.consultarUltimaEntregaFormula*********");
+    console.log("********DispensacionHcModel.prototype.consultarUltimaEntregaFormula*********");
+    console.log("********DispensacionHcModel.prototype.consultarUltimaEntregaFormula*********");
+    console.log("********DispensacionHcModel.prototype.consultarUltimaEntregaFormula*********");
     
-    var sql = "SELECT  (numero_total_entregas - numero_entrega_actual) as numeroEntrega\
+    var parametros = {1: obj.evolucion};   
+    var campo = "";
+    if(obj.numeroEntregaActual === 0){
+        campo = "(numero_total_entregas - numero_entrega_actual)";
+    }else{
+        campo = "numero_entrega_actual";
+    }         
+    console.log("obj ", obj);
+    console.log("campo ", campo);
+    var sql = "SELECT "+campo+" as numeroEntrega\
                FROM dispensacion_estados a \
                WHERE \
 	        evolucion_id =  :1  ;";          
-   var query = G.knex.raw(sql,parametros);
-   
+    var query = G.knex.raw(sql,parametros);  
      
-    query.then(function(resultado){    
-          
-          callback(false, resultado); 
+    query.then(function(resultado){ 
+        console.log("*/* resultado ", resultado);
+        callback(false, resultado); 
    }).catch(function(err){
         console.log("err (/catch) [consultarUltimaEntregaFormula]: ", err);
         console.log("parametros: ", parametros);
         callback({err:err, msj: "Error al consultar el numero de entrega"});   
     });
+};
 
-}
+
 /**
  * @author Cristian Ardila
  * @fecha 09/06/2016 (DD-MM-YYYY)
@@ -2166,7 +2292,7 @@ DispensacionHcModel.prototype.actualizarEstadoFormulaSinPendientes = function(ob
  */
 DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callback)
 {   
-   
+                                                  
     var that = this;
     var def = G.Q.defer();
     G.knex.transaction(function(transaccion) {  

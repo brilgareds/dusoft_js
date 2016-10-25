@@ -41,6 +41,11 @@ module.exports = function(app, di_container) {
         });
     });
 
+    io.sockets.on('chatDevice', function(socket) {
+
+        console.log("on chat device >>>>>>>>>>>>>>>>>>>>>>>> ", socket);
+    });
+
     // Ejecutar Tareas Programadas
     j_auth.cerrarSesionesInactivas();
 

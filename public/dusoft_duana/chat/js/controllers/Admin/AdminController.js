@@ -14,9 +14,10 @@ define(["angular", "js/controllers", "controllers/Grupos/ListaGruposController"]
                      
             var self = this;
             $rootScope.$emit("onDeshabilitarBtnChat");
+            var moduloChat =  Usuario.getUsuarioActual().objetoModulos["ChatDusoft"];
             
             $scope.root = {
-                opciones:Usuario.getUsuarioActual().getModuloActual().opciones
+                opciones:(moduloChat)? moduloChat.opciones : {}
             };
                                     
             localStorageService.set("chat", {estado:'1'});

@@ -497,7 +497,7 @@ ChatController.prototype.validarUsuarioConversacion = function(req, res) {
     
     var parametrosPermisos = { 
         usuario_id:args.chat.usuario_id, 
-        empresa_id:req.session.user.empresa, 
+        empresa_id:args.chat.empresa,//req.session.user.empresa, 
         modulos:['configuracion_chat'], 
         convertirJSON:true,
         limpiarCache:true,
@@ -519,7 +519,7 @@ ChatController.prototype.validarUsuarioConversacion = function(req, res) {
       
    }).fail(function(err){
        console.log("error generado ", err);
-        var msj = err;
+        var msj = "Ha ocurrido un error";
         var status = 500;
         
         if(err.status){

@@ -538,6 +538,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 self.abrirChat();
             };
             
+            
+            $rootScope.$on("onAbrirChat",function(){
+               self.abrirChat(); 
+            });
+            
             self.abrirChat = function(){
                 
                 var chat =  localStorageService.get("chat");

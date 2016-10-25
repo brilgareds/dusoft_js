@@ -1,6 +1,6 @@
 define(["angular",
     "js/controllers",
-    'includes/Constants/Url', 'includes/classes/Chat/GrupoChat'], function(angular, controllers) {
+    'includes/Constants/Url', 'includes/classes/Chat/GrupoChat', "includes/widgets/InputCheck",], function(angular, controllers) {
 
     controllers.controller('GruposChatController', [
         '$scope', '$rootScope', 'Request',
@@ -331,11 +331,17 @@ define(["angular",
                     return;
                 }
                 
+                var usuarioActual = Usuario.getUsuarioActual();
+                
+                //Agrega el usuario que inicia la conversacion
+                console.log("agregar usuario actual ", usuarioActual);
+                self.agregarUsuarios([usuarioActual])
+                
                 var obj = {
                     session: $scope.root.session,
                     data: {
                         chat:{
-                            usuario_id:Usuario.getUsuarioActual().getId(),
+                            usuario_id:usuarioActual.getId(),
                             usuarios:$scope.root.usuariosSeleccionados,
                             id_conversacion:idConversacion
                         }
@@ -346,7 +352,7 @@ define(["angular",
                     if(data.status === 200){
                        
                        $modalInstance.close();
-                       
+                       $rootScope.$emit("onAbrirChat");
                         
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error iniciando la conversación");
@@ -365,7 +371,8 @@ define(["angular",
                     session: $scope.root.session,
                     data: {
                         chat:{
-                            usuario_id:usuario.getId()
+                            usuario_id:usuario.getId(),
+                            empresa:Usuario.getUsuarioActual().getEmpresa().getCodigo()
                         }
                     }
                 };

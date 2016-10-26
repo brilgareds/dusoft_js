@@ -126,8 +126,8 @@ G.knex = require('./lib/Knex').
 
 
 var cluster = require('cluster'),
-        RedisStore = require("socket.io/lib/stores/redis"),
-        redis = require("socket.io/node_modules/redis"),
+        RedisStore = require("socket.io-redis"),
+        redis = require("redis"),
         pub = redis.createClient(),
         sub = redis.createClient(),
         client = redis.createClient();
@@ -163,12 +163,10 @@ if (cluster.isMaster) {
     /*=========================================
      * Configuracion Sockets.io
      * =========================================*/
-    io.configure(function() {
+    /*io.configure(function() {
         io.set("log level", 0);
-        /*io.set('transports', [
-         'websocket'
-         ]);*/
-    });
+
+    });*/
 
     io.set("store", new RedisStore(
             pub,

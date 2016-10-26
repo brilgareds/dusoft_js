@@ -1790,7 +1790,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
         return G.Q.ninvoke(that.m_pedidos_clientes,"terminar_estado_pedido", numero_pedido, [estado, '7'], '1');
     }).then(function(rows){
         return G.Q.ninvoke(that.m_e008, "marcar_cajas_como_despachadas", documento_temporal_id, numero_pedido, '1');
-    }).then(function(rows){
+    })/*.then(function(rows){
                            
         var def = G.Q.defer();
         var bodega = "BD";
@@ -1823,9 +1823,8 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
             def.resolve();
         }
         
-    }).then(function(rows){
-        console.log("proceso de sincronizacion terminado");
-        
+    }).*/
+    .then(function(rows){        
         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
                            {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
@@ -1970,24 +1969,6 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
                            {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
-                           
-       /* var def = G.Q.defer();
-        if(pedido.farmacia_id === '01'){
-            var obj = {
-                documentoId:418,
-                prefijoDocumento : prefijo_documento,
-                numeroDocumento : numero_documento,
-                bodegasDoc : bodega,
-                empresa: empresa_id,
-                contexto:that,
-                tipoPedido:"2",
-                numeroPedido:pedido.numero_pedido
-            };
-
-            return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
-        } else {
-            def.resolve();
-        }*/
         
     }).fail(function(err){
         console.log("se ha generado un error en el documento ", err);
@@ -2022,22 +2003,30 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
         return;
     }
     
+    //Permite seguir con la sincronizacion en segundo plano
+    if(args.documento_despacho.background){
+        res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, {movimientos_bodegas: {}}));
+    }
+    
     var modeloPedido = (tipoPedido === 1)? that.m_pedidos_clientes : that.m_pedidos_farmacias;
     
     G.Q.ninvoke(modeloPedido, "consultar_pedido", numeroPedido).then(function(resultado){
         pedido = resultado[0];
         //console.log("pedido a sincronizar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", pedido.tipo_id_cliente, pedido.identificacion_cliente, pedido)
         
-        if((pedido.farmacia_id && pedido.farmacia_id === '01') || 
-           (pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
-           (pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
-           (pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+        if((tipoPedido !== 1 && pedido.farmacia_id === '01') || 
+           (tipoPedido === 1 && pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
+           (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
+           (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
        
            
-           if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
-               bodega = "BD";
-           } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){
-               bodega = "BC";
+           if(tipoPedido === 1){
+               
+                if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+                    bodega = "BD";
+                } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){
+                    bodega = "BC";
+                }
            }
        
             
@@ -2060,17 +2049,23 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
         }
         
     }).then(function(){
-        res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
+        if(!args.documento_despacho.background){
+            res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
                            {movimientos_bodegas: {}}));
-    }).fail(function(err){
-        //console.log("se ha generado un error en el documento ??????????????", err);
-        if(err.status){
-            res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
-            
-        } else {
-            
-            res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
         }
+
+    }).fail(function(err){
+        console.log("error generando sincronizacion de documento ", err);
+        if(!args.documento_despacho.background){
+            if(err.status){
+                res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
+
+            } else {
+
+                res.send(G.utils.r(req.url, "Se ha generado un error", "500", {}));
+            }
+        }
+
     }).done();
 };
 
@@ -2119,14 +2114,18 @@ function __sincronizarEncabezadoDocumento(obj, callback){
     if(parseInt(obj.tipoPedido) !== 1){
         url = G.constants.WS().DOCUMENTOS.COSMITET.E008;
         
-    } else if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
-        url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
+    } else {
         
-    } else if((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
-              (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
-        
-        url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
-    }
+        if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
+            url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
+
+        } else if((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+                  (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
+
+            url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
+        }
+    } 
+    
         
     var resultado;
     
@@ -2188,15 +2187,19 @@ function __sincronizarDetalleDocumento(obj, callback){
     if(parseInt(obj.tipoPedido) !== 1){
         url = G.constants.WS().DOCUMENTOS.COSMITET.E008;
         
-    } else if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
-        url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
-        soloPrecioVenta = false;
+    } else {
         
-    } else if((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
-              (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
-        
-        url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
+        if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
+            url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
+            soloPrecioVenta = false;
+
+        } else if((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+                  (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
+
+            url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
+        }
     }
+    
     
     
     obj.parametros = {
@@ -2909,7 +2912,7 @@ E008Controller.prototype.obtenerJustificaciones = function(req, res){
         res.send(G.utils.r(req.url, "Listado de justificaciones", 200, {justificaciones: resultado}));
        
     }).fail(function(err) {
-
+        console.log("err ", err);
         res.send(G.utils.r(req.url, 'Error consultado el pedido', 500, {despachos_auditados: {}}));
 
     }).done();

@@ -1,7 +1,7 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
-    controllers.controller('Logincontroller', ['$scope', 'User', "Request", "localStorageService",
-        function($scope, User, Request, localStorageService) {
+    controllers.controller('Logincontroller', ['$scope', 'Usuario', "Request", "localStorageService",
+        function($scope, Usuario, Request, localStorageService) {
 
             console.log("init login controller");
             $scope.usuario = "";
@@ -10,7 +10,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.ocultar_formulario = true;
 
             $scope.autenticar = function() {
+                
                 if ($scope.loginform.$invalid) {
+                    return;
+                }
+                
+                if(localStorageService.get("session")){
+                    window.location = "../home/";
                     return;
                 }
 

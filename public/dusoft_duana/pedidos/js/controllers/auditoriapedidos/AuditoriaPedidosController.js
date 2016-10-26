@@ -510,18 +510,18 @@ define(["angular", "js/controllers",
                     documento: {
                         prefijo_documento : despacho.prefijo_documento,
                         numero_documento : despacho.numero_documento,
-                        bodega_destino : documento.pedido.farmacia.bodega_id,
+                        bodega_destino : (documento.pedido.tipo !== 1) ? documento.pedido.farmacia.bodega_id : documento.bodega_id,
                         empresa_id: despacho.empresa_id,
                         tipo_pedido:documento.pedido.tipo,
-                        numero_pedido : documento.pedido.numero_pedido
+                        numero_pedido : documento.pedido.numero_pedido,
+                        background: true
                     }
                 };
                 
-                console.log("informacion para enviar ", obj);
 
                 AuditoriaDespachoService.sincronizarDocumento(obj, function(data){
                     if(data.status === 200){
-                        AlertService.mostrarMensaje("success", "Documento sincronizado correctamente");
+                        //AlertService.mostrarMensaje("success", "Documento sincronizado correctamente");
                     }
                 });
                 
@@ -529,7 +529,7 @@ define(["angular", "js/controllers",
            
             
             $scope.generarDocumento = function(documento) {
-
+                console.log("sincronizar documentos  code>>>>>>>>>>>> ", documento);
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -618,7 +618,7 @@ define(["angular", "js/controllers",
                                      * @author Cristian Ardila
                                      */
                                     localStorageService.set("DocumentoDespachoImprimir",detallado);
-                                
+                                    console.log("sincronizar documentos >>>>>>>>>>>> ", documento);
                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                                    
                                    that.sincronizarDocumento(documento, $scope.documento_generado);

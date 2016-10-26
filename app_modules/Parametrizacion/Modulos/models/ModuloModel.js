@@ -47,8 +47,31 @@ ModuloModel.prototype.obtenerModulosPorId = function(ids, callback) {
     }).done();
 };
 
-//gestiona para modificar o insertar el modulo
 ModuloModel.prototype.guardarModulo = function(modulo, callback) {
+    var self = this;
+
+    __validarCreacionModulo(self, modulo, function(validacion) {
+        if (!validacion.valido) {
+            var err = {msj: validacion.msj};
+            callback(err);
+            return;
+        }
+
+        if (modulo.modulo_id && modulo.modulo_id !== 0) {
+            self.modificarModulo(modulo, function(err, rows) {
+                callback(err, rows);
+            });
+        } else {
+            self.insertarModulo(modulo, function(err, rows) {
+                callback(err, rows);
+            });
+        }
+    });
+
+};
+
+//gestiona para modificar o insertar el modulo
+/*ModuloModel.prototype.guardarModulo = function(modulo, callback) {
     var self = this;
     var def = G.Q.defer();
     var resultadoinsert;
@@ -151,7 +174,7 @@ ModuloModel.prototype.guardarReporteAdmin = function (modulo, callback){
     }).catch(function(err){
        callback(err);
     });
-};
+};*/
 
 
 ModuloModel.prototype.insertarModulo = function(modulo, callback) {

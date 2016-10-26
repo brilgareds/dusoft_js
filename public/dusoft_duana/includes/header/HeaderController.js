@@ -3,16 +3,18 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
     "includes/classes/Empresa", "includes/classes/Modulo",
     "includes/classes/Rol", "includes/classes/OpcionModulo",
     "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo",
-    "includes/components/notificaciones/NotificacionesController"], function(angular, controllers) {
+    "includes/components/chat/Chat","includes/components/usuarios/Usuarios",
+    "includes/components/notificaciones/NotificacionesController",
+    "includes/components/gruposChat/GruposChatController", 'includes/classes/Chat/Conversacion'], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
         "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
-        "$timeout","$modal",
+        "$timeout","$modal", "Conversacion",  "webNotification",
         function($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
                 Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo,
-                $timeout, $modal) {
+                $timeout, $modal, Conversacion, webNotification) {
 
             var self = this;
            
@@ -136,6 +138,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                         self.setUsuarioActual(obj);
                         callback(obj);
+                        
                     }
 
                 });
@@ -166,6 +169,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         self.asignarModulosUsuario(modulos);
 
                         self.asignarEmpresasFarmacias(obj.centros_utilidad);
+                        localStorageService.set("chat", {estado:'0'});
                         //console.log("empresa usuario ", $scope.Usuario.getEmpresa())
                         callback(obj);
                     } else {
@@ -216,6 +220,30 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     }
                 }
                 
+            };
+            
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de chat
+            * @fecha 2016-09-14
+            */
+            $scope.onMostrarVentanaGrupos = function(){
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    size: 'lg',
+                    keyboard: true,
+                    templateUrl: '../includes/components/gruposChat/GrupoChat.html',
+                    controller: 'GruposChatController',
+                    resolve: {
+                        conversacion: function() {
+                            return Conversacion.get();
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
             };
             
             
@@ -377,7 +405,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 }
             };
             
-            
             $scope.onVerPerfilUsuario = function(){
                  localStorageService.set("usuarioo_id", $scope.Usuario.getId());
                  window.location = "../parametrizacion/#/AdministracionUsuarios";
@@ -412,8 +439,18 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
 
                 Request.realizarRequest('/api/logout', "POST", {session: $scope.session, data: {}}, function(data) {
-                    //console.log(data)
-                    localStorage.removeItem("ls.session");
+                    localStorageService.remove("session");
+                    var llavesMemoria = localStorageService.keys();
+                    var llavesPermanentes = ["centro_utilidad_usuario", "bodega_usuario"];
+                    
+                    for(var i in llavesMemoria){
+                        var key = llavesMemoria[i];
+                        
+                        if(llavesPermanentes.indexOf(key) === -1){
+                            localStorageService.remove(key);
+                        }
+                    }    
+                    
                     callback();
 
                 });
@@ -461,6 +498,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 self.irAlHome(mensaje);
 
             });
+            
+            $rootScope.$on("onDeshabilitarBtnChat", function(){
+               $scope.deshabilitarBtnChat = true; 
+            });
 
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 
@@ -486,6 +527,58 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
 
             });
+            
+                        
+          /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de chat
+            * @fecha 2016-09-05
+            */
+            $scope.onBtnChat = function(){
+                self.abrirChat();
+            };
+            
+            
+            $rootScope.$on("onAbrirChat",function(){
+               self.abrirChat(); 
+            });
+            
+            self.abrirChat = function(){
+                
+                var chat =  localStorageService.get("chat");
+                console.log("estado chat ", chat);
+                
+                if(chat && chat.estado === '1'){
+                    return;
+                }
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    size: 'lg',
+                    keyboard: true,
+                    animation:false,
+                    template:'<chat></chat>', 
+                    windowClass:"contenedorChat",
+                    backdropClass:"chatBackground",
+                    controller:["$scope", "$modalInstance",function($scope, $modalInstance){
+                        $scope.onCerrarChat = function(){
+                            $modalInstance.close();
+                        };
+                        
+                    }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    localStorageService.set("chat", {estado:'0'});
+                }, function() {
+                    localStorageService.set("chat", {estado:'0'});
+                });
+                
+                localStorageService.set("chat", {estado:'1'});
+            };
 
             self.obtenerModuloActual = function(state) {
                 var obj = $scope.Usuario.getObjetoModulos();
@@ -502,6 +595,42 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     window.location = "../pages/403.html";
                 });
             });
+            
+            socket.on("onNotificacionChat", function(data){
+                var mensaje = data.mensaje;
+                
+                var chat =  localStorageService.get("chat");
+                
+                console.log("documento is hidden ", document.hidden, chat)
+                
+                if(chat && chat.estado === '1' && !document.hidden){
+                    return;
+                }
+                
+                var onHide;
+                               
+                webNotification.showNotification(mensaje.usuario+ " dice: ", {
+                    body: mensaje.mensaje,
+                    icon: '/images/logo.png',
+                    onClick: function onNotificationClicked() {
+                        localStorageService.set("mensajeNotificacion", mensaje);
+                        self.abrirChat();
+                        onHide();
+                        window.focus();
+                    },
+                    autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+                }, function onShow(error, hide) {
+                    if (error) {
+                        console.log('Error interno: al mostrar ventana de web notifications ' + error.message);
+                    } else {
+                         onHide =  hide;
+                        setTimeout(function hideNotification() {
+                           onHide();
+                           //manually close the notification (you can skip this if you use the autoClose option)
+                        }, 30000);
+                    }
+                });
+            });
 
             //evento de coneccion al socket
             socket.on("onConnected", function(datos) {
@@ -509,10 +638,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 var socket_session = {
                    usuario_id: obj_session.usuario_id,
                    auth_token: obj_session.auth_token,
-                   socket_id: socketid
+                   socket_id: socketid,
+                   device:"web"
                 };
                 
-
+                //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });
             
@@ -554,6 +684,13 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         }
                         
                         $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
+                        
+                        var moduloChat = Usuario.getUsuarioActual().objetoModulos["ChatDusoft"];
+                        
+                        if(moduloChat){
+                            $scope.permisoGuardarConversacion = moduloChat.opciones["sw_guardar_conversacion"];
+                        }
+                        
 
                     });
 

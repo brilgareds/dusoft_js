@@ -137,6 +137,47 @@ DrAriasModel.prototype.guardarEstadoReporte = function(datos,callback) {
 
 /**
 * @author Andres M Gonzalez
+* +Descripcion: guardar estado del reporte 
+* @fecha 2016-10-25
+*/
+DrAriasModel.prototype.guardarEstadoReporte = function(datos,callback) {
+
+    var fecha=G.moment().subtract(1,'days').format('DD-MM-YYYY');
+    
+    G.knex.insert({numero_registros: datos.numero,
+                    fecha_copia: fecha,
+                    sw_copia: datos.swCopia,
+                    fecha_registro: 'now()'}).
+    into("control_copias_dr_arias").then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        callback(err);
+    }).done();
+    
+    
+};
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion: editar estado del reporte 
+* @fecha 2016-06-17
+*/
+DrAriasModel.prototype.conteoTemporalesReporteDrArias = function (callback) {
+             
+    var sql = "select COUNT(*) as numero\
+                from temporal_reporte_dr_arias \
+                where fecha between (current_date - interval '1 day') and (current_date - interval '0 day' -  interval '1 sec')\
+                ";
+    
+    var query = G.knex.raw(sql);
+    query.then(function(resultado) {
+       callback(false, resultado.rows);
+     }).catch (function(err) {
+        callback(err);
+     });
+};
+/**
+* @author Andres M Gonzalez
 * +Descripcion: adicionar detalle del reporte 
 * @fecha 2016-08-03
 */

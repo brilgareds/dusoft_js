@@ -8,7 +8,7 @@ var ReporteDrAriasJobs = function(m_drArias) {
 };
 
 
-
+var jobInicio;
 
 /*
  * @Author: Andres M. Gonzalez
@@ -16,22 +16,59 @@ var ReporteDrAriasJobs = function(m_drArias) {
  * @param {type} callback
  * @returns {void}
  */
-ReporteDrAriasJobs.prototype.iniciar = function() { //AddTemporalesReporteDrArias
-    
+ReporteDrAriasJobs.prototype.iniciar = function() { //AddTemporalesReporteDrArias    
     var that = this;
+ 
     var job = new G.cronJob('00 10 00 * * *', function () {
-        G.Q.ninvoke(that.m_drArias, "borrarTemporalesReporteDrArias").then(function(result){           
-            console.log("Finaliza eliminacion del primer mes en tabla temporal_reporte_dr_arias");
-             return G.Q.ninvoke(that.m_drArias, "addTemporalesReporteDrArias");              
-        }).then(function(result){
-            console.log("Se Insertaron los datos correctamente en tabla temporal_reporte_dr_arias");
-        }).fail(function(err){
-            console.log("error borrando primer mes en tabla temporal_reporte_dr_arias ", err);
-        });
+        __InsertarDrArias(that,'0');
     });
     
+    jobInicio = new G.cronJob('00 30 * * * *', function () {
+        __InsertarDrArias(that,'1');
+    });
+  
+    jobInicio.start();
     job.start();
 };
+
+/*
+ * @Author: Andres M. Gonzalez
+ * +Descripcion: funcion para realizar el insert del dia anterior al actual
+ * @param {type} callback
+ * @returns {void} 
+ */
+function __InsertarDrArias(that,swCopia){
+    var numeroRegistros = '0';
+    G.Q.ninvoke(that.m_drArias,"conteoTemporalesReporteDrArias").then(function(result){ 
+          numeroRegistros=result[0].numero;
+            if(numeroRegistros === '0'){
+              return G.Q.ninvoke(that.m_drArias, "addTemporalesReporteDrArias");
+             }else{
+                 console.log('para proceso');
+              jobInicio.stop();
+              return;
+             }           
+        }).then(function(datos){           
+            if(numeroRegistros === '0'){
+             return G.Q.ninvoke(that.m_drArias, "conteoTemporalesReporteDrArias");
+            }else
+             return [{numero:'1'}];            
+        }).then(function(datos){
+            var numeroRegistrosfinal=datos[0].numero;
+            if(numeroRegistrosfinal !== '0' && numeroRegistros === '0'){
+             console.log("SE CREO LA COPIA DE temporal_reporte_dr_arias CORRECTAMENTE: ",numeroRegistrosfinal);
+             var update={};
+             update.numero=datos[0].numero;
+             update.swCopia=swCopia;            
+             G.Q.ninvoke(that.m_drArias, "guardarEstadoReporte",update);             
+            }
+             jobInicio.stop();
+             return;   
+        }).fail(function(err){
+            console.log("Error creando copia a la tabla temporal_reporte_dr_arias ", err);
+            return true;
+        });
+}
 
 ReporteDrAriasJobs.$inject = ["m_drArias"];
 

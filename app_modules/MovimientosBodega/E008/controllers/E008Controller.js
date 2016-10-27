@@ -1984,28 +1984,10 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
 };
 
-function __validarDumian(identificacion_cliente,tipo_id_cliente){
-    if((identificacion_cliente === '10102' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10103' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10110' && tipo_id_cliente === "NIT") || 
-   (identificacion_cliente === '10111' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10118' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10122' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10134' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10133' && tipo_id_cliente === "NIT") ||
-   (identificacion_cliente === '10174' && tipo_id_cliente === "CC") ||
-   (identificacion_cliente === '805027743' && tipo_id_cliente === "NIT") || 
-   (identificacion_cliente === '10365' && tipo_id_cliente === "CE") ||
-   (identificacion_cliente === '10366' && tipo_id_cliente === "CE")){
-     return true;
-   }else{
-     return false;
-   }
-}
 
 E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
      var that = this;
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>AMG>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    
      var args = req.body.data;
      var numeroPedido = args.documento_despacho.numero_pedido;
      var tipoPedido = parseInt(args.documento_despacho.tipo_pedido);
@@ -2013,8 +1995,6 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
      var numeroDocumento = args.documento_despacho.numero_documento; 
      var empresaId = args.documento_despacho.empresa_id; 
      var pedido;
-     var resultadoCabecera;
-     var objRemision; 
      var bodega = args.documento_despacho.bodega_destino;
 
     if (!args.documento_despacho || !numeroPedido || !tipoPedido || !numeroDocumento || !prefijoDocumento || !empresaId || !bodega) {
@@ -2032,14 +2012,12 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
     
     G.Q.ninvoke(modeloPedido, "consultar_pedido", numeroPedido).then(function(resultado){
         pedido = resultado[0];
-        resultadoCabecera=resultado[0];
         //console.log("pedido a sincronizar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", pedido.tipo_id_cliente, pedido.identificacion_cliente, pedido)
      
         if((tipoPedido !== 1 && pedido.farmacia_id === '01') || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS") ||
-           (tipoPedido === 1 && __validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente))){
+           (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
            
            
            if(tipoPedido === 1){
@@ -2051,23 +2029,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                 }
            }
        
-            if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
                 
-                console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ_AMG_ZZZZZZZZZZZZZZZZZZZZZZZZZ_000000000000000 ");
-                objRemision = {
-                      prefijoDocumento : prefijoDocumento,
-                      numeroDocumento : numeroDocumento,
-                      empresa: empresaId,
-                      tipoPedido:tipoPedido,
-                      numeroPedido:pedido.numero_pedido,
-                      pedido:pedido,
-                      contexto:that
-                 };
-                 
-                return G.Q.ninvoke(that.m_e008,"obtenerTotalDetalleDespacho",objRemision);            
-                
-            }else{  
-                console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ_AMG_ZZZZZZZZZZZZZZZZZZZZZZZZZ_1111111111 ");
                 var obj = {
                       documentoId:418,
                       prefijoDocumento : prefijoDocumento,
@@ -2079,52 +2041,21 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                       numeroPedido:pedido.numero_pedido,
                       pedido:pedido
                  };
+
                  return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
-            }
         } else {
             throw {msj:"El documento no esta parametrizado para sincronizarse", status:404,
                    obj:{documento_despacho: {}}};
         }
         
-    }).then(function(resultado){
-         if(__validarDumian(pedido.identificacion_cliente,pedido.tipo_id_cliente)){
-                var detalleProductos = [];
-                resultado.forEach(function(item) {                    
-                        var detalle = {
-                          nombre:item.nombre,
-                          codigoProducto : item.codigo_producto,
-                          lote : item.lote,
-                          codigoCum : item.codigo_cum,
-                          codigoInvima: item.codigo_invima ,
-                          fechaVencimiento:item.fecha_vencimiento,
-                          cantidad:item.cantidad,
-                          valorUnitario:item.valor_unitario_iva,
-                          valorTotal:item.valor_total_iva,
-                          porcentajeGravamen: item.porcentaje_gravamen	          
-                      };
-                      detalleProductos.push(detalle);
-                  });
-                var objCabecera = {
-                      nombreTercero : resultadoCabecera.nombre_cliente,
-                      tipoIdTercero : resultadoCabecera.tipo_id_cliente,
-                      terceroId : resultadoCabecera.identificacion_cliente,
-                      prefijo : prefijoDocumento,
-                      numero : numeroDocumento,
-                      nit :'805027743',
-                      productosDetalle : detalleProductos
-                 };           
-                 console.log(" >>>>>>>>>>>>>>>>>>>>>>>>>> ",objCabecera);
-                  objRemision.parametros=objCabecera;
-                 __sincronizarRemisionProductos(objRemision);
-            }else{ 
+    }).then(function(){
                 if(!args.documento_despacho.background){
                     res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
                                    {movimientos_bodegas: {}}));
                 }
-            }
 
     }).fail(function(err){
-        console.log("error generando sincronizacion de documento88888888 ", err);
+        console.log("error generando sincronizacion de documento ", err);
         if(!args.documento_despacho.background){
             if(err.status){
                 res.send(G.utils.r(req.url, err.msj, err.status, err.obj));
@@ -2233,60 +2164,6 @@ function __sincronizarEncabezadoDocumento(obj, callback){
         obj.tipo = '0';
         G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){
             //console.log(">>>>>>>>>>>>>>>>>>>>>>>> error __sincronizarEncabezadoDocumento ", err);
-            callback(err);
-        });
-    }).done();
-}
-
-function __sincronizarRemisionProductos(obj, callback){
-console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ_AMG_ZZZZZZZZZZZZZZZZZZZZZZZZZ_555555555");
-    var url = G.constants.WS().DOCUMENTOS.DUMIAN.E008;
-      
-    var resultado;
-    
-//    obj.parametros = {
-//        usuarioId:"4608",
-//        bodegasDoc:obj.bodegasDoc,
-//        observacion:obj.observacion,    
-//        documentoId:obj.documentoId
-//    };
-    obj.error = false;
-    
-    //Se invoca el ws
-    G.Q.nfcall(G.soap.createClient, url).
-    then(function(client) {
-console.log("bodegasMovimientoTmp ");
-console.log("bodegasMovimientoTmp client: ",client);
-console.log("bodegasMovimientoTmp url: ",url);
-        return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
-    }).
-    spread(function(result,raw,soapHeader){
-console.log("spread result: ",result);
-console.log("spread raw: ",raw);
-console.log("spread soapHeader: ",soapHeader);
-        obj.resultadoEncabezado = result.return.descripcion["$value"];
-        if(!result.return.estado["$value"]){
-            console.log("Se ha generado un error sincronizando el documento ");
-           throw {msj:"Se ha generado un error sincronizando el documento", status:403, obj:{}}; 
-        } else {
-            console.log("ingresarLogsSincronizacionDespachos ");
-            obj.temporal = result.return.docTmpId["$value"];
-            obj.tipo = '0';
-            //Se guarda el resultado en log
-            return G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj);
-            
-        }
-        
-    }).then(function(){
-        console.log("callback callback ");
-        callback(false, obj);
-        
-    }).fail(function(err) {
-        console.log("errerrerrerrerr ",err);
-        obj.error = true;
-        obj.tipo = '0';
-        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){
-            console.log("ingresarLogsSincronizacionDespachos ",err);
             callback(err);
         });
     }).done();

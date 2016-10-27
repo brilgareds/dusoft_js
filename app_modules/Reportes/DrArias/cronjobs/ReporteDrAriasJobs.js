@@ -2,9 +2,9 @@
 var ReporteDrAriasJobs = function(m_drArias) {
     var that = this;
     that.m_drArias = m_drArias;
-//    if(G.program.prod){
+    if(G.program.prod){
         that.iniciar();
-//    }
+    }
 };
 
 
@@ -19,11 +19,11 @@ var jobInicio;
 ReporteDrAriasJobs.prototype.iniciar = function() { //AddTemporalesReporteDrArias    
     var that = this;
  
-    var job = new G.cronJob('00 58 10 * * *', function () {
+    var job = new G.cronJob('00 10 00 * * *', function () {
         __InsertarDrArias(that,'0');
     });
     
-    jobInicio = new G.cronJob('10 * * * * *', function () {
+    jobInicio = new G.cronJob('00 30 * * * *', function () {
         __InsertarDrArias(that,'1');
     });
   
@@ -39,10 +39,8 @@ ReporteDrAriasJobs.prototype.iniciar = function() { //AddTemporalesReporteDrAria
  */
 function __InsertarDrArias(that,swCopia){
     var numeroRegistros = '0';
-    console.log('111111111111111 ',numeroRegistros,swCopia);
     G.Q.ninvoke(that.m_drArias,"conteoTemporalesReporteDrArias").then(function(result){ 
           numeroRegistros=result[0].numero;
-           console.log('2222222222222',numeroRegistros);
             if(numeroRegistros === '0'){
               return G.Q.ninvoke(that.m_drArias, "addTemporalesReporteDrArias");
              }else{
@@ -56,7 +54,6 @@ function __InsertarDrArias(that,swCopia){
             }else
              return [{numero:'1'}];            
         }).then(function(datos){
-              console.log('datosdatosdatosdatosdatos ',datos);
             var numeroRegistrosfinal=datos[0].numero;
             if(numeroRegistrosfinal !== '0' && numeroRegistros === '0'){
              console.log("SE CREO LA COPIA DE temporal_reporte_dr_arias CORRECTAMENTE: ",numeroRegistrosfinal);
@@ -65,7 +62,6 @@ function __InsertarDrArias(that,swCopia){
              update.swCopia=swCopia;            
              G.Q.ninvoke(that.m_drArias, "guardarEstadoReporte",update);             
             }
-            console.log('para proceso');
              jobInicio.stop();
              return;   
         }).fail(function(err){

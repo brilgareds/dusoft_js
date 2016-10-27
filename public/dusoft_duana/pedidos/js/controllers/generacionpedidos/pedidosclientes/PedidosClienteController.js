@@ -1201,12 +1201,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
                         
                     if (data.status === 200) {
-                      var observacion="Productos sin disponibilidad: \n";
+                      if(data.obj.pedidos_clientes.producto.length>0){  
+                      var observacion="**Productos sin disponibilidad** \n";
                       data.obj.pedidos_clientes.producto.forEach(function(info){
                        observacion +="Cantidad solicitada ("+info.cantidad_solicitada+")  Cantidad disponible ("+ info.cantidad_disponible+") para el codigo ("+ info.codigo_producto+") \n";
                       });
+                      observacion+=$scope.Pedido.get_observacion_cartera();
                       $scope.Pedido.set_observacion_cartera(observacion);
-                      
+                      }
                         $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
                        if(data.obj.pedidos_clientes.producto.length > 0){
                         $scope.opts = {

@@ -60,7 +60,7 @@ function __InsertarDrArias(that,swCopia){
              var update={};
              update.numero=datos[0].numero;
              update.swCopia=swCopia;            
-             G.Q.ninvoke(that.m_drArias, "guardarEstadoReporte",update);             
+             G.Q.ninvoke(that.m_drArias, "guardarControlCopias",update);             
             }
              jobInicio.stop();
              return;   

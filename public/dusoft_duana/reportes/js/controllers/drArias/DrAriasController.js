@@ -202,7 +202,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     reportesGenerados.setUsuarioId(objt.usuario_id);
                     reportesGenerados.setParametrosBusqueda(JSON.parse(objt.parametros_de_busqueda));
                     reportesGenerados.setConsolidado(JSON.parse(objt.consolidado));
-                    reportesGenerados.setBodegaDetalle(JSON.parse(objt.bodegas));
+                    if(objt.bodegas!== null ){
+                     reportesGenerados.setBodegaDetalle(JSON.parse("["+objt.bodegas+"]"));
+                    }else{
+                     reportesGenerados.setBodegaDetalle(objt.bodegas);
+                    }
                     listaReportesGenerados.push(reportesGenerados);
                 }   
                 $scope.listaReportesGenerados = listaReportesGenerados;

@@ -97,6 +97,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if (cotizacion) {
                     numeroCotizacion = cotizacion.numero_cotizacion || 0;
                 }
+                
+                if (cotizacion === null) {
+                   cotizacion = {numero_cotizacion: 0, cartera: "0"};
+                }
 
                 $scope.Pedido.set_numero_cotizacion(parseInt(numeroCotizacion));
                 $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;

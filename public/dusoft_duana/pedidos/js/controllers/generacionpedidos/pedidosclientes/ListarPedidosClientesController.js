@@ -298,8 +298,9 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-
-
+              if(estado===6){
+              $scope.datos_view.filtro=$scope.datos_view.filtro===undefined?{nombre: "Numero", tipo_busqueda: 0}:$scope.datos_view.filtro;
+              }
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
 
                 if (terminoBusqueda) {
@@ -320,14 +321,14 @@ define(["angular", "js/controllers",
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_cotizaciones, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_cotizaciones, "yyyy-MM-dd") + " 23:59:00",
-                            termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
+                            termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones===undefined?'':$scope.datos_view.termino_busqueda_cotizaciones,
                             pagina_actual: $scope.datos_view.pagina_actual_cotizaciones,
                             estado_cotizacion: estado,
                             filtro: $scope.datos_view.filtro
                         }
                     }
                 };
-
+                
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_COTIZACIONES, "POST", obj, function(data) {
 
                     if (data.status === 500) {
@@ -363,7 +364,7 @@ define(["angular", "js/controllers",
              * @param {type} estado
              */
             $scope.cargarListaNotificacionCotizacion = function(estado) {
-
+console.log("estadoestadoestado      ::::: ",estado);
                 that.buscar_cotizaciones(estado);
                 $scope.notificacionClientesAutorizar = 0;
 

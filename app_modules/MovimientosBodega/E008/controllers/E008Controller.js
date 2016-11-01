@@ -2013,12 +2013,12 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
     G.Q.ninvoke(modeloPedido, "consultar_pedido", numeroPedido).then(function(resultado){
         pedido = resultado[0];
         //console.log("pedido a sincronizar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", pedido.tipo_id_cliente, pedido.identificacion_cliente, pedido)
-        
+     
         if((tipoPedido !== 1 && pedido.farmacia_id === '01') || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
            (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
-       
+           
            
            if(tipoPedido === 1){
                
@@ -2029,30 +2029,30 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                 }
            }
        
-            
-            var obj = {
-                  documentoId:418,
-                  prefijoDocumento : prefijoDocumento,
-                  numeroDocumento : numeroDocumento,
-                  bodegasDoc : bodega,
-                  empresa: empresaId,
-                  contexto:that,
-                  tipoPedido:tipoPedido,
-                  numeroPedido:pedido.numero_pedido,
-                  pedido:pedido
-             };
+                
+                var obj = {
+                      documentoId:418,
+                      prefijoDocumento : prefijoDocumento,
+                      numeroDocumento : numeroDocumento,
+                      bodegasDoc : bodega,
+                      empresa: empresaId,
+                      contexto:that,
+                      tipoPedido:tipoPedido,
+                      numeroPedido:pedido.numero_pedido,
+                      pedido:pedido
+                 };
 
-             return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
+                 return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
         } else {
             throw {msj:"El documento no esta parametrizado para sincronizarse", status:404,
                    obj:{documento_despacho: {}}};
         }
         
     }).then(function(){
-        if(!args.documento_despacho.background){
-            res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
-                           {movimientos_bodegas: {}}));
-        }
+                if(!args.documento_despacho.background){
+                    res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
+                                   {movimientos_bodegas: {}}));
+                }
 
     }).fail(function(err){
         console.log("error generando sincronizacion de documento ", err);

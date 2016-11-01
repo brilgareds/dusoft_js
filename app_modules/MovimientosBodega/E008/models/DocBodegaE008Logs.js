@@ -17,7 +17,7 @@ DocuemntoBodegaE008Logs.prototype.ingresarLogsSincronizacionDespachos = function
     
     
     var parametros = {
-        1:(obj.tipoPedido === "1") ? "CL" : "FM", 
+        1:(obj.tipoPedido === 1) ? "CL" : "FM", 
         2:obj.numeroPedido,
         3:obj.empresa, 
         4:obj.prefijoDocumento,

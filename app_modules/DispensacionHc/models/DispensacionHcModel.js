@@ -211,7 +211,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
         //console.log("resultado ", resultado)
         callback(false, resultado);
     }).catch(function(err){    
-        console.log("err ", err)
+        console.log("err [listarFormulas]: ", err)
         callback("Ha ocurrido un error");      
     });
 };
@@ -255,7 +255,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
        //console.log("resultado Pendientes por dispensar::: ", resultado);
       callback(false, resultado)
     }).catch(function(err){         
-         console.log("err ", err);
+         console.log("err [listarMedicamentosPendientesDispensados]: ", err);
       callback(err)
     });            
 };
@@ -304,24 +304,12 @@ DispensacionHcModel.prototype.listarUltimaDispensacionPendientes = function(obj,
     G.knex.raw(sql,parametros).then(function(resultado){ 
         //console.log("resultado Pendientes por dispensar::: ", resultado);
       callback(false, resultado)
-    }).catch(function(err){         
-         console.log("err [listarUltimaDispensacionPendientes]: ", err);
+    }).catch(function(err){    
+        console.log("parametro : ", parametros);
+        console.log("err [listarUltimaDispensacionPendientes]: ", err);
       callback(err)
     });            
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
  * @author Cristian Ardila
@@ -450,7 +438,8 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
     //console.log("sql ----->>>>>>>>>> ", sql);
     G.knex.raw(sql,parametros).then(function(resultado){    
       
-        callback(false, resultado)
+        callback(false, resultado);
+        //console.log(" resultado [listarMedicamentosDispensados]: ", resultado.rows);
     }).catch(function(err){        
       console.log(" err [listarMedicamentosDispensados]: ", err);
         callback(err);
@@ -1166,7 +1155,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                      
     }
     
-                     
+        console.log("PARAMETROS obj ", obj);             
         var sql = "SELECT A.resultado,\
                 A.fecha_registro,\
                 A.unidades,\
@@ -2344,9 +2333,15 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
             }else{
                 def.resolve();
             }  
-            
                          
         }).then(function(resultado){  
+                            
+            return G.Q.ninvoke(that,'actualizarMedicamentoConfrontado', obj.parametro1 , transaccion);
+                       
+                         
+        }).
+        
+        then(function(resultado){  
                 console.log("TRANSACCION COMMIT ");
             transaccion.commit(); 
                 
@@ -2365,7 +2360,33 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
 };
 
 
-
+ 
+ /**
+ * @author Cristian Manuel Ardila
+ * @fecha  2016/10/28
+ * +Descripcion Metodo encargado de actualizar el estado del medicamento que
+ *              se ha confrontado a 0 CERO para que vuelva a confrontar nuevamente
+ *              si se da el caso
+ * 
+ * */
+DispensacionHcModel.prototype.actualizarMedicamentoConfrontado = function(obj,transaccion, callback){
+   
+   var parametros = {1: obj.evolucion};   
+   var sql = "UPDATE hc_formulacion_antecedentes\
+		SET sw_autorizado= 0 \
+		WHERE evolucion_id = :1 ;";          
+   var query = G.knex.raw(sql,parametros);
+    
+   if(transaccion) query.transacting(transaccion);     
+      query.then(function(resultado){ 
+          
+          callback(false, resultado);
+   }).catch(function(err){
+         console.log("error [actualizarEstadoFinalizoFormula]:", err);
+          callback({err:err, msj: "Error al actualizar la formula a estado finalizado"});   
+    });  
+};
+ 
 
 
 /*

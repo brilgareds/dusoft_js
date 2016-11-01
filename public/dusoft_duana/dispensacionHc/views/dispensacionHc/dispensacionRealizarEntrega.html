@@ -5,16 +5,18 @@
                 <h4 class="h4MarginTopBottom"><span >Entrega medicamentos</span></h4>
             </div>
             <br>
-            <div class="table-responsive" style="height: 400px;">
-                <div class="gridStyle2" ng-grid="listaTiposFormulas" ></div>
-            </div>
-            <div class="row">                   
+          
+               <div class="gridStyle3" ng-grid="listaTiposFormulas" ></div>
+               
+           
+            <div class="row marginCampoObservacion" >                   
                 <div class="form-group">
-                    <label class="col-sm-12" for="inputBody">Observacion</label>
-                    <div class="col-sm-12"><textarea class="form-control" ng-model="root.observacion" id="inputBody" rows="8"></textarea></div>
+                    
+                    <div class="col-sm-12"><textarea class="form-control" ng-model="root.observacion" id="inputBody" rows="2" placeholder="Observacion"></textarea></div>
                 </div>                
             </div>
-            <div class="table-responsive">
+           
+            <div class="table-responsive" >
                 <div class="gridStyle3" ng-grid="medicamentosTemporales" ></div>
             </div>
         </div>

@@ -562,7 +562,7 @@ define(["angular", "js/services"], function(angular, services) {
                  * +Descripcion Se recorre la cantidad de entregas que puede
                  *              tener la formula
                  */
-                for(var i=0; i<numeroEntrega.length ; i++){
+                //for(var i=0; i<numeroEntrega.length ; i++){
                     /*
                      * +Descripcion Se crea un objeto de la clase Entrega
                      */
@@ -581,7 +581,8 @@ define(["angular", "js/services"], function(angular, services) {
                          *              coincide con el numero de entrega de la formula (_entrega.entrega)  
                          *              y si es asi se crea la primera entrega            
                          */
-                        if(numeroEntrega[i] === _entrega.entrega){
+                        //if(numeroEntrega[i] === _entrega.entrega){
+                        if(numeroEntrega === _entrega.entrega){
                             Entrega.setNumeroEntrega(_entrega.entrega);
                         }
                         
@@ -599,7 +600,7 @@ define(["angular", "js/services"], function(angular, services) {
                     * +Descripcion Cada entrega se almacena en este arreglo 
                     **/
                     //entregas.push(Entrega);
-                }                                 
+                //}                                 
                 return Entrega;                
             };                                  
         return this;

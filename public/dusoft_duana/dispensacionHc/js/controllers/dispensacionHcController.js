@@ -541,7 +541,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             if (data.status === 200) {
                                 
                                 totalDispensaciones = data.obj.listar_medicamentos_dispensados;
-                                console.log("totalDispensaciones Normal ", totalDispensaciones);
+                                //console.log("totalDispensaciones Normal ", totalDispensaciones);
                                 totalDispensaciones.forEach(function(entregas){                                    
                                     arregloEntregas.push(entregas.entrega);                                 
                                 });
@@ -558,12 +558,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 
                                    
                                     
-                                          
+                                //console.log("listaEntregasFormulas ENTREGAS ", data.obj.listar_medicamentos_dispensados);          
                                 var numeroDeEntregas = unique(arregloEntregas);
-                                    console.log("arregloEntregas unique ", numeroDeEntregas);
+                                    //console.log("arregloEntregas unique ", numeroDeEntregas);
                                 for(var i=0; i<numeroDeEntregas.length; i++){
+                                    //console.log("numeroDeEntregas[i] ", numeroDeEntregas[i]);
+                                    //console.log("data.obj.listar_medicamentos_dispensados ", data.obj.listar_medicamentos_dispensados);
                                     listaEntregasFormulas.push(dispensacionHcService.renderListartotalDispensacionesFormula(numeroDeEntregas[i],data.obj.listar_medicamentos_dispensados));
                                 }
+                                
+                                //console.log("listaEntregasFormulas ", listaEntregasFormulas);
                                 /**
                                 * +descripcion Se almacenan todas las entregas de la formula
                                 */

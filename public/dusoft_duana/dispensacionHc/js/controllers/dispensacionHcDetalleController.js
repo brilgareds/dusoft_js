@@ -265,7 +265,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                            
                             if(privilegio.obj.privilegios[0].sw_privilegios === '1'){
                                 
-                               that.ventanaAutorizaDispensacion(data, entity);                         
+                               that.ventanaAutorizaDispensacion(data, entity);   
+                               
                             }else{
                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El usuario no posee privilegios para autorizar la dispensacion");   
                             }
@@ -314,7 +315,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 parametros.entity.vaciarProductosHc();
                 if(data.status === 200) {                                          
                     parametros.entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
-                    $scope.lotes = parametros.entity.mostrarProductosHc();                  
+                    $scope.lotes = parametros.entity.mostrarProductosHc(); 
+                    /**
+                     * +Descripcion Se recorre los lotes y se les setean la cantidad solicitada
+                     *              a cada uno de ellos
+                     */
+                    $scope.lotes[0].forEach(function(producto) {                        
+                         producto.cantidadDispensada = $scope.cantidadEntrega;                      
+                    });
                     that.ventanaDispensacionFormula();
                 }       
                
@@ -578,7 +586,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           *              listar los tipos de entrega de la formula
         */
         $scope.ventanaTipoEntregaFormula = function(todoPendiente){
-        
+                      
+                console.log("todoPendiente ", todoPendiente);
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
+            
+            if(resultadoStorage.pendientes === 1 && todoPendiente ===2){
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "los medicamentos ya se encuentran pendientes");
+                return;
+            }
+            
             $scope.opts = {
                 backdrop: true,
                 backdropClick: true,

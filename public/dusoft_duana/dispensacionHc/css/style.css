@@ -437,3 +437,9 @@ button.btnTipo{
     width: 75%;
     padding-top: 8px;
 }
+
+.marginCampoObservacion {
+    
+    margin-top: 5px; 
+    margin-bottom: 5px
+}

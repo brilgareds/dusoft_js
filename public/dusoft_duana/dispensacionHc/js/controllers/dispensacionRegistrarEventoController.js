@@ -135,7 +135,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    $scope.registroDeEventos =  dispensacionHcService.renderListarTipoDocumento(data.obj.listar_registro_eventos);
                   
                 }else{                         
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                    AlertService.mostrarMensaje("success", data.msj); 
                 }
                
             });

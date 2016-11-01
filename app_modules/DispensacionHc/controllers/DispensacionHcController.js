@@ -1343,9 +1343,9 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         if(resultado.rows[0].numeroentrega === 0){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
-            def.resolve();
+            def.resolve();             
         }
-        console.log("resultado DEBE ACTUALOZAR EL TIPO FORMULA------->>>>>>>> #1 ", resultado);
+        console.log("resultado DEBE ACTUALIZAR EL TIPO FORMULA------->>>>>>>> #1 ", resultado);
                    
     }).then(function(resultado){
         /*console.log("SEGUNDO RESULTADO OJO #3 ", resultado);
@@ -1840,7 +1840,7 @@ DispensacionHc.prototype.listarRegistroDeEventos = function(req, res){
         if(resultado.rows.length > 0){ 
               res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {listar_registro_eventos:resultado.rows}));
         }else{
-           throw 'Consulta sin resultados';
+           throw 'No hay eventos registrados';
         }
         
     }).fail(function(err){      
@@ -1934,6 +1934,10 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
  */
 DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
    
+   console.log("****DispensacionHc.prototype.listarMedicamentosDispensados*******");
+   console.log("****DispensacionHc.prototype.listarMedicamentosDispensados*******");
+   console.log("****DispensacionHc.prototype.listarMedicamentosDispensados*******");
+   
     var that = this;
     var args = req.body.data;
   
@@ -1962,10 +1966,10 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         medicamentosDispensados = 'listarMedicamentosPendientesDispensados';
         
     }else{
-        medicamentosDispensados = 'listarMedicamentosDispensados';
+        medicamentosDispensados = 'listarMedicamentosDispensados'; //listarUltimaDispensacionPendientes listarMedicamentosDispensados
     }
     //console.log("parametros ", parametros);
-    //console.log("medicamentosDispensados ", medicamentosDispensados);
+   
     G.Q.ninvoke(that.m_dispensacion_hc,medicamentosDispensados,parametros).then(function(resultado){
        //console.log("1) resultado ", resultado.rows);
         if(resultado.rows.length > 0){ 
@@ -2028,7 +2032,10 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
  */
 DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
     
-  
+  console.log("*************DispensacionHc.prototype.listarTotalDispensacionesFormula*****************");
+  console.log("*************DispensacionHc.prototype.listarTotalDispensacionesFormula*****************");
+  console.log("*************DispensacionHc.prototype.listarTotalDispensacionesFormula*****************");
+    
     var that = this;
     var args = req.body.data;
     
@@ -2049,7 +2056,7 @@ DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
     
     G.Q.ninvoke(that.m_dispensacion_hc, 'listarTodoMedicamentosDispensados', parametros).then(function(resultado){
         
-        console.log("resultado TODO TODO TODO ", resultado);
+        //console.log("resultado TODO TODO TODO ", resultado);
         
         if(resultado.rows.length > 0){ 
         
@@ -2075,7 +2082,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
    
    console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
    console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
-   //console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
+   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
    
     var that = this;
     var args = req.body.data;
@@ -2083,7 +2090,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
     if (args.listar_medicamentos_dispensados === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_dispensados: []}));
         return;
-    }
+    }                                      
    
     if (!args.listar_medicamentos_dispensados.evolucion || args.listar_medicamentos_dispensados.evolucion.length === 0 ) {
         res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {listar_medicamentos_dispensados: []}));
@@ -2152,7 +2159,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
                           };
         }    
          
-             //console.log("productosDispensados[0][0] TODOS ", productosDispensadosPendientes);
+             console.log("productosDispensados[0][0] TODOS ", productosDispensados);
             //return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros);
             __generarPdf(parametrosPdf, function(nombre_pdf) {
                     //console.log("nombre_pdf ", nombre_pdf);
@@ -2207,7 +2214,7 @@ DispensacionHc.prototype.listarUltimaDispensacionPendientes = function(req, res)
     G.Q.ninvoke(that.m_dispensacion_hc,'listarUltimaDispensacionPendientes',parametros).then(function(resultado){
       
         if(resultado.rows.length > 0){ 
-            console.log("resultado.rows ", resultado.rows);
+            console.log("resultado.rows [listarUltimaDispensacionPendientes]:: ", resultado.rows);
             productosPendienteDispensados = resultado.rows;
            
             return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)

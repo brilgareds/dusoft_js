@@ -1155,8 +1155,138 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                      
     }
     
-        console.log("PARAMETROS obj ", obj);             
-        var sql = "SELECT A.resultado,\
+        console.log("PARAMETROS obj ", obj);          
+        
+        var sql = "SELECT  A.resultado, \
+        to_char(A.fecha_registro,'YYYY-MM-DD')as fecha_registro, \
+        round(A.unidades) as unidades,\
+        A.nombre, \
+        (SELECT bode.descripcion FROM bodegas as bode WHERE bode.empresa_id = A.empresa_id AND bode.centro_utilidad=A.centro_utilidad AND bode.bodega = A.bodega) AS razon_social, \
+        A.bodega,\
+        A.centro_utilidad,\
+        A.formulacion\
+                FROM ( \
+                    SELECT \
+                        d.fecha_registro,\
+                        '1' as resultado, \
+                        SUM(dd.cantidad) as unidades, \
+                        SYS.nombre, \
+                        EMPRE.razon_social,\
+                        NUME.bodega,\
+                        NUME.centro_utilidad,\
+                        NUME.empresa_id,\
+                        'F.historia clinica' as formulacion\
+                      FROM hc_formulacion_despachos_medicamentos as dc \
+                        JOIN dispensacion_estados hc ON(dc.evolucion_id=hc.evolucion_id), \
+                        bodegas_documentos as d, \
+                        bodegas_documentos_d AS dd , \
+                        inventarios_productos inve  left join medicamentos mm ON (inve.codigo_producto=mm.codigo_medicamento), \
+                        system_usuarios  SYS, \
+                        bodegas_doc_numeraciones  NUME, \
+                        empresas EMPRE \
+                    WHERE dc.bodegas_doc_id = d.bodegas_doc_id \
+                        and dc.numeracion = d.numeracion \
+                        and d.bodegas_doc_id = dd.bodegas_doc_id \
+                        and d.numeracion = dd.numeracion \
+                        and dd.codigo_producto=inve.codigo_producto \
+                        and d.usuario_id=SYS.usuario_id \
+                        and d.bodegas_doc_id=NUME.bodegas_doc_id \
+                        and NUME.empresa_id=EMPRE.empresa_id " + sql + " and hc.tipo_id_paciente= :1 \
+                        and hc.paciente_id= :2 \
+                        and dc.sw_estado='1'\
+                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id \
+                	UNION \
+                     SELECT \
+                        d.fecha_registro,\
+                        '0' as resultado, \
+                        SUM(dd.cantidad) as unidades, \
+                        SYS.nombre, \
+                        EMPRE.razon_social,\
+                        NUME.bodega,\
+                        NUME.centro_utilidad,\
+                        NUME.empresa_id,\
+                        'F.historia clinica' as formulacion\
+                        FROM hc_formulacion_despachos_medicamentos_pendientes as dc \
+                        JOIN dispensacion_estados hc ON(dc.evolucion_id=hc.evolucion_id) , \
+                        bodegas_documentos as d, \
+                        bodegas_documentos_d AS dd , \
+                        inventarios_productos inve  left join medicamentos mm ON (inve.codigo_producto=mm.codigo_medicamento) , \
+                        system_usuarios  SYS, \
+                        bodegas_doc_numeraciones  NUME, \
+                        empresas EMPRE \
+                      WHERE dc.bodegas_doc_id = d.bodegas_doc_id \
+                        and dc.numeracion = d.numeracion \
+                        and d.bodegas_doc_id = dd.bodegas_doc_id \
+                        and d.numeracion = dd.numeracion \
+                        and dd.codigo_producto=inve.codigo_producto \
+                        and d.usuario_id=SYS.usuario_id \
+                        and d.bodegas_doc_id=NUME.bodegas_doc_id \
+                        and NUME.empresa_id=EMPRE.empresa_id " + sql +  " and hc.tipo_id_paciente= :1\
+                        and hc.paciente_id= :2\
+                      GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id\
+                UNION \
+                      SELECT \
+                        a.fecha_registro,\
+                        '1' as resultado, \
+                        SUM(b.cantidad) as unidades, \
+                        g.nombre, \
+                        f.descripcion||'-'||i.razon_social as razon_social,\
+                        e.bodega,\
+                        e.centro_utilidad, \
+                        e.empresa_id,\
+                        'F.externa' as formulacion \
+                      FROM \
+                        bodegas_documentos as a \
+                        JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id) \
+                        AND (a.numeracion = b.numeracion) \
+                        JOIN esm_formulacion_despachos_medicamentos as c ON (a.bodegas_doc_id = c.bodegas_doc_id) \
+                        AND (a.numeracion = c.numeracion) \
+                        JOIN esm_formula_externa as d ON (c.formula_id = d.formula_id) \
+                        JOIN bodegas_doc_numeraciones as e ON (a.bodegas_doc_id = e.bodegas_doc_id) \
+                        JOIN centros_utilidad as f ON (e.empresa_id = f.empresa_id) \
+                        AND (e.centro_utilidad = f.centro_utilidad) \
+                        JOIN empresas as i ON (f.empresa_id = i.empresa_id) \
+                        JOIN system_usuarios as g ON (a.usuario_id = g.usuario_id) \
+                        JOIN inventarios_productos as h ON (b.codigo_producto = h.codigo_producto) \
+                      WHERE TRUE   " + sql2 +  " and d.tipo_id_paciente= :1\
+                        and d.paciente_id = :2\
+                        and c.sw_estado='1' \
+                        and d.sw_estado IN ('0','1') \
+                        and a.fecha_registro >= '" +obj.fechaDia+ "'::date\
+                        and a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
+                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id  \
+                UNION  \
+                      SELECT \
+                        a.fecha_registro,\
+                        '0' as resultado, \
+                        SUM(b.cantidad) as unidades, \
+                        g.nombre, \
+                        f.descripcion||'-'||i.razon_social as razon_social,\
+                        e.bodega,\
+                        e.centro_utilidad,\
+                        e.empresa_id,\
+                        'F.externa' as formulacion \
+                      FROM \
+                        bodegas_documentos as a \
+                        JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id) \
+                        AND (a.numeracion = b.numeracion) \
+                        JOIN esm_formulacion_despachos_medicamentos_pendientes as c ON (a.bodegas_doc_id = c.bodegas_doc_id) \
+                        AND (a.numeracion = c.numeracion) \
+                        JOIN esm_formula_externa as d ON (c.formula_id = d.formula_id) \
+                        JOIN bodegas_doc_numeraciones as e ON (a.bodegas_doc_id = e.bodegas_doc_id) \
+                        JOIN centros_utilidad as f ON (e.empresa_id = f.empresa_id) \
+                        AND (e.centro_utilidad = f.centro_utilidad) \
+                        JOIN empresas as i ON (f.empresa_id = i.empresa_id) \
+                        JOIN system_usuarios as g ON (a.usuario_id = g.usuario_id) \
+                        JOIN inventarios_productos as h ON (b.codigo_producto = h.codigo_producto) \
+                      WHERE TRUE " + sql2 + "  and d.tipo_id_paciente = :1\
+                        and d.paciente_id= :2\
+                        and d.sw_estado IN ('0','1') \
+                        and a.fecha_registro >= '" +obj.fechaDia+ "'::date\
+                        and a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
+                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id \
+                       ) AS A ORDER BY  A.fecha_registro DESC LIMIT 1";
+     /*   var sql = "SELECT A.resultado,\
                 A.fecha_registro,\
                 A.unidades,\
                 A.nombre,\
@@ -1264,9 +1394,9 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             and d.fecha_registro <= ('" +obj.today + "'::date +'1 day' ::interval)::date\
                             and d.fecha_registro >= '" +obj.fechaDia+ "'::date\
                             GROUP BY 2,4,5,e.bodega,e.centro_utilidad,e.empresa_id \
-                       ) AS A ORDER BY  A.resultado ASC ";  
+                       ) AS A ORDER BY  A.resultado ASC ";  */
     G.knex.raw(sql,parametros).then(function(resultado){     
-        //console.log("resultado ------///*****++++ : ", resultado);
+        console.log("resultado CONFRONTADOS------///*****++++ : ", resultado.rows);
         callback(false, resultado);
     }).catch(function(err){      
         console.log("parametros: ", parametros);

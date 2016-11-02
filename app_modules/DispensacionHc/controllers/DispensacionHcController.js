@@ -482,23 +482,32 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
    console.log("*********DispensacionHc.prototype.existenciasBodegas*************");
    
     var today = new Date();
-    var dd = today.getDate();
+    /*var dd = today.getDate();
     var mm = today.getMonth()+1; //January is 0!
     var yyyy = today.getFullYear();
         if(dd<10){
             dd='0'+dd
         } 
-        if(mm<10){
+        if(mm<10){   
             mm='0'+mm
-        } 
-    var today = yyyy+'-'+mm+'-'+dd;
-    var fechaDias = sumaFecha(25,today);
+        } */
+    var formato = 'YYYY-MM-DD';
+    var fechaAddTicinco  = G.moment(today).add(25, 'day').format(formato);
+    var fechaExtTicinco=G.moment().subtract(25,'days').format(formato);
+    //var today = yyyy+'-'+mm+'-'+dd;
+    var fechaToday = G.moment(today).format(formato);
+    //var fechaDias = sumaFecha(-25,today);
     var that = this;
     var args = req.body.data;
     var fechaRegistro = "";
     var fechaDespacho = "";
     var def = G.Q.defer();
     
+    console.log("fechaAddTicinco ", fechaAddTicinco);
+    console.log("fechaExtTicinco ", fechaExtTicinco);
+    console.log("fechaToday ", fechaToday);
+    console.log("today ", today); 
+    //console.log("fechaDias ", fechaDias);
     console.log("args ", args);
     if (args.existenciasBodegas === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {existenciasBodegas: []}));
@@ -557,8 +566,8 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
                                                pacienteId: args.existenciasBodegas.pacienteId,
                                                principioActivo: args.existenciasBodegas.principioActivo, 
                                                producto: args.existenciasBodegas.codigoProducto,
-                                               fechaDia: fechaDias,
-                                               today: today
+                                               fechaDia: fechaExtTicinco,
+                                               today: fechaToday
                                                };
                                                
         console.log("parametros ", parametros);
@@ -574,7 +583,7 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
         console.log("[fechaRegistro]: ",fechaRegistro);
         console.log("[today]: ",today);
         
-        if(today >= fechaRegistro){
+        if(fechaToday >= fechaRegistro){
             console.log("2) Validacion ");                    
             console.log("today ", today);
             console.log("fechaRegistro ", fechaRegistro);
@@ -588,7 +597,8 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
               *              del producto
               **/
             if(!fechaRegistro){
-                 fechaDespacho = sumaFecha(-23,today);
+                 //fechaDespacho = sumaFecha(-23,today);
+                 fechaDespacho = fechaExtTicinco;
             }else{
                 fechaDespacho = fechaRegistro;
             }
@@ -597,11 +607,11 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
          
             
       
-        var fechaActual = G.moment(today);
+        var fechaActual = G.moment(fechaToday);
         var fechaUltimaEntregaProducto  = G.moment(fechaDespacho);
         var diferenciaDeDias = fechaActual.diff(fechaUltimaEntregaProducto, 'days');
             console.log(" [diferenciaDeDias]: ", diferenciaDeDias);
-            console.log("today ", today);
+            console.log("fechaActual ", fechaActual);
             console.log("fechaDespacho ", fechaDespacho);
             console.log("authorizado ", args.existenciasBodegas.autorizado);
         //if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1' || args.existenciasBodegas.autorizado === ""){

@@ -492,7 +492,7 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
             mm='0'+mm
         } */
     var formato = 'YYYY-MM-DD';
-    var fechaAddTicinco  = G.moment(today).add(25, 'day').format(formato);
+    //var fechaAddTicinco  = G.moment(today).add(25, 'day').format(formato);
     var fechaExtTicinco=G.moment().subtract(25,'days').format(formato);
     //var today = yyyy+'-'+mm+'-'+dd;
     var fechaToday = G.moment(today).format(formato);
@@ -503,10 +503,10 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
     var fechaDespacho = "";
     var def = G.Q.defer();
     
-    console.log("fechaAddTicinco ", fechaAddTicinco);
+    /*console.log("fechaAddTicinco ", fechaAddTicinco);
     console.log("fechaExtTicinco ", fechaExtTicinco);
     console.log("fechaToday ", fechaToday);
-    console.log("today ", today); 
+    console.log("today ", today); */
     //console.log("fechaDias ", fechaDias);
     console.log("args ", args);
     if (args.existenciasBodegas === undefined) {

@@ -38,9 +38,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         that.tipoObservacionConfrontado = function(){
             
               var tipoObservacion = [];                
-              var data = [ {descripcion: "Prueba de observacion #1"},
-                           {descripcion: "Prueba de observacion #2"},
-                           {descripcion: "Prueba de observacion #3"}];
+              var data = [ {descripcion: "Entrega tarde"},
+                           {descripcion: "Aumento de dosis"},
+                           {descripcion: "No cumple el tiempo de tratamiento"}];
                      
               for(var i in data){                
                   tipoObservacion.push(data[i]);

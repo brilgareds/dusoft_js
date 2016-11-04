@@ -696,7 +696,7 @@ SELECT todo.codigo_producto,  \
     //WHERE entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = 360317)||'%'";
    //var query = G.knex('hc_formulacion_antecedentes');//.where("evolucion_id","360317");
     var query = G.knex.raw(sql,parametros);
-    console.log("query ", query.toSQL());//.client.driver
+    //console.log("query ", query.toSQL());//.client.driver
             query.then(function(resultado){    
       //console.log("RESULTO QUE RESULTADO ", resultado);
         callback(false, resultado);

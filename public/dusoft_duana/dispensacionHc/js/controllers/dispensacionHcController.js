@@ -372,15 +372,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                                             tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
                                                                                             pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Ultima entrega</a>\
                                                  </li>\
-                                            <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
-                                                    <a href="javascript:void(0);" ng-click="imprimirUltimaDispensacionPendiente({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), \n\
-                                                                                            tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
-                                                                                            pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Pendientes dispensados</a>\
-                                                 </li>\
+                                           \
                                             </ul>\
                                        </div>'
                             },
-                         
+                            /* <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
+                                                    <a href="javascript:void(0);" ng-click="imprimirUltimaDispensacionPendiente({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), \n\
+                                                                                            tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
+                                                                                            pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Pendientes dispensados</a>\
+                                                 </li>\*/
                             //{field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: 'Estado formula', width:"10%"},
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: "Estado Actual", 
                                     cellClass: "txt-center",  
@@ -751,7 +751,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                     estadoFormula: '1'});
                                                                 
                                         that.imprimirMedicamentosPendientesLocalStorage(resultadoStoragePendientes);
-                                        that.imprimirMedicamentosDispensadosLocalStorage(resultadoStoragePendientes,1);
+                                        that.imprimirMedicamentosDispensadosLocalStorage(resultadoStoragePendientes,0);
                                         
                                     }  
                                     

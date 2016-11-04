@@ -488,7 +488,7 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
         if(dd<10){
             dd='0'+dd
         } 
-        if(mm<10){   
+        if(mm<10){      
             mm='0'+mm
         } */
     var formato = 'YYYY-MM-DD';
@@ -1711,7 +1711,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
             */          
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados',{actualizarCampoPendiente:1, conPendientes:conPendientesEstado, evolucion:evolucionId},transaccion);
 
-        });
+        });                    
             
     })
     
@@ -1976,8 +1976,8 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         medicamentosDispensados = 'listarMedicamentosPendientesDispensados';
         
     }else{
-        medicamentosDispensados = 'listarMedicamentosDispensados'; //listarUltimaDispensacionPendientes listarMedicamentosDispensados
-    }
+        medicamentosDispensados = 'listarUltimaDispensacionFormula'; //listarUltimaDispensacionPendientes listarMedicamentosDispensados
+    }//listarUltimaDispensacionFormula
     //console.log("parametros ", parametros);
    
     G.Q.ninvoke(that.m_dispensacion_hc,medicamentosDispensados,parametros).then(function(resultado){
@@ -2122,7 +2122,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
           
        
     G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros).then(function(resultado){
-       console.log("1) resultado ", resultado.rows);
+       //console.log("1) resultado ", resultado.rows);
        if(resultado.rows.length > 0){ 
             
             detalleCabecera = resultado.rows[0];
@@ -2134,7 +2134,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
         }
        
    }).then(function(resultado){
-       console.log("2) resultado ", resultado.rows);
+       //console.log("2) resultado ", resultado.rows);
        if(resultado.rows.length > 0){ 
             
             profesional = resultado.rows;
@@ -2146,7 +2146,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
        }
        //
    }).then(function(resultado){                                      
-        console.log("3) resultado ---> ", resultado.rows.length);  
+        //console.log("3) resultado ---> ", resultado.rows.length);  
         var parametrosPdf = {};
         if(resultado.rows.length > 0){ 
             
@@ -2169,7 +2169,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
                           };
         }    
          
-             console.log("productosDispensados[0][0] TODOS ", productosDispensados);
+             //console.log("productosDispensados[0][0] TODOS ", productosDispensados);
             //return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros);
             __generarPdf(parametrosPdf, function(nombre_pdf) {
                     //console.log("nombre_pdf ", nombre_pdf);
@@ -2224,7 +2224,7 @@ DispensacionHc.prototype.listarUltimaDispensacionPendientes = function(req, res)
     G.Q.ninvoke(that.m_dispensacion_hc,'listarUltimaDispensacionPendientes',parametros).then(function(resultado){
       
         if(resultado.rows.length > 0){ 
-            console.log("resultado.rows [listarUltimaDispensacionPendientes]:: ", resultado.rows);
+            //console.log("resultado.rows [listarUltimaDispensacionPendientes]:: ", resultado.rows);
             productosPendienteDispensados = resultado.rows;
            
             return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
@@ -2245,7 +2245,7 @@ DispensacionHc.prototype.listarUltimaDispensacionPendientes = function(req, res)
         }
        
    }).then(function(resultado){
-        console.log("3) resultado ", resultado.rows);   
+        //console.log("3) resultado ", resultado.rows);   
         if(resultado.rows.length > 0){ 
             
              profesional = resultado.rows;

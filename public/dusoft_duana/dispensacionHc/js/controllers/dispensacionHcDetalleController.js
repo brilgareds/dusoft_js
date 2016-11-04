@@ -757,13 +757,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             }else{
                 that.listarMedicamentosFormuladosPendientes(parametros);
             }
-            
-           // $scope.listaMedicamentosFormulados.refreshView();
-            //console.log("$scope.listaMedicamentosFormulados ", $scope.listaMedicamentosFormulados)
-            //$scope.listaMedicamentosFormulados.api.refreshView();
-
-              
-
+           
         }); 
         
         

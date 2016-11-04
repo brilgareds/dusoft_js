@@ -500,6 +500,212 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
 };
 
 
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener la ultima dispensacion de la formula
+ *              sea normal o pendientes
+ * @controller DispensacionHc.prototype.listarMedicamentosDispensados
+ */
+DispensacionHcModel.prototype.listarUltimaDispensacionFormula = function(obj,callback){
+    
+    
+    var parametros = {1: obj.evolucionId};
+   
+    var sql= " SELECT entrega.codigo_producto,  \
+       round(entrega.numero_unidades)as numero_unidades, \
+       entrega.fecha_vencimiento,\
+       entrega.lote,    \
+       entrega.descripcion_prod, \
+       entrega.molecula, \
+       entrega.usuario_id,   \
+       entrega.nombre,  \
+       entrega.descripcion, \
+      entrega.sw_pactado,  \
+       entrega.total_costo, \
+       entrega.fecha,   \
+       case when entrega.entrega = 0 then 'Pendientes'\
+                   else  ' No.'||entrega.entrega\
+                    end as entrega,\
+       entrega.sistema, \
+        entrega.dias_de_entregado, \
+       to_char(entrega.fecha_entrega, 'YYYY-DD-MM')as fecha_entrega,  \
+        entrega.grupo_id \
+ FROM ( \
+SELECT todo.codigo_producto,  \
+       todo.numero_unidades, \
+       (todo.fecha_vencimiento)AS fecha_vencimiento,   \
+       todo.lote,    \
+       todo.descripcion_prod, \
+       fc_descripcion_producto_alterno(todo.codigo_producto) as molecula, \
+       todo.usuario_id,   \
+       todo.nombre,  \
+       todo.descripcion, \
+      todo.sw_pactado,  \
+       todo.total_costo, \
+       todo.fecha,   \
+       todo.entrega, \
+       'hc_dispensaciontodo' as sistema,\
+        todo.dias_de_entregado, \
+       todo.fecha_entrega as fecha_entrega,  \
+        todo.grupo_id  \
+       FROM (   \
+            SELECT k.codigo_producto,  \
+               k.numero_unidades,  \
+               TO_CHAR(k.fecha_vencimiento,'YYYY-MM-DD')AS fecha_vencimiento,   \
+               k.lote,    \
+               k.descripcion_prod,   \
+               fc_descripcion_producto_alterno(k.codigo_producto) as molecula,  \
+               k.usuario_id,   \
+               k.nombre,  \
+               k.descripcion,  \
+               k.sw_pactado,  \
+               k.total_costo,  \
+               k.fecha,   \
+               k.grupo_id,  \
+               k.numero_entrega_actual as entrega,  \
+               k.sistema,   \
+               k.dias_de_entregado, \
+               K.fecha_entrega as fecha_entrega \
+            FROM(     \
+                SELECT dd.codigo_producto,\
+                       dd.cantidad as numero_unidades, \
+                       dd.fecha_vencimiento,   \
+                       dd.lote,   \
+                       dd.sw_pactado,  \
+                       dd.total_costo,  \
+                       fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,   \
+                       sys.usuario_id,   \
+                       sys.nombre,  \
+                       sys.descripcion,\
+                       'dispensacion_hc' as sistema,   \
+                       d.fecha_registro as fecha_entrega,   \
+                       to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,   \
+                       (   \
+                       SELECT min(hcf.fecha_formulacion)    \
+                       FROM hc_formulacion_antecedentes hcf    \
+                       WHERE hcf.evolucion_id = :1  \
+                       )as fecha,   \
+                       d.fecha_registro,  \
+                       inv.grupo_id,  \
+                       d.numero_entrega_actual   \
+               FROM  hc_formulacion_despachos_medicamentos_pendientes hc   \
+                       INNER JOIN bodegas_documentos d ON hc.bodegas_doc_id = d.bodegas_doc_id AND hc.numeracion = d.numeracion   \
+                       INNER JOIN bodegas_documentos_d dd ON dd.bodegas_doc_id = d.bodegas_doc_id AND dd.numeracion = d.numeracion  \
+                       INNER JOIN system_usuarios sys ON sys.usuario_id = d.usuario_id  \
+                       INNER JOIN inventarios_productos inv ON inv.codigo_producto  = dd.codigo_producto  \
+                 WHERE hc.evolucion_id = :1 AND d.todo_pendiente = '1'   \
+      UNION    \
+              SELECT dd.codigo_producto,   \
+                     dd.cantidad as numero_unidades,   \
+                     dd.fecha_vencimiento,  \
+                     dd.lote,   \
+                     dd.sw_pactado,  \
+                     dd.total_costo,  \
+                     fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,    \
+                     sys.usuario_id,   \
+                     sys.nombre,  \
+                     sys.descripcion,  \
+                     'dispensacion_hc' as sistema,  \
+                     d.fecha_registro as fecha_entrega,   \
+                     to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,  \
+                     (SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf WHERE hcf.evolucion_id = :1 )as fecha,  \
+                     d.fecha_registro,  \
+                     inv.grupo_id,  \
+                     d.numero_entrega_actual  \
+                 FROM hc_formulacion_despachos_medicamentos as dc,  \
+                      bodegas_documentos as d,  \
+                      bodegas_documentos_d AS dd,  \
+                      system_usuarios  sys,  \
+                      inventarios_productos inv    \
+                 WHERE dc.bodegas_doc_id = d.bodegas_doc_id  \
+                       and dc.numeracion = d.numeracion\
+                       and dc.evolucion_id = :1  \
+                       and d.bodegas_doc_id = dd.bodegas_doc_id  \
+                       and d.numeracion = dd.numeracion  \
+                       and d.usuario_id=sys.usuario_id   \
+                     and inv.codigo_producto  = dd.codigo_producto\
+  )as k   \
+  )as todo WHERE todo.entrega = (SELECT max(numero_entrega_actual) from dispensacion_estados where evolucion_id = :1 ) \
+  UNION  \
+  SELECT a.codigo_producto,  \
+       a.cantidad_entrega as numero_unidades, \
+       TO_CHAR(a.fecha_vencimiento,'YYYY-MM-DD')AS fecha_vencimiento,   \
+       a.lote,    \
+       a.descripcion_prod, \
+       fc_descripcion_producto_alterno(a.codigo_producto) as molecula \
+      ,a.usuario_id,   \
+       a.nombre,  \
+       a.descripcion, \
+       a.sw_pactado,  \
+       a.total_costo,\
+        a.fecha,    \
+       a.numero_entrega_actual as entrega, \
+       'hc_dispensaciontodo' as sistema,\
+       a.dias_de_entregado, \
+       a.fecha_entrega as fecha_entrega,  \
+        a.grupo_id \
+        FROM (  \
+                SELECT dd.codigo_producto,  \
+                                dd.cantidad as cantidad_entrega,  \
+                                dd.fecha_vencimiento,  \
+                                dd.lote,  \
+                                fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,  \
+                                dd.sw_pactado,  \
+                                fc_descripcion_producto_molecula(dd.codigo_producto) as molecula,  \
+                                dd.total_costo,  \
+                                '1' as pendiente_dispensado,  \
+                                (select fecha_registro as fecha_entrega  \
+                                  from  \
+                                  hc_pendientes_por_dispensar  AS e   \
+                                  where   \
+                                  e.evolucion_id  = :1 and sw_estado='1' limit 1  \
+                                ) as fecha_pendiente, \
+                                d.usuario_id, \
+                                sys.nombre,  \
+                        sys.descripcion, \
+                                 'dispensacion_hc' as sistema, \
+                                 d.fecha_registro as fecha_entrega,  \
+                                  to_char(now()- d.fecha_registro,'dd') as dias_de_entregado, \
+                                   (   \
+                   SELECT min(hcf.fecha_registro)  \
+                   FROM dispensacion_estados hcf    \
+                   WHERE hcf.evolucion_id = :1  \
+                   )as fecha, \
+                    d.fecha_registro,  \
+                   inv.grupo_id,  \
+                   d.numero_entrega_actual    \
+                          FROM hc_formulacion_despachos_medicamentos_pendientes tmp  \
+                          inner join bodegas_documentos as d on (tmp.bodegas_doc_id = d.bodegas_doc_id and tmp.numeracion = d.numeracion)  \
+                          inner join bodegas_documentos_d AS dd on (d.bodegas_doc_id = dd.bodegas_doc_id and d.numeracion = dd.numeracion)  \
+                          INNER JOIN system_usuarios sys ON sys.usuario_id = d.usuario_id \
+                          INNER JOIN inventarios_productos inv ON inv.codigo_producto  = dd.codigo_producto  \
+                          WHERE   \
+                          tmp.evolucion_id = :1 AND d.todo_pendiente != 1   \
+                          )as a WHERE a.fecha_entrega = (   \
+                              SELECT distinct(max(d2.fecha_registro))  \
+                            FROM hc_formulacion_despachos_medicamentos_pendientes tmp2  \
+                            inner join bodegas_documentos as d2 on   \
+                            (tmp2.bodegas_doc_id = d2.bodegas_doc_id and tmp2.numeracion = d2.numeracion)  \
+                              WHERE tmp2.evolucion_id = :1 AND d2.todo_pendiente != 1   \
+                          )  \
+  )as entrega WHERE entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = :1)||'%'";
+       
+  
+  
+    //WHERE entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = 360317)||'%'";
+   //var query = G.knex('hc_formulacion_antecedentes');//.where("evolucion_id","360317");
+    var query = G.knex.raw(sql,parametros);
+    console.log("query ", query.toSQL());//.client.driver
+            query.then(function(resultado){    
+      //console.log("RESULTO QUE RESULTADO ", resultado);
+        callback(false, resultado);
+     
+    }).catch(function(err){        
+      console.log(" err [listarMedicamentosDispensados]: ", err);
+        callback(err);
+    });
+};    
 
 /*
  * @author : Cristian Ardila
@@ -1998,9 +2204,12 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
         G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion
             
          ).then(function(resultado){
-                
+                var formato = 'YYYY-MM-DD hh:mm:ss a';
+                var fechaToday = G.moment(resultado.rows[0].fecha_registro).format(formato);
+                obj.parametro1.fecha_ultima_entrega = fechaToday;
+                console.log("RETURNING RESULTADO [__insertarBodegasDocumentos]", obj.parametro1);
             return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion); 
-               
+                                  
         }).then(function(){
             
             return G.Q.ninvoke(that,'actualizarProductoPorBodega',obj.parametro1, transaccion);
@@ -2047,9 +2256,12 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 }else{
                     obj.parametro1.actualizarCampoPendiente = 0;
                 }
+                
+                console.log("AQUI SE GUARDA ESTO DE A QUI ", obj.parametro1);
+                
             return G.Q.ninvoke(that,'actualizarDispensacionEstados', obj.parametro1 , transaccion); 
                  
-                 
+                          
                  
         }).then(function(){
                  
@@ -2059,7 +2271,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 //console.log("resultado.rows[0].estado_entrega ", resultado.rows[0].estado_entrega);
             if(resultado.rows[0].estado_entrega === '1'){                
                 return G.Q.ninvoke(that,'actualizarEstadoFinalizoFormula', obj.parametro1 , transaccion);
-            }else{
+            }else{                             
                 def.resolve();    
             }  
                     
@@ -2090,9 +2302,9 @@ var sumaTotalDispensados = 0;
  **/
 function __insertarMedicamentosPendientesPorDispensar(that, index, productos, parametros,transaccion, callback) {
     
-    console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
-    console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
-    console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
+   // console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
+    //console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
+    //console.log("||||||||| __insertarMedicamentosPendientesPorDispensar |||||||||||||| ");
     //console.log("totalInsertadosPendientes ****** ", totalInsertadosPendientes); 
     
     var producto = productos[index];
@@ -2105,7 +2317,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
     
        
             
-      console.log("9) Accion : insertarBodegasDocumentosDetalle ");
+      //console.log("9) Accion : insertarBodegasDocumentosDetalle ");
  
         G.Q.ninvoke(that,'actualizarProductoPendientePorBodega',parametros.evolucion,producto, transaccion).then(function(resultado){
             /*console.log("producto.total > 0 ::: ", producto.total);
@@ -2116,8 +2328,8 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
                 G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, parametros.evolucion, 0, parametros.usuario, transaccion)
                    .then(function(resultado){                            
                            totalInsertadosPendientes = 1;
-                           console.log(" -1- resultado totalInsertadosPendientes::::---:::: ", totalInsertadosPendientes);
-                           console.log(" -2- resultado resultado::::---:::: ", resultado);
+                           //console.log(" -1- resultado totalInsertadosPendientes::::---:::: ", totalInsertadosPendientes);
+                           //console.log(" -2- resultado resultado::::---:::: ", resultado);
                         });
             }
                    
@@ -2128,9 +2340,9 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
              //console.log("sumaTotalDispensados ", sumaTotalDispensados);
             if( sumaTotalDispensados === 0){    
                     
-                    console.log("Entro se pone CERO 0")
+                    //console.log("Entro se pone CERO 0")
                     G.Q.ninvoke(that,'consultarPendientesFormula',parametros.evolucion).then(function(resultado){  
-                         console.log("resultado ----->>>>> ", resultado.rows);
+                         //console.log("resultado ----->>>>> ", resultado.rows);
                         if(resultado.rows.length > 0){
                             totalInsertadosPendientes = 1;
                         }
@@ -2317,9 +2529,9 @@ DispensacionHcModel.prototype.actualizarProductoPorBodega = function(obj,transac
  * */
 DispensacionHcModel.prototype.actualizarEstadoFinalizoFormula = function(obj,transaccion, callback){
    
-   var parametros = {1: obj.evolucion};   
-   var sql = "UPDATE  dispensacion_estados\
-		SET sw_finalizado= 1 \
+   var parametros = {1: obj.evolucion, 2: 'now()'};   
+   var sql = "UPDATE dispensacion_estados\
+		SET sw_finalizado= 1, fecha_ultima_entrega = :2 \
 		WHERE evolucion_id = :1 ;";          
    var query = G.knex.raw(sql,parametros);
     
@@ -2333,7 +2545,7 @@ DispensacionHcModel.prototype.actualizarEstadoFinalizoFormula = function(obj,tra
     });  
 };
  
- 
+  
 
 
  /**
@@ -2416,7 +2628,14 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
     var def = G.Q.defer();
     G.knex.transaction(function(transaccion) {  
         
-        G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion).then(function(resultado){        
+        G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion)
+           .then(function(resultado){  
+               
+                var formato = 'YYYY-MM-DD hh:mm:ss a';
+                var fechaToday = G.moment(resultado.rows[0].fecha_registro).format(formato);
+                obj.parametro1.fecha_ultima_entrega = fechaToday;
+                console.log("RETURNING RESULTADO [__insertarBodegasDocumentos]", obj.parametro1);
+                
                 return G.Q.nfcall(__insertarDespachoMedicamentos, obj.parametro1, transaccion);
         }).then(function(){          
                
@@ -2450,6 +2669,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
         }).then(function(){
                 
                 obj.parametro1.actualizarCampoPendiente = 0;
+                console.log("ESTO ES CUANDO DISPENSO POR PRIMERA VEZ ", obj.parametro1);
                 return G.Q.ninvoke(that,'actualizarDispensacionEstados', obj.parametro1 , transaccion); 
          
         }).then(function(){
@@ -2601,7 +2821,7 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
    console.log("***DispensacionHcModel.prototype.actualizarDispensacionEstados*****");
    console.log("***DispensacionHcModel.prototype.actualizarDispensacionEstados*****");
    
-   console.log("obj ", obj);
+   console.log("obj [actualizarDispensacionEstados]: ", obj);
    
    var parametros = [];
    var sql = "";   
@@ -2623,13 +2843,15 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
          */       
         if(obj.actualizarFechaUltimaEntrega === 1){
             parametros = {sw_pendiente : obj.conPendientes,
-                         evolucion_id: obj.evolucion
+                         evolucion_id: obj.evolucion,
+                         fecha_ultima_entrega: obj.fecha_ultima_entrega
                         };
             
             sql = "UPDATE dispensacion_estados \
                     set fecha_entrega = now(),\
                     numero_entrega_actual = numero_entrega_actual+1, \
-                    sw_pendiente = :sw_pendiente\
+                    sw_pendiente = :sw_pendiente,\
+                    fecha_ultima_entrega = :fecha_ultima_entrega \
                     WHERE evolucion_id = :evolucion_id ";
             
         }else{        
@@ -2637,7 +2859,8 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
                     fecha_minima_entrega: obj.fechaMinima,
                     fecha_maxima_entrega: obj.fechaMaxima,
                     sw_pendiente : obj.conPendientes,
-                    evolucion_id: obj.evolucion
+                    evolucion_id: obj.evolucion,
+                    fecha_ultima_entrega: obj.fecha_ultima_entrega
                     };
                 
             sql = "UPDATE  dispensacion_estados \
@@ -2645,21 +2868,40 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
                 fecha_entrega = :fecha_entrega,\
                 fecha_minima_entrega = :fecha_minima_entrega,\
                 fecha_maxima_entrega = :fecha_maxima_entrega, \
-                sw_pendiente = :sw_pendiente \
+                sw_pendiente = :sw_pendiente, \
+                fecha_ultima_entrega = :fecha_ultima_entrega\
                 WHERE   evolucion_id = :evolucion_id ";
             }       
     };
     
     if(obj.actualizarCampoPendiente === 1){
-        parametros = {sw_pendiente : obj.conPendientes, evolucion_id: obj.evolucion};
         
+        var fechaUltimaEntrega = "";
+        if(!obj.fecha_ultima_entrega){
+            parametros = {sw_pendiente : obj.conPendientes, evolucion_id: obj.evolucion};
+           fechaUltimaEntrega = "";
+        }else{
+            parametros = {sw_pendiente : obj.conPendientes, evolucion_id: obj.evolucion, fecha_ultima_entrega: obj.fecha_ultima_entrega};
+            fechaUltimaEntrega = ",fecha_ultima_entrega = :fecha_ultima_entrega";
+           
+        }
+       
+        console.log("obj ", obj);
+        //console.log("obj.fecha_ultima_entrega ", obj.fecha_ultima_entrega);
+        console.log("fechaUltimaEntrega ", fechaUltimaEntrega);
+        console.log("sql ", sql);
         sql = "UPDATE dispensacion_estados \
                 set sw_pendiente = :sw_pendiente \
-                WHERE evolucion_id = :evolucion_id ";
+                "+fechaUltimaEntrega+"\
+               WHERE evolucion_id = :evolucion_id ";
     }                                      
     
-    
-    console.log("parametros ", parametros);
+                           
+                           
+                           
+                           
+                           
+    console.log("parametros [actualizarDispensacionEstados]: ", parametros);
     console.log("sql ", sql);
     var query = G.knex.raw(sql,parametros);    
     
@@ -3154,7 +3396,7 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
                      8: obj.todoPendiente,9: 'now()'};
                  
     var sql = " INSERT INTO bodegas_documentos(bodegas_doc_id,numeracion,fecha,total_costo,transaccion,observacion,usuario_id,todo_pendiente,fecha_registro)\
-                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9 );";
+                VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) RETURNING fecha_registro;";
     
     var query = G.knex.raw(sql, parametros);
     

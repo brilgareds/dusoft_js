@@ -179,11 +179,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         
                         if(data.status === 200) {  
                            
-                            //console.log(" ****** ==== obj ==== ", obj);
-                           //console.log("RESULTADO ", data.obj.listar_formulas);
                            $scope.root.items = data.obj.listar_formulas.length;                              
                            $scope.root.afiliados = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                           //console.log("$scope.root.afiliados ", $scope.root.afiliados);
+                           
                            /**
                             * +Descripcion: Se elimina el criterio de consulta de la formula que se
                             *               envia por memoria cuando se dispensa la entrega
@@ -191,6 +189,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             */
                            localStorageService.add("consultarFormula", null); 
                            localStorageService.add("consultarFormulaPendientes", null); 
+                           localStorageService.add("formulaTodoPendiente", null); 
                            
                         }else{
                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -620,8 +619,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                        }
                                    }    
                                 };    
+                            console.log("parametro para todo pendiente ", parametro);
+                            console.log("obj ", obj);
                         dispensacionHcService.listarMedicamentosPendientesPorDispensar(obj,function(data){
-                            
+                             console.log("[listarMedicamentosPendientesPorDispensar]: ", data);
                             if (data.status === 200) {
                                     var nombre = data.obj.listar_medicamentos_pendientes.nombre_pdf;
                                     console.log("nombre ", nombre);
@@ -728,6 +729,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                    
                                     var resultadoStorage = localStorageService.get("consultarFormula");      
                                     var resultadoStoragePendientes = localStorageService.get("consultarFormulaPendientes");      
+                                    var resultadoStorageTodoPendiente = localStorageService.get("formulaTodoPendiente");      
                                                     
                                     console.log("Dispensacion normal ", resultadoStorage);
                                     if(resultadoStorage){
@@ -753,7 +755,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         that.imprimirMedicamentosPendientesLocalStorage(resultadoStoragePendientes);
                                         that.imprimirMedicamentosDispensadosLocalStorage(resultadoStoragePendientes,0);
                                         
-                                    }  
+                                    }
+                                    
+                                    
+                                    console.log("TODO PENDIENTES ", resultadoStorageTodoPendiente);
+                                    if(resultadoStorageTodoPendiente){
+                                        that.imprimirMedicamentosPendientesLocalStorage(resultadoStorageTodoPendiente); 
+                                    }
                                     
                                 }
                             }

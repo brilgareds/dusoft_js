@@ -142,14 +142,32 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.guardarTodoPendiente = function(obj){
-            
+            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
             dispensacionHcService.guardarTodoPendiente(obj,function(data){
                 console.log("guardarTodoPendiente ", data);
-                if(data.status === 200){                   
+                /*if(data.status === 200){                   
+                    AlertService.mostrarMensaje("success", data.msj);                  
+                    //$scope.$emit('emitRealizarEntregaFormula', {response: data});          
+                    $scope.cerrarVentana();
+                    $state.go('DispensacionHc');  
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }*/
+                 if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  
                     //$scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
-                    $state.go('DispensacionHc');  
+                    $state.go('DispensacionHc');   
+                    
+                    localStorageService.add("formulaTodoPendiente",{
+                                evolucion: evolucionStorage.evolucionId,
+                                filtro:{tipo:'EV'},
+                                empresa: 'FD',
+                                pacienteId: evolucionStorage.pacienteId,
+                                tipoIdPaciente: evolucionStorage.tipoIdPaciente
+                                  
+                            });
+                                                      
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }

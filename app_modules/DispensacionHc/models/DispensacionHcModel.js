@@ -525,8 +525,8 @@ DispensacionHcModel.prototype.listarUltimaDispensacionFormula = function(obj,cal
        entrega.total_costo, \
        entrega.fecha,   \
        case when entrega.entrega = 0 then 'Pendientes'\
-                   else  ' No.'||entrega.entrega\
-                    end as entrega,\
+            else ' No.'||entrega.entrega\
+            end as entrega,\
        entrega.sistema, \
         entrega.dias_de_entregado, \
        to_char(entrega.fecha_entrega, 'YYYY-DD-MM')as fecha_entrega,  \

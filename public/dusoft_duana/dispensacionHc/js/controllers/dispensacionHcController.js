@@ -61,7 +61,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.documentosAprobados = [];
                     that.centroUtilidad = [];
                     
-                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";                  
+                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";  
+                    $scope.columnaSizeBusqueda = "col-md-3"; 
                   /**
                     * +Descripcion Filtros para tipo de documento
                     * 
@@ -79,16 +80,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     callback();
                 };
-                   
+                  
                   $scope.onSeleccionFiltro = function(filtro){
+                      
                     $scope.root.filtro = filtro;
                     $scope.root.termino_busqueda = '';
                     $scope.root.visibleBuscador = true;
                     $scope.root.visibleListaEstados = false;
                     $scope.root.visibleBotonBuscador = true;
                 };
-                
-                
+                  
+                  /**
+                   * +Descripcion Funcion encargada de cambiar el tamaño del buscador
+                   *              dinamicamente cada vez que se seleccione un criterio de busqueda
+                   *  @author Cristian Ardila
+                   *  @fecha 05/11/2016
+                   */
+                  $scope.onColumnaSize = function(){
+                     
+                    if($scope.root.filtro.tipo === "AS" || $scope.root.filtro.tipo === "MS" || $scope.root.filtro.tipo === "CD"){
+                        $scope.columnaSizeBusqueda = "col-md-4"; 
+                    }
+                      
+                  };
                /**
                 * @author Cristian Ardila
                 * @fecha 20/05/2016
@@ -326,28 +340,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableCellSelection: true,
                         enableHighlighting: true,
                         columnDefs: [
-                            {displayName: '#Evolucion',     width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
+                            {displayName: '#Evo',     width:"6%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
                             {displayName: '#Formula',       width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 
-                            {displayName: 'Identificacion', width:"7%",
+                            {displayName: 'Identificacion', width:"9%",
                              cellTemplate: "<div\n\
                                             <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente() }} {{ row.entity.mostrarPacientes()[0].getPacienteId() }}  </div>"}, 
                            
-                            {displayName: 'Paciente',       width: "8%",  
+                            {displayName: 'Paciente',       width: "10%",  
                              cellTemplate: "<div\n\
                                             <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }} </div>"},   
-                            {displayName: 'F.Formulacion',  width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()'}, 
-                            {displayName: 'F.Finalizacion', width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()'}, 
+                            {displayName: 'F.Formulacion',  width:"9%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()'}, 
+                            {displayName: 'F.Finalizacion', width:"9%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()'}, 
                             {displayName: 'F.Entrega',      width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()'}, 
                              {displayName: '#Entregas',     width:"5%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()'}, 
-                            {displayName: '#Entrega actual',width:"5%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()'}, 
+                            {displayName: '#Entrega actual',width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()'}, 
                            
                             
                             
                             //{field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
-                            {displayName: 'Plan',           width:"8%",field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()'}, 
+                            {displayName: 'Plan',           width:"9%",field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()'}, 
                             {displayName: 'Tipo',            width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()'},                            
                                                           
-                             {displayName: "Opcion",        width:"8%", cellClass: "txt-center dropdown-button",
+                             {displayName: "Opc",        width:"5%", cellClass: "txt-center dropdown-button",
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
@@ -381,8 +395,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                                             pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Pendientes dispensados</a>\
                                                  </li>\*/
                             //{field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: 'Estado formula', width:"10%"},
-                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: "Estado Actual", 
-                                    cellClass: "txt-center",  
+                            {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: "Estado", 
+                                    cellClass: "txt-center",  width:"10%", 
                         cellTemplate: "<button type='button' \n\
                                         ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
                                        <span ng-class=''></span>  {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 

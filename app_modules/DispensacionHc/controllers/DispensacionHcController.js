@@ -611,7 +611,7 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
         var fechaUltimaEntregaProducto  = G.moment(fechaDespacho);
         var diferenciaDeDias = fechaActual.diff(fechaUltimaEntregaProducto, 'days');
             console.log(" [diferenciaDeDias]: ", diferenciaDeDias);
-            console.log("fechaActual ", fechaActual);
+            //console.log("fechaActual ", fechaActual);
             console.log("fechaDespacho ", fechaDespacho);
             console.log("authorizado ", args.existenciasBodegas.autorizado);
         //if(today > fechaDespacho || args.existenciasBodegas.autorizado === '1' || args.existenciasBodegas.autorizado === ""){
@@ -626,7 +626,7 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
          }
    
    }).then(function(resultado){
-       console.log("AQUI QUE PASO ", resultado)
+       console.log("AQUI QUE PASO ", resultado.rows)
        if(resultado || resultado.rows.length > 0){ 
              res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado.rows}));
        }else{
@@ -1693,7 +1693,6 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
     
     }).then(function(resultado){
-        
            
         var conPendientesEstado;
         if(resultado.rows.length === 0){

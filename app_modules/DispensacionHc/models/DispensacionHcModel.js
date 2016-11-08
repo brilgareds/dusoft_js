@@ -1698,6 +1698,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     4: obj.principioActivo, 
                     5: obj.codigoProducto,
                     6: obj.codigoFormaFarmacologica};
+     console.log("obj ", obj);
      console.log("**parametros** ", parametros);
     var condicion = "";
     if (!obj.principioActivo || obj.principioActivo === null) { 

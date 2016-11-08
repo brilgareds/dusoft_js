@@ -96,10 +96,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    *  @author Cristian Ardila
                    *  @fecha 05/11/2016
                    */
-                  $scope.onColumnaSize = function(){
-                     
-                    if($scope.root.filtro.tipo === "AS" || $scope.root.filtro.tipo === "MS" || $scope.root.filtro.tipo === "CD"){
+                  $scope.onColumnaSize = function(tipo){
+                   
+                   
+                   /*if (history.forward(1)) {
+                       console.log("history.forward(1) ", history.forward(1));
+                    location.replace(history.forward(1));
+}                   }*/
+                    //console.log("$scope.root ", $scope.root); 
+                    //console.log("tipo ", tipo); 
+                    //$scope.columnaSizeBusqueda = "col-md-4"; 
+                    if(tipo === "AS" || tipo === "MS" || tipo === "CD"){
                         $scope.columnaSizeBusqueda = "col-md-4"; 
+                    }else{
+                        $scope.columnaSizeBusqueda = "col-md-3";
                     }
                       
                   };

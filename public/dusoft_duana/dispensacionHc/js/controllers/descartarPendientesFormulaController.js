@@ -70,6 +70,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if (rowItem.selected) {
                         console.log("rowItem ", rowItem);
                         that.onSeleccionTipoFormula(rowItem.entity);
+                    }else{
+                        that.onSeleccionTipoFormula(undefined);
                     }
                 },
             enableColumnResize: true,

@@ -825,8 +825,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         
         
         that.init(empresa, function() {
-
-            if (!Usuario.getUsuarioActual().getEmpresa()) {
+            console.log("root.detalleFormula ", $scope.root.detalleFormula);
+            console.log("($scope.root.filtro ", $scope.root.filtro);
+            if (!Usuario.getUsuarioActual().getEmpresa() ) {
                 $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
                 AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
             }else{

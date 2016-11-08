@@ -5,6 +5,16 @@
         <link href="{{:serverUrl}}stylesheets/DispensacionHc/style.css" rel=stylesheet type=text/css >
         <link href="{{:serverUrl}}stylesheets/DispensacionHc/style-print.css" rel=stylesheet type=text/css media="print">
         
+        <script>
+            
+          
+           var imprimir = function(){
+               
+               document.getElementById("btnImprimir").style.display = 'none';
+               window.print();
+              
+           }
+        </script>
     </head>
     <body>
         <br>
@@ -105,6 +115,7 @@
             </tr>
 
         </table>
+        <div id = "btnImprimir"><input type="button" name="imprimir" value="Imprimir" onclick="imprimir()" ></div>
     </BODY>
 </HTML>
 

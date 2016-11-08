@@ -74,6 +74,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             afterSelectionChange: function(rowItem) {
                     if (rowItem.selected) {
                         that.onSeleccionTipoFormula(rowItem.entity);
+                    }else{
+                        that.onSeleccionTipoFormula(undefined);
                     }
                 },
             enableColumnResize: true,

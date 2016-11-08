@@ -1018,7 +1018,7 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
     var evolucionId = args.realizar_entrega_formula.evolucionId;
     var usuario = req.session.user.usuario_id;
     var parametrosGenerarDispensacion={evolucionId:evolucionId, tipoFormula:tipoFormula.tipo,usuario: usuario}
-                  
+    var def = G.Q.defer();              
     
    /**
      * +Descripcion Se valida antes de dejar la formula con todo los productos pendientes, que no existan productos
@@ -1031,21 +1031,36 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
             throw 'La formula no puede quedar -Todo pendiente- por que contiene temporales';
           
         }else{
-          
-            return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion)
+            return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});
+            //return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion)
         }
      
+    }).then(function(resultado){ 
+        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
+        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
+        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
+        
+        console.log("resultado ", resultado);
+        
+                          
+        if(resultado.rows[0].numeroentrega === 1 && resultado.rows[0].sw_pendiente === 2){
+            return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
+        }else{
+            def.resolve();             
+        }
+        console.log("resultado DEBE ACTUALIZAR EL TIPO FORMULA------->>>>>>>> #1 ", resultado);
+                   
     }).then(function(resultado){
         
-         if(resultado.rowCount === 0){
+         /*if(resultado.rowCount === 0 || !resultado){
             
-            throw 'Error al actualizar el tipo de formula'   
+            throw 'Error al actualizar el tipo de formula'   */
             
-        }else{           
+        //}else{           
             
             return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarEstadoFormula',parametrosGenerarDispensacion);
            
-        }  
+        //}  
     }).then(function(resultado){
         
         if(resultado.rowCount === 0){
@@ -1350,7 +1365,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         console.log("resultado ", resultado);
         
         
-        if(resultado.rows[0].numeroentrega === 0){
+        if(resultado.rows[0].numeroentrega === 1){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
             def.resolve();             
@@ -1712,10 +1727,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
 
         });                    
             
-    })
-    
-    
-    .then(function(resultado){
+    }).then(function(resultado){
         
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});   
     }).then(function(resultado){ 
@@ -1726,7 +1738,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         console.log("resultado ", resultado);
         
         
-        if(resultado.rows[0].numeroentrega === 0){
+         if(resultado.rows[0].numeroentrega === 1 && resultado.rows[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
             def.resolve();

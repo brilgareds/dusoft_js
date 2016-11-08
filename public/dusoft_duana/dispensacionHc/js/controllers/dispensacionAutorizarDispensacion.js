@@ -67,8 +67,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         $scope.listaTipoObservacion = {
             data: 'tipoObservacion',
             afterSelectionChange: function(rowItem) {
+               
                     if (rowItem.selected) {
+                        
                         that.onSeleccionTipoObservacion(rowItem.entity);
+                    }else{
+                        that.onSeleccionTipoObservacion(undefined);
                     }
                 },
             enableColumnResize: true,
@@ -94,10 +98,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          */
         that.realizarEntregaFormula = function(){
             
-            if(seleccionTipoObservacion === undefined){
-                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el tipo de observacion");
-                return;
-            }
+            
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
             var obj = {                   
                 session: $scope.session,
@@ -111,13 +112,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                }    
             };  
           
-          //$scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId:352974});
-          //  $scope.cerrarVentana();
-          /*  var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
-                $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: 352974, 
-                                                                      pendientes: resultadoStorage.pendientes});
-                                                                  $scope.cerrarVentana();*/
-            //console.log("obj ", obj);
             
             dispensacionHcService.autorizarDispensacionMedicamento(obj,function(data){
                 var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");            
@@ -139,6 +133,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         
          
         $scope.realizarAutorizacionDispensacion = function(){
+            
+            if(!seleccionTipoObservacion){
+                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe seleccionar el tipo de observacion");
+                return;
+            }
             
             AlertService.mostrarVentanaAlerta("Mensaje del sistema",  "Desea autorizar la dispensacion del medicamento?",
                 function(estado){               

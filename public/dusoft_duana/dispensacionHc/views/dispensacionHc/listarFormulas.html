@@ -84,7 +84,7 @@
                         
                         <button type="button" class="btn btn-default dropdown-toggle" 
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
-                      <ul class="dropdown-menu" ng-selected="onColumnaSize()">
+                      <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtro.tipo)">
                             <li ng-repeat="filtro in root.filtros">
                                 <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.descripcion}}</a>
                             </li>

@@ -1065,8 +1065,8 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                 hc.descripcion,  \
                 hc.tiempo_perioricidad_entrega,  \
                 hc.unidad_perioricidad_entrega,  \
-                hc.cantidad,  \
-                a.cantidad as  cantidad_entrega,  \
+                round(hc.cantidad) as cantidad,  \
+                round(a.cantidad) as  cantidad_entrega,  \
                 hc.fecha_modificacion,  \
                 pric.descripcion as principio_activo,  \
                 pric.cod_principio_activo,  \
@@ -2132,7 +2132,7 @@ DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callb
     }         
     console.log("obj ", obj);
     console.log("campo ", campo);
-    var sql = "SELECT "+campo+" as numeroEntrega\
+    var sql = "SELECT "+campo+" as numeroEntrega, sw_pendiente\
                FROM dispensacion_estados a \
                WHERE \
 	        evolucion_id =  :1  ;";          

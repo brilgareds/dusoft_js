@@ -1709,9 +1709,6 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
         condicion =" and med.cod_principio_activo =  :4 AND invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'";
     } 
                               
-                              
-                              
-                              
     console.log("condicion ", condicion);
     var sql =  " SELECT\
                 invp.contenido_unidad_venta as concentracion,\
@@ -1729,7 +1726,11 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                 to_char(fv.fecha_registro,'YYYY-MM-DD') AS fecha_registro, \
                 to_char(fv.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento,\
                 fv.lote, \
-                fv.ubicacion_id\
+                fv.ubicacion_id,\
+                CASE WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) = 30 THEN 0\
+                     WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) <= 1 THEN 1\
+                    ELSE 2 END as estado_producto, \
+                extract(days from (fv.fecha_vencimiento - timestamp 'now()')) as cantidad_dias\
                 FROM existencias_bodegas_lote_fv AS fv\
                 JOIN existencias_bodegas as ext ON (fv.empresa_id = ext.empresa_id) and (fv.centro_utilidad = ext.centro_utilidad) and (fv.bodega = ext.bodega) and (fv.codigo_producto = ext.codigo_producto)\
                 JOIN inventarios as inv ON (ext.empresa_id = inv.empresa_id) and (ext.codigo_producto = inv.codigo_producto)\

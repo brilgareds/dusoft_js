@@ -335,6 +335,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           
          
         }); 
+        
+        $scope.estadosLotesProxVencer = [           
+                    "btn btn-warning btn-xs",
+                    "btn btn-danger btn-xs",
+                    "btn btn-success btn-xs",
+                    
+                    "btn btn-info btn-xs",                   
+                    "btn btn-danger btn-xs",
+                    "btn btn-warning btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-info btn-xs",
+                    "btn btn-warning btn-xs",
+                    "btn btn-warning btn-xs"
+                ];
+        
+        // Agregar Clase de acuerdo al estado del pedido
+            $scope.agregarClaseLoteProxVencer = function(estado) {
+                
+                return $scope.estadosLotesProxVencer[estado];
+            };
         /**
         * @author Cristian Ardila
         * +Descripcion Se visualiza la tabla con los medicamentos listos
@@ -350,6 +371,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             columnDefs: [                            
 
                 {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},              
+                {field: 'getEstadoProductoVencimiento()', displayName: 'Codigo', width:"10%"},              
                 {field: 'getMolecula()', displayName: 'Descripcion'},
                 {field: 'getConcentracion()', displayName: 'Concentracion', width:"10%"},                
                 {field: 'getCodigoFormaFarmacologico()', displayName: 'F.Farmacologica', width:"10%"},
@@ -362,16 +384,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                        <input type="text" \
                                         ng-model="row.entity.cantidadDispensada" \
                                         validacion-numero-entero \
-                                        class="form-control grid-inline-input" \n\
-                                        name="" id="" /> </div>'},
+                                        class="form-control grid-inline-input" \
+                                        name="" \
+                                        id="" \
+                                        ng-class="agregarClaseLoteProxVencer(row.entity.estadoProductoVencimiento)"\n\
+                                        /> </div>'},
                 {field: 'Sel', width: "10%",
                         displayName: "Dispensar",
                         cellClass: "txt-center",
                         
                         //cellTemplate : '<input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)"></input-check>'
                          cellTemplate : '<div class="row">\
-  <input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)"></input-check>\
-  <button class="btn btn-default btn-xs" ng-click="cerrarVentanaDispensacionFormula()" ng-disabled ="showBtnDispensar">Cerrar  </button>\
+  <input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)" ng-disabled="row.entity.estadoProductoVencimiento == 1"></input-check>\
+  <button class="btn btn-default btn-xs" ng-click="cerrarVentanaDispensacionFormula()" ng-disabled ="showBtnDispensar ">Cerrar  </button>\
 </div>'                               
                   },
                 /* {field: 'Cerrar', width: "10%",

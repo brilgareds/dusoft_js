@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 this.lotes = [];
                 this.principioActivo = "";
                 this.serialId = 0;
+                this.estadoProductoVencimiento = 0;
             }
             
             ProductosHc.prototype = Object.create(Producto.getClass().prototype);
@@ -27,6 +28,16 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
        
             ProductosHc.prototype.getPrincipioActivo = function(){
                 return this.principioActivo;
+            };
+            
+            
+            
+            ProductosHc.prototype.getEstadoProductoVencimiento = function(){
+                return this.estadoProductoVencimiento;
+            };
+            
+            ProductosHc.prototype.setEstadoProductoVencimiento = function(estadoProductoVencimiento){
+                return this.estadoProductoVencimiento = estadoProductoVencimiento;
             };
             
             ProductosHc.prototype.agregarLotes = function(lote){

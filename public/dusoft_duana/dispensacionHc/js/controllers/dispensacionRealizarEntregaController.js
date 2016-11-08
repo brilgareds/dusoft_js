@@ -63,7 +63,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             });
 
         };
-        
+        $scope.btnEntregaFormula = true;
         /**
          * @author Cristian Ardila
          * +Descripcion Se visualiza la tabla con los tipos de formulas
@@ -73,8 +73,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             data: 'tipoFormula',
             afterSelectionChange: function(rowItem) {
                     if (rowItem.selected) {
+                        $scope.btnEntregaFormula = false;
                         that.onSeleccionTipoFormula(rowItem.entity);
+                        
                     }else{
+                        $scope.btnEntregaFormula = true;
                         that.onSeleccionTipoFormula(undefined);
                     }
                 },

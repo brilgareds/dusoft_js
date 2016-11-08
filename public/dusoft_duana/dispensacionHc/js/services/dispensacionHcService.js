@@ -498,6 +498,7 @@ define(["angular", "js/services"], function(angular, services) {
                         Producto.setCodigoFormaFarmacologico(_lote.forma_farmacologica);
                         Producto.setLaboratorio(_lote.laboratorio);
                         Producto.setPrincipioActivo(_lote.cod_principio_activo);
+                        Producto.setEstadoProductoVencimiento(_lote.estado_producto);
                         Producto.agregarLotes(Lote);
                        
                        

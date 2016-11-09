@@ -33,20 +33,56 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         var estadoEntregaFormula;
         var tipoEstadoFormula;
         that.init = function(empresa, callback) {
-
-            $scope.root = {              
-                activar_tab: {tab_productos: true, tab_cargar_archivo: false},
-                visualizar: false,
-             // Opciones del Modulo 
-                opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
-                detalleFormula: []
-
-
-            };
             callback();
         };  
        	 
-	
+        $scope.root = {              
+            activar_tab: {tab_productos: true, tab_cargar_archivo: false},
+            visualizar: false,
+         // Opciones del Modulo 
+            opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
+            detalleFormula: []
+        };
+	$scope.root.detalleFormula= [];
+        $scope.estadosLotesProxVencer = [           
+                    "btn btn-warning btn-xs",
+                    "btn btn-danger btn-xs",
+                    "btn btn-success btn-xs",
+                    
+                    "btn btn-info btn-xs",                   
+                    "btn btn-danger btn-xs",
+                    "btn btn-warning btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-info btn-xs",
+                    "btn btn-warning btn-xs",
+                    "btn btn-warning btn-xs"
+                ];
+        
+        /**
+         * +Descripcion Funcion que se invocara cuando el usuario trate de acceder
+         *              a la formula detalle con el boton SEND del navegador
+         */
+        that.alertaBotonSendNavegador = function(){
+            
+            AlertService.mostrarVentanaAlerta("IMPORTANTE",  "No se puede acceder de esa forma (Seleccione el criterio de busqueda)",
+                    function(estado){               
+                        
+                            //window.location = "/dusoft_duana/DispensacionHc";
+                            $state.go("DispensacionHc");
+                         
+                    }
+                ); 
+        };
+        
+        /**
+         * +Descripcion Se agrega la clase Css de acuerdo al estado del lote
+         *              a dispensar
+         */
+        $scope.agregarClaseLoteProxVencer = function(estado) {
+
+            return $scope.estadosLotesProxVencer[estado];
+        };
         /**
          * +Descripcion: Se activa el cambio de interfaz, cuando se selecciona
          *               el detalle de una formula para dispensar
@@ -55,48 +91,53 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
   
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
             
-            var obj = {                   
-                session: $scope.session,
-                data: {
-                    listar_formulas: {
-                        filtro:resultadoStorage.filtro,
-                        terminoBusqueda: resultadoStorage.terminoBusqueda,//$scope.root.numero,
-                        empresaId:'',
-                        fechaInicial: resultadoStorage.fechaInicial,
-                        fechaFinal:resultadoStorage.fechaFinal,
-                        paginaActual:resultadoStorage.paginaActual,
-                        estadoFormula : resultadoStorage.estadoFormula,
-                        
-                    }
-                }    
-            };      
+            if(resultadoStorage){
+                
+                var obj = {                   
+                    session: $scope.session,
+                    data: {
+                        listar_formulas: {
+                            filtro:resultadoStorage.filtro,
+                            terminoBusqueda: resultadoStorage.terminoBusqueda,//$scope.root.numero,
+                            empresaId:'',
+                            fechaInicial: resultadoStorage.fechaInicial,
+                            fechaFinal:resultadoStorage.fechaFinal,
+                            paginaActual:resultadoStorage.paginaActual,
+                            estadoFormula : resultadoStorage.estadoFormula,
+
+                        }
+                    }    
+                };      
                                       
-            dispensacionHcService.listarFormulas(obj, function(data){
-                estadoEntregaFormula = resultadoStorage.pendientes;  
-                $scope.showBotonTodoPendiente = resultadoStorage.pendientes;
-                tipoEstadoFormula    = resultadoStorage.tipoEstadoFormula;
+                dispensacionHcService.listarFormulas(obj, function(data){
+                    estadoEntregaFormula = resultadoStorage.pendientes;  
+                    $scope.showBotonTodoPendiente = resultadoStorage.pendientes;
+                    tipoEstadoFormula = resultadoStorage.tipoEstadoFormula;
 
-                if(data.status === 200) {       
-                    console.log("data [[]]][[[]] ", data);
-                    //$scope.root.items = data.obj.listar_formulas.length;                              
-                    $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
-                    
-                    if(resultadoStorage.pendientes === 0){
+                    if(data.status === 200) {       
+                        console.log("data [[]]][[[]] ", data);
+                        //$scope.root.items = data.obj.listar_formulas.length;                              
+                        $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
 
-                        that.listarMedicamentosFormulados(resultadoStorage);
-                    }
-                    
-                    if(resultadoStorage.pendientes === 1){    
-                        $scope.showBotonRegistrarEvento = resultadoStorage.pendientes;
-                        that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
-                    }
+                        if(resultadoStorage.pendientes === 0){
+                            that.listarMedicamentosFormulados(resultadoStorage);
+                        }
 
-                 }else{
-                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                 }
+                        if(resultadoStorage.pendientes === 1){    
+                            $scope.showBotonRegistrarEvento = resultadoStorage.pendientes;
+                            that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
+                        }
 
-            });        
-             
+                     }else{
+                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                     }
+
+                });   
+            
+            }else{     
+                $scope.root.detalleFormula = null;
+                //that.alertaBotonSendNavegador();
+            }            
         };
         
         
@@ -127,8 +168,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                   
                 }               
-            });
-           
+            });          
         };
         /**
          * @author Cristian Ardila
@@ -147,16 +187,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    }
                 }    
             };
-            //console.log("medicamentosTemporales[0] ", $scope.medicamentosTemporales[0]);
-            /*dispensacionHcService.consultarMedicamentosDespachados(obj,function(data){
-                    console.log("---------consultarMedicamentosDespachados---------------");
-                    console.log("DATA ", data);
-            });*/
          
             dispensacionHcService.listarMedicamentosFormulados(obj,function(data){
-                
-                   console.log("data Medicamentos formulados -+----->>>> ", data);
-                   
+                    
                 $scope.root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].vaciarProductos();
                 if(data.status === 200) {       
 
@@ -199,7 +232,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
             dispensacionHcService.cantidadProductoTemporal(obj,function(data){
                 
-                console.log("data ", data);
                 that.cantidadPendiente = 0;
                 if(data.status === 200) {       
                     if (entity.codigo_producto === data.obj.cantidadProducto[0].codigo_formulado) {
@@ -220,7 +252,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * @fecha 26/05/2016
           */
         that.consultarExistenciasBodegas = function(entity){
+            
            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
+            
+            if(resultadoStorage){
+           
             var obj = {                   
                 session: $scope.session,
                 data: {
@@ -240,7 +276,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 /*console.log("obj ", obj);                                       
                 console.log("entity ", entity);    */                                   
             dispensacionHcService.existenciasBodegas(obj, function(data){
-                console.log("data [consultarExistenciasBodegas] ", data);
+
                 entity.vaciarProductosHc();
                 if(data.status === 200) {                                          
                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
@@ -279,6 +315,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
             }); 
+            
+            }else{     
+                $scope.root.detalleFormula = null;
+                that.alertaBotonSendNavegador();
+            }
                       
         };
          
@@ -327,35 +368,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }       
                
             });
-            
-            
-            /*console.log("AQUI ABRE LA VENTANA PARA DISPENSAR ---------------");
-            console.log("e ", e);
-            console.log("obj SON LOS PARAMETROS ", obj);*/
-          
-         
-        }); 
-        
-        $scope.estadosLotesProxVencer = [           
-                    "btn btn-warning btn-xs",
-                    "btn btn-danger btn-xs",
-                    "btn btn-success btn-xs",
                     
-                    "btn btn-info btn-xs",                   
-                    "btn btn-danger btn-xs",
-                    "btn btn-warning btn-xs",
-                    "btn btn-primary btn-xs",
-                    "btn btn-primary btn-xs",
-                    "btn btn-info btn-xs",
-                    "btn btn-warning btn-xs",
-                    "btn btn-warning btn-xs"
-                ];
-        
-        // Agregar Clase de acuerdo al estado del pedido
-            $scope.agregarClaseLoteProxVencer = function(estado) {
-                
-                return $scope.estadosLotesProxVencer[estado];
-            };
+        }); 
+         
         /**
         * @author Cristian Ardila
         * +Descripcion Se visualiza la tabla con los medicamentos listos
@@ -494,28 +509,36 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             console.log("*********medicamentosTemporales*************");
             console.log("*********medicamentosTemporales*************");
             console.log("*********medicamentosTemporales*************");
-            
-            
+             
             $scope.medicamentosTemporales = [];
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
-            var obj = {                   
-                session: $scope.session,
-                data: {
-                   listar_medicamentos_temporales: {
-                        evolucion: resultadoStorage.evolucionId                           
-                   }
-                }    
-            };      
+            if(resultadoStorage){
+                var obj = {                   
+                    session: $scope.session,
+                    data: {
+                       listar_medicamentos_temporales: {
+                            evolucion: resultadoStorage.evolucionId                           
+                       }
+                    }    
+                };      
             
-            dispensacionHcService.medicamentosTemporales(obj, function(data){
-                console.log("data (Medicamentos temporales siii )", data);
-                
-                if(data.status === 200){                     
-                    $scope.medicamentosTemporales.push(dispensacionHcService.renderMedicamentosTemporales(data.obj.listar_medicamentos_temporales));    
-                   
-                }      
-                    console.log("data (Medicamentos temporales siii )", $scope.medicamentosTemporales.length);
-            });  
+                dispensacionHcService.medicamentosTemporales(obj, function(data){
+                    console.log("data (Medicamentos temporales siii )", data);
+
+                    if(data.status === 200){                     
+                        $scope.medicamentosTemporales.push(dispensacionHcService.renderMedicamentosTemporales(data.obj.listar_medicamentos_temporales));    
+
+                    }      
+                        console.log("data (Medicamentos temporales siii )", $scope.medicamentosTemporales.length);
+                });  
+            
+            }else{     
+                $scope.root.detalleFormula = null;
+                that.alertaBotonSendNavegador();
+                  //window.location = "/dusoft_duana/DispensacionHc";
+                  //$rootScope.$emit("onIrAlHome",{mensaje: "No se puede acceder de esa forma (Seleccione el criterio de busqueda)", tipo:"warning"});
+                  //AlertService.mostrarMensaje("warning", "No se puede acceder de esa forma (Seleccione el criterio de busqueda)");
+            }
         };
         
         
@@ -734,13 +757,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 templateUrl: 'views/dispensacionHc/dispensacionRegistrarEvento.html',
                 scope: $scope,                  
                 controller: "dispensacionRegistrarEventoController",
-                
-                /*resolve: {
-                        estadoEntregaFormula: function() {
-                            return estadoEntregaFormula;
-                        }                    
-                    }*/
-                                   
+                              
             };
             var modalInstance = $modal.open($scope.opts);   
            
@@ -760,7 +777,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         var emitRealizarEntregaFormula = $scope.$on('emitRealizarEntregaFormula', function(e, parametros) { 
             $scope.showBtnImprimir = true;
             $scope.showBtnDispensar = true;
-            console.log("AQUI REALIZA LA ENTREGA DE LA FORMULA")
             that.consultarMedicamentosTemporales();
         });                    
         
@@ -850,8 +866,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         
         
         that.init(empresa, function() {
-            console.log("root.detalleFormula ", $scope.root.detalleFormula);
-            console.log("($scope.root.filtro ", $scope.root.filtro);
+            
             if (!Usuario.getUsuarioActual().getEmpresa() ) {
                 $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
                 AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");

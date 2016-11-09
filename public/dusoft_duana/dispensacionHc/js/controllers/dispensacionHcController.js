@@ -67,13 +67,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     * +Descripcion Filtros para tipo de documento
                     * 
                     **/
-                    $scope.root.filtros = [                
+                   /* $scope.root.filtros = [                
                     
                     {tipo: 'EV',descripcion: "Evolucion"},
                     {tipo: 'FO',descripcion: "Formula"} 
-                    ];
+                    ];*/
                  
-                    $scope.root.filtro = $scope.root.filtros[0];                   
+                    //$scope.root.filtro = $scope.root.filtros[0];                   
                    //Deja en estado visible el buscador
                     $scope.root.visibleBuscador = true;
                     $scope.root.visibleBotonBuscador = true;
@@ -96,9 +96,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    *  @author Cristian Ardila
                    *  @fecha 05/11/2016
                    */
+                   /**
+                    * +Descripcion Filtros para tipo de documento
+                    * 
+                    **/
+                    $scope.root.filtros = [                
+                    
+                    {tipo: 'EV',descripcion: "Evolucion"},
+                    {tipo: 'FO',descripcion: "Formula"} 
+                    ];
+                 
+                  $scope.root.filtro = $scope.root.filtros[0]; 
                   $scope.onColumnaSize = function(tipo){
                    
-                   
+                   //console.log("$scope.root.filtro ", $scope.root.filtro);
                    /*if (history.forward(1)) {
                        console.log("history.forward(1) ", history.forward(1));
                     location.replace(history.forward(1));
@@ -420,7 +431,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                  </li>\*/
                             //{field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: 'Estado formula', width:"10%"},
                             {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: "Estado", 
-                                    cellClass: "txt-center",  width:"10%", 
+                                    cellClass: "txt-center",  width:"9%", 
                         cellTemplate: "<button type='button' \n\
                                         ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
                                        <span ng-class=''></span>  {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 

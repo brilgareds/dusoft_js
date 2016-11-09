@@ -2798,9 +2798,15 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
     }).then(function(resultado) {
 
-        if (resultado.length > 0) {
+       console.log("resultado[0].estado ", resultado[0].estado);
+        console.log("resultado[0].estado_pedido ", resultado[0].estado_pedido);
+        console.log("producto.cantidad_disponible ", producto.cantidad_disponible);
 
-            if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
+        if (resultado.length > 0) {
+            
+            if (resultado[0].estado === '1' && 
+                    (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8') 
+                    || resultado[0].estado === '4' && producto.cantidad_disponible === 0) {
 
                 return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 

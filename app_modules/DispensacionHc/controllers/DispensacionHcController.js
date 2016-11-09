@@ -728,17 +728,25 @@ DispensacionHc.prototype.autorizarDispensacionMedicamento  = function(req, res){
     var parametros={evolucionId:args.autorizar_dispensacion.evolucion, 
                     usuario:usuario, 
                     observacion: args.autorizar_dispensacion.observacion,
-                    producto:args.autorizar_dispensacion.producto};
-      
+                    producto:args.autorizar_dispensacion.producto,
+                    autorizado :'1'};
+     
+    G.knex.transaction(function(transaccion) { 
+                  
+            return G.Q.ninvoke(that.m_dispensacion_hc,'autorizarDispensacionMedicamento',parametros,transaccion)
+             
+
+        }); 
     G.Q.ninvoke(that.m_dispensacion_hc,'autorizarDispensacionMedicamento',parametros).then(function(resultado){
         
-        if(resultado.rows.length > 0){ 
-           res.send(G.utils.r(req.url, 'Se autoriza la dispensacion del producto', 200, {autorizar_dispensacion:resultado.rows[0]}));
+        console.log("resultado Autorizar el medicamento", resultado);
+        //if(resultado.rows.length > 0){ 
+           res.send(G.utils.r(req.url, 'Se autoriza la dispensacion del producto', 200, {autorizar_dispensacion:resultado}));
            
-       }else{
+       /*}else{
            throw "Consulta sin resultado";
-       }
-        
+       }*/
+                             
    }).fail(function(err){      
       
        res.send(G.utils.r(req.url, err, 500, {}));
@@ -924,7 +932,11 @@ DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
  */
 DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
     
-    var that = this;
+    console.log("******DispensacionHc.prototype.eliminarTemporalFormula********");
+    console.log("******DispensacionHc.prototype.eliminarTemporalFormula********");
+    console.log("******DispensacionHc.prototype.eliminarTemporalFormula********");
+    
+    var that = this;              
     var args = req.body.data;
     
     if (args.eliminar_medicamentos_temporales === undefined) {
@@ -950,9 +962,13 @@ DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
     var parametros={serialId:args.eliminar_medicamentos_temporales.serialId, 
                     evolucionId:args.eliminar_medicamentos_temporales.evolucion, 
                     codigoProducto:args.eliminar_medicamentos_temporales.codigoProducto};
+                
+      console.log("parametros ", parametros);
       
     G.Q.ninvoke(that.m_dispensacion_hc,'eliminarTemporalFormula',parametros).then(function(resultado){
         
+        
+          console.log("resultado DESDE AFUERA ", resultado);
           res.send(G.utils.r(req.url, 'Se elimina temporal satisfactoriamente', 200, {eliminar_medicamentos_temporales:resultado}));
       
    }).fail(function(err){      
@@ -1355,21 +1371,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             */          
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:conPendientesEstado, evolucion:evolucionId},transaccion);
 
-           /* if(resultado.rows.length === 0){
-
-
-                /**
-                * +Descripcion se actualiza la tabla de estados evidenciando
-                *              que la formula ya no tiene pendientes
-                */          
-              /*  return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:0, evolucion:evolucionId},transaccion);
-
-
-            }else{
-                return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarDispensacionEstados', {actualizarCampoPendiente:1, conPendientes:1, evolucion:evolucionId},transaccion);
-                console.log("CONTINUA COMO PENDIENTE EL ESTADO DE LA FORMULA::: ", resultado);
-                //def.resolve();    
-            }*/
+           
         });  
     }).then(function(resultado){
         

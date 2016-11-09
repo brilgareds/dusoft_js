@@ -1872,10 +1872,17 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
         parametros["1"] = obj.evolucionId;
     var where = "";
         /**
-         * +Descripcion variable que guarda la tabla de donde se extraera
-         *              el usuario que realizo el proceso dependiendo del estadoEntrega
+         * +Descripcion 
+         *              tablaUsuarioDespacho = variable que guarda la tabla de donde se extraera
+         *              el bodegas_doc_id y la numeracion dependiente del estadoEntrega
          *              (0: despacho, 
          *               1: pendientes,
+         *               2: entrega pendiente)
+         *               
+         *               tablaBodegasDocumentos = variable que guarda la tabla bodegas_documentos
+         *               de donde se extraera el usuario que realizo el proceso
+         *               (0: despacho, 
+         *               1: se dejara en null ya que no se ha generado despacho alguno,
          *               2: entrega pendiente)
          */
     var tablaUsuarioDespacho;

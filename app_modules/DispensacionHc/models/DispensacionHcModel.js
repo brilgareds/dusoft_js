@@ -1812,19 +1812,16 @@ DispensacionHcModel.prototype.guardarTemporalFormula = function(producto, callba
 
 /*
  * @autor : Cristian Ardila
- * +Descripcion : Transaccion para almacenar los temporales de la formula
- *                que vendrian siendo los lotes
- * @fecha: 05/07/2015
+ * +Descripcion : Transaccion para eliminar el temporal de la formula
+ *                y si el medicamento fue confrontado denegar de nuevo la autorizacion
+ * @fecha: 09/11/2016
  */
 DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callback)
-{ 
-     console.log("***********eliminarTemporalFormula***************");
-      console.log("***********eliminarTemporalFormula***************");
-       console.log("***********eliminarTemporalFormula***************");
+{  
        
     G.knex.transaction(function(transaccion) {         
         G.Q.nfcall(__eliminarTemporalFormula, producto, transaccion).then(function(resultado){
-            console.log("resultado.rows[0].medicamento_formulado ", resultado.rows[0].codigo_formulado);
+           
             if(resultado.rowCount >0){
               
                  var parametros={evolucionId:producto.evolucionId, 
@@ -1836,10 +1833,7 @@ DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callb
                 return G.Q.nfcall(__autorizarDispensacionMedicamento, parametros, transaccion) 
             }
             
-        })
-                
-                
-        .then(function(resultado){       
+        }).then(function(resultado){       
             
            transaccion.commit();       
         }).fail(function(err){    

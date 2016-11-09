@@ -932,10 +932,6 @@ DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
  */
 DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
     
-    console.log("******DispensacionHc.prototype.eliminarTemporalFormula********");
-    console.log("******DispensacionHc.prototype.eliminarTemporalFormula********");
-    console.log("******DispensacionHc.prototype.eliminarTemporalFormula********");
-    
     var that = this;              
     var args = req.body.data;
     

@@ -371,7 +371,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             columnDefs: [                            
 
                 {field: 'getCodigoProducto()', displayName: 'Codigo', width:"10%"},              
-                {field: 'getEstadoProductoVencimiento()', displayName: 'Codigo', width:"10%"},              
+                //{field: 'getEstadoProductoVencimiento()', displayName: 'Codigo', width:"10%"},              
                 {field: 'getMolecula()', displayName: 'Descripcion'},
                 {field: 'getConcentracion()', displayName: 'Concentracion', width:"10%"},                
                 {field: 'getCodigoFormaFarmacologico()', displayName: 'F.Farmacologica', width:"10%"},

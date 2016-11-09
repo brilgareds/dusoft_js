@@ -755,6 +755,10 @@ DispensacionHc.prototype.autorizarDispensacionMedicamento  = function(req, res){
  */
 DispensacionHc.prototype.temporalLotes = function(req, res){
     
+    console.log("DispensacionHc.prototype.temporalLotes ");
+    console.log("DispensacionHc.prototype.temporalLotes ");
+    console.log("DispensacionHc.prototype.temporalLotes ");
+    console.log("DispensacionHc.prototype.temporalLotes ");
     
     var that = this;
     var args = req.body.data;
@@ -776,6 +780,11 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
     
     if(args.temporalLotes.detalle.cantidadDispensada <= 0){
         res.send(G.utils.r(req.url, 'La cantidad dispensada no debe ser menor ó igual a Cero (0)', 404, {existenciasBodegas: []}));
+        return;
+    }
+    
+    if(args.temporalLotes.detalle.estadoProductoVencimiento === 1){
+        res.send(G.utils.r(req.url, 'Este lote esta vencido, no puede ser dispensado', 404, {existenciasBodegas: []}));
         return;
     }
     
@@ -1903,7 +1912,8 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
    var detalleCabecera;
    var parametros = {evolucionId:args.listar_medicamentos_pendientes.evolucion,
                     tipoIdPaciente: args.listar_medicamentos_pendientes.tipoIdPaciente,
-                    pacienteId: args.listar_medicamentos_pendientes.pacienteId
+                    pacienteId: args.listar_medicamentos_pendientes.pacienteId,
+                    estadoEntrega: 1
                 };
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesPorDispensar',parametros).then(function(resultado){
@@ -1986,7 +1996,8 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
    var parametros = {evolucionId:args.listar_medicamentos_dispensados.evolucion,
                     tipoIdPaciente: args.listar_medicamentos_dispensados.tipoIdPaciente,
                     pacienteId: args.listar_medicamentos_dispensados.pacienteId,
-                    ultimo: 1 
+                    ultimo: 1,
+                    estadoEntrega:0
                 };
     
     var medicamentosDispensados = "";
@@ -2134,7 +2145,8 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
    var parametros = {evolucionId:args.listar_medicamentos_dispensados.evolucion,
                     tipoIdPaciente: args.listar_medicamentos_dispensados.tipoIdPaciente,
                     pacienteId: args.listar_medicamentos_dispensados.pacienteId,
-                    ultimo: 1 
+                    ultimo: 1,
+                    estadoEntrega: 2
                 };
         
                 

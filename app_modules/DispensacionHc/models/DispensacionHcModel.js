@@ -1864,17 +1864,50 @@ DispensacionHcModel.prototype.listarTipoFormula = function(callback){
  */
 DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = function(obj,callback){
      
+     console.log("***********DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar****************");
+     console.log("***********DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar****************");
+     console.log("***********DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar****************");
+     
     var parametros = {};
         parametros["1"] = obj.evolucionId;
     var where = "";
-
+        /**
+         * +Descripcion variable que guarda la tabla de donde se extraera
+         *              el usuario que realizo el proceso dependiendo del estadoEntrega
+         *              (0: despacho, 
+         *               1: pendientes,
+         *               2: entrega pendiente)
+         */
+    var tablaUsuarioDespacho;
+    var tablaBodegasDocumentos;
+    var campo;
+        if(obj.estadoEntrega === 0){
+            tablaUsuarioDespacho = "  hc_formulacion_despachos_medicamentos j "
+            tablaBodegasDocumentos = "INNER JOIN bodegas_documentos k ON j.bodegas_doc_id = k.bodegas_doc_id AND k.numeracion = j.numeracion ";
+            campo = "k.usuario_id";
+        }
+        if(obj.estadoEntrega === 1){
+            tablaUsuarioDespacho = " hc_pendientes_por_dispensar j "
+            tablaBodegasDocumentos = "";
+            campo = "j.usuario_id";
+        }
+        if(obj.estadoEntrega === 2){
+            tablaUsuarioDespacho = " hc_formulacion_despachos_medicamentos_pendientes j "
+            tablaBodegasDocumentos = "INNER JOIN bodegas_documentos k ON j.bodegas_doc_id = k.bodegas_doc_id AND k.numeracion = j.numeracion ";
+            campo = "k.usuario_id";
+        }
+    
     if(!obj.pacienteId){
        
         parametros["2"]= obj.tipoIdPaciente;
         parametros["3"]= obj.pacienteId;
         where=" and a.tipo_id_paciente= :2 and a.paciente_id= :3 ";
     }
-   
+    
+    console.log("tablaUsuarioDespacho ", tablaUsuarioDespacho);
+    console.log("tablaBodegasDocumentos ", tablaBodegasDocumentos);
+    console.log("obj ", obj);
+    
     var sql = "select distinct  ON (a.evolucion_id)\
             a.evolucion_id,\
             a.numero_formula,\
@@ -1902,7 +1935,9 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
             left join  eps_afiliados c on b.tipo_id_paciente = c.afiliado_tipo_id AND b.paciente_id = c.afiliado_id\
             inner join planes_rangos d on c.plan_atencion = d.plan_id and c.tipo_afiliado_atencion = d.tipo_afiliado_id and c.rango_afiliado_atencion = d.rango\
             inner join planes e on d.plan_id = e.plan_id\
-            inner join system_usuarios f on a.medico_id = f.usuario_id\
+            INNER JOIN " + tablaUsuarioDespacho + " ON a.evolucion_id = j.evolucion_id \
+             "+tablaBodegasDocumentos+" \
+            inner join system_usuarios f on  "+campo +" = f.usuario_id\
             inner join inv_tipos_bloqueos g on b.tipo_bloqueo_id = g.tipo_bloqueo_id\
             left join esm_tipos_formulas i on h.tipo_formula = i.tipo_formula_id\
             where\
@@ -1915,7 +1950,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
        
         callback(false, resultado);
     }).catch(function(err){        
-        
+        console.log("err ", err);
         callback(err);
     });  
 };

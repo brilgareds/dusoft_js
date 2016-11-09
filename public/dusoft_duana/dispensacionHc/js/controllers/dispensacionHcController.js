@@ -113,6 +113,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                       
                   };
+                $scope.classCssSinDispensar = "success"; 
+                $scope.classCssPendientes = "default";  
+                $scope.checkearEstadoFormula = function(estado){
+                    
+                    console.log("checkearEstadoFormula ", estado);
+                     if(estado ===0){
+                        $scope.classCssSinDispensar = "success"; 
+                        $scope.classCssPendientes = "default"; 
+                     
+                    }else{
+                        $scope.classCssSinDispensar = "default"; 
+                        $scope.classCssPendientes = "success";
+                    }
+                };
                /**
                 * @author Cristian Ardila
                 * @fecha 20/05/2016

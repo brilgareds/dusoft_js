@@ -5,20 +5,29 @@
                             <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4> 
 
                             <div class="btn-group">                             
-                                <label class="btn btn-default">
-                                    <input type="radio" name ="estadoFormula" ng-model="root.estadoFormula" value="0" checked/>
-                                    <span class="label label-success">Sin dispensar</span>
+                                <label class="btn btn-{{classCssSinDispensar}}">
+                                    <input type="radio" 
+                                           name ="estadoFormula" 
+                                           ng-model="root.estadoFormula"
+                                           ng-click="checkearEstadoFormula(0)" 
+                                           value="0" checked/>
+                                    <span class="label label-{{classCssSinDispensar}}">Sin dispensar</span>
                                 </label>
-                                 <label class="btn btn-default">
-                                    <input type="radio" name="estadoFormula" ng-model="root.estadoFormula"  value="1" ng-checked ="root.estadoFormula"/>
-                                    <span class="label label-default">Pendientes </span>
+                                 <label class="btn btn-{{classCssPendientes}}" >
+                                    <input type="radio" 
+                                           name="estadoFormula" 
+                                           ng-model="root.estadoFormula" 
+                                           ng-click="checkearEstadoFormula(1)"
+                                           value="1" 
+                                           ng-checked ="root.estadoFormula"/>
+                                    <span class="label label-{{classCssPendientes}}">Pendientes </span>
                                 </label>
                                
 
                             </div> 
                                 
-                             <span class="label label-success" ng-show="root.estadoFormula == 0" >Sin dispensar</span>
-                              <span class="label label-default" ng-show="root.estadoFormula == 1" >Pendientes</span>
+                          <!--   <span class="label label-success" ng-show="root.estadoFormula == 0" >Sin dispensar</span>
+                              <span class="label label-default" ng-show="root.estadoFormula == 1" >Pendientes</span> //-->
                               
                              
                         </div>    

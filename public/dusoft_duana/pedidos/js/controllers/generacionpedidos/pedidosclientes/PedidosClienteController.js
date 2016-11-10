@@ -632,7 +632,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
 
                 // Pedido
-                if ($scope.Pedido.get_numero_pedido() > 0) {
+               /* if ($scope.Pedido.get_numero_pedido() > 0) {
 
                     url = API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_PEDIDO;
                     obj = {
@@ -644,7 +644,38 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
                     };
-                }
+                }*/
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado,
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
+                                pagina_actual: 1,
+                                productos: '',//producto.length > 0 ? producto : $scope.Pedido.productos,//'0104030001', 
+                                tipo_producto: '',
+                                numero_cotizacion: '',
+                                numero_pedido: '',
+                                filtro: {nombre: 'codigo', tipo_busqueda: 2,numero: [$scope.Pedido.get_numero_pedido()], tipo:2},
+                                //nuevo campos
+                                molecula: '',
+                                laboratorio_id: '',
+                                codigoProducto: '',
+                                descripcionProducto: '',
+                                concentracion: '',
+                                tipoBusqueda: 0,
+                                termino_busqueda: $scope.datos_view.producto_seleccionado.codigo_producto
+                            }
+                        }
+                    };
+                };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 

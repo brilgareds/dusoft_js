@@ -2773,8 +2773,51 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
     var totalValorPedidoActual;
     var estado_pedido;
+    var estado_pedido;              
     var estado_pedido;
-    var estado_pedido;
+    //console.log("(producto) ", producto);
+    
+    /**
+     * +Descripcion Parametros exclusivos para consultar la disponibilidad 
+     *              que tiene el producto
+     */
+    var empresa_id = args.pedidos_clientes.empresa_id;
+    var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
+    var bodega = args.pedidos_clientes.bodega_id;
+    var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
+    
+    var filtro = {
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
+        termino_busqueda: args.pedidos_clientes.termino_busqueda,
+        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
+        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
+    };
+
+     var filtroAvanzado = {
+        molecula: args.pedidos_clientes.molecula,
+        laboratorio_id: args.pedidos_clientes.laboratorio_id,
+        codigoProducto: args.pedidos_clientes.codigoProducto,
+        descripcionProducto: args.pedidos_clientes.descripcionProducto,
+        concentracion: args.pedidos_clientes.concentracion,
+        tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
+    };
+
+    var filtros = args.pedidos_clientes.filtro;
+    var pagina = args.pedidos_clientes.pagina_actual;
+    
+    var parametros = {empresa_id:empresa_id,
+        centro_utilidad:centro_utilidad,
+        bodega:bodega,
+        contrato_cliente:contrato_cliente,
+        filtro:filtro,
+        pagina:pagina,
+        filtros:filtros, 
+        filtroAvanzado:filtroAvanzado
+    };      
+    //console.log("parametros ", parametros);
+    var disponibilidadProducto;
     var paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido, pedido.productos, pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo, 1, 0);
     /**
      * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
@@ -2784,11 +2827,26 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
      *               se validara de que el pedido al menos quede con un solo pro-
      *               ducto
      */
-    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosPedido', numeroPedido).then(function(resultado) {
+    
+     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
+        parametros.empresa_id,
+        parametros.centro_utilidad,
+        parametros.bodega,
+        parametros.contrato_cliente,                          
+        parametros.filtro,
+        parametros.pagina,
+        parametros.filtros, 
+        parametros.filtroAvanzado).then(function(resultado){
+            
+            disponibilidadProducto = resultado[0].cantidad_disponible;   
+            console.log("disponibilidadProducto ", disponibilidadProducto); 
+           return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosPedido', numeroPedido);
+            
+        }).then(function(resultado) {
 
         if (resultado.length > 0) {
 
-            if (resultado[0].total === "1") {
+            if (resultado[0].total === "1") {      
                 throw 'El pedido no puede quedar sin productos';
                 return;
             } else {
@@ -2799,8 +2857,11 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     }).then(function(resultado) {
 
         if (resultado.length > 0) {
-
-            if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
+            
+            if (resultado[0].estado === '1' && 
+                (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8') 
+                 || resultado[0].estado === '4' && disponibilidadProducto === 0
+                 ) {
 
                 return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 

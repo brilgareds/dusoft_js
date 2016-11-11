@@ -676,7 +676,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     };
                 };
-
+                console.log("LOS DATOS ", obj);
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);

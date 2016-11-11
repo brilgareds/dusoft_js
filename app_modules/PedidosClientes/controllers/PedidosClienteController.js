@@ -2840,6 +2840,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             
             disponibilidadProducto = resultado[0].cantidad_disponible;   
             console.log("disponibilidadProducto ", disponibilidadProducto); 
+            console.log("cantidad_solicitada ", producto.cantidad_solicitada); 
            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosPedido', numeroPedido);
             
         }).then(function(resultado) {
@@ -2861,6 +2862,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             if (resultado[0].estado === '1' && 
                 (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8') 
                  || resultado[0].estado === '4' && disponibilidadProducto === 0
+                 || resultado[0].estado === '4' && disponibilidadProducto < producto.cantidad_solicitada
                  ) {
 
                 return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);

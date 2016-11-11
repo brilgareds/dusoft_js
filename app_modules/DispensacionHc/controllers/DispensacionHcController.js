@@ -2011,7 +2011,13 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
     G.Q.ninvoke(that.m_dispensacion_hc,medicamentosDispensados,parametros).then(function(resultado){
        //console.log("1) resultado ", resultado.rows);
         if(resultado.rows.length > 0){ 
-           // console.log("resultado.rows ", resultado.rows);
+            console.log("resultado.rows LISTO PARA EL HTML", resultado.rows[0].tipo_entrega);
+            if(resultado.rows[0].tipo_entrega === '1'){
+                console.log("A QUI SE CAMBIA EL PARAMETRO");
+                parametros.estadoEntrega = 2;
+                
+            }
+            console.log("parametros ", parametros);
             productosDispensados = resultado.rows;
            
             return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
@@ -2021,7 +2027,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
         }
       
    }).then(function(resultado){
-       //console.log("2) resultado ", resultado.rows);
+       console.log("2) resultado ", resultado.rows);
        if(resultado.rows.length > 0){ 
             
             detalleCabecera = resultado.rows[0];

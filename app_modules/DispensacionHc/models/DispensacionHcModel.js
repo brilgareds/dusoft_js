@@ -480,7 +480,7 @@ DispensacionHcModel.prototype.listarUltimaDispensacionFormula = function(obj,cal
        entrega.sistema, \
         entrega.dias_de_entregado, \
        to_char(entrega.fecha_entrega, 'YYYY-DD-MM')as fecha_entrega,  \
-        entrega.grupo_id \
+        entrega.grupo_id, entrega.tipo_entrega \
  FROM ( \
 SELECT todo.codigo_producto,  \
        todo.numero_unidades, \
@@ -498,7 +498,7 @@ SELECT todo.codigo_producto,  \
        'hc_dispensaciontodo' as sistema,\
         todo.dias_de_entregado, \
        todo.fecha_entrega as fecha_entrega,  \
-        todo.grupo_id  \
+        todo.grupo_id, todo.tipo_entrega  \
        FROM (   \
             SELECT k.codigo_producto,  \
                k.numero_unidades,  \
@@ -516,7 +516,7 @@ SELECT todo.codigo_producto,  \
                k.numero_entrega_actual as entrega,  \
                k.sistema,   \
                k.dias_de_entregado, \
-               K.fecha_entrega as fecha_entrega \
+               K.fecha_entrega as fecha_entrega, k.tipo_entrega \
             FROM(     \
                 SELECT dd.codigo_producto,\
                        dd.cantidad as numero_unidades, \
@@ -538,7 +538,7 @@ SELECT todo.codigo_producto,  \
                        )as fecha,   \
                        d.fecha_registro,  \
                        inv.grupo_id,  \
-                       d.numero_entrega_actual   \
+                       d.numero_entrega_actual, '1' as tipo_entrega   \
                FROM  hc_formulacion_despachos_medicamentos_pendientes hc   \
                        INNER JOIN bodegas_documentos d ON hc.bodegas_doc_id = d.bodegas_doc_id AND hc.numeracion = d.numeracion   \
                        INNER JOIN bodegas_documentos_d dd ON dd.bodegas_doc_id = d.bodegas_doc_id AND dd.numeracion = d.numeracion  \
@@ -562,7 +562,7 @@ SELECT todo.codigo_producto,  \
                      (SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf WHERE hcf.evolucion_id = :1 )as fecha,  \
                      d.fecha_registro,  \
                      inv.grupo_id,  \
-                     d.numero_entrega_actual  \
+                     d.numero_entrega_actual, '0' as tipo_entrega  \
                  FROM hc_formulacion_despachos_medicamentos as dc,  \
                       bodegas_documentos as d,  \
                       bodegas_documentos_d AS dd,  \
@@ -594,7 +594,7 @@ SELECT todo.codigo_producto,  \
        'hc_dispensaciontodo' as sistema,\
        a.dias_de_entregado, \
        a.fecha_entrega as fecha_entrega,  \
-        a.grupo_id \
+        a.grupo_id, '1' as tipo_entrega \
         FROM (  \
                 SELECT dd.codigo_producto,  \
                                 dd.cantidad as cantidad_entrega,  \
@@ -648,7 +648,7 @@ SELECT todo.codigo_producto,  \
     var query = G.knex.raw(sql,parametros);
     //console.log("query ", query.toSQL());//.client.driver
             query.then(function(resultado){    
-      //console.log("RESULTO QUE RESULTADO ", resultado);
+     // console.log("RESULTO QUE RESULTADO ", resultado.rows);
         callback(false, resultado);
      
     }).catch(function(err){        

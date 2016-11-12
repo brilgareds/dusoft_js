@@ -521,7 +521,87 @@ console.log("estadoestadoestado      ::::: ",estado);
             };
 
 
+            that.windowValidarDisponibilidad = function(obj, callback){
+                
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
 
+                    if (data.status === 200) {
+
+                        if(data.obj.pedidos_clientes.producto.length>0){  
+
+                            var observacion="**Productos sin disponibilidad** \n";
+                            data.obj.pedidos_clientes.producto.forEach(function(info){
+
+                              observacion +="Cantidad solicitada ("+info.cantidad_solicitada+")  Cantidad disponible ("+ info.cantidad_disponible+") para el codigo ("+ info.codigo_producto+") \n";
+
+                            });
+                            observacion+=$scope.Pedido.get_observacion_cartera();
+                            $scope.Pedido.set_observacion_cartera(observacion);
+                      }
+
+                $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
+
+                    if(data.obj.pedidos_clientes.producto.length > 0){
+                      $scope.opts = {
+                          backdrop: true,
+                          backdropClick: true,
+                          dialogFade: false,
+                          keyboard: true,
+                          template: ' <div class="modal-header">\
+                                          <button type="button" class="close" ng-click="close()">&times;</button>\
+                                          <h4 class="modal-title">Listado Productos </h4>\
+                                      </div>\
+                                      <div class="modal-body row">\
+                                          <div class="col-md-12">\
+                                              <h4 >Lista productos sin disponibilidad.</h4>\
+                                              <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                  <div class="list-group">\
+                                                      <a ng-repeat="producto in datos_view.productos_no_disponible" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                      Cantidad solicitada ({{ producto.cantidad_solicitada}})  Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
+                                                      </a>\
+                                                  </div>\
+                                              </div>\
+                                          </div>\
+                                          <div class="col-md-12" ng-if = "ocultarOpciones == 0">\
+                                              <fieldset>\
+                                                  <legend>Observación Cartera</legend>\
+                                                  <div class="row">\
+                                                      <div class="col-md-12">\
+                                                          <textarea  ng-model="Pedido.observacion_cartera" \
+                                                          ng-disabled="!datos_view.cartera" class="col-lg-12 col-md-12 col-sm-12" \
+                                                          rows="4" name="" placeholder="Ingresar Observación Cartera"></textarea>\
+                                                      </div>\
+                                                  </div>\
+                                              </fieldset>\
+                                          </div>\
+                                      </div>\
+                                      <div class="modal-footer">\
+                                          <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
+                                          <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">\
+                                              Denegado Cartera\
+                                          </button>\
+                                      </div>',
+                      scope: $scope,
+                      controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+                          $scope.close = function() {
+                              $scope.datos_view.progresoArchivo = 0;
+                              $modalInstance.close();
+                          };
+                      }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+                
+                }else{                           
+                   callback(true);
+                }
+              
+              }else{                      
+                  AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error en la consulta");                       
+              } 
+
+            });  
+                      
+        };
             /**
              * +Descripcion: FUncion encargada de actualizar el estado de una cotizacion
              *               estado =6 (Se solicita autorizacion)
@@ -544,28 +624,63 @@ console.log("estadoestadoestado      ::::: ",estado);
 
                     });
                     cotizacion.set_productos($scope.Pedido.get_productos())
-
-
-                    var obj = {
-                        session: $scope.session,
+                  
+                    
+                    var objValidarDisponibilidad = {
+                        session: $scope.session,                                 
                         data: {
                             pedidos_clientes: {
-                                cotizacion: {numeroCotizacion: cotizacion.get_numero_cotizacion(), estado: '6', cotizacion: cotizacion}
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: cotizacion.getCliente().contrato_id, //894
+                                pagina_actual: 1,
+                                productos: $scope.Pedido.get_productos(),//'0104030001', 
+                                tipo_producto: '',
+                                numero_cotizacion: '',
+                                numero_pedido: '',
+                                filtro: {nombre: 'codigo', tipo_busqueda: 2, numero: [cotizacion.get_numero_cotizacion()], tipo:1},
+                                //nuevo campos
+                                molecula: '',
+                                laboratorio_id: '',
+                                codigoProducto: '',
+                                descripcionProducto: '',
+                                concentracion: '',
+                                tipoBusqueda: 0,
+                                termino_busqueda: ''
                             }
                         }
                     };
+                    
+                    that.windowValidarDisponibilidad(objValidarDisponibilidad,function(estado){
+                        
+                        if(estado){
+                            var obj = {
+                                session: $scope.session,
+                                data: {
+                                    pedidos_clientes: {
+                                        cotizacion: {numeroCotizacion: cotizacion.get_numero_cotizacion(), estado: '6', cotizacion: cotizacion}
+                                    }
+                                }
+                            };
 
-                    Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
+                        Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
 
-                        if (data.status === 200) {
-                            that.buscar_cotizaciones('');
+                            if (data.status === 200) {
+                                that.buscar_cotizaciones('');
 
-                        } else {
-                            AlertService.mostrarMensaje("warning", "Se genero un error");
+                            } else {
+                                AlertService.mostrarMensaje("warning", "Se genero un error");
+                            }
+                        }); 
                         }
                     });
+                   
                 });
             };
+            
+            
+
 
             /**
              * +Descripcion: Funcion encargada de consultar los pedidos

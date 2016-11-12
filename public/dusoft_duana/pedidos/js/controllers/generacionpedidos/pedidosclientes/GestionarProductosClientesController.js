@@ -438,7 +438,7 @@ define(["angular", "js/controllers",
              * @param {type} producto
              */
             $scope.solicitar_producto = function(producto) {
-               
+                      
                
             if(producto.precio_venta > 0){
                 /*  var val = producto.precio_venta;

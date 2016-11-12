@@ -1335,13 +1335,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }else{
                     
                     //OJO VOLVER A DEJAR
-                    
-                    that.validarDisponibleProductosCotizacion(productos,function(estado){
-                        if(estado){
-                            that.generarPedidoCartera(aprobado);
+                    console.log("denegar ", denegar);
+                    /*that.validarDisponibleProductosCotizacion(productos,function(estado){
+                        if(estado){*/
+                    that.generarPedidoCartera(aprobado);
                           
-                        }
-                    });
+                        /*}
+                    });*/
                 }
                
             };

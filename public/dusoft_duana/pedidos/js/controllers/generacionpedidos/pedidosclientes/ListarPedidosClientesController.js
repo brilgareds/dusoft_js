@@ -236,7 +236,13 @@ define(["angular", "js/controllers",
 
 
             $scope.generar_observacion_cartera = function(obj) {
-
+                
+                if(obj.getEstado() === '0' && obj.get_estado_cotizacion() === '1'){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
+                    return;
+                }
+                console.log("obj ", obj.getEstado());
+                console.log("obj ", obj.get_estado_cotizacion());
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1'});

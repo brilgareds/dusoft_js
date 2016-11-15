@@ -1780,6 +1780,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         if (resultado.length > 0) {
 
             cotizacion.usuario_id = resultado[0].usuario_id;
+        
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
              **/

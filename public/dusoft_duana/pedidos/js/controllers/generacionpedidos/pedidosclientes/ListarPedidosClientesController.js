@@ -241,17 +241,16 @@ define(["angular", "js/controllers",
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
                     return;
                 }
-                console.log("obj ", obj.getEstado());
-                console.log("obj ", obj.get_estado_cotizacion());
+              
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
-                    localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1'});
+                    localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1', tipoPedido: obj.getTipoPedido()});
                     $state.go('Cotizaciones');
                 }
 
                 // Observacion cartera para el pedido
                 if (obj.get_numero_pedido() > 0) {
-                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1'});
+                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1', tipoPedido: obj.getTipoPedido()});
                     $state.go('PedidoCliente');
                 }
             };
@@ -355,8 +354,9 @@ define(["angular", "js/controllers",
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se encontraron mas registros");
                             return;
                         }
-
+                           
                         that.render_cotizaciones(data.obj.pedidos_clientes.lista_cotizaciones);
+                      
                     }
                 });
 
@@ -400,6 +400,8 @@ console.log("estadoestadoestado      ::::: ",estado);
                     cotizacion.set_tipo_producto(data.tipo_producto);
                     cotizacion.setFechaRegistro(data.fecha_registro);
                     cotizacion.setNumeroPedido(data.numero_pedido);
+                    //console.log("data.tipoPedido ---->>> ", data.tipo_pedido);
+                    cotizacion.setTipoPedido(data.tipo_pedido);
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
@@ -766,6 +768,7 @@ console.log("estadoestadoestado      ::::: ",estado);
 
                     pedido.setDatos(data);
                     pedido.setNumeroPedido(data.numero_pedido).set_vendedor(vendedor).setCliente(cliente);
+                    pedido.setTipoPedido(data.tipo_pedido);
                     pedido.set_descripcion_estado_actual_pedido(data.descripcion_estado_actual_pedido);
                     pedido.setFechaRegistro(data.fecha_registro);
                     pedido.setEstado(data.estado);
@@ -773,6 +776,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                             setDespachoEmpresaId(data.despacho_empresa_id).
                             setDespachoPrefijo(data.despacho_prefijo).
                             setDespachoNumero(data.despacho_numero);
+                    console.log("pedido", pedido);
                     $scope.Empresa.set_pedidos(pedido);
                 });
 

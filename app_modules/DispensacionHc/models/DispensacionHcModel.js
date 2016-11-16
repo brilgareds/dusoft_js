@@ -1310,7 +1310,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
         sql2 ="and b.codigo_producto ='" + obj.producto + "' ";
                                      
     }
-    
+                   
         console.log("PARAMETROS obj ", obj);          
         
         var sql = "SELECT  A.resultado, \
@@ -1320,7 +1320,9 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
         (SELECT bode.descripcion FROM bodegas as bode WHERE bode.empresa_id = A.empresa_id AND bode.centro_utilidad=A.centro_utilidad AND bode.bodega = A.bodega) AS razon_social, \
         A.bodega,\
         A.centro_utilidad,\
-        A.formulacion\
+        A.formulacion, A.modulo, \n\
+        CASE WHEN A.modulo = 0 THEN (SELECT distinct(numero_formula) FROM hc_formulacion_antecedentes WHERE evolucion_id = A.formula ) :: varchar\
+                    ELSE (SELECT distinct(formula_papel) FROM esm_formula_externa WHERE formula_id = A.formula ) END  AS no_formula\
                 FROM ( \
                     SELECT \
                         d.fecha_registro,\
@@ -1331,7 +1333,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         NUME.bodega,\
                         NUME.centro_utilidad,\
                         NUME.empresa_id,\
-                        'F.historia clinica' as formulacion\
+                        'F.historia clinica' as formulacion, '0' as modulo, dc.evolucion_id as formula\
                       FROM hc_formulacion_despachos_medicamentos as dc \
                         JOIN dispensacion_estados hc ON(dc.evolucion_id=hc.evolucion_id), \
                         bodegas_documentos as d, \
@@ -1350,7 +1352,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and NUME.empresa_id=EMPRE.empresa_id " + sql + " and hc.tipo_id_paciente= :1 \
                         and hc.paciente_id= :2 \
                         and dc.sw_estado='1'\
-                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id \
+                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id,dc.evolucion_id  \
                 	UNION \
                      SELECT \
                         d.fecha_registro,\
@@ -1361,7 +1363,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         NUME.bodega,\
                         NUME.centro_utilidad,\
                         NUME.empresa_id,\
-                        'F.historia clinica' as formulacion\
+                        'F.historia clinica' as formulacion, '0' as modulo,dc.evolucion_id as formula\
                         FROM hc_formulacion_despachos_medicamentos_pendientes as dc \
                         JOIN dispensacion_estados hc ON(dc.evolucion_id=hc.evolucion_id) , \
                         bodegas_documentos as d, \
@@ -1379,7 +1381,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and d.bodegas_doc_id=NUME.bodegas_doc_id \
                         and NUME.empresa_id=EMPRE.empresa_id " + sql +  " and hc.tipo_id_paciente= :1\
                         and hc.paciente_id= :2\
-                      GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id\
+                      GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id,dc.evolucion_id \
                 UNION \
                       SELECT \
                         a.fecha_registro,\
@@ -1390,7 +1392,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         e.bodega,\
                         e.centro_utilidad, \
                         e.empresa_id,\
-                        'F.externa' as formulacion \
+                        'F.externa' as formulacion,'1' as modulo, c.formula_id as formula\
                       FROM \
                         bodegas_documentos as a \
                         JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id) \
@@ -1410,7 +1412,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and d.sw_estado IN ('0','1') \
                         and a.fecha_registro >= '" +obj.fechaDia+ "'::date\
                         and a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
-                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id  \
+                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id,c.formula_id  \
                 UNION  \
                       SELECT \
                         a.fecha_registro,\
@@ -1421,7 +1423,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         e.bodega,\
                         e.centro_utilidad,\
                         e.empresa_id,\
-                        'F.externa' as formulacion \
+                        'F.externa' as formulacion, '1' as modulo,c.formula_id as formula\
                       FROM \
                         bodegas_documentos as a \
                         JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id) \
@@ -1440,7 +1442,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and d.sw_estado IN ('0','1') \
                         and a.fecha_registro >= '" +obj.fechaDia+ "'::date\
                         and a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
-                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id \
+                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id,c.formula_id \
                        ) AS A ORDER BY  A.fecha_registro DESC LIMIT 1";
      /*   var sql = "SELECT A.resultado,\
                 A.fecha_registro,\

@@ -1335,9 +1335,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                 console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
                 if(denegar === 1){    
-                    
-                    
-                    
                    
                     that.generarPedidoCartera(aprobado);
                 }else{

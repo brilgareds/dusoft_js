@@ -2533,6 +2533,11 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
  */
 PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
 
+    /*console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
+    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
+    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
+    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");*/
+    
     var that = this;
 
     var args = req.body.data;
@@ -2598,6 +2603,8 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
     var estado_pedido = 0;
+    
+    //console.log("totalValorPedidoNuevo ", totalValorPedidoNuevo);
 
     /*Se recorre el arreglo de los productos y se suma el valor total de con iva
      * de cada producto
@@ -2644,9 +2651,9 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
             var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
 
             if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                estado_pedido = 1;
+                estado_pedido = 4;
             } else {
-                estado_pedido = 1;
+                estado_pedido = 1;                      
             }
             /**
              * +Descripcion: la funcion se encargara de modificar el detalle del pedido

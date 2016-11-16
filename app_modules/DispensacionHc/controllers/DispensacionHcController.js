@@ -2150,7 +2150,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
                     tipoIdPaciente: args.listar_medicamentos_dispensados.tipoIdPaciente,
                     pacienteId: args.listar_medicamentos_dispensados.pacienteId,
                     ultimo: 1,
-                    estadoEntrega: 2
+                    estadoEntrega: 0
                 };
         
                 

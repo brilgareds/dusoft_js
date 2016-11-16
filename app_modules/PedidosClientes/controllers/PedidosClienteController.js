@@ -2576,12 +2576,13 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'La cantidad solicitada no puede ser menor o igual a cero', 404, {}));
         return;
     }
+    
     if (producto.precio_venta === undefined || producto.precio_venta === '') {
         res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
 	
-	if (!producto.cantidadPendienteDespachar  || producto.cantidadPendienteDespachar.length === 0) {
+    if (!producto.cantidadPendienteDespachar  || producto.cantidadPendienteDespachar.length === 0) {
         res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacÃ­a', 404, {}));
         return;
     }  

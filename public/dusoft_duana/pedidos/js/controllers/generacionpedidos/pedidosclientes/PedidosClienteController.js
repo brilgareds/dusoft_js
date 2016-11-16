@@ -94,8 +94,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             if ($state.is("Cotizaciones") === true) {
                 var cotizacion = localStorageService.get("cotizacion");
                 var numeroCotizacion = 0;
+                var tipoCotizacionCartera;
+                console.log("cotizacion ><><<<<<<>>>>><>>>< ", cotizacion);
                 if (cotizacion) {
                     numeroCotizacion = cotizacion.numero_cotizacion || 0;
+                    tipoCotizacionCartera = cotizacion.tipoPedido;
                 }
                 
                 if (cotizacion === null) {
@@ -103,6 +106,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
 
                 $scope.Pedido.set_numero_cotizacion(parseInt(numeroCotizacion));
+                $scope.Pedido.setTipoPedido(tipoCotizacionCartera);
                 $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (cotizacion.visualizar === '1') ? true : false;
 
@@ -117,19 +121,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 //Pedido
                 var pedido = localStorageService.get("pedido");
                 var numeroPedido = 0;
+                var tipoPedidoCartera;
                 if (pedido) {
                     numeroPedido = pedido.numero_pedido || 0;
+                    tipoPedidoCartera = pedido.tipoPedido;
                 }
 
                 $scope.Pedido.setNumeroPedido(parseInt(numeroPedido));
-
+                $scope.Pedido.setTipoPedido(tipoPedidoCartera);
                 $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
-
+                
                 /*
                  * +Descripcion: Se consulta el estado del pedido
                  */
                 that.consultarEstadoPedidoCotizacion(1, pedido.numero_pedido);
+                
             }
 
 
@@ -1325,23 +1332,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.gestion_cartera = function(aprobado, denegar) {
                 $scope.ocultarOpciones = 0;
                 var productos = [];
-               
+                
+                console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
                 if(denegar === 1){    
-                    
-                    
-                    
                    
                     that.generarPedidoCartera(aprobado);
                 }else{
                     
                     //OJO VOLVER A DEJAR
                     
-                    that.validarDisponibleProductosCotizacion(productos,function(estado){
-                        if(estado){
-                            that.generarPedidoCartera(aprobado);
-                          
-                        }
-                    });
+                    if($scope.Pedido.getTipoPedido() === '1'){
+                        that.validarDisponibleProductosCotizacion(productos,function(estado){
+                            if(estado){
+                                that.generarPedidoCartera(aprobado);                        
+                            }
+                        });
+                    }
+                    console.log("denegar ", $scope.Pedido.getTipoPedido() );
+                    if($scope.Pedido.getTipoPedido() === '0'){
+                        that.generarPedidoCartera(aprobado);   
+                    }
                 }
                
             };

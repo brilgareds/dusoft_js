@@ -169,7 +169,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         "e.prefijo as despacho_prefijo",
         "e.numero as despacho_numero",
         G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
-        "f.descripcion as descripcion_tipo_producto"
+        "f.descripcion as descripcion_tipo_producto",
+        G.knex.raw("'1' as tipo_pedido")
     ];
 
     var query = G.knex.column(columns).from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {
@@ -1217,23 +1218,6 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         //filtroAvanzado.tipoBusqueda
     }
 
-    /***
-     * +Descripcion Campos para obtener la fecha actual
-     */
-    var fechaActual = new Date();
-    var dd = fechaActual.getDate();
-    var mm = fechaActual.getMonth() + 1; //hoy es 0!
-    var yyyy = fechaActual.getFullYear();
-
-    if (dd < 10) {
-        dd = '0' + dd
-    }
-
-    if (mm < 10) {
-        mm = '0' + mm
-    }
-
-    fechaActual = yyyy + '-' + mm + '-' + dd;
 
     //Se agrega un nuevo campo llamado contrato que retornara FALSE si no tiene
     //contrato con la empresa y TRUE si lo tiene
@@ -1510,7 +1494,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      when a.estado = '6' then 'Se solicita autorizacion'\
      when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
      to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro,\
-     h.pedido_cliente_id as numero_pedido\
+     h.pedido_cliente_id as numero_pedido, '0' as tipo_pedido\
      from ventas_ordenes_pedidos_tmp a\
      inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
      inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\

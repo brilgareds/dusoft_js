@@ -1218,23 +1218,6 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         //filtroAvanzado.tipoBusqueda
     }
 
-    /***
-     * +Descripcion Campos para obtener la fecha actual
-     */
-    var fechaActual = new Date();
-    var dd = fechaActual.getDate();
-    var mm = fechaActual.getMonth() + 1; //hoy es 0!
-    var yyyy = fechaActual.getFullYear();
-
-    if (dd < 10) {
-        dd = '0' + dd
-    }
-
-    if (mm < 10) {
-        mm = '0' + mm
-    }
-
-    fechaActual = yyyy + '-' + mm + '-' + dd;
 
     //Se agrega un nuevo campo llamado contrato que retornara FALSE si no tiene
     //contrato con la empresa y TRUE si lo tiene

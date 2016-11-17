@@ -1376,7 +1376,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
                 console.log("aprobado", aprobado);
                 console.log("denegar", denegar);
-              /*  $scope.ocultarOpciones = 0;
+                $scope.ocultarOpciones = 0;
                 var productos = [];
                 
                 console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
@@ -1398,7 +1398,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if($scope.Pedido.getTipoPedido() === '0'){
                         that.generarPedidoCartera(aprobado);   
                     }
-                }*/
+                }
                
             };
 

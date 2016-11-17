@@ -708,7 +708,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.ocultarOpciones = 1;
                
                 //OJO VOLVER A DEJAR
-                that.validarDisponibleProductosCotizacion(productos,function(estado){
+                that.validarDisponibleProductosCotizacion(0,productos,function(estado){
                     if(estado){
 
                         $scope.datos_view.producto_seleccionado = producto;
@@ -939,7 +939,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              */
             $scope.registrarProductoModificado = function() {
                 
-                that.validarDisponibleProductosCotizacion($scope.Pedido.get_productos(),function(estado){
+                that.validarDisponibleProductosCotizacion(0,$scope.Pedido.get_productos(),function(estado){
                     if(estado){
                         that.registrarProductoModificado();                     
                     }
@@ -1208,6 +1208,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             
             
+            that.ventanaProductosSinDisponibilidad = function(productos){
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/generacionpedidos/pedidosclientes/validardisponibilidadproductoscontroller.html',
+                    scope: $scope,                  
+                    controller: "ValidarDisponibilidadProductosController",
+                    resolve: {
+                        pedido: function() {
+                            return productos;
+                        },
+                        swBotonDenegarCartera:function() {
+                            return 0;
+                        }
+                    }           
+                };
+                var modalInstance = $modal.open($scope.opts);   
+
+                modalInstance.result.then(function(){ 
+                },function(){});     
+            };
             /**
              * @author Cristian Ardila
              * +Descripcion Metodo encargado de validar la disponibilidad de los
@@ -1215,9 +1239,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 30/09/2016 DD/MM/YYYY
              * 
              **/
-            that.validarDisponibleProductosCotizacion = function(producto,callback) {
+            that.validarDisponibleProductosCotizacion = function(estadoBoton,producto,callback) {
                 
-                 
                 var numeroPedidoCot;
                 var tipoPedidoCot;
                 if($scope.Pedido.get_numero_cotizacion() >0){
@@ -1266,9 +1289,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                       observacion+=$scope.Pedido.get_observacion_cartera();
                       $scope.Pedido.set_observacion_cartera(observacion);
                       }
-                        $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
+                        //$scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
                        if(data.obj.pedidos_clientes.producto.length > 0){
-                        $scope.opts = {
+                           
+                         that.ventanaProductosSinDisponibilidad(estadoBoton,data.obj.pedidos_clientes.producto);
+                       /* $scope.opts = {
                             backdrop: true,               
                             backdropClick: true,
                             dialogFade: false,
@@ -1315,7 +1340,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 };
                             }]
                         };
-                        var modalInstance = $modal.open($scope.opts);
+                        var modalInstance = $modal.open($scope.opts);*/
                         
                        }else{
                            
@@ -1331,6 +1356,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              
             };
             
+            
+            
            /**
             * @author Cristian Ardila
             * +Descripcion Metodo que se invoca desde la ventana que valida si
@@ -1345,7 +1372,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
             // Gestiona la aprobacion o no del departamento de cartera
             $scope.gestion_cartera = function(aprobado, denegar) {
-                $scope.ocultarOpciones = 0;
+                
+                console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
+                console.log("aprobado", aprobado);
+                console.log("denegar", denegar);
+              /*  $scope.ocultarOpciones = 0;
                 var productos = [];
                 
                 console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
@@ -1357,7 +1388,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     //OJO VOLVER A DEJAR
                     
                     if($scope.Pedido.getTipoPedido() === '1'){
-                        that.validarDisponibleProductosCotizacion(productos,function(estado){
+                        that.validarDisponibleProductosCotizacion(1,productos,function(estado){
                             if(estado){
                                 that.generarPedidoCartera(aprobado);                        
                             }
@@ -1367,7 +1398,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if($scope.Pedido.getTipoPedido() === '0'){
                         that.generarPedidoCartera(aprobado);   
                     }
-                }
+                }*/
                
             };
 

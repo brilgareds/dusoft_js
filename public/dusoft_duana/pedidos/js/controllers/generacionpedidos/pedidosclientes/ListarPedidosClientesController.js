@@ -446,7 +446,7 @@ console.log("estadoestadoestado      ::::: ",estado);
             };
 
             $scope.solicitarAutorizacion = function(cotizacion) {
-
+                console.log(" [solicitarAutorizacion] cotizacion ", cotizacion);
                 var estadoCotizacion = cotizacion.get_estado_cotizacion()
 
                 if (estadoCotizacion === '6' || estadoCotizacion === '3' || estadoCotizacion === '5') {
@@ -519,7 +519,8 @@ console.log("estadoestadoestado      ::::: ",estado);
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
-
+                    
+                    console.log("buscar_detalle_cotizacion  ", data);
                     if (data.status === 200) {
                         callback(true, data)
 
@@ -528,11 +529,49 @@ console.log("estadoestadoestado      ::::: ",estado);
                 });
             };
 
-
-            that.windowValidarDisponibilidad = function(obj, callback){
+            
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * +Descripcion Metodo encargado de desplegar la ventana modal
+             *              con los productos sin disponibilidad o que tengan
+             *              la cantidad disponible menor a la solicitada
+             * @fecha 17/11/2016
+             */
+            that.ventanaProductosSinDisponibilidad = function(productos){
                 
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/generacionpedidos/pedidosclientes/validardisponibilidadproductoscontroller.html',
+                    scope: $scope,                  
+                    controller: "ValidarDisponibilidadProductosController",
+                    resolve: {
+                        pedido: function() {
+                            return productos;
+                        },
+                        swBotonDenegarCartera:function() {
+                            return 0;
+                        }
+                    }           
+                };
+                var modalInstance = $modal.open($scope.opts);   
 
+                modalInstance.result.then(function(){ 
+                },function(){});     
+            };
+            
+            /**
+             * @author Cristian Manuel Ardila
+             * +Descripcion Metodo invocado al momento de solicitar autorizacion 
+             *              a cartera para una cotizacion en la lista de cotizaciones
+             * @fecha 17/11/2016
+             */
+            that.validarDisponibilidadProducto = function(obj, callback){
+                    
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
+                       
                     if (data.status === 200) {
 
                         if(data.obj.pedidos_clientes.producto.length>0){  
@@ -547,9 +586,12 @@ console.log("estadoestadoestado      ::::: ",estado);
                             $scope.Pedido.set_observacion_cartera(observacion);
                       }
 
-                $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
-
-                    if(data.obj.pedidos_clientes.producto.length > 0){
+                //$scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
+                  if(data.obj.pedidos_clientes.producto.length > 0){      
+                      
+                        that.ventanaProductosSinDisponibilidad(data.obj.pedidos_clientes.producto);
+                        
+               /*
                       $scope.opts = {
                           backdrop: true,
                           backdropClick: true,
@@ -597,7 +639,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                           };                    
                       }]
                 };
-                var modalInstance = $modal.open($scope.opts);
+                var modalInstance = $modal.open($scope.opts);*/
                 
                 }else{                           
                    callback(true);
@@ -617,13 +659,13 @@ console.log("estadoestadoestado      ::::: ",estado);
              * @returns {undefined}
              */
             that.cambiarEstadoCotizacionAutorizacion = function(cotizacion) {
-
+                
                 that.buscar_detalle_cotizacion(cotizacion, function(estado, data) {
-
+                    
                     var productos = data.obj.pedidos_clientes.lista_productos;
-                    $scope.Pedido.limpiar_productos();
+                        $scope.Pedido.limpiar_productos();
                     productos.forEach(function(data) {
-
+                            console.log("data.codigo_producto ", data.codigo_producto);
                         var _producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
                         _producto.set_cantidad_inicial(data.cantidad_solicitada);
                         _producto.set_cantidad_solicitada(data.cantidad_solicitada);
@@ -660,7 +702,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                         }
                     };
                     
-                    that.windowValidarDisponibilidad(objValidarDisponibilidad,function(estado){
+                    that.validarDisponibilidadProducto(objValidarDisponibilidad,function(estado){
                         
                         if(estado){
                             var obj = {

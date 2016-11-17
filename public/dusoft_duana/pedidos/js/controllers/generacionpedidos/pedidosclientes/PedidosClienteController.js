@@ -932,11 +932,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
 
             };
-
+                
+            /**
+             * @author Cristian Manuel Ardila
+             * +Descripcion Metodo invocado del boton (Solicitar auotirzacion cartera)
+             */
             $scope.registrarProductoModificado = function() {
-
-
-                // Pedido
+                
+                that.validarDisponibleProductosCotizacion($scope.Pedido.get_productos(),function(estado){
+                    if(estado){
+                        that.registrarProductoModificado();                     
+                    }
+                });                
+            };
+            
+            /**
+             * @author Cristian Manuel Ardila
+             * +Descripcion Metodo encargado de registrar multiples productos
+             *              modificados
+             * @fecha 17/11/2016
+             */
+            that.registrarProductoModificado = function(){
+              
                 if ($scope.Pedido.get_numero_pedido() > 0) {
 
                     var url = API.PEDIDOS.CLIENTES.VALIDAR_ESTADO_TOTAL_PEDIDO;
@@ -949,10 +966,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
                     };
-                }
-                ;
-
-
+                };
+                
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -972,8 +987,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
 
                 });
+                
             };
-
 
 
 
@@ -1202,7 +1217,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              **/
             that.validarDisponibleProductosCotizacion = function(producto,callback) {
                 
-                console.log("$scope.Pedido ", $scope.Pedido);
+                 
                 var numeroPedidoCot;
                 var tipoPedidoCot;
                 if($scope.Pedido.get_numero_cotizacion() >0){
@@ -1254,7 +1269,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
                        if(data.obj.pedidos_clientes.producto.length > 0){
                         $scope.opts = {
-                            backdrop: true,
+                            backdrop: true,               
                             backdropClick: true,
                             dialogFade: false,
                             keyboard: true,
@@ -1288,7 +1303,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         </div>\
                                         <div class="modal-footer">\
                                             <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
-                                            <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">\
+                                            <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" >\
                                                 Denegado Cartera\
                                             </button>\
                                         </div>',

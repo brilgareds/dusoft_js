@@ -585,7 +585,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                                       </div>\
                                       <div class="modal-footer">\
                                           <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
-                                          <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">\
+                                          <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" >\
                                               Denegado Cartera\
                                           </button>\
                                       </div>',
@@ -594,7 +594,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                           $scope.close = function() {
                               $scope.datos_view.progresoArchivo = 0;
                               $modalInstance.close();
-                          };
+                          };                    
                       }]
                 };
                 var modalInstance = $modal.open($scope.opts);

@@ -205,7 +205,7 @@
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
                                     </button>
                                     
-                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() >0" ng-disabled="!datos_view.btnSolicitarAutorizacionCartera">
+                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() >0" > <!-- ng-disabled="!datos_view.btnSolicitarAutorizacionCartera"//-->
                                         <span class="glyphicon glyphicon-cog" ></span> Solicitar autorizacion cartera 
                                     </button>
                                    <!-- <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 " >//-->

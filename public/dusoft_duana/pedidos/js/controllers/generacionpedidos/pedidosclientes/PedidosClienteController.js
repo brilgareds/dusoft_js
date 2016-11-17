@@ -953,7 +953,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 17/11/2016
              */
             that.registrarProductoModificado = function(){
-              
+                
+                var obj = {};
                 if ($scope.Pedido.get_numero_pedido() > 0) {
 
                     var url = API.PEDIDOS.CLIENTES.VALIDAR_ESTADO_TOTAL_PEDIDO;
@@ -967,7 +968,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     };
                 };
-                
+                console.log("LOS OBJETOS ", obj);
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -1208,7 +1209,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             
             
-            that.ventanaProductosSinDisponibilidad = function(productos){
+            that.ventanaProductosSinDisponibilidad = function(estadoBoton,productos){
                 
                 $scope.opts = {
                     backdrop: true,
@@ -1223,7 +1224,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             return productos;
                         },
                         swBotonDenegarCartera:function() {
-                            return 0;
+                            return estadoBoton;
                         }
                     }           
                 };
@@ -1358,112 +1359,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
             
             
-           /**
-            * @author Cristian Ardila
-            * +Descripcion Metodo que se invoca desde la ventana que valida si
-            *              hay disponibles con el proposito de desaprobar la
-            *              cotizacion
-            * @fecha 30/09/2016
-            */
-           $scope.desaprobarCartera = function(aprobado){
-               that.generarPedidoCartera(aprobado);
-             
-           };
-            
-            // Gestiona la aprobacion o no del departamento de cartera
-            $scope.gestion_cartera = function(aprobado, denegar) {
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * +Descripcion Metodo encargado de desplegar una ventana
+             *              para solicitar al usuario si desea confirmar la
+             *              autorizacion y generar el pedido posteriormente
+             * @fecha 17/11/2016
+             */
+            that.autorizarCotizacionCartera = function(aprobado){
                 
-                console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
-                console.log("aprobado", aprobado);
-                console.log("denegar", denegar);
-                $scope.ocultarOpciones = 0;
-                var productos = [];
-                
-                console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
-                if(denegar === 1){    
-                   
-                    that.generarPedidoCartera(aprobado);
-                }else{
-                    
-                    //OJO VOLVER A DEJAR
-                    
-                    if($scope.Pedido.getTipoPedido() === '1'){
-                        that.validarDisponibleProductosCotizacion(1,productos,function(estado){
-                            if(estado){
-                                that.generarPedidoCartera(aprobado);                        
-                            }
-                        });
-                    }
-                    console.log("denegar ", $scope.Pedido.getTipoPedido() );
-                    if($scope.Pedido.getTipoPedido() === '0'){
-                        that.generarPedidoCartera(aprobado);   
-                    }
-                }
-               
-            };
-
-            that.generarPedidoCartera = function(aprobado){
-               
-                var obj = {};
-                var url = '';
-                $scope.Pedido.set_aprobado_cartera(aprobado);
-                // Observacion cartera para cotizacion
-                if ($scope.Pedido.get_numero_cotizacion() > 0) {
-                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
-                    obj = {
-                        session: $scope.session,
-                        data: {
-                            pedidos_clientes: {
-                                cotizacion: $scope.Pedido
-                            }
-                        }
-                    };
-                }
-                // Observacion cartera para pedido
-                if ($scope.Pedido.get_numero_pedido() > 0) {
-
-                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
-                    obj = {
-                        session: $scope.session,
-                        data: {
-                            pedidos_clientes: {
-                                pedido: $scope.Pedido,
-                                aprobado: aprobado
-                            }
-                        }
-                    };
-                }
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-
-
-                    if (data.status === 200) {
-                        /*Se valida si es una cotizacion y entonces se procede
-                         a crear el pedido*/
-                        if ($scope.Pedido.get_numero_cotizacion() > 0) {
-
-                            var parametros = {busqueda: cotizacion.busqueda,
-                                pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
-                            };
-
-                            localStorageService.add("terminoBusqueda", parametros);
-
-                            $scope.gestionar_pedido()
-                        }
-                        if ($scope.Pedido.get_numero_pedido() > 0) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                            $scope.volver_cotizacion();
-                        }                                 
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                        //$scope.volver_cotizacion();
-                    }
-                });
-                
-            };
-            // Gestionar la creacion del pedido
-            $scope.gestionar_pedido = function() {
-
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -1485,7 +1389,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
-                            $scope.generar_pedido_cliente();
+                            that.generarPedidoCartera(aprobado);
                             $modalInstance.close();
                         };
                         $scope.close = function() {
@@ -1494,8 +1398,153 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }]
                 };
                 var modalInstance = $modal.open($scope.opts);
+                
             };
+            
+            
+             /**
+            * @author Cristian Ardila
+            * +Descripcion Metodo que se invoca desde el boton GENERAR PEDIDO
+            *              el cual invocara al metodo (autorizarCotizacionCartera)
+            * @fecha 30/09/2016
+            */
+            $scope.gestionar_pedido = function(aprobado) {
+                that.autorizarCotizacionCartera(aprobado);
+            };
+            
+           /**
+            * @author Cristian Ardila
+            * +Descripcion Metodo que se invoca desde la ventana que valida si
+            *              hay disponibles con el proposito de desaprobar la
+            *              cotizacion
+            * @fecha 30/09/2016
+            */
+           $scope.desaprobarCartera = function(aprobado){
+               that.autorizarCotizacionCartera(aprobado);
+             
+           };
+            
+            /**
+            * @author Cristian Ardila
+            * +Descripcion Metodo que se invoca desde el boton APROBADO CARTERA
+            *              el cual invocara al metodo (autorizarCotizacionCartera)
+            * @fecha 30/09/2016
+            */
+            $scope.gestion_cartera = function(aprobado, denegar) {
+                
+                console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
+                console.log("aprobado", aprobado);
+                console.log("denegar", denegar);
+                $scope.ocultarOpciones = 0;
+                
+                
+                console.log("Pedido.get_estado_cotizacion() ///-----  ", $scope.Pedido.getTipoPedido() );
+                if(denegar === 1){    
+                                       
+                    that.autorizarCotizacionCartera(aprobado);
+                }else{
+                    
+                    //OJO VOLVER A DEJAR
+                    that.autorizarCotizacionCartera(aprobado);
+                    /*if($scope.Pedido.getTipoPedido() === '1'){
+                        that.validarDisponibleProductosCotizacion(1,productos,function(estado){
+                            if(estado){
+                                that.generarPedidoCartera(aprobado);                        
+                            }
+                        });
+                    }
+                    console.log("denegar ", $scope.Pedido.getTipoPedido() );
+                    if($scope.Pedido.getTipoPedido() === '0'){
+                         that.validarDisponibleProductosCotizacion(1,productos,function(estado){
+                            if(estado){
+                                that.generarPedidoCartera(aprobado);                       
+                            }
+                        });
+                           
+                    }*/
+                }
+               
+            };
+            
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * +Descrpcion Metodo encargado de validar
+             * 1) validar la disponibilidad de cada producto, y si no hay disponibilidad
+             *    se mostrar una ventana modal con los posibles productos
+             *    de lo contrario se procedera a cambiarle el estado de la cotizacion
+             *    a estado (AUTORIZADO POR CARTERA)
+             *    y despues se invocara la funcion $scope.generar_pedido_cliente()
+             *    la cual generara el pedido
+             * @fecha 17/11/2016
+             */
+            that.generarPedidoCartera = function(aprobado){
+                
+                var productos = [];
+                
+                that.validarDisponibleProductosCotizacion(1,productos,function(estado){
+                    
+                    if(estado){                       
+               
+                        var obj = {};
+                        var url = '';
+                        $scope.Pedido.set_aprobado_cartera(aprobado);
+                        // Observacion cartera para cotizacion
+                        if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                            url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
+                            obj = {
+                                session: $scope.session,
+                                data: {
+                                    pedidos_clientes: {
+                                        cotizacion: $scope.Pedido
+                                    }
+                                }
+                            };
+                        }
+                        // Observacion cartera para pedido
+                        if ($scope.Pedido.get_numero_pedido() > 0) {
 
+                            url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
+                            obj = {
+                                session: $scope.session,
+                                data: {
+                                    pedidos_clientes: {
+                                        pedido: $scope.Pedido,
+                                        aprobado: aprobado
+                                    }
+                                }
+                            };
+                        }
+
+                        Request.realizarRequest(url, "POST", obj, function(data) {
+
+
+                            if (data.status === 200) {
+                                /*Se valida si es una cotizacion y entonces se procede
+                                 a crear el pedido*/
+                                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                                    var parametros = {busqueda: cotizacion.busqueda,
+                                        pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
+                                    };
+
+                                    localStorageService.add("terminoBusqueda", parametros);
+                                    $scope.generar_pedido_cliente();
+                                    //$scope.gestionar_pedido();
+                                }
+                                if ($scope.Pedido.get_numero_pedido() > 0) {
+                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                    $scope.volver_cotizacion();
+                                }                                 
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                //$scope.volver_cotizacion();
+                            }
+                       });                                  
+                    }
+                });
+                
+            };
+           
 
             $scope.generar_pedido_cliente = function() {
 

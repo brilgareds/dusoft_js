@@ -1852,7 +1852,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
          *               1: se dejara en null ya que no se ha generado despacho alguno,
          *               2: entrega pendiente)
          */
-    var tablaUsuarioDespacho;
+   /* var tablaUsuarioDespacho;
     var tablaBodegasDocumentos;
     var campo;
         if(obj.estadoEntrega === 0){
@@ -1869,7 +1869,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
             tablaUsuarioDespacho = " hc_formulacion_despachos_medicamentos_pendientes j "
             tablaBodegasDocumentos = "INNER JOIN bodegas_documentos k ON j.bodegas_doc_id = k.bodegas_doc_id AND k.numeracion = j.numeracion ";
             campo = "k.usuario_id";
-        }
+        }*/
     
     if(!obj.pacienteId){
        
@@ -1878,12 +1878,37 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
         where=" and a.tipo_id_paciente= :2 and a.paciente_id= :3 ";
     }
     
-    console.log("tablaUsuarioDespacho ", tablaUsuarioDespacho);
+    /*console.log("tablaUsuarioDespacho ", tablaUsuarioDespacho);
     console.log("tablaBodegasDocumentos ", tablaBodegasDocumentos);
-    console.log("obj ", obj);                       
+    console.log("obj ", obj);  */                     
+                            
     
-    
-    var sql = "select distinct  ON (a.evolucion_id)\
+    var sql = "SELECT ca.evolucion_id,\
+                      ca.numero_formula, \
+                      ca.tipo_id_paciente, \
+                      ca.paciente_id, \
+                      ca.fecha_registro,\
+                      ca.fecha_finalizacion,\
+                      ca.fecha_formulacion,\
+                      ca.apellidos,\
+                      ca.nombres,\
+                      ca.edad,\
+                      ca.sexo,\
+                        ca.residencia_direccion,\
+                        ca.residencia_telefono,\
+                        ca.plan_id,\
+                        ca.plan_descripcion,\
+                        ca.tipo_bloqueo_id,\
+                        ca.bloqueo,\
+                        ca.tipo_formula,\
+                        ca.descripcion_tipo_formula,\
+                        CASE WHEN ca.nombre is null\
+                        THEN (SELECT sys.nombre \
+                              FROM system_usuarios sys \
+                              WHERE sys.usuario_id =(SELECT distinct(usuario_id) FROM hc_pendientes_por_dispensar WHERE evolucion_id = :1 limit 1))\
+                                ELSE ca.nombre END  AS nombre\
+            FROM(\
+            select distinct  ON (a.evolucion_id)\
             a.evolucion_id,\
             a.numero_formula,\
             a.tipo_id_paciente,\
@@ -1949,7 +1974,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
                 a.evolucion_id= :1\
                 " + where + "\
                 and a.sw_formulado='1' \
-                and g.estado='1' ; ";
+                and g.estado='1' ) as ca";
     /*var sql = "select distinct  ON (a.evolucion_id)\
             a.evolucion_id,\
             a.numero_formula,\

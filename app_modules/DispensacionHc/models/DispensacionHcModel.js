@@ -775,7 +775,7 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
        k.fecha,\
        cast(k.numero_entrega_actual as text) as Entrega,\
        k.codigo_producto,\
-       k.numero_unidades,\
+       round(k.numero_unidades) as numero_unidades,\
        TO_CHAR(k.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento,\
        k.lote,\
        k.descripcion_prod,\
@@ -1906,7 +1906,9 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
             (SELECT nombre \
             FROM system_usuarios\
             WHERE usuario_id = (\
-            SELECT distinct(bod.usuario_id) as usuario_id\
+            SELECT todo.usuario_id \
+            FROM (\
+            SELECT distinct(bod.usuario_id) as usuario_id, bod.fecha_registro\
             FROM bodegas_documentos bod INNER JOIN ( \
             SELECT union_entrega.evolucion_id,\
                    union_entrega.bodegas_doc_id as bodegas_doc_id,\
@@ -1927,7 +1929,13 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
             WHERE union_entrega.evolucion_id = :1\
             )as entrega ON entrega.bodegas_doc_id = bod.bodegas_doc_id \
                         AND entrega.numeracion = bod.numeracion\
-            WHERE bod.fecha_registro ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = :1)||'%'\
+            UNION ALL\
+            SELECT distinct(p.usuario_id)as usuario_id,\
+                   p.fecha_pendiente\
+            FROM hc_pendientes_por_dispensar p \
+            WHERE p.evolucion_id = :1 and p.bodegas_doc_id is null and p.numeracion is null  \
+            ) as todo WHERE todo.fecha_registro ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = :1 )||'%'\
+            limit 1\
             ))as nombre\
             from hc_formulacion_antecedentes a\
             inner join hc_evoluciones h on a.evolucion_id = h.evolucion_id\
@@ -3274,8 +3282,8 @@ DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto
   //console.log("parametros ", parametros);
    var sql = "INSERT INTO hc_pendientes_por_dispensar\
       (hc_pendiente_dispensacion_id,evolucion_id,codigo_medicamento,cantidad,\
-       usuario_id,todo_pendiente,fecha_registro)\
-            VALUES( DEFAULT, :1, :2, :3, :4, :5, :6 );";
+       usuario_id,todo_pendiente,fecha_registro, fecha_pendiente)\
+            VALUES( DEFAULT, :1, :2, :3, :4, :5, :6, :6 );";
 
            
     var query = G.knex.raw(sql,parametros );

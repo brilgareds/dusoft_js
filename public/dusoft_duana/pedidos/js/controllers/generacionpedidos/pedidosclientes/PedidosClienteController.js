@@ -1383,8 +1383,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             * @fecha 30/09/2016
             */
             $scope.gestion_cartera = function(aprobado, denegar) {
-                console.log("aprobado ", aprobado);
-                console.log("denegar ", denegar);
+               
                 //$scope.Pedido.getTipoPedido()               
                 $scope.ocultarOpciones = 0;               
                 if(denegar === 1){                                           

@@ -370,7 +370,7 @@ define(["angular", "js/controllers",
              * @param {type} estado
              */
             $scope.cargarListaNotificacionCotizacion = function(estado) {
-console.log("estadoestadoestado      ::::: ",estado);
+ 
                 that.buscar_cotizaciones(estado);
                 $scope.notificacionClientesAutorizar = 0;
 
@@ -400,7 +400,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                     cotizacion.set_tipo_producto(data.tipo_producto);
                     cotizacion.setFechaRegistro(data.fecha_registro);
                     cotizacion.setNumeroPedido(data.numero_pedido);
-                    //console.log("data.tipoPedido ---->>> ", data.tipo_pedido);
+                    
                     cotizacion.setTipoPedido(data.tipo_pedido);
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
@@ -446,7 +446,7 @@ console.log("estadoestadoestado      ::::: ",estado);
             };
 
             $scope.solicitarAutorizacion = function(cotizacion) {
-                console.log(" [solicitarAutorizacion] cotizacion ", cotizacion);
+                 
                 var estadoCotizacion = cotizacion.get_estado_cotizacion()
 
                 if (estadoCotizacion === '6' || estadoCotizacion === '3' || estadoCotizacion === '5') {
@@ -519,8 +519,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
-                    
-                    console.log("buscar_detalle_cotizacion  ", data);
+                     
                     if (data.status === 200) {
                         callback(true, data)
 
@@ -665,7 +664,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                     var productos = data.obj.pedidos_clientes.lista_productos;
                         $scope.Pedido.limpiar_productos();
                     productos.forEach(function(data) {
-                            console.log("data.codigo_producto ", data.codigo_producto);
+                           
                         var _producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
                         _producto.set_cantidad_inicial(data.cantidad_solicitada);
                         _producto.set_cantidad_solicitada(data.cantidad_solicitada);
@@ -818,7 +817,7 @@ console.log("estadoestadoestado      ::::: ",estado);
                             setDespachoEmpresaId(data.despacho_empresa_id).
                             setDespachoPrefijo(data.despacho_prefijo).
                             setDespachoNumero(data.despacho_numero);
-                    console.log("pedido", pedido);
+                   
                     $scope.Empresa.set_pedidos(pedido);
                 });
 
@@ -884,10 +883,9 @@ console.log("estadoestadoestado      ::::: ",estado);
                 };
 
                 var modalInstance = $modal.open($scope.opts);
-
+                //refrescar producto
                 modalInstance.result.then(function() {
-                    console.log("refrescar producto");
-
+                   
                 }, function() {
 
                 });

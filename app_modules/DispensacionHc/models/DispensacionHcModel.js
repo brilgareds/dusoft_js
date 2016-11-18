@@ -1880,9 +1880,69 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
     
     console.log("tablaUsuarioDespacho ", tablaUsuarioDespacho);
     console.log("tablaBodegasDocumentos ", tablaBodegasDocumentos);
-    console.log("obj ", obj);
+    console.log("obj ", obj);                       
+    
     
     var sql = "select distinct  ON (a.evolucion_id)\
+            a.evolucion_id,\
+            a.numero_formula,\
+            a.tipo_id_paciente,\
+            a.paciente_id,\
+            to_char(a.fecha_registro,'YYYY-MM-DD') as fecha_registro,\
+            to_char(a.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion,\
+            to_char(a.fecha_formulacion,'YYYY-MM-DD') as fecha_formulacion,\
+            b.primer_apellido ||' '|| b.segundo_apellido AS apellidos,\
+            b.primer_nombre||' '||b.segundo_nombre AS nombres,\
+            edad(b.fecha_nacimiento) as edad,\
+            b.sexo_id as sexo,\
+            b.residencia_direccion,\
+            b.residencia_telefono,\
+            e.plan_id,\
+            e.plan_descripcion,\
+            g.tipo_bloqueo_id,\
+            g.descripcion AS bloqueo,\
+            h.tipo_formula,\
+            i.descripcion_tipo_formula,\
+            (SELECT nombre \
+            FROM system_usuarios\
+            WHERE usuario_id = (\
+            SELECT distinct(bod.usuario_id) as usuario_id\
+            FROM bodegas_documentos bod INNER JOIN ( \
+            SELECT union_entrega.evolucion_id,\
+                   union_entrega.bodegas_doc_id as bodegas_doc_id,\
+                   union_entrega.numeracion as numeracion\
+            FROM (\
+            SELECT a.evolucion_id,\
+                   b.bodegas_doc_id as bodegas_doc_id,\
+                   b.numeracion as numeracion\
+            FROM dispensacion_estados a\
+            INNER JOIN hc_formulacion_despachos_medicamentos b ON a.evolucion_id = b.evolucion_id\
+            UNION \
+            SELECT a.evolucion_id,\
+                   c.bodegas_doc_id as bodegas_doc_id,\
+                   c.numeracion as numeracion\
+            FROM dispensacion_estados a    \
+            LEFT JOIN hc_formulacion_despachos_medicamentos_pendientes c ON a.evolucion_id = c.evolucion_id\
+            ) as union_entrega\
+            WHERE union_entrega.evolucion_id = :1\
+            )as entrega ON entrega.bodegas_doc_id = bod.bodegas_doc_id \
+                        AND entrega.numeracion = bod.numeracion\
+            WHERE bod.fecha_registro ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = :1)||'%'\
+            ))as nombre\
+            from hc_formulacion_antecedentes a\
+            inner join hc_evoluciones h on a.evolucion_id = h.evolucion_id\
+            inner join pacientes b on a.tipo_id_paciente = b.tipo_id_paciente and a.paciente_id = b.paciente_id\
+            left join  eps_afiliados c on b.tipo_id_paciente = c.afiliado_tipo_id AND b.paciente_id = c.afiliado_id\
+            inner join planes_rangos d on c.plan_atencion = d.plan_id and c.tipo_afiliado_atencion = d.tipo_afiliado_id and c.rango_afiliado_atencion = d.rango\
+            inner join planes e on d.plan_id = e.plan_id\
+            inner join inv_tipos_bloqueos g on b.tipo_bloqueo_id = g.tipo_bloqueo_id\
+            left join esm_tipos_formulas i on h.tipo_formula = i.tipo_formula_id\
+            where\
+                a.evolucion_id= :1\
+                " + where + "\
+                and a.sw_formulado='1' \
+                and g.estado='1' ; ";
+    /*var sql = "select distinct  ON (a.evolucion_id)\
             a.evolucion_id,\
             a.numero_formula,\
             a.tipo_id_paciente,\
@@ -1918,13 +1978,13 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
                 a.evolucion_id= :1\
                 " + where + "\
                 and a.sw_formulado='1' \
-                and g.estado='1' ; ";
+                and g.estado='1' ; ";*/
              
     G.knex.raw(sql,parametros).then(function(resultado){
        
         callback(false, resultado);
     }).catch(function(err){        
-        console.log("err ", err);
+        console.log("err [obtenerCabeceraFormulaPendientesPorDispensar]: ", err);
         callback(err);
     });  
 };

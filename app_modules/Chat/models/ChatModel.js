@@ -15,8 +15,13 @@ ChatModel.prototype.listarGrupos = function(parametros, callback) {
                 (SELECT COUNT(b.grupo_id) AS total FROM chat_grupos_usuarios b\
                 WHERE b.grupo_id = a.id) AS numero_integrantes from chat_grupos a ";
     
-    G.knex.select(G.knex.raw(sql)).
-    limit(G.settings.limit).
+    var query = G.knex.select(G.knex.raw(sql));
+    
+    if(parametros.termino_busqueda.length > 0){
+        query.where("a.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+    }
+    
+    query.limit(G.settings.limit).
     offset((parametros.pagina - 1) * G.settings.limit).
     then(function(resultado){
         callback(false, resultado);

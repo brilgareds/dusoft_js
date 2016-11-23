@@ -519,11 +519,6 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
         return;
     }
     
-    /*if (!args.existenciasBodegas.principioActivo || args.existenciasBodegas.principioActivo.length === 0) {
-        res.send(G.utils.r(req.url, 'Se requiere el principio activo', 404, {existenciasBodegas: []}));
-        return;
-    }*/
-    
     if (!args.existenciasBodegas.empresa || args.existenciasBodegas.empresa.length === 0 ) {
         res.send(G.utils.r(req.url, 'La empresa esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
         return;

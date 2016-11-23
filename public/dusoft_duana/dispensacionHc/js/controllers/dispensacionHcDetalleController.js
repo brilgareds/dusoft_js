@@ -392,17 +392,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 {field: 'getCodigoFormaFarmacologico()', displayName: 'F.Farmacologica', width:"10%"},
                 {field: 'getLaboratorio()', displayName: 'Laboratorio', width:"10%"},
                 {field: 'mostrarLotes()[0].getCodigo()', displayName: 'Lote', width:"10%"},
-                {field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
+                //{field: 'mostrarLotes()[0].getFechaVencimiento()', displayName: 'Fecha vencimiento', width:"10%"},
+                {field: 'fecha_vencimiento', width: "10%", displayName: 'Fecha vencimiento',
+                         cellTemplate: '<div class="col-xs-12 "> \
+                                       <input type="label" \
+                                        ng-model="row.entity.lotes[0].fecha_vencimiento" \
+                                        validacion-numero-entero \
+                                        class="form-control grid-inline-input" \
+                                        name="" \
+                                        id="" \
+                                        ng-class="agregarClaseLoteProxVencer(row.entity.estadoProductoVencimiento)"\n\
+                                        /> </div>'},
                 {field: 'mostrarLotes()[0].getCantidad()', displayName: 'Existencia', width:"10%"},
                 {field: 'cantidad_solicitada', width: "7%", displayName: 'Cantidad',
-                         cellTemplate: '<div class="col-xs-12"> \
+                         cellTemplate: '<div class="col-xs-12 "> \
                                        <input type="text" \
                                         ng-model="row.entity.cantidadDispensada" \
                                         validacion-numero-entero \
                                         class="form-control grid-inline-input" \
                                         name="" \
                                         id="" \
-                                        ng-class="agregarClaseLoteProxVencer(row.entity.estadoProductoVencimiento)"\n\
+                                        ng-disabled="row.entity.estadoProductoVencimiento == 1" ng-class=""\n\
                                         /> </div>'},
                 {field: 'Sel', width: "10%",
                         displayName: "Dispensar",
@@ -410,7 +420,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         
                         //cellTemplate : '<input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)"></input-check>'
                          cellTemplate : '<div class="row">\
-  <input-check ng-model="row.entity.loteSeleccionado"  ng-click="temporalLotes(row.entity)" ng-disabled="row.entity.estadoProductoVencimiento == 1"></input-check>\
+  <input-check ng-model="row.entity.loteSeleccionado" ng-click="temporalLotes(row.entity)" ng-disabled="row.entity.estadoProductoVencimiento == 1"></input-check>\
   <button class="btn btn-default btn-xs" ng-click="cerrarVentanaDispensacionFormula()" ng-disabled ="showBtnDispensar ">Cerrar  </button>\
 </div>'                               
                   },

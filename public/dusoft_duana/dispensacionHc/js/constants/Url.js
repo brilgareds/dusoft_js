@@ -39,7 +39,7 @@ define(["angular"], function (angular) {
                 "GUARDAR_TODO_PENDIENTES": BASE_URL + "/DispensacionHc/guardarTodoPendiente",
                 "DESCARTAR_PRODUCTO_PENDIENTE": BASE_URL + "/DispensacionHc/descartarProductoPendiente",
                 "LISTAR_REGISTRO_DE_EVENTOS": BASE_URL + "/DispensacionHc/listarRegistroDeEventos",
-              
+                "CONSULTAR_CABECERA_FORMULA": BASE_URL + "/DispensacionHc/obtenerCabeceraFormula"
                
             }
         }

@@ -9,11 +9,24 @@ define(["angular", "js/models", "includes/classes/Producto"], function (angular,
                 this.lotes = [];
                 this.principioActivo = "";
                 this.serialId = 0;
-                this.estadoProductoVencimiento = 0;
+                this.estadoProductoVencimiento = 0; 
+                this.loteSeleccionado = false;
             }
             
             ProductosHc.prototype = Object.create(Producto.getClass().prototype);
             
+            
+            ProductosHc.prototype.setLoteSeleccionado = function(loteSeleccionado){   
+                this.loteSeleccionado = loteSeleccionado;              
+            };
+            
+            ProductosHc.prototype.getLoteSeleccionado = function(){             
+               return this.loteSeleccionado;              
+            };
+            
+            
+           
+           
             ProductosHc.prototype.setSerialId = function(serialId){
                 this.serialId = serialId;
             };

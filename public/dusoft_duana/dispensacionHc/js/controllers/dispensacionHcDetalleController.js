@@ -410,7 +410,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         
                         //cellTemplate : '<input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)"></input-check>'
                          cellTemplate : '<div class="row">\
-  <input-check ng-model="modelocheck"  ng-click="temporalLotes(row.entity)" ng-disabled="row.entity.estadoProductoVencimiento == 1"></input-check>\
+  <input-check ng-model="row.entity.loteSeleccionado"  ng-click="temporalLotes(row.entity)" ng-disabled="row.entity.estadoProductoVencimiento == 1"></input-check>\
   <button class="btn btn-default btn-xs" ng-click="cerrarVentanaDispensacionFormula()" ng-disabled ="showBtnDispensar ">Cerrar  </button>\
 </div>'                               
                   },
@@ -455,6 +455,50 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         
         
         
+         /**
+         * @author Cristian Ardila
+         * +Descripcion Metodo encargado de invocar el servicio para eliminar
+         *              un producto de la lista de los temporales de la formula
+         * @fecha 08/06/2016 (DD-MM-YYYY)
+         */
+        $scope.eliminarMedicamentoTemporal = function(entity){
+            
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
+            var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           eliminar_medicamentos_temporales: {
+                                evolucion: resultadoStorage.evolucionId,
+                                serialId : entity.serialId,
+                                codigoProducto : entity.codigo_producto
+                           }
+                       }    
+                    };    
+                    
+         
+            dispensacionHcService.eliminarMedicamentosTemporales(obj,function(data){
+                console.log("data ", data);
+                if(data.status === 200){                     
+                    AlertService.mostrarMensaje("success", data.msj); 
+                    that.consultarMedicamentosTemporales();
+                    
+                    /**
+                     * +Descripcion Se valida si los productos formulados son pendientes
+                     */
+                    if(resultadoStorage.pendientes === 1){    
+                     
+                        that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
+                    }
+                    if(resultadoStorage.pendientes === 0){
+
+                        that.listarMedicamentosFormulados(resultadoStorage);
+                    }
+                  
+                }              
+                
+            });
+            
+        };
         
        
          /**
@@ -463,10 +507,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           *              almacenara los productos en las tablas temporales
           * @fecha 07/06/2016
           */
-        $scope.temporalLotes = function(entity){
+        $scope.temporalLotes = function(entity){           
+            console.log("entity ", entity);
+            
             
             // that.listarMedicamentosFormulados(resultadoStorage);
-            
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");           
             var obj = {                   
                 session: $scope.session,
@@ -483,6 +528,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                }    
             };
                
+           if(!entity.loteSeleccionado){
+            
             dispensacionHcService.temporalLotes(obj, function(data){              
                 if(data.status === 200) {                                          
                     AlertService.mostrarMensaje("success", data.msj);   
@@ -490,10 +537,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }else{
                     
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                    $scope.modelocheck = false;
-                    console.log("$scope.modelocheck ", $scope.modelocheck);
+                    entity.loteSeleccionado = false;
                 }            
-            });            
+            });  
+            
+            }else{
+                $scope.eliminarMedicamentoTemporal(entity);
+            }
         };
          
         
@@ -571,51 +621,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             ]
         };
         
-        /**
-         * @author Cristian Ardila
-         * +Descripcion Metodo encargado de invocar el servicio para eliminar
-         *              un producto de la lista de los temporales de la formula
-         * @fecha 08/06/2016 (DD-MM-YYYY)
-         */
-        $scope.eliminarMedicamentoTemporal = function(entity){
-            
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
-            var obj = {                   
-                        session: $scope.session,
-                        data: {
-                           eliminar_medicamentos_temporales: {
-                                evolucion: resultadoStorage.evolucionId,
-                                serialId : entity.serialId,
-                                codigoProducto : entity.codigo_producto
-                           }
-                       }    
-                    };    
-                    
-         
-            dispensacionHcService.eliminarMedicamentosTemporales(obj,function(data){
-               
-                if(data.status === 200){                     
-                    AlertService.mostrarMensaje("success", data.msj); 
-                    that.consultarMedicamentosTemporales();
-                    
-                    /**
-                     * +Descripcion Se valida si los productos formulados son pendientes
-                     */
-                    if(resultadoStorage.pendientes === 1){    
-                     
-                        that.listarMedicamentosFormuladosPendientes(resultadoStorage);                      
-                    }
-                    if(resultadoStorage.pendientes === 0){
-
-                        that.listarMedicamentosFormulados(resultadoStorage);
-                    }
-                  
-                }              
-                
-            });
-            
-        };
-        
+       
         /**
          * @author Cristian Ardila
          * +Descripcion Metodo encargado de cambiar de view al inicio del modulo

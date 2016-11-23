@@ -93,47 +93,80 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          
         that.onSeleccionTipoFormula = function(entity){
             seleccionTipoFormula = entity;
-            console.log("entity ", seleccionTipoFormula);
         };
         
+        /**
+         * @author Cristian Ardila
+         * Descripcion Metodo encargado de consultar previamente la cabecera de la formula
+         *              para obtener el detalle del paciente y una vez consultados
+         *              se dispone a invocar los metodos dependiente del estado 
+         *              de la variable 
+         *              estadoEntregaFormula = 0
+         *              Si la variable estadoTodoPendiente es = 1 
+         *              se invocara el metodo
+         *              dispensacionNormal: Se dispensa la formula en su estado natural
+         *              si no se invocara el metodo
+         *              guardarTodoPendiente: Se dejan pendientes todos los medicamentos de la formula
+         *              
+         *              estadoEntregaFormula = 1
+         *              dispensacionPendientes Se dispensan los medicamentos pendientes
+         * @author Cristian Ardila
+         */
         that.realizarEntregaFormula = function(){
             
-            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle"); 
-            var obj = {                   
+            var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");          
+            var parametroCabecera = { 
                 session: $scope.session,
                 data: {
-                   realizar_entrega_formula: {
-                        variable: 'ParametrizacionReformular',
-                        evolucionId: resultadoStorage.evolucionId,                    
-                        empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(), 
-                        bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                        observacion: $scope.root.observacion,
-                        todoPendiente:0,
-                        tipoFormula: seleccionTipoFormula,
-                        tipoEstadoFormula: tipoEstadoFormula
-                        
+                   cabecera_formula: {
+                        evolucion: resultadoStorage.evolucionId
                    }
-               }    
-            };  
-           
-            if(estadoEntregaFormula === 0){
-                
-                if(estadoTodoPendiente === 1){
-                    console.log("DISPENSAR FORMULA ");
-                    that.dispensacionNormal(obj);
-                }else{
-                    console.log("TODO PENDIENTES ");
-                    that.guardarTodoPendiente(obj);
-                }
-                //
-            }         
-           
-           
-            if(estadoEntregaFormula === 1){
-                console.log("DISPENSAR PENDIENTES FORMULA ");
-                that.dispensacionPendientes(obj);
+               } 
             }
-            
+               
+            dispensacionHcService.obtenerCabeceraFormula(parametroCabecera,function(data){
+                
+                if(data.status === 200){                   
+                    
+                    var obj = {                   
+                        session: $scope.session,
+                        data: {
+                           realizar_entrega_formula: {
+                                variable: 'ParametrizacionReformular',
+                                evolucionId: resultadoStorage.evolucionId,                    
+                                empresa: Usuario.getUsuarioActual().getEmpresa().getCodigo(), 
+                                bodega: Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                                observacion: $scope.root.observacion + " No. Formula: " + data.obj.cabecera_formula[0].numero_formula
+                                             +" No. Evolucion: "+ resultadoStorage.evolucionId 
+                                             + " Paciente " + data.obj.cabecera_formula[0].tipo_id_paciente + " " + data.obj.cabecera_formula[0].paciente_id
+                                             + " "+ data.obj.cabecera_formula[0].nombres
+                                             + " "+ data.obj.cabecera_formula[0].apellidos,
+                                todoPendiente:0,
+                                tipoFormula: seleccionTipoFormula,
+                                tipoEstadoFormula: tipoEstadoFormula
+
+                           }
+                        }    
+                    };  
+           
+                    if(estadoEntregaFormula === 0){
+                
+                        if(estadoTodoPendiente === 1){
+                            that.dispensacionNormal(obj);
+                        }else{
+                            that.guardarTodoPendiente(obj);
+                        }
+                    }                   
+           
+                    if(estadoEntregaFormula === 1){
+                        that.dispensacionPendientes(obj);
+                    }
+                                      
+                }else{
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                }
+            });  
+           
         };
         
         
@@ -149,29 +182,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         that.guardarTodoPendiente = function(obj){
             var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
             dispensacionHcService.guardarTodoPendiente(obj,function(data){
-                console.log("guardarTodoPendiente ", data);
-                /*if(data.status === 200){                   
+              
+                if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  
-                    //$scope.$emit('emitRealizarEntregaFormula', {response: data});          
-                    $scope.cerrarVentana();
-                    $state.go('DispensacionHc');  
-                }else{
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }*/
-                 if(data.status === 200){                   
-                    AlertService.mostrarMensaje("success", data.msj);                  
-                    //$scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
                     $state.go('DispensacionHc');   
                     
                     localStorageService.add("formulaTodoPendiente",{
-                                evolucion: evolucionStorage.evolucionId,
-                                filtro:{tipo:'EV'},
-                                empresa: 'FD',
-                                pacienteId: evolucionStorage.pacienteId,
-                                tipoIdPaciente: evolucionStorage.tipoIdPaciente
+                        evolucion: evolucionStorage.evolucionId,
+                        filtro:{tipo:'EV'},
+                        empresa: 'FD',
+                        pacienteId: evolucionStorage.pacienteId,
+                        tipoIdPaciente: evolucionStorage.tipoIdPaciente
                                   
-                            });
+                    });
                                                       
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -189,11 +213,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionPendientes = function(obj){
-            console.log("*********dispensacionPendientes*************");
             
             var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
             dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
-                console.log("DATA ULTIMA RESPUESTA ", data);
                 if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  
                     $scope.$emit('emitRealizarEntregaFormula', {response: data});
@@ -201,13 +223,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $state.go('DispensacionHc');
                     
                     localStorageService.add("consultarFormulaPendientes",{
-                                evolucion: evolucionStorage.evolucionId,
-                                filtro:{tipo:'EV'},
-                                empresa: 'FD',
-                                pacienteId: evolucionStorage.pacienteId,
-                                tipoIdPaciente: evolucionStorage.tipoIdPaciente
-                                  
-                            });
+                        evolucion: evolucionStorage.evolucionId,
+                        filtro:{tipo:'EV'},
+                        empresa: 'FD',
+                        pacienteId: evolucionStorage.pacienteId,
+                        tipoIdPaciente: evolucionStorage.tipoIdPaciente
+
+                    });
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
@@ -222,10 +244,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionNormal = function(obj){
-            console.log("*********dispensacionNormal*************");
             
-            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
-           
+            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");          
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
               
                 if(data.status === 200){                   
@@ -235,13 +255,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $state.go('DispensacionHc');   
                     
                     localStorageService.add("consultarFormula",{
-                                evolucion: evolucionStorage.evolucionId,
-                                filtro:{tipo:'EV'},
-                                empresa: 'FD',
-                                pacienteId: evolucionStorage.pacienteId,
-                                tipoIdPaciente: evolucionStorage.tipoIdPaciente
-                                  
-                            });
+                        evolucion: evolucionStorage.evolucionId,
+                        filtro:{tipo:'EV'},
+                        empresa: 'FD',
+                        pacienteId: evolucionStorage.pacienteId,
+                        tipoIdPaciente: evolucionStorage.tipoIdPaciente
+
+                    });
                                                       
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
@@ -303,8 +323,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };      
             
             dispensacionHcService.medicamentosTemporales(obj, function(data){
-                    
-                    console.log("data ---->>", data);
+
                 if(data.status === 200){                     
                     $scope.Temporales.push(dispensacionHcService.renderMedicamentosTemporales(data.obj.listar_medicamentos_temporales));    
 

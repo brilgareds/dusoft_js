@@ -147,5 +147,9 @@ module.exports = function(app, di_container) {
     
     
     
+    // realizando el descarte de los productos pendientes
+    app.post("/api/DispensacionHc/obtenerCabeceraFormula", function(req, res){
+        c_dispensacion_hc.obtenerCabeceraFormula(req, res);
+    });
     
 };

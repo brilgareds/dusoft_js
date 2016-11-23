@@ -1770,7 +1770,7 @@ DispensacionHcModel.prototype.guardarTemporalFormula = function(producto, callba
  */
 DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callback)
 {  
-       
+       console.log("DispensacionHcModel.prototype.eliminarTemporalFormula ", DispensacionHcModel.prototype.eliminarTemporalFormula);
     G.knex.transaction(function(transaccion) {         
         G.Q.nfcall(__eliminarTemporalFormula, producto, transaccion).then(function(resultado){
            
@@ -1784,16 +1784,18 @@ DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callb
                 
                 return G.Q.nfcall(__autorizarDispensacionMedicamento, parametros, transaccion) 
             }
-            
+                                
         }).then(function(resultado){       
             
            transaccion.commit();       
-        }).fail(function(err){    
+        }).fail(function(err){
+        console.log("err ", err);    
            transaccion.rollback(err);
-        }).done();
+        }).done();            
     }).then(function(){    
             callback(false);
-    }).catch(function(err){       
+    }).catch(function(err){ 
+         console.log("err ", err);   
             callback(err);       
     }).done(); 
     
@@ -1871,7 +1873,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
             campo = "k.usuario_id";
         }*/
     
-    if(!obj.pacienteId){
+    if(obj.pacienteId){
        
         parametros["2"]= obj.tipoIdPaciente;
         parametros["3"]= obj.pacienteId;
@@ -3468,10 +3470,13 @@ DispensacionHcModel.prototype.listarRegistroDeEventos = function(obj,callback){
  * @fecha: 08/06/2015 09:45 pm 
  */
 function __eliminarTemporalFormula(producto, transaccion, callback) {
-   
+    var idTemp = "";
+    if(producto.serialId > 0){
+        idTemp = "hc_dispen_tmp_id = :1 AND";
+    }
     var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp\
-               WHERE hc_dispen_tmp_id = :1 \
-               AND   evolucion_id = :2\
+               WHERE " + idTemp +"\
+                  evolucion_id = :2\
                AND   codigo_producto = :3 RETURNING codigo_formulado";
 
     var query = G.knex.raw(sql,{1: producto.serialId,2: producto.evolucionId,3: producto.codigoProducto});    
@@ -3495,7 +3500,7 @@ function __eliminarTemporalFormula(producto, transaccion, callback) {
  * @fecha: 08/06/2015 2:43 pm 
  */
 function __insertarTemporalFarmacia(producto, transaccion, callback) {
-   
+                                      
     var sql = "INSERT INTO hc_dispensacion_medicamentos_tmp\
       (hc_dispen_tmp_id,evolucion_id,empresa_id,centro_utilidad,\
        bodega,codigo_producto,cantidad_despachada,fecha_vencimiento, \

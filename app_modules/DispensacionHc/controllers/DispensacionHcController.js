@@ -932,9 +932,14 @@ DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
  */
 DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
     
+    console.log("*****DispensacionHc.prototype.eliminarTemporalFormula*********");
+    console.log("*****DispensacionHc.prototype.eliminarTemporalFormula*********");
+    console.log("*****DispensacionHc.prototype.eliminarTemporalFormula*********");
+    
     var that = this;              
     var args = req.body.data;
-    
+    console.log("args ", args);
+    console.log("args.eliminar_medicamentos_temporales.serialId ", args.eliminar_medicamentos_temporales.serialId);
     if (args.eliminar_medicamentos_temporales === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {eliminar_medicamentos_temporales: []}));
         return;
@@ -945,7 +950,7 @@ DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
         return;
     }
     
-    if (!args.eliminar_medicamentos_temporales.serialId || args.eliminar_medicamentos_temporales.serialId.length === 0) {
+    if (args.eliminar_medicamentos_temporales.serialId === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere el serialId', 404, {eliminar_medicamentos_temporales: []}));
         return;
     }
@@ -1885,6 +1890,47 @@ DispensacionHc.prototype.listarRegistroDeEventos = function(req, res){
 };
 
 
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 26/09/2016
+ * +Descripcion Controlador encargado de consultar la cabecera de la formula
+ */
+DispensacionHc.prototype.obtenerCabeceraFormula = function(req, res){
+   
+   console.log("*****DispensacionHc.prototype.obtenerCabeceraFormula**********");
+   console.log("*****DispensacionHc.prototype.obtenerCabeceraFormula**********");
+   console.log("*****DispensacionHc.prototype.obtenerCabeceraFormula**********");
+   
+    var that = this;
+    var args = req.body.data;
+   
+    if (!args.cabecera_formula) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {cabecera_formula: []}));
+        return;
+    }
+    
+    if (!args.cabecera_formula.evolucion || args.cabecera_formula.evolucion.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {cabecera_formula: []}));
+        return;
+    }
+    
+    var parametros = {evolucionId:args.cabecera_formula.evolucion};
+            
+                
+    G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros).then(function(resultado){
+       
+        if(resultado.rows.length > 0){ 
+              res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {cabecera_formula:resultado.rows}));
+        }else{
+           throw 'La cabecera de la formula no esta creada';
+        }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 /*
  * @author Cristian Ardila
  * @fecha 15/06/2016

@@ -373,6 +373,20 @@ define(["angular", "js/services"], function(angular, services) {
             };
             
             
+            
+            
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  09/02/2016 DD/MM/YYYYY
+              * +Descripcion se obtiene la cabecera de la formula
+              */
+            self.obtenerCabeceraFormula = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.CONSULTAR_CABECERA_FORMULA,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la
@@ -491,7 +505,8 @@ define(["angular", "js/services"], function(angular, services) {
                     
                     var _lote = productoLote.existenciasBodegas[i];
                    
-                    var Lote  = LoteHc.get(_lote.lote,_lote.fecha_vencimiento, _lote.existencia_actual);  
+                    var Lote  = LoteHc.get(_lote.lote,_lote.fecha_vencimiento, _lote.existencia_actual); 
+                                
                     var Producto = ProductosHc.get(_lote.codigo_producto,_lote.producto, 0);  
                         Producto.setConcentracion(_lote.concentracion);
                         Producto.setMolecula(_lote.molecula);

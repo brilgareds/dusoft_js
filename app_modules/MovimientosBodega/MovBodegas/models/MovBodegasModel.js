@@ -5,7 +5,7 @@ var MovimientosBodegasModel = function() {
 // Consultar identificador del movimieto temporal
 MovimientosBodegasModel.prototype.obtener_identificicador_movimiento_temporal = function(usuario_id, callback) {
 
-   var sql = "SELECT (COALESCE(MAX(doc_tmp_id),0) + 1) as doc_tmp_id FROM inv_bodegas_movimiento_tmp WHERE usuario_id = :1; ";
+   var sql = "SELECT (COALESCE(MAX(doc_tmp_id),0) + 1) as doc_tmp_id FROM inv_bodegas_movimiento_tmp; ";
 
    G.knex.raw(sql, {1 : usuario_id}).
    then(function(resultado){

@@ -1319,7 +1319,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              autorizacion y generar el pedido posteriormente
              * @fecha 17/11/2016
              */
-            that.autorizarCotizacionCartera = function(aprobado){
+            that.autorizarCotizacionCartera = function(aprobado,denegar){
                 
                 $scope.opts = {
                     backdrop: true,
@@ -1342,7 +1342,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
-                            that.generarPedidoCartera(aprobado);
+                            that.generarPedidoCartera(aprobado,denegar);
                             $modalInstance.close();
                         };
                         $scope.close = function() {
@@ -1360,8 +1360,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             *              el cual invocara al metodo (autorizarCotizacionCartera)
             * @fecha 30/09/2016
             */
-            $scope.gestionar_pedido = function(aprobado) {
-                that.autorizarCotizacionCartera(aprobado);
+            $scope.gestionar_pedido = function(aprobado,denegar) {
+                that.autorizarCotizacionCartera(aprobado,denegar);
             };
             
            /**
@@ -1371,9 +1371,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             *              cotizacion
             * @fecha 30/09/2016
             */
-           $scope.desaprobarCartera = function(aprobado){
-               that.autorizarCotizacionCartera(aprobado);
-             
+           $scope.desaprobarCartera = function(aprobado, denegar){
+              
+               //that.autorizarCotizacionCartera(aprobado,denegar);
+                that.generarObservacionCartera(aprobado);
            };
             
             /**
@@ -1381,15 +1382,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             * +Descripcion Metodo que se invoca desde el boton APROBADO CARTERA
             *              el cual invocara al metodo (autorizarCotizacionCartera)
             * @fecha 30/09/2016
-            */
+            */                
+           
             $scope.gestion_cartera = function(aprobado, denegar) {
                
                 //$scope.Pedido.getTipoPedido()               
                 $scope.ocultarOpciones = 0;               
                 if(denegar === 1){                                           
-                    that.autorizarCotizacionCartera(aprobado);
+                    that.autorizarCotizacionCartera(aprobado,denegar);
                 }else{
-                    that.autorizarCotizacionCartera(aprobado);                   
+                    that.autorizarCotizacionCartera(aprobado,denegar);                   
                 }               
             };
             
@@ -1404,73 +1406,80 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *    la cual generara el pedido
              * @fecha 17/11/2016
              */
-            that.generarPedidoCartera = function(aprobado){
+            that.generarPedidoCartera = function(aprobado,denegar){
                 
                 var productos = [];
                 
                 that.validarDisponibleProductosCotizacion(1,productos,function(estado){
                     
                     if(estado){                       
-               
-                        var obj = {};
-                        var url = '';
-                        $scope.Pedido.set_aprobado_cartera(aprobado);
-                        // Observacion cartera para cotizacion
-                        if ($scope.Pedido.get_numero_cotizacion() > 0) {
-                            url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
-                            obj = {
-                                session: $scope.session,
-                                data: {
-                                    pedidos_clientes: {
-                                        cotizacion: $scope.Pedido
-                                    }
-                                }
-                            };
-                        }
-                        // Observacion cartera para pedido
-                        if ($scope.Pedido.get_numero_pedido() > 0) {
-
-                            url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
-                            obj = {
-                                session: $scope.session,
-                                data: {
-                                    pedidos_clientes: {
-                                        pedido: $scope.Pedido,
-                                        aprobado: aprobado
-                                    }
-                                }
-                            };
-                        }
-
-                        Request.realizarRequest(url, "POST", obj, function(data) {
-
-
-                            if (data.status === 200) {
-                                /*Se valida si es una cotizacion y entonces se procede
-                                 a crear el pedido*/
-                                if ($scope.Pedido.get_numero_cotizacion() > 0) {
-
-                                    var parametros = {busqueda: cotizacion.busqueda,
-                                        pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
-                                    };
-
-                                    localStorageService.add("terminoBusqueda", parametros);
-                                    $scope.generar_pedido_cliente();
-                                    //$scope.gestionar_pedido();
-                                }
-                                if ($scope.Pedido.get_numero_pedido() > 0) {
-                                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                                    $scope.volver_cotizacion();
-                                }                                 
-                            } else {
-                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                                //$scope.volver_cotizacion();
-                            }
-                       });                                  
+                         that.generarObservacionCartera(aprobado);                      
                     }
                 });
                 
             };
+           
+            that.generarObservacionCartera = function(aprobado){               
+                
+                var obj = {};
+                var url = '';
+                $scope.Pedido.set_aprobado_cartera(aprobado);
+                // Observacion cartera para cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido
+                            }
+                        }
+                    };
+                }
+                // Observacion cartera para pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                aprobado: aprobado
+                            }
+                        }
+                    };
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+
+                    if (data.status === 200) {
+                        /*Se valida si es una cotizacion y entonces se procede
+                         a crear el pedido*/
+                        if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                            var parametros = {busqueda: cotizacion.busqueda,
+                                pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
+                            };
+
+                            localStorageService.add("terminoBusqueda", parametros);
+                            $scope.generar_pedido_cliente();
+                            //$scope.gestionar_pedido();
+                        }
+                        if ($scope.Pedido.get_numero_pedido() > 0) {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            $scope.volver_cotizacion();
+                        }                                 
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        //$scope.volver_cotizacion();
+                    }
+               });  
+                
+                
+            };
+           
            
             /**
              * @author Cristian Manuel Ardila Troches

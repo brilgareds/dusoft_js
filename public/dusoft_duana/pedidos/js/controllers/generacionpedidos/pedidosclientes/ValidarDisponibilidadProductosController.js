@@ -32,7 +32,7 @@ define(["angular", "js/controllers",
                 $scope.cerrarVentanaDisponibilidad = function(){
                     
                     $modalInstance.close();
-                }
+                };
                 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

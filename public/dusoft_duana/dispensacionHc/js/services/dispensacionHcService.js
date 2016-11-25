@@ -16,9 +16,19 @@ define(["angular", "js/services"], function(angular, services) {
             var self = this;
             
            
+               
+            /**
+            * +DESCRIPCION FUNCION EXCLUSIVA PARA ALMACENAR LAS FORMULAS EN LA TABLA
+            *              DE DISPENSACION_ESTADOS
+            */
+            self.insertarFormulasDispensacionEstados = function(obj, callback){
                 
-           
-              
+                Request.realizarRequest(API.DISPENSACIONHC.INSERTAR_FORMULAS_DISPENSACION_ESTADOS,"POST", obj, function(data){    
+                    callback(data);                        
+                });
+            };
+            
+            
              /**
               * @author Cristian Ardila
               * @fecha  21/05/2016 DD/MM/YYYYY

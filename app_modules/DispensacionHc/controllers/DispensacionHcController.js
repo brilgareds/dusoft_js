@@ -2384,6 +2384,42 @@ function __generarPdf(datos, callback) {
 }
 
 
+
+
+/**
+ * +Descripcion Proceso de migracion a la tabla dispensacion_estados
+ *
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Controlador encargado de consultar los tipos de documentos
+ *              
+ */
+DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+    
+    var parametros={ evolucionId:639353
+                    };
+   
+
+    G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionEstados', parametros).then(function(resultado){//consultarDispensacionesFormula
+      
+        if(resultado.rows.length > 0){
+       
+           res.send(G.utils.r(req.url, 'Consulta tipo documento', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
+        }else{
+           throw 'Consulta sin resultados';
+        }
+      
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
+
 DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc"];
 
 module.exports = DispensacionHc;

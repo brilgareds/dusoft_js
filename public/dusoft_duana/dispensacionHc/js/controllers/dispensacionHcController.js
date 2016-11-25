@@ -759,6 +759,39 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     };
                     
+                    
+                    
+                    
+                    
+                    /**
+                    * +DESCRIPCION SERVICIO EXCLUSIVO PARA ALMACENAR LAS FORMULAS EN LA TABLA
+                    *              DE DISPENSACION_ESTADOS
+                    */
+                    $scope.insertarFormulasDispensacionEstados = function(){
+                        
+                        console.log("**********$scope.insertarFormulasDispensacionEstados*************");
+                        console.log("**********$scope.insertarFormulasDispensacionEstados*************");
+                        console.log("**********$scope.insertarFormulasDispensacionEstados*************");
+                        var obj = {                   
+                                    session: $scope.session,
+                                    data: {
+                                       insertar_formulas_dispensacion_estados: {
+                                            
+                                       }
+                                   }    
+                                };    
+                        dispensacionHcService.insertarFormulasDispensacionEstados(obj,function(data){
+                            
+                            console.log("data ", data);
+                            /*if (data.status === 200) {
+                                    var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
+                                    console.log("nombre ", nombre);
+                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                            }*/
+                        });  
+
+                    };
+                    
                     that.init(empresa, function() {
 
                         if(!Usuario.getUsuarioActual().getEmpresa()) {

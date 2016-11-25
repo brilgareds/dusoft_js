@@ -39,8 +39,14 @@ define(["angular"], function (angular) {
                 "GUARDAR_TODO_PENDIENTES": BASE_URL + "/DispensacionHc/guardarTodoPendiente",
                 "DESCARTAR_PRODUCTO_PENDIENTE": BASE_URL + "/DispensacionHc/descartarProductoPendiente",
                 "LISTAR_REGISTRO_DE_EVENTOS": BASE_URL + "/DispensacionHc/listarRegistroDeEventos",
-                "CONSULTAR_CABECERA_FORMULA": BASE_URL + "/DispensacionHc/obtenerCabeceraFormula"
-               
+                "CONSULTAR_CABECERA_FORMULA": BASE_URL + "/DispensacionHc/obtenerCabeceraFormula",
+                
+               /**
+                * +DESCRIPCION FUNCION EXCLUSIVA PARA ALMACENAR LAS FORMULAS EN LA TABLA
+                *              DE DISPENSACION_ESTADOS
+                */
+               "INSERTAR_FORMULAS_DISPENSACION_ESTADOS": BASE_URL + "/DispensacionHc/insertarFormulasDispensacionEstados"
+
             }
         }
 

@@ -152,4 +152,14 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.obtenerCabeceraFormula(req, res);
     });
     
+    
+    /**
+     * +DESCRIPCION SERVICIO EXCLUSIVO PARA ALMACENAR LAS FORMULAS EN LA TABLA
+     *              DE DISPENSACION_ESTADOS
+     */
+    app.post("/api/DispensacionHc/insertarFormulasDispensacionEstados", function(req, res){
+        c_dispensacion_hc.insertarFormulasDispensacionEstados(req, res);
+    });
+    
+    
 };

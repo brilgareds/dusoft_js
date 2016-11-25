@@ -14,8 +14,11 @@ DocuemntoBodegaE008Logs.prototype.ingresarLogsSincronizacionDespachos = function
     
     
     var resultado = (obj.tipo === '1') ? obj.resultadoDetalle : obj.resultadoEncabezado;
-    
-    
+   
+    console.log("1- cabecera Responde) ",obj.resultadoEncabezado);
+    console.log("2- detalle responde) ",obj.resultadoDetalle);
+     
+     
     var parametros = {
         1:(obj.tipoPedido === 1) ? "CL" : "FM", 
         2:obj.numeroPedido,
@@ -35,7 +38,7 @@ DocuemntoBodegaE008Logs.prototype.ingresarLogsSincronizacionDespachos = function
     query.then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
-        console.log("error en logs ", err);
+        console.log("error en logs Duana ", err);
         callback(err);
     });
 };

@@ -2017,7 +2017,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
         if((tipoPedido !== 1 && pedido.farmacia_id === '01') || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+           (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")||
+           (tipoPedido === 1 && pedido.identificacion_cliente === '900228989' && pedido.tipo_id_cliente === "NIT")){
            
            
            if(tipoPedido === 1){
@@ -2044,6 +2045,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 
                  return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
         } else {
+             console.log(">>>>>>>>>>>",obj);
             throw {msj:"El documento no esta parametrizado para sincronizarse", status:404,
                    obj:{documento_despacho: {}}};
         }
@@ -2123,6 +2125,10 @@ function __sincronizarEncabezadoDocumento(obj, callback){
                   (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
+            
+        }else if(obj.pedido.identificacion_cliente ==='900228989' && obj.pedido.tipo_id_cliente === "NIT"){//Santa Sofia
+            url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",url);
         }
     } 
     
@@ -2140,6 +2146,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
+console.log(">>>>>>>>>>>>>>>>>bodegasMovimientoTmp>>>>>>>>>>>>>>>>>>>>>");
         return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
@@ -2163,7 +2170,7 @@ console.log("result >>>>>>",result);
         obj.error = true;
         obj.tipo = '0';
         G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){
-            //console.log(">>>>>>>>>>>>>>>>>>>>>>>> error __sincronizarEncabezadoDocumento ", err);
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>> error __sincronizarEncabezadoDocumento ", err);
             callback(err);
         });
     }).done();

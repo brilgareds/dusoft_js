@@ -358,7 +358,7 @@ define(["angular", "js/controllers",
                         }
                     };
                 }
-                console.log("EL OBJETO DE TODO ", obj);
+              
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
 
@@ -405,9 +405,6 @@ define(["angular", "js/controllers",
                 });
 
             };
-
-
-
 
             $scope.habilitar_seleccion_producto = function() {
 
@@ -605,7 +602,7 @@ define(["angular", "js/controllers",
                 $scope.datos_view.termino_busqueda_moleculas = termino_busqueda;
 
                 that.buscar_moleculas(function(moleculas) {
-                    // console.log("moleculas ", moleculas)
+                  
                     that.render_moleculas(moleculas);
                 });
             };

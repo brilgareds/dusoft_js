@@ -51,6 +51,8 @@ define([
     "controllers/separacionpedidos/SeparacionDetalleController",
     "services/separacionpedidos/SeparacionService",
     "controllers/separacionpedidos/SeparacionProductosPendientesController",
+    "controllers/generacionpedidos/pedidosclientes/ValidarDisponibilidadProductosController",
+    
     
     //Nuevo modelo
     "models/separacionpedidos/DocumentoDespacho",

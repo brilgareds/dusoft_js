@@ -2393,8 +2393,11 @@ function __generarPdf(datos, callback) {
  * @fecha 20/05/2016
  * +Descripcion Controlador encargado de consultar los tipos de documentos
  *              
- */
+ */  
 DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res){
+    console.log("***********generarDispensacionEstados******************");
+    console.log("***********generarDispensacionEstados******************");
+    console.log("***********generarDispensacionEstados******************");
     
     var that = this;
     var args = req.body.data;
@@ -2403,11 +2406,15 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
                     };
    
 
-    G.Q.ninvoke(that.m_dispensacion_hc,'generarDispensacionEstados', parametros).then(function(resultado){//consultarDispensacionesFormula
-      
-        if(resultado.rows.length > 0){
-       
-           res.send(G.utils.r(req.url, 'Consulta tipo documento', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
+    G.Q.ninvoke(that.m_dispensacion_hc,'consultarDispensacionesFormula', parametros).then(function(resultado){// generarDispensacionEstados
+        
+        ///console.log("resultado SIGA EL OTRO PROCESO ", resultado);
+        if(!resultado){
+            console.log("resultado SIGA EL OTRO PROCESO ", resultado);
+            
+            
+            return G.Q.ninvoke(that.m_dispensacion_hc,'migrandoDispensacionEstados', parametros);
+          //return res.send(G.utils.r(req.url, 'INSERTE EN LA TABLA DISPENSACION ESTADOS', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
         }else{
            throw 'Consulta sin resultados';
         }

@@ -1977,43 +1977,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
                 " + where + "\
                 and a.sw_formulado='1' \
                 and g.estado='1' ) as ca";
-    /*var sql = "select distinct  ON (a.evolucion_id)\
-            a.evolucion_id,\
-            a.numero_formula,\
-            a.tipo_id_paciente,\
-            a.paciente_id,\
-            to_char(a.fecha_registro,'YYYY-MM-DD') as fecha_registro,\
-            to_char(a.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion,\
-            to_char(a.fecha_formulacion,'YYYY-MM-DD') as fecha_formulacion,\
-            b.primer_apellido ||' '|| b.segundo_apellido AS apellidos,\
-            b.primer_nombre||' '||b.segundo_nombre AS nombres,\
-            edad(b.fecha_nacimiento) as edad,\
-            b.sexo_id as sexo,\
-            b.residencia_direccion,\
-            b.residencia_telefono,\
-            e.plan_id,\
-            e.plan_descripcion,\
-            f.nombre,\
-            g.tipo_bloqueo_id,\
-            g.descripcion AS bloqueo,\
-            h.tipo_formula,\
-            i.descripcion_tipo_formula\
-            from hc_formulacion_antecedentes a\
-            inner join hc_evoluciones h on a.evolucion_id = h.evolucion_id\
-            inner join pacientes b on a.tipo_id_paciente = b.tipo_id_paciente and a.paciente_id = b.paciente_id\
-            left join  eps_afiliados c on b.tipo_id_paciente = c.afiliado_tipo_id AND b.paciente_id = c.afiliado_id\
-            inner join planes_rangos d on c.plan_atencion = d.plan_id and c.tipo_afiliado_atencion = d.tipo_afiliado_id and c.rango_afiliado_atencion = d.rango\
-            inner join planes e on d.plan_id = e.plan_id\
-            INNER JOIN " + tablaUsuarioDespacho + " ON a.evolucion_id = j.evolucion_id \
-             "+tablaBodegasDocumentos+" \
-            inner join system_usuarios f on  "+campo +" = f.usuario_id\
-            inner join inv_tipos_bloqueos g on b.tipo_bloqueo_id = g.tipo_bloqueo_id\
-            left join esm_tipos_formulas i on h.tipo_formula = i.tipo_formula_id\
-            where\
-                a.evolucion_id= :1\
-                " + where + "\
-                and a.sw_formulado='1' \
-                and g.estado='1' ; ";*/
+   
              
     G.knex.raw(sql,parametros).then(function(resultado){
        
@@ -3567,7 +3531,7 @@ function __insertarDespachoMedicamentos(obj, transaccion, callback){
 
 
 
-
+    
 
 /**
  * ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -3579,76 +3543,19 @@ function __insertarDespachoMedicamentos(obj, transaccion, callback){
  * ::::::::::::::::::::::                           :::::::::::::::::::::::::::
  * :::::::::::::::::::::::                         ::::::::::::::::::::::::::::
  */
-
+/*
 DispensacionHcModel.prototype.generarDispensacionEstados = function(obj, callback) {
     
-    console.log("********DispensacionHcModel.prototype.generarDispensacionEstados**********");
-    console.log("********DispensacionHcModel.prototype.generarDispensacionEstados**********");
-    console.log("********DispensacionHcModel.prototype.generarDispensacionEstados**********");
+    console.log("1) ********DispensacionHcModel.prototype.generarDispensacionEstados**********");
+    
     
     var that = this;
     var def = G.Q.defer();
-    var formulas = [{evolucionId:639353}];
-     G.Q.nfcall(__consultarFormula, that, 0, formulas).then(function(resultado){
-         
-         
-     }).fail(function(err){
-         console.log("err (/fail) [__insertarMedicamentosPendientesPorDispensar]: ", err);
-    }).done(); 
-};
-
-
-function __consultarFormula(that, index, formulas, callback) {
-    
-    console.log("*******   ********__actualizarNumeroEntrega*******   ********");
-    console.log("*******   ********__actualizarNumeroEntrega*******   ********");
-    console.log("*******   ********__actualizarNumeroEntrega*******   ********");
-
-    
-    var formula = formulas[index];
-        //formula.numero_entrega = rowNum;
-    console.log("formula ", formula);
-    
-    if (!formula) {   
-        formula = 0; 
-       
-        callback(false);
-        return; 
-    }  
-     
-   G.Q.ninvoke(that,'consultarDispensacionesFormula',formula).then(function(resultado){
-       
-       console.log("resultado [actualizarNumeroEntrega]: ", resultado);
-       
-    }).fail(function(err){
-         console.log("err (/fail) [__insertarMedicamentosPendientesPorDispensar]: ", err);
-    }).done();               
-      
-    index++;
-    
-    setTimeout(function() {
-        __consultarFormula(that, index, formulas, callback);
-    }, 300);
-   
-       
-};
-
-DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, callback) {
-                 
-    console.log("********DispensacionHcModel.prototype.consultarDispensacionesFormula************");   
-    console.log("********DispensacionHcModel.prototype.consultarDispensacionesFormula************");   
-    console.log("********DispensacionHcModel.prototype.consultarDispensacionesFormula************");   
-    var that = this;
-    var def = G.Q.defer();
-     G.knex.transaction(function(transaccion) {          
-        G.Q.nfcall(__consultarDispensacionesFormula, obj.evolucionId, transaccion).then(function(resultado){            
-           // console.log("resultado __consultarDispensacionesFormula ", resultado.rows);
+    var formulas = [{evolucionId:840589},{evolucionId:639353}];//{evolucionId:639353}, 840589 
+    G.knex.transaction(function(transaccion) {          
+        G.Q.nfcall(__consultarFormula, that, 0, formulas, transaccion).then(function(resultado){
             
-            return G.Q.nfcall(__actualizarNumeroEntrega,that,0,1, resultado.rows,obj,transaccion);                      
-                 
-        }).then(function(resultado){
-            
-            console.log("resultado ****//// ", resultado);
+            console.log("RESULTADO FINAL//// ", resultado);
             transaccion.commit();   
             
         }).fail(function(err){        
@@ -3660,19 +3567,82 @@ DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, cal
     }).catch(function(err){  
         console.log("err[consultarDispensacionesFormula]: ", err);
             callback(err);       
+    }).done();   
+   
+};
+
+
+function __consultarFormula(that, index, formulas, transaccion, callback) {
+    
+    console.log("2)*******__actualizarNumeroEntrega*******");
+
+
+    
+    var formula = formulas[index];
+        //formula.numero_entrega = rowNum;
+     console.log("(((( formula )))) ", formula);
+    
+    if (!formula) {          
+        callback(false);
+        return; 
+    }  
+     
+   G.Q.ninvoke(that,'consultarDispensacionesFormula',formula).then(function(resultado){
+       
+       //console.log("::::::::::::::::::::::::::::::::::::::TERMINO LA ACCIONES: ************************************* ", resultado);
+       
+    }).fail(function(err){
+         console.log("err (/fail) [__insertarMedicamentosPendientesPorDispensar]: ", err);
+    }).done();               
+      
+    index++;
+    
+    setTimeout(function() {
+        __consultarFormula(that, index, formulas,transaccion, callback);
+    }, 300);
+   
+       
+};*/
+
+DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, callback) {
+                 
+    console.log("3) ********DispensacionHcModel.prototype.consultarDispensacionesFormula************");   
+    
+    var that = this;
+    var def = G.Q.defer();
+      G.knex.transaction(function(transaccion) {          
+        G.Q.nfcall(__consultarDispensacionesFormula, obj.evolucionId, transaccion).then(function(resultado){            
+           // console.log("resultado __consultarDispensacionesFormula ", resultado.rows);
+            
+            return G.Q.nfcall(__actualizarNumeroEntrega,that,0,1, resultado.rows,obj,transaccion);                      
+                 
+        }).then(function(resultado){
+            
+            //console.log("resultado ****//// ", resultado);
+            transaccion.commit();   
+            
+        }).fail(function(err){        
+           transaccion.rollback(err);
+           console.log("fail transaccion rollback ", err);
+        }).done();
+    }).then(function(){  
+         
+            callback(false);
+    }).catch(function(err){  
+        console.log("err[consultarDispensacionesFormula]: ", err);
+            callback(err);       
     }).done();    
 }; 
 
 function __consultarDispensacionesFormula(evolucion,transaccion, callback) {
     
-    console.log("********__consultarDispensacionesFormula************");   
-    console.log("********__consultarDispensacionesFormula************");   
-    console.log("********__consultarDispensacionesFormula************");  
-    
- var parametros = {1: evolucion};   
-    var sql =  "SELECT  b.evolucion_id,\n\
-                      date(TO_CHAR(b.fecha_entrega,'DD/MM/YYYY')),\
-                      b.bodegas_doc_id,\n\
+    console.log("4) ********__consultarDispensacionesFormula************");   
+   
+    //console.log("evolucion ---> ", evolucion);
+    var parametros = {1: evolucion};   
+    var sql =  "SELECT  b.evolucion_id,\
+                      date(TO_CHAR(b.fecha_entrega,'DD/MM/YYYY'))as fecha_entrega,\
+                      b.bodegas_doc_id,\
                       b.numeracion\
                 FROM (\
                     SELECT a.evolucion_id,\
@@ -3706,15 +3676,13 @@ function __consultarDispensacionesFormula(evolucion,transaccion, callback) {
 
 function __actualizarNumeroEntrega(that, index,rowNum, formulas, parametros,transaccion, callback) {
     
-    console.log("*******   ********__actualizarNumeroEntrega*******   ********");
-    console.log("*******   ********__actualizarNumeroEntrega*******   ********");
-    console.log("*******   ********__actualizarNumeroEntrega*******   ********");
-
+    console.log("5) *******   ********__actualizarNumeroEntrega*******   ********");
+   
     
     var formula = formulas[index];
         //formula.numero_entrega = rowNum;
-    console.log("formulaa ", formulas);
-    console.log("rowNum ", rowNum);
+    //console.log("formulaa ", formulas);
+    //console.log("rowNum ", rowNum);
     if (!formula) {   
         formula = 0; 
         rowNum = 1;
@@ -3724,7 +3692,7 @@ function __actualizarNumeroEntrega(that, index,rowNum, formulas, parametros,tran
      
    G.Q.ninvoke(that,'actualizarNumeroEntrega',formula,rowNum, transaccion).then(function(resultado){
        
-       console.log("resultado [__actualizarNumeroEntrega]: ", resultado);
+       //console.log("resultado [__actualizarNumeroEntrega]: ", resultado);
        
     }).fail(function(err){
          console.log("err (/fail) [__actualizarNumeroEntrega]: ", err);
@@ -3744,16 +3712,17 @@ function __actualizarNumeroEntrega(that, index,rowNum, formulas, parametros,tran
  */
 DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNum, transaccion, callback) {
    
-   console.log("*******DispensacionHcModel.prototype.actualizarNumeroEntrega*************");
+   console.log("6) *******DispensacionHcModel.prototype.actualizarNumeroEntrega*************");
    
     var sql = "update bodegas_documentos\
          set   numero_entrega_actual= :1\
          where bodegas_doc_id= :2\
-         and   numeracion= :3; ";
+         and   numeracion= :3 returning numero_entrega_actual;";
 
     var query = G.knex.raw(sql,{1: rowNum, 2: parametro.bodegas_doc_id,3: parametro.numeracion});    
     if(transaccion) query.transacting(transaccion);    
-        query.then(function(resultado){          
+        query.then(function(resultado){  
+            //console.log("resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){   
         console.log("err (/catch) [actualizarNumeroEntrega]: ", err);
@@ -3762,6 +3731,155 @@ DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNu
     });  
 };
 
+
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado consultar las formulas 
+ *              las cuales se han dejado con estado todo_pendiente
+ * @controller DispensacionHc.prototype.consultarProductosTodoPendiente
+ *             DispensacionHc.prototype.descartarProductoPendiente
+ */
+DispensacionHcModel.prototype.migrandoDispensacionEstados = function(obj,callback){
+     
+     console.log("**********DispensacionHcModel.prototype.migrandoDispensacionEstados **********");
+    var parametros = {1:obj.evolucionId};//obj.evolucionId 840589 
+    var campo = "";
+    //console.log("parametros ", parametros);
+    /**
+     * +Descripcion El estado 0 (Cero) se envia desde el controlador descartarProductoPendiente
+     *              El estado 1 (Uno)  Se envia desde el controlador consultarProductosTodoPendiente
+     */
+   
+    
+    var sql = "INSERT INTO dispensacion_estados \
+(formula_id, \
+ evolucion_id, \
+ paciente_id, \
+ tipo_id_paciente, \
+ numero_total_entregas, \
+ numero_entrega_actual, \
+ sw_refrendar, \
+ sw_pendiente, \
+ tipo_formula,\
+ sw_finalizado,\
+ fecha_entrega,\
+ fecha_minima_entrega,\
+ fecha_maxima_entrega,\
+ medico_id,\
+ fecha_registro,\
+ fecha_finalizacion,\
+ fecha_ultima_entrega)\
+SELECT \
+ b.formula_id, \
+ b.evolucion_id, \
+ b.paciente_id, \
+ b.tipo_id_paciente, \
+ b.numero_total_entregas, \
+ b.numero_entrega_actual, \
+ b.sw_refrendar, \
+ b.sw_pendiente, \
+ b.tipo_formula,\
+ b.sw_finalizado,\
+ b.fecha_entrega,\
+ null as fecha_minima_entrega,\
+ null as fecha_maxima_entrega,\
+ b.medico_id,\
+ b.fecha_registro,\
+ b.fecha_finalizacion,\
+ b.fecha_ultima_entrega FROM (\
+SELECT a.formula_id,\
+       a.evolucion_id,\
+       a.paciente_id,\
+       a.tipo_id_paciente,\
+       a.numero_total_entregas, \
+        CASE WHEN a.numero_entrega_actual is null THEN 0 ELSE a.numero_entrega_actual END as numero_entrega_actual,\
+       0 as sw_refrendar,\
+       a.sw_pendiente,\
+       a.tipo_formula,\
+       CASE WHEN a.numero_total_entregas = a.numero_entrega_actual THEN 1 ELSE 0 END as sw_finalizado,\
+       CASE WHEN a.refrendar = 1 THEN (SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion\
+        FROM medicamentos_refrendados \
+                                  WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula) \
+                                  ELSE a.fecha_registro END as fecha_entrega,\
+       null as fecha_minima_entrega, \
+       null as fecha_maxima_entrega, \
+       a.medico_id,\
+       a.fecha_registro,\
+       a.fecha_finalizacion,     \
+       a.fecha_ultima_entrega FROM (\
+SELECT numero_formula as formula_id, \
+       evolucion_id,\
+       paciente_id,\
+       tipo_id_paciente, \
+       max( ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ) as numero_total_entregas,\
+       transcripcion_medica as tipo_formula,\
+       fecha_formulacion as fecha_registro,\
+       hc.medico_id,\
+       hc.refrendar,\
+       max(fecha_finalizacion) as fecha_finalizacion,\
+       CASE WHEN \
+       (SELECT distinct(hp.todo_pendiente) \
+       FROM hc_pendientes_por_dispensar hp \
+       WHERE hp.evolucion_id = hc.evolucion_id AND hp.bodegas_doc_id is null and hp.numeracion is null) = 0 THEN 1\
+       WHEN (SELECT distinct(hp.todo_pendiente)  \
+       FROM hc_pendientes_por_dispensar hp \
+       WHERE hp.evolucion_id = hc.evolucion_id AND hp.bodegas_doc_id is null and hp.numeracion is null) = 1 THEN 2 \
+       ELSE 0 END as sw_pendiente, \
+       (SELECT max(c.numero_entregas)as numero_entregas\
+                            FROM (\
+            SELECT a.evolucion_id,1 from hc_formulacion_despachos_medicamentos a\
+            union \
+            select a.evolucion_id,2 from hc_formulacion_despachos_medicamentos_pendientes a\
+            union\
+            select a.evolucion_id,3 from hc_dispensacion_medicamentos_tmp a   \
+        ) as b INNER JOIN (	\
+        SELECT  sum(dispensados.numero_entregas)as numero_entregas, dispensados.evolucion_id \
+                FROM (\
+                        SELECT count(evolucion_id) as numero_entregas, evolucion_id, 'normales' as a\
+                       FROM hc_formulacion_despachos_medicamentos WHERE evolucion_id = :1 GROUP BY evolucion_id\
+                        UNION ALL\
+                SELECT count(desp.evolucion_id) as numero_entregas, desp.evolucion_id, 'pendientestodos' as b\
+                                            FROM hc_formulacion_despachos_medicamentos_pendientes desp INNER JOIN bodegas_documentos pend\
+                ON desp.bodegas_doc_id = pend.bodegas_doc_id AND desp.numeracion = pend.numeracion\
+                WHERE desp.evolucion_id = :1 AND pend.todo_pendiente = 1  GROUP BY desp.evolucion_id	\
+                                            )as dispensados GROUP BY dispensados.evolucion_id      \
+        ) c ON b.evolucion_id = c.evolucion_id   \
+                    WHERE b.evolucion_id= :1)as numero_entrega_actual,       \
+                    (SELECT max(a.fecha_registro) FROM (\
+                      SELECT bod.fecha_registro\
+                      FROM hc_formulacion_despachos_medicamentos  hp\
+                      INNER JOIN bodegas_documentos bod ON hp.bodegas_doc_id = bod.bodegas_doc_id AND hp.numeracion = bod.numeracion\
+                      WHERE evolucion_id = :1\
+                      UNION\
+                      SELECT bod.fecha_registro\
+                       FROM hc_formulacion_despachos_medicamentos_pendientes hp\
+                      INNER JOIN bodegas_documentos bod ON hp.bodegas_doc_id = bod.bodegas_doc_id AND hp.numeracion = bod.numeracion\
+                      WHERE evolucion_id = :1\
+                      ) as a) as fecha_ultima_entrega \
+FROM hc_formulacion_antecedentes hc \
+WHERE hc.evolucion_id = :1 \
+GROUP BY numero_formula, \
+       evolucion_id,\
+       paciente_id,\
+       tipo_id_paciente, \
+       transcripcion_medica, \
+       fecha_formulacion,\
+       hc.medico_id,\
+       hc.refrendar\
+)as a ORDER BY a.numero_total_entregas desc limit 1\
+)as b ";
+               //console.log("sql ", sql);
+    G.knex.raw(sql,parametros).then(function(resultado){ 
+        console.log(" resultado[migrandoDispensacionEstados]: ", resultado)
+        callback(false, resultado)
+    }).catch(function(err){   
+        console.log("err [migrandoDispensacionEstados]", err);
+        callback(err)
+    });   
+};
 
 DispensacionHcModel.$inject = [];
 

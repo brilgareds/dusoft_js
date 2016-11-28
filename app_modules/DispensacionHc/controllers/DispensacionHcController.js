@@ -2424,7 +2424,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
             
         return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
             //return G.Q.ninvoke(that.m_dispensacion_hc,'migrandoDispensacionEstados', parametros);
-        }else{
+        }else{                            
            throw 'Consulta sin resultados';
         }
       

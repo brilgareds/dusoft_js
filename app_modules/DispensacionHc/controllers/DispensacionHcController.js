@@ -2411,14 +2411,16 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
      
     G.Q.ninvoke(that.m_dispensacion_hc,'consultarDispensacionesFormula', parametros).then(function(resultado){// generarDispensacionEstados
          
+         console.log("resultado")
         if(resultado.rowCount > 0){
             
-            fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);
-            //fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).subtract(5,'days').format(formato);
+            fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);        
             fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(25,'days').format(formato);
-             //Variables para calcular la fecha maxima de entrega de una formula
-            /*fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).format(formato);
-            fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).subtract(5,'days').format(formato);*/
+           
+           /*fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(resultado.rows[0].numero_entrega_actual, 'months').format(formato);
+            //fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).subtract(5,'days').format(formato);
+            fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(resultado.rows[0].numero_entrega_actual,'days').format(formato);
+            fechaMinima   = G.moment(fechaMinima).subtract(5,'days').format(formato);*/
             
         return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
             //return G.Q.ninvoke(that.m_dispensacion_hc,'migrandoDispensacionEstados', parametros);

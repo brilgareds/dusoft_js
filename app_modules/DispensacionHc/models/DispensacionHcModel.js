@@ -3810,7 +3810,7 @@ SELECT \
  b.sw_pendiente, \
  b.tipo_formula,\
  b.sw_finalizado,\
- b.fecha_ultima_entrega as fecha_entrega,\
+ b.fecha_entrega,\
  null as fecha_minima_entrega,\
  null as fecha_maxima_entrega,\
  b.medico_id,\
@@ -3830,7 +3830,7 @@ SELECT a.formula_id,\
        CASE WHEN a.refrendar = 1 THEN (SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion\
         FROM medicamentos_refrendados \
                                   WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula) \
-                                  ELSE a.fecha_registro END as fecha_entrega,\
+                                  ELSE a.fecha_ultima_entrega END as fecha_entrega,\
        null as fecha_minima_entrega, \
        null as fecha_maxima_entrega, \
        a.medico_id,\
@@ -3897,7 +3897,7 @@ GROUP BY numero_formula, \
        hc.medico_id,\
        hc.refrendar\
 )as a ORDER BY a.numero_total_entregas desc limit 1\
-)as b returning fecha_entrega ";
+)as b returning fecha_entrega, numero_entrega_actual ";
     
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    

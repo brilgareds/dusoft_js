@@ -3604,36 +3604,66 @@ function __consultarFormula(that, index, formulas, transaccion, callback) {
        
 };*/
 
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de invocar a traves de transacciones los metodos
+ *              encargados de almacenar el movimiento de una formula
+ */
 DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, callback) {
                  
     console.log("3) ********DispensacionHcModel.prototype.consultarDispensacionesFormula************");   
     
     var that = this;
     var def = G.Q.defer();
+    var fechaEntrega;
       G.knex.transaction(function(transaccion) {          
         G.Q.nfcall(__consultarDispensacionesFormula, obj.evolucionId, transaccion).then(function(resultado){            
            // console.log("resultado __consultarDispensacionesFormula ", resultado.rows);
             
             return G.Q.nfcall(__actualizarNumeroEntrega,that,0,1, resultado.rows,obj,transaccion);                      
                  
+        }).then(function(){
+            
+            return G.Q.ninvoke(that,'insertarDispensacionEstados',obj,transaccion);   
+            
+            
+        }).then(function(resultado){
+            console.log("DISPENSACION ESTADOS ");
+            fechaEntrega = resultado;
+            
+            return G.Q.nfcall(__consultarMedicamentosFormulados,obj,transaccion);   
+           
         }).then(function(resultado){
             
-            //console.log("resultado ****//// ", resultado);
-            transaccion.commit();   
+            return G.Q.nfcall(__actualizarEntregaPorProducto,that,0,resultado.rows,obj,transaccion);
             
+             
+        }).then(function(resultado){
+            
+            return G.Q.ninvoke(that,'actualizarFechaPendientePorDispensar',obj,transaccion);   
+            
+        }).then(function(resultado){
+            
+            transaccion.commit();   
         }).fail(function(err){        
            transaccion.rollback(err);
            console.log("fail transaccion rollback ", err);
         }).done();
     }).then(function(){  
-         
-            callback(false);
+            console.log("fechaEntrega ----- LO PASO ", fechaEntrega);
+            callback(false,fechaEntrega);
     }).catch(function(err){  
         console.log("err[consultarDispensacionesFormula]: ", err);
             callback(err);       
     }).done();    
 }; 
 
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de consultar los documentos de despacho 
+ *              de la formula a traves del numero de evolucion
+ * @fecha 26-11-2016
+ */
 function __consultarDispensacionesFormula(evolucion,transaccion, callback) {
     
     console.log("4) ********__consultarDispensacionesFormula************");   
@@ -3670,10 +3700,15 @@ function __consultarDispensacionesFormula(evolucion,transaccion, callback) {
         console.log("parametros [evolucion]: ", evolucion);
         callback(error);
     });
+};
 
-}
-
-
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo recursivo encargado de actualizar el numero de entrega correspondiente
+ *              de cada documento de despacho de la formula invocando el metodo
+ *              actualizarNumeroEntrega
+ * @fecha 26-11-2016
+ */
 function __actualizarNumeroEntrega(that, index,rowNum, formulas, parametros,transaccion, callback) {
     
     console.log("5) *******   ********__actualizarNumeroEntrega*******   ********");
@@ -3705,10 +3740,12 @@ function __actualizarNumeroEntrega(that, index,rowNum, formulas, parametros,tran
     }, 300);    
 };
 
-/*
- * @autor : Cristian Ardila
- * Descripcion : SQL para actualizar el estado del evento del despacho del medicamento
- * @fecha: 08/06/2015 09:45 pm 
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de actualizar el numero de entrega de
+ *              cada documento de despacho de la formula retornando el numero de entrega
+ *              de despacho
+ * @fecha 26-11-2016
  */
 DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNum, transaccion, callback) {
    
@@ -3736,24 +3773,14 @@ DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNu
 
 /**
  * @author Cristian Ardila
- * @fecha 09/06/2016 (DD-MM-YYYY)
- * +Descripcion Modelo encargado consultar las formulas 
- *              las cuales se han dejado con estado todo_pendiente
- * @controller DispensacionHc.prototype.consultarProductosTodoPendiente
- *             DispensacionHc.prototype.descartarProductoPendiente
+ * +Descripcion Modelo encargado de insertar el movimiento de la formula
+ *              en la tabla de dispensacion_estados
+ * @fecha 28/11/2016 (DD-MM-YYYY)
  */
-DispensacionHcModel.prototype.migrandoDispensacionEstados = function(obj,callback){
+DispensacionHcModel.prototype.insertarDispensacionEstados = function(obj,transaccion,callback){
      
-     console.log("**********DispensacionHcModel.prototype.migrandoDispensacionEstados **********");
+     console.log("**********DispensacionHcModel.prototype.insertarDispensacionEstados **********");
     var parametros = {1:obj.evolucionId};//obj.evolucionId 840589 
-    var campo = "";
-    //console.log("parametros ", parametros);
-    /**
-     * +Descripcion El estado 0 (Cero) se envia desde el controlador descartarProductoPendiente
-     *              El estado 1 (Uno)  Se envia desde el controlador consultarProductosTodoPendiente
-     */
-   
-    
     var sql = "INSERT INTO dispensacion_estados \
 (formula_id, \
  evolucion_id, \
@@ -3783,7 +3810,7 @@ SELECT \
  b.sw_pendiente, \
  b.tipo_formula,\
  b.sw_finalizado,\
- b.fecha_entrega,\
+ b.fecha_ultima_entrega as fecha_entrega,\
  null as fecha_minima_entrega,\
  null as fecha_maxima_entrega,\
  b.medico_id,\
@@ -3870,16 +3897,160 @@ GROUP BY numero_formula, \
        hc.medico_id,\
        hc.refrendar\
 )as a ORDER BY a.numero_total_entregas desc limit 1\
-)as b ";
-               //console.log("sql ", sql);
-    G.knex.raw(sql,parametros).then(function(resultado){ 
-        console.log(" resultado[migrandoDispensacionEstados]: ", resultado)
-        callback(false, resultado)
+)as b returning fecha_entrega ";
+    
+    var query = G.knex.raw(sql,parametros);    
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){  
+            //console.log("resultado ", resultado);
+            callback(false, resultado);
     }).catch(function(err){   
-        console.log("err [migrandoDispensacionEstados]", err);
-        callback(err)
-    });   
+        console.log("err (/catch) [insertarDispensacionEstados]: ", err);
+      
+        callback({err:err, msj: "Error al actualizar el evento"});
+    });  
+     
 };
+
+
+
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de consultar los medicamentos asignados a una
+ *              formula atraves del nuevo de evolucion
+ * @fecha 28/11/2016 (DD-MM-YYYY)
+ */
+function __consultarMedicamentosFormulados(obj,transaccion, callback) {
+    
+    console.log("4) ********__consultarMedicamentosFormulados************");   
+   
+    //console.log("evolucion ---> ", evolucion);
+    var parametros = {1: obj.evolucionId};   
+    var sql =  "SELECT  codigo_medicamento, evolucion_id FROM hc_formulacion_antecedentes WHERE evolucion_id = :1 ";
+   var query = G.knex.raw(sql,parametros);
+   
+    if(transaccion) query.transacting(transaccion); 
+    query.then(function(resultado) {
+        
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("err (/catch) [__consultarMedicamentosFormulados]: ", error)
+        
+        callback(error);
+    });
+};
+
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de actualizar la formula asignandole a cada 
+ *              medicamento el numero de entrega que tiene
+ * @fecha 28/11/2016 (DD-MM-YYYY)
+ */
+function __actualizarEntregaPorProducto(that, index, productos, parametros,transaccion, callback) {
+    
+    var producto = productos[index];
+
+    if (!producto) {   
+        callback(false);
+        return; 
+    }  
+     
+   G.Q.ninvoke(that,'actualizarEntregaPorProducto',producto, transaccion).then(function(resultado){
+
+    }).fail(function(err){
+         console.log("err (/fail) [__actualizarNumeroEntrega]: ", err);
+    }).done();               
+      
+    index++;
+  
+    setTimeout(function() {
+        __actualizarEntregaPorProducto(that, index, productos,parametros,transaccion, callback);
+    }, 300);    
+};
+
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de actualizar la formula asignandole a cada 
+ *              medicamento el numero de entrega que tiene
+ * @fecha 28/11/2016 (DD-MM-YYYY)
+ */
+DispensacionHcModel.prototype.actualizarEntregaPorProducto = function(obj, transaccion, callback) {
+    console.log("****DispensacionHcModel.prototype.actualizarEntregaPorProducto***");
+     var sql = "UPDATE hc_formulacion_antecedentes \
+                SET numero_total_entregas = (SELECT max(ceiling(ceiling(fecha_finalizacion - fecha_registro)/30)) \n\
+                FROM hc_formulacion_antecedentes WHERE evolucion_id = :1 AND codigo_medicamento = :2)\
+                WHERE evolucion_id = :1 AND codigo_medicamento = :2;";
+   //G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro")
+    var query = G.knex.raw(sql,{1: obj.evolucion_id, 2: obj.codigo_medicamento });    
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){  
+            console.log("resultado [actualizarEntregaPorProducto]: ", resultado);
+            callback(false, resultado);
+    }).catch(function(err){   
+        console.log("err (/catch) [actualizarEntregaPorProducto]: ", err);
+      
+        callback({err:err, msj: "Error actualizarEntregaPorProducto"});
+    }); 
+};
+
+
+
+
+
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de actualizar la fecha pendiente con hora y minutos 
+ *              de los medicamentos que quedaran en estado pendiente
+ * @fecha 28/11/2016 (DD-MM-YYYY)
+ */
+DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar = function(obj, transaccion, callback) {
+    console.log("****DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar***");
+     var sql = "UPDATE hc_pendientes_por_dispensar\
+                SET fecha_pendiente = fecha_registro\
+                WHERE evolucion_id = :1;";
+   
+    var query = G.knex.raw(sql,{1: obj.evolucionId});    
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){  
+            console.log("resultado [actualizarFechaPendientePorDispensar]: ", resultado);
+            callback(false, resultado);
+    }).catch(function(err){   
+        console.log("err (/catch) [actualizarFechaPendientePorDispensar]: ", err);
+      
+        callback({err:err, msj: "Error actualizarFechaPendientePorDispensar"});
+    }); 
+};
+
+                
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de actualizar la fecha minima la fecha maxima
+ *              y la fecha de entrega de la formula que se almacenara en la
+ *              tabla dispensacion_estados
+ * @fecha 28/11/2016 (DD-MM-YYYY)
+ */
+DispensacionHcModel.prototype.actualizarFechaMinimaMaxima = function(obj, callback) {
+    
+    console.log("****DispensacionHcModel.prototype.actualizarFechaMinimaMaxima***");
+    
+     var sql = "UPDATE dispensacion_estados\
+                SET fecha_entrega = :2,\
+                    fecha_minima_entrega = :3,\
+                    fecha_maxima_entrega = :4\
+                WHERE evolucion_id = :1;";
+ 
+    var query = G.knex.raw(sql,{1: obj.evolucionId, 2: obj.fechaEntrega, 3: obj.fechaMinima , 4: obj.fechaMaxima});    
+      
+        query.then(function(resultado){  
+            console.log("resultado [actualizarFechaMinimaMaxima]: ", resultado);
+            callback(false, resultado);
+    }).catch(function(err){   
+        console.log("err (/catch) [actualizarFechaMinimaMaxima]: ", err);
+      
+        callback({err:err, msj: "Error actualizarFechaMinimaMaxima"});
+    }); 
+};
+
 
 DispensacionHcModel.$inject = [];
 

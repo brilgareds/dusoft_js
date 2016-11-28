@@ -2402,24 +2402,50 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     var that = this;
     var args = req.body.data;
     
-    var parametros={ evolucionId:639353
+    var parametros={ evolucionId:360317
                     };
    
-
+    var formato = 'YYYY-MM-DD';
+    var fechaEntrega;
+    var fechaMinima;
+     
     G.Q.ninvoke(that.m_dispensacion_hc,'consultarDispensacionesFormula', parametros).then(function(resultado){// generarDispensacionEstados
-        
-        ///console.log("resultado SIGA EL OTRO PROCESO ", resultado);
-        if(!resultado){
-            console.log("resultado SIGA EL OTRO PROCESO ", resultado);
+         
+        if(resultado.rowCount > 0){
             
+            fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);
+            //fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).subtract(5,'days').format(formato);
+            fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(25,'days').format(formato);
+             //Variables para calcular la fecha maxima de entrega de una formula
+            /*fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).format(formato);
+            fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).subtract(5,'days').format(formato);*/
             
-            return G.Q.ninvoke(that.m_dispensacion_hc,'migrandoDispensacionEstados', parametros);
-          //return res.send(G.utils.r(req.url, 'INSERTE EN LA TABLA DISPENSACION ESTADOS', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
+        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
+            //return G.Q.ninvoke(that.m_dispensacion_hc,'migrandoDispensacionEstados', parametros);
         }else{
            throw 'Consulta sin resultados';
         }
       
         
+    }) .then(function(resultado){
+      console.log("EL RESULTADO QUE ESPERABA SON LAS FECHA QUE NECESITABA");
+       
+       
+         
+        var parametrosFechaMinimaMaxima=
+            {
+               evolucionId:360317,
+               fechaEntrega: fechaEntrega, 
+               fechaMinima:fechaMinima, 
+               fechaMaxima:resultado.fechaMaxima 
+              };
+         
+        G.Q.ninvoke(that.m_dispensacion_hc,'actualizarFechaMinimaMaxima', parametrosFechaMinimaMaxima)
+        
+    }).then(function(resultado){
+        
+       return res.send(G.utils.r(req.url, 'DATOS ALMACENADOS EXITOSAMENTE', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
+       
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();

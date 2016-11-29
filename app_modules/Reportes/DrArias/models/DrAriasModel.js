@@ -68,7 +68,7 @@ DrAriasModel.prototype.listarDrArias = function(filtro, callback) {
         }
        
    }).fail(function(err){
-        console.log("Error listarDrArias",err);
+        console.log("Error [listarDrArias] Parametros: ",filtro,err);
         callback(err);
    }).done();
     
@@ -90,7 +90,7 @@ DrAriasModel.prototype.borrarTemporalesReporteDrArias = function(callback) {
                .del().then(function(rows) { 
                     callback(false);
                 }).catch(function(error){
-                    console.log("Error temporal_reporte_dr_arias >>>>>>>>>>>>>>",error);
+                    console.log("Error [borrarTemporalesReporteDrArias] Parametros: ",error);
                     callback(error);
                 });
 };
@@ -111,7 +111,7 @@ DrAriasModel.prototype.listarPlanes = function(callback) {
     query.then(function(resultado) {
        callback(false, resultado.rows);
      }).catch (function(err) {
-         console.log("Error listarPlanes >>>>>>>>>>>>>>",err);
+        console.log("Error [listarPlanes] Parametros: ",err);
         callback(err);
      });
 };
@@ -130,11 +130,54 @@ DrAriasModel.prototype.guardarEstadoReporte = function(datos,callback) {
     query.then(function(resultado) {
        callback(false);
      }).catch (function(err) {
-         console.log("Error guardarEstadoReporte:::: ",err);
+        console.log("Error [guardarEstadoReporte] Parametros: ",datos,err);
         callback(err);
      });
 };
 
+/**
+* @author Andres M Gonzalez
+* +Descripcion: guardar estado del reporte 
+* @fecha 2016-10-25
+*/
+DrAriasModel.prototype.guardarControlCopias= function(datos,callback) {
+
+    var fecha=G.moment().subtract(1,'days').format('DD-MM-YYYY');
+    
+    G.knex.insert({numero_registros: datos.numero,
+                    fecha_copia: fecha,
+                    sw_copia: datos.swCopia,
+                    fecha_registro: 'now()'}).
+    into("control_copias_dr_arias").then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        console.log("Error [guardarControlCopias] Parametros: ",datos,err);
+        callback(err);
+    }).done();
+    
+    
+};
+
+/**
+* @author Andres M Gonzalez
+* +Descripcion: editar estado del reporte 
+* @fecha 2016-06-17
+*/
+DrAriasModel.prototype.conteoTemporalesReporteDrArias = function (callback) {
+             
+    var sql = "select COUNT(*) as numero\
+                from temporal_reporte_dr_arias \
+                where fecha between (current_date - interval '1 day') and (current_date - interval '0 day' -  interval '1 sec')\
+                ";
+    
+    var query = G.knex.raw(sql);
+    query.then(function(resultado) {
+       callback(false, resultado.rows);
+     }).catch (function(err) {
+        console.log("Error [conteoTemporalesReporteDrArias] Parametros: ",err);
+        callback(err);
+     });
+};
 /**
 * @author Andres M Gonzalez
 * +Descripcion: adicionar detalle del reporte 
@@ -149,7 +192,7 @@ DrAriasModel.prototype.editarConsolidadoReporte = function(datos,callback) {
     update({consolidado : datos.detalle,bodegas : datos.bodegasdetalle}).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("Error editarConsolidadoReporte >>>>>>>>>>>>>>",err);
+        console.log("Error [editarConsolidadoReporte] Parametros: ",datos,err);
         callback(err);
     });     
 };
@@ -167,7 +210,7 @@ DrAriasModel.prototype.editarEstadoReporte = function(datos,callback) {
     update({fecha_fin : datos.fecha_fin, estado:datos.estado}).then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        console.log("editarEstadoReporte >>>>>>>>>>>>>>",err);
+        console.log("Error [editarEstadoReporte] Parametros: ",datos,err);
         callback(err);        
     });     
 };
@@ -202,7 +245,7 @@ DrAriasModel.prototype.reportesGenerados = function (datos,callback) {
                        callback(false, rows);
                    })
                    .catch(function (error) {
-                       console.log("Error reportesGenerados >>>>>>>>>>>>>>",error);
+                       console.log("Error [reportesGenerados] Parametros: ",datos,error);
                        callback(error);
                    }).done();
 };
@@ -421,7 +464,7 @@ DrAriasModel.prototype.addTemporalesReporteDrArias = function(callback) {
                query.then(function(resultado) {
                   callback(false);
                 }).catch (function(err) {
-                    console.log("Error addTemporalesReporteDrArias >>>>>>>>>>>>>>",err);
+                   console.log("Error [addTemporalesReporteDrArias] Parametros: ");
                    callback(err);
                 });
 };
@@ -735,7 +778,7 @@ DrAriasModel.prototype.realizarReportePorRango = function(obj, callback) {
                 query.then(function(resultado) {
                    callback(false, resultado);
                  }).catch (function(err) {
-                    console.log("ERROR realizarReportePorRango: ",err);
+                    console.log("Error [realizarReportePorRango] Parametros: ",obj,err);
                     callback(err);
                  });
 

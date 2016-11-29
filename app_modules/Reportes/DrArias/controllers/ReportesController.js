@@ -196,14 +196,14 @@ function __generarCsvDrArias(datos,filtro, callback) {
     
     console.log("Generar CSV DR ARDIAS");
     
-        var fields =  ["fecha","fecha_formula","formula_id","formula_papel","nom_bode","plan_descripcion","usuario_digita",
+       var fields =  ["fecha","fecha_formula","formula_id","formula_papel","nom_bode","plan_descripcion","usuario_digita",
                         "descripcion_tipo_formula","paciente_id","paciente","tercero_id","medico","especialidad",
                         "codigo_producto","codigo_cum","producto","cantidad","precio","total","eps_punto_atencion_nombre"];
                     
        var fieldNames=["FECHA","FECHA FORMULA","FORMULA_ID","FORMULA","FARMACIA","PROGRAMA","USUARIO FARMACIA",
                         "TIPO FORMULA","CC. PACIENTE","NOMBRES PACIENTE","CC. MEDICO","MEDICO","ESPECIALIDAD",
                         "CODIGO","CODIGO CUM","PRODUCTO","CANTIDAD","PRECIO UNITARIO","PRECIO TOTAL","PUNTO DE ATENCION"];
-        var opts = {
+       var opts = {
                     data: datos,
                     fields: fields,
                     fieldNames: fieldNames,
@@ -216,11 +216,11 @@ function __generarCsvDrArias(datos,filtro, callback) {
         var nombreReporte=filtro.nombre;
         G.fs.writeFile(G.dirname + "/public/reports/" +nombreReporte, csv, function(err) {
           if (err){ 
-           console.log('Error ',err);
+           console.log('Error __generarCsvDrArias',err);
            throw err;
           }
           callback(datos.length);
-          console.log('file saved');
+          console.log('SE GUARDO ARCHIVO DR ARIAS');
         });
       });
 }
@@ -231,7 +231,7 @@ function __guardarEstadoReporte(that,datos){
     G.Q.ninvoke(that.m_drArias, 'guardarEstadoReporte',datos).then(function (resultado) {       
     }).
     fail(function (err) {
-        console.log("error controller guardarEstadoReporte ", err);
+        console.log("error controller __guardarEstadoReporte ", err);
     }).
     done();
 }
@@ -240,7 +240,7 @@ function __editarEstadoReporte(that,datos){
     G.Q.ninvoke(that.m_drArias, 'editarEstadoReporte',datos).then(function (resultado) {       
     }).
     fail(function (err) {
-        console.log("error controller editarEstadoReporte ", err);
+        console.log("error controller __editarEstadoReporte ", err);
     }).
     done();
 }
@@ -249,7 +249,7 @@ function __editarConsolidadoReporte(that,datos){
     G.Q.ninvoke(that.m_drArias, 'editarConsolidadoReporte',datos).then(function (resultado) {       
     }).
     fail(function (err) {
-        console.log("error controller editarConsolidadoReporte ", err);
+        console.log("error controller __editarConsolidadoReporte ", err);
     }).
     done();
 }

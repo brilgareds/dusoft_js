@@ -236,16 +236,21 @@ define(["angular", "js/controllers",
 
 
             $scope.generar_observacion_cartera = function(obj) {
-
+                
+                if(obj.getEstado() === '0' && obj.get_estado_cotizacion() === '1'){
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
+                    return;
+                }
+              
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
-                    localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1'});
+                    localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1', tipoPedido: obj.getTipoPedido()});
                     $state.go('Cotizaciones');
                 }
 
                 // Observacion cartera para el pedido
                 if (obj.get_numero_pedido() > 0) {
-                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1'});
+                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1', tipoPedido: obj.getTipoPedido()});
                     $state.go('PedidoCliente');
                 }
             };
@@ -298,8 +303,9 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_cotizaciones = function(estado) {
-
-
+              if(estado===6){
+              $scope.datos_view.filtro=$scope.datos_view.filtro===undefined?{nombre: "Numero", tipo_busqueda: 0}:$scope.datos_view.filtro;
+              }
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
 
                 if (terminoBusqueda) {
@@ -320,14 +326,14 @@ define(["angular", "js/controllers",
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_cotizaciones, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_cotizaciones, "yyyy-MM-dd") + " 23:59:00",
-                            termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
+                            termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones===undefined?'':$scope.datos_view.termino_busqueda_cotizaciones,
                             pagina_actual: $scope.datos_view.pagina_actual_cotizaciones,
                             estado_cotizacion: estado,
                             filtro: $scope.datos_view.filtro
                         }
                     }
                 };
-
+                
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_COTIZACIONES, "POST", obj, function(data) {
 
                     if (data.status === 500) {
@@ -348,8 +354,9 @@ define(["angular", "js/controllers",
                             AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se encontraron mas registros");
                             return;
                         }
-
+                           
                         that.render_cotizaciones(data.obj.pedidos_clientes.lista_cotizaciones);
+                      
                     }
                 });
 
@@ -363,7 +370,7 @@ define(["angular", "js/controllers",
              * @param {type} estado
              */
             $scope.cargarListaNotificacionCotizacion = function(estado) {
-
+ 
                 that.buscar_cotizaciones(estado);
                 $scope.notificacionClientesAutorizar = 0;
 
@@ -393,6 +400,8 @@ define(["angular", "js/controllers",
                     cotizacion.set_tipo_producto(data.tipo_producto);
                     cotizacion.setFechaRegistro(data.fecha_registro);
                     cotizacion.setNumeroPedido(data.numero_pedido);
+                    
+                    cotizacion.setTipoPedido(data.tipo_pedido);
 
                     $scope.Empresa.set_cotizaciones(cotizacion);
                 });
@@ -437,7 +446,7 @@ define(["angular", "js/controllers",
             };
 
             $scope.solicitarAutorizacion = function(cotizacion) {
-
+                 
                 var estadoCotizacion = cotizacion.get_estado_cotizacion()
 
                 if (estadoCotizacion === '6' || estadoCotizacion === '3' || estadoCotizacion === '5') {
@@ -510,7 +519,7 @@ define(["angular", "js/controllers",
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
-
+                     
                     if (data.status === 200) {
                         callback(true, data)
 
@@ -519,8 +528,129 @@ define(["angular", "js/controllers",
                 });
             };
 
+            
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * +Descripcion Metodo encargado de desplegar la ventana modal
+             *              con los productos sin disponibilidad o que tengan
+             *              la cantidad disponible menor a la solicitada
+             * @fecha 17/11/2016
+             */
+            that.ventanaProductosSinDisponibilidad = function(productos){
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/generacionpedidos/pedidosclientes/validardisponibilidadproductoscontroller.html',
+                    scope: $scope,                  
+                    controller: "ValidarDisponibilidadProductosController",
+                    resolve: {
+                        pedido: function() {
+                            return productos;
+                        },
+                        swBotonDenegarCartera:function() {
+                            return 0;
+                        }
+                    }           
+                };
+                var modalInstance = $modal.open($scope.opts);   
 
+                modalInstance.result.then(function(){ 
+                },function(){});     
+            };
+            
+            /**
+             * @author Cristian Manuel Ardila
+             * +Descripcion Metodo invocado al momento de solicitar autorizacion 
+             *              a cartera para una cotizacion en la lista de cotizaciones
+             * @fecha 17/11/2016
+             */
+            that.validarDisponibilidadProducto = function(obj, callback){
+                    
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
+                       
+                    if (data.status === 200) {
 
+                        if(data.obj.pedidos_clientes.producto.length>0){  
+
+                            var observacion="**Productos sin disponibilidad** \n";
+                            data.obj.pedidos_clientes.producto.forEach(function(info){
+
+                              observacion +="Cantidad solicitada ("+info.cantidad_solicitada+")  Cantidad disponible ("+ info.cantidad_disponible+") para el codigo ("+ info.codigo_producto+") \n";
+
+                            });
+                            observacion+=$scope.Pedido.get_observacion_cartera();
+                            $scope.Pedido.set_observacion_cartera(observacion);
+                      }
+
+                //$scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
+                  if(data.obj.pedidos_clientes.producto.length > 0){      
+                      
+                        that.ventanaProductosSinDisponibilidad(data.obj.pedidos_clientes.producto);
+                        
+               /*
+                      $scope.opts = {
+                          backdrop: true,
+                          backdropClick: true,
+                          dialogFade: false,
+                          keyboard: true,
+                          template: ' <div class="modal-header">\
+                                          <button type="button" class="close" ng-click="close()">&times;</button>\
+                                          <h4 class="modal-title">Listado Productos </h4>\
+                                      </div>\
+                                      <div class="modal-body row">\
+                                          <div class="col-md-12">\
+                                              <h4 >Lista productos sin disponibilidad.</h4>\
+                                              <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                  <div class="list-group">\
+                                                      <a ng-repeat="producto in datos_view.productos_no_disponible" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                      Cantidad solicitada ({{ producto.cantidad_solicitada}})  Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
+                                                      </a>\
+                                                  </div>\
+                                              </div>\
+                                          </div>\
+                                          <div class="col-md-12" ng-if = "ocultarOpciones == 0">\
+                                              <fieldset>\
+                                                  <legend>Observación Cartera</legend>\
+                                                  <div class="row">\
+                                                      <div class="col-md-12">\
+                                                          <textarea  ng-model="Pedido.observacion_cartera" \
+                                                          ng-disabled="!datos_view.cartera" class="col-lg-12 col-md-12 col-sm-12" \
+                                                          rows="4" name="" placeholder="Ingresar Observación Cartera"></textarea>\
+                                                      </div>\
+                                                  </div>\
+                                              </fieldset>\
+                                          </div>\
+                                      </div>\
+                                      <div class="modal-footer">\
+                                          <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
+                                          <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" >\
+                                              Denegado Cartera\
+                                          </button>\
+                                      </div>',
+                      scope: $scope,
+                      controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+                          $scope.close = function() {
+                              $scope.datos_view.progresoArchivo = 0;
+                              $modalInstance.close();
+                          };                    
+                      }]
+                };
+                var modalInstance = $modal.open($scope.opts);*/
+                
+                }else{                           
+                   callback(true);
+                }
+              
+              }else{                      
+                  AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error en la consulta");                       
+              } 
+
+            });  
+                      
+        };
             /**
              * +Descripcion: FUncion encargada de actualizar el estado de una cotizacion
              *               estado =6 (Se solicita autorizacion)
@@ -528,13 +658,13 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
             that.cambiarEstadoCotizacionAutorizacion = function(cotizacion) {
-
+                
                 that.buscar_detalle_cotizacion(cotizacion, function(estado, data) {
-
+                    
                     var productos = data.obj.pedidos_clientes.lista_productos;
-                    $scope.Pedido.limpiar_productos();
+                        $scope.Pedido.limpiar_productos();
                     productos.forEach(function(data) {
-
+                           
                         var _producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
                         _producto.set_cantidad_inicial(data.cantidad_solicitada);
                         _producto.set_cantidad_solicitada(data.cantidad_solicitada);
@@ -543,28 +673,63 @@ define(["angular", "js/controllers",
 
                     });
                     cotizacion.set_productos($scope.Pedido.get_productos())
-
-
-                    var obj = {
-                        session: $scope.session,
+                  
+                    
+                    var objValidarDisponibilidad = {
+                        session: $scope.session,                                 
                         data: {
                             pedidos_clientes: {
-                                cotizacion: {numeroCotizacion: cotizacion.get_numero_cotizacion(), estado: '6', cotizacion: cotizacion}
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: cotizacion.getCliente().contrato_id, //894
+                                pagina_actual: 1,
+                                productos: $scope.Pedido.get_productos(),//'0104030001', 
+                                tipo_producto: '',
+                                numero_cotizacion: '',
+                                numero_pedido: '',
+                                filtro: {nombre: 'codigo', tipo_busqueda: 2, numero: [cotizacion.get_numero_cotizacion()], tipo:1},
+                                //nuevo campos
+                                molecula: '',
+                                laboratorio_id: '',
+                                codigoProducto: '',
+                                descripcionProducto: '',
+                                concentracion: '',
+                                tipoBusqueda: 0,
+                                termino_busqueda: ''
                             }
                         }
                     };
+                    
+                    that.validarDisponibilidadProducto(objValidarDisponibilidad,function(estado){
+                        
+                        if(estado){
+                            var obj = {
+                                session: $scope.session,
+                                data: {
+                                    pedidos_clientes: {
+                                        cotizacion: {numeroCotizacion: cotizacion.get_numero_cotizacion(), estado: '6', cotizacion: cotizacion}
+                                    }
+                                }
+                            };
 
-                    Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
+                        Request.realizarRequest(API.PEDIDOS.CLIENTES.SOLICITAR_AUTORIZACION, "POST", obj, function(data) {
 
-                        if (data.status === 200) {
-                            that.buscar_cotizaciones('');
+                            if (data.status === 200) {
+                                that.buscar_cotizaciones('');
 
-                        } else {
-                            AlertService.mostrarMensaje("warning", "Se genero un error");
+                            } else {
+                                AlertService.mostrarMensaje("warning", "Se genero un error");
+                            }
+                        }); 
                         }
                     });
+                   
                 });
             };
+            
+            
+
 
             /**
              * +Descripcion: Funcion encargada de consultar los pedidos
@@ -644,6 +809,7 @@ define(["angular", "js/controllers",
 
                     pedido.setDatos(data);
                     pedido.setNumeroPedido(data.numero_pedido).set_vendedor(vendedor).setCliente(cliente);
+                    pedido.setTipoPedido(data.tipo_pedido);
                     pedido.set_descripcion_estado_actual_pedido(data.descripcion_estado_actual_pedido);
                     pedido.setFechaRegistro(data.fecha_registro);
                     pedido.setEstado(data.estado);
@@ -651,6 +817,7 @@ define(["angular", "js/controllers",
                             setDespachoEmpresaId(data.despacho_empresa_id).
                             setDespachoPrefijo(data.despacho_prefijo).
                             setDespachoNumero(data.despacho_numero);
+                   
                     $scope.Empresa.set_pedidos(pedido);
                 });
 
@@ -716,10 +883,9 @@ define(["angular", "js/controllers",
                 };
 
                 var modalInstance = $modal.open($scope.opts);
-
+                //refrescar producto
                 modalInstance.result.then(function() {
-                    console.log("refrescar producto");
-
+                   
                 }, function() {
 
                 });

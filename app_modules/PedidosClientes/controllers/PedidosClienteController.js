@@ -2052,12 +2052,20 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     }).then(function(rows) {
 
         var totalValorPedidoActual = rows[0].valor_total_cotizacion;
-
-        if (totalValorPedidoNuevo > totalValorPedidoActual) {
-            estado_pedido = 1;
+        
+        /**
+         * +Descripcion: Se solicita que cada vez que se ingrese un ítem (PRODUCTO) al pedido este no actualice el estado 
+                        (SE SOLICITA AUTORIZACION DE CARTERA 4) y de esta forma poder ingresar múltiples ítem (PRODUCTOS)
+                        Una vez se cierre la ventana modal que despliega todos los productos
+                        en la ventana que muestra el detalle del pedido, en la parte superior de la pagina se encuentra un 
+                        botón (SOLICITAR AUTORIZACION CARTERA)  a través del cual se realizara la solicitud
+         */
+        /*if (totalValorPedidoNuevo > totalValorPedidoActual) {
+            estado_pedido = 4;
         } else {
             estado_pedido = 1;
-        }
+        }*/
+        estado_pedido = 1;
         /**
          * +Descripcion: Se valida si el pedido ya cuenta con ese producto en el detalle
          */

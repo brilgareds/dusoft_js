@@ -2054,7 +2054,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         var totalValorPedidoActual = rows[0].valor_total_cotizacion;
 
         if (totalValorPedidoNuevo > totalValorPedidoActual) {
-            estado_pedido = 4;
+            estado_pedido = 1;
         } else {
             estado_pedido = 1;
         }

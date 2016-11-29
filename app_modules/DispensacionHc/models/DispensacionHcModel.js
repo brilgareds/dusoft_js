@@ -3604,6 +3604,26 @@ function __consultarFormula(that, index, formulas, transaccion, callback) {
        
 };*/
 
+
+/**
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener los diferentes tipos de formula
+ * @controller DispensacionHc.prototype.listarTipoFormula
+ */
+DispensacionHcModel.prototype.consultarFormulaAntecedentes = function(obj,callback){
+                            
+    var sql = "SELECT *\
+                FROM hc_formulacion_antecedentes a \
+                WHERE a.evolucion_id = :1;";
+   
+    G.knex.raw(sql,{1: obj.evolucionId}).then(function(resultado){    
+        callback(false, resultado)
+    }).catch(function(err){          
+        callback(err)
+    });         
+    
+};
 /**
  * @author Cristian Manuel Ardila Troches
  * +Descripcion Metodo encargado de invocar a traves de transacciones los metodos
@@ -3618,10 +3638,13 @@ DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, cal
     var fechaEntrega;
       G.knex.transaction(function(transaccion) {          
         G.Q.nfcall(__consultarDispensacionesFormula, obj.evolucionId, transaccion).then(function(resultado){            
-           // console.log("resultado __consultarDispensacionesFormula ", resultado.rows);
+           console.log("resultado __consultarDispensacionesFormula ", resultado.rows);
+            if(resultado.rows.length > 0){
+                return G.Q.nfcall(__actualizarNumeroEntrega,that,0,1, resultado.rows,obj,transaccion);                      
+            }else{
+                return transaccion.rollback("El numero de evolucion no existe");
+            }
             
-            return G.Q.nfcall(__actualizarNumeroEntrega,that,0,1, resultado.rows,obj,transaccion);                      
-                 
         }).then(function(){
             
             return G.Q.ninvoke(that,'insertarDispensacionEstados',obj,transaccion);   
@@ -3810,7 +3833,7 @@ SELECT \
  b.sw_pendiente, \
  b.tipo_formula,\
  b.sw_finalizado,\
- b.fecha_entrega,\
+ b.fecha_ultima_entrega as fecha_entrega,\
  null as fecha_minima_entrega,\
  null as fecha_maxima_entrega,\
  b.medico_id,\

@@ -760,7 +760,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     };
                     
                     
-                    
+                                             
                     
                     
                     /**
@@ -772,23 +772,31 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         console.log("**********$scope.insertarFormulasDispensacionEstados*************");
                         console.log("**********$scope.insertarFormulasDispensacionEstados*************");
                         console.log("**********$scope.insertarFormulasDispensacionEstados*************");
-                        var obj = {                   
+                       
+                                 
+                       var obj = {                   
                                     session: $scope.session,
                                     data: {
                                        insertar_formulas_dispensacion_estados: {
-                                            
+                                            filtro:$scope.root.filtro,
+                                            terminoBusqueda: $scope.root.termino_busqueda,
+                                            estadoFormula: '0',
+                                            fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
+                                            fechaFinal:   $filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
                                        }
                                    }    
                                 };    
                         dispensacionHcService.insertarFormulasDispensacionEstados(obj,function(data){
                             
-                            console.log("data ", data);
-                            /*if (data.status === 200) {
-                                    var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
-                                    console.log("nombre ", nombre);
-                                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                            }*/
-                        });  
+                            console.log("-----------------(data)*****  ", data);
+                            if(data.status === 200){                        
+                               AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                            }else{                         
+                               AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                            }
+                                   
+                            
+                        }); 
 
                     };
                     

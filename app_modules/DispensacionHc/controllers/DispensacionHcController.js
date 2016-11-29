@@ -2402,14 +2402,61 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     var that = this;
     var args = req.body.data;
     
-    var parametros={ evolucionId:360317
-                    };
+    if (!args.insertar_formulas_dispensacion_estados ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_dispensados: []}));
+        return;
+    }
+    
+    
+    if (!args.insertar_formulas_dispensacion_estados.filtro || !args.insertar_formulas_dispensacion_estados.filtro.tipo === 'EV' ) {
+        res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
+        return;
+    }
+    
+    if (!args.insertar_formulas_dispensacion_estados.terminoBusqueda || args.insertar_formulas_dispensacion_estados.terminoBusqueda === '') {
+        res.send(G.utils.r(req.url, 'Debe diligenciar el termino de busqueda', 404, {}));
+        return;
+    }
+    
+    
    
+    var terminoBusqueda = args.insertar_formulas_dispensacion_estados.terminoBusqueda;
+    var filtro = args.insertar_formulas_dispensacion_estados.filtro;
+   
+   
+    var parametros={ 
+                    evolucionId: terminoBusqueda,
+                    filtro: filtro};
+                
+                
+    /*var parametros={ evolucionId:360317
+                    };*/
+                                
     var formato = 'YYYY-MM-DD';
     var fechaEntrega;
     var fechaMinima;
      
-    G.Q.ninvoke(that.m_dispensacion_hc,'consultarDispensacionesFormula', parametros).then(function(resultado){// generarDispensacionEstados
+     console.log("parametros ", parametros);
+     
+   G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros).then(function(resultado){   
+            
+        if(resultado.rows.length > 0){
+             return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:parametros.evolucionId,numeroEntregaActual:1});
+
+        }else{
+            throw 'La formula no existe'
+        }
+            
+    }).then(function(resultado){
+        
+        if(resultado.rows.length > 0){
+            throw 'La formula ya ha sido generada'
+            
+        }else{
+           return  G.Q.ninvoke(that.m_dispensacion_hc,'consultarDispensacionesFormula', parametros)
+        }
+         
+    }).then(function(resultado){// generarDispensacionEstados
          
          console.log("resultado")
         if(resultado.rowCount > 0){
@@ -2430,10 +2477,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
       
         
     }) .then(function(resultado){
-      console.log("EL RESULTADO QUE ESPERABA SON LAS FECHA QUE NECESITABA");
-       
-       
-         
+        
         var parametrosFechaMinimaMaxima=
             {
                evolucionId:360317,
@@ -2442,7 +2486,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
                fechaMaxima:resultado.fechaMaxima 
               };
          
-        G.Q.ninvoke(that.m_dispensacion_hc,'actualizarFechaMinimaMaxima', parametrosFechaMinimaMaxima)
+        return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarFechaMinimaMaxima', parametrosFechaMinimaMaxima)
         
     }).then(function(resultado){
         

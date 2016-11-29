@@ -1884,6 +1884,23 @@ PedidosClienteModel.prototype.consultarProductoDetallePedido = function(pedido, 
         callback(error);
     });
 };
+
+
+PedidosClienteModel.prototype.consultarProductoPedido = function(pedido, producto, callback) {
+
+
+    var sql = "SELECT * FROM ventas_ordenes_pedidos_d WHERE pedido_cliente_id = :1 AND codigo_producto = :2 ";
+
+    G.knex.raw(sql, {1: pedido.numero_pedido, 2: producto.codigo_producto}).
+            then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err [consultarProductoPedido]", err);
+        callback(err);
+    });
+
+};
+
 /*
  * @author : Cristian Ardila
  * Descripcion : Funcion encargada de consultar el estado de un pedido

@@ -667,7 +667,9 @@ SELECT todo.codigo_producto,  \
  *  --PedidosCliente.prototype.generarPedido
  *  --PedidosCliente.prototype.eliminarCotizacion
  */
-DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion,transaccion, callback) {
+/*DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion,transaccion, callback) {
+    
+     
     
     var parametros = {1: evolucion};   
    var sql = "SELECT * FROM hc_pendientes_por_dispensar\
@@ -680,9 +682,9 @@ DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion,tr
         
     }).select('evolucion_id');*/
     
-    if(transaccion) query.transacting(transaccion); 
+   /* if(transaccion) query.transacting(transaccion); 
     query.then(function(resultado) {
-        //console.log("----resultado-----", resultado.rows);
+        console.log("----resultado-----", resultado.rows);
         callback(false, resultado);
     }). catch (function(error) {
         console.log("err (/catch) [actualizarProductoPendientePorBodega]: ", error)
@@ -692,7 +694,7 @@ DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion,tr
     
     
    
-}; 
+}; */
 
 
 /**
@@ -2238,8 +2240,7 @@ DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callb
     }else{
         campo = "numero_entrega_actual";
     }         
-    console.log("obj ", obj);
-    console.log("campo ", campo);
+    
     var sql = "SELECT "+campo+" as numeroEntrega, sw_pendiente\
                FROM dispensacion_estados a \
                WHERE \
@@ -2247,7 +2248,7 @@ DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callb
     var query = G.knex.raw(sql,parametros);  
      
     query.then(function(resultado){ 
-        console.log("*/* resultado ", resultado);
+        
         callback(false, resultado); 
    }).catch(function(err){
         console.log("err (/catch) [consultarUltimaEntregaFormula]: ", err);
@@ -2466,7 +2467,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
  *  --PedidosCliente.prototype.eliminarCotizacion
  */
 DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion, callback) {
-    
+     
    
     G.knex('hc_pendientes_por_dispensar').where({
         evolucion_id: evolucion,
@@ -3616,7 +3617,7 @@ DispensacionHcModel.prototype.consultarFormulaAntecedentes = function(obj,callba
     var sql = "SELECT *\
                 FROM hc_formulacion_antecedentes a \
                 WHERE a.evolucion_id = :1;";
-   
+      
     G.knex.raw(sql,{1: obj.evolucionId}).then(function(resultado){    
         callback(false, resultado)
     }).catch(function(err){          
@@ -3638,32 +3639,40 @@ DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, cal
     var fechaEntrega;
       G.knex.transaction(function(transaccion) {          
         G.Q.nfcall(__consultarDispensacionesFormula, obj.evolucionId, transaccion).then(function(resultado){            
-           console.log("resultado __consultarDispensacionesFormula ", resultado.rows);
+           console.log("1) __consultarDispensacionesFormula ", resultado.rows);
             if(resultado.rows.length > 0){
                 return G.Q.nfcall(__actualizarNumeroEntrega,that,0,1, resultado.rows,obj,transaccion);                      
             }else{
-                return transaccion.rollback("El numero de evolucion no existe");
+                def.resolve();//return transaccion.rollback("El numero de evolucion no existe");
             }
             
         }).then(function(){
-            
+            console.log("2) __actualizarNumeroEntrega ");
             return G.Q.ninvoke(that,'insertarDispensacionEstados',obj,transaccion);   
             
             
         }).then(function(resultado){
-            console.log("DISPENSACION ESTADOS ");
+            console.log("3) insertarDispensacionEstados ", resultado);
             fechaEntrega = resultado;
             
             return G.Q.nfcall(__consultarMedicamentosFormulados,obj,transaccion);   
            
         }).then(function(resultado){
-            
+            console.log("4) __consultarMedicamentosFormulados ", resultado.rows);
             return G.Q.nfcall(__actualizarEntregaPorProducto,that,0,resultado.rows,obj,transaccion);
             
              
         }).then(function(resultado){
+            console.log("5) __actualizarEntregaPorProducto ", resultado);
+            return G.Q.ninvoke(that,'consultarPendientesFormula',obj.evolucionId); 
             
-            return G.Q.ninvoke(that,'actualizarFechaPendientePorDispensar',obj,transaccion);   
+        }).then(function(resultado){
+         
+            if(resultado.length > 0){
+                return G.Q.ninvoke(that,'actualizarFechaPendientePorDispensar',obj,transaccion);  
+            }else{
+                def.resolve();
+            }
             
         }).then(function(resultado){
             

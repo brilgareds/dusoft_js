@@ -1157,7 +1157,9 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
  */
 DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
    
-   
+   console.log("******DispensacionHc.prototype.realizarEntregaFormula****************");
+   console.log("******DispensacionHc.prototype.realizarEntregaFormula****************");
+   console.log("******DispensacionHc.prototype.realizarEntregaFormula****************");
     var that = this;
     var args = req.body.data;   
    
@@ -1339,10 +1341,13 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             
         }else{
             throw 'No se genero la dispensacion'    
-            
+                                              
         }
         
     }).then(function(resultado){
+        
+        
+        console.log(" resultado DEL COMMIT CUANDO ES ROLLBACKKKKK ", resultado);
         
         /**
          * +Descripcion Se valida si la formula despues de dispensada se encuentra con productos pendientes
@@ -2435,12 +2440,12 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     var formato = 'YYYY-MM-DD';
     var fechaEntrega;
     var fechaMinima;
-     
-     console.log("parametros ", parametros);
-     
+    var now = new Date(); 
+    var fechaFormulacion;
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros).then(function(resultado){   
-            
+         
         if(resultado.rows.length > 0){
+            fechaFormulacion = resultado.rows[0].fecha_formulacion;
              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:parametros.evolucionId,numeroEntregaActual:1});
 
         }else{
@@ -2448,22 +2453,31 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         }
             
     }).then(function(resultado){
-        
+        //console.log("2) consultarUltimaEntregaFormula::: ", resultado.rows.length);
         if(resultado.rows.length > 0){
             throw 'La formula ya ha sido generada'
-            
+                         
         }else{
            return  G.Q.ninvoke(that.m_dispensacion_hc,'consultarDispensacionesFormula', parametros)
         }
          
     }).then(function(resultado){// generarDispensacionEstados
-         
-         console.log("resultado")
+          
         if(resultado.rowCount > 0){
             
-            fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);        
-            fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(25,'days').format(formato);
-           
+            if(resultado.rows[0].fecha_entrega === null){  
+                
+                fechaEntrega = G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);  
+                fechaMinima  = G.moment(G.moment(fechaFormulacion).format(formato)).add(25,'days').format(formato);
+            }else{
+                fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);  
+                fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(25,'days').format(formato);
+            }
+            
+                
+                
+                console.log("fechaEntrega ", fechaEntrega);
+                console.log("fechaMinima ", fechaMinima);
            /*fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(resultado.rows[0].numero_entrega_actual, 'months').format(formato);
             //fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).subtract(5,'days').format(formato);
             fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(resultado.rows[0].numero_entrega_actual,'days').format(formato);
@@ -2480,8 +2494,8 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         
         var parametrosFechaMinimaMaxima=
             {
-               evolucionId:360317,
-               fechaEntrega: fechaEntrega, 
+               evolucionId:terminoBusqueda,
+               fechaEntrega:fechaEntrega, 
                fechaMinima:fechaMinima, 
                fechaMaxima:resultado.fechaMaxima 
               };

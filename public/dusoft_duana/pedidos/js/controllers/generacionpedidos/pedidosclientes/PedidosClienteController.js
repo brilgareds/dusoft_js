@@ -94,11 +94,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             if ($state.is("Cotizaciones") === true) {
                 var cotizacion = localStorageService.get("cotizacion");
                 var numeroCotizacion = 0;
+                var tipoCotizacionCartera;
+                console.log("cotizacion ><><<<<<<>>>>><>>>< ", cotizacion);
                 if (cotizacion) {
                     numeroCotizacion = cotizacion.numero_cotizacion || 0;
+                    tipoCotizacionCartera = cotizacion.tipoPedido;
+                }
+                
+                if (cotizacion === null) {
+                   cotizacion = {numero_cotizacion: 0, cartera: "0"};
                 }
 
                 $scope.Pedido.set_numero_cotizacion(parseInt(numeroCotizacion));
+                $scope.Pedido.setTipoPedido(tipoCotizacionCartera);
                 $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (cotizacion.visualizar === '1') ? true : false;
 
@@ -113,19 +121,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 //Pedido
                 var pedido = localStorageService.get("pedido");
                 var numeroPedido = 0;
+                var tipoPedidoCartera;
                 if (pedido) {
                     numeroPedido = pedido.numero_pedido || 0;
+                    tipoPedidoCartera = pedido.tipoPedido;
                 }
 
                 $scope.Pedido.setNumeroPedido(parseInt(numeroPedido));
-
+                $scope.Pedido.setTipoPedido(tipoPedidoCartera);
                 $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
                 $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
-
+                
                 /*
                  * +Descripcion: Se consulta el estado del pedido
                  */
                 that.consultarEstadoPedidoCotizacion(1, pedido.numero_pedido);
+                
             }
 
 
@@ -321,6 +332,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
+            
             that.render_pedido = function(data) {
 
                 var cliente = Cliente.get(data.nombre_cliente, data.direccion_cliente, data.tipo_id_cliente, data.identificacion_cliente, data.telefono_cliente);
@@ -628,7 +640,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
 
                 // Pedido
-                if ($scope.Pedido.get_numero_pedido() > 0) {
+               /* if ($scope.Pedido.get_numero_pedido() > 0) {
 
                     url = API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_PEDIDO;
                     obj = {
@@ -640,8 +652,39 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
                     };
-                }
+                }*/
+                if ($scope.Pedido.get_numero_pedido() > 0) {
 
+                    url = API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado,
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
+                                pagina_actual: 1,
+                                productos: '',//producto.length > 0 ? producto : $scope.Pedido.productos,//'0104030001', 
+                                tipo_producto: '',
+                                numero_cotizacion: '',
+                                numero_pedido: '',
+                                filtro: {nombre: 'codigo', tipo_busqueda: 2,numero: [$scope.Pedido.get_numero_pedido()], tipo:2},
+                                //nuevo campos
+                                molecula: '',
+                                laboratorio_id: '',
+                                codigoProducto: '',
+                                descripcionProducto: '',
+                                concentracion: '',
+                                tipoBusqueda: 0,
+                                termino_busqueda: $scope.datos_view.producto_seleccionado.codigo_producto
+                            }
+                        }
+                    };
+                };
+                console.log("LOS DATOS ", obj);
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -666,7 +709,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.ocultarOpciones = 1;
                
                 //OJO VOLVER A DEJAR
-                that.validarDisponibleProductosCotizacion(productos,function(estado){
+                that.validarDisponibleProductosCotizacion(0,productos,function(estado){
                     if(estado){
 
                         $scope.datos_view.producto_seleccionado = producto;
@@ -886,15 +929,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if (data.status === 200) {
 
                         AlertService.mostrarMensaje("warning", data.msj);
+                        $scope.volver_cotizacion();
                     }
                 });
 
             };
-
+                
+            /**
+             * @author Cristian Manuel Ardila
+             * +Descripcion Metodo invocado del boton (Solicitar auotirzacion cartera)
+             */
             $scope.registrarProductoModificado = function() {
-
-
-                // Pedido
+                
+                that.validarDisponibleProductosCotizacion(0,$scope.Pedido.get_productos(),function(estado){
+                    if(estado){
+                        that.registrarProductoModificado();                     
+                    }
+                });                
+            };
+            
+            /**
+             * @author Cristian Manuel Ardila
+             * +Descripcion Metodo encargado de registrar multiples productos
+             *              modificados
+             * @fecha 17/11/2016
+             */
+            that.registrarProductoModificado = function(){
+                
+                var obj = {};
                 if ($scope.Pedido.get_numero_pedido() > 0) {
 
                     var url = API.PEDIDOS.CLIENTES.VALIDAR_ESTADO_TOTAL_PEDIDO;
@@ -907,31 +969,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             }
                         }
                     };
-                }
-                ;
+                };
+                
+                Request.realizarRequest(url,"POST",obj,function(data){
 
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
+                    if (data.status === 200){
                         AlertService.mostrarVentanaAlerta("Registrando cambios", "Desea modificar la cantidad de los productos",
-                                function(confirmar) {
-
-                                    if (confirmar) {
-                                        that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
-
-                                    }
-                                });
-
-
-                    } else {
+                            function(confirmar){
+                                if (confirmar){
+                                    that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
+                                }
+                            }
+                        );
+                    }else{
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-
                     }
-
-                });
+                });               
             };
-
 
 
 
@@ -1043,7 +1097,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             /**
              * @author Cristian Ardila
              * @fecha  17/11/2015
-             * +Descripcion: FUncion encargada de cancelar la cotizacion
+             * +Descripcion: Funcion encargada de mostrar una ventana modal la cual
+             *               con una confirmacion y si el usuario acepta SI
+             *               se invocara el metodo that.eliminarCotizacionDetalle()
              */
             $scope.cancelar_cotizacion = function() {
 
@@ -1082,7 +1138,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     var modalInstance = $modal.open($scope.opts);
                 }
             };
-
+            
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de eliminar una cotizacion
+             * @fecha 17/11/2016
+             */
             that.eliminarCotizacionDetalle = function() {
 
                 var url = API.PEDIDOS.CLIENTES.ELIMINAR_COTIZACION;
@@ -1097,15 +1158,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-
-
                     if (data.status === 200) {
                         $state.go('ListarPedidosClientes');
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
-
                     if (data.status === 404) {
-
                         AlertService.mostrarMensaje("Mensaje del sistema", data.msj);
                     }
                 });
@@ -1124,7 +1181,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var obj = {};
                 var url = '';
-
                 // Observacion cartera para cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
 
@@ -1138,19 +1194,104 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     };
                 }
-
-
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
-
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
                     }
                 });
-
             };
             
+            /**
+             * @author Cristian Manuel Ardila
+             * +Descripcion Metodo encargado de invocar una ventana modal que
+             *              mostrar los productos con disponibilidad en CERO
+             *              o menor a la cantidad solicitada
+             * @fecha 17/11/2016
+             */
+            that.ventanaProductosSinDisponibilidad = function(estadoBoton,productos){
+                $scope.productos_no_disponible = productos;
+                $scope.swBotonDenegarCartera = estadoBoton;
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+<button type="button" class="close" ng-click="cerrarVentanaDisponibilidad()">&times;</button>\
+                        <h4 class="modal-title">Listado Productos </h4>\
+                    </div>\
+                    <div class="modal-body row">\
+                        <div class="col-md-12">\
+                            <h4 >Lista productos sin disponibilidad.</h4>\
+                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                <div class="list-group">\
+                                    <a ng-repeat="producto in productos_no_disponible" \
+                                    class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                        Cantidad solicitada ({{ producto.cantidad_solicitada}})\
+                                        Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
+                                    </a>\
+                                </div>\
+                            </div>\
+                        </div>\
+                        <div class="col-md-12" ng-if = "ocultarOpciones == 0">\
+                            <fieldset>\
+                                <legend>Observación Cartera</legend>\
+                                <div class="row">\
+                                    <div class="col-md-12">\
+                                        <textarea  ng-model="Pedido.observacion_cartera"\
+                    ng-disabled="!datos_view.cartera" class="col-lg-12 col-md-12 col-sm-12" \
+                    rows="4" name="" placeholder="Ingresar Observación Cartera"></textarea>\
+                                    </div>\
+                                </div>\
+                            </fieldset>\
+                        </div>\
+                    </div>\
+                    <div class="modal-footer">\
+                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
+                        <button class="btn btn-danger" ng-click="confirmar(4,0)" ng-if = "swBotonDenegarCartera == 1" >\
+                            Denegado Cartera\
+                        </button>\
+                    </div>',
+                    scope: $scope,
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+
+                        $scope.confirmar = function(aprobado, denegar) {
+                            
+                            $scope.desaprobarCartera(4,0);
+                            $modalInstance.close();
+                        };
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }]
+                };
+                var modalInstance = $modal.open($scope.opts);     
+                /*$scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/generacionpedidos/pedidosclientes/validardisponibilidadproductoscontroller.html',
+                    scope: $scope,                  
+                    controller: "ValidarDisponibilidadProductosController",
+                    resolve: {
+                        pedido: function() {
+                            return productos;
+                        },
+                        swBotonDenegarCartera:function() {
+                            return estadoBoton;
+                        }
+                    }           
+                };
+                var modalInstance = $modal.open($scope.opts);   
+
+                modalInstance.result.then(function(){ 
+                },function(){});*/     
+            };                                      
             
+           
+           
+
             /**
              * @author Cristian Ardila
              * +Descripcion Metodo encargado de validar la disponibilidad de los
@@ -1158,9 +1299,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 30/09/2016 DD/MM/YYYY
              * 
              **/
-            that.validarDisponibleProductosCotizacion = function(producto,callback) {
+            that.validarDisponibleProductosCotizacion = function(estadoBoton,producto,callback) {
                 
-                console.log("$scope.Pedido ", $scope.Pedido);
                 var numeroPedidoCot;
                 var tipoPedidoCot;
                 if($scope.Pedido.get_numero_cotizacion() >0){
@@ -1200,72 +1340,83 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
                         
-                        
                     if (data.status === 200) {
-                      
-                        $scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
-                       if(data.obj.pedidos_clientes.producto.length > 0){
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: false,
-                            keyboard: true,
-                            template: ' <div class="modal-header">\
-                                            <button type="button" class="close" ng-click="close()">&times;</button>\
-                                            <h4 class="modal-title">Listado Productos </h4>\
-                                        </div>\
-                                        <div class="modal-body row">\
-                                            <div class="col-md-12">\
-                                                <h4 >Lista productos sin disponibilidad.</h4>\
-                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
-                                                    <div class="list-group">\
-                                                        <a ng-repeat="producto in datos_view.productos_no_disponible" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                        Cantidad solicitada ({{ producto.cantidad_solicitada}})  Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
-                                                        </a>\
-                                                    </div>\
-                                                </div>\
-                                            </div>\
-                                            <div class="col-md-12" ng-if = "ocultarOpciones == 0">\
-                                                <fieldset>\
-                                                    <legend>Observación Cartera</legend>\
-                                                    <div class="row">\
-                                                        <div class="col-md-12">\
-                                                            <textarea  ng-model="Pedido.observacion_cartera" \
-                                                            ng-disabled="!datos_view.cartera" class="col-lg-12 col-md-12 col-sm-12" \
-                                                            rows="4" name="" placeholder="Ingresar Observación Cartera"></textarea>\
-                                                        </div>\
-                                                    </div>\
-                                                </fieldset>\
-                                            </div>\
-                                        </div>\
-                                        <div class="modal-footer">\
-                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
-                                            <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">\
-                                                Denegado Cartera\
-                                            </button>\
-                                        </div>',
-                            scope: $scope,
-                            controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
-                                $scope.close = function() {
-                                    $scope.datos_view.progresoArchivo = 0;
-                                    $modalInstance.close();
-                                };
-                            }]
-                        };
-                        var modalInstance = $modal.open($scope.opts);
-                        
-                       }else{
-                           
+                        if(data.obj.pedidos_clientes.producto.length>0){ 
+                            
+                            var observacion="**Productos sin disponibilidad** \n";
+                            data.obj.pedidos_clientes.producto.forEach(function(info){
+                                observacion +="Cantidad solicitada ("+info.cantidad_solicitada+")  Cantidad disponible ("+ info.cantidad_disponible+") para el codigo ("+ info.codigo_producto+") \n";
+
+                            });
+                            observacion+=$scope.Pedido.get_observacion_cartera();
+                            $scope.Pedido.set_observacion_cartera(observacion);
+                        }
+
+                       if(data.obj.pedidos_clientes.producto.length > 0){                           
+                         that.ventanaProductosSinDisponibilidad(estadoBoton,data.obj.pedidos_clientes.producto);                      
+                       }else{                          
                            callback(true);
                        }
                        
-                    }else{
-                        
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error en la consulta");
-                        
+                    }else{                        
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error en la consulta");                       
                     }
                 });
              
+            };
+            
+            
+            
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * +Descripcion Metodo encargado de desplegar una ventana
+             *              para solicitar al usuario si desea confirmar la
+             *              autorizacion y generar el pedido posteriormente
+             * @fecha 17/11/2016
+             */
+            that.autorizarCotizacionCartera = function(aprobado,denegar){
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea autorizar la cotizacion ?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                     \
+                                    <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            that.generarPedidoCartera(aprobado,denegar);
+                            $modalInstance.close();
+                        };
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }]
+                };
+                var modalInstance = $modal.open($scope.opts);               
+            };
+            
+            
+           /**
+            * @author Cristian Ardila
+            * +Descripcion Metodo que se invoca desde el boton GENERAR PEDIDO
+            *              el cual invocara al metodo (autorizarCotizacionCartera)
+            * @fecha 30/09/2016
+            */
+            $scope.gestionar_pedido = function(aprobado,denegar) {
+                that.autorizarCotizacionCartera(aprobado,denegar);
             };
             
            /**
@@ -1275,38 +1426,56 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             *              cotizacion
             * @fecha 30/09/2016
             */
-           $scope.desaprobarCartera = function(aprobado){
-               that.generarPedidoCartera(aprobado);
-             
+           $scope.desaprobarCartera = function(aprobado, denegar){
+              
+               //that.autorizarCotizacionCartera(aprobado,denegar);
+                that.generarObservacionCartera(aprobado);
            };
             
-            // Gestiona la aprobacion o no del departamento de cartera
+            /**
+            * @author Cristian Ardila
+            * +Descripcion Metodo que se invoca desde el boton APROBADO CARTERA
+            *              el cual invocara al metodo (autorizarCotizacionCartera)
+            * @fecha 30/09/2016
+            */                
+           
             $scope.gestion_cartera = function(aprobado, denegar) {
-                $scope.ocultarOpciones = 0;
-                var productos = [];
                
-                if(denegar === 1){    
-                    
-                    
-                    
-                   
-                    that.generarPedidoCartera(aprobado);
+                //$scope.Pedido.getTipoPedido()               
+                $scope.ocultarOpciones = 0;               
+                if(denegar === 1){                                           
+                    that.autorizarCotizacionCartera(aprobado,denegar);
                 }else{
-                    
-                    //OJO VOLVER A DEJAR
-                    
-                    that.validarDisponibleProductosCotizacion(productos,function(estado){
-                        if(estado){
-                            that.generarPedidoCartera(aprobado);
-                          
-                        }
-                    });
-                }
-               
+                    that.autorizarCotizacionCartera(aprobado,denegar);                   
+                }               
             };
-
-            that.generarPedidoCartera = function(aprobado){
-               
+            
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * +Descrpcion Metodo encargado de validar
+             * 1) validar la disponibilidad de cada producto, y si no hay disponibilidad
+             *    se mostrar una ventana modal con los posibles productos
+             *    de lo contrario se procedera a cambiarle el estado de la cotizacion
+             *    a estado (AUTORIZADO POR CARTERA)
+             *    y despues se invocara la funcion $scope.generar_pedido_cliente()
+             *    la cual generara el pedido
+             * @fecha 17/11/2016
+             */
+            that.generarPedidoCartera = function(aprobado,denegar){
+                
+                var productos = [];
+                
+                that.validarDisponibleProductosCotizacion(1,productos,function(estado){
+                    
+                    if(estado){                       
+                         that.generarObservacionCartera(aprobado);                      
+                    }
+                });
+                
+            };
+           
+            that.generarObservacionCartera = function(aprobado){               
+                
                 var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);
@@ -1339,7 +1508,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-
+                console.log("DESAPROBADO CARTERA ", data);
                     if (data.status === 200) {
                         /*Se valida si es una cotizacion y entonces se procede
                          a crear el pedido*/
@@ -1350,56 +1519,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             };
 
                             localStorageService.add("terminoBusqueda", parametros);
-
-                            $scope.gestionar_pedido()
+                            $scope.generar_pedido_cliente();
+                            //$scope.gestionar_pedido();
                         }
                         if ($scope.Pedido.get_numero_pedido() > 0) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             $scope.volver_cotizacion();
                         }                                 
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         //$scope.volver_cotizacion();
                     }
-                });
+               });  
+                
                 
             };
-            // Gestionar la creacion del pedido
-            $scope.gestionar_pedido = function() {
-
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea autorizar la cotizacion ?</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                     \
-                                    <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="close()">No</button>\
-                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
-
-                        $scope.confirmar = function() {
-                            $scope.generar_pedido_cliente();
-                            $modalInstance.close();
-                        };
-                        $scope.close = function() {
-                            $modalInstance.close();
-                        };
-                    }]
-                };
-                var modalInstance = $modal.open($scope.opts);
-            };
-
-
+           
+           
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * +Descripcion Metodo encargado de generar el pedido
+             * @fecha 17/11/2016
+             */
             $scope.generar_pedido_cliente = function() {
 
                 var obj = {
@@ -1413,8 +1554,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
 
-                    console.log("data ", data)
-
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", "Se atendio la solicitud satisfactoriamente");
                         $scope.volver_cotizacion();
@@ -1426,8 +1565,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
+            
+            /**
+             * 
+             */
             $scope.habilitar_generacion_reporte = function() {
-
                 // Pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
                     if (!$scope.datos_view.opciones.sw_reporte_pedidos)
@@ -1441,6 +1583,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         return $scope.datos_view.permisos_cotizaciones.btn_reporte_cotizaciones;
                 }
             };
+            
             $scope.descargar_enviar_reporte = function() {
 
                 $scope.opts = {

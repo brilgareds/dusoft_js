@@ -298,25 +298,27 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
             } 
      }).then(function(resultado){
          console.log(" resultado de autorizar pedido ", resultado, " numero de pedido ", numero_pedido, " tipo pedido ", tipoPedido," estado_actual_pedido ",estado_actual_pedido);
-          if(resultado[0].numero_productos !== resultado[0].numero_denegados){
-            if(resultado[0].numero_pendientes === '0' || resultado[0].numero_pendientes === null){
-                envio=true;
-               if(estado_actual_pedido === '8' || estado_actual_pedido === '0' || estado_actual_pedido === '10'){
-                return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
-               }else{
-                  console.log(" def.resolve 1, estado_actual_pedido: ",estado_actual_pedido);
-                  def.resolve(); 
-              }
-            }else{
-                console.log(" def.resolve 2, numero_pendientes: ",resultado[0].numero_pendientes," resultado:: ",resultado[0]," estado_actual_pedido ",estado_actual_pedido);
+         //se compara el numero de productos del pedido con el numero de denegados
+        if (resultado[0].numero_productos !== resultado[0].numero_denegados) {
+            //se valida que no hayan pndientes
+            if (resultado[0].numero_pendientes === '0' || resultado[0].numero_pendientes === null) {
+                envio = true;
+                if (estado_actual_pedido === '8' || estado_actual_pedido === '0' || estado_actual_pedido === '10') {
+                    return G.Q.ninvoke(modelo, "actualizar_estado_actual_pedido", numero_pedido, estado_pedido);
+                } else {
+                    console.log(" def.resolve 1, estado_actual_pedido: ", estado_actual_pedido);
+                    def.resolve();
+                }
+            } else {
+                console.log(" def.resolve 2, numero_pendientes: ", resultado[0].numero_pendientes, " resultado:: ", resultado[0], " estado_actual_pedido ", estado_actual_pedido);
                 def.resolve();
             }
-         }else{
-             console.log("1-) estado_pedido: ",estado_pedido," resultado:: ",resultado[0]," estado_actual_pedido ",estado_actual_pedido);
-             estado_pedido=10;
-             envio=true;
-            if(estado_actual_pedido === '8' || estado_actual_pedido === '0' ){
-            return G.Q.ninvoke(modelo,"actualizar_estado_actual_pedido",numero_pedido,estado_pedido);
+        } else {
+            console.log("1-) estado_pedido: ", estado_pedido, " resultado:: ", resultado[0], " estado_actual_pedido ", estado_actual_pedido);
+            estado_pedido = 10;
+            envio = true;
+            if (estado_actual_pedido === '8' || estado_actual_pedido === '0') {
+                return G.Q.ninvoke(modelo, "actualizar_estado_actual_pedido", numero_pedido, estado_pedido);
             }
         } 
          

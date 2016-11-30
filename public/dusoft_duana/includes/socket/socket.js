@@ -1,10 +1,14 @@
-define(["angular","js/services"], function(angular, services){
+define(["angular","js/services", "socket"], function(angular, services, io){
     services.factory('socket', ["$rootScope", function ($rootScope) {
-      var socket = io.connect();
+      //console.log("io socket ", io);
+      //var socket = io.connect(window.location.origin, {port:window.location.port});
+      var socket = io.connect({transports: ['websocket'], upgrade: false});
       
       var listenersPrivados = [
           "onRealizarNotificacionWeb",
-          "onCerrarSesion"          
+          "onCerrarSesion",
+          "onNotificarMensaje",
+          "onNotificacionChat"
       ];
       
       function esEventoPrivado(evento){
@@ -61,6 +65,23 @@ define(["angular","js/services"], function(angular, services){
                       callback.apply(socket, args);
                     });
                 });
+            },
+            
+            remove:function(listeners){
+                
+                for(var i in listeners){
+                    
+                    for(var ii in socket.$events){
+                        
+                        if(ii === listeners[i]){
+                            
+                            socket.$events[ii] = null;
+                            delete  socket.$events[ii];
+                        }
+                        
+                    }
+                }
+                
             }
       };
     }]);

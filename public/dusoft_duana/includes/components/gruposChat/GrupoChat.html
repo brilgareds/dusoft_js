@@ -1,0 +1,116 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="onCerrarVentana()">&times;</button>
+    <h4 class="modal-title">Seleccionar los grupos o usuarios para iniciar la conversación: </h4>
+    <h5><span ng-bind="rootExistencias.producto.getDescripcion()"></span></h5>
+</div>
+<div class="modal-body">
+    
+    
+    <tabset> <!--Grupo de Tabs--> 
+    <tab active="rootPedidoFarmaciaTemporal.tabListaPedidos">
+
+        <tab-heading>
+            <span></span> <b>Selección de usuarios </b>
+        </tab-heading>
+            
+        <br>
+        <div class="row">
+            <!--div class="col-md-4">
+                <input type="text" class="form-control" ng-keypress="onBuscarUsuario($event)" ng-model="root.terminoBusqueda" placeholder="Tema de la conversación" />
+            </div-->
+            
+            <div class="btn-group col-md-3">
+                <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >
+                    Filtrar por: <span ng-if="root.filtro.usuarios">Usuarios</span><span ng-if="root.filtro.grupos">Grupos</span>
+                   <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-options">
+                    <li >
+                        <a href="javascript:void(0);" ng-click="onCambiarFiltro(0)"  >Usuarios</a>
+                    </li>
+                    <li><a href="javascript:void(0);" ng-click="onCambiarFiltro(1)" >Grupos</a></li>
+
+                </ul>
+            </div>
+            
+            
+        </div>
+        
+        
+        <div ng-if="root.filtro.grupos">
+            
+            <!--div class="input-group col-md-3 pull-right" style="margin-bottom: 10px;">
+
+                <div class="input-group-btn">
+                    <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >
+                        Filtrar por: <span ng-if="root.filtro.usuarios">Usuarios</span><span ng-if="root.filtro.grupos">Grupos</span>
+                       <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-optionsc">
+                        <li >
+                            <a href="javascript:void(0);" ng-click="onCambiarFiltro(0)"  >Usuarios</a>
+                        </li>
+                        <li><a href="javascript:void(0);" ng-click="onCambiarFiltro(1)" >Grupos</a></li>
+                    </ul>
+                </div>
+
+                <input type="text" class="form-control pull-right ng-pristine ng-untouched ng-valid" ng-keypress="onCampoBuscarPedidos($event)" ng-model="rootPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+
+                <div class="input-group-btn">
+                    <button class="btn btn-default pull-right" type="submit" ng-click="onCampoBuscarPedidos({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div-->
+            
+            
+            
+            
+            <div class="input-group navbar-form">
+
+                <input type="text" class="form-control pull-right" ng-keypress="onBuscarUsuario($event)" ng-model="root.terminoBusqueda" placeholder="Buscar grupo" />
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="onBuscarUsuario({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+
+            </div>
+            <div class="defaultGrid gridGruposChat"  ng-grid="listaGrupos" >
+
+            </div>
+
+            <br>
+
+            <div class="row text-center">
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="root.paginaactual == 1" ng-click="paginaAnterior()">
+                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                </button>
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="root.grupos.length == 0" ng-click="paginaSiguiente()">
+                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                </button>
+            </div>
+
+        </div>
+
+        <usuarios  btn-seleccionar="true" btn-detalle="false" ng-if="root.filtro.usuarios"></usuarios>
+
+        </tab>
+        
+        
+        <tab>
+            <tab-heading>
+                <i class="glyphicon glyphicon-cloud-upload"></i> <b> Usuarios en la conversación </b>
+            </tab-heading>
+            <br>
+            <div class="defaultGrid " ng-grid="listaUsuariosSeleccionados" >
+
+            </div>
+
+        </tab> 
+                  
+    </tabset> 
+    
+    <div class="modal-footer" style="padding-left: 0px; padding-right: 0px;">
+        <button class="btn btn-success" ng-click="onNuevaConversacion()" ng-if="root.conversacionSeleccionada.getId() != 0" >Nueva Conversacion</button>
+        <button class="btn btn-primary" ng-click="onIniciarConversacion()" >Guardar Conversacion</button>
+
+    </div>
+</div>
+

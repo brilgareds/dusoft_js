@@ -606,21 +606,202 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 
 
 
-
-
-.app-modal-window-smlg .modal-dialog{
-   
-    width: 600px;
-    height: 100px;
+.chatGrid, .panelConversacion{
+    height: 263px;
+    margin-bottom: 5px;
 }
-.app-modal-window-smlg .modal-content {
-    padding: 5px;
+
+.contenedorChat .chatGrid{
+    width:100%;
+    min-width: 335px;
+}
+
+
+
+.contenedorChat .modal-content{
+    padding:0px;
+}
+
+
+.contenedorChat{
+    height: 470px;
+    width: 350px;
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    top:initial!important;
+    left:initial!important;
+    /*background-color: white;
+    overflow-y: auto;
+    border: solid #428bca;*/
+    z-index: 5000;
+    overflow: hidden!important;
+    padding-bottom: 10px;
+}
+
+.contenedorChat .modal-dialog {
+    width: 350px;
+}
+
+.topBarChat{
+    background-color:#428bca;
+    padding:5px;
+    clear: both;
+    overflow: hidden;
+}
+
+.tabChat .topBarChat{
+    background-color:#f5f5f5;
+}
+
+.tabChat .panelConversacion{
     height: 400px;
 }
 
-.app-modal-window-smlg .panel-info {
-    border-color: #bce8f1;
-    height: 300px;
+.tabChat .chatBody .indicadorScrollChat{
+    right: 18px;
+}
+
+.tabChat .chatBody{
+    height: 525px;
+}
+.tabChat .btnCloseChat{
+    display: none;
+}
+
+.tabChat .btnVentanaCompletaChat{
+    display: none;
+}
+
+.tabChat .topBarChat{
+    height: 32px;
+}
+
+.chatBody{
+    padding: 5px;
+    height: 385px;
+}
+
+.chatBackground{
+    background-color: transparent!important;
+    display:none!important;
+}
+
+.panelConversacion{
+    overflow-y: auto;
+}
+
+.contenedorDetalle{
+    margin-right: 5px;
+    padding: 7px 0 7px 0;
+    word-break: break-all;
+}
+
+.chatPanel{
+}
+
+.textAreaChat{
+    padding: 4px 10px 4px 4px;
+    height: 50px!important;
+    overflow-y: hidden;
+}
+
+.chatBody .indicadorScrollChat{
+    background-color: transparent!important;
+    border: 0px!important;
+    color: green!important;
+    z-index: 1000;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    bottom: 10px;
+    right: 8px;
+}
+
+.detallePar{
+    
+    background-color: #fdfdfd;
+}
+
+.detalleInpar{
+    background-color: #ffffff;
 }
 
 
+
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+    color:red;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+
+.gridGruposChat{
+    clear:both;
+    margin-top: 10px;
+}
+
+
+
+.fileUploadChat {
+    position: relative;
+    overflow: hidden;
+    margin: 0px;
+}
+
+
+.fileUploadChat input.uploadChat {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+
+.chatImg{
+    max-width:280px ;
+    display:block;
+    margin:0 auto;
+    margin-top:5px;
+    
+}
+
+.btnCloseChat{
+    margin-left: 5px;
+}
+
+
+.highlightedText {
+    background: yellow;
+}
+
+/*
+::-webkit-scrollbar
+{
+  width: 3px;  
+  height: 3px; 
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
+}*/

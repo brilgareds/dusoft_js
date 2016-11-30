@@ -1208,6 +1208,8 @@ DocuemntoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
                     b.descripcion,\
                     b.unidad_id,\
 		    b.contenido_unidad_venta,\
+		    b.codigo_cum,\
+		    b.codigo_invima,\
                     c.descripcion as descripcion_unidad,\
                     fc_descripcion_producto(b.codigo_producto) as nombre,\
 					(a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\

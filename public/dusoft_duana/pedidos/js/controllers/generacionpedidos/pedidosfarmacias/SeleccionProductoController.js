@@ -188,7 +188,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              * @Author: Eduar
              * @param {ProductoPedidoFarmacia} producto
              * @return Object
-             * +Descripcion: Function que valida el ingreso del producto (maximo de 25, un producto por codigo, solo un tipo por pedido  y que no este bloqueado)
+             * +Descripcion: Function que valida el ingreso del producto (maximo de 50, un producto por codigo, solo un tipo por pedido  y que no este bloqueado)
              */
 
             self.validarIngresoProducto = function(producto, callback) {
@@ -200,9 +200,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     return;
                 }
 
-                if (pedido.getProductosSeleccionados().length === 25) {
+                if (pedido.getProductosSeleccionados().length === 50) {
 
-                    callback({msj: "El pedido tiene 25 productos agregados", valido: false});
+                    callback({msj: "El pedido tiene 50 productos agregados", valido: false});
                     return;
                 }
 

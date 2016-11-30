@@ -19,8 +19,8 @@
                     'LISTAR_USUARIO_OPCIONES':BASE_URL+"/Usuarios/listarUsuariosModulosOpciones",
                     'OBTENER_ROL_USUARIO':BASE_URL+"/Usuarios/obtenerRolUsuarioPorEmpresa",
                     'OBTENER_PARAMETRIZACION_USUARIO':BASE_URL+"/Usuarios/obtenerParametrizacionUsuario",
-                    'OBTENER_EMPRESAS_USUARIO':BASE_URL+"/Usuarios/obtenerEmpresasUsuario"
-                    
+                    'OBTENER_EMPRESAS_USUARIO':BASE_URL+"/Usuarios/obtenerEmpresasUsuario",
+                    'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
 
                 },
                 'MODULOS':{
@@ -32,7 +32,18 @@
                     'ACTUALIZAR_EXISTENCIAS' : BASE_URL+"/Productos/actualizarExistenciasProducto"
                 },
                 'PEDIDOS':{
-                    'CONSULTAR_LOGS' : BASE_URL+"/Pedidos/consultarLogs",
+                    'CONSULTAR_LOGS' : BASE_URL+"/Pedidos/consultarLogs"
+                },
+                'CHAT':{
+                    'CONSULTAR_GRUPOS' : BASE_URL+"/Chat/listarUsuariosPorGrupo",
+                    'GUARDAR_CONVERSACION': BASE_URL+"/Chat/guardarConversacion",
+                    'OBTENER_CONVERSACIONES':BASE_URL+"/Chat/obtenerConversaciones",
+                    'OBTENER_DETALLE_CONVERSACION':BASE_URL+"/Chat/obtenerDetalleConversacion",
+                    'GUARDAR_MENSAJE':BASE_URL+"/Chat/guardarMensajeConversacion",
+                    'SUBIR_ARCHIVO':BASE_URL+"/Chat/subirArchivo",
+                    'LISTAR_USUARIOS_CONVERSACION':BASE_URL+"/Chat/listarUsuariosConversacion",
+                    'REMOVER_USUARIO_CONVERSACION':BASE_URL+"/Chat/removerUsuarioConversacion",
+                    'VALIDAR_USUARIO_CONVERSACION':BASE_URL+"/Chat/validarUsuarioConversacion"
                 }
               },
               'STATIC' :{

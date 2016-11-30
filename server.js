@@ -126,10 +126,10 @@ G.knex = require('./lib/Knex').
 
 
 var cluster = require('cluster'),
-        RedisStore = require("socket.io/lib/stores/redis"),
-        redis = require("socket.io/node_modules/redis"),
-        pub = redis.createClient(),
-        sub = redis.createClient(),
+        RedisStore = require("socket.io-redis"),
+        redis = require("redis"),
+        pub = redis.createClient(6379, "localhost", {return_buffers: true}),
+        sub = redis.createClient(6379, "localhost", {return_buffers: true}),
         client = redis.createClient();
 
 G.cronJob = require('cron-cluster')(client).CronJob;
@@ -163,18 +163,28 @@ if (cluster.isMaster) {
     /*=========================================
      * Configuracion Sockets.io
      * =========================================*/
-    io.configure(function() {
+    /*io.configure(function() {
         io.set("log level", 0);
-        /*io.set('transports', [
-         'websocket'
-         ]);*/
-    });
 
-    io.set("store", new RedisStore(
+    });*/
+
+    /*io.set("store", new RedisStore(
             pub,
             sub,
             client
-    ));
+    ));*/
+    
+    
+    
+    var redisOptions = {
+        pubClient: pub,
+        subClient: sub,
+        host: "redis://localhost",
+        port: 6379
+    };
+    
+    io.adapter(RedisStore(redisOptions));
+    
 
 
     /*=========================================
@@ -215,7 +225,13 @@ if (cluster.isMaster) {
     app.use(G.utils.validar_request());
     app.use(G.auth.validate());
     app.use(app.router);
-    app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
+    
+    if (G.program.prod) {
+        app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
+    } else {
+        app.use(express.static(path.join(__dirname, 'public')));
+    }
+    
     app.use(express.static(path.join(__dirname, 'files')));
     
     /*=========================================
@@ -301,7 +317,7 @@ if (cluster.isMaster) {
 
     });
     
-    //Si el servidro esta en modo produccion se sobreescribe el mand-dev.js por el de produccion
+    //Si el servidor esta en modo produccion se sobreescribe el mand-dev.js por el de produccion
     app.all('/dusoft_duana/:type(*)/main-dev.js', function(req, res, next) {
         
         if(!G.program.prod ) {

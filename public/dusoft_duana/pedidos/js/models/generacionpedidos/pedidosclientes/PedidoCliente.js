@@ -27,6 +27,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.despachoPrefijo = "";
                 this.despachoNumero = 0;
                 this.estadoSolicitud;
+                this.tipoPedido;
             };
 
             PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);
@@ -285,6 +286,16 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 
             PedidoCliente.prototype.getDespachoNumero = function() {
                 return this.despachoNumero;
+            };
+            
+            
+            PedidoCliente.prototype.setTipoPedido = function(tipoPedido) {
+                this.tipoPedido = tipoPedido;
+                return this;
+            };
+
+            PedidoCliente.prototype.getTipoPedido = function() {
+                return this.tipoPedido;
             };
 
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {

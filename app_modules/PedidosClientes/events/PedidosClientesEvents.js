@@ -99,7 +99,7 @@ PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCot
 // Notificacion al Clientes que esta conectado al socket
 PedidosClientesEvents.prototype.onConnected = function(socket_id) {    
     console.log('== SocletConectado == ' + socket_id);
-    this.io.sockets.socket(socket_id).emit('onConnected', {socket_id: socket_id});
+    this.io.to(socket_id).emit('onConnected', {socket_id: socket_id});
 };
 PedidosClientesEvents.prototype.onActualizarSesion = function(datos) { 
     console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
@@ -227,7 +227,7 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
                                     sessions.forEach(function(session) {
 
                                         //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-                                        that.io.sockets.socket(session.socket_id).emit('onPedidosClientesAsignados', {pedidos_clientes: lista_pedidos});
+                                        that.io.to(session.socket_id).emit('onPedidosClientesAsignados', {pedidos_clientes: lista_pedidos});
                                     });
                                 }
 
@@ -262,7 +262,7 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = funct
                 sessions.forEach(function(session) {
 
                     //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-                    that.io.sockets.socket(session.socket_id).emit('onPedidosClientesReasignados', {pedidos_clientes: datos.numero_pedidos});
+                    that.io.to(session.socket_id).emit('onPedidosClientesReasignados', {pedidos_clientes: datos.numero_pedidos});
                 });
 
             });
@@ -281,7 +281,7 @@ PedidosClientesEvents.prototype.onNotificarProgresoArchivoPlanoClientes = functi
             //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
             var session = sessions[i];
             if (session.token === usuario.auth_token) {
-                that.io.sockets.socket(session.socket_id).emit('onNotificarProgresoArchivoPlanoClientes', {porcentaje: porcentaje});
+                that.io.to(session.socket_id).emit('onNotificarProgresoArchivoPlanoClientes', {porcentaje: porcentaje});
                 callback();
                 break;
             }

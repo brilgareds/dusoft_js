@@ -1,0 +1,96 @@
+<div class="altoSlide">   
+    <div>
+        <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs marginRightCerrarSlide"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+    </div>   
+    <div class="row">
+        <div class="col-xs-12">         
+            <div class="panel panel-info marginBottom5">
+                <div class="panel-heading">
+                  <h4 class="h4MarginTopBottom" align="center">Selección de Producto para Farmacias</h4>
+                </div>
+                <div class="panel-body">                       
+                    <div class="input-group col-sm-12 col-md-12 col-lg-12">                       
+                         <div class="row" >
+                                <div class="col-md-6">
+                                    <h4>Busqueda por <span ng-bind="datos_form.seleccion_tipo_producto"></span> </h4> 
+                                    
+                                  <div class="btn-group">
+                                        <label class="btn btn-default">
+                                          <input type="radio" name="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="0" /><span class="label label-default">Todos</span>
+                                        </label>
+                                        <label class="btn btn-default">
+                                            <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="1" /><span class="label label-success">Normales</span>
+                                        </label>
+                                        <label class="btn btn-default">
+                                          <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="2" /><span class="label label-danger">Alto Costo</span>
+                                        </label>
+                                        <label class="btn btn-default">
+                                          <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="3" /><span class="label label-warning">Controlados</span>
+                                        </label>
+                                        <label class="btn btn-default">
+                                          <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="4" /><span class="label label-primary">Insumos</span>
+                                        </label>
+                                        <label class="btn btn-default">
+                                          <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="5" /><span class="label label-info">Nevera</span>
+                                        </label>  
+                                        <label class="btn btn-default">
+                                          <input type="radio" name ="tipoProducto" ng-model="rootSeleccionProductoFarmacia.tipoProducto" value="8" /><span class="label label-info">Nutricional</span>
+                                        </label>  
+                                  </div>                               
+                                </div>                                                              
+                        <div class="col-sm-12 col-md-6 col-lg-3 pull-left" ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true">
+                            <alert ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true" type="danger">El Producto que intenta Incluir ya fue INGRESADO. Elimínelo primero de los Productos Seleccionados.</alert>
+                        </div>                                        
+                      <div class="col-md-3 pull-right">                                                                
+                           <div class=" row col-sm-12 col-md-12 col-lg-12 paddingLeftZero">
+                                <label>Tipo Producto Búsqueda: </label>
+                                <span class="label label-default" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 0" >Todos</span>
+                                <span class="label label-success" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 1" >Normales</span>
+                                <span class="label label-danger" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 2">Alto Costo</span>
+                                <span class="label label-warning" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 3">Controlados</span>
+                                <span class="label label-primary" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 4">Insumos</span>
+                                <span class="label label-info" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 5">Nevera</span>   
+                                <span class="label label-info" ng-show="rootSeleccionProductoFarmacia.tipoProducto == 8">Nutricional</span>   
+                            </div>                              
+                           <div class="input-group">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span ng-bind="rootSeleccionProductoFarmacia.filtro.nombre"></span> <span class="caret"></span></button>
+                                  <ul class="dropdown-menu">
+                                    <li ng-repeat="filtro in rootSeleccionProductoFarmacia.filtros">
+                                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)"><span ng-bind="filtro.nombre"></span></a>
+                                    </li>
+                                  </ul>
+                                </div>
+                                <input type="text" class="form-control" ng-keypress="onBuscarProductos($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">                                                                                                                      
+                                 <div class="input-group-btn" >
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarProductos({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                          </div>                            
+                     </div>                               
+                   </div>                    
+             </div>                      
+                    </div>
+
+                </div>
+                <!--<div class="panel-body table-responsive" ng-if="rootSeleccionProductoFarmacia.listado_productos.length > 0">-->
+                <div class="panel-body table-responsive">
+                    <div class="defaultGrid grid-responsive" ng-grid="lista_productos"></div>
+                </div>
+            </div>
+              
+        </div>    
+    </div>
+    
+    <br/>
+
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="rootSeleccionProductoFarmacia.paginaactual == 1" ng-click="paginaAnterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="rootSeleccionProductoFarmacia.items == 0" ng-click="paginaSiguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+
+
+</div>

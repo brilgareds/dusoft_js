@@ -62,20 +62,28 @@
                 </li>
             </ul>
         </div>
-
+        
         <div class="btn-group contenedorEmpresaUsuario" ng-if="Usuario.empresa.getNombre() != ''">    
-            <!--ui-select ng-model="Usuario.empresa"
-               theme="bootstrap"
-              ng-change="onEmpresaSeleccionada()"
-              style="width: 200px; margin-right: 20px"
-              class="">
-               <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.getNombre()}}</ui-select-match>
-               <ui-select-choices repeat="empresa in empresas | filter:$select.search">
-                   {{empresa.getNombre()}}
-               </ui-select-choices>
-           </ui-select-->
+            
+            <div class="btn-group selectTopBar" role="group"     >
+                <button ng-if="permisoGuardarConversacion" class="btn btn-default btnOpenChatPanel" ng-click="onMostrarVentanaGrupos()">
+                    <span class="glyphicon glyphicon-user" >
+                       
+                    </span>
+                </button>
+                
+                <button ng-if="!permisoGuardarConversacion" class="btn btn-default btnOpenChatPanel" disabled="true">
+                    <span class="glyphicon glyphicon-user" >
+                       
+                    </span>
+                </button>
+                <button type="button" class="btn btn-default btnOpenChatPanel" ng-click="onBtnChat()" ng-disabled="deshabilitarBtnChat">
+                    <i class="glyphicon glyphicon-comment"></i>
+                </button>
 
-            <!--button type="button" class="btn btn-default">Empresa</button-->
+            </div>
+            
+
             <div class="btn-group selectTopBar" role="group"     >
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >
                     <span>{{Usuario.empresa.getNombre()}}</span>

@@ -13,7 +13,7 @@ DrAriasEvents.prototype.onNotificarEstadoDescargaReporte = function(usuario_id,e
          sessions.forEach(function(session) {
              console.log("emitir evento reportes ___________________________________________________");
              //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-             that.io.sockets.socket(session.socket_id).emit('onNotificarEstadoDescargaReporte', {estado: 'ok'});
+             that.io.to(session.socket_id).emit('onNotificarEstadoDescargaReporte', {estado: 'ok'});
          });
 
      });

@@ -1876,6 +1876,20 @@ CREATE TABLE "public"."chat_grupos_usuarios" (
 ) WITH OIDS;
 
 
+CREATE UNIQUE INDEX "chat_grupos_usuarios_idx" ON "public"."chat_grupos_usuarios"
+  USING btree ("grupo_id", "usuario_id");
+
+
+ALTER TABLE "public"."chat_grupos_usuarios"
+  ADD COLUMN "estado" CHAR(1);
+
+ALTER TABLE "public"."chat_grupos_usuarios"
+  ALTER COLUMN "estado" SET DEFAULT 1;
+
+COMMENT ON COLUMN "public"."chat_grupos_usuarios"."estado"
+IS '0 = inactivo, 1 = activo';
+
+
 CREATE TABLE "public"."chat_conversacion" (
   "id" SERIAL, 
   "estado" CHAR(1) DEFAULT 1, 

@@ -929,6 +929,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if (data.status === 200) {
 
                         AlertService.mostrarMensaje("warning", data.msj);
+                        $scope.volver_cotizacion();
                     }
                 });
 
@@ -969,27 +970,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     };
                 };
-                console.log("LOS OBJETOS ", obj);
-                Request.realizarRequest(url, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        AlertService.mostrarVentanaAlerta("Registrando cambios", "Desea modificar la cantidad de los productos",
-                                function(confirmar) {
-
-                                    if (confirmar) {
-                                        that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
-
-                                    }
-                                });
-
-
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-
-                    }
-
-                });
                 
+                Request.realizarRequest(url,"POST",obj,function(data){
+
+                    if (data.status === 200){
+                        AlertService.mostrarVentanaAlerta("Registrando cambios", "Desea modificar la cantidad de los productos",
+                            function(confirmar){
+                                if (confirmar){
+                                    that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
+                                }
+                            }
+                        );
+                    }else{
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });               
             };
 
 
@@ -1528,7 +1523,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             //$scope.gestionar_pedido();
                         }
                         if ($scope.Pedido.get_numero_pedido() > 0) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             $scope.volver_cotizacion();
                         }                                 
                     } else {

@@ -215,7 +215,13 @@ if (cluster.isMaster) {
     app.use(G.utils.validar_request());
     app.use(G.auth.validate());
     app.use(app.router);
-    app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
+    
+    if (G.program.prod) {
+        app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
+    } else {
+        app.use(express.static(path.join(__dirname, 'public')));
+    }
+    
     app.use(express.static(path.join(__dirname, 'files')));
     
     /*=========================================

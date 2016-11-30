@@ -169,7 +169,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         "e.prefijo as despacho_prefijo",
         "e.numero as despacho_numero",
         G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
-        "f.descripcion as descripcion_tipo_producto"
+        "f.descripcion as descripcion_tipo_producto",
+        G.knex.raw("'1' as tipo_pedido")
     ];
 
     var query = G.knex.column(columns).from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {
@@ -1212,28 +1213,11 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                    AND b.contenido_unidad_venta " + G.constants.db().LIKE + " :7\
                    AND fc_descripcion_producto(b.codigo_producto) " + G.constants.db().LIKE + " :6\
                    AND e.descripcion " + G.constants.db().LIKE + " :5\
-                   AND f.clase_id " + G.constants.db().LIKE + " :9 and b.tipo_producto_id = '" + filtroAvanzado.tipo_producto + "'";
+                   AND f.clase_id " + G.constants.db().LIKE + " :9 and b.tipo_producto_id  " + G.constants.db().LIKE +" '%"+ filtroAvanzado.tipo_producto + "%' ";
 
         //filtroAvanzado.tipoBusqueda
     }
 
-    /***
-     * +Descripcion Campos para obtener la fecha actual
-     */
-    var fechaActual = new Date();
-    var dd = fechaActual.getDate();
-    var mm = fechaActual.getMonth() + 1; //hoy es 0!
-    var yyyy = fechaActual.getFullYear();
-
-    if (dd < 10) {
-        dd = '0' + dd
-    }
-
-    if (mm < 10) {
-        mm = '0' + mm
-    }
-
-    fechaActual = yyyy + '-' + mm + '-' + dd;
 
     //Se agrega un nuevo campo llamado contrato que retornara FALSE si no tiene
     //contrato con la empresa y TRUE si lo tiene
@@ -1510,7 +1494,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      when a.estado = '6' then 'Se solicita autorizacion'\
      when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
      to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro,\
-     h.pedido_cliente_id as numero_pedido\
+     h.pedido_cliente_id as numero_pedido, '0' as tipo_pedido\
      from ventas_ordenes_pedidos_tmp a\
      inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
      inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
@@ -1900,6 +1884,23 @@ PedidosClienteModel.prototype.consultarProductoDetallePedido = function(pedido, 
         callback(error);
     });
 };
+
+
+PedidosClienteModel.prototype.consultarProductoPedido = function(pedido, producto, callback) {
+
+
+    var sql = "SELECT * FROM ventas_ordenes_pedidos_d WHERE pedido_cliente_id = :1 AND codigo_producto = :2 ";
+
+    G.knex.raw(sql, {1: pedido.numero_pedido, 2: producto.codigo_producto}).
+            then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("err [consultarProductoPedido]", err);
+        callback(err);
+    });
+
+};
+
 /*
  * @author : Cristian Ardila
  * Descripcion : Funcion encargada de consultar el estado de un pedido

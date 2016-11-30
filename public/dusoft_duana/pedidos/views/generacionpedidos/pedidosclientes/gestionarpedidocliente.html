@@ -205,7 +205,7 @@
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
                                     </button>
                                     
-                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() >0" ng-disabled="!datos_view.btnSolicitarAutorizacionCartera">
+                                     <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="registrarProductoModificado()" ng-if="Pedido.get_numero_pedido() >0" > <!-- ng-disabled="!datos_view.btnSolicitarAutorizacionCartera"//-->
                                         <span class="glyphicon glyphicon-cog" ></span> Solicitar autorizacion cartera 
                                     </button>
                                    <!-- <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 " >//-->
@@ -220,13 +220,13 @@
                                 </div> 
                                 <!--Acciones Cartera-->
                                 <div class="modal-footer col-md-12" ng-if="datos_view.cartera">                                                             
-                                    <button class="btn btn-default" ng-click="gestion_cartera(4,1)" ng-disabled ="Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==4">
-                                        <span class="glyphicon glyphicon-remove" ></span> Denegado Cartera
+                                    <button class="btn btn-default" ng-click="gestion_cartera(4,1)" > <!-- ng-disabled ="!items >0" Pedido.get_estado_cotizacion() ==5 ||   Pedido.getEstado() !=4 && Pedido.getEstado() !=1 && //-->
+                                        <span class="glyphicon glyphicon-remove" ></span> Denegado Cartera 
                                     </button>
                                 <!--   <button class="btn btn-default" ng-click="gestion_cartera(1)" ng-disabled ="Pedido.getEstado() !=4 && !items >0 || Pedido.get_estado_cotizacion() ==5">
                                         <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera 
                                     </button> //-->
-                                     <button class="btn btn-default" ng-click="gestion_cartera(1,0)" ng-disabled ="Pedido.getEstado() !=4 && !items >0 || Pedido.get_estado_cotizacion() ==5">
+                                     <button class="btn btn-default" ng-click="gestion_cartera(1,0)" > <!-- ng-disabled =" !items >0" Pedido.get_estado_cotizacion() ==5 || Pedido.getEstado() ==2  && !items >0 ||Pedido.getEstado() ==3  && //-->
                                         <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera  
                                     </button>
                                     
@@ -237,7 +237,7 @@
                 </div>       
             </div>
         </div>
-        <div  class="slide" slide-content open-callback="gestionar_productos_clientes" close-callback="cerrar_gestion_productos_clientes"   >
+        <div  class="slide" slide-content open-callback="gestionar_productos_clientes" close-callback="cerrar_gestion_productos_clientes"  >
             <div ng-include src="slideurl"  ng-controller="GestionarProductosClientesController"></div>
         </div>
     </div>

@@ -198,6 +198,12 @@ if (cluster.isMaster) {
     
     var tiempo = 10800000;
     
+    if (G.program.prod) {
+        tiempo = 0;
+    }
+    
+    
+    
     app.set('port', process.env.PORT || G.settings.server_port);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');

@@ -3034,7 +3034,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     } else {
         estadoAprobacion = 1;
     }
-
+    pedido.estado_desaprobado = aprobado;
     var paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido, pedido.productos, pedido.usuario_id, pedido.observacion_cartera, pedido.total, 1, estadoAprobacion);
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarPedidoCarteraEstadoNoAsigando', pedido).then(function(resultado) {

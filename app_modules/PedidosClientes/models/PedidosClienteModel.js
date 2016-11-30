@@ -1694,7 +1694,7 @@ PedidosClienteModel.prototype.actualizarPedidoCarteraEstadoNoAsigando = function
             .update({
         observacion_cartera: pedido.observacion_cartera,
         sw_aprobado_cartera: pedido.aprobado_cartera,
-        estado: '1'
+        estado: '1' //pedido.estado_desaprobado
     }).then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {

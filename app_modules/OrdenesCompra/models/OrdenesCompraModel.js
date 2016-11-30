@@ -1621,7 +1621,7 @@ function __validarFilaOrden(params, callback){
         return;
     } 
     
-    var error = " Codigo producto: " + params.orden.codigo_producto + " codigo proveedor: "+params.orden.codigo_proveedor;
+    var error = " Codigo producto: " + params.orden.codigo_producto + " y codigo proveedor: "+params.orden.codigo_proveedor;
     
     var costo = params.orden.costo;
     var cantidad = params.orden.cantidad;

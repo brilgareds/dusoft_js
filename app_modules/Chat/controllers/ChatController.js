@@ -59,6 +59,7 @@ ChatController.prototype.listarUsuariosPorGrupo = function(req, res) {
         res.send(G.utils.r(req.url, 'Listado de grupos', 200, {usuarios: usuarios}));
       
     }).fail(function(err) {
+        console.log("ocurrio un error ", err);
         res.send(G.utils.r(req.url, 'Error Listado los grupos', 500, {usuarios: {}}));
     }).done();
 

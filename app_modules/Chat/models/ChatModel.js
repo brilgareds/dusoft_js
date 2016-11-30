@@ -15,8 +15,13 @@ ChatModel.prototype.listarGrupos = function(parametros, callback) {
                 (SELECT COUNT(b.grupo_id) AS total FROM chat_grupos_usuarios b\
                 WHERE b.grupo_id = a.id) AS numero_integrantes from chat_grupos a ";
     
-    G.knex.select(G.knex.raw(sql)).
-    limit(G.settings.limit).
+    var query = G.knex.select(G.knex.raw(sql));
+    
+    if(parametros.termino_busqueda.length > 0){
+        query.where("a.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+    }
+    
+    query.limit(G.settings.limit).
     offset((parametros.pagina - 1) * G.settings.limit).
     then(function(resultado){
         callback(false, resultado);
@@ -246,34 +251,52 @@ ChatModel.prototype.insertarUsuariosEnGrupo = function(parametros, callback) {
 ChatModel.prototype.guardarConversacion = function(parametros, callback) {
     var that = this;
     var promesa;
+    var usuariosExistentes = false;
+    var def = G.Q.defer();
     
-    if(parametros.id_conversacion === 0){
-        promesa = G.Q.ninvoke(that, "insertarConversacion", parametros);
-    } else {
-        var obj = {
-            campos:{
-                estado:'1'
-            },
-            id_conversacion:parametros.id_conversacion
-        };
+    G.Q.nfcall(__verificarConversacionPorUsuarios, parametros).then(function(conversacion){
         
-        promesa = G.Q.ninvoke(that, "modificarConversacion", obj);
-    }
-    
-    promesa.then(function(resultado){
+        usuariosExistentes = (conversacion.length === 0) ? false : true; 
+        console.log("usuarios encontrados ", conversacion);
+        
+        if(parametros.id_conversacion === 0 && !usuariosExistentes){
+            promesa = G.Q.ninvoke(that, "insertarConversacion", parametros);
+        } else {
+            
+            if(usuariosExistentes){
+                parametros.id_conversacion = conversacion[0].id_conversacion;
+            }
+            
+            var obj = {
+                campos:{
+                    estado:'1'
+                },
+                id_conversacion:parametros.id_conversacion
+            };
+
+            promesa = G.Q.ninvoke(that, "modificarConversacion", obj);
+        }
+
+        return promesa;
+        
+    }).then(function(resultado){
         parametros.conversacionId = (parametros.id_conversacion === 0) ? resultado[0] : parametros.id_conversacion;
-        return G.Q.ninvoke(that, "insertarUsuariosEnConversacion", parametros);
-         
-    }).then(function(){
-        callback(false);
         
+        if(usuariosExistentes){
+            def.resolve();
+        } else {
+            return G.Q.ninvoke(that, "insertarUsuariosEnConversacion", parametros);
+        }
+        
+    }).then(function(){
+        callback(false, parametros.conversacionId);
+
     }).fail(function(err){
         callback(err);
-    })
-    
-    
+    });
     
 };
+
 
 /**
 * @author Eduar Garcia
@@ -681,6 +704,36 @@ function __insertarUsuariosEnGrupo(parametros, callback){
         console.log("error sql",err);
         callback(err);       
     });  
+}
+
+/**
+* @author Eduar Garcia
+* +Descripcion Valida que no los usuarios a insertarse no esten ya en otra conversacion
+* @params Object: {parametros}
+* @fecha 2016-11-28
+*/
+function __verificarConversacionPorUsuarios(parametros, callback){
+    
+    var usuarios = [];
+    
+    for(var i in parametros.usuarios){
+        usuarios.push(parametros.usuarios[i].id);
+    }
+    
+    var columns = ["id_conversacion"];
+    var query =  G.knex.column(columns).
+    from("chat_conversacion_usuarios").
+    groupBy("id_conversacion").
+    havingRaw("sort(array_agg(usuario_id)) = sort( '{ "+usuarios.join()+" }' :: int[])");
+        
+    query.then(function(conversacion){
+
+        callback(false, conversacion);
+        
+    }).catch(function(err){
+        callback(err);       
+    }); 
+    
 }
 
 

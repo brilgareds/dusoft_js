@@ -539,7 +539,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             };
             
             
-            $rootScope.$on("onAbrirChat",function(){
+            $rootScope.$on("onAbrirChat",function(e, conversacionId){
+               localStorageService.set("mensajeNotificacion", {id_conversacion:conversacionId});
                self.abrirChat(); 
             });
             

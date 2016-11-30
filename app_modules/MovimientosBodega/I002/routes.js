@@ -145,6 +145,7 @@ module.exports = function(app, di_container) {
     });
     
     app.post('/api/movBodegas/E008/imprimirRotuloFarmacias', function(req, res){
+       console.log("imprimir rotulo farmacias");
        c_e008.imprimirRotuloFarmacias(req, res); 
     });
     

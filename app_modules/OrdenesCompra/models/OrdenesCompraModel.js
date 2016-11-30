@@ -1565,11 +1565,14 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
 function  __agruparOrdenes(params, callback ){
     params.orden = params.datos[0];
     var def = G.Q.defer();
-     
+    
     if(!params.orden){
         callback(false, params.ordenes);
         return;
     } 
+    
+    params.orden.__rownum__ = params.datos.indexOf(params.orden);
+    params.orden.empresa_id = params.empresa_id;
     
     G.Q.nfcall(__validarFilaOrden, params).then(function(ordenValidada){
         var _orden = params.ordenes[params.orden.codigo_proveedor + "_" + params.orden.unidad_negocio];
@@ -1612,12 +1615,13 @@ function  __agruparOrdenes(params, callback ){
  * +Descripcion: Permite validar el registro en cada fila del archivo sea valido, (unidad de negocio, proveedor, producto etc);
  */ 
 function __validarFilaOrden(params, callback){
-    if(!params.orden.codigo_proveedor || !params.orden.unidad_negocio || !params.orden.codigo_producto ||
+    if(!params.orden.codigo_proveedor || params.orden.unidad_negocio === undefined || params.orden.unidad_negocio === null || !params.orden.codigo_producto ||
        !params.orden.costo || !params.orden.cantidad || !params.orden.observacion){
-   
-        callback({error:true, msj:"Los campos son requeridos para todas las filas, error en la fila "+ (params.orden.__rownum__ + 1)}) ;
+        callback({error:true, msj:"Los campos son requeridos para todas las filas, producto " + params.orden.codigo_producto }) ;
         return;
     } 
+    
+    var error = " Codigo producto: " + params.orden.codigo_producto + " codigo proveedor: "+params.orden.codigo_proveedor;
     
     var costo = params.orden.costo;
     var cantidad = params.orden.cantidad;
@@ -1625,23 +1629,23 @@ function __validarFilaOrden(params, callback){
         
     if(!reg.test(costo) || !reg.test(cantidad) || parseInt(costo) <= 0 || parseInt(cantidad) <= 0){
         console.log("error fila ", cantidad, " costo ", costo);
-        callback({error:true, msj:"La cantidad o costo no son validos "+ (params.orden.__rownum__ + 1)}) ;
+        callback({error:true, msj:"La cantidad o costo no son validos." + error}) ;
         return;
     }
     
     var def = G.Q.defer();
     
-    G.Q.ninvoke(params.contexto.m_unidad_negocio, 'obtenerUnidadNegocioPorEmpresa', params.orden.unidad_negocio).then(function(resultado){
+    G.Q.ninvoke(params.contexto.m_unidad_negocio, 'obtenerUnidadNegocioPorEmpresa', params.orden.empresa_id, params.orden.unidad_negocio).then(function(resultado){
         
         if(resultado.length === 0){
-            throw "No se encontro la unidad de negocio, fila "+(params.orden.__rownum__ + 1);
+            throw "No se encontro la unidad de negocio" + error;
         } else {
             params.orden.codigo_unidad = resultado[0].codigo_unidad_negocio;
             return G.Q.ninvoke(params.contexto.m_proveedores, 'obtenerProveedorPorCodigo', params.orden.codigo_proveedor);
         }
     }).then(function(resultado){
         if(resultado.length === 0){
-            throw "No se encontro el proveedor, fila "+(params.orden.__rownum__ + 1);
+            throw "No se encontro el proveedor" + error;
         } else {
             params.orden.proveedor_id = resultado[0].tercero_id;
             params.orden.proveedor_tipo_id = resultado[0].tipo_id_tercero;

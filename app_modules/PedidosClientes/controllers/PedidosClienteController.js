@@ -774,7 +774,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
 
         if (resultado > 0) {
 
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
 
         } else {
@@ -2305,7 +2305,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
          */
         if (resultado > 0) {
 
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
             throw 'Error actualizando la observacion de cartera';
@@ -2375,7 +2375,7 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
             return;
         } else {
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Modificacion exitosa', 200, {pedidos_clientes: {}}));
             return;
         }
     });
@@ -2703,7 +2703,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
          */
         if (resultado > 0) {
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
             throw 'Error actualizando la observacion de cartera';
@@ -2951,7 +2951,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         if (resultado > 0) {
 
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             //Agregamdo validacion
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
@@ -3034,14 +3034,14 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     } else {
         estadoAprobacion = 1;
     }
-
+    pedido.estado_desaprobado = aprobado;
     var paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido, pedido.productos, pedido.usuario_id, pedido.observacion_cartera, pedido.total, 1, estadoAprobacion);
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarPedidoCarteraEstadoNoAsigando', pedido).then(function(resultado) {
 
         if (resultado > 0) {
 
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Modificacion exitosa', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
 
         } else {

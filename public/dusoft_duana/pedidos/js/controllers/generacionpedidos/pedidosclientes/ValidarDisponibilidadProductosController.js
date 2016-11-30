@@ -33,7 +33,9 @@ define(["angular", "js/controllers",
                     
                     $modalInstance.close();
                 };
-                
+                socket.on("onCerrarVentanaCartera", function(datos) {
+                    console.log("LLLEGOOO ", datos);
+                });
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 //$scope.datos_form = null;

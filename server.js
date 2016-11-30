@@ -198,12 +198,6 @@ if (cluster.isMaster) {
     
     var tiempo = 10800000;
     
-    if (G.program.prod) {
-        tiempo = 0;
-    }
-    
-    
-    
     app.set('port', process.env.PORT || G.settings.server_port);
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'jade');
@@ -221,7 +215,13 @@ if (cluster.isMaster) {
     app.use(G.utils.validar_request());
     app.use(G.auth.validate());
     app.use(app.router);
-    app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
+    
+    if (G.program.prod) {
+        app.use(express.static(path.join(__dirname, 'public'), { maxAge: tiempo } ));
+    } else {
+        app.use(express.static(path.join(__dirname, 'public')));
+    }
+    
     app.use(express.static(path.join(__dirname, 'files')));
     
     /*=========================================

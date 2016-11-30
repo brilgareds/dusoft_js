@@ -1347,7 +1347,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     }).then(function(resultado){
         
         
-        console.log(" resultado DEL COMMIT CUANDO ES ROLLBACKKKKK ", resultado);
+        //console.log(" resultado DEL COMMIT CUANDO ES ROLLBACKKKKK ", resultado);
         
         /**
          * +Descripcion Se valida si la formula despues de dispensada se encuentra con productos pendientes
@@ -2400,9 +2400,6 @@ function __generarPdf(datos, callback) {
  *              
  */  
 DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res){
-    console.log("***********generarDispensacionEstados******************");
-    console.log("***********generarDispensacionEstados******************");
-    console.log("***********generarDispensacionEstados******************");
     
     var that = this;
     var args = req.body.data;
@@ -2422,9 +2419,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         res.send(G.utils.r(req.url, 'Debe diligenciar el termino de busqueda', 404, {}));
         return;
     }
-    
-    
-   
+     
     var terminoBusqueda = args.insertar_formulas_dispensacion_estados.terminoBusqueda;
     var filtro = args.insertar_formulas_dispensacion_estados.filtro;
    
@@ -2432,18 +2427,14 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     var parametros={ 
                     evolucionId: terminoBusqueda,
                     filtro: filtro};
-                
-                
-    /*var parametros={ evolucionId:360317
-                    };*/
-                                
+               
     var formato = 'YYYY-MM-DD';
     var fechaEntrega;
     var fechaMinima;
     var now = new Date(); 
     var fechaFormulacion;
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros).then(function(resultado){   
-         
+         console.log("ESTO ES TODO OK ", resultado.rows);
         if(resultado.rows.length > 0){
             fechaFormulacion = resultado.rows[0].fecha_formulacion;
              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:parametros.evolucionId,numeroEntregaActual:1});
@@ -2453,7 +2444,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         }
             
     }).then(function(resultado){
-        //console.log("2) consultarUltimaEntregaFormula::: ", resultado.rows.length);
+       
         if(resultado.rows.length > 0){
             throw 'La formula ya ha sido generada'
                          
@@ -2468,7 +2459,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
             if(resultado.rows[0].fecha_entrega === null){  
                 
                 fechaEntrega = G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);  
-                fechaMinima  = G.moment(G.moment(fechaFormulacion).format(formato)).add(25,'days').format(formato);
+                fechaMinima  = G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);
             }else{
                 fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);  
                 fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(25,'days').format(formato);

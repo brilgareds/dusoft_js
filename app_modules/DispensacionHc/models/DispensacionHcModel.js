@@ -662,10 +662,6 @@ SELECT todo.codigo_producto,  \
  * Descripcion : Funcion encargada de consultar el estado de una cotizacion
  * @fecha: 05/11/2015
  * @Funciones que hacen uso del model :
- *  --PedidosCliente.prototype.consultarPendientesFormula
- *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
- *  --PedidosCliente.prototype.generarPedido
- *  --PedidosCliente.prototype.eliminarCotizacion
  */
 /*DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion,transaccion, callback) {
     
@@ -2458,13 +2454,10 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
              
 /*
  * @author : Cristian Ardila
- * Descripcion : Funcion encargada de consultar el estado de una cotizacion
+ * Descripcion : Funcion encargada de validar si una formula tiene medicamentos
+ *               pendientes
  * @fecha: 05/11/2015
  * @Funciones que hacen uso del model :
- *  --PedidosCliente.prototype.consultarPendientesFormula
- *  --PedidosClientesEvents.prototype.onNotificarEstadoCotizacion
- *  --PedidosCliente.prototype.generarPedido
- *  --PedidosCliente.prototype.eliminarCotizacion
  */
 DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion, callback) {
      

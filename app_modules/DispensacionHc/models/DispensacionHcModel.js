@@ -3606,14 +3606,19 @@ function __consultarFormula(that, index, formulas, transaccion, callback) {
  * @controller DispensacionHc.prototype.listarTipoFormula
  */
 DispensacionHcModel.prototype.consultarFormulaAntecedentes = function(obj,callback){
-                            
-    var sql = "SELECT *\
+        console.log("***consultarFormulaAntecedentes**********");    
+        console.log("***consultarFormulaAntecedentes**********");    
+        console.log("***consultarFormulaAntecedentes**********");
+        
+    var sql = "SELECT a.fecha_formulacion\
                 FROM hc_formulacion_antecedentes a \
                 WHERE a.evolucion_id = :1;";
       
-    G.knex.raw(sql,{1: obj.evolucionId}).then(function(resultado){    
+    G.knex.raw(sql,{1: obj.evolucionId}).then(function(resultado){ 
+        console.log("consultarFormulaAntecedentes", resultado);
         callback(false, resultado)
-    }).catch(function(err){          
+    }).catch(function(err){      
+        console.log("err [consultarFormulaAntecedentes]: ", err);    
         callback(err)
     });         
     
@@ -3632,7 +3637,7 @@ DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, cal
     var fechaEntrega;
       G.knex.transaction(function(transaccion) {          
         G.Q.nfcall(__consultarDispensacionesFormula, obj.evolucionId, transaccion).then(function(resultado){            
-           console.log("1) __consultarDispensacionesFormula ", resultado.rows);
+           //console.log("1) __consultarDispensacionesFormula ", resultado.rows);
             if(resultado.rows.length > 0){
                 return G.Q.nfcall(__actualizarNumeroEntrega,that,0,1, resultado.rows,obj,transaccion);                      
             }else{
@@ -3640,23 +3645,23 @@ DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, cal
             }
             
         }).then(function(){
-            console.log("2) __actualizarNumeroEntrega ");
+            //console.log("2) __actualizarNumeroEntrega ");
             return G.Q.ninvoke(that,'insertarDispensacionEstados',obj,transaccion);   
             
             
         }).then(function(resultado){
-            console.log("3) insertarDispensacionEstados ", resultado);
+            //console.log("3) insertarDispensacionEstados ", resultado);
             fechaEntrega = resultado;
             
             return G.Q.nfcall(__consultarMedicamentosFormulados,obj,transaccion);   
            
         }).then(function(resultado){
-            console.log("4) __consultarMedicamentosFormulados ", resultado.rows);
+            //console.log("4) __consultarMedicamentosFormulados ", resultado.rows);
             return G.Q.nfcall(__actualizarEntregaPorProducto,that,0,resultado.rows,obj,transaccion);
             
              
         }).then(function(resultado){
-            console.log("5) __actualizarEntregaPorProducto ", resultado);
+            //console.log("5) __actualizarEntregaPorProducto ", resultado);
             return G.Q.ninvoke(that,'consultarPendientesFormula',obj.evolucionId); 
             
         }).then(function(resultado){
@@ -3672,10 +3677,10 @@ DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, cal
             transaccion.commit();   
         }).fail(function(err){        
            transaccion.rollback(err);
-           console.log("fail transaccion rollback ", err);
+           //console.log("fail transaccion rollback ", err);
         }).done();
     }).then(function(){  
-            console.log("fechaEntrega ----- LO PASO ", fechaEntrega);
+            //console.log("fechaEntrega ----- LO PASO ", fechaEntrega);
             callback(false,fechaEntrega);
     }).catch(function(err){  
         console.log("err[consultarDispensacionesFormula]: ", err);
@@ -3691,7 +3696,7 @@ DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, cal
  */
 function __consultarDispensacionesFormula(evolucion,transaccion, callback) {
     
-    console.log("4) ********__consultarDispensacionesFormula************");   
+    //console.log("4) ********__consultarDispensacionesFormula************");   
    
     //console.log("evolucion ---> ", evolucion);
     var parametros = {1: evolucion};   
@@ -3736,7 +3741,7 @@ function __consultarDispensacionesFormula(evolucion,transaccion, callback) {
  */
 function __actualizarNumeroEntrega(that, index,rowNum, formulas, parametros,transaccion, callback) {
     
-    console.log("5) *******   ********__actualizarNumeroEntrega*******   ********");
+    //console.log("5) *******   ********__actualizarNumeroEntrega*******   ********");
    
     
     var formula = formulas[index];
@@ -3774,7 +3779,7 @@ function __actualizarNumeroEntrega(that, index,rowNum, formulas, parametros,tran
  */
 DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNum, transaccion, callback) {
    
-   console.log("6) *******DispensacionHcModel.prototype.actualizarNumeroEntrega*************");
+   //console.log("6) *******DispensacionHcModel.prototype.actualizarNumeroEntrega*************");
    
     var sql = "update bodegas_documentos\
          set   numero_entrega_actual= :1\
@@ -3804,7 +3809,7 @@ DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNu
  */
 DispensacionHcModel.prototype.insertarDispensacionEstados = function(obj,transaccion,callback){
      
-     console.log("**********DispensacionHcModel.prototype.insertarDispensacionEstados **********");
+     //console.log("**********DispensacionHcModel.prototype.insertarDispensacionEstados **********");
     var parametros = {1:obj.evolucionId};//obj.evolucionId 840589 
     var sql = "INSERT INTO dispensacion_estados \
 (formula_id, \
@@ -3922,7 +3927,7 @@ GROUP BY numero_formula, \
        hc.medico_id,\
        hc.refrendar\
 )as a ORDER BY a.numero_total_entregas desc limit 1\
-)as b returning fecha_entrega, numero_entrega_actual ";
+)as b returning fecha_entrega, numero_entrega_actual, sw_finalizado ";
     
     var query = G.knex.raw(sql,parametros);    
     if(transaccion) query.transacting(transaccion);    
@@ -3947,7 +3952,7 @@ GROUP BY numero_formula, \
  */
 function __consultarMedicamentosFormulados(obj,transaccion, callback) {
     
-    console.log("4) ********__consultarMedicamentosFormulados************");   
+    //console.log("4) ********__consultarMedicamentosFormulados************");   
    
     //console.log("evolucion ---> ", evolucion);
     var parametros = {1: obj.evolucionId};   
@@ -4000,7 +4005,7 @@ function __actualizarEntregaPorProducto(that, index, productos, parametros,trans
  * @fecha 28/11/2016 (DD-MM-YYYY)
  */
 DispensacionHcModel.prototype.actualizarEntregaPorProducto = function(obj, transaccion, callback) {
-    console.log("****DispensacionHcModel.prototype.actualizarEntregaPorProducto***");
+    //console.log("****DispensacionHcModel.prototype.actualizarEntregaPorProducto***");
      var sql = "UPDATE hc_formulacion_antecedentes \
                 SET numero_total_entregas = (SELECT max(ceiling(ceiling(fecha_finalizacion - fecha_registro)/30)) \n\
                 FROM hc_formulacion_antecedentes WHERE evolucion_id = :1 AND codigo_medicamento = :2)\
@@ -4009,7 +4014,7 @@ DispensacionHcModel.prototype.actualizarEntregaPorProducto = function(obj, trans
     var query = G.knex.raw(sql,{1: obj.evolucion_id, 2: obj.codigo_medicamento });    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){  
-            console.log("resultado [actualizarEntregaPorProducto]: ", resultado);
+            //console.log("resultado [actualizarEntregaPorProducto]: ", resultado);
             callback(false, resultado);
     }).catch(function(err){   
         console.log("err (/catch) [actualizarEntregaPorProducto]: ", err);
@@ -4029,7 +4034,7 @@ DispensacionHcModel.prototype.actualizarEntregaPorProducto = function(obj, trans
  * @fecha 28/11/2016 (DD-MM-YYYY)
  */
 DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar = function(obj, transaccion, callback) {
-    console.log("****DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar***");
+    //console.log("****DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar***");
      var sql = "UPDATE hc_pendientes_por_dispensar\
                 SET fecha_pendiente = fecha_registro\
                 WHERE evolucion_id = :1;";
@@ -4037,7 +4042,7 @@ DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar = function(ob
     var query = G.knex.raw(sql,{1: obj.evolucionId});    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){  
-            console.log("resultado [actualizarFechaPendientePorDispensar]: ", resultado);
+            //console.log("resultado [actualizarFechaPendientePorDispensar]: ", resultado);
             callback(false, resultado);
     }).catch(function(err){   
         console.log("err (/catch) [actualizarFechaPendientePorDispensar]: ", err);
@@ -4056,7 +4061,7 @@ DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar = function(ob
  */
 DispensacionHcModel.prototype.actualizarFechaMinimaMaxima = function(obj, callback) {
     
-    console.log("****DispensacionHcModel.prototype.actualizarFechaMinimaMaxima***");
+    //console.log("****DispensacionHcModel.prototype.actualizarFechaMinimaMaxima***");
     
      var sql = "UPDATE dispensacion_estados\
                 SET fecha_entrega = :2,\
@@ -4067,7 +4072,7 @@ DispensacionHcModel.prototype.actualizarFechaMinimaMaxima = function(obj, callba
     var query = G.knex.raw(sql,{1: obj.evolucionId, 2: obj.fechaEntrega, 3: obj.fechaMinima , 4: obj.fechaMaxima});    
       
         query.then(function(resultado){  
-            console.log("resultado [actualizarFechaMinimaMaxima]: ", resultado);
+            //console.log("resultado [actualizarFechaMinimaMaxima]: ", resultado);
             callback(false, resultado);
     }).catch(function(err){   
         console.log("err (/catch) [actualizarFechaMinimaMaxima]: ", err);

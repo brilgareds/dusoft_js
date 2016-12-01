@@ -1786,10 +1786,12 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion de pendientes correctamente', 200, {dispensacion: resultado}));
            
         }   
-    }).*/fail(function(err){            
+    }).*/fail(function(err){ 
+     console.log("TERCER RESULTADO OJO #3 ", err);
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done(); 
 };
+
 /*
  * @author Cristian Ardila
  * @fecha 03/08/2016
@@ -2454,15 +2456,24 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
          
     }).then(function(resultado){// generarDispensacionEstados
           
+        console.log("LO DEL RETURNING  ", fechaFormulacion);
+        console.log("LO DE LA FECHA  ", fechaFormulacion);
         if(resultado.rowCount > 0){
             
-            if(resultado.rows[0].fecha_entrega === null){  
+            if(resultado.rows[0].fecha_entrega === null ){  
                 
                 fechaEntrega = G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);  
                 fechaMinima  = G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);
             }else{
-                fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);  
-                fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(25,'days').format(formato);
+                
+                if(resultado.rows[0].sw_finalizado === 1){
+                    fechaEntrega = G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);  
+                    fechaMinima  = G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);
+                }else{
+                    fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);  
+                    fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(25,'days').format(formato);
+                }
+                
             }
             
                 

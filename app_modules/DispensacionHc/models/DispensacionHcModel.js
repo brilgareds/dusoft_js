@@ -3599,7 +3599,7 @@ function __consultarFormula(that, index, formulas, transaccion, callback) {
 };*/
 
 
-/**
+/**                          
  * @author Cristian Ardila
  * @fecha 09/06/2016 (DD-MM-YYYY)
  * +Descripcion Modelo encargado de obtener los diferentes tipos de formula
@@ -3610,7 +3610,7 @@ DispensacionHcModel.prototype.consultarFormulaAntecedentes = function(obj,callba
         console.log("***consultarFormulaAntecedentes**********");    
         console.log("***consultarFormulaAntecedentes**********");
         
-    var sql = "SELECT a.fecha_formulacion\
+    var sql = "SELECT  TO_CHAR(a.fecha_formulacion,'YYYY-MM-DD') as fecha_formulacion\
                 FROM hc_formulacion_antecedentes a \
                 WHERE a.evolucion_id = :1;";
       

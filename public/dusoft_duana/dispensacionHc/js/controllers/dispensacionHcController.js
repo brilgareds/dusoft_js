@@ -768,12 +768,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     *              DE DISPENSACION_ESTADOS
                     */
                     $scope.insertarFormulasDispensacionEstados = function(){
-                        
-                        console.log("**********$scope.insertarFormulasDispensacionEstados*************");
-                        console.log("**********$scope.insertarFormulasDispensacionEstados*************");
-                        console.log("**********$scope.insertarFormulasDispensacionEstados*************");
-                       
-                                 
+                                  
                        var obj = {                   
                                     session: $scope.session,
                                     data: {
@@ -788,9 +783,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 };    
                         dispensacionHcService.insertarFormulasDispensacionEstados(obj,function(data){
                             
-                            console.log("-----------------(data)*****  ", data);
                             if(data.status === 200){                        
                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                               that.listarFormulasMedicas({estado:0}); 
                             }else{                         
                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
                             }

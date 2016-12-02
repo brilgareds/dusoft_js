@@ -58,6 +58,9 @@ requirejs.config({
         "url":{
             deps:["angular"]
         },
+        /*"socket":{
+            exports:'io'
+        },*/
         "socketservice":{
             deps:["socket"]
         },

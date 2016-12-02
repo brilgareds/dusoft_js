@@ -929,6 +929,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if (data.status === 200) {
 
                         AlertService.mostrarMensaje("warning", data.msj);
+                        $scope.volver_cotizacion();
                     }
                 });
 
@@ -969,27 +970,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     };
                 };
-                console.log("LOS OBJETOS ", obj);
-                Request.realizarRequest(url, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        AlertService.mostrarVentanaAlerta("Registrando cambios", "Desea modificar la cantidad de los productos",
-                                function(confirmar) {
-
-                                    if (confirmar) {
-                                        that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
-
-                                    }
-                                });
-
-
-                    } else {
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-
-                    }
-
-                });
                 
+                Request.realizarRequest(url,"POST",obj,function(data){
+
+                    if (data.status === 200){
+                        AlertService.mostrarVentanaAlerta("Registrando cambios", "Desea modificar la cantidad de los productos",
+                            function(confirmar){
+                                if (confirmar){
+                                    that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);
+                                }
+                            }
+                        );
+                    }else{
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });               
             };
 
 
@@ -1214,8 +1209,64 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 17/11/2016
              */
             that.ventanaProductosSinDisponibilidad = function(estadoBoton,productos){
-                
+                $scope.productos_no_disponible = productos;
+                $scope.swBotonDenegarCartera = estadoBoton;
                 $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+<button type="button" class="close" ng-click="cerrarVentanaDisponibilidad()">&times;</button>\
+                        <h4 class="modal-title">Listado Productos </h4>\
+                    </div>\
+                    <div class="modal-body row">\
+                        <div class="col-md-12">\
+                            <h4 >Lista productos sin disponibilidad.</h4>\
+                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                <div class="list-group">\
+                                    <a ng-repeat="producto in productos_no_disponible" \
+                                    class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                        Cantidad solicitada ({{ producto.cantidad_solicitada}})\
+                                        Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
+                                    </a>\
+                                </div>\
+                            </div>\
+                        </div>\
+                        <div class="col-md-12" ng-if = "ocultarOpciones == 0">\
+                            <fieldset>\
+                                <legend>Observación Cartera</legend>\
+                                <div class="row">\
+                                    <div class="col-md-12">\
+                                        <textarea  ng-model="Pedido.observacion_cartera"\
+                    ng-disabled="!datos_view.cartera" class="col-lg-12 col-md-12 col-sm-12" \
+                    rows="4" name="" placeholder="Ingresar Observación Cartera"></textarea>\
+                                    </div>\
+                                </div>\
+                            </fieldset>\
+                        </div>\
+                    </div>\
+                    <div class="modal-footer">\
+                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
+                        <button class="btn btn-danger" ng-click="confirmar(4,0)" ng-if = "swBotonDenegarCartera == 1" >\
+                            Denegado Cartera\
+                        </button>\
+                    </div>',
+                    scope: $scope,
+                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+
+                        $scope.confirmar = function(aprobado, denegar) {
+                            
+                            $scope.desaprobarCartera(4,0);
+                            $modalInstance.close();
+                        };
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }]
+                };
+                var modalInstance = $modal.open($scope.opts);     
+                /*$scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
@@ -1235,8 +1286,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);   
 
                 modalInstance.result.then(function(){ 
-                },function(){});     
-            };
+                },function(){});*/     
+            };                                      
+            
+           
+           
+
             /**
              * @author Cristian Ardila
              * +Descripcion Metodo encargado de validar la disponibilidad de los
@@ -1453,7 +1508,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-
+                console.log("DESAPROBADO CARTERA ", data);
                     if (data.status === 200) {
                         /*Se valida si es una cotizacion y entonces se procede
                          a crear el pedido*/
@@ -1468,7 +1523,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             //$scope.gestionar_pedido();
                         }
                         if ($scope.Pedido.get_numero_pedido() > 0) {
-                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             $scope.volver_cotizacion();
                         }                                 
                     } else {

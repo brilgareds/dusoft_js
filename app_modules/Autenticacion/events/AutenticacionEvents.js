@@ -10,7 +10,7 @@ var AutenticacionEvents = function(socket, pedidos_farmacias) {
 // Notificacion al Clientes que esta conectado al socket
 AutenticacionEvents.prototype.onConnected = function(socket_id) {    
     console.log('== SocletConectado == ' + socket_id);
-    this.io.sockets.socket(socket_id).emit('onConnected', {socket_id: socket_id});
+    this.io.to(socket_id).emit('onConnected', {socket_id: socket_id});
 };
 
 
@@ -28,7 +28,7 @@ AutenticacionEvents.prototype.onCerrarSesion = function(sesion_usuario) {
     var that = this;
 
     if (sesion_usuario.socket_id)
-        that.io.sockets.socket(sesion_usuario.socket_id).emit('onCerrarSesion', {msj: 'Sesion Cerrada'});
+        that.io.to(sesion_usuario.socket_id).emit('onCerrarSesion', {msj: 'Sesion Cerrada'});
 };
 
 AutenticacionEvents.$inject = ["socket", "m_pedidos_farmacias"];

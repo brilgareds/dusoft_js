@@ -29,8 +29,8 @@
     "pg-query": "0.x",
     "q": "*",
     "soap": "^0.13.0",
-    "socket.io": "~0.9.16",
-    "socket.io-client": "~0.9.16",
+    "socket.io": "1.4.5",
+    "socket.io-client": "1.4.5",
     "xls-to-json": "*",
     "json2csv": "~3.4.2",
     "promise": "~7.1.1"

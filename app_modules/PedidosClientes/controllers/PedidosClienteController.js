@@ -2100,7 +2100,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
              *              solicita a cartera la aprobacion y se almacenara esta
              *              trazabilidad en la tabla (ventas_trazabilidad)
              */
-            if (estado_pedido === 4) {
+            if (estado_pedido === 1) { //estado_pedido
 
                 that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
                 res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
@@ -2956,7 +2956,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
 
-            throw  'Error actualizando la observacion de cartera';
+            throw  'Error actualizando la observacion de cartera';  
             return;
 
         }
@@ -2965,10 +2965,10 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
-         *              se procede a registrarlo, de lo contrario solo lo actualizara
+         *              se procede a registrarlo, de lo contrario solo lo actualizara  
          */
 
-        if (estado_pedido === 4) {
+        if (estado_pedido === 1) { //estado_pedido = 4  
 
             if (resultado.length === 1) {
                 return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogAutorizarPedido);

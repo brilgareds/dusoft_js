@@ -130,7 +130,7 @@ var cluster = require('cluster'),
         redis = require("redis"),
         pub = redis.createClient(6379, "localhost", {return_buffers: true}),
         sub = redis.createClient(6379, "localhost", {return_buffers: true}),
-        client = redis.createClient();
+        client = redis.createClient();   
 
 G.cronJob = require('cron-cluster')(client).CronJob;
 G.redis = client;

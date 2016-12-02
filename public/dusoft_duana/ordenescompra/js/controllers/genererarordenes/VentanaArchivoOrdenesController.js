@@ -53,7 +53,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.visualizarReporte("/reports/" + data.obj.pdf, data.obj.pdf , "download");
                     $modalInstance.close();
                 } else {
-                    AlertService.mostrarVentanaAlerta(String.CONSTANTS.ALERTA_TITULO, data.msj);
+                    var msj = data.msj;
+                    
+                    if(msj.msj){
+                        msj = msj.msj;
+                    }
+                    
+                    AlertService.mostrarVentanaAlerta(String.CONSTANTS.ALERTA_TITULO, msj);
                 }
                 
                 $scope.root.progresoArchivo = 0;

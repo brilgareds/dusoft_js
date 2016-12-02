@@ -350,9 +350,12 @@ define(["angular",
                 Request.realizarRequest(URL.CONSTANTS.API.CHAT.GUARDAR_CONVERSACION, "POST", obj, function(data) {
                     
                     if(data.status === 200){
-                       
-                       $modalInstance.close();
-                       $rootScope.$emit("onAbrirChat");
+                        $modalInstance.close();
+                        $timeout(function(){
+                            
+                            $rootScope.$emit("onAbrirChat", data.obj.conversacionId);
+                        },1000)
+
                         
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error iniciando la conversación");

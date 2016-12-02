@@ -243,7 +243,7 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
                     } else {
                         smtpTransport.close();
 
-                        that.m_usuarios.cambiar_contrasenia(nombre_usuario, constrasenia, function(err, rows, result) {
+                        that.m_usuarios.cambiar_contrasenia(nombre_usuario, constrasenia, function(err, result) {
 
                             if (err) {
                                 res.send(G.utils.r(req.url, 'Se ha Generado un Error Interno al Cambiar la Contraseña del Usuario', 500, {}));

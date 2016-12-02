@@ -42,7 +42,7 @@ E008Events.prototype.onObtenerTiempoSeparacionCliente = function(socket_id, dato
                     console.log('=======================================================================');
                 }
 
-                that.io.sockets.socket(socket_id).emit('onTiempoSeparacionCliente', {numero_pedido: numero_pedido, tiempo_separacion: tiempo_separacion});
+                that.io.to(socket_id).emit('onTiempoSeparacionCliente', {numero_pedido: numero_pedido, tiempo_separacion: tiempo_separacion});
             }
         });
     }
@@ -82,7 +82,7 @@ E008Events.prototype.onObtenerTiempoSeparacionFarmacias = function(socket_id, da
                     console.log(tiempo_separacion);
                     console.log('=======================================================================');
                 }
-                that.io.sockets.socket(socket_id).emit('onTiempoSeparacionFarmacias', {numero_pedido: numero_pedido, tiempo_separacion: tiempo_separacion});
+                that.io.to(socket_id).emit('onTiempoSeparacionFarmacias', {numero_pedido: numero_pedido, tiempo_separacion: tiempo_separacion});
             }
         });
     }

@@ -26,7 +26,7 @@ OrdenesCompraEvents.prototype.onNotificarProgresoArchivoPlanoOrdenes = function(
          //Se recorre cada una de las sesiones abiertas por el usuario
          sessions.forEach(function(session) {
              //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-             that.io.sockets.socket(session.socket_id).emit('onNotificarProgresoArchivoPlanoOrdenes', {porcentaje: porcentaje});
+             that.io.to(session.socket_id).emit('onNotificarProgresoArchivoPlanoOrdenes', {porcentaje: porcentaje});
          });
 
      });

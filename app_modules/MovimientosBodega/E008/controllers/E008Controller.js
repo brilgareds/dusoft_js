@@ -19,6 +19,7 @@ var E008Controller = function(movimientos_bodegas, m_e008, e_e008, pedidos_clien
     this.log_e008 = log_e008;
 };
 
+
 // Generar Cabecera del Documento Temporal de CLIENTES
 E008Controller.prototype.documentoTemporalClientes = function(req, res) {
 
@@ -2021,7 +2022,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
            (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")||
            (tipoPedido === 1 && pedido.identificacion_cliente === '255' && pedido.tipo_id_cliente === "AS")||
            (tipoPedido === 1 && pedido.identificacion_cliente === '256' && pedido.tipo_id_cliente === "AS")){
-           
+
            
            if(tipoPedido === 1){
                 if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
@@ -2058,6 +2059,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 
                  return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
         } else {
+             console.log(">>>>>>>>>>>",obj);
             throw {msj:"El documento no esta parametrizado para sincronizarse", status:404,
                    obj:{documento_despacho: {}}};
         }
@@ -2159,6 +2161,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
+console.log(">>>>>>>>>>>>>>>>>bodegasMovimientoTmp>>>>>>>>>>>>>>>>>>>>>");
         return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
@@ -2182,7 +2185,7 @@ console.log("cabecera result >>>>>>",result);
         obj.error = true;
         obj.tipo = '0';
         G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){
-            //console.log(">>>>>>>>>>>>>>>>>>>>>>>> error __sincronizarEncabezadoDocumento ", err);
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>> error __sincronizarEncabezadoDocumento ", err);
             callback(err);
         });
     }).done();

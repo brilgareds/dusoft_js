@@ -774,7 +774,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
 
         if (resultado > 0) {
 
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
 
         } else {
@@ -1928,10 +1928,10 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
  *                proceso en los logs de trazabilidad ventas
  */
 PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
-
+    
     var that = this;
     var args = req.body.data;
-
+    var def = G.Q.defer();
     // Pedido
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o pedido No Estan Definidos', 404, {}));
@@ -2035,7 +2035,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         } else {
             throw precioVenta.msj;
         }
-    }).then(function(resultado) {
+    }).then(function(resultado) {   
         /**
          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
          *               siempre y cuando el pedido tenga el
@@ -2051,27 +2051,34 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         }
     }).then(function(rows) {
 
-        var totalValorPedidoActual = rows[0].valor_total_cotizacion;
+        /*var totalValorPedidoActual = rows[0].valor_total_cotizacion;
 
         if (totalValorPedidoNuevo > totalValorPedidoActual) {
-            estado_pedido = 4;
+            estado_pedido = 1;
         } else {
             estado_pedido = 1;
-        }
+        }*/
+        estado_pedido = 1;
         /**
          * +Descripcion: Se valida si el pedido ya cuenta con ese producto en el detalle
          */
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarProductoDetallePedido', pedido, producto);
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarProductoPedido', pedido, producto);
 
     }).then(function(resultado) {
+        console.log("consultarProductoDetallePedido ", resultado.rows);
+      
         /**
          * +Descripcion: Se valida si el producto es diferente al del detalle
          *               y si es asi se procede a modficar el detalle
          */
-        if (resultado.length === 0) {
+       /* if (resultado.length === 0) {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarDetallePedido', pedido, producto);
-        } else {
+        } else {*/
+        if (resultado.rows.length > 0) {
             throw 'El producto ya aparece registrado en el pedido';
+        } else {
+            
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarDetallePedido', pedido, producto);
         }
 
     }).then(function(resultado) {
@@ -2085,7 +2092,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         return  G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoPedido', pedido, estado_pedido);
 
     }).then(function(resultado) {
-
+        
         if (resultado > 0) {
             /*
              * +Descripcion Se valida el estado del pedido, si es estado 4
@@ -2093,13 +2100,14 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
              *              solicita a cartera la aprobacion y se almacenara esta
              *              trazabilidad en la tabla (ventas_trazabilidad)
              */
-            if (estado_pedido === 4) {
+            if (estado_pedido === 1) { //estado_pedido
 
                 that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
                 res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
                 return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
             } else {
-                res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
+                 
+                 def.resolve();
             }
 
         } else {
@@ -2107,18 +2115,24 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         }
 
     }).then(function(resultado) {
-
+        
         var paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido, pedido.productos, pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo, 1, 0);
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
          *              se procede a registrarlo, de lo contrario solo lo actualizara
          */
-        if (resultado.length === 0) {
+        
+        if (!resultado || resultado.length === 0) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logTrazabilidadVentas', paramLogAutorizarPedido);
         } else {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogAutorizarPedido);
         }
-    }).fail(function(err) {
+        
+    }).then(function(resultado){
+        
+        res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
+    })
+            .fail(function(err) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -2291,7 +2305,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
          */
         if (resultado > 0) {
 
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
             throw 'Error actualizando la observacion de cartera';
@@ -2361,7 +2375,7 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
             return;
         } else {
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Modificacion exitosa', 200, {pedidos_clientes: {}}));
             return;
         }
     });
@@ -2689,7 +2703,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
          */
         if (resultado > 0) {
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
             throw 'Error actualizando la observacion de cartera';
@@ -2902,15 +2916,15 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
         if (resultado.length > 0) {
 
-            totalValorPedidoActual = resultado[0].valor_total_cotizacion;
+            /*totalValorPedidoActual = resultado[0].valor_total_cotizacion;
             estado_pedido = 0;
 
             if (totalValorPedidoNuevo > totalValorPedidoActual) {
                 estado_pedido = 4;
             } else {
                 estado_pedido = 1;
-            }
-
+            }*/
+                estado_pedido = 1;
             return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_producto_pedido', pedido, producto);
 
         } else {
@@ -2937,12 +2951,12 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         if (resultado > 0) {
 
             that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             //Agregamdo validacion
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
 
-            throw  'Error actualizando la observacion de cartera';
+            throw  'Error actualizando la observacion de cartera';  
             return;
 
         }
@@ -2951,10 +2965,10 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
-         *              se procede a registrarlo, de lo contrario solo lo actualizara
+         *              se procede a registrarlo, de lo contrario solo lo actualizara  
          */
 
-        if (estado_pedido === 4) {
+        if (estado_pedido === 1) { //estado_pedido = 4  
 
             if (resultado.length === 1) {
                 return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogAutorizarPedido);
@@ -3020,14 +3034,14 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     } else {
         estadoAprobacion = 1;
     }
-
+    pedido.estado_desaprobado = aprobado;
     var paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido, pedido.productos, pedido.usuario_id, pedido.observacion_cartera, pedido.total, 1, estadoAprobacion);
 
     G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarPedidoCarteraEstadoNoAsigando', pedido).then(function(resultado) {
 
         if (resultado > 0) {
 
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Modificacion exitosa', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
 
         } else {

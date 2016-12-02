@@ -306,7 +306,10 @@ define(["angular", "js/models"], function(angular, models) {
             this.get = function(id, parent, text, url, prefijo, alias) {
                 return new Modulo(id, parent, text, url, prefijo, alias);
             };
-
+            
+            this.getClass = function(){
+                return Modulo;
+            };
             return this;
         }]);
 });

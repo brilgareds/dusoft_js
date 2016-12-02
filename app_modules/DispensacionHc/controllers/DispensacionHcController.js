@@ -477,38 +477,18 @@ DispensacionHc.prototype.consultarLotesDispensarFormula = function(req, res){
  *              
  */
 DispensacionHc.prototype.existenciasBodegas = function(req, res){
-   console.log("*********DispensacionHc.prototype.existenciasBodegas*************");
-   console.log("*********DispensacionHc.prototype.existenciasBodegas*************");
-   console.log("*********DispensacionHc.prototype.existenciasBodegas*************");
    
     var today = new Date();
-    /*var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
-    var yyyy = today.getFullYear();
-        if(dd<10){
-            dd='0'+dd
-        } 
-        if(mm<10){      
-            mm='0'+mm
-        } */
+    
     var formato = 'YYYY-MM-DD';
-    //var fechaAddTicinco  = G.moment(today).add(25, 'day').format(formato);
     var fechaExtTicinco=G.moment().subtract(25,'days').format(formato);
-    //var today = yyyy+'-'+mm+'-'+dd;
     var fechaToday = G.moment(today).format(formato);
-    //var fechaDias = sumaFecha(-25,today);
     var that = this;
     var args = req.body.data;
     var fechaRegistro = "";
     var fechaDespacho = "";
     var def = G.Q.defer();
     
-    /*console.log("fechaAddTicinco ", fechaAddTicinco);
-    console.log("fechaExtTicinco ", fechaExtTicinco);
-    console.log("fechaToday ", fechaToday);
-    console.log("today ", today); */
-    //console.log("fechaDias ", fechaDias);
-    console.log("args ", args);
     if (args.existenciasBodegas === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {existenciasBodegas: []}));
         return;
@@ -562,7 +542,8 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
                                                principioActivo: args.existenciasBodegas.principioActivo, 
                                                producto: args.existenciasBodegas.codigoProducto,
                                                fechaDia: fechaExtTicinco,
-                                               today: fechaToday
+                                               today: fechaToday,
+                                               movimientoFormulaPaciente: 1
                                                };
                                                
         console.log("parametros ", parametros);
@@ -2521,6 +2502,47 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     }).done();
 };
 
+
+DispensacionHc.prototype.consultarMovimientoFormulasPaciente = function(req, res){
+
+    var that = this;
+    var args = req.body.data;
+    
+    var today = new Date();
+    
+    var formato = 'YYYY-MM-DD';
+     
+    var fechaExtTicinco=G.moment().subtract(25,'days').format(formato);
+    //var today = yyyy+'-'+mm+'-'+dd;
+    var fechaToday = G.moment(today).format(formato);
+     
+    if (!args.consultar_movimiento_formula_paciente.pacienteId || args.consultar_movimiento_formula_paciente.pacienteId.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere el documento del paciente', 404, {consultar_movimiento_formula_paciente: []}));
+        return;
+    }
+    if (!args.consultar_movimiento_formula_paciente.tipoIdPaciente || args.consultar_movimiento_formula_paciente.tipoIdPaciente.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de documento del paciente', 404, {consultar_movimiento_formula_paciente: []}));
+        return;
+    }
+    
+    var parametros = {tipoIdPaciente: args.consultar_movimiento_formula_paciente.tipoIdPaciente, 
+                                               pacienteId: args.consultar_movimiento_formula_paciente.pacienteId,
+                                               fechaDia: fechaExtTicinco,
+                                               today: fechaToday,
+                                               movimientoFormulaPaciente: 0
+                                               };
+    
+    G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametros).then(function(resultado){
+        
+        
+        return res.send(G.utils.r(req.url, 'Lista de formulas del paciente', 200, {consultar_movimiento_formula_paciente:resultado.rows}));
+       
+    }).fail(function(err){
+        
+        res.send(G.utils.r(req.url, err.msj, err.codigo, {consultar_movimiento_formula_paciente:[]}));
+    }).done();
+    
+};
 
 
 DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc"];

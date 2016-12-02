@@ -6,12 +6,12 @@ define(["angular", "js/services"], function(angular, services) {
                      "Usuario","$modal","localStorageService",
                      "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc",
                      "PlanesHc","TipoDocumentoHc","ProductosFOFO","LoteHc","ProductosHc","TipoDocumentoHc",
-                     "EntregaHc",
+                     "EntregaHc","UsuarioHc","ModuloHc","BodegaHc",
         function($rootScope, Request, API,
                 $modal,Usuario,localStorageService,
                 FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,
                 PlanesHc,TipoDocumentoHc,ProductosFOFO,LoteHc,ProductosHc,TipoDocumentoHc,
-                EntregaHc) {
+                EntregaHc,UsuarioHc,ModuloHc,BodegaHc) {
 
             var self = this;
             
@@ -28,6 +28,17 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
+            /**
+              * @author Cristian Ardila
+              * @fecha  02/12/2016 DD/MM/YYYYY
+              * +Descripcion Consulta el movimiento de las formulas del paciente
+              */
+            self.consultarMovimientoFormulasPaciente = function(obj, callback){
+                
+                Request.realizarRequest(API.DISPENSACIONHC.CONSULTAR_MOVIMIENTO_FORMULAS_PACIENTE,"POST", obj, function(data){    
+                    callback(data);                        
+                });
+            };
             
              /**
               * @author Cristian Ardila
@@ -397,6 +408,73 @@ define(["angular", "js/services"], function(angular, services) {
                     callback(data);
                 });
             };
+            
+            /**
+               * @author Cristian Ardila
+               * +Descripcion Funcion encargada de serializar los datos de la
+               *              formula medica contra los modelos
+               * @fecha 25/05/2016 DD/MM/YYYYY
+               */
+            self.renderListarMovimientoFormulasPaciente = function(formulas){                        
+                  
+                var resultado = [];
+                    
+                for(var i in formulas.consultar_movimiento_formula_paciente) {
+                    var _formula = formulas.consultar_movimiento_formula_paciente[i];
+                    var bodega = BodegaHc.get(_formula.bodega, _formula.razon_social);
+                    var usuario = UsuarioHc.get(_formula.usuario_id, _formula.usuario, _formula.nombre)
+                        usuario.setUsuarioId(_formula.usuario_id);
+                    var modulo = ModuloHc.get(_formula.usuario_id, '', _formula.formulacion, '', '', '');
+                    var formula = FormulaHc.get('',_formula.no_formula,'', '','', '', '','');   
+                   
+                    var Productos  = ProductosFOFO.get(_formula.codigo_producto,_formula.descripcion, 0); 
+                        Productos.setCantidadEntrega(_formula.unidades);
+                        formula.agregarProductos(Productos);  
+                                                             
+                        usuario.agregarModulosHc(modulo);  
+                        
+                        bodega.agregarFormula(usuario);
+                          console.log("usuario ", usuario);
+                    //Se crea el objeto afiliados
+                    /*var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
+                    //Se crea el objeto paciente
+                    var paciente = PacienteHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.apellidos,_formula.nombres)
+                      */
+                    
+                    /*
+                     * +Descripcion Formulas pendientes
+                     */
+                    
+                          /*  paciente.setEdad(_formula.edad);
+                            paciente.setResidenciaDireccion(_formula.residencia_direccion);
+                            paciente.setResidenciaTelefono(_formula.residencia_telefono);
+                            paciente.setSexo(_formula.sexo);  
+                        var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');   
+                            formula.setEstadoEntrega( _formula.estado_entrega);
+                            formula.setDescripcionEstadoEntrega( _formula.descripcion_estado_entrega);
+                            formula.setEstado( _formula.sw_estado);
+                        var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad); 
+                            Productos.setIdentificadorDePendiente(_formula.hc_pendiente_dispensacion_id);
+                            formula.agregarProductos(Productos);  
+                         
+                    
+                         //El paciente tiene su formula
+                    paciente.agregarFormulas(formula);
+
+                     //debe ser afiliado el paciente
+                    afiliados.agregarPacientes(paciente);
+                    
+                    
+                     //Se almacenan los afiliados
+                    resultado.push(afiliados);*/
+                }
+                
+                 // console.log("resultado ---> ", resultado);
+                return resultado;
+                
+            };
+            
+            
             /**
                * @author Cristian Ardila
                * +Descripcion Funcion encargada de serializar los datos de la

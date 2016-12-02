@@ -350,103 +350,17 @@ DispensacionHcModel.prototype.listarMedicamentosDispensados = function(obj,callb
              and inv.codigo_producto  = dd.codigo_producto\
   )as k \
   )as todo WHERE todo.entrega = (SELECT max(numero_entrega_actual) from dispensacion_estados where evolucion_id = :1 )";
-   /*console.log("obj ", obj);
-    var fecha=" to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega ";
-    var group;
-    if(obj.ultimo ===1){
-          fecha=" max(to_char(d.fecha_registro,'YYYY-mm-dd')) as fecha_entrega ";
-          group=" GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12 order by fecha_entrega desc ";
-      }
-    var parametros = {1: obj.evolucionId};
-    var sql = "SELECT\
-        dd.codigo_producto,\
-        dd.cantidad as numero_unidades,\
-        dd.fecha_vencimiento ,\ 
-        dd.lote,\
-        fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
-        fc_descripcion_producto_alterno(dd.codigo_producto) as molecula,\
-        d.usuario_id,\
-        sys.nombre,\
-        sys.descripcion,\
-        dd.sw_pactado,\
-        dd.total_costo,\
-        inv.grupo_id, "+fecha+" \
-        FROM\
-          hc_formulacion_despachos_medicamentos as dc,\
-          bodegas_documentos as d,\
-          bodegas_documentos_d AS dd,\
-          system_usuarios  sys,\
-          inventarios_productos inv\
-        WHERE\
-            dc.bodegas_doc_id = d.bodegas_doc_id\
-        and dc.numeracion = d.numeracion\
-        and dc.evolucion_id = :1\
-        and d.bodegas_doc_id = dd.bodegas_doc_id\
-        and d.numeracion = dd.numeracion\
-        and d.usuario_id=sys.usuario_id\
-        and inv.codigo_producto  = dd.codigo_producto " + group;*/
-    //console.log("sql ----->>>>>>>>>> ", sql);
+   
     G.knex.raw(sql,parametros).then(function(resultado){    
       
         callback(false, resultado);
-        //console.log(" resultado [listarMedicamentosDispensados]: ", resultado.rows);
+       
     }).catch(function(err){        
       console.log(" err [listarMedicamentosDispensados]: ", err);
         callback(err);
     });
           
-    /*var group;
-    if(obj.ultimo ===1){
-
-        group="AND (to_char(d.fecha_registro,'YYYY-mm-dd')) >= \
-            (\
-                SELECT\
-                max( to_char(d.fecha_registro,'YYYY-mm-dd') ) as fecha_entrega\
-                FROM\
-                hc_formulacion_despachos_medicamentos as dc,\
-                bodegas_documentos as d,\
-                bodegas_documentos_d AS dd,\
-                system_usuarios  sys,\
-                inventarios_productos inv\
-                WHERE\
-                    dc.bodegas_doc_id = d.bodegas_doc_id\
-                    and  dc.numeracion = d.numeracion\
-                    and  dc.evolucion_id = :1\
-                    and  d.bodegas_doc_id = dd.bodegas_doc_id\
-                    and  d.numeracion = dd.numeracion\
-                    and  d.usuario_id=sys.usuario_id\
-                    and  inv.codigo_producto  = dd.codigo_producto\
-            )";
-    }
-    var parametros = {1: obj.evolucionId};
-    var sql = "SELECT\
-              dd.codigo_producto,\
-              dd.cantidad as numero_unidades,\
-              dd.fecha_vencimiento ,\
-              dd.lote,\
-              fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
-              fc_descripcion_producto_alterno(dd.codigo_producto) as molecula,\
-              d.usuario_id,\
-              sys.nombre,\
-              sys.descripcion,\
-              dd.sw_pactado,\
-              dd.total_costo,\
-	      inv.grupo_id, to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega \
-              FROM\
-                hc_formulacion_despachos_medicamentos as dc,\
-                bodegas_documentos as d,\
-                bodegas_documentos_d AS dd,\
-                system_usuarios  sys,\
-		inventarios_productos inv\
-              WHERE\
-                   dc.bodegas_doc_id = d.bodegas_doc_id\
-              and  dc.numeracion = d.numeracion\
-              and  dc.evolucion_id = :1\
-              and  d.bodegas_doc_id = dd.bodegas_doc_id\
-              and  d.numeracion = dd.numeracion\
-              and  d.usuario_id=sys.usuario_id\
-	      and  inv.codigo_producto  = dd.codigo_producto " + group;
-    console.log("sql ----->>>>>>>>>> ", sql);*/
+   
 };
 
 
@@ -640,15 +554,11 @@ SELECT todo.codigo_producto,  \
                               WHERE tmp2.evolucion_id = :1 AND d2.todo_pendiente != 1   \
                           )  \
   )as entrega WHERE entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = :1)||'%'";
-       
-  
-  
-    //WHERE entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = 360317)||'%'";
-   //var query = G.knex('hc_formulacion_antecedentes');//.where("evolucion_id","360317");
+    
     var query = G.knex.raw(sql,parametros);
-    //console.log("query ", query.toSQL());//.client.driver
+     
             query.then(function(resultado){    
-     // console.log("RESULTO QUE RESULTADO ", resultado.rows);
+     
         callback(false, resultado);
      
     }).catch(function(err){        
@@ -702,72 +612,6 @@ SELECT todo.codigo_producto,  \
 DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,callback){
     
     var parametros = {1: obj.evolucionId};
-    /*var sql = "SELECT\
-       TO_CHAR(k.fecha_registro,'YYYY-MM-DD') AS fecha_registro,\
-       k.fecha,\
-       round(to_number(to_char(k.fecha_registro - k.fecha,'dd'),'99G999D9S')/30) as Entrega,\
-       k.codigo_producto,\
-       k.numero_unidades,\
-       TO_CHAR(k.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento,\
-       k.lote,\
-       k.descripcion_prod,\
-       k.usuario_id,\
-       k.sistema,\
-       k.dias_de_entregado,\
-       K.fecha_entrega as fecha_entrega\
-        FROM(   SELECT   dd.codigo_producto,\
-                        dd.cantidad as numero_unidades,\
-                        dd.fecha_vencimiento ,\
-                        dd.lote,\
-                        fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
-                        d.usuario_id,\
-                        'dispensacion_hc' as sistema,\
-                        to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
-                        to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,\
-                                (\
-                                	SELECT min(hcf.fecha_formulacion) \
-                                    FROM hc_formulacion_antecedentes hcf \
-                                    WHERE hcf.evolucion_id = :1 \
-                                    )as fecha,\
-                                d.fecha_registro\
-			FROM  hc_formulacion_despachos_medicamentos_pendientes hc\
-                        INNER JOIN bodegas_documentos d\
-                         ON hc.bodegas_doc_id = d.bodegas_doc_id AND hc.numeracion = d.numeracion\
-                        INNER JOIN bodegas_documentos_d dd ON\
-                            dd.bodegas_doc_id = d.bodegas_doc_id\
-                            AND dd.numeracion     = d.numeracion\
-                            WHERE hc.evolucion_id = :1 AND d.todo_pendiente = '1' \
-			UNION \
-			select\
-                                dd.codigo_producto,\
-                                dd.cantidad as numero_unidades,\
-                                dd.fecha_vencimiento ,\
-                                dd.lote,\
-                                fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
-                                d.usuario_id,\
-                                'dispensacion_hc' as sistema,\
-                                to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
-                                to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,\
-                                (\
-                                	SELECT min(hcf.fecha_formulacion) \
-                                    FROM hc_formulacion_antecedentes hcf \
-                                    WHERE hcf.evolucion_id = :1 \
-                                    )as fecha,\
-                                d.fecha_registro\
-                                FROM\
-                                  hc_formulacion_despachos_medicamentos as dc,\
-                                  bodegas_documentos as d,\
-                                  bodegas_documentos_d AS dd\
-                                WHERE\
-                                     dc.bodegas_doc_id = d.bodegas_doc_id\
-                                and        dc.numeracion = d.numeracion\
-                                and        dc.evolucion_id = :1 \
-                                and        d.bodegas_doc_id = dd.bodegas_doc_id\
-                                and        d.numeracion = dd.numeracion\
-                           )as k\
-                           order by fecha_entrega asc";*/
-    //console.log("sql ----->>>>>>>>>> ", sql);
-    
     var sql = "SELECT\
        TO_CHAR(k.fecha_registro,'YYYY-MM-DD') AS fecha_registro,\
        k.fecha,\
@@ -961,43 +805,6 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
     console.log("***********DispensacionHcModel.prototype.listarMedicamentosFormulados*****************");
     var parametros = {1: obj.evolucionId};
        
-        /*var sql = "SELECT  hc.codigo_medicamento,\
-                   ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30)  as numero_entregas,\
-               (hc.fecha_finalizacion - hc.fecha_registro)  as diferencia_final_inicio,\
-                hc.fecha_registro,\
-                hc.fecha_finalizacion,\
-                hc.dosis,\
-                hc.unidad_dosificacion,\
-                hc.frecuencia,\
-                hc.tiempo_total,\
-                hc.perioricidad_entrega,\
-                hc.descripcion,\
-                hc.tiempo_perioricidad_entrega,\
-                hc.unidad_perioricidad_entrega,\
-                hc.cantidad,\
-                a.cantidad as  cantidad_entrega,\
-                hc.fecha_modificacion,\
-                pric.descripcion as principio_activo,\
-                pric.cod_principio_activo,\
-                fc_descripcion_producto_alterno(hc.codigo_medicamento) as descripcion_prod,\
-                hc.sw_autorizado,\
-                hc.tipo_id_paciente,\
-                hc.paciente_id,\
-                TO_CHAR(hc.fecha_formulacion,'YYYY-MM-DD') AS fecha_formulacion,\
-                refrendar,\
-                hc.numero_formula,\
-                invp.cod_forma_farmacologica,\
-                CASE WHEN (\
-                 	SELECT sum(tmp.cantidad_despachada) FROM hc_dispensacion_medicamentos_tmp tmp\
-                 	WHERE tmp.evolucion_id = hc.evolucion_id AND tmp.codigo_formulado = hc.codigo_medicamento \
-                    GROUP BY tmp.codigo_formulado \
-                    ) = a.cantidad THEN '1' ELSE '0' END  AS sw_seleccionar_tmp\
-                FROM   hc_formulacion_antecedentes hc\
-                LEFT JOIN  medicamentos med ON(hc.codigo_medicamento=med.codigo_medicamento)\
-                LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
-                LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)\
-                JOIN hc_medicamentos_recetados_amb a ON hc.codigo_medicamento = a.codigo_producto AND hc.evolucion_id = a.evolucion_id\
-                WHERE hc.evolucion_id = :1 ORDER BY  ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ";*/
         
         var sql = "SELECT * FROM (\
                 SELECT  hc.codigo_medicamento,  \
@@ -1062,33 +869,6 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                      
     var parametros = {1: obj.evolucionId};
      
-        /*var sql = "select A.codigo_medicamento,\
-                    SUM(numero_unidades) as cantidad_entrega,\
-                   fc_descripcion_producto_alterno(A.codigo_medicamento) as descripcion_prod,\
-                   med.cod_principio_activo,hc.sw_autorizado,\
-                   hc.perioricidad_entrega,\
-                   hc.tiempo_total ,\
-                   invp.cod_forma_farmacologica\
-                    from\
-                        (\
-                        select\
-                        dc.codigo_medicamento,\
-                        SUM(dc.cantidad) as numero_unidades\
-                        FROM  hc_pendientes_por_dispensar as dc\
-                   WHERE      dc.evolucion_id = :1\
-                   and        dc.sw_estado = '0'\
-                  group by(dc.codigo_medicamento)\
-                  ) as A INNER JOIN hc_formulacion_antecedentes hc ON (hc.codigo_medicamento=A.codigo_medicamento)\
-                     LEFT JOIN  medicamentos med ON(A.codigo_medicamento=med.codigo_medicamento)\
-                     LEFT JOIN inv_med_cod_principios_activos pric ON (med.cod_principio_activo=pric.cod_principio_activo)\
-                     LEFT JOIN  inventarios_productos invp ON(hc.codigo_medicamento=invp.codigo_producto)\
-                    WHERE hc.evolucion_id = :1\
-                    group by med.cod_principio_activo,\
-                          A.codigo_medicamento,\
-                          hc.sw_autorizado,\
-                          hc.perioricidad_entrega,\
-                          hc.tiempo_total,\
-                          invp.cod_forma_farmacologica";*/
     var sql = "SELECT B.codigo_medicamento,\
        B.cantidad_entrega,\
        B.descripcion_prod, \
@@ -1184,35 +964,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callba
                                                       codigo_formulado  \
                                                       FROM hc_dispensacion_medicamentos_tmp  \
                                                       where evolucion_id= :1 )";
-        /*var sql = "SELECT  a.codigo_producto,\
-                          (b.cantidades - a.cantidades) as total\
-                  from\
-                  (\
-                        SELECT codigo_formulado AS codigo_producto,\
-                              SUM(cantidad_despachada) as cantidades\
-                        FROM hc_dispensacion_medicamentos_tmp\
-                        where evolucion_id= :1\
-                        group by  codigo_formulado\
-                  ) as a,\
-                  (\
-                  SELECT codigo_medicamento as codigo_producto,\
-                            SUM(cantidad_entrega) as cantidades\
-                            FROM hc_formulacion_antecedentes\
-                            where evolucion_id= :1\
-                      group by codigo_medicamento\
-                  ) as b\
-                 where\
-                          a.codigo_producto = b.codigo_producto\
-                UNION\
-                    SELECT codigo_medicamento as codigo_producto,\
-                          cantidad_entrega as cantidades\
-                          FROM hc_formulacion_antecedentes\
-                          where evolucion_id= :1 and sw_mostrar='1'\
-                     and codigo_medicamento NOT IN( select\
-                                                      codigo_formulado\
-                                                      FROM hc_dispensacion_medicamentos_tmp\
-                                                      where evolucion_id= :1 )";*/
-   
+    
     G.knex.raw(sql,parametros).then(function(resultado){    
        
         callback(false, resultado)
@@ -1290,25 +1042,24 @@ DispensacionHcModel.prototype.consultarMedicamentosDespachados = function(obj,ca
  * -- Pertenece a la funcion ConsultarUltimoResg_Dispens_
  */
 DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj,callback){
-    
-    console.log(" ***** consultarUltimoRegistroDispensacion ****** ");
-    console.log(" ***** consultarUltimoRegistroDispensacion ****** ");
-    console.log(" ***** consultarUltimoRegistroDispensacion ****** ");
-    
-    
+     
     var sql = "";
     var sql2 = "";
+    var limit = "";
     var parametros = {1: obj.tipoIdPaciente, 2: obj.pacienteId};
-    if(obj.principioActivo){
-        sql = "and mm.cod_principio_activo='" + obj.principioActivo + "' ";
-        sql2 = "and h.subclase_id='" + obj.principioActivo + "' ";
-       
-    }else{
-        sql ="and inve.codigo_producto='" + obj.producto + "' ";
-        sql2 ="and b.codigo_producto ='" + obj.producto + "' ";
-                                     
-    }
-                   
+    
+   if(obj.movimientoFormulaPaciente === 1){
+        if(obj.principioActivo){
+            sql = "and mm.cod_principio_activo='" + obj.principioActivo + "' ";
+            sql2 = "and h.subclase_id='" + obj.principioActivo + "' ";
+
+        }else{
+            sql ="and inve.codigo_producto='" + obj.producto + "' ";
+            sql2 ="and b.codigo_producto ='" + obj.producto + "' ";
+
+        }
+        limit = "LIMIT 1";
+   }                                
         console.log("PARAMETROS obj ", obj);          
         
         var sql = "SELECT  A.resultado, \
@@ -1318,9 +1069,13 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
         (SELECT bode.descripcion FROM bodegas as bode WHERE bode.empresa_id = A.empresa_id AND bode.centro_utilidad=A.centro_utilidad AND bode.bodega = A.bodega) AS razon_social, \
         A.bodega,\
         A.centro_utilidad,\
-        A.formulacion, A.modulo, \n\
+        A.formulacion, A.modulo, \
         CASE WHEN A.modulo = 0 THEN (SELECT distinct(numero_formula) FROM hc_formulacion_antecedentes WHERE evolucion_id = A.formula ) :: varchar\
-                    ELSE (SELECT distinct(formula_papel) FROM esm_formula_externa WHERE formula_id = A.formula ) END  AS no_formula\
+                    ELSE (SELECT distinct(formula_papel) FROM esm_formula_externa WHERE formula_id = A.formula ) END  AS no_formula,\
+        A.codigo_producto,\
+        fc_descripcion_producto(A.codigo_producto) as descripcion,\n\
+        A.usuario_id,\
+        A.usuario\
                 FROM ( \
                     SELECT \
                         d.fecha_registro,\
@@ -1331,7 +1086,10 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         NUME.bodega,\
                         NUME.centro_utilidad,\
                         NUME.empresa_id,\
-                        'F.historia clinica' as formulacion, '0' as modulo, dc.evolucion_id as formula\
+                        'F.historia clinica' as formulacion, '0' as modulo, \n\
+                        dc.evolucion_id as formula,\
+                        dd.codigo_producto,\
+                        SYS.usuario_id,SYS.usuario \
                       FROM hc_formulacion_despachos_medicamentos as dc \
                         JOIN dispensacion_estados hc ON(dc.evolucion_id=hc.evolucion_id), \
                         bodegas_documentos as d, \
@@ -1350,7 +1108,8 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and NUME.empresa_id=EMPRE.empresa_id " + sql + " and hc.tipo_id_paciente= :1 \
                         and hc.paciente_id= :2 \
                         and dc.sw_estado='1'\
-                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id,dc.evolucion_id  \
+                    GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,\n\
+                            NUME.bodega,NUME.centro_utilidad,NUME.empresa_id,dc.evolucion_id,dd.codigo_producto,SYS.usuario_id,SYS.usuario\
                 	UNION \
                      SELECT \
                         d.fecha_registro,\
@@ -1361,7 +1120,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         NUME.bodega,\
                         NUME.centro_utilidad,\
                         NUME.empresa_id,\
-                        'F.historia clinica' as formulacion, '0' as modulo,dc.evolucion_id as formula\
+                        'F.historia clinica' as formulacion, '0' as modulo,dc.evolucion_id as formula,dd.codigo_producto,SYS.usuario_id,SYS.usuario \
                         FROM hc_formulacion_despachos_medicamentos_pendientes as dc \
                         JOIN dispensacion_estados hc ON(dc.evolucion_id=hc.evolucion_id) , \
                         bodegas_documentos as d, \
@@ -1379,7 +1138,8 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and d.bodegas_doc_id=NUME.bodegas_doc_id \
                         and NUME.empresa_id=EMPRE.empresa_id " + sql +  " and hc.tipo_id_paciente= :1\
                         and hc.paciente_id= :2\
-                      GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,NUME.empresa_id,dc.evolucion_id \
+                      GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,\n\
+                               NUME.empresa_id,dc.evolucion_id,dd.codigo_producto,SYS.usuario_id,SYS.usuario \
                 UNION \
                       SELECT \
                         a.fecha_registro,\
@@ -1390,7 +1150,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         e.bodega,\
                         e.centro_utilidad, \
                         e.empresa_id,\
-                        'F.externa' as formulacion,'1' as modulo, c.formula_id as formula\
+                        'F.externa' as formulacion,'1' as modulo, c.formula_id as formula,b.codigo_producto,g.usuario_id,g.usuario\
                       FROM \
                         bodegas_documentos as a \
                         JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id) \
@@ -1410,7 +1170,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and d.sw_estado IN ('0','1') \
                         and a.fecha_registro >= '" +obj.fechaDia+ "'::date\
                         and a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
-                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id,c.formula_id  \
+                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id,c.formula_id,b.codigo_producto,g.usuario_id,g.usuario  \
                 UNION  \
                       SELECT \
                         a.fecha_registro,\
@@ -1421,7 +1181,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         e.bodega,\
                         e.centro_utilidad,\
                         e.empresa_id,\
-                        'F.externa' as formulacion, '1' as modulo,c.formula_id as formula\
+                        'F.externa' as formulacion, '1' as modulo,c.formula_id as formula, b.codigo_producto,g.usuario_id,g.usuario\
                       FROM \
                         bodegas_documentos as a \
                         JOIN bodegas_documentos_d as b ON (a.bodegas_doc_id = b.bodegas_doc_id) \
@@ -1440,8 +1200,8 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and d.sw_estado IN ('0','1') \
                         and a.fecha_registro >= '" +obj.fechaDia+ "'::date\
                         and a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
-                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id,c.formula_id \
-                       ) AS A ORDER BY  A.fecha_registro DESC LIMIT 1";
+                      GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id,c.formula_id,b.codigo_producto,g.usuario_id,g.usuario \
+                       ) AS A ORDER BY  A.fecha_registro DESC "+ limit;
      /*   var sql = "SELECT A.resultado,\
                 A.fecha_registro,\
                 A.unidades,\

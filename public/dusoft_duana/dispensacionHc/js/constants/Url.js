@@ -40,6 +40,7 @@ define(["angular"], function (angular) {
                 "DESCARTAR_PRODUCTO_PENDIENTE": BASE_URL + "/DispensacionHc/descartarProductoPendiente",
                 "LISTAR_REGISTRO_DE_EVENTOS": BASE_URL + "/DispensacionHc/listarRegistroDeEventos",
                 "CONSULTAR_CABECERA_FORMULA": BASE_URL + "/DispensacionHc/obtenerCabeceraFormula",
+                "CONSULTAR_MOVIMIENTO_FORMULAS_PACIENTE": BASE_URL + "/DispensacionHc/consultarMovimientoFormulasPaciente",
                 
                /**
                 * +DESCRIPCION FUNCION EXCLUSIVA PARA ALMACENAR LAS FORMULAS EN LA TABLA

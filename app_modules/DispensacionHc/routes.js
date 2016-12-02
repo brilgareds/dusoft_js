@@ -152,7 +152,10 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.obtenerCabeceraFormula(req, res);
     });
     
-    
+    //realizando la consulta de todas las dispensaciones pertenecientes a un paciente
+    app.post("/api/DispensacionHc/consultarMovimientoFormulasPaciente", function(req, res){
+        c_dispensacion_hc.consultarMovimientoFormulasPaciente(req, res);
+    });
     /**
      * +DESCRIPCION SERVICIO EXCLUSIVO PARA ALMACENAR LAS FORMULAS EN LA TABLA
      *              DE DISPENSACION_ESTADOS
@@ -160,6 +163,8 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/insertarFormulasDispensacionEstados", function(req, res){
         c_dispensacion_hc.insertarFormulasDispensacionEstados(req, res);
     });
+    
+    
     
     
 };

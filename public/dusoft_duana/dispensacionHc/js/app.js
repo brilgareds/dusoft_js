@@ -48,6 +48,7 @@ define([
     "controllers/dispensacionAutorizarDispensacion",
     "controllers/dispensacionRegistrarEventoController",
     "controllers/descartarPendientesFormulaController",
+    "controllers/dispensacionMovimientoFormulasPacienteController",
     "services/dispensacionHcService",
     "webNotification"
 ], function(angular) { 

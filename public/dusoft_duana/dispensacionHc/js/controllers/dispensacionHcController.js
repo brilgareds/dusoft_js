@@ -421,7 +421,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                                             pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Ultima entrega</a>\
                                                  </li>\
                                            \<li>\
-                                                    <a href="javascript:void(0);" ng-click="consultarMovimientoFormulasPaciente({tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
+                                                    <a href="javascript:void(0);" ng-click="ventanaMovimientoFormulasPaciente({tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
                                                                                             pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()})" class = "glyphicon glyphicon-folder-open" > Movimiento</a>\
                                                  </li>\
                                             </ul>\
@@ -798,41 +798,46 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     };
                     
-                    /**
-                     * @author Cristian Manuel Ardila Troches
-                     * +Descripcion Metodo que se activara cuando se seleccione
-                     *              en la lista de formulas de la pagina principal
-                     *              la opcion (Movimiento), el cual invocara el 
-                     *              servicio encargado de listar el movimiento
-                     *              de formulas del paciente
-                     * @fecha 2016/12/02 YYYY/MM/DD
-                     */
-                    $scope.consultarMovimientoFormulasPaciente = function(entity){                        
-                        
-                        var obj = {                   
-                                    session: $scope.session,
-                                    data: {
-                                       consultar_movimiento_formula_paciente: {
-                                            tipoIdPaciente:entity.tipoIdPaciente,
-                                            pacienteId: entity.pacienteId,
-                                            
-                                       }
-                                   }    
-                                };  
-                        dispensacionHcService.consultarMovimientoFormulasPaciente(obj,function(data){
-                            
-                            if(data.status === 200){ 
-                                
-                                dispensacionHcService.renderListarMovimientoFormulasPaciente(data.obj);
-                               //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
-                                
-                            }else{                         
-                               AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                    
+                    
+                    
+                    
+            /**
+            * @author Cristian Ardila
+            * +Descripcion ventana modal para registrar la autorizacion de dispensacion
+            *              de un medicamento confrontado
+            */
+            $scope.ventanaMovimientoFormulasPaciente = function(detallePaciente){
+                
+                console.log("movimientoFormulas ", detallePaciente);
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                     /*backdrop: 'static',
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    
+                    windowClass: 'app-modal-window-xlg',*/
+                    templateUrl: 'views/dispensacionHc/dispensacionMovimientoFormulasPaciente.html',
+                    scope: $scope,                  
+                    controller: "dispensacionMovimientoFormulasPacienteController",
+                    resolve: {                                              
+                            detallePaciente: function(){
+                                return detallePaciente;
                             }
-                                   
-                            
-                        });                        
-                    }
+                        }         
+                };
+                var modalInstance = $modal.open($scope.opts);   
+
+                    modalInstance.result.then(function(){
+                    },function(){});                          
+
+            };
+                    
+                    
                     
                     that.init(empresa, function() {
 

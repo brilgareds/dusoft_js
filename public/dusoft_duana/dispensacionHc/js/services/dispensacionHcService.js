@@ -6,12 +6,12 @@ define(["angular", "js/services"], function(angular, services) {
                      "Usuario","$modal","localStorageService",
                      "FormulaHc","PacienteHc","EpsAfiliadosHc","PlanesRangosHc",
                      "PlanesHc","TipoDocumentoHc","ProductosFOFO","LoteHc","ProductosHc","TipoDocumentoHc",
-                     "EntregaHc","UsuarioHc","ModuloHc","BodegaHc",
+                     "EntregaHc","UsuarioHc","ModuloHc","BodegaHc","EntregaHc",
         function($rootScope, Request, API,
                 $modal,Usuario,localStorageService,
                 FormulaHc,PacienteHc,EpsAfiliadosHc,PlanesRangosHc,
                 PlanesHc,TipoDocumentoHc,ProductosFOFO,LoteHc,ProductosHc,TipoDocumentoHc,
-                EntregaHc,UsuarioHc,ModuloHc,BodegaHc) {
+                EntregaHc,UsuarioHc,ModuloHc,BodegaHc,EntregaHc) {
 
             var self = this;
             
@@ -411,9 +411,9 @@ define(["angular", "js/services"], function(angular, services) {
             
             /**
                * @author Cristian Ardila
-               * +Descripcion Funcion encargada de serializar los datos de la
-               *              formula medica contra los modelos
-               * @fecha 25/05/2016 DD/MM/YYYYY
+               * +Descripcion Funcion encargada de serializar contra los modelos 
+               *              los datos de la formula medica hasta ahora dispensadas 
+               * @fecha 02/12/2016 DD/MM/YYYYY
                */
             self.renderListarMovimientoFormulasPaciente = function(formulas){                        
                   
@@ -421,7 +421,7 @@ define(["angular", "js/services"], function(angular, services) {
                     
                 for(var i in formulas.consultar_movimiento_formula_paciente) {
                     var _formula = formulas.consultar_movimiento_formula_paciente[i];
-                    var bodega = BodegaHc.get(_formula.bodega, _formula.razon_social);
+                    var bodega = BodegaHc.get( _formula.razon_social, _formula.bodega);
                     var usuario = UsuarioHc.get(_formula.usuario_id, _formula.usuario, _formula.nombre)
                         usuario.setUsuarioId(_formula.usuario_id);
                     var modulo = ModuloHc.get(_formula.usuario_id, '', _formula.formulacion, '', '', '');
@@ -430,46 +430,18 @@ define(["angular", "js/services"], function(angular, services) {
                     var Productos  = ProductosFOFO.get(_formula.codigo_producto,_formula.descripcion, 0); 
                         Productos.setCantidadEntrega(_formula.unidades);
                         formula.agregarProductos(Productos);  
-                                                             
+                    var Entrega = EntregaHc.get();
+                        Entrega.setFechaEntrega(_formula.fecha_registro);
+                        Entrega.agregarFormulas(formula);    
+                        modulo.agregarEntregas(Entrega);                                   
                         usuario.agregarModulosHc(modulo);  
                         
-                        bodega.agregarFormula(usuario);
-                          console.log("usuario ", usuario);
-                    //Se crea el objeto afiliados
-                    /*var afiliados = EpsAfiliadosHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.plan_id)
-                    //Se crea el objeto paciente
-                    var paciente = PacienteHc.get(_formula.tipo_id_paciente,_formula.paciente_id,_formula.apellidos,_formula.nombres)
-                      */
-                    
-                    /*
-                     * +Descripcion Formulas pendientes
-                     */
-                    
-                          /*  paciente.setEdad(_formula.edad);
-                            paciente.setResidenciaDireccion(_formula.residencia_direccion);
-                            paciente.setResidenciaTelefono(_formula.residencia_telefono);
-                            paciente.setSexo(_formula.sexo);  
-                        var formula = FormulaHc.get(_formula.evolucion_id,_formula.numero_formula,'', '','', '', '','');   
-                            formula.setEstadoEntrega( _formula.estado_entrega);
-                            formula.setDescripcionEstadoEntrega( _formula.descripcion_estado_entrega);
-                            formula.setEstado( _formula.sw_estado);
-                        var Productos  = ProductosFOFO.get(_formula.codigo_medicamento,_formula.descripcion, _formula.cantidad); 
-                            Productos.setIdentificadorDePendiente(_formula.hc_pendiente_dispensacion_id);
-                            formula.agregarProductos(Productos);  
-                         
-                    
-                         //El paciente tiene su formula
-                    paciente.agregarFormulas(formula);
-
-                     //debe ser afiliado el paciente
-                    afiliados.agregarPacientes(paciente);
-                    
-                    
-                     //Se almacenan los afiliados
-                    resultado.push(afiliados);*/
+                        bodega.agregarUsuarios(usuario);
+                        resultado.push(bodega);
+                   
                 }
                 
-                 // console.log("resultado ---> ", resultado);
+                 console.log("resultado ---> ", resultado);
                 return resultado;
                 
             };

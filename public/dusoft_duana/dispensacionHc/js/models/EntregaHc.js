@@ -7,6 +7,8 @@ define(["angular", "js/models", "includes/classes/Entrega"], function (angular, 
             function EntregaHc() {                           
                 Entrega.getClass().call(); 
                 this.productos = [];
+                this.formulas = [];
+                this.fechaEntrega;
             }
             
             EntregaHc.prototype = Object.create(Entrega.getClass().prototype);
@@ -28,7 +30,33 @@ define(["angular", "js/models", "includes/classes/Entrega"], function (angular, 
             EntregaHc.prototype.vaciarProductos = function () {
                 this.productos = [];
              };
-             
+            
+            
+            
+            
+            
+            EntregaHc.prototype.setFechaEntrega = function(fechaEntrega) {
+                this.fechaEntrega = fechaEntrega;
+            };
+
+            EntregaHc.prototype.getFechaEntrega = function() {
+                return this.fechaEntrega;
+            };
+
+            EntregaHc.prototype.agregarFormulas = function(formula){
+                this.formulas.push(formula);
+            };
+
+            EntregaHc.prototype.mostrarFormulas = function(){
+               return this.formulas;
+            };
+
+            EntregaHc.prototype.vaciarFormulas = function () {
+               this.formulas = [];
+            };
+
+            
+            
             return this;
 
         }]);

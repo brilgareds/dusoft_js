@@ -2162,7 +2162,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
         return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
-console.log("result >>>>>>",result);
+console.log("cabecera result >>>>>>",result);
         obj.resultadoEncabezado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
            throw {msj:/*result.return.descripcion["$value"]*/"Se ha generado un error sincronizando el documento", status:403, obj:{}}; 
@@ -2216,7 +2216,9 @@ function __sincronizarDetalleDocumento(obj, callback){
                   (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
-        } else if(obj.pedido.identificacion_cliente === '900228989' && obj.pedido.tipo_id_cliente === "NIT"){//Santa Soafia
+        } else if((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS")||
+                  (obj.pedido.identificacion_cliente === '255' && obj.pedido.tipo_id_cliente === "AS")||
+                  (obj.pedido.identificacion_cliente === '256' && obj.pedido.tipo_id_cliente === "AS")){//Santa Soafia
             
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
         }
@@ -2257,6 +2259,9 @@ function __sincronizarDetalleDocumento(obj, callback){
         return G.Q.ninvoke(client, "bodegasMovimientoTmpD",detalle);
     }).
     spread(function(result,raw,soapHeader){
+console.log("result detalle ",result);
+console.log("result raw ",raw);
+console.log("result soapHeader ",soapHeader);
         obj.resultadoDetalle = result.return.descripcion["$value"];
         obj.error = false;
         

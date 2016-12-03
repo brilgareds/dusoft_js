@@ -2419,7 +2419,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     var fechaUltimaEntrega;
     var estadoFinalizacionFormula;
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros).then(function(resultado){   
-         console.log("ESTO ES TODO OK ", resultado.rows);
+         
         if(resultado.rows.length > 0){
             fechaFormulacion = resultado.rows[0].fecha_formulacion;
              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:parametros.evolucionId,numeroEntregaActual:1});
@@ -2438,9 +2438,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         }
          
     }).then(function(resultado){// generarDispensacionEstados
-          
-        console.log("LO DEL RETURNING  ", fechaFormulacion);
-        console.log("LO DE LA FECHA  ", resultado.rows[0].fecha_entrega);
+         
         if(resultado.rowCount > 0){
               fechaUltimaEntrega = resultado.rows[0].fecha_entrega;
               estadoFinalizacionFormula = resultado.rows[0].sw_finalizado;
@@ -2502,25 +2500,28 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     }).done();
 };
 
-
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de traer las formulas dispensadas de los ultimos
+ *              50 dias de un paciente, se hayan entregado tanto por el modulo de 
+ *              dispensacion HC (Histori Clinica) ó Formulacion Externa
+ * @fecha 2016-12-03
+ */
 DispensacionHc.prototype.consultarMovimientoFormulasPaciente = function(req, res){
 
     var that = this;
     var args = req.body.data;
-    
     var today = new Date();
-    
     var formato = 'YYYY-MM-DD';
-     
     var fechaExtTicinco=G.moment().subtract(50,'days').format(formato);
-    //var today = yyyy+'-'+mm+'-'+dd;
     var fechaToday = G.moment(today).format(formato);
      
-    if (!args.consultar_movimiento_formula_paciente.pacienteId || args.consultar_movimiento_formula_paciente.pacienteId.length === 0 ) {
+    if(!args.consultar_movimiento_formula_paciente.pacienteId || args.consultar_movimiento_formula_paciente.pacienteId.length === 0 ) {
         res.send(G.utils.r(req.url, 'Se requiere el documento del paciente', 404, {consultar_movimiento_formula_paciente: []}));
         return;
     }
-    if (!args.consultar_movimiento_formula_paciente.tipoIdPaciente || args.consultar_movimiento_formula_paciente.tipoIdPaciente.length === 0 ) {
+    
+    if(!args.consultar_movimiento_formula_paciente.tipoIdPaciente || args.consultar_movimiento_formula_paciente.tipoIdPaciente.length === 0 ) {
         res.send(G.utils.r(req.url, 'Se requiere el tipo de documento del paciente', 404, {consultar_movimiento_formula_paciente: []}));
         return;
     }

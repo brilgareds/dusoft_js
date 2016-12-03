@@ -811,16 +811,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
                 console.log("movimientoFormulas ", detallePaciente);
                 $scope.opts = {
-                    backdrop: true,
+                    /*backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
-                    keyboard: true,
-                     /*backdrop: 'static',
+                    keyboard: true,*/
+                    //backdrop: 'static',
                     backdropClick: true,
                     dialogFade: false,
                     keyboard: true,
-                    
-                    windowClass: 'app-modal-window-xlg',*/
+                    size: 'lg',
+                    //windowClass: 'window-class',
+                    //windowClass: 'app-modal-window-xls',                            
                     templateUrl: 'views/dispensacionHc/dispensacionMovimientoFormulasPaciente.html',
                     scope: $scope,                  
                     controller: "dispensacionMovimientoFormulasPacienteController",

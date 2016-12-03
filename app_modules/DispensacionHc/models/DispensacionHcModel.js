@@ -1046,21 +1046,24 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     var sql = "";
     var sql2 = "";
     var limit = "";
+    var sql3 = "WHERE A.fecha_registro between '" +obj.fechaDia+ "'::date and '" + obj.today + "'::date";
     var parametros = {1: obj.tipoIdPaciente, 2: obj.pacienteId};
     
    if(obj.movimientoFormulaPaciente === 1){
         if(obj.principioActivo){
             sql = "and mm.cod_principio_activo='" + obj.principioActivo + "' ";
             sql2 = "and h.subclase_id='" + obj.principioActivo + "' ";
-
+            sql3 = "";
         }else{
             sql ="and inve.codigo_producto='" + obj.producto + "' ";
             sql2 ="and b.codigo_producto ='" + obj.producto + "' ";
-
+            sql3 = "";
         }
         limit = "LIMIT 1";
-   }                                
+   }   
+    
         console.log("PARAMETROS obj ", obj);          
+        console.log("PARAMETROS sql3 ", sql3);          
         
         var sql = "SELECT  A.resultado, \
         to_char(A.fecha_registro,'YYYY-MM-DD')as fecha_registro, \
@@ -1201,7 +1204,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         and a.fecha_registro >= '" +obj.fechaDia+ "'::date\
                         and a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date\
                       GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id,c.formula_id,b.codigo_producto,g.usuario_id,g.usuario \
-                       ) AS A ORDER BY  A.fecha_registro DESC "+ limit;
+                       ) AS A "+sql3+" ORDER BY  A.fecha_registro DESC "+ limit;
      /*   var sql = "SELECT A.resultado,\
                 A.fecha_registro,\
                 A.unidades,\

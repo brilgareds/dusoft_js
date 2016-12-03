@@ -2512,7 +2512,7 @@ DispensacionHc.prototype.consultarMovimientoFormulasPaciente = function(req, res
     
     var formato = 'YYYY-MM-DD';
      
-    var fechaExtTicinco=G.moment().subtract(25,'days').format(formato);
+    var fechaExtTicinco=G.moment().subtract(50,'days').format(formato);
     //var today = yyyy+'-'+mm+'-'+dd;
     var fechaToday = G.moment(today).format(formato);
      

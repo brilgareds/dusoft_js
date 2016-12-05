@@ -62,15 +62,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
               enableCellSelection: true,
               enableHighlighting: true,
               columnDefs: [
-                  {field: 'getNombre()', displayName: 'Farmacia', width:"10%"}, 
-                  {field: 'mostrarUsuarios()[0].getNombre()', displayName: 'Usuario', width:"15%"}, 
-                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].getNombre()', displayName: 'Modulo', width:"12%"}, 
-                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].getFechaEntrega()', displayName: 'Fecha', width:"8%"}, 
-                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: 'Formula', width:"8%"}, 
-                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].mostrarFormulas()[0].mostrarProductos()[0].getCantidadEntrega()', displayName: 'Cant', width:"5%"}, 
-                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].mostrarFormulas()[0].mostrarProductos()[0].getCodigoProducto()', displayName: 'Codigo', width:"12%"}, 
+                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].getNombre()', displayName: 'Modulo', width:"10%"}, 
+                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].mostrarFormulas()[0].mostrarProductos()[0].getCodigoProducto()', displayName: 'Codigo', width:"10%"},
                   {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].mostrarFormulas()[0].mostrarProductos()[0].getDescripcion()', displayName: 'Descripcion'}, 
+                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].mostrarFormulas()[0].mostrarProductos()[0].getCantidadEntrega()', displayName: 'Cant', width:"5%"}, 
+                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].mostrarFormulas()[0].getNumeroFormula()', displayName: 'Formula', width:"8%"}, 
+                  {field: 'getNombre()', displayName: 'Farmacia', width:"14%"}, 
+                  {field: 'mostrarUsuarios()[0].getNombre()', displayName: 'Usuario', width:"15%"},                 
+                  {field: 'mostrarUsuarios()[0].mostrarModulosHc()[0].mostrarEntregas()[0].getFechaEntrega()', displayName: 'Fecha', width:"8%"}, 
                   
+                                     
+                                    
                  
               ]               
           };

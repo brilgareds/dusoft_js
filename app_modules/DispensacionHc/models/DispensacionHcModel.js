@@ -1046,7 +1046,9 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     var sql = "";
     var sql2 = "";
     var limit = "";
-    var sql3 = "WHERE A.fecha_registro between '" +obj.fechaDia+ "'::date and '" + obj.today + "'::date";
+    //var sql3 = "WHERE A.fecha_registro between '" +obj.fechaDia+ "'::date and '" + obj.today + "'::date";
+    var sql3 = "WHERE A.fecha_registro >= '" +obj.fechaDia+ "'::date\
+                        and A.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date";
     var parametros = {1: obj.tipoIdPaciente, 2: obj.pacienteId};
     
    if(obj.movimientoFormulaPaciente === 1){

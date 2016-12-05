@@ -1046,12 +1046,11 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     var sql = "";
     var sql2 = "";
     var limit = "";
-    //var sql3 = "WHERE A.fecha_registro between '" +obj.fechaDia+ "'::date and '" + obj.today + "'::date";
     var sql3 = "WHERE A.fecha_registro >= '" +obj.fechaDia+ "'::date\
                         and A.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date";
     var parametros = {1: obj.tipoIdPaciente, 2: obj.pacienteId};
     
-   if(obj.movimientoFormulaPaciente === 1){
+    if(obj.movimientoFormulaPaciente === 1){
         if(obj.principioActivo){
             sql = "and mm.cod_principio_activo='" + obj.principioActivo + "' ";
             sql2 = "and h.subclase_id='" + obj.principioActivo + "' ";
@@ -1062,7 +1061,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
             sql3 = "";
         }
         limit = "LIMIT 1";
-   }   
+    }   
     
         console.log("PARAMETROS obj ", obj);          
         console.log("PARAMETROS sql3 ", sql3);          

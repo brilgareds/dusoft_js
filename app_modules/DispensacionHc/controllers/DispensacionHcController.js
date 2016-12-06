@@ -95,9 +95,9 @@ DispensacionHc.prototype.listarTipoDocumento = function(req, res){
 
     G.Q.ninvoke(that.m_dispensacion_hc,'listarTipoDocumento').then(function(resultado){
       
-        if(resultado.rows.length > 0){
+        if(resultado.length > 0){
        
-           res.send(G.utils.r(req.url, 'Consulta tipo documento', 200, {listar_tipo_documento:resultado.rows}));
+           res.send(G.utils.r(req.url, 'Consulta tipo documento', 200, {listar_tipo_documento:resultado}));
         }else{
            throw 'Consulta sin resultados';
         }
@@ -2420,8 +2420,8 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     var estadoFinalizacionFormula;
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros).then(function(resultado){   
          
-        if(resultado.rows.length > 0){
-            fechaFormulacion = resultado.rows[0].fecha_formulacion;
+        if(resultado.length > 0){
+            fechaFormulacion = resultado[0].fecha_formulacion;
              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:parametros.evolucionId,numeroEntregaActual:1});
 
         }else{

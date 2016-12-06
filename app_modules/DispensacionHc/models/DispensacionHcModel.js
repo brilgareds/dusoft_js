@@ -2033,8 +2033,9 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
         G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion
             
          ).then(function(resultado){
+             
                 var formato = 'YYYY-MM-DD hh:mm:ss a';
-                var fechaToday = G.moment(resultado.rows[0].fecha_registro).format(formato);
+                var fechaToday = G.moment(resultado[0]).format(formato);
                 obj.parametro1.fecha_ultima_entrega = fechaToday;
                 console.log("RETURNING RESULTADO [__insertarBodegasDocumentos]", obj.parametro1);
             return  G.Q.nfcall(__guardarBodegasDocumentosDetalle,that,0, obj.parametro2,transaccion); 
@@ -2430,16 +2431,19 @@ DispensacionHcModel.prototype.actualizarEstadoFormulaSinPendientes = function(ob
  */
 DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callback)
 {   
-                                                  
+       console.log("***********DispensacionHcModel.prototype.generarDispensacionFormula*************");                                           
+       console.log("***********DispensacionHcModel.prototype.generarDispensacionFormula*************");                                           
+       console.log("***********DispensacionHcModel.prototype.generarDispensacionFormula*************");
+       
     var that = this;
     var def = G.Q.defer();
     G.knex.transaction(function(transaccion) {  
         
         G.Q.nfcall(__insertarBodegasDocumentos, obj.parametro1, transaccion)
            .then(function(resultado){  
-               
+               console.log("ESTE ES EL RESULTADO ", resultado);
                 var formato = 'YYYY-MM-DD hh:mm:ss a';
-                var fechaToday = G.moment(resultado.rows[0].fecha_registro).format(formato);
+                var fechaToday = G.moment(resultado[0]).format(formato);
                 obj.parametro1.fecha_ultima_entrega = fechaToday;
                 console.log("RETURNING RESULTADO [__insertarBodegasDocumentos]", obj.parametro1);
                 
@@ -2500,7 +2504,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
         
         then(function(resultado){  
                 console.log("TRANSACCION COMMIT ");
-            transaccion.commit(); 
+            //transaccion.commit(); 
                 
         }).fail(function(err){
             console.log("TRANSACCION FAIL ", err);
@@ -2872,9 +2876,12 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
  * @fecha 11/06/2016 (DD-MM-YYYY)
  */
 function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
+    console.log("*********__actualizarExistenciasBodegasLotesFv***********");
+    console.log("*********__actualizarExistenciasBodegasLotesFv***********");
+    console.log("*********__actualizarExistenciasBodegasLotesFv***********");
     //Problemas con el filtro de la fecha de vencimiento    
     var formato = 'DD/mm/YYYY';
-    var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
+    /*var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto, 6:  G.moment(obj.fecha_vencimiento, formato), 7: obj.lote};
           
     var sql = "UPDATE  existencias_bodegas_lote_fv \
@@ -2885,14 +2892,28 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
                 AND     codigo_producto = :5\
                 AND     fecha_vencimiento = :6\
                 AND     lote = :7 ";
+    var query = G.knex.raw(sql,parametros);
+    */
+   
+    var query = G.knex('existencias_bodegas_lote_fv')
+                 .where({empresa_id:obj.empresa_id,
+                    centro_utilidad:obj.centro_utilidad,
+                    bodega:obj.bodega,
+                    codigo_producto:obj.codigo_producto,
+                    fecha_vencimiento: G.moment(obj.fecha_vencimiento, formato),
+                    lote:obj.lote,
+            }).decrement('existencia_actual', obj.cantidad_despachada);
+    
+    
 
-    var query = G.knex.raw(sql,parametros);    
+    
     if(transaccion) query.transacting(transaccion);    
-        query.then(function(resultado){     
+        query.then(function(resultado){  
+        console.log("resultado [__actualizarExistenciasBodegasLotesFv]: ", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__actualizarExistenciasBodegasLotesFv]: ", err);
-        console.log("parametros: ", parametros);
+        
         callback({err:err, msj: "Error al actualizar las existencias de los lotes por que no pueden ser menores a 0"});   
     });  
 
@@ -2906,23 +2927,36 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
  * @fecha 11/06/2016 (DD-MM-YYYY)
  */
 function __actualizarExistenciasBodegas(obj,transaccion,callback) {
-
-    var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
+    
+    console.log("*********__actualizarExistenciasBodegas***********");
+    console.log("*********__actualizarExistenciasBodegas***********");
+    console.log("*********__actualizarExistenciasBodegas***********");
+    /*var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto};
-    var sql = "UPDATE  existencias_bodegas set     existencia= existencia - :1\
+    var sql = "UPDATE  existencias_bodegas \n\
+                set existencia= existencia - :1\
                 WHERE   empresa_id = :2 \
                 AND  centro_utilidad = :3\
                 AND     bodega = :4\
                 AND     codigo_producto = :5";
 
-    var query = G.knex.raw(sql,parametros);    
+    var query = G.knex.raw(sql,parametros);  */
+    
+    var query = G.knex('existencias_bodegas')
+                 .where({empresa_id:obj.empresa_id,
+                    centro_utilidad:obj.centro_utilidad,
+                    bodega:obj.bodega,
+                    codigo_producto:obj.codigo_producto
+            }).decrement('existencia', obj.cantidad_despachada);
+
+
     if(transaccion) query.transacting(transaccion);    
-        query.then(function(resultado){    
-            callback(false, resultado);
+        query.then(function(resultado){ 
+        console.log("resultado [__actualizarExistenciasBodegasLotesFv]: ", resultado);
+        callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__actualizarExistenciasBodegas]: ", err);
-        console.log("parametros: ", parametros);
-            callback({err:err, msj: "Error al actualizar las existencias de bodega por que no pueden ser menores a 0"});   
+        callback({err:err, msj: "Error al actualizar las existencias de bodega por que no pueden ser menores a 0"});   
     });  
 };
 
@@ -3202,14 +3236,28 @@ function __insertarTemporalFarmacia(producto, transaccion, callback) {
  */
 function __insertarBodegasDocumentos(obj, transaccion, callback){
     
-    var parametros ={1: obj.bodegasDocId,2: obj.numeracion,3: 'now()',
+    console.log("MIGRANDO KNEX ORM (__insertarBodegasDocumentos)")
+    /*var parametros ={1: obj.bodegasDocId,2: obj.numeracion,3: 'now()',
                      4: '0',5: null,6: obj.observacion,7: obj.usuario,
                      8: obj.todoPendiente,9: 'now()'};
                  
     var sql = " INSERT INTO bodegas_documentos(bodegas_doc_id,numeracion,fecha,total_costo,transaccion,observacion,usuario_id,todo_pendiente,fecha_registro)\
                 VALUES( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) RETURNING fecha_registro;";
+    var query = G.knex.raw(sql, parametros);*/
     
-    var query = G.knex.raw(sql, parametros);
+     var query = G.knex('bodegas_documentos')
+             .returning("fecha_registro")
+     .insert({bodegas_doc_id: obj.bodegasDocId,
+            numeracion: obj.numeracion,
+            fecha: 'now()',
+            total_costo: '0',
+            transaccion: null,
+            observacion: obj.observacion,
+            usuario_id: obj.usuario,
+            todo_pendiente: obj.todoPendiente,
+            fecha_registro: 'now()' });
+    
+    
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){  
@@ -3217,7 +3265,7 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarBodegasDocumentos]: ", err);
-        console.log("parametros: ", obj);
+         
         callback({err:err, msj: "Error al generar el documento de bodega"});   
     });
 };
@@ -3229,14 +3277,21 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
  * @fecha 11/06/2016
  */                   
 function __insertarDespachoMedicamentos(obj, transaccion, callback){
-
-    var sql = " INSERT INTO hc_formulacion_despachos_medicamentos(hc_formulacion_despacho_id,evolucion_id,bodegas_doc_id,numeracion)\
+    
+    console.log("MIGRANDO KNEX ORM (__insertarDespachoMedicamentos)")
+    /*var sql = " INSERT INTO hc_formulacion_despachos_medicamentos(hc_formulacion_despacho_id,evolucion_id,bodegas_doc_id,numeracion)\
                 VALUES( DEFAULT, :1, :2, :3);";
     
      var query = G.knex.raw(sql, {1: obj.evolucion, 2: obj.bodegasDocId,3: obj.numeracion});
-                             
+     */
+    var query = G.knex('hc_formulacion_despachos_medicamentos')
+     .insert({hc_formulacion_despacho_id: G.knex.raw('DEFAULT'),
+              evolucion_id: obj.evolucion,
+              bodegas_doc_id: obj.bodegasDocId,
+              numeracion: obj.numeracion});
      if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){           
+        query.then(function(resultado){  
+        console.log("resultado(__insertarDespachoMedicamentos) ", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarDespachoMedicamentos]: ", err);

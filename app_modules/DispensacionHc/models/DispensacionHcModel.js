@@ -173,7 +173,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
  */
 DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function(obj,callback){
     
-    var parametros = {1: obj.evolucionId};                           
+ /* var parametros = {1: obj.evolucionId};                                      
     var sql =  "SELECT dd.codigo_producto,\
                 dd.cantidad as numero_unidades,\
                 TO_CHAR(dd.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento,\
@@ -194,10 +194,39 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
                 inner join bodegas_documentos_d AS dd on (d.bodegas_doc_id = dd.bodegas_doc_id and d.numeracion = dd.numeracion)\
                 WHERE \
                 tmp.evolucion_id = :1 AND d.todo_pendiente != 1";
-    
-     
-    G.knex.raw(sql,parametros).then(function(resultado){ 
-      callback(false, resultado)
+              
+   var query = G.knex.raw(sql,parametros)*/
+      
+   var columnas = ["dd.codigo_producto",
+                    "dd.cantidad as numero_unidades",
+                    G.knex.raw("TO_CHAR(dd.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),
+                    "dd.lote",
+                    G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod"),
+                    "dd.sw_pactado",
+                    G.knex.raw("fc_descripcion_producto_molecula(dd.codigo_producto) as molecula"),
+                    "dd.total_costo",
+                    G.knex.raw("to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega"),
+                    G.knex.raw("'1' as pendiente_dispensado"),
+                    G.knex.raw("TO_CHAR((select fecha_registro as fecha_entrega \
+                                FROM hc_pendientes_por_dispensar  AS e \
+                               WHERE e.evolucion_id  = "+obj.evolucionId+" and sw_estado='1' limit 1),'YYYY-MM-DD') as fecha_pendiente")];
+                 
+     var query  = G.knex.select(columnas)
+                        .from('hc_formulacion_despachos_medicamentos_pendientes as tmp')
+                        .innerJoin('bodegas_documentos as d', 
+                            function() {
+                                this.on("tmp.bodegas_doc_id", "d.bodegas_doc_id")
+                                    .on("tmp.numeracion", "d.numeracion")
+                        }).innerJoin('bodegas_documentos_d AS dd', function() {
+                                this.on("d.bodegas_doc_id", "dd.bodegas_doc_id")
+                                    .on("d.numeracion", "dd.numeracion")
+                        })
+                        .where('evolucion_id',obj.evolucionId).andWhere("d.todo_pendiente","!=", 1);                 
+                      
+            
+       query.then(function(resultado){ 
+         console.log("resultado [listarMedicamentosPendientesDispensados]: ", resultado);
+      callback(false, resultado);
     }).catch(function(err){         
          console.log("err [listarMedicamentosPendientesDispensados]: ", err);
       callback(err)
@@ -553,7 +582,7 @@ SELECT todo.codigo_producto,  \
      
             query.then(function(resultado){    
      
-        callback(false, resultado);
+        callback(false, resultado.rows);
      
     }).catch(function(err){        
       console.log(" err [listarMedicamentosDispensados]: ", err);

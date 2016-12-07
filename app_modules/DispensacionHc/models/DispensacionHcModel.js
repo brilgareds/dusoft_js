@@ -2541,7 +2541,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                     return G.Q.ninvoke(that,'listarMedicamentosPendientes',{evolucionId:obj.parametro1.evolucion});                                   
                 }        
         }).then(function(resultado){           
-                
+                                           
               
                 if(resultado.length >0){
                    // console.log("Insertar medicamentos pendientes ");
@@ -3112,24 +3112,38 @@ function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,tra
  */
 DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto,evolucionId,todoPendiente,usuario,transaccion,callback) {
    
-   var parametros = {1: evolucionId, 2: producto.codigo_producto, 3: Math.round(producto.total),
+   console.log("*********DispensacionHcModel.prototype.insertarPendientesPorDispensar *************");
+   console.log("*********DispensacionHcModel.prototype.insertarPendientesPorDispensar *************");
+   console.log("*********DispensacionHcModel.prototype.insertarPendientesPorDispensar *************");
+   
+   /*var parametros = {1: evolucionId, 2: producto.codigo_producto, 3: Math.round(producto.total),
                      4: usuario, 5: todoPendiente, 6: 'now()'};
   //console.log("parametros ", parametros);
    var sql = "INSERT INTO hc_pendientes_por_dispensar\
       (hc_pendiente_dispensacion_id,evolucion_id,codigo_medicamento,cantidad,\
        usuario_id,todo_pendiente,fecha_registro, fecha_pendiente)\
             VALUES( DEFAULT, :1, :2, :3, :4, :5, :6, :6 );";
-
+        
+        
            
-    var query = G.knex.raw(sql,parametros );
+    var query = G.knex.raw(sql,parametros );*/
+    
+    var query = G.knex('hc_pendientes_por_dispensar')
+     .insert({hc_pendiente_dispensacion_id: G.knex.raw('DEFAULT'),
+              evolucion_id: evolucionId,
+              codigo_medicamento: producto.codigo_producto,
+              cantidad: Math.round(producto.total),
+              usuario_id: usuario,
+              todo_pendiente:  todoPendiente,
+              fecha_registro: 'now()',
+              fecha_pendiente: 'now()'});
     
    if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){ 
-          
+          console.log("err (/catch) [insertarPendientesPorDispensar]: ", resultado);  
             callback(false, resultado);
     }).catch(function(err){
-        console.log("err (/catch) [insertarPendientesPorDispensar]: ", err);
-        console.log("parametros: ", parametros);
+        console.log("err (/catch) [insertarPendientesPorDispensar]: ", err);       
         callback({err:err, msj: "Error al guardar los medicamentos pendientes"});   
     });
 };

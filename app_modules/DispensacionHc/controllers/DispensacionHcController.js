@@ -975,8 +975,8 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
     
     G.Q.ninvoke(that.m_dispensacion_hc,'listarTipoFormula').then(function(resultado){
        
-        if(resultado.rows.length > 0){ 
-              res.send(G.utils.r(req.url, 'Consulta con tipos de formula', 200, {listar_tipo_formula:resultado.rows}));
+        if(resultado.length > 0){ 
+              res.send(G.utils.r(req.url, 'Consulta con tipos de formula', 200, {listar_tipo_formula:resultado}));
         }else{
            throw 'Consulta sin resultados';
         }

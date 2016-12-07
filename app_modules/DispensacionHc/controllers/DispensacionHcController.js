@@ -1966,13 +1966,13 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
         }
        
    }).then(function(resultado){
-        
-        if(resultado.rows.length > 0){ 
+        console.log("resultado [listarMedicamentosPendientesPorDispensar]:  ", resultado);
+        if(resultado.length > 0){ 
             
             __generarPdf({productosPendientes:productosPendientes, 
                             serverUrl:req.protocol + '://' + req.get('host')+ "/", 
                             detalle: detalleCabecera, 
-                            profesional:resultado.rows[0],
+                            profesional:resultado[0],
                             archivoHtml: 'medicamentosPendientesPorDispensar.html',
                             reporte: "Medicamentos_pendientes_por_dispensar_"}, function(nombre_pdf) {
                     
@@ -2067,9 +2067,9 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
        
    }).then(function(resultado){
         //console.log("3) resultado ", resultado.rows);   
-        if(resultado.rows.length > 0){ 
+        if(resultado.length > 0){ 
             
-             profesional = resultado.rows;
+             profesional = resultado;
              
             // console.log("productosDispensados ", productosDispensados)
           
@@ -2198,9 +2198,9 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
        
    }).then(function(resultado){
        //console.log("2) resultado ", resultado.rows);
-       if(resultado.rows.length > 0){ 
+       if(resultado.length > 0){ 
             
-            profesional = resultado.rows;
+            profesional = resultado;
             return G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesDispensados',parametros)
        }else{
            
@@ -2309,9 +2309,9 @@ DispensacionHc.prototype.listarUltimaDispensacionPendientes = function(req, res)
        
    }).then(function(resultado){
         //console.log("3) resultado ", resultado.rows);   
-        if(resultado.rows.length > 0){ 
+        if(resultado.length > 0){ 
             
-             profesional = resultado.rows;
+             profesional = resultado;
            
             __generarPdf({productosPendientes:productosPendienteDispensados, 
                           serverUrl:req.protocol + '://' + req.get('host')+ "/", 

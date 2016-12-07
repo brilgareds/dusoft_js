@@ -1759,8 +1759,12 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
  */
 DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
     
-    var parametros = {1: obj.evolucionId};
-    var sql = "SELECT hc.medico_id,\
+    console.log("***DispensacionHcModel.prototype.profesionalFormula ***********");
+    console.log("***DispensacionHcModel.prototype.profesionalFormula ***********");
+    console.log("***DispensacionHcModel.prototype.profesionalFormula ***********");
+    
+  /* var parametros = {1: obj.evolucionId};
+   var sql = "SELECT hc.medico_id,\
               pro.nombre,\
               pro.tipo_id_tercero,\
               pro.tercero_id,\
@@ -1771,10 +1775,32 @@ DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
             LEFT JOIN tipos_profesionales tipos ON (pro.tipo_profesional=tipos.tipo_profesional)\
             WHERE  hc.evolucion_id = :1 ";
    
-    G.knex.raw(sql,parametros).then(function(resultado){          
-        callback(false, resultado)
-    }).catch(function(err){        
-        callback(err)
+    var query = G.knex.raw(sql,parametros);*/
+      
+    var columnas = ["hc.medico_id",
+                    "pro.nombre",
+                    "pro.tipo_id_tercero",
+                    "pro.tercero_id",
+                    "tipos.descripcion"];
+                 
+     var query  = G.knex.select(columnas)
+                        .from('hc_formulacion_antecedentes as hc')
+                        .leftJoin('profesionales_usuarios AS usu', function() {                            
+                                this.on("hc.medico_id", "usu.usuario_id")
+                        }).leftJoin('profesionales AS pro', function() {
+                                this.on("usu.tipo_tercero_id", "pro.tipo_id_tercero")
+                                    .on("usu.tercero_id", "pro.tercero_id")
+                        }).leftJoin('tipos_profesionales AS tipos', function() {
+                                this.on("pro.tipo_profesional", "tipos.tipo_profesional") 
+                        })
+                        .where('hc.evolucion_id',obj.evolucionId);  
+            
+     query.then(function(resultado){ 
+       console.log("resultado [profesionalFormula]:", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+       console.log("err [profesionalFormula]:", err);
+        callback(err);                
     });   
 };
 

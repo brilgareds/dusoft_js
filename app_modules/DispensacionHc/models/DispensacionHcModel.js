@@ -1275,7 +1275,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             GROUP BY 2,4,5,e.bodega,e.centro_utilidad,e.empresa_id \
                        ) AS A ORDER BY  A.resultado ASC ";  */
     G.knex.raw(sql,parametros).then(function(resultado){     
-        console.log("resultado CONFRONTADOS------///*****++++ : ", resultado.rows);
+        //console.log("resultado CONFRONTADOS------///*****++++ : ", resultado.rows);
         callback(false, resultado);
     }).catch(function(err){      
         console.log("parametros: ", parametros);
@@ -1417,7 +1417,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
 
      
     G.knex.raw(sql,parametros).then(function(resultado){  
-      console.log(" resultado [existenciasBodegas]: ", resultado.rows);
+      //console.log(" resultado [existenciasBodegas]: ", resultado.rows);
       callback(false, resultado)
     }).catch(function(err){ 
         console.log("err existenciasBodegas: ", err);
@@ -1436,26 +1436,83 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
  */
 DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,callback){
    
+   console.log("***********DispensacionHcModel.prototype.consultarProductoTemporal*************");
+   console.log("***********DispensacionHcModel.prototype.consultarProductoTemporal*************");
+   console.log("***********DispensacionHcModel.prototype.consultarProductoTemporal*************");
+   console.log("estado ", estado);
     var parametros = [];
     var condicion = "";
     var descripcionProducto = "";
-    if(estado === 0){
+    /*if(estado === 0){
         parametros = {1: obj.evolucionId, 2: obj.codigoProducto, 3: obj.fechaVencimiento, 4: obj.lote};
         condicion = "AND codigo_producto = :2 AND fecha_vencimiento = :3 AND lote = :4";
     }else{
         parametros = {1: obj.evolucionId};
         descripcionProducto =",fc_descripcion_producto_alterno(codigo_producto) as descripcion_prod";
+    }*/
+    var columnas = [];
+                    
+    if(estado === 0){
+        parametros = {evolucion_id: obj.evolucionId, 
+                      codigo_producto: obj.codigoProducto, 
+                      fecha_vencimiento: obj.fechaVencimiento, 
+                      lote: obj.lote};
+       var columnas = ["hc_dispen_tmp_id",
+                    "evolucion_id",
+                    "empresa_id",
+                    "centro_utilidad",
+                    "bodega", 
+                    "codigo_producto",
+                    "cantidad_despachada",
+                    "fecha_vencimiento",
+                    "lote",
+                    "codigo_formulado",
+                    "usuario_id",
+                    "sw_entregado_off"
+                    ];
+        
+    }else{
+        parametros = {evolucion_id: obj.evolucionId};
+        descripcionProducto = G.knex.raw("fc_descripcion_producto_alterno(codigo_producto) as descripcion_prod");
+        var columnas = ["hc_dispen_tmp_id",
+                    "evolucion_id",
+                    "empresa_id",
+                    "centro_utilidad",
+                    "bodega", 
+                    "codigo_producto",
+                    "cantidad_despachada",
+                    "fecha_vencimiento",
+                    "lote",
+                    "codigo_formulado",
+                    "usuario_id",
+                    "sw_entregado_off",descripcionProducto
+                    ];
     }
-   
-    var sql = "SELECT  *"+descripcionProducto+" FROM hc_dispensacion_medicamentos_tmp \
+    
+    console.log("columnas ", columnas);
+    
+     var query = G.knex.select(columnas).where(parametros).from("hc_dispensacion_medicamentos_tmp");
+        query.then(function(resultado){ 
+        //console.log("resultado [consultarProductoTemporal]:", resultado);     
+        callback(false, resultado)
+    }).catch(function(err){    
+        console.log("err [consultarProductoTemporal]:", err);
+        callback(err);
+    });
+    
+    
+  /*  var sql = "SELECT  *"+descripcionProducto+" FROM hc_dispensacion_medicamentos_tmp \
               WHERE evolucion_id = :1 " + condicion +"";
                
   
-    G.knex.raw(sql,parametros).then(function(resultado){         
+    G.knex.raw(sql,parametros).then(function(resultado){     
+        console.log("resultado [consultarProductoTemporal]:", resultado);   
         callback(false, resultado)
-    }).catch(function(err){       
+    }).catch(function(err){   
+    console.log("err [consultarProductoTemporal]:", err);       
         callback(err);
-    });
+    });  */
+    
     
 };
 
@@ -1765,7 +1822,7 @@ DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(obj,cal
 	       AND bodegas_doc_id is null\
 	       AND numeracion is null\
 	       AND evolucion_id = :1 ";
-               console.log("sql ", sql);
+               //console.log("sql ", sql);
     G.knex.raw(sql,parametros).then(function(resultado){ 
         //console.log(" ***///888resultado ", resultado)
         callback(false, resultado)
@@ -1845,7 +1902,7 @@ DispensacionHcModel.prototype.autorizarDispensacionMedicamento = function(obj, c
     G.knex.transaction(function(transaccion) {         
         G.Q.nfcall(__autorizarDispensacionMedicamento, obj, transaccion).then(function(resultado){     
             evolucionId = resultado.rows[0];
-            console.log("resultado ", resultado);
+            //console.log("resultado ", resultado);
            transaccion.commit();       
         }).fail(function(err){    
            transaccion.rollback(err);                                  
@@ -1880,7 +1937,7 @@ function __autorizarDispensacionMedicamento(obj,transaccion, callback) {
    
    if(transaccion) query.transacting(transaccion);                         
       query.then(function(resultado){    
-       console.log("resultado [autorizarDispensacionMedicamento]: ", resultado);   
+       //console.log("resultado [autorizarDispensacionMedicamento]: ", resultado);   
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [autorizarDispensacionMedicamento]: ", err);
@@ -2052,7 +2109,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)          
         }).then(function(resultado){
             //console.log("resultado Producto temporal ", resultado.rows.length);
-                if(resultado.rows.length >0){                                   
+                if(resultado.length >0){                                   
                     return G.Q.ninvoke(that,'listarMedicamentosPendientesSinDispensar',{evolucionId:obj.parametro1.evolucion});                                   
                 }                    
         }).then(function(resultado){     
@@ -2087,7 +2144,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                     obj.parametro1.actualizarCampoPendiente = 0;
                 }
                 
-                console.log("AQUI SE GUARDA ESTO DE A QUI ", obj.parametro1);
+                //console.log("AQUI SE GUARDA ESTO DE A QUI ", obj.parametro1);
                 
             return G.Q.ninvoke(that,'actualizarDispensacionEstados', obj.parametro1 , transaccion); 
                  
@@ -2455,7 +2512,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                 return G.Q.ninvoke(that,'consultarProductoTemporal',{evolucionId:obj.parametro1.evolucion},1)          
         }).then(function(resultado){
           
-                if(resultado.rows.length >0 || obj.parametro1.todoPendiente === '1'){                                   
+                if(resultado.length >0 || obj.parametro1.todoPendiente === '1'){                                   
                     return G.Q.ninvoke(that,'listarMedicamentosPendientes',{evolucionId:obj.parametro1.evolucion});                                   
                 }        
         }).then(function(resultado){           
@@ -2504,7 +2561,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
         
         then(function(resultado){  
                 console.log("TRANSACCION COMMIT ");
-            //transaccion.commit(); 
+            transaccion.commit(); 
                 
         }).fail(function(err){
             console.log("TRANSACCION FAIL ", err);
@@ -2697,10 +2754,10 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
            
         }
        
-        console.log("obj ", obj);
+        //console.log("obj ", obj);
         //console.log("obj.fecha_ultima_entrega ", obj.fecha_ultima_entrega);
-        console.log("fechaUltimaEntrega ", fechaUltimaEntrega);
-        console.log("sql ", sql);
+        //console.log("fechaUltimaEntrega ", fechaUltimaEntrega);
+        //console.log("sql ", sql);
         sql = "UPDATE dispensacion_estados \
                 set sw_pendiente = :sw_pendiente \
                 "+fechaUltimaEntrega+"\
@@ -2761,7 +2818,7 @@ function __numeroEntregaBodegasDocumentos(obj, transaccion, callback){
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){  
-            console.log("resultado ", resultado);
+            //console.log("resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__numeroEntregaBodegasDocumentos]: ", err);
@@ -2797,15 +2854,15 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
     if(parseInt(producto.total) > 0){      
         G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
             rowCount = 1;
-           console.log("resultado rowCount::::---:::: ", rowCount);
+           //console.log("resultado rowCount::::---:::: ", rowCount);
          }).fail(function(err){      
        }).done();   
     }
     
      console.log("Se valida si es el ultimo producto por dispensar y si este es 0");
-     console.log("productos.length ", productos.length);
-     console.log("parseInt(producto.total) ", parseInt(producto.total));
-     console.log("(producto) ", (producto));
+     //console.log("productos.length ", productos.length);
+     //console.log("parseInt(producto.total) ", parseInt(producto.total));
+     //console.log("(producto) ", (producto));
      sumaTotalDispensados += parseInt(producto.total);
     if( sumaTotalDispensados === 0){    
         console.log("Entro se pone CERO 0")
@@ -2894,14 +2951,16 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
                 AND     lote = :7 ";
     var query = G.knex.raw(sql,parametros);
     */
-   
+   console.log("obj ", obj);
+   console.log("G.moment(obj.fecha_vencimiento, formato) ", G.moment(obj.fecha_vencimiento, formato));
+  
     var query = G.knex('existencias_bodegas_lote_fv')
                  .where({empresa_id:obj.empresa_id,
                     centro_utilidad:obj.centro_utilidad,
                     bodega:obj.bodega,
                     codigo_producto:obj.codigo_producto,
                     fecha_vencimiento: G.moment(obj.fecha_vencimiento, formato),
-                    lote:obj.lote,
+                    lote:obj.lote
             }).decrement('existencia_actual', obj.cantidad_despachada);
     
     
@@ -2947,7 +3006,7 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
                     centro_utilidad:obj.centro_utilidad,
                     bodega:obj.bodega,
                     codigo_producto:obj.codigo_producto
-            }).decrement('existencia', obj.cantidad_despachada);
+            }).decrement('existencia', obj.cantidad_despachada );
 
 
     if(transaccion) query.transacting(transaccion);    
@@ -2968,25 +3027,49 @@ function __actualizarExistenciasBodegas(obj,transaccion,callback) {
  * @fecha 11/06/2016
  */
 function __insertarBodegasDocumentosDetalle(obj,bodegasDocId,numeracion,plan,transaccion, callback){
-    
-    var parametros ={1: obj.codigo_producto,2: obj.cantidad_despachada,3: obj.empresa_id,
-                     4: plan,5: bodegasDocId,6: numeracion,7: obj.fecha_vencimiento,
-                     8: obj.lote,9: '1'};
+     
+     console.log("************__insertarBodegasDocumentosDetalle********************");
+     console.log("************__insertarBodegasDocumentosDetalle********************");
+     console.log("************__insertarBodegasDocumentosDetalle********************");
+     
+     
+    /*var parametros ={1: obj.codigo_producto,
+     *                  2: obj.cantidad_despachada,
+     *                  3: obj.empresa_id,
+                     4: plan,
+                     5: bodegasDocId,
+                     6: numeracion,
+                     7: obj.fecha_vencimiento,
+                     8: obj.lote,
+                     9: '1'};
                  
-    var sql = " INSERT INTO bodegas_documentos_d(consecutivo,codigo_producto,cantidad,total_costo,total_venta,bodegas_doc_id,numeracion,fecha_vencimiento,lote,sw_pactado)\
+    var sql = " INSERT INTO bodegas_documentos_d(consecutivo,codigo_producto,cantidad,total_costo,total_venta,bodegas_doc_id,
+                    numeracion,fecha_vencimiento,lote,sw_pactado)\
                 VALUES( DEFAULT, :1, :2, (COALESCE(fc_precio_producto_plan('0', :1, :3,'0','0'),0)),\
                 (COALESCE(fc_precio_producto_plan( :4, :1, :3,'0','0'),0)* :2),\
                  :5, :6, :7, :8, :9 );";
     
-    var query = G.knex.raw(sql, parametros);
+    var query = G.knex.raw(sql, parametros);*/
+    
+    var query = G.knex('bodegas_documentos_d')
+     .insert({consecutivo: G.knex.raw('DEFAULT'),
+            codigo_producto: obj.codigo_producto,
+            cantidad: obj.cantidad_despachada,
+            total_costo: G.knex.raw("(COALESCE(fc_precio_producto_plan('0','"+obj.codigo_producto+"', '"+obj.empresa_id+"','0','0'),0))"),
+            total_venta:G.knex.raw("(COALESCE(fc_precio_producto_plan( "+plan+", '"+obj.codigo_producto+"', '"+obj.empresa_id+"','0','0'),0)* "+obj.cantidad_despachada+")"),
+            bodegas_doc_id: bodegasDocId,
+            numeracion: numeracion,
+            fecha_vencimiento: obj.fecha_vencimiento,
+            lote: obj.lote,
+            sw_pactado: '1' });
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){ 
-          
+         //console.log("resultado [__insertarBodegasDocumentosDetalle]: ", resultado);  
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarBodegasDocumentosDetalle]: ", err);
-        console.log("parametros: ", parametros);
+      
         callback({err:err, msj: "Error al guardar el detalle de los productos dispensados"});   
     });
 };
@@ -3035,7 +3118,7 @@ DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,trans
     
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){    
-          console.log("Eliminar resultado ", resultado)
+          //console.log("Eliminar resultado ", resultado)
           callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [eliminarTemporalesDispensados]: ", err);
@@ -3129,7 +3212,7 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
                                 7: parametro.usuario});    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){ 
-            console.log(" resultado ", resultado);
+            //console.log(" resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarDespachoMedicamentoEvento]: ", err);
@@ -3178,7 +3261,7 @@ function __eliminarTemporalFormula(producto, transaccion, callback) {
     var query = G.knex.raw(sql,{1: producto.serialId,2: producto.evolucionId,3: producto.codigoProducto});    
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){    
-            console.log("resultado ", resultado);
+            //console.log("resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__eliminarTemporalFormula]: ", err);
@@ -3261,7 +3344,7 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){  
-            console.log("resultado ", resultado);
+            //console.log("resultado ", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarBodegasDocumentos]: ", err);
@@ -3291,7 +3374,7 @@ function __insertarDespachoMedicamentos(obj, transaccion, callback){
               numeracion: obj.numeracion});
      if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){  
-        console.log("resultado(__insertarDespachoMedicamentos) ", resultado);
+        //console.log("resultado(__insertarDespachoMedicamentos) ", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarDespachoMedicamentos]: ", err);
@@ -3792,7 +3875,7 @@ DispensacionHcModel.prototype.actualizarEntregaPorProducto = function(obj, trans
                    
     if(transaccion) 
         query.transacting(transaccion).then(function(resultado) {    
-             console.log(" [actualizarEntregaPorProducto]: ", resultado);  
+             //console.log(" [actualizarEntregaPorProducto]: ", resultado);  
             callback(false, resultado);
         }).catch (function(err) {
             callback({err:err, msj: "Error actualizarEntregaPorProducto"});
@@ -3835,7 +3918,7 @@ DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar = function(ob
     
     if(transaccion) 
         query.transacting(transaccion).then(function(resultado) {
-            console.log("resultado [actualizarFechaPendientePorDispensar]: ", resultado);
+            //console.log("resultado [actualizarFechaPendientePorDispensar]: ", resultado);
             callback(false, resultado);
         }). catch (function(error) {
             console.log("error [actualizarFechaPendientePorDispensar]: ", error);
@@ -3853,22 +3936,29 @@ DispensacionHcModel.prototype.actualizarFechaPendientePorDispensar = function(ob
  */
 DispensacionHcModel.prototype.actualizarFechaMinimaMaxima = function(obj, callback) {
  
-     /*var sql = "UPDATE dispensacion_estados\
-                SET fecha_entrega = :2,\
-                    fecha_minima_entrega = :3,\
-                    fecha_maxima_entrega = :4\
-                WHERE evolucion_id = :1;";
+ console.log("***********DispensacionHcModel.prototype.actualizarFechaMinimaMaxima *****************");
+ console.log("***********DispensacionHcModel.prototype.actualizarFechaMinimaMaxima *****************");
+ console.log("***********DispensacionHcModel.prototype.actualizarFechaMinimaMaxima *****************");
  
-    var query = G.knex.raw(sql,{1: obj.evolucionId, 2: obj.fechaEntrega, 3: obj.fechaMinima , 4: obj.fechaMaxima});  */  
-    
-    
-    var query = G.knex('dispensacion_estados')
-            .where('evolucion_id', obj.evolucionId)
-            .update({
+  var parametros;
+   if(obj.numeroEntrega === 0){
+       parametros = {
                 fecha_entrega: obj.fechaEntrega,
                 fecha_minima_entrega: obj.fechaMinima,
                 fecha_maxima_entrega: obj.fechaMaxima,
-            });
+            };
+   }else{
+       parametros = {
+                fecha_entrega: obj.fechaEntrega,
+                fecha_minima_entrega: obj.fechaMinima,
+                fecha_maxima_entrega: obj.fechaMaxima,
+                numero_entrega_actual: obj.numeroEntrega
+            };
+   }
+    console.log("parametros ", parametros);
+    var query = G.knex('dispensacion_estados')
+            .where('evolucion_id', obj.evolucionId)
+            .update(parametros);
     
     
     query.then(function(resultado){  

@@ -156,6 +156,10 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/consultarMovimientoFormulasPaciente", function(req, res){
         c_dispensacion_hc.consultarMovimientoFormulasPaciente(req, res);
     });
+    //realizando el ajuste del numero de la formula
+    app.post("/api/DispensacionHc/ajustarNumeroEntregaFormula", function(req, res){
+        c_dispensacion_hc.ajustarNumeroEntregaFormula(req, res);
+    });
     /**
      * +DESCRIPCION SERVICIO EXCLUSIVO PARA ALMACENAR LAS FORMULAS EN LA TABLA
      *              DE DISPENSACION_ESTADOS

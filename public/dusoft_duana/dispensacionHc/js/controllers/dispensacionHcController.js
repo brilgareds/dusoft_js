@@ -20,40 +20,43 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.root = {
                     termino_busqueda_proveedores: "",
                     fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-                    fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
-                  
-                   
+                    fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),                 
                     empresaSeleccionada: '',
                     termino_busqueda:'',
                     estadoSesion: true,
                     items:0,
                     afiliados:[],
                     estadoBotones : [
-                    "btn btn-danger btn-xs",
-                    "btn btn-primary btn-xs",
-                    "btn btn-danger btn-xs",
-                    "btn btn-info btn-xs",
-                    "btn btn-warning btn-xs",
-                    "btn btn-success btn-xs",
-                    "btn btn-warning btn-xs"
-                    ]
-                   
+                        "btn btn-danger btn-xs",
+                        "btn btn-primary btn-xs",
+                        "btn btn-danger btn-xs",
+                        "btn btn-info btn-xs",
+                        "btn btn-warning btn-xs",
+                        "btn btn-success btn-xs",
+                        "btn btn-warning btn-xs"
+                    ],
+                    opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
                 }; 
-               
                 $scope.root.estadoFormula = 0;
                
-                 
-                    /*
-                     * Inicializacion de variables
-                     * @param {type} empresa
-                     * @param {type} callback
-                     * @returns {void}
-                     */
+                that.cargar_permisos = function() {
+                // Permisos ajustes formula
+                    $scope.root.permisos_ajustes = {
+                        btn_ajustar_entrega_formula: {
+                            'click': false//$scope.root.opciones.sw_crear_cotizacion
+                        }
+                    };                
+                };
+                $scope.nuevoNumeroEntrega = "";
+                /*
+                 * Inicializacion de variables
+                 * @param {type} empresa
+                 * @param {type} callback
+                 * @returns {void}
+                 */
                 that.init = function(empresa, callback) {
-                   
+                    that.cargar_permisos();
                     $scope.root.empresaSeleccionada = EmpresaDispensacionHc.get("TODAS LAS EMPRESAS", -1);
-                    
-                    
                     $scope.session = {
                         usuario_id: Usuario.getUsuarioActual().getId(),
                         auth_token: Usuario.getUsuarioActual().getToken()
@@ -63,18 +66,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-3  pull-right";  
                     $scope.columnaSizeBusqueda = "col-md-3"; 
-                  /**
-                    * +Descripcion Filtros para tipo de documento
-                    * 
-                    **/
-                   /* $scope.root.filtros = [                
-                    
-                    {tipo: 'EV',descripcion: "Evolucion"},
-                    {tipo: 'FO',descripcion: "Formula"} 
-                    ];*/
-                 
-                    //$scope.root.filtro = $scope.root.filtros[0];                   
-                   //Deja en estado visible el buscador
                     $scope.root.visibleBuscador = true;
                     $scope.root.visibleBotonBuscador = true;
                     
@@ -361,7 +352,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             $state.go('DispensarFormulaDetalle');
                      };
                     
-                    
+                    $scope.habilitar_modificacion_producto = function() {
+
+                            return $scope.root.permisos_ajustes.btn_ajustar_entrega_formula;
+                    };
                     
                    
                      /**
@@ -375,8 +369,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         enableCellSelection: true,
                         enableHighlighting: true,
                         columnDefs: [
-                            {displayName: '#Evo',     width:"6%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
-                            {displayName: '#Formula',       width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 
+                            {displayName: '#Evo',     width:"4%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
+                            {displayName: '#Formula',       width:"5%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 
                             {displayName: 'Identificacion', width:"9%",
                              cellTemplate: "<div\n\
                                             <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente() }} {{ row.entity.mostrarPacientes()[0].getPacienteId() }}  </div>"}, 
@@ -384,9 +378,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             {displayName: 'Paciente',       width: "10%",  
                              cellTemplate: "<div\n\
                                             <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }} </div>"},   
-                            {displayName: 'F.Formulacion',  width:"9%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()'}, 
-                            {displayName: 'F.Finalizacion', width:"9%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()'}, 
-                            {displayName: 'F.Entrega',      width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()'}, 
+                            {displayName: 'F.Formulacion',  width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()'}, 
+                            {displayName: 'F.Finalizacion', width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()'}, 
+                            {displayName: 'F.Entrega',      width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()'}, 
                              {displayName: '#Entregas',     width:"5%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()'}, 
                             {displayName: '#Entrega actual',width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()'}, 
                            
@@ -395,8 +389,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             //{field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
                             {displayName: 'Plan',           width:"9%",field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()'}, 
                             {displayName: 'Tipo',            width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()'},                            
-                                                          
-                             {displayName: "Opc",        width:"5%", cellClass: "txt-center dropdown-button",
+                                 
+                            
+                            {field: 'Ajuste', width: "7%", displayName: 'Ajuste',
+                         cellTemplate: '<div class="col-xs-12 "> \
+                                       <input type="text" \
+                                        ng-model="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroEntregaActual" \
+                                        validacion-numero-entero \
+                                        class="form-control grid-inline-input" \
+                                        name="" \
+                                        id="" \
+                                        ng-disabled="row.entity.estadoProductoVencimiento == 1" ng-class=""\n\
+                                        /> </div>'},
+                             {displayName: "Opc", width:"5%", cellClass: "txt-center dropdown-button",
                              cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
@@ -420,10 +425,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                                                             tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
                                                                                             pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Ultima entrega</a>\
                                                  </li>\
-                                           \<li>\
+                                                  <li>\
                                                     <a href="javascript:void(0);" ng-click="ventanaMovimientoFormulasPaciente({tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
                                                                                             pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()})" class = "glyphicon glyphicon-folder-open" > Movimiento</a>\
-                                                 </li>\
+                                                  </li>\
+                                                  <li ng-validate-events="{{ habilitar_modificacion_producto() }}">\
+                                                    <a href="javascript:void(0);" ng-click="ventanaAjustarEntregaFormula({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), numero_entrega: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()})" class = "glyphicon glyphicon-wrench" > Ajustar formula</a>\
+                                                  </li>\
                                             </ul>\
                                        </div>'
                             },
@@ -838,65 +846,99 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             };
                     
-                    
-                    
-                    that.init(empresa, function() {
+            /**
+             * @author Cristian Manuel Ardila
+             * +Descripcion Metodo encargado de invocar una ventana modal que
+             *              permitira ajustar la entrega de una formula
+             * @fecha 06/12/2016
+             */
+            $scope.ventanaAjustarEntregaFormula = function(obj){              
+               
+               if($scope.habilitar_modificacion_producto()){
+                var obj = {                   
+                     session: $scope.session,
+                     data: {
+                        ajustar_numero_entrega_formula: {
+                             numero_entrega:obj.numero_entrega,
+                             evolucion:obj.evolucion,
+                        }
+                    }    
+                 };
 
-                        if(!Usuario.getUsuarioActual().getEmpresa()) {
-                            $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
-                            AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
-                        }else{                               
-                            if(!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
-                                Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
-                                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
-                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
-                            }else{
-                                if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
-                                    $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
-                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
-                                }else{                                
-                                    that.listarTipoDocumentos(function(){});    
-                                   
-                                    var resultadoStorage = localStorageService.get("consultarFormula");      
-                                    var resultadoStoragePendientes = localStorageService.get("consultarFormulaPendientes");      
-                                    var resultadoStorageTodoPendiente = localStorageService.get("formulaTodoPendiente");      
-                                                    
-                                    console.log("Dispensacion normal ", resultadoStorage);
-                                    if(resultadoStorage){
-                                        that.listarFormulasMedicas({estado:1, 
-                                                                    evolucion:resultadoStorage.evolucion, 
-                                                                    filtro:resultadoStorage.filtro, 
-                                                                    empresa: resultadoStorage.empresa,
-                                                                    estadoFormula: '0'});
-                                        that.imprimirMedicamentosPendientesLocalStorage(resultadoStorage);
-                                        that.imprimirMedicamentosDispensadosLocalStorage(resultadoStorage,0);
-                                                                
-                                    }
-                                    
-                                   console.log("Dispensacion PENDIENTES ", resultadoStoragePendientes);
-                                    if(resultadoStoragePendientes){
-                                        $scope.root.estadoFormula = 1;
-                                        that.listarFormulasMedicas({estado:1, 
-                                                                    evolucion:resultadoStoragePendientes.evolucion, 
-                                                                    filtro:resultadoStoragePendientes.filtro, 
-                                                                    empresa: resultadoStoragePendientes.empresa,
-                                                                    estadoFormula: '1'});
-                                                                
-                                        that.imprimirMedicamentosPendientesLocalStorage(resultadoStoragePendientes);
-                                        that.imprimirMedicamentosDispensadosLocalStorage(resultadoStoragePendientes,0);
-                                        
-                                    }
-                                    
-                                    
-                                    console.log("TODO PENDIENTES ", resultadoStorageTodoPendiente);
-                                    if(resultadoStorageTodoPendiente){
-                                        that.imprimirMedicamentosPendientesLocalStorage(resultadoStorageTodoPendiente); 
-                                    }
-                                    
-                                }
+                 dispensacionHcService.ajustarNumeroEntregaFormula(obj,function(data){
+                     console.log("data ", data);
+                     if (data.status === 200) {
+                         AlertService.mostrarMensaje("success", data.msj);
+                     }else{
+                         AlertService.mostrarMensaje("warning", data.msj);
+                     }
+                 });  
+                 
+               }else{
+                    AlertService.mostrarMensaje("success", "El usuario no posee privilegios para realizar la accion");
+               }
+                    
+            };        
+            
+            
+                    
+            that.init(empresa, function() {
+
+                if(!Usuario.getUsuarioActual().getEmpresa()) {
+                    $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
+                }else{                               
+                    if(!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
+                        Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
+                        $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
+                        AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
+                    }else{
+                        if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                            $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
+                            AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
+                        }else{                                
+                            that.listarTipoDocumentos(function(){});    
+
+                            var resultadoStorage = localStorageService.get("consultarFormula");      
+                            var resultadoStoragePendientes = localStorageService.get("consultarFormulaPendientes");      
+                            var resultadoStorageTodoPendiente = localStorageService.get("formulaTodoPendiente");      
+
+                            console.log("Dispensacion normal ", resultadoStorage);
+                            if(resultadoStorage){
+                                that.listarFormulasMedicas({estado:1, 
+                                                            evolucion:resultadoStorage.evolucion, 
+                                                            filtro:resultadoStorage.filtro, 
+                                                            empresa: resultadoStorage.empresa,
+                                                            estadoFormula: '0'});
+                                that.imprimirMedicamentosPendientesLocalStorage(resultadoStorage);
+                                that.imprimirMedicamentosDispensadosLocalStorage(resultadoStorage,0);
+
                             }
-                        }                                           
-                    });
+
+                           console.log("Dispensacion PENDIENTES ", resultadoStoragePendientes);
+                            if(resultadoStoragePendientes){
+                                $scope.root.estadoFormula = 1;
+                                that.listarFormulasMedicas({estado:1, 
+                                                            evolucion:resultadoStoragePendientes.evolucion, 
+                                                            filtro:resultadoStoragePendientes.filtro, 
+                                                            empresa: resultadoStoragePendientes.empresa,
+                                                            estadoFormula: '1'});
+
+                                that.imprimirMedicamentosPendientesLocalStorage(resultadoStoragePendientes);
+                                that.imprimirMedicamentosDispensadosLocalStorage(resultadoStoragePendientes,0);
+
+                            }
+
+
+                            console.log("TODO PENDIENTES ", resultadoStorageTodoPendiente);
+                            if(resultadoStorageTodoPendiente){
+                                that.imprimirMedicamentosPendientesLocalStorage(resultadoStorageTodoPendiente); 
+                            }
+
+                        }
+                    }
+                }                                           
+            });
 
                      
                       

@@ -40,6 +40,20 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
+            
+            
+            /**
+              * @author Cristian Ardila
+              * @fecha  07/06/2016 DD/MM/YYYYY
+              * +Descripcion Servicio encargado autorizar la dispensacion de un
+              *              medicamento
+              */
+            self.ajustarNumeroEntregaFormula = function(obj,callback){
+               
+                Request.realizarRequest(API.DISPENSACIONHC.AJUSTAR_NUMERO_ENTREGA_FORMULA,"POST", obj, function(data){     
+                    callback(data);
+                });
+            };
              /**
               * @author Cristian Ardila
               * @fecha  21/05/2016 DD/MM/YYYYY

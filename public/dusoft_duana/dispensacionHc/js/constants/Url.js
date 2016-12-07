@@ -41,7 +41,11 @@ define(["angular"], function (angular) {
                 "LISTAR_REGISTRO_DE_EVENTOS": BASE_URL + "/DispensacionHc/listarRegistroDeEventos",
                 "CONSULTAR_CABECERA_FORMULA": BASE_URL + "/DispensacionHc/obtenerCabeceraFormula",
                 "CONSULTAR_MOVIMIENTO_FORMULAS_PACIENTE": BASE_URL + "/DispensacionHc/consultarMovimientoFormulasPaciente",
-                
+                 
+               /**
+                * +Descripcion Constante que guarda el path para ajustar numero de entrega de la formula
+                */
+                "AJUSTAR_NUMERO_ENTREGA_FORMULA": BASE_URL + "/DispensacionHc/ajustarNumeroEntregaFormula",
                /**
                 * +DESCRIPCION FUNCION EXCLUSIVA PARA ALMACENAR LAS FORMULAS EN LA TABLA
                 *              DE DISPENSACION_ESTADOS

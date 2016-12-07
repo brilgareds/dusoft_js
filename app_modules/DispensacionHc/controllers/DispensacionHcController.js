@@ -1067,9 +1067,7 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
     }).then(function(resultado){
         
           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});
-            //return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion)
-        
-     
+             
     }).then(function(resultado){ 
         /*console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
         console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
@@ -1734,39 +1732,18 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
         console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
         console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-        
-        //console.log("resultado ", resultado);
-        
-        
+           
          if(resultado.rows[0].numeroentrega === 1 && resultado.rows[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
             def.resolve();
         }
-        //console.log("resultado DEBE ACTUALOZAR EL TIPO FORMULA------->>>>>>>> #1 ", resultado);
-                   
+                      
     }).then(function(resultado){
-        /*console.log("SEGUNDO RESULTADO OJO #3 ", resultado);
-        if(resultado.rowCount > 0 || !resultado){*/
+        
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
-        /*}else{       
-           throw 'Error al actualizar el tipo de formula'               
-           //that.e_dispensacion_hc.onNotificarEntregaFormula(); 
-        }   */
-    }).
-    
-    /*.then(function(resultado){ 
-        console.log("resultado DEBE ACTUALOZAR EL TIPO FORMULA------->>>>>>>> #1 ", resultado);
-         return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});            
-    }).then(function(resultado){
-        console.log("SEGUNDO RESULTADO OJO #3 ", resultado);
-        if(resultado.rowCount === 0){
-            throw 'Error al actualizar el tipo de formula'        
-        }else{           
-           res.send(G.utils.r(req.url, 'Se realiza la dispensacion de pendientes correctamente', 200, {dispensacion: resultado}));
-           
-        }   
-    }).*/fail(function(err){ 
+        
+    }).fail(function(err){ 
      console.log("TERCER RESULTADO OJO #3 ", err);
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done(); 

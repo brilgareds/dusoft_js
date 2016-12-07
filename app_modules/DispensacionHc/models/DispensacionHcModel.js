@@ -1879,17 +1879,31 @@ DispensacionHcModel.prototype.estadoParametrizacionReformular = function(obj,cal
  */
 DispensacionHcModel.prototype.actualizarTipoFormula = function(obj, callback) {
     console.log("****DispensacionHcModel.prototype.actualizarTipoFormula***");
-     var sql = "UPDATE hc_evoluciones set tipo_formula = :2 WHERE evolucion_id = :1 ;";
+    /*var sql = "UPDATE hc_evoluciones set tipo_formula = :2 WHERE evolucion_id = :1 ;";
    
-    G.knex.raw(sql, {1: obj.evolucionId, 2: obj.tipoFormula}).
-    then(function(resultado){ 
-        //console.log("resultado --->>>", resultado);
+    G.knex.raw(sql, {1: obj.evolucionId, 2: obj.tipoFormula}).*/
+   //console.log("parametros ", parametros);
+    var query = G.knex('hc_evoluciones')
+            .where('evolucion_id', obj.evolucionId)
+            .update({tipo_formula:obj.tipoFormula});
+    
+    query.then(function(resultado){ 
+        console.log("resultado --->>>", resultado);
        callback(false, resultado);
     }).catch(function(err){    
         console.log("err (/catch) [actualizarTipoFormula]: ", err);
        callback(err);
     });
 };
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2534,7 +2548,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                 /**
                  * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
                  */               
-                    return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, obj.parametro1.evolucion,0, obj.parametro1.usuario,transaccion);
+                    return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado, obj.parametro1.evolucion,0, obj.parametro1.usuario,transaccion);
                 }else{
                     def.resolve();
                 }         

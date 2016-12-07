@@ -890,8 +890,13 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
  * @controller DispensacionHc.prototype.listarMedicamentosPendientes
  */
 DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callback){
-
-    var parametros = {1: obj.evolucionId};
+    
+    console.log("*************DispensacionHcModel.prototype.listarMedicamentosPendientes**************");
+    console.log("*************DispensacionHcModel.prototype.listarMedicamentosPendientes**************");
+    console.log("*************DispensacionHcModel.prototype.listarMedicamentosPendientes**************");
+    
+   /* var parametros = {1: obj.evolucionId};
+     
     
     var sql = "SELECT  a.codigo_producto,\
                           (b.cantidades - a.cantidades) as total\
@@ -924,11 +929,65 @@ DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callba
                                                       FROM hc_dispensacion_medicamentos_tmp  \
                                                       where evolucion_id= :1 )";
     
-    G.knex.raw(sql,parametros).then(function(resultado){    
-       
+    //G.knex.raw(sql,parametros).   */
+   var colQuery = ["a.codigo_producto",
+                 G.knex.raw('(b.cantidades - a.cantidades) as total') ];
+             
+   var colFormulados = ["codigo_medicamento as codigo_producto",
+                       "cantidad_entrega as cantidades"];
+   
+   
+   var colCantidadEntregas = ["codigo_medicamento as codigo_producto",
+                                G.knex.raw("SUM(cantidad_entrega) as cantidades")];
+                            
+   var colCantidadDespachada = ["codigo_formulado as codigo_producto",
+                                G.knex.raw("SUM(cantidad_despachada) as cantidades")];
+   
+    var queryNumeroEntregaActual = G.knex.column("numero_entrega_actual")
+       .select()
+       .from('dispensacion_estados')
+       .where({evolucion_id:obj.evolucionId});
+      
+  var queryCantidadDespachada = G.knex.column(colCantidadDespachada)
+        .select()
+        .from('hc_dispensacion_medicamentos_tmp')
+        .where({evolucion_id:obj.evolucionId})
+        .groupBy('codigo_formulado').as("a");
+
+   var queryCantidadEntregas = G.knex.column(colCantidadEntregas)
+        .select()
+        .from('hc_formulacion_antecedentes')
+        .where({evolucion_id:obj.evolucionId})
+        .andWhere('numero_total_entregas','>', queryNumeroEntregaActual)
+        .groupBy('codigo_medicamento').as("b");
+    
+  var queryTmp = G.knex.select("codigo_formulado")
+                        .from('hc_dispensacion_medicamentos_tmp')
+                        .where('evolucion_id',obj.evolucionId)
+                
+     
+ 
+  var query = G.knex.select(colQuery)
+                .from(queryCantidadDespachada)
+                .innerJoin(queryCantidadEntregas, 
+                    function() {
+                        this.on("a.codigo_producto", "b.codigo_producto")
+
+                }).union(function(){
+                    this.select(colFormulados)
+                        .from('hc_formulacion_antecedentes')
+                        .where('evolucion_id',obj.evolucionId)
+                        .andWhere('sw_mostrar','1')
+                        .andWhere('numero_total_entregas','>', queryNumeroEntregaActual)
+                        .andWhereNot('codigo_medicamento','not in', queryTmp);
+                });
+               
+            
+      query.then(function(resultado){    
+       console.log("resultado [listarMedicamentosPendientes]: ", resultado);
         callback(false, resultado)
     }).catch(function(err){        
-      
+      console.log("err [listarMedicamentosPendientes]: ", err);
         callback(err)
     });  
 };
@@ -1024,7 +1083,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     
         console.log("PARAMETROS obj ", obj);          
         console.log("PARAMETROS sql3 ", sql3);          
-        
+        //max( ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ) as numero_total_entregas
         var sql = "SELECT  A.resultado, \
         to_char(A.fecha_registro,'YYYY-MM-DD')as fecha_registro, \
         round(A.unidades) as unidades,\
@@ -2518,7 +2577,7 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
         }).then(function(resultado){           
                 
               
-                if(resultado.rows.length >0){
+                if(resultado.length >0){
                    // console.log("Insertar medicamentos pendientes ");
                 /**
                  * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
@@ -2622,13 +2681,12 @@ DispensacionHcModel.prototype.guardarTodoPendiente = function(obj, callback)
     G.knex.transaction(function(transaccion) {  
         
         G.Q.ninvoke(that,'listarMedicamentosPendientes', {evolucionId:obj.evolucionId}).then(function(resultado){        
-               
-               //console.log("listarMedicamentosPendientes ", resultado);
-                if(resultado.rows.length >0){                    
+                
+                if(resultado.length >0){                    
                 /**
                  * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
                  */
-                    return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado.rows, obj.evolucionId,1, obj.usuario,transaccion);
+                    return G.Q.nfcall(__insertarMedicamentosPendientes,that,0, resultado, obj.evolucionId,1, obj.usuario,transaccion);
                 }     
                       
         }).then(function(resultado){                     
@@ -2659,14 +2717,19 @@ DispensacionHcModel.prototype.guardarTodoPendiente = function(obj, callback)
  * @returns {undefined}
  */
 DispensacionHcModel.prototype.actualizarEstadoFormula = function(obj, callback) {
-    console.log("*****DispensacionHcModel.prototype.actualizarEstadoFormula*********");
-    console.log("*****DispensacionHcModel.prototype.actualizarEstadoFormula*********");
-    console.log("*****DispensacionHcModel.prototype.actualizarEstadoFormula*********");
+    console.log("*****DispensacionHcModel.prototype.actualizarEstadoFormula 1*********");
+    console.log("*****DispensacionHcModel.prototype.actualizarEstadoFormula 2*********");
+    console.log("*****DispensacionHcModel.prototype.actualizarEstadoFormula 3*********");
     
-    var sql = "UPDATE hc_formulacion_antecedentes set sw_estado='0' WHERE evolucion_id = :1;";
-   
-    G.knex.raw(sql, {1: obj.evolucionId}).
-    then(function(resultado){ 
+    /*var sql = "UPDATE hc_formulacion_antecedentes set sw_estado='0' WHERE evolucion_id = :1;";
+    
+    var query = G.knex.raw(sql, {1: obj.evolucionId});*/
+            
+            
+    var query = G.knex('hc_formulacion_antecedentes')
+        .where({evolucion_id: obj.evolucionId})                    
+        .update({sw_estado: '0'})
+    query.then(function(resultado){ 
        
        callback(false, resultado);
     }).catch(function(err){    
@@ -2754,23 +2817,12 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
            
         }
        
-        //console.log("obj ", obj);
-        //console.log("obj.fecha_ultima_entrega ", obj.fecha_ultima_entrega);
-        //console.log("fechaUltimaEntrega ", fechaUltimaEntrega);
-        //console.log("sql ", sql);
         sql = "UPDATE dispensacion_estados \
                 set sw_pendiente = :sw_pendiente \
                 "+fechaUltimaEntrega+"\
                WHERE evolucion_id = :evolucion_id ";
     }                                      
-    
-                           
-                           
-                           
-                           
-                           
-    console.log("parametros [actualizarDispensacionEstados]: ", parametros);
-    console.log("sql ", sql);
+                          
     var query = G.knex.raw(sql,parametros);    
     
     if(transaccion) query.transacting(transaccion);     
@@ -2803,29 +2855,40 @@ DispensacionHcModel.prototype.actualizarDispensacionEstados = function(obj,trans
  */
 function __numeroEntregaBodegasDocumentos(obj, transaccion, callback){
     
-    console.log("****__numeroEntregaBodegasDocumentos*******");
-    console.log("****__numeroEntregaBodegasDocumentos*******");
-    console.log("****__numeroEntregaBodegasDocumentos*******");
+      console.log("****__numeroEntregaBodegasDocumentos 1*******");
+      console.log("****__numeroEntregaBodegasDocumentos 2*******");
+      console.log("****__numeroEntregaBodegasDocumentos 3*******");
       console.log("parametros ", obj);
-    var parametros ={1: obj.bodegasDocId,2: obj.numeracion, 3: obj.evolucion_id};
+   /* var parametros ={1: obj.bodegasDocId,2: obj.numeracion, 3: obj.evolucion_id};
             
         var sql = "UPDATE  bodegas_documentos \
                 set numero_entrega_actual = (SELECT numero_entrega_actual FROM dispensacion_estados WHERE evolucion_id = :3 )\
                 WHERE   bodegas_doc_id = :1 \
                 AND  numeracion = :2 ";
-        
-    var query = G.knex.raw(sql, parametros);
+     
+    var query = G.knex.raw(sql, parametros); */
+  
+     var queryNumeroEntregaActual = G.knex.column("numero_entrega_actual")
+        .select()
+        .from('dispensacion_estados')
+        .where({evolucion_id:obj.evolucion_id});
+     
+     var query = G.knex('bodegas_documentos')
+        .where({bodegas_doc_id: obj.bodegasDocId,numeracion: obj.numeracion})                    
+        .update({numero_entrega_actual: queryNumeroEntregaActual});
     
-    if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){  
-            //console.log("resultado ", resultado);
+     if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){
+            console.log("resultado: ", resultado);
             callback(false, resultado);
-    }).catch(function(err){
+     }).catch(function(err){
         console.log("err (/catch) [__numeroEntregaBodegasDocumentos]: ", err);
-        console.log("parametros: ", obj);
+        
         callback({err:err, msj: "Error al guardar el numero de entrega"});   
-    });
-};
+     });
+};          
+
+
   
 /**
  * +Descripcion Variable que almacena la respuesta del servidor cuando
@@ -2937,7 +3000,7 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     console.log("*********__actualizarExistenciasBodegasLotesFv***********");
     console.log("*********__actualizarExistenciasBodegasLotesFv***********");
     //Problemas con el filtro de la fecha de vencimiento    
-    var formato = 'DD/mm/YYYY';
+    var formato = 'YYYY-MM-DD';
     /*var parametros = {1: obj.cantidad_despachada, 2: obj.empresa_id,  3: obj.centro_utilidad, 
                       4: obj.bodega , 5:obj.codigo_producto, 6:  G.moment(obj.fecha_vencimiento, formato), 7: obj.lote};
           
@@ -2952,14 +3015,14 @@ function __actualizarExistenciasBodegasLotesFv(obj,transaccion,callback) {
     var query = G.knex.raw(sql,parametros);
     */
    console.log("obj ", obj);
-   console.log("G.moment(obj.fecha_vencimiento, formato) ", G.moment(obj.fecha_vencimiento, formato));
+   console.log("G.moment(obj.fecha_vencimiento, formato) ", G.moment(obj.fecha_vencimiento).format(formato));//G.moment(obj.fecha_vencimiento).add(1, 'day').format(formato)
   
     var query = G.knex('existencias_bodegas_lote_fv')
-                 .where({empresa_id:obj.empresa_id,
+                 .where({empresa_id:obj.empresa_id,                      
                     centro_utilidad:obj.centro_utilidad,
                     bodega:obj.bodega,
-                    codigo_producto:obj.codigo_producto,
-                    fecha_vencimiento: G.moment(obj.fecha_vencimiento, formato),
+                    codigo_producto:obj.codigo_producto, //to_char(d.fecha_registro,'YYYY-mm-dd') 
+                    fecha_vencimiento: G.moment(obj.fecha_vencimiento).add(1, 'day').format(formato),//G.moment(obj.fecha_vencimiento, formato),
                     lote:obj.lote
             }).decrement('existencia_actual', obj.cantidad_despachada);
     

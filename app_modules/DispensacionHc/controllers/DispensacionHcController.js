@@ -1497,7 +1497,7 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
    
        
    }).then(function(resultado){
-      //console.log("3 actualizarEstadoFormulaSinPendientes) ", resultado);
+      
       res.send(G.utils.r(req.url, 'Se descarta el producto satisfactoriamente', 200, {realizar_descarate_producto:[]}));       
       
    }).fail(function(err){   
@@ -2209,7 +2209,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
        }
        //
    }).then(function(resultado){                                      
-        //console.log("3) resultado ---> ", resultado.rows.length);  
+        console.log("3) resultado ---> ", resultado.rows);  
         var parametrosPdf = {};
         if(resultado.rows.length > 0){ 
             
@@ -2387,8 +2387,8 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
     var args = req.body.data;
     var formato = 'YYYY-MM-DD';
     var now = new Date(); 
-    var fechaEntrega = G.moment(now).format(formato);
-    var fechaMinima  = G.moment(now).format(formato);
+    var fechaEntrega = G.moment(now).format(formato);                                       
+    var fechaMinima  = G.moment(now).format(formato);              
     
     console.log("args ", args);
      if (!args.ajustar_numero_entrega_formula ) {
@@ -2397,11 +2397,27 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
     }
     
     
-    if (!args.ajustar_numero_entrega_formula.numero_entrega ) {
-        res.send(G.utils.r(req.url, 'Error en el numero de entrega', 404, {}));
+    if (!args.ajustar_numero_entrega_formula.numero_entrega || 
+            args.ajustar_numero_entrega_formula.numero_entrega === 0  
+              ) {                                                                                    
+        res.send(G.utils.r(req.url, 'El numero de entrega no puede estar vacio ni ser CERO (0)', 404, {}));
         return;
     }
     
+    
+    /*var parametrosPermisos = { usuario_id:req.session.user.usuario_id, empresa_id:req.session.user.empresa, modulos:[req.session.user.moduloActual], convertirJSON:true };
+         console.log("parametrosPermisos ", parametrosPermisos);
+     G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){
+         
+         console.log("OBTENER PARAMETRIZACION USUARIO ", parametrizacion.modulosJson);
+      //opciones=parametrizacion.modulosJson.productos_en_pedidos.opciones;
+      /*if(opciones.sw_cambiar_estado){
+          return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
+      }else{
+           throw {estado:403, mensaje:"El Usuario no tiene permisos para modificar"};
+      }
+      
+   })*/
     
     G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}).then(function(resultado){   
          

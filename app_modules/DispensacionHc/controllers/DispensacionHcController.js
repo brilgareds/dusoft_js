@@ -1337,7 +1337,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     }).then(function(resultado){
        
         var conPendientesEstado;
-        if(resultado.rows.length === 0){
+        if(resultado.length === 0){
             conPendientesEstado = 0;
         }else{
             conPendientesEstado = 1;
@@ -1471,7 +1471,7 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
                     evolucion: args.realizar_descarate_producto.evolucion};
       
     G.Q.ninvoke(that.m_dispensacion_hc,'descartarProductoPendiente',parametros).then(function(resultado){
-        //console.log("1) descartarProductoPendiente :: ", resultado);
+       
         if(resultado.rowCount === 0){                                          
             throw {msj:'No se descarto el pendiente',status:403}
         }else{
@@ -1708,7 +1708,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     }).then(function(resultado){
            
         var conPendientesEstado;
-        if(resultado.rows.length === 0){
+        if(resultado.length === 0){
             conPendientesEstado = 0;
         }else{
             conPendientesEstado = 1;

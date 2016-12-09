@@ -1272,7 +1272,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
  */
 DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
 
-    var parametros = {1: obj.empresa, 2: obj.centroUtilidad,
+   /* var parametros = {1: obj.empresa, 2: obj.centroUtilidad,
                       3: obj.bodega, 4: obj.usuario};
   
         var sql = "SELECT sw_privilegios\
@@ -1280,14 +1280,29 @@ DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
                   WHERE empresa_id= :1 AND centro_utilidad = :2 AND bodega = :3\
                   AND usuario_id = :4 AND sw_activo = '1' ";
   
-    G.knex.raw(sql,parametros).then(function(resultado){ 
-        //console.log("resultado ", resultado)
+   var query = G.knex.raw(sql,parametros);*/
+   console.log("******DispensacionHcModel.prototype.usuarioPrivilegios********");
+   console.log("******DispensacionHcModel.prototype.usuarioPrivilegios********");
+   console.log("******DispensacionHcModel.prototype.usuarioPrivilegios********");
+   
+  var query = G.knex.column(['sw_privilegios'])
+                .select()
+                .from('userpermisos_dispensacion')
+                .where('empresa_id',obj.empresa)
+                .andWhere('centro_utilidad',obj.centroUtilidad)
+                .andWhere('bodega',obj.bodega)
+                .andWhere('usuario_id',obj.usuario)
+                .andWhere('sw_activo','1');
+            
+     query.then(function(resultado){ 
+        console.log("resultado ", resultado)
           callback(false, resultado)
     }).catch(function(err){   
         console.log("err usuarioPrivilegios: ", err);    
           callback(err);
     });
     
+          
 };
 
 /**
@@ -3517,17 +3532,23 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
  */
 DispensacionHcModel.prototype.listarRegistroDeEventos = function(obj,callback){
                             
-    var sql = "SELECT a.observacion as descripcion,  TO_CHAR(a.fecha_registro,'YYYY-MM-DD')as id\
+  /*  var sql = "SELECT a.observacion as descripcion,  TO_CHAR(a.fecha_registro,'YYYY-MM-DD')as id\
                 FROM hc_despacho_medicamentos_eventos a \
                 WHERE a.evolucion_id = :1;";
-   
-    G.knex.raw(sql,{1: obj.evolucion}).then(function(resultado){    
+    
+   var query = G.knex.raw(sql,{1: obj.evolucion});*/
+   var columna = ["observacion as descripcion",
+                  G.knex.raw("TO_CHAR(fecha_registro,'YYYY-MM-DD')as id")];
+    G.knex('hc_despacho_medicamentos_eventos').where({
+        evolucion_id: obj.evolucion
+    }).select(columna).then(function(resultado){    
+       
         callback(false, resultado)
-    }).catch(function(err){          
-        callback(err)
+    }).catch(function(err){     
+         console.log("err [listarRegistroDeEventos]: ", err)
+        callback(err);
     });
           
-    
 };
 
 

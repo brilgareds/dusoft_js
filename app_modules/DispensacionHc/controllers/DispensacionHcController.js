@@ -651,9 +651,9 @@ DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
                     };
                     
  G.Q.ninvoke(that.m_dispensacion_hc,'usuarioPrivilegios', parametros).then(function(resultado){
-     
-       if(resultado && resultado.rows.length > 0){ 
-           res.send(G.utils.r(req.url, 'Usuario con privilegios de autorizar dispensacion', 200, {privilegios:resultado.rows}));
+        console.log("resultado usuarioPrivilegios ", resultado)
+       if(resultado && resultado.length > 0){ 
+           res.send(G.utils.r(req.url, 'Usuario con privilegios de autorizar dispensacion', 200, {privilegios:resultado}));
        }else{
            throw "Consulta sin resultado";
        }
@@ -1838,8 +1838,8 @@ DispensacionHc.prototype.listarRegistroDeEventos = function(req, res){
                 
     G.Q.ninvoke(that.m_dispensacion_hc,'listarRegistroDeEventos',parametros).then(function(resultado){
        
-        if(resultado.rows.length > 0){ 
-              res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {listar_registro_eventos:resultado.rows}));
+        if(resultado.length > 0){ 
+              res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {listar_registro_eventos:resultado}));
         }else{
            throw 'No hay eventos registrados';
         }

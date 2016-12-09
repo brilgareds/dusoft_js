@@ -1248,7 +1248,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     }).then(function(resultado){     
          
          
-        if(resultado.rowCount === 0){
+        /*if(resultado.rowCount === 0){
             throw 'No se genero numero de despacho'
         }else{
             
@@ -1257,8 +1257,9 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:0});   
             
            
-        };
-            
+        };*/
+            numeracion = resultado[0];    
+            return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:0});   
             
     }).then(function(resultado){
         
@@ -1617,15 +1618,18 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         return G.Q.ninvoke(that.m_dispensacion_hc,'asignacionNumeroDocumentoDespacho',{bodegasDocId:bodegasDocId});     
         
     }).then(function(resultado){
-        
-        //console.log("6)resultado ", resultado);
-        if(resultado.rowCount === 0){
+           console.log("6)resultado ", resultado);
+      
+        //
+      /*  if(resultado.rowCount === 0){
             throw 'No se genero numero de despacho'
         }else{
             numeracion = resultado.rows[0].numeracion;    
            return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);  
             
-        }
+        }*/
+           numeracion = resultado[0];    
+           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);  
         
     }).then(function(resultado){
         temporales = resultado;
@@ -1634,13 +1638,15 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
        
     }).then(function(resultado){
         
-        if(resultado.rows[0].numeroentrega === 1){
+        if(resultado[0].numeroentrega === 1){
              
            actualizarFechaUltimaEntrega = 1;
         }else{
            actualizarFechaUltimaEntrega = 0;  
             
         }
+        
+        console.log("actualizarFechaUltimaEntrega ", actualizarFechaUltimaEntrega);
         //Variables para calcular la fecha maxima de entrega de una formula
         fechaEntrega = G.moment(now).add(30, 'day').format(formato);
         fechaMinima   = G.moment(now).add(25, 'day').format(formato);
@@ -1733,7 +1739,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
         console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
            
-         if(resultado.rows[0].numeroentrega === 1 && resultado.rows[0].sw_pendiente === 2){
+         if(resultado[0].numeroentrega === 1 && resultado[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
             def.resolve();
@@ -2478,7 +2484,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
             
     }).then(function(resultado){
        
-        if(resultado.rows.length > 0){
+        if(resultado.length > 0){
             throw 'La formula ya ha sido generada'
                          
         }else{

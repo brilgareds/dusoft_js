@@ -1982,15 +1982,25 @@ function __autorizarDispensacionMedicamento(obj,transaccion, callback) {
  */
 DispensacionHcModel.prototype.asignacionNumeroDocumentoDespacho = function(obj, callback) {
     
-     var sql = "UPDATE bodegas_doc_numeraciones set numeracion=numeracion + 1 \
+    console.log("**************DispensacionHcModel.prototype.asignacionNumeroDocumentoDespacho**************");
+    console.log("**************DispensacionHcModel.prototype.asignacionNumeroDocumentoDespacho**************");
+    console.log("**************DispensacionHcModel.prototype.asignacionNumeroDocumentoDespacho**************");
+    
+   /*  var sql = "UPDATE bodegas_doc_numeraciones set numeracion=numeracion + 1 \
                 WHERE  bodegas_doc_id= :1 RETURNING numeracion;";
    
-    G.knex.raw(sql, {1: obj.bodegasDocId}).
-    then(function(resultado){   
+    var query = G.knex.raw(sql, {1: obj.bodegasDocId});*/
+            
+    var query = G.knex('bodegas_doc_numeraciones')
+                 .where('bodegas_doc_id', obj.bodegasDocId)
+                 .returning("numeracion")
+                 .increment('numeracion', 1);
+              
+    query.then(function(resultado){  
+        console.log("resultado [asignacionNumeroDocumentoDespacho]: ", obj);
        callback(false, resultado);
     }).catch(function(err){  
         console.log("err (/catch) [asignacionNumeroDocumentoDespacho]: ", err);
-        console.log("parametros: ", obj);
        callback(err);
     });
 
@@ -2034,28 +2044,40 @@ DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callb
     console.log("********DispensacionHcModel.prototype.consultarUltimaEntregaFormula*********");
     console.log("********DispensacionHcModel.prototype.consultarUltimaEntregaFormula*********");
     
-    var parametros = {1: obj.evolucion};   
+ /*   var parametros = {1: obj.evolucion};   
     var campo = "";
-    if(obj.numeroEntregaActual === 0){
+   if(obj.numeroEntregaActual === 0){
         campo = "(numero_total_entregas - numero_entrega_actual)";
     }else{
         campo = "numero_entrega_actual";
     }         
-    
-    var sql = "SELECT "+campo+" as numeroEntrega, sw_pendiente\
+     var sql = "SELECT "+campo+" as numeroEntrega, sw_pendiente\
                FROM dispensacion_estados a \
                WHERE \
 	        evolucion_id =  :1  ;";          
-    var query = G.knex.raw(sql,parametros);  
+    var query = G.knex.raw(sql,parametros);  */
      
-    query.then(function(resultado){ 
-        
-        callback(false, resultado); 
-   }).catch(function(err){
-        console.log("err (/catch) [consultarUltimaEntregaFormula]: ", err);
-        console.log("parametros: ", parametros);
-        callback({err:err, msj: "Error al consultar el numero de entrega"});   
-    });
+     
+    var colFormulados = [];
+    if(obj.numeroEntregaActual === 0){
+        colFormulados = [G.knex.raw("(numero_total_entregas - numero_entrega_actual) as numeroEntrega"),"sw_pendiente"];
+    }else{
+        colFormulados = ["numero_entrega_actual as numeroEntrega","sw_pendiente"];
+    } 
+   
+    var query = G.knex.column(colFormulados)
+          .select()
+          .from('dispensacion_estados')
+          .where({evolucion_id:obj.evolucion});
+
+     query.then(function(resultado){ 
+         console.log("resultado [consultarUltimaEntregaFormula]: ", resultado);
+          callback(false, resultado); 
+     }).catch(function(err){
+          console.log("err (/catch) [consultarUltimaEntregaFormula]: ", err);
+          callback({err:err, msj: "Error al consultar el numero de entrega"});   
+     });
+    
 };
 
 
@@ -2073,7 +2095,13 @@ DispensacionHcModel.prototype.consultarNumeroTotalEntregas = function(obj,transa
     console.log("*****DispensacionHcModel.prototype.consultarNumeroTotalEntregas*********");
     console.log("*****DispensacionHcModel.prototype.consultarNumeroTotalEntregas*********");
     
-    var parametros = {1: obj.evolucion};
+    var columna = [G.knex.raw("CASE WHEN numero_entrega_actual = numero_total_entregas THEN '1' ELSE '0' END  AS estado_entrega")];
+     
+    var query = G.knex.column(columna)
+     .select()
+     .from('dispensacion_estados')
+     .where({evolucion_id:obj.evolucion});
+    /*var parametros = {1: obj.evolucion};
     
     var sql = "SELECT\
                 CASE WHEN a.numero_entrega_actual = numero_total_entregas THEN '1'\
@@ -2081,15 +2109,15 @@ DispensacionHcModel.prototype.consultarNumeroTotalEntregas = function(obj,transa
                FROM dispensacion_estados a\
                WHERE \
 	        evolucion_id = :1;";          
-   var query = G.knex.raw(sql,parametros);
+   var query = G.knex.raw(sql,parametros);*/
    
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){    
-       //console.log("resultado [consultarNumeroTotalEntregas]: ", resultado);   
+       console.log("resultado [consultarNumeroTotalEntregas]: ", resultado);   
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [consultarNumeroTotalEntregas]: ", err);
-        console.log("parametros: ", parametros);
+       
         callback({err:err, msj: "Error al consultar el numero total de entregas"});   
 });  
    
@@ -2180,8 +2208,8 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
             return G.Q.ninvoke(that,'consultarNumeroTotalEntregas', obj.parametro1 , transaccion);
                 
         }).then(function(resultado){  
-                //console.log("resultado.rows[0].estado_entrega ", resultado.rows[0].estado_entrega);
-            if(resultado.rows[0].estado_entrega === '1'){                
+            console.log(" ============= MIRAR SI A QUI PASO SATISFACTORIAMENTE ", resultado);
+            if(resultado[0].estado_entrega === '1'){                
                 return G.Q.ninvoke(that,'actualizarEstadoFinalizoFormula', obj.parametro1 , transaccion);
             }else{                             
                 def.resolve();    
@@ -2276,7 +2304,7 @@ DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion, c
 
         callback(false, resultado);
     }). catch (function(error) {
-        console.log("err (/catch) [actualizarProductoPendientePorBodega]: ", error)
+        console.log("err (/catch) [consultarPendientesFormula]: ", error)
         console.log("parametros [evolucion]: ", evolucion);
         callback(error);
     });
@@ -2289,20 +2317,28 @@ DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion, c
  * @controller DispensacionHc.prototype.existenciasBodegas
  */
 DispensacionHcModel.prototype.actualizarProductoPendientePorBodega = function(evolucion,producto,transaccion, callback){
-  
-   var parametros = {1: evolucion, 2: producto.codigo_producto};   
+    
+    console.log("********DispensacionHcModel.prototype.actualizarProductoPendientePorBodega **************");
+    console.log("********DispensacionHcModel.prototype.actualizarProductoPendientePorBodega **************");
+    console.log("********DispensacionHcModel.prototype.actualizarProductoPendientePorBodega **************");
+    
+  /* var parametros = {1: evolucion, 2: producto.codigo_producto};   
    var sql = "UPDATE hc_pendientes_por_dispensar\
 		SET sw_estado='1'\
 		WHERE evolucion_id = :1 AND codigo_medicamento = :2 ;";          
-   var query = G.knex.raw(sql,parametros);
-    
+   var query = G.knex.raw(sql,parametros);*/
+   
+    var query = G.knex('hc_pendientes_por_dispensar')
+       .where({evolucion_id: evolucion}) 
+       .andWhere({codigo_medicamento:producto.codigo_producto})             
+       .update({sw_estado:'1'});
+       
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){     
-           
-          callback(false, resultado);
+        console.log("resultado [actualizarProductoPendientePorBodega]: ", resultado);   
+        callback(false, resultado);
    }).catch(function(err){       
         console.log("err (/catch) [actualizarProductoPendientePorBodega]: ", err);
-        console.log("parametros ", parametros);
         callback({err:err, msj: "Error al realizar el despacho de los pendientes"});   
     });  
 };
@@ -2641,8 +2677,8 @@ DispensacionHcModel.prototype.generarDispensacionFormula = function(obj, callbac
                 return G.Q.ninvoke(that,'consultarNumeroTotalEntregas', obj.parametro1 , transaccion);
                 
         }).then(function(resultado){  
-             
-            if(resultado.rows[0].estado_entrega === '1'){                
+            console.log(" ============= MIRAR SI A QUI PASO SATISFACTORIAMENTE ", resultado); 
+            if(resultado[0].estado_entrega === '1'){                
                 return G.Q.ninvoke(that,'actualizarEstadoFinalizoFormula', obj.parametro1 , transaccion);
             }else{
                 def.resolve();

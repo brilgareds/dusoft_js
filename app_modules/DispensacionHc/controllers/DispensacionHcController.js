@@ -194,11 +194,7 @@ DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
  *              
  */
 DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
-   
-   console.log("*********DispensacionHc.prototype.cantidadProductoTemporal**************");
-   console.log("*********DispensacionHc.prototype.cantidadProductoTemporal**************");
-   console.log("*********DispensacionHc.prototype.cantidadProductoTemporal**************");
-   
+     
     var that = this;
     var args = req.body.data;
    
@@ -229,9 +225,12 @@ DispensacionHc.prototype.cantidadProductoTemporal = function(req, res){
    
    
     G.Q.ninvoke(that.m_dispensacion_hc,'cantidadProductoTemporal',parametros).then(function(resultado){
-        //console.log("resultado [cantidadProductoTemporal]::", resultado);
-        if(resultado.rows.length > 0){
-            res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {cantidadProducto:resultado.rows}));
+      console.log("********DispensacionHc.prototype.cantidadProductoTemporal******************");
+      console.log("********DispensacionHc.prototype.cantidadProductoTemporal******************");
+      console.log("********DispensacionHc.prototype.cantidadProductoTemporal******************");
+      
+        if(resultado.length > 0){
+            res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {cantidadProducto:resultado}));
         }else{
            throw 'Consulta sin resultados';
         }
@@ -457,8 +456,8 @@ DispensacionHc.prototype.consultarLotesDispensarFormula = function(req, res){
             
     G.Q.ninvoke(that.m_dispensacion_hc,'existenciasBodegas',parametros).then(function(resultado){
        //console.log("AQUI QUE PASO ", resultado)
-       if(resultado || resultado.rows.length > 0){ 
-             res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado.rows}));
+       if(resultado || resultado.length > 0){ 
+             res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado}));
        }else{
            throw {msj: "Consulta sin resultado", codigo: 500};
        }
@@ -603,8 +602,8 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
    
    }).then(function(resultado){
        //console.log("AQUI QUE PASO ", resultado.rows)
-       if(resultado || resultado.rows.length > 0){ 
-             res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado.rows}));
+       if(resultado || resultado.length > 0){ 
+             res.send(G.utils.r(req.url, 'Consulta los lotes de cada producto de los FOFO', 200, {existenciasBodegas:resultado}));
        }else{
            throw {msj: "Consulta sin resultado", codigo: 500};
        }
@@ -739,10 +738,10 @@ DispensacionHc.prototype.autorizarDispensacionMedicamento  = function(req, res){
  */
 DispensacionHc.prototype.temporalLotes = function(req, res){
     
-    console.log("DispensacionHc.prototype.temporalLotes ");
-    console.log("DispensacionHc.prototype.temporalLotes ");
-    console.log("DispensacionHc.prototype.temporalLotes ");
-    console.log("DispensacionHc.prototype.temporalLotes ");
+    console.log("DispensacionHc.prototype.temporalLotes ****");
+    console.log("DispensacionHc.prototype.temporalLotes ****");
+    console.log("DispensacionHc.prototype.temporalLotes ****");
+    console.log("DispensacionHc.prototype.temporalLotes ****");
     
     var that = this;
     var args = req.body.data;
@@ -804,8 +803,8 @@ DispensacionHc.prototype.temporalLotes = function(req, res){
     G.Q.ninvoke(that.m_dispensacion_hc,'cantidadProductoTemporal',parametros).then(function(resultado){
        var total;
        
-        if(resultado.rows.length > 0){         
-            total = parseInt(resultado.rows[0].total) + cantidadDispensada;          
+        if(resultado.length > 0){         
+            total = parseInt(resultado[0].total) + cantidadDispensada;          
         }else{
             total = parseInt(cantidadDispensada);
         }

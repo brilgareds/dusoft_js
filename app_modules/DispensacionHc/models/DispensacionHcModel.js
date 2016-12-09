@@ -1299,7 +1299,11 @@ DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
  */
 DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
 
-    var parametros = {1: obj.codigoProducto, 2: obj.evolucionId, 3: obj.principioActivo};
+    console.log("**********DispensacionHcModel.prototype.cantidadProductoTemporal****************");
+    console.log("**********DispensacionHcModel.prototype.cantidadProductoTemporal****************");
+    console.log("**********DispensacionHcModel.prototype.cantidadProductoTemporal****************");
+    
+   /* var parametros = {1: obj.codigoProducto, 2: obj.evolucionId, 3: obj.principioActivo};
         console.log("parametros ", parametros);
     var condicion = "";
         if (!obj.principioActivo || obj.principioActivo === null) {
@@ -1316,12 +1320,39 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
                        LEFT JOIN inventarios_productos invp ON(tmp.codigo_formulado=invp.codigo_producto)\
                   where tmp.codigo_formulado= :1\
                   and tmp.evolucion_id = :2 "+condicion+" GROUP BY codigo_formulado";
-  
-    G.knex.raw(sql,parametros).then(function(resultado){      
-          callback(false, resultado)
+     var query =  G.knex.raw(sql,parametros);*/
+    var condicion = "";
+    var parametro = "";
+        if (!obj.principioActivo || obj.principioActivo === null) {
+            condicion="invp.codigo_producto";
+            parametro = obj.codigoProducto;
+        }else{
+            condicion ="med.cod_principio_activo";
+            parametro = obj.principioActivo;
+        } 
+    var columna = [G.knex.raw("COALESCE(sum(tmp.cantidad_despachada),0) as total"),
+                    "tmp.codigo_formulado"];
+    var query = G.knex.column(columna)
+                .select()
+                .from('hc_dispensacion_medicamentos_tmp as tmp')
+                .leftJoin('medicamentos as med',function() {                             
+                    this.on("tmp.codigo_formulado", "med.codigo_medicamento")
+                        
+                 })
+                .leftJoin('inventarios_productos as invp',function() {                             
+                    this.on("tmp.codigo_formulado", "invp.codigo_producto")                       
+                 })
+                .where("tmp.codigo_formulado", obj.codigoProducto)
+                .andWhere("tmp.evolucion_id",obj.evolucionId)
+                .andWhere(condicion,parametro)
+                .groupBy("codigo_formulado");
+         
+   query.then(function(resultado){      
+        console.log("resultado [cantidadProductoTemporal]: ", resultado);    
+          callback(false, resultado);
     }).catch(function(err){     
-         console.log("err cantidadProductoTemporal: ", err);    
-          callback(err)
+         console.log("err [cantidadProductoTemporal]: ", err);    
+          callback(err);
     });
     
 };
@@ -1339,37 +1370,36 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
  */
 DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
     
-    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ******");
-    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ******");
-    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ******");
+    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ORM******");
+    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ORM******");
+    console.log("MODEL *******DispensacionHcModel.prototype.existenciasBodegas ORM******");
     
-    var parametros = {1: obj.empresa, 
+   /* var parametros = {1: obj.empresa, 
                     2: obj.centroUtilidad, 
                     3: obj.bodega, 
                     4: obj.principioActivo, 
                     5: obj.codigoProducto,
                     6: obj.codigoFormaFarmacologica};
-     console.log("obj ", obj);
-     console.log("**parametros** ", parametros);
+     
     var condicion = "";
     if (!obj.principioActivo || obj.principioActivo === null) { 
-        //if (obj.principioActivo !== "") { G.constants.db().LIKE,"%" + obj.variable + "%"
-        condicion=" and fv.codigo_producto = :5 AND invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'";
+        
+        condicion=" and fv.codigo_producto = :5 ";
         
     }else{
-        condicion =" and med.cod_principio_activo =  :4 AND invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'";
+        condicion =" and med.cod_principio_activo =  :4 ";
     } 
-                              
-    console.log("condicion ", condicion);
-    var sql =  " SELECT\
+     
+                          
+    var sql =  "SELECT\
                 invp.contenido_unidad_venta as concentracion,\
                 invsinv.descripcion as molecula,\
                 invmcf.descripcion as forma_farmacologica,\
                 invci.descripcion as laboratorio,\
                 fc_descripcion_producto_alterno(fv.codigo_producto) as producto,\
                 med.cod_principio_activo,\
-                fv.empresa_id,\n\
-                fv.centro_utilidad, \n\
+                fv.empresa_id,\
+                fv.centro_utilidad, \
                 fv.codigo_producto,fv.bodega,\
                 fv.estado, \
                 fv.existencia_actual, \
@@ -1383,19 +1413,109 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     ELSE 2 END as estado_producto, \
                 extract(days from (fv.fecha_vencimiento - timestamp 'now()')) as cantidad_dias\
                 FROM existencias_bodegas_lote_fv AS fv\
-                JOIN existencias_bodegas as ext ON (fv.empresa_id = ext.empresa_id) and (fv.centro_utilidad = ext.centro_utilidad) and (fv.bodega = ext.bodega) and (fv.codigo_producto = ext.codigo_producto)\
+                JOIN existencias_bodegas as ext\
+                ON (fv.empresa_id = ext.empresa_id) \
+                and (fv.centro_utilidad = ext.centro_utilidad) \
+                and (fv.bodega = ext.bodega) and (fv.codigo_producto = ext.codigo_producto)\
                 JOIN inventarios as inv ON (ext.empresa_id = inv.empresa_id) and (ext.codigo_producto = inv.codigo_producto)\
                 JOIN inventarios_productos as invp ON (inv.codigo_producto = invp.codigo_producto)\
                 LEFT JOIN medicamentos med ON (fv.codigo_producto=med.codigo_medicamento)\
-                INNER JOIN inv_subclases_inventarios invsinv ON ( invsinv.grupo_id = invp.grupo_id  ) AND (invsinv.clase_id = invp.clase_id) AND (invsinv.subclase_id = invp.subclase_id)\
-                INNER JOIN inv_med_cod_forma_farmacologica invmcf ON (invmcf.cod_forma_farmacologica = invp.cod_forma_farmacologica)\
-                INNER JOIN inv_clases_inventarios invci ON ( invci.grupo_id = invp.grupo_id  ) AND (invci.clase_id = invp.clase_id) \n\
-                WHERE fv.empresa_id = :1 and fv.centro_utilidad = :2\
-                and fv.bodega = :3 and fv.existencia_actual > 0 "+condicion+" ORDER BY invp.descripcion ASC,fv.fecha_vencimiento ASC";
+                INNER JOIN inv_subclases_inventarios invsinv\
+                ON ( invsinv.grupo_id = invp.grupo_id  ) \
+                AND (invsinv.clase_id = invp.clase_id) \
+                AND (invsinv.subclase_id = invp.subclase_id)\
+                INNER JOIN inv_med_cod_forma_farmacologica invmcf \
+                ON (invmcf.cod_forma_farmacologica = invp.cod_forma_farmacologica)\
+                INNER JOIN inv_clases_inventarios invci \
+                ON ( invci.grupo_id = invp.grupo_id  ) \
+                AND (invci.clase_id = invp.clase_id) \
+                WHERE fv.empresa_id = :1 \
+                and fv.centro_utilidad = :2\
+                and fv.bodega = :3 \
+                and fv.existencia_actual > 0 "+condicion+" " 
+                + "AND invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'"
+                +"ORDER BY invp.descripcion ASC,fv.fecha_vencimiento ASC";
 
-     
-    G.knex.raw(sql,parametros).then(function(resultado){  
-      //console.log(" resultado [existenciasBodegas]: ", resultado.rows);
+     var query = G.knex.raw(sql,parametros);
+     console.log("ESTE ES TODOOOOO ", obj);*/
+    var condicion = "";
+    var parametro = "";
+    if (!obj.principioActivo || obj.principioActivo === null) { 
+        
+        condicion = "fv.codigo_producto";
+        parametro = obj.codigoProducto;
+        //condicion=" and fv.codigo_producto = :5 AND invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'";
+        
+    }else{
+        condicion = "med.cod_principio_activo";
+        parametro = obj.principioActivo;
+        //condicion =" and med.cod_principio_activo =  :4 AND invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'";
+    } 
+    var columna = ["invp.contenido_unidad_venta as concentracion", 
+                    "invsinv.descripcion as molecula",
+                    "invmcf.descripcion as forma_farmacologica",
+                    "invci.descripcion as laboratorio",
+                    "invci.descripcion as laboratorio",
+                    G.knex.raw("fc_descripcion_producto_alterno(fv.codigo_producto) as producto"),
+                    "med.cod_principio_activo",
+                    "fv.empresa_id",
+                    "fv.centro_utilidad",
+                    "fv.codigo_producto",
+                    "fv.bodega",
+                    "fv.estado",
+                    "fv.existencia_actual",
+                    "fv.existencia_inicial",
+                    G.knex.raw("to_char(fv.fecha_registro,'YYYY-MM-DD') AS fecha_registro"),
+                    G.knex.raw("to_char(fv.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),
+                    "fv.lote",
+                    "fv.ubicacion_id",
+                    G.knex.raw("CASE WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) = 30 THEN 0\
+                     WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) <= 1 THEN 1\
+                    ELSE 2 END as estado_producto"),
+                    G.knex.raw("extract(days from (fv.fecha_vencimiento - timestamp 'now()')) as cantidad_dias")]; 
+    var query = G.knex.column(columna)
+                .select()
+                .from('existencias_bodegas_lote_fv as fv')
+                .join('existencias_bodegas as ext',function() {                             
+                    this.on("fv.empresa_id","=", "ext.empresa_id")
+                        .on("fv.centro_utilidad","=", "ext.centro_utilidad")
+                        .on("fv.bodega","=", "ext.bodega")
+                        .on("fv.codigo_producto", "=","ext.codigo_producto")
+                 })
+                 .join('inventarios as inv', function(){
+                    this.on("ext.empresa_id","=", "inv.empresa_id")
+                        .on("ext.codigo_producto","=", "inv.codigo_producto")
+                 })
+                 .join('inventarios_productos as invp', function(){
+                    this.on("invp.codigo_producto","=", "inv.codigo_producto") 
+                 })
+                 .leftJoin('medicamentos as med', function(){
+                    this.on("fv.codigo_producto", "med.codigo_medicamento") 
+                 })
+                 .innerJoin('inv_subclases_inventarios as invsinv', function(){
+                    this.on("invsinv.grupo_id", "invp.grupo_id")
+                        .on("invsinv.clase_id", "invp.clase_id")
+                        .on("invsinv.subclase_id", "invp.subclase_id")
+                 })
+                 .innerJoin('inv_med_cod_forma_farmacologica as invmcf', function(){
+                    this.on("invmcf.cod_forma_farmacologica", "invp.cod_forma_farmacologica")
+                 })
+                 .innerJoin('inv_clases_inventarios as invci', function(){
+                    this.on("invci.grupo_id", "invp.grupo_id")
+                        .on("invci.clase_id", "invp.clase_id")
+                 })
+                 //.
+                 .where("fv.empresa_id", obj.empresa)
+                 .andWhere("fv.centro_utilidad", obj.centroUtilidad)
+                 .andWhere("fv.bodega", obj.bodega)
+                 .andWhere("fv.existencia_actual",">", 0)
+                 .andWhere(condicion,parametro)
+                 //.andWhere("invp.cod_forma_farmacologica",G.constants.db().LIKE,"'%" + obj.codigoFormaFarmacologica + "%'")
+                 .andWhere(G.knex.raw("invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'"))
+                 .orderBy("fv.fecha_vencimiento","ASC");
+                  
+    query.then(function(resultado){  
+      console.log(" resultado [existenciasBodegas]: ---->>>>>>>  ", resultado);
       callback(false, resultado)
     }).catch(function(err){ 
         console.log("err existenciasBodegas: ", err);

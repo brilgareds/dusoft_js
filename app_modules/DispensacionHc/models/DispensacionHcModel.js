@@ -1814,31 +1814,49 @@ DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
  */
 DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(obj,callback){
      
+     console.log("*************DispensacionHcModel.prototype.consultarProductosTodoPendiente*****************");
+     console.log("*************DispensacionHcModel.prototype.consultarProductosTodoPendiente*****************");
+     console.log("*************DispensacionHcModel.prototype.consultarProductosTodoPendiente*****************");
+     
     var parametros = {1: obj.evolucionId, 2: obj.estado};
     var campo = "";
     //console.log("parametros ", parametros);
-    /**
-     * +Descripcion El estado 0 (Cero) se envia desde el controlador descartarProductoPendiente
-     *              El estado 1 (Uno)  Se envia desde el controlador consultarProductosTodoPendiente
-     */
-    if(obj.estado === 0){
+   
+   if(obj.estado === 0){
         campo = "sw_estado";
     }else{
-        campo = "todo_pendiente";
+        campo = "todo_pendiente";    
     }
     
-    var sql = "SELECT   evolucion_id\
+    
+   
+   /* var sql = "SELECT   evolucion_id\
                FROM    hc_pendientes_por_dispensar\
                WHERE   "+campo+" = :2\
 	       AND bodegas_doc_id is null\
 	       AND numeracion is null\
 	       AND evolucion_id = :1 ";
                //console.log("sql ", sql);
-    G.knex.raw(sql,parametros).then(function(resultado){ 
-        //console.log(" ***///888resultado ", resultado)
+    var query = G.knex.raw(sql,parametros);*/
+    
+   /**
+     * +Descripcion El estado 0 (Cero) se envia desde el controlador descartarProductoPendiente
+     *              El estado 1 (Uno)  Se envia desde el controlador consultarProductosTodoPendiente
+     */
+    console.log("campo ", campo);
+    var query = G.knex.column("evolucion_id")
+                 .select()
+                 .from('hc_pendientes_por_dispensar')
+                 .whereNull('bodegas_doc_id')
+                 .andWhere('numeracion','is', null)
+                 .andWhere("evolucion_id",obj.evolucionId)
+                 .andWhere(campo,obj.estado);
+    
+    query.then(function(resultado){ 
+      console.log(" ========== RESULTADO [consultarProductosTodoPendiente]:", resultado)
         callback(false, resultado)
     }).catch(function(err){   
-        console.log("err ", err);
+        console.log("err [consultarProductosTodoPendiente]: ", err);
         callback(err)
     });   
 };

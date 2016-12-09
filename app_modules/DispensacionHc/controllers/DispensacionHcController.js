@@ -1069,15 +1069,9 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});
              
     }).then(function(resultado){ 
-        /*console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");*/
-        
-        //console.log("resultado ", resultado);
-        
-        //resultado.rows[0].numeroentrega === 1 && resultado.rows[0].sw_pendiente === 2 ||
+       
                                   
-        if(resultado.rows[0].numeroentrega === 0 && resultado.rows[0].sw_pendiente === 2){
+        if(resultado[0].numeroentrega === 0 && resultado[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
             def.resolve();             
@@ -1473,18 +1467,20 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
       
     G.Q.ninvoke(that.m_dispensacion_hc,'descartarProductoPendiente',parametros).then(function(resultado){
        
-        if(resultado.rowCount === 0){                                          
+        if(resultado === 0){                                          
             throw {msj:'No se descarto el pendiente',status:403}
         }else{
             
             return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente', {evolucionId:parametros.evolucion, estado:0} );
             //    
-        }
+        }            
+        
+           
         
    }).then(function(resultado){
         //console.log("2)  :: ", resultado.rows);
        
-         if(resultado.rows.length === 0){
+         if(resultado.length === 0){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarEstadoFormulaSinPendientes', {evolucion:parametros.evolucion, estado:0} );
              
         }else{
@@ -1568,8 +1564,8 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var bodegasDocTodoPendiente;                           
       //console.log("parametrosReformular:::: ", parametrosReformular);
         G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',{evolucionId:evolucionId, estado: 1}).then(function(resultado){
-        //console.log("1) resultado consultarProductosTodoPendiente ", resultado.rows.length)
-        if(resultado.rows.length > 0){        
+        console.log("1) resultado consultarProductosTodoPendiente ", resultado.length)
+        if(resultado.length > 0){        
            bodegasDocTodoPendiente = 1;                   
         }else{
            bodegasDocTodoPendiente = 0;              

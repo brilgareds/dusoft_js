@@ -1798,7 +1798,7 @@ DispensacionHcModel.prototype.guardarTemporalFormula = function(producto, callba
  */
 DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callback)
 {  
-       console.log("DispensacionHcModel.prototype.eliminarTemporalFormula ");
+      
     G.knex.transaction(function(transaccion) {         
         G.Q.nfcall(__eliminarTemporalFormula, producto, transaccion).then(function(resultado){
            console.log("resultado ", resultado);
@@ -1837,14 +1837,7 @@ DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callb
  * @controller DispensacionHc.prototype.listarTipoFormula
  */
 DispensacionHcModel.prototype.listarTipoFormula = function(callback){
-
-   /* var sql = "SELECT\
-            a.tipo_formula_id as id,\
-            a.descripcion_tipo_formula as descripcion\
-            FROM esm_tipos_formulas as a\
-            ORDER BY a.descripcion_tipo_formula ASC";
-   
-    G.knex.raw(sql).*/
+ 
    var columna = ["a.tipo_formula_id as id", "a.descripcion_tipo_formula as descripcion"];
      
     var query = G.knex.column(columna)
@@ -1875,51 +1868,28 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
     var parametros = {};
         parametros["1"] = obj.evolucionId;
     var where = "";
-        /**
-         * +Descripcion 
-         *              tablaUsuarioDespacho = variable que guarda la tabla de donde se extraera
-         *              el bodegas_doc_id y la numeracion dependiente del estadoEntrega
-         *              (0: despacho, 
-         *               1: pendientes,
-         *               2: entrega pendiente)
-         *               
-         *               tablaBodegasDocumentos = variable que guarda la tabla bodegas_documentos
-         *               de donde se extraera el usuario que realizo el proceso
-         *               (0: despacho, 
-         *               1: se dejara en null ya que no se ha generado despacho alguno,
-         *               2: entrega pendiente)
-         */
-   /* var tablaUsuarioDespacho;
-    var tablaBodegasDocumentos;
-    var campo;
-        if(obj.estadoEntrega === 0){
-            tablaUsuarioDespacho = "  hc_formulacion_despachos_medicamentos j "
-            tablaBodegasDocumentos = "INNER JOIN bodegas_documentos k ON j.bodegas_doc_id = k.bodegas_doc_id AND k.numeracion = j.numeracion ";
-            campo = "k.usuario_id";
-        }
-        if(obj.estadoEntrega === 1){
-            tablaUsuarioDespacho = " hc_pendientes_por_dispensar j "
-            tablaBodegasDocumentos = "";
-            campo = "j.usuario_id";
-        }
-        if(obj.estadoEntrega === 2){
-            tablaUsuarioDespacho = " hc_formulacion_despachos_medicamentos_pendientes j "
-            tablaBodegasDocumentos = "INNER JOIN bodegas_documentos k ON j.bodegas_doc_id = k.bodegas_doc_id AND k.numeracion = j.numeracion ";
-            campo = "k.usuario_id";
-        }*/
-    
+    /**
+     * +Descripcion 
+     *              tablaUsuarioDespacho = variable que guarda la tabla de donde se extraera
+     *              el bodegas_doc_id y la numeracion dependiente del estadoEntrega
+     *              (0: despacho, 
+     *               1: pendientes,
+     *               2: entrega pendiente)
+     *               
+     *               tablaBodegasDocumentos = variable que guarda la tabla bodegas_documentos
+     *               de donde se extraera el usuario que realizo el proceso
+     *               (0: despacho, 
+     *               1: se dejara en null ya que no se ha generado despacho alguno,
+     *               2: entrega pendiente)
+     */
+   
     if(obj.pacienteId){
        
         parametros["2"]= obj.tipoIdPaciente;
         parametros["3"]= obj.pacienteId;
         where=" and a.tipo_id_paciente= :2 and a.paciente_id= :3 ";
     }
-    
-    /*console.log("tablaUsuarioDespacho ", tablaUsuarioDespacho);
-    console.log("tablaBodegasDocumentos ", tablaBodegasDocumentos);
-    console.log("obj ", obj);  */                     
-                            
-    
+   
     var sql = "SELECT ca.evolucion_id,\
                       ca.numero_formula, \
                       ca.tipo_id_paciente, \
@@ -2014,7 +1984,109 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
                 and g.estado='1' ) as ca";
    
              
-    G.knex.raw(sql,parametros).then(function(resultado){
+   var query = G.knex.raw(sql,parametros);
+   
+  /* var colQuery = ["ca.evolucion_id",  
+                      "ca.numero_formula",   
+                      "ca.tipo_id_paciente",   
+                      "ca.paciente_id",   
+                      "ca.fecha_registro",  
+                      "ca.fecha_finalizacion",  
+                      "ca.fecha_formulacion",  
+                      "ca.apellidos",  
+                      "ca.nombres",  
+                      "ca.edad",  
+                      "ca.sexo",  
+                        "ca.residencia_direccion",  
+                        "ca.residencia_telefono",  
+                        "ca.plan_id",  
+                        "ca.plan_descripcion",  
+                        "ca.tipo_bloqueo_id",  
+                        "ca.bloqueo",  
+                        "ca.tipo_formula",  
+                        "ca.descripcion_tipo_formula",  
+                        G.knex.raw("CASE WHEN ca.nombre is null  \
+                        THEN (SELECT sys.nombre   \
+                              FROM system_usuarios sys   \
+                              WHERE sys.usuario_id =(SELECT distinct(usuario_id) FROM hc_pendientes_por_dispensar WHERE evolucion_id = :1 limit 1))  \
+                          ELSE ca.nombre END  AS nombre")];
+    
+    var colSubQuery = [G.knex.raw("distinct ON(a.evolucion_id)"),
+            "a.evolucion_id",  
+            "a.numero_formula",  
+            "a.tipo_id_paciente",  
+            "a.paciente_id",  
+            G.knex.raw("to_char(a.fecha_registro,'YYYY-MM-DD') as fecha_registro"),  
+            G.knex.raw("to_char(a.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion"),  
+            G.knex.raw("to_char(a.fecha_formulacion,'YYYY-MM-DD') as fecha_formulacion"),  
+            G.knex.raw("b.primer_apellido ||' '|| b.segundo_apellido AS apellidos"),  
+            G.knex.raw("b.primer_nombre||' '||b.segundo_nombre AS nombres"),  
+            G.knex.raw("edad(b.fecha_nacimiento) as edad"),  
+            "b.sexo_id as sexo",  
+            "b.residencia_direccion",  
+            "b.residencia_telefono",  
+            "e.plan_id",  
+            "e.plan_descripcion",  
+            "g.tipo_bloqueo_id",  
+            "g.descripcion AS bloqueo",  
+            "h.tipo_formula",  
+            "i.descripcion_tipo_formula"
+        ]
+    
+    
+    var subQueryNombreE = G.knex.select(["a.evolucion_id", 
+                                         "b.bodegas_doc_id as bodegas_doc_id",
+                   			 "b.numeracion as numeracion"
+                                     ]).from("dispensacion_estados AS a")
+                                       .innerJoin("hc_formulacion_despachos_medicamentos AS b",
+                                            function(){
+                                                this.on("a.evolucion_id","b.evolucion_id")
+                                            })
+                                       .union(function(){
+                                            this.select(["a.evolucion_id", 
+                                                         "c.bodegas_doc_id as bodegas_doc_id",
+                                                        "c.numeracion as numeracion"])
+                                            .from("dispensacion_estados AS a")
+                                            .leftJoin("hc_formulacion_despachos_medicamentos_pendientes AS c",
+                                            function(){
+                                                this.on("a.evolucion_id","c.evolucion_id")
+                                            })
+                                              
+                                       }).as("union_entrega").where("union_entrega.evolucion_id",obj.evolucionId)
+    
+    var subQueryNombreD = G.knex.select(["union_entrega.evolucion_id", 
+                                         "union_entrega.bodegas_doc_id as bodegas_doc_id",
+                   			 "union_entrega.numeracion as numeracion"
+                                     ]).from(subQueryNombreE).as("entrega")
+    
+    var subQueryNombreC = G.knex.select([G.knex.raw("distinct(bod.usuario_id) as usuario_id"), "bod.fecha_registro"])
+                             .from("bodegas_documentos AS bod")
+                             .innerJoin(subQueryNombreD, function(){
+                                    this.on("entrega.bodegas_doc_id","bod.bodegas_doc_id")
+                                        .on("entrega.numeracion","bod.numeracion")
+                             }).unionAll(function(){
+                                this.select([G.knex.raw("distinct(p.usuario_id)as usuario_id"),"p.fecha_pendiente"]) 
+                                    .from("hc_pendientes_por_dispensar p")
+                                    .where("p.evolucion_id",obj.evolucionId)
+                                    .andWhere("p.bodegas_doc_id","is",null)
+                                    .andWhere("p.numeracion","is",null)
+                                    
+                                    
+                             }).as("todo")
+                               .where(G.knex.raw("todo.fecha_registro ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = :1 )||'%' limit 1"))
+    
+    var subQueryNombreB = G.knex.select("todo.usuario_id")
+                             .from(subQueryNombreC)
+    
+    var colSubQueryNombre = G.knex.select("nombre")
+                             .from("system_usuarios")
+                             .where("usuario_id", subQueryNombreB)
+    
+    
+    
+    var query = G.knex.select(colQuery).from(colSubQueryNombre).as("nombre");
+    */
+    query.then(function(resultado){
        
         callback(false, resultado);
     }).catch(function(err){        

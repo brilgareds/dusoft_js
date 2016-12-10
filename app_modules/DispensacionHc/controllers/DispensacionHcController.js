@@ -117,10 +117,6 @@ DispensacionHc.prototype.listarTipoDocumento = function(req, res){
  *              
  */
 DispensacionHc.prototype.listarFormulasPendientes = function(req, res){
-      
-    console.log("************DispensacionHc.prototype.listarFormulasPendientes*************");
-    console.log("************DispensacionHc.prototype.listarFormulasPendientes*************");
-    console.log("************DispensacionHc.prototype.listarFormulasPendientes*************");
     
     var that = this;
     var args = req.body.data;
@@ -270,8 +266,8 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosFormulados',parametros).then(function(resultado){
        
      // console.log("resultado.rows ", resultado.rows);
-        if(resultado.rows.length > 0){ 
-              res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado.rows}));
+        if(resultado.length > 0){ 
+              res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado}));
         }else{
            throw 'Consulta sin resultados';
         }
@@ -290,10 +286,7 @@ DispensacionHc.prototype.listarMedicamentosFormulados = function(req, res){
  */
 DispensacionHc.prototype.listarMedicamentosFormuladosPendientes = function(req, res){
    
-   console.log("*DispensacionHc.prototype.listarMedicamentosFormuladosPendientes************");
-   console.log("*DispensacionHc.prototype.listarMedicamentosFormuladosPendientes************");
-   console.log("*DispensacionHc.prototype.listarMedicamentosFormuladosPendientes************");
-   
+     
     var that = this;
     var args = req.body.data;
    
@@ -1252,7 +1245,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             
     }).then(function(resultado){
         
-        if(resultado.rows[0].numeroentrega === 1){
+        if(resultado[0].numeroentrega === 1){
              
            actualizarFechaUltimaEntrega = 1;
         }else{
@@ -1347,18 +1340,15 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});   
     }).then(function(resultado){ 
         console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-        
+         
         //console.log("resultado ", resultado);
         
         
-        if(resultado.rows[0].numeroentrega === 1){
+        if(resultado[0].numeroentrega === 1){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
             def.resolve();             
         }
-        //console.log("resultado DEBE ACTUALIZAR EL TIPO FORMULA------->>>>>>>> #1 ", resultado);
                    
     }).then(function(resultado){
         /*console.log("SEGUNDO RESULTADO OJO #3 ", resultado);
@@ -1727,9 +1717,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});   
     }).then(function(resultado){ 
         console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-        console.log("***********resultado [consultarUltimaEntregaFormula]: **************");
-           
+             
          if(resultado[0].numeroentrega === 1 && resultado[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{

@@ -675,8 +675,7 @@ DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
 DispensacionHc.prototype.autorizarDispensacionMedicamento  = function(req, res){
     
     console.log("DispensacionHc.prototype.autorizarDispensacionMedicamento  ");
-    console.log("DispensacionHc.prototype.autorizarDispensacionMedicamento  ");
-    console.log("DispensacionHc.prototype.autorizarDispensacionMedicamento  ");
+    
     var that = this;
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;
@@ -706,17 +705,17 @@ DispensacionHc.prototype.autorizarDispensacionMedicamento  = function(req, res){
                     producto:args.autorizar_dispensacion.producto,
                     autorizado :'1'};
      
-    G.knex.transaction(function(transaccion) { 
+    /*G.knex.transaction(function(transaccion) { 
                   
             return G.Q.ninvoke(that.m_dispensacion_hc,'autorizarDispensacionMedicamento',parametros,transaccion)
              
 
-        }); 
+        }); */
     G.Q.ninvoke(that.m_dispensacion_hc,'autorizarDispensacionMedicamento',parametros).then(function(resultado){
         
-        //console.log("resultado Autorizar el medicamento", resultado);
+        console.log("resultado Autorizar el medicamento", resultado);
         //if(resultado.rows.length > 0){ 
-           res.send(G.utils.r(req.url, 'Se autoriza la dispensacion del producto', 200, {autorizar_dispensacion:resultado}));
+           res.send(G.utils.r(req.url, 'Se autoriza la dispensacion del producto', 200, {autorizar_dispensacion:{evolucion_id:resultado}}));
            
        /*}else{
            throw "Consulta sin resultado";
@@ -907,10 +906,7 @@ DispensacionHc.prototype.listarMedicamentosTemporales = function(req, res){
  */
 DispensacionHc.prototype.eliminarTemporalFormula  = function(req, res){
     
-    /*console.log("*****DispensacionHc.prototype.eliminarTemporalFormula*********");
-    console.log("*****DispensacionHc.prototype.eliminarTemporalFormula*********");
-    console.log("*****DispensacionHc.prototype.eliminarTemporalFormula*********");*/
-    
+     
     var that = this;              
     var args = req.body.data;
     //console.log("args ", args);

@@ -1658,16 +1658,16 @@ DispensacionHcModel.prototype.guardarTemporalFormula = function(producto, callba
  */
 DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callback)
 {  
-       console.log("DispensacionHcModel.prototype.eliminarTemporalFormula ", DispensacionHcModel.prototype.eliminarTemporalFormula);
+       console.log("DispensacionHcModel.prototype.eliminarTemporalFormula ");
     G.knex.transaction(function(transaccion) {         
         G.Q.nfcall(__eliminarTemporalFormula, producto, transaccion).then(function(resultado){
-           
-            if(resultado.rowCount >0){
+           console.log("resultado ", resultado);
+            if(resultado.length >0){
               
                  var parametros={evolucionId:producto.evolucionId, 
                     usuario:null, 
                     observacion: null,
-                    producto:resultado.rows[0].codigo_formulado,
+                    producto:resultado[0],
                     autorizado :'0'};
                 
                 return G.Q.nfcall(__autorizarDispensacionMedicamento, parametros, transaccion) 
@@ -2071,12 +2071,11 @@ DispensacionHcModel.prototype.actualizarTipoFormula = function(obj, callback) {
 DispensacionHcModel.prototype.autorizarDispensacionMedicamento = function(obj, callback)
 { 
      console.log("***********autorizarDispensacionMedicamento***************");
-      console.log("***********autorizarDispensacionMedicamento***************");
-       console.log("***********autorizarDispensacionMedicamento***************");
+       
     var evolucionId;
     G.knex.transaction(function(transaccion) {         
         G.Q.nfcall(__autorizarDispensacionMedicamento, obj, transaccion).then(function(resultado){     
-            evolucionId = resultado.rows[0];
+            evolucionId = resultado[0];
             //console.log("resultado ", resultado);
            transaccion.commit();       
         }).fail(function(err){    
@@ -2096,10 +2095,8 @@ DispensacionHcModel.prototype.autorizarDispensacionMedicamento = function(obj, c
 function __autorizarDispensacionMedicamento(obj,transaccion, callback) {
 
     console.log("****_autorizarDispensacionMedicamento***");
-    console.log("****_autorizarDispensacionMedicamento***");
-    console.log("****_autorizarDispensacionMedicamento***");
     
-     var sql = "update hc_formulacion_antecedentes\
+    /*var sql = "update hc_formulacion_antecedentes\
               set sw_autorizado = :6,\
                   usuario_autoriza_id = :2,\
                   observacion_autorizacion= :3,\
@@ -2108,17 +2105,27 @@ function __autorizarDispensacionMedicamento(obj,transaccion, callback) {
             AND     codigo_medicamento = :4 returning evolucion_id";
     var parametros = {1: obj.evolucionId, 2: obj.usuario, 3: obj.observacion, 4: obj.producto, 5: 'now()', 6:obj.autorizado};
     
-    var query = G.knex.raw(sql,parametros);
+    var query = G.knex.raw(sql,parametros);*/
+    
    
+    var query = G.knex('hc_formulacion_antecedentes')
+       .where({evolucion_id: obj.evolucionId}) 
+       .andWhere({codigo_medicamento:obj.producto})   
+       .returning('evolucion_id')          
+       .update({sw_autorizado:obj.autorizado, 
+                usuario_autoriza_id: obj.usuario,
+                observacion_autorizacion: obj.observacion,
+                fecha_registro_autorizacion: 'now()'});
+            
+       
    if(transaccion) query.transacting(transaccion);                         
       query.then(function(resultado){    
-       //console.log("resultado [autorizarDispensacionMedicamento]: ", resultado);   
+       console.log("resultado [autorizarDispensacionMedicamento]: ----> ", resultado);   
         callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [autorizarDispensacionMedicamento]: ", err);
-        console.log("parametros: ", parametros);
         callback({err:err, msj: "Error al autorizar la dispensacion del medicamento"});   
-}); 
+});
 };
 
 
@@ -3659,22 +3666,41 @@ function __eliminarTemporalFormula(producto, transaccion, callback) {
     if(producto.serialId > 0){
         idTemp = "hc_dispen_tmp_id = :1 AND";
     }
-    var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp\
+    
+    console.log("idTemp ", idTemp);
+    /*var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp\
                WHERE " + idTemp +"\
                   evolucion_id = :2\
                AND   codigo_producto = :3 RETURNING codigo_formulado";
 
-    var query = G.knex.raw(sql,{1: producto.serialId,2: producto.evolucionId,3: producto.codigoProducto});    
+    var query = G.knex.raw(sql,{1: producto.serialId,2: producto.evolucionId,3: producto.codigoProducto}); */   
+    
+        
+    var query = G.knex('hc_dispensacion_medicamentos_tmp').returning("codigo_formulado")
+        /*.where('evolucion_id', producto.evolucionId)
+        .andWhere('codigo_producto',producto.codigoProducto)*/
+        .where(function(){
+            this.where('evolucion_id', producto.evolucionId)
+                .andWhere('codigo_producto',producto.codigoProducto)
+            if (producto.serialId > 0) {
+                this.where("hc_dispen_tmp_id", producto.serialId);
+            }
+        }).del();
+        
+    
+    //console.log("query.toSQL() ", query.toSQL());
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){    
-            //console.log("resultado ", resultado);
+           console.log("resultado [__eliminarTemporalFormula]:", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__eliminarTemporalFormula]: ", err);
         console.log("parametros: ", producto);
         callback(err);   
     });  
-};
+};                                 
+
+
 
 
 

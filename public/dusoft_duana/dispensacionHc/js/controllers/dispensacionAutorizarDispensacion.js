@@ -118,7 +118,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 if(data.status === 200){
                      
                     AlertService.mostrarMensaje("success", data.msj);
-                    //console.log("data.obj.autorizar_dispensacion.rows ", data.obj.autorizar_dispensacion.evolucion_id)
+                 
                     $scope.$emit('emitAutorizarDispensacionMedicamento', {evolucionId: data.obj.autorizar_dispensacion.evolucion_id, 
                                                                       pendientes: resultadoStorage.pendientes});
                     

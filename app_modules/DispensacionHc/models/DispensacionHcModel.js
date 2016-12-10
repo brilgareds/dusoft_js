@@ -1281,10 +1281,7 @@ DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
                   AND usuario_id = :4 AND sw_activo = '1' ";
   
    var query = G.knex.raw(sql,parametros);*/
-   console.log("******DispensacionHcModel.prototype.usuarioPrivilegios********");
-   console.log("******DispensacionHcModel.prototype.usuarioPrivilegios********");
-   console.log("******DispensacionHcModel.prototype.usuarioPrivilegios********");
-   
+     
   var query = G.knex.column(['sw_privilegios'])
                 .select()
                 .from('userpermisos_dispensacion')
@@ -3415,23 +3412,31 @@ DispensacionHcModel.prototype.insertarPendientesPorDispensar = function(producto
  */
 DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,transaccion,callback) {
    
-   var parametros = {1: obj.evolucionId};   
-   var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp WHERE  evolucion_id = :1;";          
-   var query = G.knex.raw(sql,parametros );
+   console.log("*********DispensacionHcModel.prototype.eliminarTemporalesDispensados***************");
+   console.log("*********DispensacionHcModel.prototype.eliminarTemporalesDispensados***************");
+   console.log("*********DispensacionHcModel.prototype.eliminarTemporalesDispensados***************");
+   
+  /* var parametros = {1: obj.evolucionId};   
+   var sql = "DELETE FROM hc_dispensacion_medicamentos_tmp WHERE evolucion_id = :1;";          
+   var query = G.knex.raw(sql,parametros );*/
+    
+   var query = G.knex('hc_dispensacion_medicamentos_tmp')
+        .where('evolucion_id', obj.evolucionId)
+        .del();
     
    if(transaccion) query.transacting(transaccion);     
       query.then(function(resultado){    
-          //console.log("Eliminar resultado ", resultado)
+         console.log("resultado [eliminarTemporalesDispensados]:", resultado)
           callback(false, resultado);
    }).catch(function(err){
         console.log("err (/catch) [eliminarTemporalesDispensados]: ", err);
-        console.log("parametros: ", parametros);
+        
         callback({err:err, msj: "Error al eliminar los temporales"});   
     });  
 };
 
 
-
+                                            
 /*
  * @autor : Cristian Ardila
  * +Descripcion : Transaccion encargada de actualizar el ultimo evento
@@ -3441,11 +3446,25 @@ DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,trans
  */
 DispensacionHcModel.prototype.registrarEvento = function(parametro, callback)
 {  
+    var that = this;
+    var hcDespachoEventoId = "";
     G.knex.transaction(function(transaccion) {          
         G.Q.nfcall(__actualizarDespachoMedicamentoEvento, parametro, transaccion).then(function(resultado){                               
             return G.Q.nfcall(__insertarDespachoMedicamentoEvento,parametro, transaccion);                
-        }).then(function(resultado){      
-           
+        }).then(function(resultado){                  
+            hcDespachoEventoId = resultado[0];
+            return G.Q.ninvoke(that,'consultarMedicamentosPendientesEvento', parametro, transaccion)           
+
+        }).then(function(resultado){           
+            console.log("resultado TAMO ", resultado.length)
+            if(resultado.length >0){                    
+            /**
+             * +Descripcion Funcion recursiva que se encargada de almacenar los pendientes
+             */
+                  return G.Q.nfcall(__prepararMedicamentoEventoDetalle,that,0,resultado, hcDespachoEventoId, transaccion);     
+            }  
+
+        }).then(function(resultado){
             transaccion.commit();    
         }).fail(function(err){        
            transaccion.rollback(err);
@@ -3461,27 +3480,103 @@ DispensacionHcModel.prototype.registrarEvento = function(parametro, callback)
     
 };
 
+/**
+ *@author Cristian Manuel Ardila Troches
+ *+Descripcion Funcion encargada de consultar los medicamentos pendientes
+ *             para almacenar su registro en un evento por el cual el paciente
+ *             no se haya acercado hasta la fecha a la farmacia a reclamar
+ *@fecha 2016-12-09              
+ **/             
+DispensacionHcModel.prototype.consultarMedicamentosPendientesEvento = function(parametro,transaccion, callback)
+{    
+    console.log("**********DispensacionHcModel.prototype.consultarMedicamentosPendientesEvento****************");
+    console.log("**********DispensacionHcModel.prototype.consultarMedicamentosPendientesEvento****************");
+    console.log("**********DispensacionHcModel.prototype.consultarMedicamentosPendientesEvento****************");
+    
+    var columnas = [G.knex.raw("SUM(numero_unidades) as total"),
+                    "codigo_medicamento",
+                    "fecha_registro",
+                    G.knex.raw("fc_descripcion_producto_alterno(codigo_medicamento) as descripcion_prod")]
+   var colSubQuery = ["codigo_medicamento",
+                      "fecha_registro",
+                      G.knex.raw("SUM(cantidad) as numero_unidades")];
+                  
+   var subQuery = G.knex.select(colSubQuery)
+                        .from('hc_pendientes_por_dispensar')
+                        .where('evolucion_id',parametro.evolucionId)
+                        .andWhere('sw_estado','0')
+                        .groupBy('codigo_medicamento','fecha_registro').as("A");
+                
+         
+    var query = G.knex.select(columnas).from(subQuery).groupBy('codigo_medicamento','fecha_registro');
+    
+     if(transaccion) query.transacting(transaccion);   
+     query.then(function(resultado) {
+        console.log("resultado [consultarMedicamentosPendientesEvento]: ", resultado);
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [consultarMedicamentosPendientesEvento]: ", error);
+        callback(error);
+    });
+};
+
+
+function __prepararMedicamentoEventoDetalle(that, index, parametros,hcDespachoEventoId,transaccion, callback) {
+     
+    var producto = parametros[index];
+    if (!producto) {             
+        callback(false);
+        return;
+    }  
+     
+    G.Q.nfcall(__insertarDespachoMedicamentoEventoDetalle,producto,hcDespachoEventoId, transaccion).then(function(resultado){
+
+    }).fail(function(err){
+         console.log("err (/fail) [__prepararMedicamentoEventoDetalle]: ", err);
+    }).done();               
+      
+    index++;
+  
+    setTimeout(function() {
+        __prepararMedicamentoEventoDetalle(that, index, parametros,hcDespachoEventoId,transaccion, callback);
+    }, 300);
+}
+
+
 /*
  * @autor : Cristian Ardila
  * Descripcion : SQL para actualizar el estado del evento del despacho del medicamento
  * @fecha: 08/06/2015 09:45 pm 
  */
 function __actualizarDespachoMedicamentoEvento(parametro, transaccion, callback) {
+
+   console.log("**********__actualizarDespachoMedicamentoEvento************");
+   console.log("**********__actualizarDespachoMedicamentoEvento************");
+   console.log("**********__actualizarDespachoMedicamentoEvento************");
    
-    var sql = "update hc_despacho_medicamentos_eventos\
+   /* var sql = "update hc_despacho_medicamentos_eventos\
          set   sw_estado='0'\
          where paciente_id= :1\
          and   tipo_id_paciente= :2\
          and   evolucion_id = :3\
          and   sw_estado ='1';";
 
-    var query = G.knex.raw(sql,{1: parametro.pacienteId,2: parametro.tipoIdPaciente,3: parametro.evolucionId});    
+    var query = G.knex.raw(sql,{1: parametro.pacienteId,2: parametro.tipoIdPaciente,3: parametro.evolucionId});   
+    */
+   var query = G.knex("hc_despacho_medicamentos_eventos").
+            where({paciente_id: parametro.pacienteId, 
+                    tipo_id_paciente: parametro.tipoIdPaciente,
+                    evolucion_id: parametro.evolucionId,
+                    sw_estado: '1'}).
+            update({sw_estado: '0'});
+    
     if(transaccion) query.transacting(transaccion);    
-        query.then(function(resultado){          
+        query.then(function(resultado){ 
+        console.log("resultado [__actualizarDespachoMedicamentoEvento]: ", resultado);
             callback(false, resultado);
     }).catch(function(err){   
         console.log("err (/catch) [__actualizarDespachoMedicamentoEvento]: ", err);
-        console.log("parametros: ", parametro);
+        
         callback({err:err, msj: "Error al actualizar el evento"});
     });  
 };
@@ -3493,7 +3588,7 @@ function __actualizarDespachoMedicamentoEvento(parametro, transaccion, callback)
  */
 function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
   
-    var sql = "INSERT INTO hc_despacho_medicamentos_eventos(\
+  /*  var sql = "INSERT INTO hc_despacho_medicamentos_eventos(\
          hc_despacho_evento,\
         paciente_id,\
        tipo_id_paciente,\
@@ -3505,17 +3600,27 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
        )VALUES(\
        nextval('hc_despacho_medicamentos_eventos_hc_despacho_evento_seq'),\
         :1, :2, :3, :4, :5, :6, :7) RETURNING hc_despacho_evento;   ";
-
+        
     var query = G.knex.raw(sql,{1: parametro.pacienteId,
                                 2: parametro.tipoIdPaciente,
                                 3: parametro.evolucionId, 
                                 4: parametro.observacion,
                                 5: parametro.fecha,
                                 6: 'now()',
-                                7: parametro.usuario});    
+                                7: parametro.usuario});  */  
+      var query = G.knex('hc_despacho_medicamentos_eventos')
+       .returning("hc_despacho_evento")
+     .insert({hc_despacho_evento:G.knex.raw("nextval('hc_despacho_medicamentos_eventos_hc_despacho_evento_seq')"),
+              paciente_id: parametro.pacienteId,
+              tipo_id_paciente: parametro.tipoIdPaciente,
+              evolucion_id: parametro.evolucionId,
+              observacion: parametro.observacion,
+              fecha_evento: parametro.fecha,
+              fecha_registro: 'now()',
+            usuario_id: parametro.usuario});
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){ 
-            //console.log(" resultado ", resultado);
+         console.log(" resultado [__insertarDespachoMedicamentoEvento]:", resultado);
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarDespachoMedicamentoEvento]: ", err);
@@ -3524,6 +3629,28 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
     });  
 };
 
+
+function __insertarDespachoMedicamentoEventoDetalle(parametro,hcDespachoEventoId, transaccion, callback) {
+  
+  console.log(" **************** __insertarDespachoMedicamentoEventoDetalle **********************");
+  console.log(" **************** __insertarDespachoMedicamentoEventoDetalle **********************");
+  console.log(" **************** __insertarDespachoMedicamentoEventoDetalle **********************");
+    
+   var query = G.knex('hc_despacho_medicamentos_eventos_d')
+     .insert({hc_despacho_evento_d:G.knex.raw("DEFAULT"),
+              hc_despacho_evento: hcDespachoEventoId,
+              codigo_medicamento: parametro.codigo_medicamento,
+              cantidad: parametro.total});
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){ 
+         console.log(" resultado [__insertarDespachoMedicamentoEvento]:", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [__insertarDespachoMedicamentoEvento]: ", err);
+        console.log("parametros: ", parametro);
+        callback({err:err, msj: "Error al guardar el evento"});
+    });  
+};
 /**
  * @author Cristian Ardila
  * @fecha 09/06/2016 (DD-MM-YYYY)

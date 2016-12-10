@@ -651,7 +651,7 @@ DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
                     };
                     
  G.Q.ninvoke(that.m_dispensacion_hc,'usuarioPrivilegios', parametros).then(function(resultado){
-        console.log("resultado usuarioPrivilegios ", resultado)
+        
        if(resultado && resultado.length > 0){ 
            res.send(G.utils.r(req.url, 'Usuario con privilegios de autorizar dispensacion', 200, {privilegios:resultado}));
        }else{

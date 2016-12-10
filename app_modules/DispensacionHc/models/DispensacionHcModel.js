@@ -568,7 +568,9 @@ SELECT todo.codigo_producto,  \
  */
 DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,callback){
     
-    var parametros = {1: obj.evolucionId};
+    console.log("/*********listarTodoMedicamentosDispensados*******************"); 
+    
+   /* var parametros = {1: obj.evolucionId};
     var sql = "SELECT\
        TO_CHAR(k.fecha_registro,'YYYY-MM-DD') AS fecha_registro,\
        k.fecha,\
@@ -635,8 +637,63 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
                                 and        d.numeracion = dd.numeracion\
                            )as k\
                            order by fecha_entrega asc";
-    G.knex.raw(sql,parametros).then(function(resultado){    
-      
+   var query = G.knex.raw(sql,parametros);*/
+    
+    var colQuery = [G.knex.raw("TO_CHAR(k.fecha_registro,'YYYY-MM-DD') AS fecha_registro"),  
+       "k.fecha",  
+       G.knex.raw("cast(k.numero_entrega_actual as text) as Entrega"),  
+       "k.codigo_producto",  
+       G.knex.raw("round(k.numero_unidades) as numero_unidades"),  
+       G.knex.raw("TO_CHAR(k.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),  
+       "k.lote",  
+       "k.descripcion_prod",  
+       "k.usuario_id",  
+       "k.sistema",  
+       "k.dias_de_entregado",  
+       "k.fecha_entrega as fecha_entrega" ];
+    
+    var colSubQueryB =["dd.codigo_producto",  
+                    "dd.cantidad as numero_unidades",  
+                    "dd.fecha_vencimiento",  
+                    "dd.lote",  
+                    G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod"),  
+                    "d.usuario_id",  
+                    G.knex.raw("'dispensacion_hc' as sistema"),  
+                    G.knex.raw("to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega"),  
+                    G.knex.raw("to_char(now()- d.fecha_registro,'dd') as dias_de_entregado"),
+                   G.knex.raw("(\
+                    SELECT min(fecha_formulacion) \
+                    FROM hc_formulacion_antecedentes \
+                    WHERE evolucion_id ="+obj.evolucionId+" \
+                    )as fecha"),
+                    "d.fecha_registro",
+                    "d.numero_entrega_actual"]
+    
+     var subQueryB = G.knex.select(colSubQueryB).from("hc_formulacion_despachos_medicamentos_pendientes AS hc")
+                        .innerJoin("bodegas_documentos AS d", function(){
+                            this.on("hc.bodegas_doc_id","d.bodegas_doc_id")
+                            this.on("hc.numeracion","d.numeracion")
+                        }).innerJoin("bodegas_documentos_d AS dd", function(){
+                            this.on("dd.bodegas_doc_id","d.bodegas_doc_id")
+                            this.on("dd.numeracion","d.numeracion")
+                        }).where("hc.evolucion_id", obj.evolucionId)
+                          .andWhere("d.todo_pendiente",'1')
+                          .union(function(){
+                      
+                            this.select(colSubQueryB).from("hc_formulacion_despachos_medicamentos AS hc")
+                                .innerJoin("bodegas_documentos AS d", function(){
+                                    this.on("hc.bodegas_doc_id","d.bodegas_doc_id")
+                                    this.on("hc.numeracion","d.numeracion")
+                              }).innerJoin("bodegas_documentos_d AS dd", function(){
+                                    this.on("dd.bodegas_doc_id","d.bodegas_doc_id")
+                                    this.on("dd.numeracion","d.numeracion")
+                              }).where("hc.evolucion_id", obj.evolucionId)
+                              
+                          }).as("k").orderBy("fecha_entrega","asc")
+    
+    var query = G.knex.select(colQuery).from(subQueryB);
+    query.then(function(resultado){    
+     
         callback(false, resultado)
     }).catch(function(err){        
       console.log("err [listarTodoMedicamentosDispensados] ", err);
@@ -1017,7 +1074,8 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                           .andWhere("dc.sw_estado",'0')
                           .groupBy("dc.codigo_medicamento").as("a");
     
-    var subQueryB = G.knex.select(colSubQueryB).from( subQueryC ).leftJoin("hc_formulacion_antecedentes AS hc", function(){
+    var subQueryB = G.knex.select(colSubQueryB).from( subQueryC )
+                      .leftJoin("hc_formulacion_antecedentes AS hc", function(){
                             this.on("hc.codigo_medicamento","a.codigo_medicamento")
                     }).leftJoin("medicamentos AS med", function(){
                             this.on("a.codigo_medicamento","med.codigo_medicamento")
@@ -1035,9 +1093,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesPorDispensar = functio
                                 "hc.evolucion_id").as("b")
                    
     
-    var query = G.knex.select(colSubQuery)
-                  .from(subQueryB                  
-                   );
+    var query = G.knex.select(colSubQuery).from(subQueryB);
                            
                    
         

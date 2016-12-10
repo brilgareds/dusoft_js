@@ -2092,9 +2092,9 @@ DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
         
         //console.log("resultado TODO TODO TODO ", resultado);
         
-        if(resultado.rows.length > 0){ 
+        if(resultado.length > 0){ 
         
-            res.send(G.utils.r(req.url, 'Evento registrado satisfactoriamente', 200, {listar_medicamentos_dispensados: resultado.rows}));  
+            res.send(G.utils.r(req.url, 'Evento registrado satisfactoriamente', 200, {listar_medicamentos_dispensados: resultado}));  
         }else{
             throw 'Consulta sin resultados';
         }
@@ -2114,10 +2114,7 @@ DispensacionHc.prototype.listarTotalDispensacionesFormula = function(req, res){
  */      
 DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
    
-   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
-   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
-   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********");
-   
+   console.log("*****DispensacionHc.prototype.listarTodoMedicamentosDispensados ********"); 
     var that = this;
     var args = req.body.data;
   

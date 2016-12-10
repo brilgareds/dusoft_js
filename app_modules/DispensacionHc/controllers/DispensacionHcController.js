@@ -306,8 +306,8 @@ DispensacionHc.prototype.listarMedicamentosFormuladosPendientes = function(req, 
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesPorDispensar',parametros).then(function(resultado){
        
     
-        if(resultado.rows.length > 0){ 
-              res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_pendientes:resultado.rows}));
+        if(resultado.length > 0){ 
+              res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_pendientes:resultado}));
         }else{
            throw 'Consulta sin resultados';
         }
@@ -1906,9 +1906,9 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
    
     G.Q.ninvoke(that.m_dispensacion_hc,'listarMedicamentosPendientesPorDispensar',parametros).then(function(resultado){
          
-        if(resultado.rows.length > 0){ 
+        if(resultado.length > 0){ 
             
-            productosPendientes = resultado.rows;
+            productosPendientes = resultado;
            
             return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
           

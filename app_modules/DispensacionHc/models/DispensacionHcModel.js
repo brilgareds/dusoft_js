@@ -3520,7 +3520,14 @@ DispensacionHcModel.prototype.consultarMedicamentosPendientesEvento = function(p
     });
 };
 
-
+/**
+*@author Cristian MAnuel Ardila Troches
+*+Descripcion Metodo encargado de recorrer los productos pendientes que se almacenaran
+*             como una nueva eventualidad de por que el paciente no reclamo la
+*             formula
+*@fecha 2016-09-12 (YYYY-DD-MM) 
+* 
+**/
 function __prepararMedicamentoEventoDetalle(that, index, parametros,hcDespachoEventoId,transaccion, callback) {
      
     var producto = parametros[index];
@@ -3550,19 +3557,6 @@ function __prepararMedicamentoEventoDetalle(that, index, parametros,hcDespachoEv
  */
 function __actualizarDespachoMedicamentoEvento(parametro, transaccion, callback) {
 
-   console.log("**********__actualizarDespachoMedicamentoEvento************");
-   console.log("**********__actualizarDespachoMedicamentoEvento************");
-   console.log("**********__actualizarDespachoMedicamentoEvento************");
-   
-   /* var sql = "update hc_despacho_medicamentos_eventos\
-         set   sw_estado='0'\
-         where paciente_id= :1\
-         and   tipo_id_paciente= :2\
-         and   evolucion_id = :3\
-         and   sw_estado ='1';";
-
-    var query = G.knex.raw(sql,{1: parametro.pacienteId,2: parametro.tipoIdPaciente,3: parametro.evolucionId});   
-    */
    var query = G.knex("hc_despacho_medicamentos_eventos").
             where({paciente_id: parametro.pacienteId, 
                     tipo_id_paciente: parametro.tipoIdPaciente,
@@ -3587,28 +3581,8 @@ function __actualizarDespachoMedicamentoEvento(parametro, transaccion, callback)
  * @fecha: 08/06/2015 09:45 pm 
  */
 function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
-  
-  /*  var sql = "INSERT INTO hc_despacho_medicamentos_eventos(\
-         hc_despacho_evento,\
-        paciente_id,\
-       tipo_id_paciente,\
-        evolucion_id,\
-         observacion,\
-        fecha_evento,\
-        Fecha_Registro,\
-       Usuario_id\
-       )VALUES(\
-       nextval('hc_despacho_medicamentos_eventos_hc_despacho_evento_seq'),\
-        :1, :2, :3, :4, :5, :6, :7) RETURNING hc_despacho_evento;   ";
-        
-    var query = G.knex.raw(sql,{1: parametro.pacienteId,
-                                2: parametro.tipoIdPaciente,
-                                3: parametro.evolucionId, 
-                                4: parametro.observacion,
-                                5: parametro.fecha,
-                                6: 'now()',
-                                7: parametro.usuario});  */  
-      var query = G.knex('hc_despacho_medicamentos_eventos')
+ 
+    var query = G.knex('hc_despacho_medicamentos_eventos')
        .returning("hc_despacho_evento")
      .insert({hc_despacho_evento:G.knex.raw("nextval('hc_despacho_medicamentos_eventos_hc_despacho_evento_seq')"),
               paciente_id: parametro.pacienteId,
@@ -3629,13 +3603,14 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
     });  
 };
 
-
+/*
+ * @autor : Cristian Ardila
+ * Descripcion : SQL para insertar los medicamentos pendientes relacionados con 
+ *              el evento de por que el paciente no reclamo la formula
+ * @fecha: 09/12/2016 09:45 pm 
+ */
 function __insertarDespachoMedicamentoEventoDetalle(parametro,hcDespachoEventoId, transaccion, callback) {
   
-  console.log(" **************** __insertarDespachoMedicamentoEventoDetalle **********************");
-  console.log(" **************** __insertarDespachoMedicamentoEventoDetalle **********************");
-  console.log(" **************** __insertarDespachoMedicamentoEventoDetalle **********************");
-    
    var query = G.knex('hc_despacho_medicamentos_eventos_d')
      .insert({hc_despacho_evento_d:G.knex.raw("DEFAULT"),
               hc_despacho_evento: hcDespachoEventoId,
@@ -3658,12 +3633,7 @@ function __insertarDespachoMedicamentoEventoDetalle(parametro,hcDespachoEventoId
  * @controller DispensacionHc.prototype.listarTipoFormula
  */
 DispensacionHcModel.prototype.listarRegistroDeEventos = function(obj,callback){
-                            
-  /*  var sql = "SELECT a.observacion as descripcion,  TO_CHAR(a.fecha_registro,'YYYY-MM-DD')as id\
-                FROM hc_despacho_medicamentos_eventos a \
-                WHERE a.evolucion_id = :1;";
-    
-   var query = G.knex.raw(sql,{1: obj.evolucion});*/
+   
    var columna = ["observacion as descripcion",
                   G.knex.raw("TO_CHAR(fecha_registro,'YYYY-MM-DD')as id")];
     G.knex('hc_despacho_medicamentos_eventos').where({

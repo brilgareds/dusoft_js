@@ -316,65 +316,7 @@ DispensacionHc.prototype.listarMedicamentosFormuladosPendientes = function(req, 
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
-/*
- * @author Cristian Ardila
- * @fecha 25/07/2016
- * +Descripcion Controlador encargado de consultar los medicamentos despachados
- *              
- */
-DispensacionHc.prototype.consultarMedicamentosDespachados = function(req, res){
-   
-    var that = this;
-    var args = req.body.data;
-   
-    if (args.listar_medicamentos_formulados === undefined) {
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_medicamentos_formulados: []}));
-        return;
-    }
-   
-    if (!args.listar_medicamentos_formulados.evolucionId || args.listar_medicamentos_formulados.evolucionId.length === 0) {
-        res.send(G.utils.r(req.url, 'Se requiere la evolucionId', 404, {listar_medicamentos_formulados: []}));
-        return;
-    }
-
-    var parametros = {evolucionId:args.listar_medicamentos_formulados.evolucionId};
-   
-   
-    G.Q.ninvoke(that.m_dispensacion_hc,'consultarMedicamentosDespachados',parametros).then(function(resultado){
-       
-     // console.log("---resultado.rows.length ---- ", resultado.rows.length)
-        if(resultado.rows.length > 0){ 
-              res.send(G.utils.r(req.url, 'Consulta con medicamentos formulados', 200, {listar_medicamentos_formulados:resultado.rows}));
-        }else{
-           throw 'Consulta sin resultados';
-        }
-        
-    }).fail(function(err){      
-       res.send(G.utils.r(req.url, err, 500, {}));
-    }).done();
-};
-
-
-var sumaFecha = function(d, fechaP){
-        
-        var Fecha = new Date();
-        var sFecha = fechaP || (Fecha.getDate() + "-" + (Fecha.getMonth() +1) + "-" + Fecha.getFullYear());      
-        var sep = sFecha.indexOf('/') !== -1 ? '/' : '-'; 
-        var aFecha = sFecha.split(sep);
-        var fecha = aFecha[0]+'-'+aFecha[1]+'-'+aFecha[2];           
-            fecha= new Date(fecha);        
-            fecha.setDate(fecha.getDate()+parseInt(d));
-        var anno=fecha.getFullYear();            
-        var mes= fecha.getMonth()+1;         
-        var dia= fecha.getDate();        
-            mes = (mes < 10) ? ("0" + mes) : mes;
-            dia = (dia < 10) ? ("0" + dia) : dia;
-        var fechaFinal = anno+sep+mes+sep+dia;
-
-        return (fechaFinal) === "NaN-NaN-NaN" ? "" : (fechaFinal);
-    };
-    
-    
+ 
     
 /*
  * @author Cristian Ardila
@@ -564,8 +506,7 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
               *              de lo contrario debe confrontar contra la ultima fecha de registro
               *              del producto
               **/
-            if(!fechaRegistro){
-                 //fechaDespacho = sumaFecha(-23,today);
+            if(!fechaRegistro){                
                  fechaDespacho = fechaExtTicinco;
             }else{
                 fechaDespacho = fechaRegistro;

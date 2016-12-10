@@ -1218,64 +1218,6 @@ DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callba
 };
 
 
-/**
- * @author Cristian Ardila
- * @fecha 25/07/2016
- * +Descripcion Modelo encargado de consultar los medicamentos despachados
- * @controller DispensacionHc.prototype.consultarMedicamentosDespachados
- * -- Pertenece a la funcion medicamentosDespachados
- */
-DispensacionHcModel.prototype.consultarMedicamentosDespachados = function(obj,callback){
-
-    var parametros = {1: obj.evolucionId};
-                     
-        var sql = "SELECT * FROM(\
-                        SELECT   dd.codigo_producto,\
-                        dd.cantidad as numero_unidades,\
-                        dd.fecha_vencimiento ,\
-                        dd.lote,\
-                        fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
-                        d.usuario_id,\
-                        'dispensacion_hc' as sistema,\
-                        to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
-                        to_char(now()- d.fecha_registro,'dd') as dias_de_entregado\
-			FROM  hc_formulacion_despachos_medicamentos_pendientes hc\
-                        INNER JOIN bodegas_documentos d\
-                         ON  hc.bodegas_doc_id = d.bodegas_doc_id AND hc.numeracion = d.numeracion\
-                        INNER JOIN bodegas_documentos_d dd\
-                         ON dd.bodegas_doc_id = d.bodegas_doc_id AND dd.numeracion = d.numeracion\
-                        WHERE hc.evolucion_id = :1 AND d.todo_pendiente = 1\
-			UNION\
-                        select\
-                        dd.codigo_producto,\
-                        dd.cantidad as numero_unidades,\
-                        dd.fecha_vencimiento ,\
-                        dd.lote,\
-                        fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,\
-                        d.usuario_id,\
-                        'dispensacion_hc' as sistema,\
-                        to_char(d.fecha_registro,'YYYY-mm-dd') as fecha_entrega,\
-                        to_char(now()- d.fecha_registro,'dd') as dias_de_entregado\
-                        FROM\
-                          hc_formulacion_despachos_medicamentos as dc,\
-                          bodegas_documentos as d,\
-                          bodegas_documentos_d AS dd\
-                        WHERE\
-                            dc.bodegas_doc_id = d.bodegas_doc_id\
-                        and dc.numeracion = d.numeracion\
-                        and dc.evolucion_id = :1\
-                        and d.bodegas_doc_id = dd.bodegas_doc_id\
-                        and d.numeracion = dd.numeracion\
-                           )as k\
-                           order by fecha_entrega asc;\
-                           ";  
-    G.knex.raw(sql,parametros).then(function(resultado){     
-        callback(false, resultado);
-    }).catch(function(err){   
-        console.log("err consultarMedicamentosDespachados: ", err);   
-        callback(err);
-    });  
-};
 
 /**
  * @author Cristian Ardila

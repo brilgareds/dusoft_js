@@ -137,18 +137,6 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
-            /**
-              * @author Cristian Ardila
-              * @fecha  21/05/2016
-              * +Descripcion Consulta todas las formulas
-              */
-            self.consultarMedicamentosDespachados = function(obj,callback){
-               
-                Request.realizarRequest(API.DISPENSACIONHC.CONSULTAR_MEDICAMENTOS_DESPACHADOS,"POST", obj, function(data){
-                   callback(data);
-                });
-            };
-            
             
             /**
               * @author Cristian Ardila

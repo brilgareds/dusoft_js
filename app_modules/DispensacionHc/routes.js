@@ -35,13 +35,8 @@ module.exports = function(app, di_container) {
     app.post("/api/DispensacionHc/listarMedicamentosFormuladosPendientes", function(req, res){
         c_dispensacion_hc.listarMedicamentosFormuladosPendientes(req, res);
     });
-    
-    // consultar los medicamentos despachados
-    app.post("/api/DispensacionHc/consultarMedicamentosDespachados", function(req, res){
-        c_dispensacion_hc.consultarMedicamentosDespachados(req, res);
-    });
-  
-        // cantidad de producto temporal
+   
+    // cantidad de producto temporal
     app.post("/api/DispensacionHc/cantidadProductoTemporal", function(req, res){
         c_dispensacion_hc.cantidadProductoTemporal(req, res);
     });

@@ -323,20 +323,7 @@ define(["angular", "js/services"], function(angular, services) {
                     callback(data);
                 });
             };
-            
-            /**
-              * @author Cristian Ardila
-              * @fecha  07/06/2016 DD/MM/YYYYY
-              * +Descripcion Servicio encargado de obtener la ultima dispensacion
-              *              de la formula tratandose de medicamentos pendientes
-              */
-            self.listarUltimaDispensacionPendiente = function(obj,callback){
-               
-                Request.realizarRequest(API.DISPENSACIONHC.LISTAR_ULTIMA_DISPENSACIONE_PENDIENTES,"POST", obj, function(data){     
-                    callback(data);
-                });
-            };
-            
+             
             
             
             /**

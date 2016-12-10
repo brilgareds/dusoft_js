@@ -103,9 +103,7 @@ module.exports = function(app, di_container) {
         c_dispensacion_hc.listarTotalDispensacionesFormula(req, res);
     })
     
-    app.post("/api/DispensacionHc/listarUltimaDispensacionPendientes", function(req, res){
-        c_dispensacion_hc.listarUltimaDispensacionPendientes(req, res);
-    })
+
     //==========================================================================
     
     // consultando los privilegios de dispensacion del usuario de session

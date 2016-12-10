@@ -28,10 +28,7 @@ define(["angular"], function (angular) {
                 "LISTAR_MEDICAMENTOS_DISPENSADOS": BASE_URL + "/DispensacionHc/listarMedicamentosDispensados",
                 //PDF
                 "LISTAR_TODOS_MEDICAMENTOS_DISPENSADOS": BASE_URL + "/DispensacionHc/listarTodoMedicamentosDispensados",
-                "LISTAR_TOTAL_DISPENSACIONES_FORMULA": BASE_URL + "/DispensacionHc/listarTotalDispensacionesFormula",
-                "LISTAR_ULTIMA_DISPENSACIONE_PENDIENTES": BASE_URL + "/DispensacionHc/listarUltimaDispensacionPendientes",
-                 
-                
+                "LISTAR_TOTAL_DISPENSACIONES_FORMULA": BASE_URL + "/DispensacionHc/listarTotalDispensacionesFormula",               
                 "USUARIO_PRIVILEGIOS": BASE_URL + "/DispensacionHc/usuarioPrivilegios",
                 "AUTORIZAR_DISPENSACION_MEDICAMENTO": BASE_URL + "/DispensacionHc/autorizarDispensacionMedicamento",
                 "REGISTRAR_EVENTO": BASE_URL + "/DispensacionHc/registrarEvento",

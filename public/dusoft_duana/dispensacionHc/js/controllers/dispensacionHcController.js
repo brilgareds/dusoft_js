@@ -416,12 +416,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                        </ul>\
                                   </div>'
                        },
-                        /* <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
-                                                <a href="javascript:void(0);" ng-click="imprimirUltimaDispensacionPendiente({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), \n\
-                                                                                        tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
-                                                                                        pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Pendientes dispensados</a>\
-                                             </li>\*/
-                        //{field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: 'Estado formula', width:"10%"},
+                        
                         {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', displayName: "Estado", 
                                 cellClass: "txt-center",  width:"9%", 
                     cellTemplate: "<button type='button' \n\
@@ -700,40 +695,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                         that.consultaMedicamentosDispensados(parametro, estado);
                 };
-                    
-                    
-                /**
-                 * @author Cristian Ardila
-                 * +Descripcion Metodo encargado de imprimir el reporte de la ultima 
-                 *              dispensacion de pendientes
-                 * @fecha 16/06/2016
-                 */
-                $scope.imprimirUltimaDispensacionPendiente = function(obj, estado){
-
-                    var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
-                        console.log("imprimirUltimaDispensacionPendiente ", resultadoStorage);
-                    var obj = {                   
-                                session: $scope.session,
-                                data: {
-                                   listar_medicamentos_dispensados: {
-                                        evolucion: obj.evolucion,
-                                        tipoIdPaciente:obj.tipoIdPaciente,
-                                        pacienteId: obj.pacienteId,
-                                        pendientes: estado
-                                   }
-                               }    
-                            };    
-                    dispensacionHcService.listarUltimaDispensacionPendiente(obj,function(data){
-
-                        if (data.status === 200) {
-                                var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
-                                console.log("nombre ", nombre);
-                                $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
-                        }
-                    });  
-
-                };
-                    
+                 
                 /**
                 * +DESCRIPCION SERVICIO EXCLUSIVO PARA ALMACENAR LAS FORMULAS EN LA TABLA
                 *              DE DISPENSACION_ESTADOS

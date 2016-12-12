@@ -1806,8 +1806,8 @@ DispensacionHc.prototype.obtenerCabeceraFormula = function(req, res){
                 
     G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros).then(function(resultado){
        
-        if(resultado.rows.length > 0){ 
-              res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {cabecera_formula:resultado.rows}));
+        if(resultado.length > 0){ 
+              res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {cabecera_formula:resultado}));
         }else{
            throw 'La cabecera de la formula no esta creada';
         }
@@ -1859,9 +1859,9 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
       
    }).then(function(resultado){
        
-       if(resultado.rows.length > 0){ 
+       if(resultado.length > 0){ 
             
-            detalleCabecera = resultado.rows[0];
+            detalleCabecera = resultado[0];
             return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros)
                 
         }else{
@@ -1959,9 +1959,9 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
       
    }).then(function(resultado){
        //console.log("2) resultado ", resultado.rows);
-       if(resultado.rows.length > 0){ 
+       if(resultado.length > 0){ 
             
-            detalleCabecera = resultado.rows[0];
+            detalleCabecera = resultado[0];
             return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros)
                 
         }else{
@@ -2086,9 +2086,9 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
        
     G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros).then(function(resultado){
        //console.log("1) resultado ", resultado.rows);
-       if(resultado.rows.length > 0){ 
+       if(resultado.length > 0){ 
             
-            detalleCabecera = resultado.rows[0];
+            detalleCabecera = resultado[0];
             productosDispensados = args.lista_total_dispensaciones;
             return G.Q.ninvoke(that.m_dispensacion_hc,'profesionalFormula',parametros);
                 

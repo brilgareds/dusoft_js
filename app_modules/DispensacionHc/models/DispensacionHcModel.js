@@ -1890,7 +1890,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
         where=" and a.tipo_id_paciente= :2 and a.paciente_id= :3 ";
     }
    
-    var sql = "SELECT ca.evolucion_id,\
+   /* var sql = "SELECT ca.evolucion_id,\
                       ca.numero_formula, \
                       ca.tipo_id_paciente, \
                       ca.paciente_id, \
@@ -1984,9 +1984,9 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
                 and g.estado='1' ) as ca";
    
              
-   var query = G.knex.raw(sql,parametros);
+   var query = G.knex.raw(sql,parametros);*/
    
-  /* var colQuery = ["ca.evolucion_id",  
+   var colQuery = ["ca.evolucion_id",  
                       "ca.numero_formula",   
                       "ca.tipo_id_paciente",   
                       "ca.paciente_id",   
@@ -2008,11 +2008,64 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
                         G.knex.raw("CASE WHEN ca.nombre is null  \
                         THEN (SELECT sys.nombre   \
                               FROM system_usuarios sys   \
-                              WHERE sys.usuario_id =(SELECT distinct(usuario_id) FROM hc_pendientes_por_dispensar WHERE evolucion_id = :1 limit 1))  \
-                          ELSE ca.nombre END  AS nombre")];
+                              WHERE sys.usuario_id =(SELECT distinct(usuario_id) FROM hc_pendientes_por_dispensar WHERE evolucion_id = "+obj.evolucionId+" limit 1))  \
+                          ELSE ca.nombre END  AS nombre"),
+                       
+                    ];
     
-    var colSubQuery = [G.knex.raw("distinct ON(a.evolucion_id)"),
-            "a.evolucion_id",  
+    
+    
+    var colSubQueryNombreE = [ "a.evolucion_id", 
+                               "b.bodegas_doc_id as bodegas_doc_id",
+                               "b.numeracion as numeracion"
+                              ];
+    var subQueryNombreE = G.knex.select(colSubQueryNombreE)
+                                .from("dispensacion_estados AS a")
+                                .innerJoin("hc_formulacion_despachos_medicamentos AS b",
+                                    function(){
+                                        this.on("a.evolucion_id","b.evolucion_id")
+                                    })
+                                .union(function(){
+                                     this.select(colSubQueryNombreE)
+                                     .from("dispensacion_estados AS a")
+                                     .leftJoin("hc_formulacion_despachos_medicamentos_pendientes AS b",
+                                     function(){
+                                         this.on("a.evolucion_id","b.evolucion_id")
+                                     })
+                                              
+                                }).as("union_entrega")
+    
+    var subQueryNombreD = G.knex.select(["union_entrega.evolucion_id", 
+                                         "union_entrega.bodegas_doc_id as bodegas_doc_id",
+                   			 "union_entrega.numeracion as numeracion"
+                                     ]).from(subQueryNombreE).where("union_entrega.evolucion_id",obj.evolucionId).as("entrega")
+    
+    var subQueryNombreC = G.knex.select([G.knex.raw("distinct(bod.usuario_id) as usuario_id"), "bod.fecha_registro"])
+                             .from("bodegas_documentos AS bod")
+                             .innerJoin(subQueryNombreD, function(){
+                                    this.on("entrega.bodegas_doc_id","bod.bodegas_doc_id")
+                                        .on("entrega.numeracion","bod.numeracion")
+                             }).unionAll(function(){
+                                this.select([G.knex.raw("distinct(p.usuario_id)as usuario_id"),"p.fecha_pendiente"]) 
+                                    .from("hc_pendientes_por_dispensar AS p")
+                                    .where("p.evolucion_id",obj.evolucionId)
+                                    .andWhere("p.bodegas_doc_id","is",null)
+                                    .andWhere("p.numeracion","is",null)
+                                    
+                                    
+                             }).as("todo")
+                              
+    var subQueryNombreB = G.knex.select("todo.usuario_id")
+                             .from(subQueryNombreC)
+                             .where(G.knex.raw("todo.fecha_registro ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = "+obj.evolucionId+" )||'%' limit 1"))
+    
+    
+    var subQueryNombre = G.knex.select("nombre")
+                             .from("system_usuarios")
+                             .where("usuario_id", subQueryNombreB).as("nombre");
+    
+    
+    var colSubQuery = [G.knex.raw("distinct ON(a.evolucion_id) a.evolucion_id"),
             "a.numero_formula",  
             "a.tipo_id_paciente",  
             "a.paciente_id",  
@@ -2030,71 +2083,57 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
             "g.tipo_bloqueo_id",  
             "g.descripcion AS bloqueo",  
             "h.tipo_formula",  
-            "i.descripcion_tipo_formula"
-        ]
-    
-    
-    var subQueryNombreE = G.knex.select(["a.evolucion_id", 
-                                         "b.bodegas_doc_id as bodegas_doc_id",
-                   			 "b.numeracion as numeracion"
-                                     ]).from("dispensacion_estados AS a")
-                                       .innerJoin("hc_formulacion_despachos_medicamentos AS b",
-                                            function(){
-                                                this.on("a.evolucion_id","b.evolucion_id")
-                                            })
-                                       .union(function(){
-                                            this.select(["a.evolucion_id", 
-                                                         "c.bodegas_doc_id as bodegas_doc_id",
-                                                        "c.numeracion as numeracion"])
-                                            .from("dispensacion_estados AS a")
-                                            .leftJoin("hc_formulacion_despachos_medicamentos_pendientes AS c",
-                                            function(){
-                                                this.on("a.evolucion_id","c.evolucion_id")
-                                            })
-                                              
-                                       }).as("union_entrega").where("union_entrega.evolucion_id",obj.evolucionId)
-    
-    var subQueryNombreD = G.knex.select(["union_entrega.evolucion_id", 
-                                         "union_entrega.bodegas_doc_id as bodegas_doc_id",
-                   			 "union_entrega.numeracion as numeracion"
-                                     ]).from(subQueryNombreE).as("entrega")
-    
-    var subQueryNombreC = G.knex.select([G.knex.raw("distinct(bod.usuario_id) as usuario_id"), "bod.fecha_registro"])
-                             .from("bodegas_documentos AS bod")
-                             .innerJoin(subQueryNombreD, function(){
-                                    this.on("entrega.bodegas_doc_id","bod.bodegas_doc_id")
-                                        .on("entrega.numeracion","bod.numeracion")
-                             }).unionAll(function(){
-                                this.select([G.knex.raw("distinct(p.usuario_id)as usuario_id"),"p.fecha_pendiente"]) 
-                                    .from("hc_pendientes_por_dispensar p")
-                                    .where("p.evolucion_id",obj.evolucionId)
-                                    .andWhere("p.bodegas_doc_id","is",null)
-                                    .andWhere("p.numeracion","is",null)
-                                    
-                                    
-                             }).as("todo")
-                               .where(G.knex.raw("todo.fecha_registro ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = :1 )||'%' limit 1"))
-    
-    var subQueryNombreB = G.knex.select("todo.usuario_id")
-                             .from(subQueryNombreC)
-    
-    var colSubQueryNombre = G.knex.select("nombre")
-                             .from("system_usuarios")
-                             .where("usuario_id", subQueryNombreB)
-    
-    
-    
-    var query = G.knex.select(colQuery).from(colSubQueryNombre).as("nombre");
-    */
+            "i.descripcion_tipo_formula",
+            subQueryNombre
+        ];
+    var subQuery = G.knex.select(colSubQuery)
+                        .from("hc_formulacion_antecedentes AS a")
+                        .innerJoin("hc_evoluciones AS h", function(){
+                          this.on("a.evolucion_id","h.evolucion_id")
+                        })
+                        .innerJoin("pacientes AS b", function(){
+                          this.on("a.tipo_id_paciente","b.tipo_id_paciente")
+                              .on("a.paciente_id","b.paciente_id")
+                        })
+                        .leftJoin("eps_afiliados AS c", function(){
+                            this.on("b.tipo_id_paciente","c.afiliado_tipo_id")
+                                .on("b.paciente_id","c.afiliado_id")
+                        })
+                        .innerJoin("planes_rangos AS d", function(){
+                            this.on("c.plan_atencion","d.plan_id")
+                                .on("c.tipo_afiliado_atencion","d.tipo_afiliado_id")
+                                .on("c.rango_afiliado_atencion","d.rango")
+                        })
+                        .innerJoin("planes AS e", function(){
+                            this.on("d.plan_id","e.plan_id")
+                        })
+                        .innerJoin("inv_tipos_bloqueos AS g", function(){
+                            this.on("b.tipo_bloqueo_id","g.tipo_bloqueo_id")
+                        })
+                        .leftJoin("esm_tipos_formulas AS i", function(){
+                            this.on("h.tipo_formula","i.tipo_formula_id")
+
+                        })
+                        .where(function(){
+                            this.where("a.evolucion_id",obj.evolucionId)
+                                .andWhere("a.sw_formulado",'1')
+                                .andWhere("g.estado",'1')
+                            if(obj.pacienteId){
+                                this.andWhere("a.tipo_id_paciente", obj.tipoIdPaciente)
+                                    .andWhere("a.paciente_id",obj.pacienteId)                               
+                            }
+                        }).as("ca");
+    var query = G.knex.select(colQuery).from(subQuery)
+                        
     query.then(function(resultado){
-       
+        console.log("resultado [obtenerCabeceraFormulaPendientesPorDispensar]: ", resultado);
         callback(false, resultado);
     }).catch(function(err){        
         console.log("err [obtenerCabeceraFormulaPendientesPorDispensar]: ", err);
         callback(err);
     });  
 };
-
+  
 /**
  * @author Cristian Ardila
  * @fecha 09/06/2016 (DD-MM-YYYY)

@@ -485,9 +485,9 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
         
 G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametrosUltimoRegistroDispensacion).then(function(resultado){
         
-        if(resultado.rows.length > 0){ 
+        if(resultado.length > 0){ 
             console.log("1) Validacion resultado")
-            fechaRegistro = resultado.rows[0].fecha_registro;
+            fechaRegistro = resultado[0].fecha_registro;
         }
         
         console.log("[fechaRegistro]: ",fechaRegistro);
@@ -531,7 +531,7 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
            
          }else{
               def.resolve();             
-              throw {msj: resultado.rows, codigo: 204};
+              throw {msj: resultado, codigo: 204};
          }
    
    }).then(function(resultado){
@@ -2421,7 +2421,7 @@ DispensacionHc.prototype.consultarMovimientoFormulasPaciente = function(req, res
     G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametros).then(function(resultado){
         
         
-        return res.send(G.utils.r(req.url, 'Lista de formulas del paciente', 200, {consultar_movimiento_formula_paciente:resultado.rows}));
+        return res.send(G.utils.r(req.url, 'Lista de formulas del paciente', 200, {consultar_movimiento_formula_paciente:resultado}));
        
     }).fail(function(err){
         

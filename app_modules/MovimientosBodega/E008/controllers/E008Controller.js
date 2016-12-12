@@ -2177,14 +2177,14 @@ console.log("result >>>>>>",result);
 }
 
 function __sincronizarDetalleDocumento(obj, callback){
-//    var producto = obj.detalle[0];
+    var producto = obj.detalle[0];
     var def = G.Q.defer();  
     obj.error = false;
     
-//    if(!producto){
-//        callback(false);
-//        return;
-//    }
+    if(!producto){
+        callback(false);
+        return;
+    }
     
     //var url = (obj.tipoPedido === 1)? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
     var url = "";
@@ -2194,58 +2194,45 @@ function __sincronizarDetalleDocumento(obj, callback){
     if(parseInt(obj.tipoPedido) !== 1){
         url = G.constants.WS().DOCUMENTOS.COSMITET.E008;
         
-    } else {
+    } else if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
+        url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
+        soloPrecioVenta = false;
         
-        if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
-            url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
-            soloPrecioVenta = false;
-
-        } else if((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
-                  (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
-
-            url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
-        }
+    } else if((obj.pedido.identificacion_cliente === '1083' && obj.pedido.tipo_id_cliente === "CC") || //Clinica las peñitas
+              (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
+        
+        url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
     }
-   
-    var productos=[];
-    var temporal=obj.temporal;
-    obj.detalle.forEach(function(producto) {
-        obj.parametros = {
-            "usuarioId": "4608", 
-            "docTmpId":temporal, //temporal, diferencia en produccion y doc_tmp_id
-            "tipoTercero": "NIT",
-            "terceroId": "830080649",
-            "documentoCompra": "AAA000",
-            "fechaDocCompra": "2014-06-27",
-            "codigoProducto": producto.codigo_producto,
-            "cantidad": producto.cantidad,
-            "porcentajeGravamen": producto.porcentaje_gravamen,
-            "totalCosto": producto.valor_total_iva,
-            "fechaVencimiento": producto.fecha_vencimiento_producto,
-            "lote": producto.lote,
-            "localizacionProducto": "N/A",
-            "totalcostoPedido": producto.valor_unitario_iva,
-            "valorUnitario": producto.valor_unitario_iva,
-            "descuento": 0
-        };
-        productos.push(obj.parametros);
-    });      
- 
- var detalle={
-     "productos": productos
- };
- 
- console.log(">>>>>>>>>>__sincronizarDetalleDocumento22  >>>>>>>>>>>>>>>>>>",JSON.stringify(detalle));
-
+    
+    
+    obj.parametros = {
+        usuarioId:"4608",
+        docTmpId:obj.temporal,
+        tipoTercero: "NIT",
+        terceroId:"830080649",
+        documentoCompra:"AAA000",
+        fechaDocCompra:"2014-06-27",
+        codigoProducto:producto.codigo_producto,
+        cantidad:producto.cantidad,
+        porcentajeGravamen:producto.porcentaje_gravamen,
+       // totalCosto:producto.total_costo,
+        totalCosto:producto.valor_total_iva,
+        fechaVencimiento:producto.fecha_vencimiento_producto,
+        lote:producto.lote,
+        localizacionProducto:"N/A",
+        totalcostoPedido:producto.valor_unitario_iva,
+        //totalcostoPedido:producto.total_costo_pedido,
+        valorUnitario:producto.valor_unitario_iva,
+        descuento:0
+    };
+            
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
-        return G.Q.ninvoke(client, "bodegasMovimientoTmpD",detalle);
+        return G.Q.ninvoke(client, "bodegasMovimientoTmpD", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
         obj.resultadoDetalle = result.return.descripcion["$value"];
         obj.error = false;
-        
-        console.log("Duana obj.resultadoDetalle :: ",obj.resultadoDetalle);
         //Asi fallen los productos se debe continuar con el proceso
         if(!result.return.estado["$value"]){
            //throw {msj:"Resultado sincronización: "+result.return.descripcion["$value"], status:403, obj:{}}; 
@@ -2255,7 +2242,7 @@ function __sincronizarDetalleDocumento(obj, callback){
         def.resolve();
         
     }).fail(function(err) {
-        console.log(">>>>>>>>>>>>>>>>error generado __sincronizarDetalleDocumento ", err);
+        console.log("error generado __sincronizarDetalleDocumento ", err);
         callback(err);
     }).
     done(function(){
@@ -2265,9 +2252,7 @@ function __sincronizarDetalleDocumento(obj, callback){
        obj.tipo = '1';
        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).then(function(){
            obj.detalle.splice(0,1);
-//           __sincronizarDetalleDocumento(obj,callback); 
-           callback(false);
-           return;
+           __sincronizarDetalleDocumento(obj,callback); 
        });
     });
 }

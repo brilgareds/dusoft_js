@@ -1228,7 +1228,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callba
  */
 DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj,callback){
      
-   /* var sql = "";
+  /*  var sql = "";
     var sql2 = "";
     var limit = "";
     var sql3 = "WHERE A.fecha_registro >= '" +obj.fechaDia+ "'::date\
@@ -1330,11 +1330,6 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                       GROUP BY d.fecha_registro,resultado,SYS.nombre,razon_social,NUME.bodega,NUME.centro_utilidad,\n\
                                NUME.empresa_id,dc.evolucion_id,dd.codigo_producto,SYS.usuario_id,SYS.usuario \
                 UNION \
-    
-    
-    
-    
-    
                       SELECT \
                         a.fecha_registro,\
                         '1' as resultado, \
@@ -1397,18 +1392,11 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                       GROUP BY a.fecha_registro,2,4,5,e.bodega,e.centro_utilidad,e.empresa_id,c.formula_id,b.codigo_producto,g.usuario_id,g.usuario \
                        ) AS A "+sql3+" ORDER BY  A.fecha_registro DESC "+ limit;
       
-    var query = G.knex.raw(sql,parametros)*/
-   /* var parametroSubQueryA ={};
-        parametroSubQueryA.resultado ='1';
-        parametroSubQueryA.tabla = "hc_formulacion_despachos_medicamentos as dc";
-    
-    var parametroSubQueryB ={};
-        parametroSubQueryB.resultado ='0';
-        parametroSubQueryB.tabla = "hc_formulacion_despachos_medicamentos_pendientes as dc";
-        
-    var subQueryA = __subQueryDespachoFormula(obj,parametroSubQueryA);
-    //var subQueryB = __subQueryDespachoFormula(obj,parametroSubQueryB);*/
-    
+    var queryS = G.knex.raw(sql,parametros)*/
+    var limite = "1000";
+    if(obj.movimientoFormulaPaciente === 1){
+                limite = "1";  
+            } 
     
     var colSubQuery = ["a.resultado",   
         G.knex.raw("to_char(a.fecha_registro,'YYYY-MM-DD')as fecha_registro"),   
@@ -1427,7 +1415,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     ]
     
     var colSubQueryA = ["d.fecha_registro",  
-                       G.knex.raw("'0' as resultado"),   
+                       G.knex.raw("'1' as resultado"),   
                         G.knex.raw("SUM(dd.cantidad) as unidades"),   
                         "sys.nombre",   
                         "empre.razon_social",  
@@ -1443,7 +1431,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     
     
     var colSubQueryB = ["d.fecha_registro",  
-                       G.knex.raw("'1' as resultado"),   
+                       G.knex.raw("'0' as resultado"),   
                         G.knex.raw("SUM(dd.cantidad) as unidades"),   
                         "sys.nombre",   
                         "empre.razon_social",  
@@ -1487,6 +1475,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         "g.usuario_id",
                         "g.usuario"]            
                     
+     console.log("VALIDANDO NUEVO ", obj);                    
     var subQuery = G.knex.select(colSubQueryB)
                            .from("hc_formulacion_despachos_medicamentos_pendientes as dc")
                            .join("dispensacion_estados AS hc", function(){
@@ -1503,51 +1492,8 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             .innerJoin("inventarios_productos AS inve", function(){
                                 this.on("dd.codigo_producto","inve.codigo_producto")   
                             })
-                            .innerJoin("system_usuarios AS sys", function(){
-                                this.on("d.usuario_id","sys.usuario_id")
-                            })
-                            .innerJoin("bodegas_doc_numeraciones AS nume", function(){
-                                this.on("d.bodegas_doc_id","nume.bodegas_doc_id")
-                            })
-                            .innerJoin("empresas AS empre", function(){
-                                this.on("nume.empresa_id","empre.empresa_id")
-                            })
-                            .where(function(){
-                                this.where("hc.tipo_id_paciente",obj.tipoIdPaciente)
-                                .andWhere("hc.paciente_id",obj.pacienteId)
-                                
-                                if(obj.movimientoFormulaPaciente === 1){
-                                    if(obj.principioActivo){
-                                        this.andWhere("mm.cod_principio_activo","'"+obj.principioActivo+"'")
-                                       
-                                    }else{
-                                        this.andWhere("inve.codigo_producto","'"+obj.producto+"'")
-                                       
-                                    }
-                                    
-                                } 
-                            }).groupBy("d.fecha_registro",
-                                    "resultado",
-                                    "sys.nombre","razon_social",  
-                                    "nume.bodega","nume.centro_utilidad","nume.empresa_id","formulacion","modulo",
-                                    "dc.evolucion_id","dd.codigo_producto","sys.usuario_id","sys.usuario").as("A")
-                                    
-                           
-    var subQuery = G.knex.select(colSubQueryB)
-                           .from("hc_formulacion_despachos_medicamentos_pendientes as dc")
-                           .join("dispensacion_estados AS hc", function(){
-                               this.on("dc.evolucion_id","=","hc.evolucion_id")
-                           })
-                           .innerJoin("bodegas_documentos AS d", function(){
-                               this.on("dc.bodegas_doc_id", "d.bodegas_doc_id")
-                               .on("dc.numeracion","d.numeracion")
-                           })
-                            .innerJoin("bodegas_documentos_d AS dd", function(){
-                                this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
-                                .on("d.numeracion","dd.numeracion")
-                            })
-                            .innerJoin("inventarios_productos AS inve", function(){
-                                this.on("dd.codigo_producto","inve.codigo_producto")   
+                            .leftJoin("medicamentos AS mm", function(){
+                                this.on("inve.codigo_producto","mm.codigo_medicamento")
                             })
                             .innerJoin("system_usuarios AS sys", function(){
                                 this.on("d.usuario_id","sys.usuario_id")
@@ -1561,17 +1507,20 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             .where(function(){
                                 this.where("hc.tipo_id_paciente",obj.tipoIdPaciente)
                                 .andWhere("hc.paciente_id",obj.pacienteId)
-                                
+                                 console.log("VALIDA")
                                 if(obj.movimientoFormulaPaciente === 1){
+                                     console.log("ENTRO A 2")
                                     if(obj.principioActivo){
-                                        this.andWhere("mm.cod_principio_activo","'"+obj.principioActivo+"'")
+                                         console.log("ENTRO B 2")
+                                        this.andWhere(G.knex.raw("mm.cod_principio_activo='" + obj.principioActivo + "' "))
                                        
                                     }else{
-                                        this.andWhere("inve.codigo_producto","'"+obj.producto+"'")
+                                         console.log("ENTRO A 3")
+                                        this.andWhere(G.knex.raw("inve.codigo_producto='" + obj.producto + "' "))
                                        
                                     }
                                     
-                                } 
+                                }  
                             }).groupBy("d.fecha_registro",
                                     "resultado",
                                     "sys.nombre","razon_social",  
@@ -1597,6 +1546,9 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             .innerJoin("inventarios_productos AS inve", function(){
                                 this.on("dd.codigo_producto","inve.codigo_producto")   
                             })
+                            .leftJoin("medicamentos AS mm", function(){
+                                this.on("inve.codigo_producto","mm.codigo_medicamento")
+                            })
                             .innerJoin("system_usuarios AS sys", function(){
                                 this.on("d.usuario_id","sys.usuario_id")
                             })
@@ -1609,15 +1561,17 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             .where(function(){
                                 this.where("hc.tipo_id_paciente",obj.tipoIdPaciente)
                                 .andWhere("hc.paciente_id",obj.pacienteId)
-                               
-                                    this.andWhere("dc.sw_estado",'1')
+                                .andWhere("dc.sw_estado",'1')
                              
                                 if(obj.movimientoFormulaPaciente === 1){
+                                     console.log("ENTRO A 2")
                                     if(obj.principioActivo){
-                                        this.andWhere("mm.cod_principio_activo","'"+obj.principioActivo+"'")
+                                         console.log("ENTRO B 2")
+                                        this.andWhere(G.knex.raw("mm.cod_principio_activo='" + obj.principioActivo + "' "))
                                        
                                     }else{
-                                        this.andWhere("inve.codigo_producto","'"+obj.producto+"'")
+                                         console.log("ENTRO A 3")
+                                        this.andWhere(G.knex.raw("inve.codigo_producto='" + obj.producto + "' "))
                                        
                                     }
                                     
@@ -1630,35 +1584,34 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                    
                             })
                             //union 3       
-                            .union(function(){
-                                    this.select(colSubQueryC)
-                          
+                           .union(function(){
+                                    this.select(colSubQueryC)                          
                            .from("bodegas_documentos AS a")
-                           .innerJoin("bodegas_documentos_d AS b", function(){
-                                this.on("a.bodegas_doc_id","b.bodegas_doc_id")
-                                .on("a.numeracion","b.numeracion")
+                           .join("bodegas_documentos_d AS b", function(){
+                                this.on("a.bodegas_doc_id","=","b.bodegas_doc_id")
+                                .on("a.numeracion","=","b.numeracion")
                             })
-                            .innerJoin("esm_formulacion_despachos_medicamentos AS c", function(){
-                                this.on("c.bodegas_doc_id","a.bodegas_doc_id")
-                                .on("c.numeracion","a.numeracion")
+                            .join("esm_formulacion_despachos_medicamentos AS c", function(){
+                                this.on("c.bodegas_doc_id","=","a.bodegas_doc_id")
+                                .on("c.numeracion","=","a.numeracion")
                             })                           
-                            .innerJoin("esm_formula_externa AS d", function(){
-                                this.on("c.formula_id","d.formula_id")                               
-                            })                           
-                            .innerJoin("bodegas_doc_numeraciones AS e", function(){
-                                this.on("a.bodegas_doc_id","e.bodegas_doc_id")                               
-                            })                            
+                            .join("esm_formula_externa AS d", function(){
+                                this.on("c.formula_id","=","d.formula_id")                               
+                            })                                          
+                            .join("bodegas_doc_numeraciones AS e", function(){
+                                this.on("a.bodegas_doc_id","=","e.bodegas_doc_id")                               
+                            })                                  
                             .join("centros_utilidad AS f", function(){
                                 this.on("e.empresa_id","=","f.empresa_id")
                                 .on("e.centro_utilidad","=","f.centro_utilidad")
-                            })                            
+                            })                                    
                             .join("empresas AS i", function(){
-                                this.on("f.empresa_id","=","f.empresa_id")                             
-                            })                                                        
+                                this.on("f.empresa_id","=","i.empresa_id")                             
+                            })                                     
                             .join("system_usuarios AS g", function(){
                                 this.on("a.usuario_id","=","g.usuario_id")
                                 
-                            })
+                            })                            
                             .join("inventarios_productos AS h", function(){
                                 this.on("b.codigo_producto","=","h.codigo_producto")                               
                             })
@@ -1671,10 +1624,10 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                 .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))
                                 if(obj.movimientoFormulaPaciente === 1){
                                     if(obj.principioActivo){
-                                        this.andWhere("h.subclase_id","'"+obj.principioActivo+"'")
+                                        this.andWhere(G.knex.raw("h.subclase_id='" + obj.principioActivo + "' "))
                                        
                                     }else{
-                                        this.andWhere("b.codigo_producto","'"+obj.producto+"'")
+                                        this.andWhere(G.knex.raw("and b.codigo_producto ='" + obj.producto + "' "))
                                        
                                     }
                                     
@@ -1685,30 +1638,31 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                             })
                              
                             //union 4
-                             .union(function(){
+                            .union(function(){
                                     this.select(colSubQueryD)
                           
-                           .from("bodegas_documentos AS a")
-                           .innerJoin("bodegas_documentos_d AS b", function(){
-                                this.on("a.bodegas_doc_id","b.bodegas_doc_id")
-                                .on("a.numeracion","b.numeracion")
-                            })
-                            .innerJoin("esm_formulacion_despachos_medicamentos_pendientes AS c", function(){
-                                this.on("c.bodegas_doc_id","a.bodegas_doc_id")
-                                .on("c.numeracion","a.numeracion")
+                            .from("bodegas_documentos AS a")
+                            .join("bodegas_documentos_d AS b", function(){
+                                this.on("a.bodegas_doc_id","=","b.bodegas_doc_id")
+                                .on("a.numeracion","=","b.numeracion")
                             })                           
-                            .innerJoin("esm_formula_externa AS d", function(){
-                                this.on("c.formula_id","d.formula_id")                               
-                            })                           
-                            .innerJoin("bodegas_doc_numeraciones AS e", function(){
-                                this.on("a.bodegas_doc_id","e.bodegas_doc_id")                               
-                            })                            
+                            .join("esm_formulacion_despachos_medicamentos_pendientes AS c", function(){
+                                this.on("c.bodegas_doc_id","=","a.bodegas_doc_id")
+                                .on("c.numeracion","=","a.numeracion")
+                            })                                
+                            .join("esm_formula_externa AS d", function(){
+                                this.on("c.formula_id","=","d.formula_id")                               
+                            })      
+                            
+                            .join("bodegas_doc_numeraciones AS e", function(){
+                                this.on("a.bodegas_doc_id","=","e.bodegas_doc_id")                               
+                            })                                    
                             .join("centros_utilidad AS f", function(){
                                 this.on("e.empresa_id","=","f.empresa_id")
                                 .on("e.centro_utilidad","=","f.centro_utilidad")
                             })                            
                             .join("empresas AS i", function(){
-                                this.on("f.empresa_id","=","f.empresa_id")                             
+                                this.on("f.empresa_id","=","i.empresa_id")                             
                             })                                                        
                             .join("system_usuarios AS g", function(){
                                 this.on("a.usuario_id","=","g.usuario_id")
@@ -1723,37 +1677,28 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                 .andWhere("d.sw_estado",'in',['0','1'])
                                 .andWhere(G.knex.raw("a.fecha_registro >= '" +obj.fechaDia+ "'::date"))  
                                 .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))
-                                if(obj.movimientoFormulaPaciente === 1){
+                                 if(obj.movimientoFormulaPaciente === 1){
                                     if(obj.principioActivo){
-                                        this.andWhere("h.subclase_id","'"+obj.principioActivo+"'")
+                                        this.andWhere(G.knex.raw("h.subclase_id='" + obj.principioActivo + "' "))
                                        
                                     }else{
-                                        this.andWhere("b.codigo_producto","'"+obj.producto+"'")
+                                        this.andWhere(G.knex.raw("and b.codigo_producto ='" + obj.producto + "' "))
                                        
                                     }
                                     
-                                } 
+                                }  
                                
                             }).groupBy("a.fecha_registro","resultado","g.nombre","f.descripcion","i.razon_social",
                             "e.bodega","e.centro_utilidad","e.empresa_id","c.formula_id","b.codigo_producto","g.usuario_id","g.usuario")
-                            })
-            
-            
-            .as("a");                     
+                            }).as("a");  
+                            
     var queryS = G.knex.column(colSubQuery)
             .from(query)
             .where(G.knex.raw("a.fecha_registro >= '" +obj.fechaDia+ "'::date"))  
-                                .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))
-            .orderBy("a.fecha_registro","desc")
-            if(obj.movimientoFormulaPaciente === 1){
-                this.limit("1");  
-            } 
-              
-               
-       
-        
-        
-        
+            .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))
+            .orderBy("a.fecha_registro","desc").limit(limite);
+            
+          
     queryS.then(function(resultado){     
         console.log("resultado CONFRONTADOS subQueryC------///*****++++ : ", resultado);
         callback(false, resultado);
@@ -1764,76 +1709,6 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     });  
 };
 
-
-function __subQueryDespachoFormula(obj,parametro){
-    
-    console.log("ESTO A QUI SE ENVIA ", parametro)
-    var colSubQuery = ["d.fecha_registro",  
-                       G.knex.raw(parametro.resultado+" as resultado"),   
-                        G.knex.raw("SUM(dd.cantidad) as unidades"),   
-                        "sys.nombre",   
-                        "empre.razon_social",  
-                        "nume.bodega",  
-                        "nume.centro_utilidad",  
-                        "nume.empresa_id",                         
-                        G.knex.raw("'F.historia clinica' as formulacion"),
-                        G.knex.raw("'0' as modulo"), 
-                        "dc.evolucion_id as formula",  
-                        "dd.codigo_producto",  
-                        "sys.usuario_id",
-                        "sys.usuario"]
-    
-    var subQuery = G.knex.select(colSubQuery)
-                           .from(parametro.tabla)
-                           .join("dispensacion_estados AS hc", function(){
-                               this.on("dc.evolucion_id","=","hc.evolucion_id")
-                           })
-                           .innerJoin("bodegas_documentos AS d", function(){
-                               this.on("dc.bodegas_doc_id", "d.bodegas_doc_id")
-                               .on("dc.numeracion","d.numeracion")
-                           })
-                            .innerJoin("bodegas_documentos_d AS dd", function(){
-                                this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
-                                .on("d.numeracion","dd.numeracion")
-                            })
-                            .innerJoin("inventarios_productos AS inve", function(){
-                                this.on("dd.codigo_producto","inve.codigo_producto")   
-                            })
-                            .innerJoin("system_usuarios AS sys", function(){
-                                this.on("d.usuario_id","sys.usuario_id")
-                            })
-                            .innerJoin("bodegas_doc_numeraciones AS nume", function(){
-                                this.on("d.bodegas_doc_id","nume.bodegas_doc_id")
-                            })
-                            .innerJoin("empresas AS empre", function(){
-                                this.on("nume.empresa_id","empre.empresa_id")
-                            })
-                            .where(function(){
-                                this.where("hc.tipo_id_paciente",obj.tipoIdPaciente)
-                                .andWhere("hc.paciente_id",obj.pacienteId)
-                                
-                                if(parametro.resultado ==='1'){
-                                    this.andWhere("dc.sw_estado",'1')
-                                }
-                                
-                                if(obj.movimientoFormulaPaciente === 1){
-                                    if(obj.principioActivo){
-                                        this.andWhere("mm.cod_principio_activo","'"+obj.principioActivo+"'")
-                                       
-                                    }else{
-                                        this.andWhere("inve.codigo_producto","'"+obj.producto+"'")
-                                       
-                                    }
-                                    
-                                } 
-                            }).groupBy("d.fecha_registro",
-                                    "resultado",
-                                    "sys.nombre","razon_social",  
-                                    "nume.bodega","nume.centro_utilidad","nume.empresa_id","formulacion","modulo",
-                                    "dc.evolucion_id","dd.codigo_producto","sys.usuario_id","sys.usuario").as("A")
-                                    
-             return subQuery;
-}
 /**
  * @author Cristian Ardila
  * @fecha 26/07/2016

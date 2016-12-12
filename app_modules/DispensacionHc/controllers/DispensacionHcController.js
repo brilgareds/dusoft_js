@@ -479,12 +479,18 @@ DispensacionHc.prototype.existenciasBodegas = function(req, res){
                                                today: fechaToday,
                                                movimientoFormulaPaciente: 1
                                                };
-                                               
+   /*  
+    var parametros = {tipoIdPaciente: args.consultar_movimiento_formula_paciente.tipoIdPaciente, 
+                                               pacienteId: args.consultar_movimiento_formula_paciente.pacienteId,
+                                               fechaDia: fechaExtTicinco,
+                                               today: fechaToday,
+                                               movimientoFormulaPaciente: 0
+                                               };*/                                            
         console.log("parametros ", parametros);
         console.log("parametrosUltimoRegistroDispensacion ", parametrosUltimoRegistroDispensacion);
         
 G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parametrosUltimoRegistroDispensacion).then(function(resultado){
-        
+         console.log("1) consultarUltimoRegistroDispensacion ", resultado)
         if(resultado.length > 0){ 
             console.log("1) Validacion resultado")
             fechaRegistro = resultado[0].fecha_registro;

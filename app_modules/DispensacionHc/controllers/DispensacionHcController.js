@@ -1804,7 +1804,7 @@ DispensacionHc.prototype.obtenerCabeceraFormula = function(req, res){
     var parametros = {evolucionId:args.cabecera_formula.evolucion};
             
                 
-    G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros).then(function(resultado){
+    G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormula',parametros).then(function(resultado){
        
         if(resultado.length > 0){ 
               res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {cabecera_formula:resultado}));
@@ -1851,7 +1851,7 @@ DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar = function(req
             
             productosPendientes = resultado;
            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
+            return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormula',parametros)
           
         }else{
            throw 'No hay pendientes por dispensar';
@@ -1951,7 +1951,7 @@ DispensacionHc.prototype.listarMedicamentosDispensados = function(req, res){
             //console.log("parametros ", parametros);
             productosDispensados = resultado;
            
-            return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros)
+            return G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormula',parametros)
           
         }else{
            throw 'No hay pendientes por dispensar';
@@ -2084,7 +2084,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
                 
           
        
-    G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormulaPendientesPorDispensar',parametros).then(function(resultado){
+    G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormula',parametros).then(function(resultado){
        //console.log("1) resultado ", resultado.rows);
        if(resultado.length > 0){ 
             

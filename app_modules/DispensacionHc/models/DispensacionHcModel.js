@@ -1859,29 +1859,14 @@ DispensacionHcModel.prototype.listarTipoFormula = function(callback){
  * +Descripcion Modelo encargado de obtener la cabecera de informacion de la formula
  * @controller DispensacionHc.prototype.listarMedicamentosPendientesPorDispensar
  */
-DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = function(obj,callback){
+DispensacionHcModel.prototype.obtenerCabeceraFormula = function(obj,callback){
      
-     console.log("***********DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar****************");
-     console.log("***********DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar****************");
-     console.log("***********DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar****************");
+     console.log("***********DispensacionHcModel.prototype.obtenerCabeceraFormula****************");
      
-    var parametros = {};
+    /*  var parametros = {};
         parametros["1"] = obj.evolucionId;
     var where = "";
-    /**
-     * +Descripcion 
-     *              tablaUsuarioDespacho = variable que guarda la tabla de donde se extraera
-     *              el bodegas_doc_id y la numeracion dependiente del estadoEntrega
-     *              (0: despacho, 
-     *               1: pendientes,
-     *               2: entrega pendiente)
-     *               
-     *               tablaBodegasDocumentos = variable que guarda la tabla bodegas_documentos
-     *               de donde se extraera el usuario que realizo el proceso
-     *               (0: despacho, 
-     *               1: se dejara en null ya que no se ha generado despacho alguno,
-     *               2: entrega pendiente)
-     */
+    
    
     if(obj.pacienteId){
        
@@ -1890,7 +1875,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
         where=" and a.tipo_id_paciente= :2 and a.paciente_id= :3 ";
     }
    
-   /* var sql = "SELECT ca.evolucion_id,\
+  var sql = "SELECT ca.evolucion_id,\
                       ca.numero_formula, \
                       ca.tipo_id_paciente, \
                       ca.paciente_id, \
@@ -1985,7 +1970,7 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
    
              
    var query = G.knex.raw(sql,parametros);*/
-   
+  
    var colQuery = ["ca.evolucion_id",  
                       "ca.numero_formula",   
                       "ca.tipo_id_paciente",   
@@ -2012,8 +1997,6 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
                           ELSE ca.nombre END  AS nombre"),
                        
                     ];
-    
-    
     
     var colSubQueryNombreE = [ "a.evolucion_id", 
                                "b.bodegas_doc_id as bodegas_doc_id",
@@ -2126,10 +2109,10 @@ DispensacionHcModel.prototype.obtenerCabeceraFormulaPendientesPorDispensar = fun
     var query = G.knex.select(colQuery).from(subQuery)
                         
     query.then(function(resultado){
-        console.log("resultado [obtenerCabeceraFormulaPendientesPorDispensar]: ", resultado);
+        console.log("resultado [obtenerCabeceraFormula]: ", resultado);
         callback(false, resultado);
     }).catch(function(err){        
-        console.log("err [obtenerCabeceraFormulaPendientesPorDispensar]: ", err);
+        console.log("err [obtenerCabeceraFormula]: ", err);
         callback(err);
     });  
 };

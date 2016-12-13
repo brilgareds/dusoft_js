@@ -2103,7 +2103,7 @@ DispensacionHc.prototype.listarTodoMedicamentosDispensados = function(req, res){
         }
        
    }).then(function(resultado){
-       //console.log("2) resultado ", resultado.rows);
+       
        if(resultado.length > 0){ 
             
             profesional = resultado;

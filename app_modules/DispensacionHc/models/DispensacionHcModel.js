@@ -154,7 +154,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
 DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function(obj,callback){
        
     var columnas = ["dd.codigo_producto",
-                    "dd.cantidad as numero_unidades",
+                    G.knex.raw("round(dd.cantidad) as numero_unidades"),
                     G.knex.raw("TO_CHAR(dd.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),
                     "dd.lote",
                     G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod"),
@@ -199,193 +199,245 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
  */
 DispensacionHcModel.prototype.listarUltimaDispensacionFormula = function(obj,callback){
     
+    var colQueryTodo = [
+       "todo.codigo_producto",    
+       "todo.numero_unidades",   
+       "todo.fecha_vencimiento AS fecha_vencimiento",     
+       "todo.lote",      
+       "todo.descripcion_prod",   
+       G.knex.raw("fc_descripcion_producto_alterno(todo.codigo_producto) as molecula"),   
+       "todo.usuario_id",     
+       "todo.nombre",    
+       "todo.descripcion",   
+       "todo.sw_pactado",    
+       "todo.total_costo",   
+       "todo.fecha",     
+       "todo.entrega",   
+       G.knex.raw("'hc_dispensaciontodo' as sistema"),  
+       "todo.dias_de_entregado",   
+       "todo.fecha_entrega as fecha_entrega",    
+       "todo.grupo_id", 
+       "todo.tipo_entrega"
+   ];
     
-    var parametros = {1: obj.evolucionId};
+    var colSubQuery = ["k.codigo_producto",    
+               "k.numero_unidades",    
+               G.knex.raw("TO_CHAR(k.fecha_vencimiento,'YYYY-MM-DD')AS fecha_vencimiento"),     
+               "k.lote",      
+               "k.descripcion_prod",     
+               G.knex.raw("fc_descripcion_producto_alterno(k.codigo_producto) as molecula"),    
+               "k.usuario_id",     
+               "k.nombre",    
+               "k.descripcion",    
+               "k.sw_pactado",    
+               "k.total_costo",    
+               "k.fecha",     
+               "k.grupo_id",    
+               "k.numero_entrega_actual as entrega",    
+               "k.sistema",     
+               "k.dias_de_entregado",   
+               "k.fecha_entrega as fecha_entrega", 
+               "k.tipo_entrega"
+           ]
+    
+    var colSubQueryA = ["dd.codigo_producto",  
+                       "dd.cantidad as numero_unidades",   
+                       "dd.fecha_vencimiento",     
+                       "dd.lote",     
+                       "dd.sw_pactado",    
+                       "dd.total_costo",    
+                       G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod"),     
+                       "sys.usuario_id",     
+                       "sys.nombre",    
+                       "sys.descripcion",  
+                       G.knex.raw("'dispensacion_hc' as sistema"),     
+                       G.knex.raw("d.fecha_registro as fecha_entrega"),     
+                       G.knex.raw("to_char(now()- d.fecha_registro,'dd') as dias_de_entregado"),     
+                       G.knex.raw("(SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf  WHERE hcf.evolucion_id = "+obj.evolucionId + ")as fecha"),                             
+                       "d.fecha_registro",    
+                       "inv.grupo_id",    
+                       "d.numero_entrega_actual", 
+                      G.knex.raw("'1' as tipo_entrega")
+                   ]
+    var colSubQueryB = ["dd.codigo_producto",  
+                       "dd.cantidad as numero_unidades",   
+                       "dd.fecha_vencimiento",     
+                       "dd.lote",     
+                       "dd.sw_pactado",    
+                       "dd.total_costo",    
+                       G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod"),     
+                       "sys.usuario_id",     
+                       "sys.nombre",    
+                       "sys.descripcion",  
+                       G.knex.raw("'dispensacion_hc' as sistema"),     
+                       G.knex.raw("d.fecha_registro as fecha_entrega"),     
+                       G.knex.raw("to_char(now()- d.fecha_registro,'dd') as dias_de_entregado"),     
+                       G.knex.raw("(SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf  WHERE hcf.evolucion_id = "+obj.evolucionId + ")as fecha"),                             
+                       "d.fecha_registro",    
+                       "inv.grupo_id",    
+                       "d.numero_entrega_actual", 
+                      G.knex.raw("'0' as tipo_entrega")
+                   ]
+     
+    var colSubQueryD = ["dd.codigo_producto",    
+                        "dd.cantidad as cantidad_entrega",    
+                        "dd.fecha_vencimiento",    
+                        "dd.lote",    
+                        G.knex.raw("fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod"),    
+                        "dd.sw_pactado",    
+                        G.knex.raw("fc_descripcion_producto_molecula(dd.codigo_producto) as molecula"),    
+                        "dd.total_costo",    
+                        G.knex.raw("'1' as pendiente_dispensado"),    
+                        G.knex.raw("(select fecha_registro as fecha_entrega from hc_pendientes_por_dispensar  AS e where e.evolucion_id  = "+obj.evolucionId + " and sw_estado='1' limit 1) as fecha_pendiente"),   
+                        "d.usuario_id",   
+                        "sys.nombre",    
+                        "sys.descripcion",   
+                        G.knex.raw("'dispensacion_hc' as sistema"),   
+                        "d.fecha_registro as fecha_entrega",    
+                        G.knex.raw("to_char(now()- d.fecha_registro,'dd') as dias_de_entregado"),   
+                        G.knex.raw("(SELECT min(hcf.fecha_registro) FROM dispensacion_estados hcf WHERE hcf.evolucion_id = "+obj.evolucionId + " )as fecha"),                        
+                        "d.fecha_registro",    
+                        "inv.grupo_id",    
+                        "d.numero_entrega_actual"
+                    ]
+    
+    var colSubQueryC = [
+       "a.codigo_producto",    
+       "a.cantidad_entrega as numero_unidades",   
+       G.knex.raw("TO_CHAR(a.fecha_vencimiento,'YYYY-MM-DD')AS fecha_vencimiento"),     
+       "a.lote",      
+       "a.descripcion_prod",   
+       G.knex.raw("fc_descripcion_producto_alterno(a.codigo_producto) as molecula") , 
+       "a.usuario_id",     
+       "a.nombre",    
+       "a.descripcion",   
+       "a.sw_pactado",    
+       "a.total_costo",  
+       "a.fecha",      
+       "a.numero_entrega_actual as entrega",   
+       G.knex.raw("'hc_dispensaciontodo' as sistema"),  
+       "a.dias_de_entregado",   
+       "a.fecha_entrega as fecha_entrega",    
+       "a.grupo_id", 
+       G.knex.raw("'1' as tipo_entrega")
+    ];
+    
+    var subQueryD = G.knex.select(colSubQueryD)
+                           .from("hc_formulacion_despachos_medicamentos_pendientes as tmp")                 
+                           .innerJoin("bodegas_documentos AS d", function(){
+                               this.on("tmp.bodegas_doc_id", "d.bodegas_doc_id")
+                               .on("tmp.numeracion","d.numeracion")
+                           })
+                            .innerJoin("bodegas_documentos_d AS dd", function(){
+                                this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
+                                .on("d.numeracion","dd.numeracion")
+                            })                           
+                            .innerJoin("system_usuarios AS sys", function(){
+                                this.on("d.usuario_id","sys.usuario_id")
+                            })
+                            .innerJoin("inventarios_productos AS inv", function(){
+                                this.on("dd.codigo_producto","inv.codigo_producto")   
+                            })
+                           
+                            .where(function(){
+                                this.where("tmp.evolucion_id",obj.evolucionId)
+                                .andWhere(G.knex.raw("d.todo_pendiente != 1"))
+                                
+                            }).as("a");
    
-    var sql= " SELECT entrega.codigo_producto,  \
-       round(entrega.numero_unidades)as numero_unidades, \
-       entrega.fecha_vencimiento,\
-       entrega.lote,    \
-       entrega.descripcion_prod, \
-       entrega.molecula, \
-       entrega.usuario_id,   \
-       entrega.nombre,  \
-       entrega.descripcion, \
-      entrega.sw_pactado,  \
-       entrega.total_costo, \
-       entrega.fecha,   \
-       case when entrega.entrega = 0 then 'Pendientes'\
-            else ' No.'||entrega.entrega\
-            end as entrega,\
-       entrega.sistema, \
-        entrega.dias_de_entregado, \
-       to_char(entrega.fecha_entrega, 'YYYY-DD-MM')as fecha_entrega,  \
-        entrega.grupo_id, entrega.tipo_entrega \
- FROM ( \
-SELECT todo.codigo_producto,  \
-       todo.numero_unidades, \
-       (todo.fecha_vencimiento)AS fecha_vencimiento,   \
-       todo.lote,    \
-       todo.descripcion_prod, \
-       fc_descripcion_producto_alterno(todo.codigo_producto) as molecula, \
-       todo.usuario_id,   \
-       todo.nombre,  \
-       todo.descripcion, \
-      todo.sw_pactado,  \
-       todo.total_costo, \
-       todo.fecha,   \
-       todo.entrega, \
-       'hc_dispensaciontodo' as sistema,\
-        todo.dias_de_entregado, \
-       todo.fecha_entrega as fecha_entrega,  \
-        todo.grupo_id, todo.tipo_entrega  \
-       FROM (   \
-            SELECT k.codigo_producto,  \
-               k.numero_unidades,  \
-               TO_CHAR(k.fecha_vencimiento,'YYYY-MM-DD')AS fecha_vencimiento,   \
-               k.lote,    \
-               k.descripcion_prod,   \
-               fc_descripcion_producto_alterno(k.codigo_producto) as molecula,  \
-               k.usuario_id,   \
-               k.nombre,  \
-               k.descripcion,  \
-               k.sw_pactado,  \
-               k.total_costo,  \
-               k.fecha,   \
-               k.grupo_id,  \
-               k.numero_entrega_actual as entrega,  \
-               k.sistema,   \
-               k.dias_de_entregado, \
-               K.fecha_entrega as fecha_entrega, k.tipo_entrega \
-            FROM(     \
-                SELECT dd.codigo_producto,\
-                       dd.cantidad as numero_unidades, \
-                       dd.fecha_vencimiento,   \
-                       dd.lote,   \
-                       dd.sw_pactado,  \
-                       dd.total_costo,  \
-                       fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,   \
-                       sys.usuario_id,   \
-                       sys.nombre,  \
-                       sys.descripcion,\
-                       'dispensacion_hc' as sistema,   \
-                       d.fecha_registro as fecha_entrega,   \
-                       to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,   \
-                       (   \
-                       SELECT min(hcf.fecha_formulacion)    \
-                       FROM hc_formulacion_antecedentes hcf    \
-                       WHERE hcf.evolucion_id = :1  \
-                       )as fecha,   \
-                       d.fecha_registro,  \
-                       inv.grupo_id,  \
-                       d.numero_entrega_actual, '1' as tipo_entrega   \
-               FROM  hc_formulacion_despachos_medicamentos_pendientes hc   \
-                       INNER JOIN bodegas_documentos d ON hc.bodegas_doc_id = d.bodegas_doc_id AND hc.numeracion = d.numeracion   \
-                       INNER JOIN bodegas_documentos_d dd ON dd.bodegas_doc_id = d.bodegas_doc_id AND dd.numeracion = d.numeracion  \
-                       INNER JOIN system_usuarios sys ON sys.usuario_id = d.usuario_id  \
-                       INNER JOIN inventarios_productos inv ON inv.codigo_producto  = dd.codigo_producto  \
-                 WHERE hc.evolucion_id = :1 AND d.todo_pendiente = '1'   \
-      UNION    \
-              SELECT dd.codigo_producto,   \
-                     dd.cantidad as numero_unidades,   \
-                     dd.fecha_vencimiento,  \
-                     dd.lote,   \
-                     dd.sw_pactado,  \
-                     dd.total_costo,  \
-                     fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,    \
-                     sys.usuario_id,   \
-                     sys.nombre,  \
-                     sys.descripcion,  \
-                     'dispensacion_hc' as sistema,  \
-                     d.fecha_registro as fecha_entrega,   \
-                     to_char(now()- d.fecha_registro,'dd') as dias_de_entregado,  \
-                     (SELECT min(hcf.fecha_formulacion) FROM hc_formulacion_antecedentes hcf WHERE hcf.evolucion_id = :1 )as fecha,  \
-                     d.fecha_registro,  \
-                     inv.grupo_id,  \
-                     d.numero_entrega_actual, '0' as tipo_entrega  \
-                 FROM hc_formulacion_despachos_medicamentos as dc,  \
-                      bodegas_documentos as d,  \
-                      bodegas_documentos_d AS dd,  \
-                      system_usuarios  sys,  \
-                      inventarios_productos inv    \
-                 WHERE dc.bodegas_doc_id = d.bodegas_doc_id  \
-                       and dc.numeracion = d.numeracion\
-                       and dc.evolucion_id = :1  \
-                       and d.bodegas_doc_id = dd.bodegas_doc_id  \
-                       and d.numeracion = dd.numeracion  \
-                       and d.usuario_id=sys.usuario_id   \
-                     and inv.codigo_producto  = dd.codigo_producto\
-  )as k   \
-  )as todo WHERE todo.entrega = (SELECT max(numero_entrega_actual) from dispensacion_estados where evolucion_id = :1 ) \
-  UNION  \
-  SELECT a.codigo_producto,  \
-       a.cantidad_entrega as numero_unidades, \
-       TO_CHAR(a.fecha_vencimiento,'YYYY-MM-DD')AS fecha_vencimiento,   \
-       a.lote,    \
-       a.descripcion_prod, \
-       fc_descripcion_producto_alterno(a.codigo_producto) as molecula \
-      ,a.usuario_id,   \
-       a.nombre,  \
-       a.descripcion, \
-       a.sw_pactado,  \
-       a.total_costo,\
-        a.fecha,    \
-       a.numero_entrega_actual as entrega, \
-       'hc_dispensaciontodo' as sistema,\
-       a.dias_de_entregado, \
-       a.fecha_entrega as fecha_entrega,  \
-        a.grupo_id, '1' as tipo_entrega \
-        FROM (  \
-                SELECT dd.codigo_producto,  \
-                                dd.cantidad as cantidad_entrega,  \
-                                dd.fecha_vencimiento,  \
-                                dd.lote,  \
-                                fc_descripcion_producto_alterno(dd.codigo_producto) as descripcion_prod,  \
-                                dd.sw_pactado,  \
-                                fc_descripcion_producto_molecula(dd.codigo_producto) as molecula,  \
-                                dd.total_costo,  \
-                                '1' as pendiente_dispensado,  \
-                                (select fecha_registro as fecha_entrega  \
-                                  from  \
-                                  hc_pendientes_por_dispensar  AS e   \
-                                  where   \
-                                  e.evolucion_id  = :1 and sw_estado='1' limit 1  \
-                                ) as fecha_pendiente, \
-                                d.usuario_id, \
-                                sys.nombre,  \
-                        sys.descripcion, \
-                                 'dispensacion_hc' as sistema, \
-                                 d.fecha_registro as fecha_entrega,  \
-                                  to_char(now()- d.fecha_registro,'dd') as dias_de_entregado, \
-                                   (   \
-                   SELECT min(hcf.fecha_registro)  \
-                   FROM dispensacion_estados hcf    \
-                   WHERE hcf.evolucion_id = :1  \
-                   )as fecha, \
-                    d.fecha_registro,  \
-                   inv.grupo_id,  \
-                   d.numero_entrega_actual    \
-                          FROM hc_formulacion_despachos_medicamentos_pendientes tmp  \
-                          inner join bodegas_documentos as d on (tmp.bodegas_doc_id = d.bodegas_doc_id and tmp.numeracion = d.numeracion)  \
-                          inner join bodegas_documentos_d AS dd on (d.bodegas_doc_id = dd.bodegas_doc_id and d.numeracion = dd.numeracion)  \
-                          INNER JOIN system_usuarios sys ON sys.usuario_id = d.usuario_id \
-                          INNER JOIN inventarios_productos inv ON inv.codigo_producto  = dd.codigo_producto  \
-                          WHERE   \
-                          tmp.evolucion_id = :1 AND d.todo_pendiente != 1   \
-                          )as a WHERE a.fecha_entrega = (   \
-                              SELECT distinct(max(d2.fecha_registro))  \
-                            FROM hc_formulacion_despachos_medicamentos_pendientes tmp2  \
-                            inner join bodegas_documentos as d2 on   \
-                            (tmp2.bodegas_doc_id = d2.bodegas_doc_id and tmp2.numeracion = d2.numeracion)  \
-                              WHERE tmp2.evolucion_id = :1 AND d2.todo_pendiente != 1   \
-                          )  \
-  )as entrega WHERE entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = :1)||'%'";
     
-    var query = G.knex.raw(sql,parametros);
-     
+    var subQueryAUnionB = G.knex.select(colSubQueryA)
+                           .from("hc_formulacion_despachos_medicamentos_pendientes as hc")                 
+                           .innerJoin("bodegas_documentos AS d", function(){
+                               this.on("hc.bodegas_doc_id", "d.bodegas_doc_id")
+                               .on("hc.numeracion","d.numeracion")
+                           })
+                            .innerJoin("bodegas_documentos_d AS dd", function(){
+                                this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
+                                .on("d.numeracion","dd.numeracion")
+                            })                           
+                            .innerJoin("system_usuarios AS sys", function(){
+                                this.on("d.usuario_id","sys.usuario_id")
+                            })
+                            .innerJoin("inventarios_productos AS inv", function(){
+                                this.on("dd.codigo_producto","inv.codigo_producto")   
+                            })
+                           
+                            .where(function(){
+                                this.where("hc.evolucion_id",obj.evolucionId)
+                                .andWhere("d.todo_pendiente", '1')
+                                
+                            })
+                            .union(function(){
+                                 this.select(colSubQueryB)
+                           .from("hc_formulacion_despachos_medicamentos as hc")                 
+                           .innerJoin("bodegas_documentos AS d", function(){
+                               this.on("hc.bodegas_doc_id", "d.bodegas_doc_id")
+                               .on("hc.numeracion","d.numeracion")
+                           })
+                            .innerJoin("bodegas_documentos_d AS dd", function(){
+                                this.on("d.bodegas_doc_id","dd.bodegas_doc_id")
+                                .on("d.numeracion","dd.numeracion")
+                            })                           
+                            .innerJoin("system_usuarios AS sys", function(){
+                                this.on("d.usuario_id","sys.usuario_id")
+                            })
+                            .innerJoin("inventarios_productos AS inv", function(){
+                                this.on("dd.codigo_producto","inv.codigo_producto")   
+                            })
+                           
+                            .where(function(){
+                                this.where("hc.evolucion_id",obj.evolucionId)                              
+                            });
+                        }).as("k") 
+         
+    var subQueryB = G.knex.column(colSubQuery).from(subQueryAUnionB).as("todo")
+    
+    var subQuery = G.knex.column(colQueryTodo)
+                         .from(subQueryB)
+                         .where(G.knex.raw("todo.entrega = (SELECT max(numero_entrega_actual) from dispensacion_estados where evolucion_id = "+obj.evolucionId+" )"))
+                         .union(function(){
+                             this.select(colSubQueryC)
+                              .from(subQueryD)
+                              .where("a.fecha_entrega",G.knex.select(G.knex.raw("distinct(max(d2.fecha_registro))"))                               
+                                        .from("hc_formulacion_despachos_medicamentos_pendientes AS tmp2")
+                                        .innerJoin("bodegas_documentos AS d2", function(){
+                                            this.on("tmp2.bodegas_doc_id","d2.bodegas_doc_id")
+                                            .on("tmp2.numeracion","d2.numeracion")
+                                        })
+                                        .where("tmp2.evolucion_id",obj.evolucionId)
+                                        .andWhere(G.knex.raw("d2.todo_pendiente != 1"))
+                                )
+                         }).as("entrega")    
+  
+    var colQuery = ["entrega.codigo_producto",    
+       G.knex.raw("round(entrega.numero_unidades)as numero_unidades"),   
+       "entrega.fecha_vencimiento",  
+       "entrega.lote",      
+       "entrega.descripcion_prod",   
+       "entrega.molecula",   
+       "entrega.usuario_id",     
+       "entrega.nombre",    
+       "entrega.descripcion",   
+       "entrega.sw_pactado",    
+       "entrega.total_costo",   
+       "entrega.fecha",     
+       G.knex.raw("case when entrega.entrega = 0 then 'Pendientes'  \
+            else ' No.'||entrega.entrega  \
+            end as entrega"),  
+       "entrega.sistema",   
+       "entrega.dias_de_entregado",   
+       G.knex.raw("to_char(entrega.fecha_entrega, 'YYYY-DD-MM')as fecha_entrega"),    
+        "entrega.grupo_id", 
+        "entrega.tipo_entrega"
+    ]
+    var query = G.knex.column(colQuery)
+                      .from(subQuery)
+                     .where(G.knex.raw("entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = "+obj.evolucionId+")||'%'"));
+                        
         query.then(function(resultado){    
-     
-        callback(false, resultado.rows);
+            console.log(" resultado [listarUltimaDispensacionFormula]: ", resultado);
+        callback(false, resultado);
      
         }).catch(function(err){        
             console.log(" err [listarUltimaDispensacionFormula]: ", err);
@@ -1925,6 +1977,10 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 def.resolve();    
             }  
                     
+        }).then(function(resultado){      
+                            
+            return G.Q.ninvoke(that,'actualizarMedicamentoConfrontado', obj.parametro1 , transaccion);
+                         
         }).then(function(){  
              
             transaccion.commit();            
@@ -2172,7 +2228,7 @@ DispensacionHcModel.prototype.actualizarEstadoFinalizoFormula = function(obj,tra
 };
  
   
-
+     
 
  /**
  * @author Cristian Manuel Ardila
@@ -3039,7 +3095,7 @@ function __insertarTemporalFarmacia(producto, transaccion, callback) {
  * @fecha 11/06/2016
  */
 function __insertarBodegasDocumentos(obj, transaccion, callback){
-       
+    console.log("********__insertarBodegasDocumentos***********");     
     var query = G.knex('bodegas_documentos')
              .returning("fecha_registro")
      .insert({bodegas_doc_id: obj.bodegasDocId,
@@ -3056,6 +3112,7 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){  
+        console.log("resultado [__insertarBodegasDocumentos]: ", resultado);  
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarBodegasDocumentos]: ", err);         

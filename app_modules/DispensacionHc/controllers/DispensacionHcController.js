@@ -2327,31 +2327,31 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
            return  G.Q.ninvoke(that.m_dispensacion_hc,'consultarDispensacionesFormula', parametros)
         }
          
-    }).then(function(resultado){// generarDispensacionEstados
+    }).then(function(resultado){ 
          
-        if(resultado.rowCount > 0){
-              fechaUltimaEntrega = resultado.rows[0].fecha_entrega;
-              estadoFinalizacionFormula = resultado.rows[0].sw_finalizado;
-            if(resultado.rows[0].fecha_entrega === null ){  
+        if(resultado.length > 0){
+              fechaUltimaEntrega = resultado[0].fecha_entrega;
+              estadoFinalizacionFormula = resultado[0].sw_finalizado;
+            if(resultado[0].fecha_entrega === null ){  
                 
-                fechaEntrega = fechaFormulacion;//G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);  
-                fechaMinima  = fechaFormulacion;//G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);
+                fechaEntrega = fechaFormulacion;  
+                fechaMinima  = fechaFormulacion; 
             }else{         
                 
-                if(resultado.rows[0].sw_finalizado === 1){
-                    fechaEntrega = fechaFormulacion;//G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);  
-                    fechaMinima  = fechaFormulacion;//G.moment(G.moment(fechaFormulacion).format(formato)).format(formato);
+                if(resultado[0].sw_finalizado === 1){
+                    fechaEntrega = fechaFormulacion;   
+                    fechaMinima  = fechaFormulacion; 
                 }else{
-                    fechaEntrega = G.moment(resultado.rows[0].fecha_entrega).add(30, 'day').format(formato);  
-                    fechaMinima   = G.moment(resultado.rows[0].fecha_entrega).add(25,'days').format(formato);
+                    fechaEntrega = G.moment(resultado[0].fecha_entrega).add(30, 'day').format(formato);  
+                    fechaMinima   = G.moment(resultado[0].fecha_entrega).add(25,'days').format(formato);
                 }
                 
             }
            
         return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
-            //return G.Q.ninvoke(that.m_dispensacion_hc,'migrandoDispensacionEstados', parametros);
+           
         }else{                            
-           throw 'Consulta sin resultados';
+           throw 'Error al almacenar la formula';
         }
       
         
@@ -2386,7 +2386,8 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         
        return res.send(G.utils.r(req.url, 'DATOS ALMACENADOS EXITOSAMENTE', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
        
-    }).fail(function(err){      
+    }).fail(function(err){  
+    console.log("err [insertarFormulasDispensacionEstados]: ", err)    
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };

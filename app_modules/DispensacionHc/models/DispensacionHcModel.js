@@ -3185,7 +3185,7 @@ DispensacionHcModel.prototype.consultarDispensacionesFormula = function(obj, cal
             
         }).then(function(){
              
-            return G.Q.ninvoke(that,'insertarDispensacionEstados',obj,transaccion);   
+            return G.Q.ninvoke(that,'consultarDispensacionEstadosFormula',obj,transaccion);   
             
             
         }).then(function(resultado){
@@ -3340,10 +3340,10 @@ DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNu
  *              en la tabla de dispensacion_estados
  * @fecha 28/11/2016 (DD-MM-YYYY)
  */
-DispensacionHcModel.prototype.insertarDispensacionEstados = function(obj,transaccion,callback){
+DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj,transaccion,callback){
       
-    var parametros = {1:obj.evolucionId}; 
-/*    var sql = "INSERT INTO dispensacion_estados \
+   /* var parametros = {1:obj.evolucionId}; 
+    var sql = "INSERT INTO dispensacion_estados \
         (formula_id, \
          evolucion_id, \
          paciente_id, \
@@ -3461,24 +3461,18 @@ DispensacionHcModel.prototype.insertarDispensacionEstados = function(obj,transac
             )as a ORDER BY a.numero_total_entregas desc limit 1\
         )as b returning fecha_entrega, numero_entrega_actual, sw_finalizado ";
      
-      var query = G.knex.raw(sql,parametros); */
+    var query = G.knex.raw(sql,parametros); 
      
-    
-  
-                    
-                  
-     /*G.knex.select(["a.evolucion_id", G.knex.raw("1")])
-                                .from("hc_formulacion_despachos_medicamentos AS a")
-                                .union(function(){
-                                    G.knex.select(["a.evolucion_id", G.knex.raw("2")])
-                                     .from("hc_formulacion_despachos_medicamentos_pendientes AS a")
-                                })
-                                .union(function(){
-                                    G.knex.select(["a.evolucion_id", G.knex.raw("3")])
-                                     .from("hc_dispensacion_medicamentos_tmp AS a")
-                                })*/
-     //+Descripcion Query que consulta el numero de entrega actual
-     
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){   
+            
+        callback(false, resultado);
+        
+    }).catch(function(err){   
+        console.log("err (/catch) [consultarDispensacionEstadosFormula]: ", err);     
+        callback({err:err, msj: "Error al consultar el movimiento de la formula"});
+    });*/
+    var that = this;
     var subQueryB = G.knex.select([G.knex.raw("count(evolucion_id) as numero_entregas"),
                                     "evolucion_id", 
                                     G.knex.raw("'normales' as a")])
@@ -3652,19 +3646,61 @@ DispensacionHcModel.prototype.insertarDispensacionEstados = function(obj,transac
                         
     var subQueryMovFormulaC = G.knex.select(campoSubQueryMovFormulaC)
                                 .from(subQueryMovFormulaB)
-                                
+                      
+    
+     
     if(transaccion) subQueryMovFormulaC.transacting(transaccion);    
-        subQueryMovFormulaC.then(function(resultado){   
-            console.log("resultado  [insertarDispensacionEstados]: ", resultado); 
+        subQueryMovFormulaC.then(function(resultado){              
+            return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion)
+            
+    }).then(function(resultado){
+        
         callback(false, resultado);
+        
     }).catch(function(err){   
-        console.log("err (/catch) [insertarDispensacionEstados]: ", err);     
-        callback({err:err, msj: "Error al actualizar el evento"});
+        console.log("err (/catch) [consultarDispensacionEstadosFormula]: ", err);     
+        callback({err:err, msj: "Error al consultar el movimiento de la formula"});
     });  
      
 };
 
-
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de insertar el movimiento de la formula
+ * @fecha 2016-12-14 (YYYY-MM-DD)
+ */
+DispensacionHcModel.prototype.insertarDispensacionEstadosFormula = function(obj, transaccion, callback) {
+     
+    var query = G.knex('dispensacion_estados')
+        .returning(["fecha_entrega","numero_entrega_actual","sw_finalizado"])
+        .insert({formula_id:obj.formula_id,   
+         evolucion_id:obj.evolucion_id,   
+         paciente_id:obj.paciente_id,   
+         tipo_id_paciente:obj.tipo_id_paciente,   
+         numero_total_entregas:obj.numero_total_entregas,   
+         numero_entrega_actual:obj.numero_entrega_actual,   
+         sw_refrendar:obj.sw_refrendar,   
+         sw_pendiente:obj.sw_pendiente,   
+         tipo_formula:obj.tipo_formula,  
+         sw_finalizado:obj.sw_finalizado,  
+         fecha_entrega:obj.fecha_entrega,  
+         fecha_minima_entrega:obj.fecha_minima_entrega,  
+         fecha_maxima_entrega:obj.fecha_maxima_entrega,  
+         medico_id:obj.medico_id,  
+         fecha_registro:obj.fecha_registro,  
+         fecha_finalizacion:obj.fecha_finalizacion,  
+         fecha_ultima_entrega:obj.fecha_ultima_entrega           
+        });
+                   
+    if(transaccion) 
+        query.transacting(transaccion).then(function(resultado) {   
+             console.log("resultado [insertarDispensacionEstadosFormula]: ", resultado);
+            callback(false, resultado);
+        }).catch (function(err) {
+             console.log("err (/catch) [insertarDispensacionEstadosFormula]: ", err);  
+            callback({err:err, msj: "Error insertarDispensacionEstadosFormula"});             
+        });
+};
 
 /**
  * @author Cristian Manuel Ardila

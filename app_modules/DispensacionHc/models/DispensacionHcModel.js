@@ -3342,136 +3342,6 @@ DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNu
  */
 DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj,transaccion,callback){
       
-   /* var parametros = {1:obj.evolucionId}; 
-    var sql = "INSERT INTO dispensacion_estados \
-        (formula_id, \
-         evolucion_id, \
-         paciente_id, \
-         tipo_id_paciente, \
-         numero_total_entregas, \
-         numero_entrega_actual, \
-         sw_refrendar, \
-         sw_pendiente, \
-         tipo_formula,\
-         sw_finalizado,\
-         fecha_entrega,\
-         fecha_minima_entrega,\
-         fecha_maxima_entrega,\
-         medico_id,\
-         fecha_registro,\
-         fecha_finalizacion,\
-         fecha_ultima_entrega)\
-        SELECT \
-         b.formula_id, \
-         b.evolucion_id, \
-         b.paciente_id, \
-         b.tipo_id_paciente, \
-         b.numero_total_entregas, \
-         b.numero_entrega_actual, \
-         b.sw_refrendar, \
-         b.sw_pendiente, \
-         b.tipo_formula,\
-         b.sw_finalizado,\
-         b.fecha_ultima_entrega as fecha_entrega,\
-         null as fecha_minima_entrega,\
-         null as fecha_maxima_entrega,\
-         b.medico_id,\
-         b.fecha_registro,\
-         b.fecha_finalizacion,\
-         b.fecha_ultima_entrega FROM (\
-            SELECT a.formula_id,\
-                   a.evolucion_id,\
-                   a.paciente_id,\
-                   a.tipo_id_paciente,\
-                   a.numero_total_entregas, \
-                    CASE WHEN a.numero_entrega_actual is null THEN 0 ELSE a.numero_entrega_actual END as numero_entrega_actual,\
-                   0 as sw_refrendar,\
-                   a.sw_pendiente,\
-                   a.tipo_formula,\
-                   CASE WHEN a.numero_total_entregas = a.numero_entrega_actual THEN 1 ELSE 0 END as sw_finalizado,\
-                   CASE WHEN a.refrendar = 1 THEN (SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion\
-                   FROM medicamentos_refrendados \
-                    WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula) \
-                    ELSE a.fecha_ultima_entrega END as fecha_entrega,\
-                   null as fecha_minima_entrega, \
-                   null as fecha_maxima_entrega, \
-                   a.medico_id,\
-                   a.fecha_registro,\
-                   a.fecha_finalizacion,     \
-                   a.fecha_ultima_entrega FROM (\
-                        SELECT numero_formula as formula_id, \
-                               evolucion_id,\
-                               paciente_id,\
-                               tipo_id_paciente, \
-                               max( ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ) as numero_total_entregas,\
-                               transcripcion_medica as tipo_formula,\
-                               fecha_formulacion as fecha_registro,\
-                               hc.medico_id,\
-                               hc.refrendar,\
-                               max(fecha_finalizacion) as fecha_finalizacion,\
-                               CASE WHEN \
-                               (SELECT distinct(hp.todo_pendiente) \
-                               FROM hc_pendientes_por_dispensar hp \
-                               WHERE hp.evolucion_id = hc.evolucion_id AND hp.bodegas_doc_id is null and hp.numeracion is null) = 0 THEN 1\
-                               WHEN (SELECT distinct(hp.todo_pendiente)  \
-                               FROM hc_pendientes_por_dispensar hp \
-                               WHERE hp.evolucion_id = hc.evolucion_id AND hp.bodegas_doc_id is null and hp.numeracion is null) = 1 THEN 2 \
-                               ELSE 0 END as sw_pendiente, \
-                               (SELECT max(c.numero_entregas)as numero_entregas\
-                                    FROM (\
-                                    SELECT a.evolucion_id,1 from hc_formulacion_despachos_medicamentos a\
-                                    union \
-                                    select a.evolucion_id,2 from hc_formulacion_despachos_medicamentos_pendientes a\
-                                    union\
-                                    select a.evolucion_id,3 from hc_dispensacion_medicamentos_tmp a   \
-                                ) as b INNER JOIN (	\
-                                SELECT  sum(dispensados.numero_entregas)as numero_entregas, dispensados.evolucion_id \
-                                        FROM (\
-                                                SELECT count(evolucion_id) as numero_entregas, evolucion_id, 'normales' as a\
-                                               FROM hc_formulacion_despachos_medicamentos WHERE evolucion_id = :1 GROUP BY evolucion_id\
-                                                UNION ALL\
-                                        SELECT count(desp.evolucion_id) as numero_entregas, desp.evolucion_id, 'pendientestodos' as b\
-                                                                    FROM hc_formulacion_despachos_medicamentos_pendientes desp INNER JOIN bodegas_documentos pend\
-                                        ON desp.bodegas_doc_id = pend.bodegas_doc_id AND desp.numeracion = pend.numeracion\
-                                        WHERE desp.evolucion_id = :1 AND pend.todo_pendiente = 1  GROUP BY desp.evolucion_id	\
-                                                                    )as dispensados GROUP BY dispensados.evolucion_id      \
-                                    ) c ON b.evolucion_id = c.evolucion_id   \
-                                                WHERE b.evolucion_id= :1)as numero_entrega_actual,\
-                                                (SELECT max(a.fecha_registro) FROM (\
-                                                  SELECT bod.fecha_registro\
-                                                  FROM hc_formulacion_despachos_medicamentos  hp\
-                                                  INNER JOIN bodegas_documentos bod ON hp.bodegas_doc_id = bod.bodegas_doc_id AND hp.numeracion = bod.numeracion\
-                                                  WHERE evolucion_id = :1\
-                                                  UNION\
-                                                  SELECT bod.fecha_registro\
-                                                   FROM hc_formulacion_despachos_medicamentos_pendientes hp\
-                                                  INNER JOIN bodegas_documentos bod ON hp.bodegas_doc_id = bod.bodegas_doc_id AND hp.numeracion = bod.numeracion\
-                                                  WHERE evolucion_id = :1\
-                                                  ) as a) as fecha_ultima_entrega \
-                        FROM hc_formulacion_antecedentes hc \
-                        WHERE hc.evolucion_id = :1 \
-                        GROUP BY numero_formula, \
-                               evolucion_id,\
-                               paciente_id,\
-                               tipo_id_paciente, \
-                               transcripcion_medica, \
-                               fecha_formulacion,\
-                               hc.medico_id,\
-                               hc.refrendar\
-            )as a ORDER BY a.numero_total_entregas desc limit 1\
-        )as b returning fecha_entrega, numero_entrega_actual, sw_finalizado ";
-     
-    var query = G.knex.raw(sql,parametros); 
-     
-    if(transaccion) query.transacting(transaccion);    
-        query.then(function(resultado){   
-            
-        callback(false, resultado);
-        
-    }).catch(function(err){   
-        console.log("err (/catch) [consultarDispensacionEstadosFormula]: ", err);     
-        callback({err:err, msj: "Error al consultar el movimiento de la formula"});
-    });*/
     var that = this;
     var subQueryB = G.knex.select([G.knex.raw("count(evolucion_id) as numero_entregas"),
                                     "evolucion_id", 
@@ -3493,10 +3363,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                             .andWhere("pend.todo_pendiente",1)
                             .groupBy("desp.evolucion_id");
             }).as("dispensados")
-          
-    
      
-    
     //+Descripcion Query que consulta la ultima fecha de entrega de la formula
      
     var subQueryA = G.knex.select("bod.fecha_registro")  
@@ -3521,10 +3388,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                              .groupBy("dispensados.evolucion_id")
                              .as("c")
     
-    
-    
-      
-    var subQueryC1 = G.knex.select(["evolucion_id", G.knex.raw("1")])
+    var subQueryC = G.knex.select(["evolucion_id", G.knex.raw("1")])
                                 .from("hc_formulacion_despachos_medicamentos").as("a")
                                 .union(function(){
                                     this.select(["evolucion_id", G.knex.raw("2")])
@@ -3534,26 +3398,17 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                                     this.select(["evolucion_id", G.knex.raw("3")])
                                 .from("hc_dispensacion_medicamentos_tmp")
                                 }).as("b");
-    var subQueryC2 = G.knex.select(["evolucion_id", G.knex.raw("2")])
-                                .from("hc_formulacion_despachos_medicamentos_pendientes").as("a")
-                                
-    var subQueryC = G.knex.select([G.knex.raw("max(c.numero_entregas) as numero_entregas")])
-                          .from(subQueryC1
-                                
-                            ).as("b")
-                    
+   
     var campoNumeroEntregaActual = G.knex.select(G.knex.raw("max(c.numero_entregas)as numero_entregas"))
-            .from(subQueryC1)
+            .from(subQueryC)
             .innerJoin(numeroEntregaActualSubQuery, function(){
                 this.on("b.evolucion_id","c.evolucion_id")
             }).as("numero_entrega_actual")
-            .where("b.evolucion_id",obj.evolucionId) 
-    
+            .where("b.evolucion_id",obj.evolucionId);   
     
     var campoFechaUltimaEntrega = G.knex.max("a.fecha_registro")
                              .from(subQueryA).as("fecha_ultima_entrega")
-     
-     
+          
     var campoSubQueryMovFormulaA = ["numero_formula as formula_id",   
                                "evolucion_id",  
                                "paciente_id",  
@@ -3617,7 +3472,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                    "a.fecha_registro",  
                    "a.fecha_finalizacion",       
                    "a.fecha_ultima_entrega"
-               ]
+               ];
     
     
     var campoSubQueryMovFormulaC = ["b.formula_id",   
@@ -3637,26 +3492,25 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
          "b.fecha_registro",  
          "b.fecha_finalizacion",  
          "b.fecha_ultima_entrega"
-     ]
+     ];
     
     var subQueryMovFormulaB = G.knex.select(campoSubQueryMovFormulaB)
                                 .from(subQueryMovFormulaA)
                                 .orderBy("a.numero_total_entregas","desc")
                                 .limit("1").as("b")
                         
-    var subQueryMovFormulaC = G.knex.select(campoSubQueryMovFormulaC)
+    var query = G.knex.select(campoSubQueryMovFormulaC)
                                 .from(subQueryMovFormulaB)
                       
     
      
-    if(transaccion) subQueryMovFormulaC.transacting(transaccion);    
-        subQueryMovFormulaC.then(function(resultado){              
-            return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion)
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){  
             
-    }).then(function(resultado){
-        
+        return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion)
+            
+    }).then(function(resultado){       
         callback(false, resultado);
-        
     }).catch(function(err){   
         console.log("err (/catch) [consultarDispensacionEstadosFormula]: ", err);     
         callback({err:err, msj: "Error al consultar el movimiento de la formula"});
@@ -3666,7 +3520,8 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
 
 /**
  * @author Cristian Manuel Ardila Troches
- * +Descripcion Metodo encargado de insertar el movimiento de la formula
+ * +Descripcion Metodo encargado de insertar el movimiento de la formula en la tabla
+ *              dispensacion_estados
  * @fecha 2016-12-14 (YYYY-MM-DD)
  */
 DispensacionHcModel.prototype.insertarDispensacionEstadosFormula = function(obj, transaccion, callback) {
@@ -3694,7 +3549,6 @@ DispensacionHcModel.prototype.insertarDispensacionEstadosFormula = function(obj,
                    
     if(transaccion) 
         query.transacting(transaccion).then(function(resultado) {   
-             console.log("resultado [insertarDispensacionEstadosFormula]: ", resultado);
             callback(false, resultado);
         }).catch (function(err) {
              console.log("err (/catch) [insertarDispensacionEstadosFormula]: ", err);  

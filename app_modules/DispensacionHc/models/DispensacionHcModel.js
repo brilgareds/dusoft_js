@@ -1220,9 +1220,6 @@ DispensacionHcModel.prototype.cantidadProductoTemporal = function(obj,callback){
     
 };
 
-
-
-
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
@@ -1364,9 +1361,7 @@ DispensacionHcModel.prototype.consultarProductoTemporal = function(obj,estado,ca
                     "sw_entregado_off",descripcionProducto
                     ];
     }
-    
-    console.log("columnas ", columnas);
-    
+     
     var query = G.knex.select(columnas).where(parametros).from("hc_dispensacion_medicamentos_tmp");
         query.then(function(resultado){   
             callback(false, resultado)
@@ -1412,7 +1407,7 @@ DispensacionHcModel.prototype.eliminarTemporalFormula = function(producto, callb
       
     G.knex.transaction(function(transaccion) {         
         G.Q.nfcall(__eliminarTemporalFormula, producto, transaccion).then(function(resultado){
-           console.log("resultado ", resultado);
+            
             if(resultado.length >0){
               
                  var parametros={evolucionId:producto.evolucionId, 
@@ -1958,9 +1953,7 @@ DispensacionHcModel.prototype.generarDispensacionFormulaPendientes = function(ob
                 }else{
                     obj.parametro1.actualizarCampoPendiente = 0;
                 }
-                
-                //console.log("AQUI SE GUARDA ESTO DE A QUI ", obj.parametro1);
-                
+                 
             return G.Q.ninvoke(that,'actualizarDispensacionEstados', obj.parametro1 , transaccion); 
                  
                           
@@ -2060,8 +2053,7 @@ function __insertarMedicamentosPendientesPorDispensar(that, index, productos, pa
  * @Funciones que hacen uso del model :
  */
 DispensacionHcModel.prototype.consultarPendientesFormula = function(evolucion, callback) {
-     
-   
+        
     G.knex('hc_pendientes_por_dispensar').where({
         evolucion_id: evolucion,
         sw_estado: '0'
@@ -3351,7 +3343,7 @@ DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNu
 DispensacionHcModel.prototype.insertarDispensacionEstados = function(obj,transaccion,callback){
       
     var parametros = {1:obj.evolucionId}; 
-    var sql = "INSERT INTO dispensacion_estados \
+/*    var sql = "INSERT INTO dispensacion_estados \
         (formula_id, \
          evolucion_id, \
          paciente_id, \
@@ -3468,10 +3460,202 @@ DispensacionHcModel.prototype.insertarDispensacionEstados = function(obj,transac
                                hc.refrendar\
             )as a ORDER BY a.numero_total_entregas desc limit 1\
         )as b returning fecha_entrega, numero_entrega_actual, sw_finalizado ";
-
-    var query = G.knex.raw(sql,parametros);    
-    if(transaccion) query.transacting(transaccion);    
-        query.then(function(resultado){             
+     
+      var query = G.knex.raw(sql,parametros); */
+     
+    
+  
+                    
+                  
+     /*G.knex.select(["a.evolucion_id", G.knex.raw("1")])
+                                .from("hc_formulacion_despachos_medicamentos AS a")
+                                .union(function(){
+                                    G.knex.select(["a.evolucion_id", G.knex.raw("2")])
+                                     .from("hc_formulacion_despachos_medicamentos_pendientes AS a")
+                                })
+                                .union(function(){
+                                    G.knex.select(["a.evolucion_id", G.knex.raw("3")])
+                                     .from("hc_dispensacion_medicamentos_tmp AS a")
+                                })*/
+     //+Descripcion Query que consulta el numero de entrega actual
+     
+    var subQueryB = G.knex.select([G.knex.raw("count(evolucion_id) as numero_entregas"),
+                                    "evolucion_id", 
+                                    G.knex.raw("'normales' as a")])
+                    .from("hc_formulacion_despachos_medicamentos")
+                    .where(G.knex.raw("evolucion_id = "+obj.evolucionId+" group by evolucion_id"))
+                    
+                     .union(function(){
+                        this.select([G.knex.raw("count(desp.evolucion_id) as numero_entregas"),
+                                    G.knex.raw("desp.evolucion_id as evolucion_id"), 
+                                    G.knex.raw("'pendientestodos' as b")
+                                ])
+                            .from("hc_formulacion_despachos_medicamentos_pendientes AS desp")
+                            .innerJoin("bodegas_documentos AS pend", function(){
+                                this.on("desp.bodegas_doc_id","pend.bodegas_doc_id")
+                                    .on("desp.numeracion","pend.numeracion")
+                            })                   
+                            .where("desp.evolucion_id",obj.evolucionId)
+                            .andWhere("pend.todo_pendiente",1)
+                            .groupBy("desp.evolucion_id");
+            }).as("dispensados")
+          
+    
+     
+    
+    //+Descripcion Query que consulta la ultima fecha de entrega de la formula
+     
+    var subQueryA = G.knex.select("bod.fecha_registro")  
+            .from("hc_formulacion_despachos_medicamentos AS hp")
+            .innerJoin("bodegas_documentos AS bod", function(){
+                this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
+                .on("hp.numeracion","bod.numeracion")
+            }).where("evolucion_id", obj.evolucionId)
+              .union(function(){
+                this.select("bod.fecha_registro")  
+                    .from("hc_formulacion_despachos_medicamentos_pendientes AS hp")
+                    .innerJoin("bodegas_documentos AS bod", function(){
+                        this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
+                        .on("hp.numeracion","bod.numeracion")
+                    }).where("evolucion_id", obj.evolucionId)
+            }).as("a")
+    
+    
+    var numeroEntregaActualSubQuery = G.knex.select([G.knex.raw("sum(dispensados.numero_entregas)as numero_entregas"),
+                                      "dispensados.evolucion_id"])
+                             .from(subQueryB)
+                             .groupBy("dispensados.evolucion_id")
+                             .as("c")
+    
+    
+    
+      
+    var subQueryC1 = G.knex.select(["evolucion_id", G.knex.raw("1")])
+                                .from("hc_formulacion_despachos_medicamentos").as("a")
+                                .union(function(){
+                                    this.select(["evolucion_id", G.knex.raw("2")])
+                                .from("hc_formulacion_despachos_medicamentos_pendientes")
+                                })
+                                .union(function(){
+                                    this.select(["evolucion_id", G.knex.raw("3")])
+                                .from("hc_dispensacion_medicamentos_tmp")
+                                }).as("b");
+    var subQueryC2 = G.knex.select(["evolucion_id", G.knex.raw("2")])
+                                .from("hc_formulacion_despachos_medicamentos_pendientes").as("a")
+                                
+    var subQueryC = G.knex.select([G.knex.raw("max(c.numero_entregas) as numero_entregas")])
+                          .from(subQueryC1
+                                
+                            ).as("b")
+                    
+    var campoNumeroEntregaActual = G.knex.select(G.knex.raw("max(c.numero_entregas)as numero_entregas"))
+            .from(subQueryC1)
+            .innerJoin(numeroEntregaActualSubQuery, function(){
+                this.on("b.evolucion_id","c.evolucion_id")
+            }).as("numero_entrega_actual")
+            .where("b.evolucion_id",obj.evolucionId) 
+    
+    
+    var campoFechaUltimaEntrega = G.knex.max("a.fecha_registro")
+                             .from(subQueryA).as("fecha_ultima_entrega")
+     
+     
+    var campoSubQueryMovFormulaA = ["numero_formula as formula_id",   
+                               "evolucion_id",  
+                               "paciente_id",  
+                               "tipo_id_paciente",   
+                               G.knex.raw("max( ceiling(ceiling(hc.fecha_finalizacion - hc.fecha_registro)/30) ) as numero_total_entregas"),  
+                               "transcripcion_medica as tipo_formula",  
+                               "fecha_formulacion as fecha_registro",  
+                               "hc.medico_id",  
+                               "hc.refrendar",  
+                               G.knex.raw("max(fecha_finalizacion) as fecha_finalizacion"),
+                               G.knex.raw("CASE \
+                               WHEN(\
+                               	    SELECT distinct(hp.todo_pendiente)   \
+                               	    FROM hc_pendientes_por_dispensar hp   \
+                              	    WHERE hp.evolucion_id = hc.evolucion_id \
+                                    AND hp.bodegas_doc_id is null \
+                                    AND hp.numeracion is null\
+                               ) = 0 THEN 1  \
+                               WHEN(\
+                                    SELECT distinct(hp.todo_pendiente)    \
+                                    FROM hc_pendientes_por_dispensar hp   \
+                                    WHERE hp.evolucion_id = hc.evolucion_id \
+                                    AND hp.bodegas_doc_id is null \
+                                    AND hp.numeracion is null\
+                                    ) = 1 THEN 2   \
+                               ELSE 0 END as sw_pendiente"),
+                               campoNumeroEntregaActual,
+                               campoFechaUltimaEntrega
+                            ]
+    var subQueryMovFormulaA = G.knex.select(campoSubQueryMovFormulaA)
+                                    .from("hc_formulacion_antecedentes as hc")
+                                    .where("hc.evolucion_id",obj.evolucionId)
+                                    .groupBy("numero_formula",   
+                                            "evolucion_id",  
+                                            "paciente_id",  
+                                            "tipo_id_paciente",   
+                                            "transcripcion_medica",   
+                                            "fecha_formulacion",  
+                                            "hc.medico_id",  
+                                            "hc.refrendar").as("a")
+                          
+    
+    var campoSubQueryMovFormulaB = ["a.formula_id",  
+                   "a.evolucion_id",  
+                   "a.paciente_id",  
+                   "a.tipo_id_paciente",  
+                   "a.numero_total_entregas",   
+                   G.knex.raw("CASE WHEN a.numero_entrega_actual is null THEN 0 ELSE a.numero_entrega_actual END as numero_entrega_actual"),  
+                   G.knex.raw("0 as sw_refrendar"),  
+                   "a.sw_pendiente",  
+                   "a.tipo_formula",  
+                   G.knex.raw("CASE WHEN a.numero_total_entregas = a.numero_entrega_actual THEN 1 ELSE 0 END as sw_finalizado"),  
+                   G.knex.raw("CASE WHEN a.refrendar = 1 THEN (\
+                   		SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion  \
+                   		FROM medicamentos_refrendados   \
+                    	WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula)   \
+                    	ELSE a.fecha_ultima_entrega END as fecha_entrega"),  
+                   G.knex.raw("null as fecha_minima_entrega"),   
+                   G.knex.raw("null as fecha_maxima_entrega"),   
+                   "a.medico_id",  
+                   "a.fecha_registro",  
+                   "a.fecha_finalizacion",       
+                   "a.fecha_ultima_entrega"
+               ]
+    
+    
+    var campoSubQueryMovFormulaC = ["b.formula_id",   
+         "b.evolucion_id",   
+         "b.paciente_id",   
+         "b.tipo_id_paciente",   
+         "b.numero_total_entregas",   
+         "b.numero_entrega_actual",   
+         "b.sw_refrendar",   
+         "b.sw_pendiente",   
+         "b.tipo_formula",  
+         "b.sw_finalizado",  
+         "b.fecha_ultima_entrega as fecha_entrega",  
+         G.knex.raw("null as fecha_minima_entrega"),  
+         G.knex.raw("null as fecha_maxima_entrega"),  
+         "b.medico_id",  
+         "b.fecha_registro",  
+         "b.fecha_finalizacion",  
+         "b.fecha_ultima_entrega"
+     ]
+    
+    var subQueryMovFormulaB = G.knex.select(campoSubQueryMovFormulaB)
+                                .from(subQueryMovFormulaA)
+                                .orderBy("a.numero_total_entregas","desc")
+                                .limit("1").as("b")
+                        
+    var subQueryMovFormulaC = G.knex.select(campoSubQueryMovFormulaC)
+                                .from(subQueryMovFormulaB)
+                                
+    if(transaccion) subQueryMovFormulaC.transacting(transaccion);    
+        subQueryMovFormulaC.then(function(resultado){   
+            console.log("resultado  [insertarDispensacionEstados]: ", resultado); 
         callback(false, resultado);
     }).catch(function(err){   
         console.log("err (/catch) [insertarDispensacionEstados]: ", err);     

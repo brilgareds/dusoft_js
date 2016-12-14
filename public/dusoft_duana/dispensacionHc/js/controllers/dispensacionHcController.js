@@ -476,9 +476,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  * @fecha 02/09/2016 DD/MM/YYYY
                  */
                 $scope.descartarFormula = function(entity){
-
+                   
                     that.ventanaDescartarPendientesFormula(entity);
-
+                    
                 };
 
                 /**
@@ -510,7 +510,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     var modalInstance = $modal.open($scope.opts);   
 
                         modalInstance.result.then(function(){
+                            that.listarFormulasMedicas({estado:0}); 
                             that.listarFormulasMedicasPendientes();
+                            
                         },function(){});                          
 
                 };
@@ -780,6 +782,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      dispensacionHcService.ajustarNumeroEntregaFormula(obj,function(data){
                          console.log("data ", data);
                          if (data.status === 200) {
+                             that.listarFormulasMedicas({estado:0}); 
                              AlertService.mostrarMensaje("success", data.msj);
                          }else{
                              AlertService.mostrarMensaje("warning", data.msj);

@@ -9,7 +9,7 @@ var DispensacionHcModel = function() {};
  */
 DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
      
-     var colSubQuery = [G.knex.raw("'0' AS tipo_formula"),
+    var colSubQuery = [G.knex.raw("'0' AS tipo_formula"),
                         "a.tipo_formula as transcripcion_medica",
                         G.knex.raw("CASE WHEN (a.tipo_formula='0' or a.tipo_formula ='2') THEN 'FORMULACION' ELSE 'TRANSCRIPCION' END AS descripcion_tipo_formula"),
                         G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS fecha_registro"),
@@ -80,7 +80,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         END AS descripcion_estado_entrega"),
                         "a.sw_pendiente as sw_estado"
                         ];
-     var subQuery = G.knex.select(colSubQuery)
+    var subQuery = G.knex.select(colSubQuery)
                 .from("dispensacion_estados AS a")
                 .innerJoin("pacientes AS b", 
                         function() {
@@ -2612,7 +2612,7 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
     if(parseInt(producto.total) > 0){      
         G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, evolucionId, todoPendiente, usuario, transaccion).then(function(resultado){
             rowCount = 1;
-           //console.log("resultado rowCount::::---:::: ", rowCount);
+            
          }).fail(function(err){      
        }).done();   
     }
@@ -2802,7 +2802,7 @@ DispensacionHcModel.prototype.eliminarTemporalesDispensados = function(obj,trans
     
    if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){    
-            console.log("resultado [eliminarTemporalesDispensados]:", resultado)
+             
             callback(false, resultado);
    }).catch(function(err){
             console.log("err (/catch) [eliminarTemporalesDispensados]: ", err);        
@@ -2965,7 +2965,7 @@ function __insertarDespachoMedicamentoEvento(parametro, transaccion, callback) {
             callback(false, resultado);
     }).catch(function(err){
             console.log("err (/catch) [__insertarDespachoMedicamentoEvento]: ", err);
-            console.log("parametros: ", parametro);
+             
             callback({err:err, msj: "Error al guardar el evento"});
     });  
 };
@@ -3035,7 +3035,7 @@ function __eliminarTemporalFormula(producto, transaccion, callback) {
             callback(false, resultado);
     }).catch(function(err){
             console.log("err (/catch) [__eliminarTemporalFormula]: ", err);
-            console.log("parametros: ", producto);
+             
             callback(err);   
     });  
 };                                 
@@ -3087,7 +3087,7 @@ function __insertarTemporalFarmacia(producto, transaccion, callback) {
  * @fecha 11/06/2016
  */
 function __insertarBodegasDocumentos(obj, transaccion, callback){
-    console.log("********__insertarBodegasDocumentos***********");     
+      
     var query = G.knex('bodegas_documentos')
              .returning("fecha_registro")
      .insert({bodegas_doc_id: obj.bodegasDocId,
@@ -3328,7 +3328,7 @@ DispensacionHcModel.prototype.actualizarNumeroEntrega = function(parametro,rowNu
         callback(false, resultado);
     }).catch(function(err){   
         console.log("err (/catch) [actualizarNumeroEntrega]: ", err);
-        console.log("parametros: ", parametro);
+         
         callback({err:err, msj: "Error al actualizar el evento"});
     });  
 };
@@ -3426,6 +3426,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                               	    WHERE hp.evolucion_id = hc.evolucion_id \
                                     AND hp.bodegas_doc_id is null \
                                     AND hp.numeracion is null\
+                                    AND hp.sw_estado not in(2)\
                                ) = 0 THEN 1  \
                                WHEN(\
                                     SELECT distinct(hp.todo_pendiente)    \
@@ -3433,7 +3434,8 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                                     WHERE hp.evolucion_id = hc.evolucion_id \
                                     AND hp.bodegas_doc_id is null \
                                     AND hp.numeracion is null\
-                                    ) = 1 THEN 2   \
+                                    AND hp.sw_estado not in(2)\
+                                ) = 1 THEN 2   \
                                ELSE 0 END as sw_pendiente"),
                                campoNumeroEntregaActual,
                                campoFechaUltimaEntrega

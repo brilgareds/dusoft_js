@@ -130,7 +130,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             dispensacionHcService.listarRegistroDeEventos(obj,function(data){
                 
-                console.log("<<<|||||||>>>> ", data);
+               
                 if(data.status === 200){                        
                    $scope.registroDeEventos =  dispensacionHcService.renderListarTipoDocumento(data.obj.listar_registro_eventos);
                   

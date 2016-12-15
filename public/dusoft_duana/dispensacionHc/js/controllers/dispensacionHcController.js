@@ -104,8 +104,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.classCssSinDispensar = "success"; 
                 $scope.classCssPendientes = "default";  
                 $scope.checkearEstadoFormula = function(estado){
-                    
-                    console.log("checkearEstadoFormula ", estado);
+                     
                      if(estado ===0){
                         $scope.classCssSinDispensar = "success"; 
                         $scope.classCssPendientes = "default"; 
@@ -737,7 +736,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 */
                 $scope.ventanaMovimientoFormulasPaciente = function(detallePaciente){
 
-                    console.log("movimientoFormulas ", detallePaciente);
+                    
                     $scope.opts = {
                         
                         backdropClick: true,
@@ -780,7 +779,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      };
 
                      dispensacionHcService.ajustarNumeroEntregaFormula(obj,function(data){
-                         console.log("data ", data);
+                         
                          if (data.status === 200) {
                              that.listarFormulasMedicas({estado:0}); 
                              AlertService.mostrarMensaje("success", data.msj);
@@ -861,8 +860,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.$$watchers = null;
-               // set localstorage
-
+               
                 $scope.root=null;
 
            });

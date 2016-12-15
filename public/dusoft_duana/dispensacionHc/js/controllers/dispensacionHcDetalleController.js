@@ -115,8 +115,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     tipoEstadoFormula = resultadoStorage.tipoEstadoFormula;
 
                     if(data.status === 200) {       
-                        console.log("data [[]]][[[]] ", data);
-                        //$scope.root.items = data.obj.listar_formulas.length;                              
+                                                  
                         $scope.root.detalleFormula = dispensacionHcService.renderListarFormulasMedicas(data.obj,1);
 
                         if(resultadoStorage.pendientes === 0){
@@ -273,8 +272,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    }
                }    
             };
-                /*console.log("obj ", obj);                                       
-                console.log("entity ", entity);    */                                   
+                                                
             dispensacionHcService.existenciasBodegas(obj, function(data){
 
                 entity.vaciarProductosHc();
@@ -487,7 +485,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     
          
             dispensacionHcService.eliminarMedicamentosTemporales(obj,function(data){
-                console.log("data ", data);
+                
                 if(data.status === 200){                     
                     AlertService.mostrarMensaje("success", data.msj); 
                     that.consultarMedicamentosTemporales();
@@ -518,10 +516,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
           * @fecha 07/06/2016
           */
         $scope.temporalLotes = function(entity){           
-            console.log("entity ", entity);
-            
-            
-            // that.listarMedicamentosFormulados(resultadoStorage);
+           
+             
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");           
             var obj = {                   
                 session: $scope.session,
@@ -566,9 +562,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @returns {undefined}
          */                                          
         that.consultarMedicamentosTemporales = function(){
-            console.log("*********medicamentosTemporales*************");
-            console.log("*********medicamentosTemporales*************");
-            console.log("*********medicamentosTemporales*************");
+           
              
             $scope.medicamentosTemporales = [];
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");
@@ -583,13 +577,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };      
             
                 dispensacionHcService.medicamentosTemporales(obj, function(data){
-                    console.log("data (Medicamentos temporales siii )", data);
+                   
 
                     if(data.status === 200){                     
                         $scope.medicamentosTemporales.push(dispensacionHcService.renderMedicamentosTemporales(data.obj.listar_medicamentos_temporales));    
 
                     }      
-                        console.log("data (Medicamentos temporales siii )", $scope.medicamentosTemporales.length);
+                        
                 });  
             
             }else{     
@@ -651,7 +645,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         */
         $scope.ventanaTipoEntregaFormula = function(todoPendiente){
                       
-                console.log("todoPendiente ", todoPendiente);
+                
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");   
             
             if(resultadoStorage.pendientes === 1 && todoPendiente ===2){
@@ -804,11 +798,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
          * @fecha 15/06/2016
          */
        $scope.$on('emitAutorizarDispensacionMedicamento', function(e, parametros) { 
-         
-            console.log("AQUI AUTORIZA LA ENTREGA DE MEDICAMENTO ---------------");
-            console.log("e ", e);
-            console.log("parametros ", parametros);
-            
+          
             if(parametros.pendientes === 0){
                 that.listarMedicamentosFormulados(parametros);
             }else{
@@ -842,7 +832,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 if (data.status === 200) {
                         var nombre = data.obj.listar_medicamentos_pendientes.nombre_pdf;
-                        console.log("nombre ", nombre);
+                        
                         $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                 }
             });  
@@ -858,7 +848,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         $scope.imprimirMedicamentosDispensados = function(){
             
             var resultadoStorage = localStorageService.get("dispensarFormulaDetalle");  
-                console.log("resultadoStorage ", resultadoStorage);
+              
             var obj = {                   
                         session: $scope.session,
                         data: {
@@ -873,7 +863,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 if (data.status === 200) {
                         var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;
-                        console.log("nombre ", nombre);
+                        
                         $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
                 }
             });  

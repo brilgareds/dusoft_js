@@ -15,7 +15,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         var seleccionTipoObservacion;
         $scope.root = { observacion:''}; 
         
-        console.log("detalleRegistroDispensaciondetalleRegistroDispensacion ", detalleRegistroDispensacion.msj[0]);
+       
         $scope.detalleRegistroDispensacion = detalleRegistroDispensacion.msj[0];
         /*
          * Inicializacion de variables
@@ -87,7 +87,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          
         that.onSeleccionTipoObservacion = function(entity){
             seleccionTipoObservacion = entity;
-            console.log("entity ", seleccionTipoObservacion);
+            
         };
         
         /*
@@ -160,10 +160,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         };
         
         that.cerrarVentana = function(data){
-            //console.log("cerrarVentana ", data);
+          
             if(data.status === 200){              
-                    /*$modalInstance.close();
-                    $scope.$emit('emitLotesProductosFormula', {entity: detalleFormula});*/
+                    
                 if($modalInstance.close() === undefined){
                    $scope.$emit('emitLotesProductosFormula', {entity: detalleFormula});
                 }

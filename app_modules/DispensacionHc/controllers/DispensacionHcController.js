@@ -2106,12 +2106,12 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
       opciones=parametrizacion.modulosJson.dispensar_formulas.opciones;
        
         if(opciones.sw_ajustar_entrega_formula){
-          return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
+            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
         }else{
-           throw {state:403, msj:"El usuario no tiene permisos para modificar"};
+            throw {state:403, msj:"El usuario no tiene permisos para modificar"};
         } 
       
-   }) .then(function(resultado){   
+    }).then(function(resultado){   
          //G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
          var parametros = {
                    fechaEntrega: fechaEntrega, 

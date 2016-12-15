@@ -68,7 +68,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             data: 'tipoJustificacion',
             afterSelectionChange: function(rowItem) {
                     if (rowItem.selected) {
-                        console.log("rowItem ", rowItem);
+                       
                         that.onSeleccionTipoFormula(rowItem.entity);
                     }else{
                         that.onSeleccionTipoFormula(undefined);

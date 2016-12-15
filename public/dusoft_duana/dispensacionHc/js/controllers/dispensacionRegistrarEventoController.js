@@ -105,10 +105,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $modalInstance.close();
         };
         
-        
-        
-        
-        
+         
         
         /**
         * @author Cristian Ardila

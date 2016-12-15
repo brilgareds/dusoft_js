@@ -349,8 +349,84 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    enableCellSelection: true,
                    enableHighlighting: true,
                    columnDefs: [
-                       {displayName: '#Evo',           width:"6%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
-                       {displayName: '#Formula',       width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 
+                       //{displayName: '#Evo',           width:"6%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
+                    {field: '#Evo', width: "5%", displayName: '#Evo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].evolucionId}}</p></div>'},
+                    
+                    {field: '#Formula', width: "7%", displayName: '#Formula', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroFormula}}</p></div>'},
+                     
+                    {field: '#Identificacion', width: "7%", displayName: '#Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente()}} {{ row.entity.mostrarPacientes()[0].getPacienteId()}}</p></div>'},
+
+                    {displayName: 'Paciente',   cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }}</p> </div>'},   
+  
+                    {displayName: 'F.Formulacion',  width: "7%",  cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()}}</p></div>'},
+                        
+                    {displayName: 'F.Finalizacion',  width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()}}</p></div>'},
+                    
+                    {displayName: 'F.Entrega', width: "7%",  cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()}}</p></div>'},
+                    
+                    {displayName: '#Entregas', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()}}</p></div>'},
+                    
+                     {displayName: '#Actual', width: "5%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}}</p></div>'},
+                     
+                   {field: 'Ajuste', width: "7%", displayName: 'Ajuste',
+                    cellTemplate: '<div class="col-xs-12 " > \
+                                  <input type="text" \
+                                   ng-model="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroEntregaActual" \
+                                   validacion-numero-entero \
+                                   class="form-control grid-inline-input" \
+                                   name="" \
+                                   id="" \
+                                   ng-disabled="!root.opciones.sw_ajustar_entrega_formula" ng-class=""\n\
+                                    /> </div>'},
+                        
+                        
+                    {displayName: 'Medico', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].getMedico()}}</p></div>'},
+                    
+                    {displayName: 'Plan', width: "7%",   cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()}}</p></div>'},
+                    
+                    {displayName: 'Tipo', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()}}</p></div>'},
+                   
+                     {displayName: "Opc", width:"7%", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                       <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                                       <ul class="dropdown-menu dropdown-options">\
+                                            <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 0  && root.estadoFormula == 0">\n\
+                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n </a>\
+                                            </li>\
+                                            <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 && root.estadoFormula == 1 || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2 && root.estadoFormula == 1">\
+                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a>\
+                                            </li>\
+                                            <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
+                                               <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Todo </a>\
+                                            </li>\
+                                            <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0\
+                                                    && row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2 ">\n\
+                                               <a href="javascript:void(0);" ng-click="imprimirMedicamentosPendientes({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), \n\
+                                                                                       tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
+                                                                                       pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()})" class = "glyphicon glyphicon-print" > Pendientes</a>\
+                                            </li>\
+                                            <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
+                                               <a href="javascript:void(0);" ng-click="imprimirMedicamentosDispensados({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), \n\
+                                                                                       tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
+                                                                                       pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()},0)" class = "glyphicon glyphicon-print" > Ultima entrega</a>\
+                                            </li>\
+                                             <li>\
+                                               <a href="javascript:void(0);" ng-click="ventanaMovimientoFormulasPaciente({tipoIdPaciente: row.entity.mostrarPacientes()[0].getTipoIdPaciente(), \n\
+                                                                                       pacienteId: row.entity.mostrarPacientes()[0].getPacienteId()})" class = "glyphicon glyphicon-folder-open" > Movimiento</a>\
+                                             </li>\
+                                             <li >\
+                                               <a href="javascript:void(0);" ng-validate-events="{{ habilitar_modificacion_producto() }}"  ng-click="ventanaAjustarEntregaFormula({evolucion: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(), numero_entrega: row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()})" class = "glyphicon glyphicon-wrench" > Ajustar formula</a>\
+                                             </li>\
+                                       </ul>\
+                                  </div>'
+                       },
+                       
+                       {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()',  displayName: "Estado", cellClass: "txt-center",
+                        cellTemplate: "<button type='button' \n\
+                                    ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
+                                   <span ng-class=''></span>  {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 
+
+                        /*{displayName: '#Formula',       width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 
                        {displayName: 'Identificacion', width:"9%",
                         cellTemplate: "<div\n\
                                        <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente() }} {{ row.entity.mostrarPacientes()[0].getPacienteId() }}  </div>"}, 
@@ -421,7 +497,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     cellTemplate: "<button type='button' \n\
                                     ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
                                    <span ng-class=''></span>  {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 
-
+                        */
                     ]
                 }; 
                         
@@ -790,7 +866,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          }
                          
                          else{
-                             AlertService.mostrarMensaje("warning", data.msj);
+                             AlertService.mostrarMensaje("success", data.msj);
                          }
                      });  
 

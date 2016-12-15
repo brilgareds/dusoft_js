@@ -909,11 +909,11 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
             throw 'La formula no puede quedar -Todo pendiente- por que contiene temporales';
           
         }else{
-          
-            return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion)
+            return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarEstadoFormula',parametrosGenerarDispensacion); 
+            //return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion)
         }
      
-    }).then(function(resultado){
+    })/*.then(function(resultado){
         
          if(resultado.rowCount === 0){
             
@@ -924,7 +924,7 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
             return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarEstadoFormula',parametrosGenerarDispensacion);
            
         }  
-    }).then(function(resultado){
+    })*/.then(function(resultado){
         
         if(resultado.rowCount === 0){
              
@@ -946,17 +946,18 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
              
     }).then(function(resultado){ 
        
-                                  
+         console.log("TODO PENDIENTE OKJ ", resultado);                         
         if(resultado[0].numeroentrega === 0 && resultado[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
+            console.log("TODO PENDIENTE OKJ 2 ", resultado);              
             def.resolve();             
         }
         //console.log("resultado DEBE ACTUALIZAR EL TIPO FORMULA------->>>>>>>> #1 ", resultado);
                    
     }).then(function(resultado){
-        
-        res.send(G.utils.r(req.url, 'La formula ha quedado con todos sus medicamentos pendientes', 200, {dispensacion: resultado}));
+        console.log("TODO PENDIENTE OKJ 3 ", resultado);              
+        res.send(G.utils.r(req.url, 'La formula ha quedado con todos sus medicamentos pendientes', 200, {}));
         
    }) .fail(function(err){
         res.send(G.utils.r(req.url, err, 500, {}));
@@ -1561,7 +1562,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});   
     }).then(function(resultado){ 
         
-             
+         console.log("TODO PENDIENTE VALIDAR ", resultado);
          if(resultado[0].numeroentrega === 1 && resultado[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
@@ -2100,8 +2101,19 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
     }
      
     var parametrosPermisos = { usuario_id:req.session.user.usuario_id, empresa_id:req.session.user.empresa, modulos:['dispensar_formulas'], convertirJSON:true };
-        
-    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){
+       
+    
+    G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:args.ajustar_numero_entrega_formula.evolucion
+        ,numeroEntregaActual:1}).then(function(resultado){
+            
+        if(args.ajustar_numero_entrega_formula.numero_entrega >= resultado[0].numeroentrega && 
+           args.ajustar_numero_entrega_formula.numero_entrega < resultado[0].numero_total_entregas){
+            return G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametrosPermisos);
+        }else{
+            throw {state:404, msj:"El numero de entrega no debe ser menor al actual y no debe ser superior al total de entregas de la formula "};
+        }
+            
+    }).then(function(parametrizacion){
       
       opciones=parametrizacion.modulosJson.dispensar_formulas.opciones;
        

@@ -1839,9 +1839,9 @@ DispensacionHcModel.prototype.consultarUltimaEntregaFormula = function(obj,callb
       
     var colFormulados = [];
     if(obj.numeroEntregaActual === 0){
-        colFormulados = [G.knex.raw("(numero_total_entregas - numero_entrega_actual) as numeroEntrega"),"sw_pendiente"];
+        colFormulados = [G.knex.raw("(numero_total_entregas - numero_entrega_actual) as numeroentrega"),"sw_pendiente"];
     }else{
-        colFormulados = ["numero_entrega_actual as numeroEntrega","sw_pendiente"];
+        colFormulados = ["numero_entrega_actual as numeroentrega","sw_pendiente", "numero_total_entregas"];
     } 
    
     var query = G.knex.column(colFormulados)

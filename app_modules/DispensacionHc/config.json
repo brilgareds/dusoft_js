@@ -13,6 +13,11 @@
                     "module": "DispensacionHc",
                     "model": "DispensacionHcModel",
                     "alias": "m_dispensacion_hc"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
                 }
             }],
          "events": [{

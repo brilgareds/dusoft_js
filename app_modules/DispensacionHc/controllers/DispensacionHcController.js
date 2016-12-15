@@ -1,9 +1,9 @@
 
-var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion) {
+var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuarios) {
 
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.e_dispensacion_hc = eventos_dispensacion;
-  
+    this.m_usuarios = m_usuarios;
   //  this.m_pedidos_clientes_log = m_pedidos_clientes_log;
 };
 
@@ -2085,7 +2085,7 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
     var now = new Date(); 
     var fechaEntrega = G.moment(now).format(formato);                                       
     var fechaMinima  = G.moment(now).format(formato);              
-     
+    var opciones = "";
     if (!args.ajustar_numero_entrega_formula ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {ajustar_numero_entrega_formula: []}));
         return;
@@ -2099,9 +2099,20 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
         return;
     }
      
-    
-    G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}).then(function(resultado){   
-         
+    var parametrosPermisos = { usuario_id:req.session.user.usuario_id, empresa_id:req.session.user.empresa, modulos:['dispensar_formulas'], convertirJSON:true };
+        
+    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){
+      
+      opciones=parametrizacion.modulosJson.dispensar_formulas.opciones;
+       
+        if(opciones.sw_ajustar_entrega_formula){
+          return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
+        }else{
+           throw {state:403, msj:"El usuario no tiene permisos para modificar"};
+        } 
+      
+   }) .then(function(resultado){   
+         //G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
          var parametros = {
                    fechaEntrega: fechaEntrega, 
                    fechaMinima:fechaMinima, 
@@ -2118,7 +2129,8 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
             return res.send(G.utils.r(req.url, 'Se realiza el ajuste satisfactoriamente', 200, {ajustar_numero_entrega_formula:resultado}));
        
     }).fail(function(err){      
-       res.send(G.utils.r(req.url, err, 500, {}));
+         console.log("err [ajustarNumeroEntregaFormula]: ", err);
+       res.send(G.utils.r(req.url, err.msj, err.state, {}));
     }).done();
 }
 
@@ -2299,6 +2311,6 @@ DispensacionHc.prototype.consultarMovimientoFormulasPaciente = function(req, res
 };
 
 
-DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc"];
+DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc", "m_usuarios"];
 
 module.exports = DispensacionHc;

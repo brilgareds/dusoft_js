@@ -350,8 +350,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    enableCellSelection: true,
                    enableHighlighting: true,
                    columnDefs: [
-                       {displayName: '#Evo',     width:"4%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
-                       {displayName: '#Formula',       width:"5%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 
+                       {displayName: '#Evo',           width:"6%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
+                       {displayName: '#Formula',       width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 
                        {displayName: 'Identificacion', width:"9%",
                         cellTemplate: "<div\n\
                                        <span ng-class=''></span>{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente() }} {{ row.entity.mostrarPacientes()[0].getPacienteId() }}  </div>"}, 
@@ -363,16 +363,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        {displayName: 'F.Finalizacion', width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()'}, 
                        {displayName: 'F.Entrega',      width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()'}, 
                         {displayName: '#Entregas',     width:"5%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()'}, 
-                       {displayName: '#Entrega actual',width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()'}, 
-
-
-
-                       //{field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
-                       {displayName: 'Plan',           width:"9%",field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()'}, 
-                       {displayName: 'Tipo',            width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()'},                            
-
-
-                       {field: 'Ajuste', width: "7%", displayName: 'Ajuste',
+                       {displayName: '#Actual',width:"5%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()'}, 
+                       {field: 'Ajuste', width: "5%", displayName: 'Ajuste',
                     cellTemplate: '<div class="col-xs-12 "> \
                                   <input type="text" \
                                    ng-model="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroEntregaActual" \
@@ -380,8 +372,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                    class="form-control grid-inline-input" \
                                    name="" \
                                    id="" \
-                                   ng-disabled="row.entity.estadoProductoVencimiento == 1" ng-class=""\n\
-                                   /> </div>'},
+                                   ng-disabled="!root.opciones.sw_ajustar_entrega_formula" ng-class=""\n\
+                                    /> </div>'},
+
+
+                       //{field: 'mostrarPacientes()[0].getMedico()', displayName: 'Medico', width:"9%"},    
+                       {displayName: 'Plan',           width:"9%",field: 'mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()'}, 
+                       {displayName: 'Tipo',            width:"8%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()'},                            
+
+
+                       
                         {displayName: "Opc", width:"5%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
@@ -784,7 +784,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                          if (data.status === 200) {
                              that.listarFormulasMedicas({estado:0}); 
                              AlertService.mostrarMensaje("success", data.msj);
-                         }else{
+                         }
+                         if (data.status === 404) {
+                             
+                             AlertService.mostrarMensaje("success", data.msj);
+                         }
+                         
+                         else{
                              AlertService.mostrarMensaje("warning", data.msj);
                          }
                      });  

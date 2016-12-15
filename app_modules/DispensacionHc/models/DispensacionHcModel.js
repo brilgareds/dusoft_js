@@ -40,7 +40,16 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         "a.sw_finalizado",
                         "a.numero_total_entregas",
                         "a.numero_entrega_actual",
-                        G.knex.raw("CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+                        G.knex.raw("CASE WHEN (\
+                                                SELECT distinct(usuario_id) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                                WHERE evolucion_id = a.evolucion_id ) = 1 THEN '1' \n\
+                                                ELSE '0' END AS formula_en_proceso"),
+                        G.knex.raw("CASE WHEN (\
+                                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                                WHERE evolucion_id = a.evolucion_id ) = 0 THEN (\
+                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
                                 CASE \
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL OR a.sw_pendiente = '1' THEN(\
@@ -58,8 +67,15 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '1' THEN '3' \
                                     WHEN a.sw_pendiente = '2' THEN '4' END\
                                 ) \
-                         END AS estado_entrega"),
-                        G.knex.raw("CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+                         END ) ELSE '5' END AS estado_entrega"),
+        
+        
+        
+                        G.knex.raw("CASE WHEN (\
+                                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                                WHERE evolucion_id = a.evolucion_id ) = 0 THEN (\
+                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
                                 CASE \
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
@@ -77,7 +93,8 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \
-                        END AS descripcion_estado_entrega"),
+                        END ) ELSE 'Formula en proceso' END AS descripcion_estado_entrega"),
+        
                         "a.sw_pendiente as sw_estado"
                         ];
     var subQuery = G.knex.select(colSubQuery)
@@ -136,10 +153,11 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                 });
                 
     query.limit(G.settings.limit).
-    offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){          
+    offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){   
+         console.log("resultado [listarFormulas]: ", resultado);
         callback(false, resultado);
     }).catch(function(err){    
-        console.log("err [listarFormulas]: ", err)
+        console.log("err [listarFormulas]: ", err);
         callback("Ha ocurrido un error");      
     });
 };
@@ -3134,9 +3152,6 @@ function __insertarDespachoMedicamentos(obj, transaccion, callback){
     });
 }
 
-
-
-
     
 
 /**
@@ -3154,7 +3169,7 @@ DispensacionHcModel.prototype.consultarFormulaAntecedentes = function(obj,callba
      
     var columna = [G.knex.raw("TO_CHAR(fecha_formulacion,'YYYY-MM-DD') as fecha_formulacion")];
      
-     G.knex('hc_formulacion_antecedentes').where({
+    G.knex('hc_formulacion_antecedentes').where({
         evolucion_id: obj.evolucionId
     }).select(columna).then(function(resultado) {
         callback(false, resultado);

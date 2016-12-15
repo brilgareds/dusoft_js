@@ -475,6 +475,7 @@ define(["angular", "js/services"], function(angular, services) {
                             formula.setNumeroEntregaActual( _formula.numero_entrega_actual);
                             formula.setNumeroTotalEntregas( _formula.numero_total_entregas);
                             formula.setFechaEntrega( _formula.fecha_entrega);
+                            formula.setFormulaEnProceso( _formula.formula_en_proceso);
                                 
                     }
                     

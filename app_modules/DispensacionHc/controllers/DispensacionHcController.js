@@ -51,7 +51,7 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
     var fechaInicial = args.listar_formulas.fechaInicial;
     var fechaFinal = args.listar_formulas.fechaFinal;
     var estadoFormula = args.listar_formulas.estadoFormula;
-    
+    var usuario = req.session.user.usuario_id;
    
    
    var parametros={ empresaId:empresaId,
@@ -60,7 +60,8 @@ DispensacionHc.prototype.listarFormulas = function(req, res){
                     fechaInicial: fechaInicial,
                     fechaFinal: fechaFinal,
                     filtro: filtro,
-                    estadoFormula: estadoFormula};
+                    estadoFormula: estadoFormula,
+                    usuarioId : usuario};
                 
                  
     G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametros).then(function(resultado){

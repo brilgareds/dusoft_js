@@ -20,6 +20,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.numeroEntregaActual;
             this.numeroTotalEntregas;
             this.fechaEntrega;
+            this.formulaEnProceso;
         };
         
         
@@ -115,6 +116,18 @@ define(["angular", "js/models"], function(angular, models) {
         Formula.prototype.getDescripcionEstadoEntrega = function(){
             return this.descripcionEstadoEntrega;
         };
+        
+        
+        Formula.prototype.setFormulaEnProceso = function(formulaEnProceso){
+             this.formulaEnProceso = formulaEnProceso;
+        };
+       
+        Formula.prototype.getFormulaEnProceso = function(){
+            return this.formulaEnProceso;
+        };
+        
+        
+        
         
         this.get = function(evolucionId,numeroFormula,tipoFormula, transcripcionMedica,descripcionTipoFormula,
                         fechaRegistro,fechaFinalizacion,fechaFormulacion) {

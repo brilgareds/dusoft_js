@@ -7,3 +7,184 @@
 	text-align: center;
 	max-width: 330px;
 }
+
+
+
+body.fondoimg{
+    background-image: url(../../../images/login/fondo.jpg); 
+    background-attachment: fixed;
+}
+
+/*FONDO NAV*/
+nav.nnav{
+    background-color: rgba(66, 139, 202, 0.7);
+}
+
+
+.nav>li>a:focus{
+    display: none;
+    color: black;
+}
+
+.nav>li>a:hover{
+    background-color: #cccccc;
+}
+
+/* COLOR ICONOS BENEFICIOS*/
+i.iconos, .iconosPar{
+    color: #428bca;
+    display: block;
+    text-align: center;
+}
+
+.iconosPar{
+    display:inline;
+    margin:0 auto;
+}
+
+.iconosParContenedor{
+    text-align: center;
+}
+
+/*OPACIDAD SELECCION DE IMAGENES*/
+section div div div a div.sectimag{
+    background:rgba(41, 78, 244, 0.6)!important;
+
+}
+
+/*OPACIDAD DE FONDO MODAL*/
+div div div div.claseemodal {
+    margin: 20%;
+    background-color: rgba(255, 255, 255, 0.9);
+
+}
+
+/*COLOR DE FONDO DE SECCIONES...*/
+section.services, section.contactanos, section.imagenescoll{
+    color: black;
+    background-color: white;
+}
+
+
+div.flecha 
+{
+    position: fixed;
+    z-index: 100;
+
+}
+/*FLECHA QUE SUBE EL SCROLL*/
+.arriba {
+    display:none;
+    padding:20px;
+    background: #428bca;
+    font-size:20px;
+    color:#fff;
+    cursor:pointer;
+    position: fixed;
+    bottom:20px;
+    right:20px;
+
+}
+
+
+/**** Angular ****/
+
+
+.tituloSeccion{
+    font-size: 17px;
+    font-weight: bold;
+}
+
+
+#slides_control{
+    margin-top:70px;
+    text-align:center;
+}
+
+.moto-widget-image-picture{
+    border-radius:100%;
+    width:250px;
+}
+
+.carouselSlide img{
+    width: 100%;
+    max-width: 1000px!important;
+}
+
+.numeroMisionVision{
+    color:#428bca;
+    font-size: 60px;
+}
+
+.moto-widget-divider-line{
+    border-color: #428bca;
+    width:18%; 
+}
+
+.contenedorLogin{
+    margin-top: 40px;
+    overflow: hidden;
+}
+
+.contenedorLogin .modal-content{
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.contenedorLogin .modal-dialog{
+    width: 400px;
+}
+
+.contenedorLoginInpunts{
+    width: 80%;
+    margin:0 auto;
+    margin-bottom: 25px; 
+}
+
+.btn-primary{
+    color: #fff;
+    background-color: #428bca!important;
+    border-color: #357ebd;
+    text-transform: inherit;
+    border-radius: 5px!important;
+}
+
+.btnIniciar{
+    margin: 0 auto;
+    display:block;
+    color:white!important;
+    text-transform: initial;
+    padding:8px;
+    border-radius: 5px;
+    width: 80%;
+}
+
+.img_logo{
+    margin: 0 auto;
+}
+
+.tituloFormularioContraseña{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+/*******/
+
+
+
+a.botonmas {
+    background-color: rgba(41, 78, 244, 0.7); 
+    color: white;
+    margin-top:20px;
+}
+
+a.botonmas:hover {
+    background-color: black;
+ 
+
+}
+
+a.botonmas:focus{
+    display: none;
+
+}

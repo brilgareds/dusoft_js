@@ -789,6 +789,15 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     background: yellow;
 }
 
+
+.logoNav{
+    width: 40px;
+    display: inline;
+    float: left;
+    margin-right: 5px;
+    padding: 5px;
+}
+
 /*
 ::-webkit-scrollbar
 {

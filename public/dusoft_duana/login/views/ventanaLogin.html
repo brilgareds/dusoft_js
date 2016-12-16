@@ -1,0 +1,99 @@
+<div>
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="onCerrarVentana()" aria-hidden="true">×</button>
+        <img class="img-responsive img_logo" src="../../images/login/logoo.png">
+    </div>
+
+    <div class="modal-body">
+        <div class="row" style="margin-bottom: 2em;" id="iniciotexto" ng-if="formularioLogin">
+            <form id="loginform" class="form-horizontal" name="loginform" role="form">
+                <div class="contenedorLoginInpunts input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input id="login-username" name="login-username" type="text" popover-placement="top" popover="Requerido" popover-trigger="focus" required class="form-control"  placeholder="Usuario"  ng-model="$parent.usuario"  >                                        
+                </div>
+
+                <div class="input-group contenedorLoginInpunts">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                    <input id="login-password" popover-placement="top" popover="Requerido" popover-trigger="focus" type="password" required class="form-control"  placeholder="Contraseña" ng-model="$parent.clave">
+                </div> 
+
+                <button type="submit" class="btn btn-primary btnIniciar" name="btnentrar" ng-disabled="loginform.$invalid" ng-click="autenticar($parent.usuario, $parent.clave)"><i class="icon-facebook"></i> Iniciar </button>
+            </form>
+
+        </div>
+
+        <div id="textooculto" ng-if="!formularioLogin">
+
+            <form id="forgoutform" class="form-horizontal " name="forgoutform" role="form" >
+
+                <h5 class="tituloFormularioContraseña">Ingrese su nombre de usuario, se enviara a su correo electronico la nueva contraseña</h5>
+                <div style="margin-bottom: 25px" class="input-group contenedorLoginInpunts">                        
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input id="login-username-recuperar" name="login-username-recuperar" type="text" popover-placement="top" popover="Requerido" popover-trigger="focus" required class="form-control"  placeholder="Usuario"  ng-model="$parent.usuario"  >                                        
+                </div>  
+            </form> 
+
+            <div>
+                <button  type="button" class="btn btn-primary btnIniciar" name="btnenviar" ng-disabled="forgoutform.$invalid" ng-click="recuperarContrasenia($parent.usuario)"><i class="icon-facebook"></i> Enviar </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <a  href="#" data-toggle="modal" style="color: rgba(41, 78, 244, 1);margin: 5% auto 5% 10%;" ng-if="formularioLogin" ng-click="$parent.formularioLogin = false">Recuperar contraseña</a>
+        <a  href="#" data-toggle="modal" style="color: rgba(41, 78, 244, 1);margin: 5% auto 5% 1%;" ng-if="!formularioLogin" ng-click="$parent.formularioLogin = true" >Cancelar</a>
+
+    </div>
+
+
+</div>
+
+
+
+
+<!--div class="container">       
+    <div id="loginbox"  class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
+        <div class="panel panel-primary" >
+            <div class="panel-heading">
+                <div class="panel-title">Dusoft - Iniciar Sesion</div>
+                <div style="float:right; font-size: 80%; position: relative; top:-17px;"><a href="#recuperarContrasenia" style="color: #fff">Olvidó Contraseña?</a></div>
+            </div>     
+              <form id="loginform" class="form-horizontal" name="loginform" role="form">
+                <div style="padding-top:30px" class="panel-body" >
+
+                    <alert type="danger"  class="col-sm-12 alert alert-danger" ng-show="mostrarmensaje">{{msgerror}}</alert>
+
+                    <div class="col-xs-6 col-sm-6 col-md-6 separator social-login-box" style="width: 200px; height: 116px; position: relative;"> <br />
+                        <img src="/images/Very-Basic-Lock-icon.png" style="position: absolute; top: -11px;">
+                    </div>
+
+
+                  
+
+                        <div style="margin-bottom: 25px" class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <input id="login-username" name="login-username" type="text" popover-placement="right" popover="Requerido" popover-trigger="focus" required class="form-control"  placeholder="Usuario" required ng-model="usuario"  >                                        
+                        </div>
+
+                        <div style="margin-bottom: 25px" class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            <input id="login-password" popover-placement="right" popover="Requerido" popover-trigger="focus" type="password" required class="form-control"  placeholder="Contraseña" required ng-model="clave">
+                        </div>                                        
+                       
+
+
+                </div>    
+                <div class="panel-footer">
+                    <div class="row">
+                        <div style="margin-top:10px; padding-right:32px;" class="form-group">                         
+                            <div class="pull-right">
+                                <button id="btn-fbsignup" type="submit" class="btn btn-primary" name="btnentrar" ng-disabled="loginform.$invalid" ng-click="autenticar(usuario, clave)"><i class="icon-facebook"></i> Iniciar </button>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </form>  
+        </div>  
+    </div>
+</div-->
+

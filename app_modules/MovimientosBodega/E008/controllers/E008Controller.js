@@ -2020,30 +2020,30 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
            (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
            (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS") ||
            (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '255' && pedido.tipo_id_cliente === "AS")||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '256' && pedido.tipo_id_cliente === "AS")){
+           (tipoPedido === 1 && pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")||
+           (tipoPedido === 1 && pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS")||
+           (tipoPedido === 1 && pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")){
 
            
            if(tipoPedido === 1){
-                if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+                if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){//Clinica las peñitas
                     bodega = "BD";
-                } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){
+                } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){//Clinica las peñitas
                     bodega = "BC";
-                }else if((pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")){
+                }else if((pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")){//santasofia
                     bodega = "1";
-                }else if((pedido.identificacion_cliente === '255' && pedido.tipo_id_cliente === "AS")){
+                }else if((pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")){//santasofia
                     bodega = "2";
-                }else if((pedido.identificacion_cliente === '256' && pedido.tipo_id_cliente === "AS")){
+                }else if((pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS")){//santasofia
                     bodega = "3";
-                }
+                }else if((pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")){//cucuta
+                    bodega = "FG";
+                }else if((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE")){//cartagena
+                    bodega = "BF";
+                }              
+                
            }
-     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-     console.log(">>>>>>>>>>>> Cliente:  ",pedido.identificacion_cliente);
-     console.log(">>>>>>>>>>>> Numero:  ",pedido.tipo_id_cliente);
-     console.log(">>>>>>>>>>>> Bodega:  ",bodega);
-     console.log("Bodega:::::::::::::::",tipoPedido);
-     console.log("pedido:::::::::::::::",pedido);
-     
+          
            
                 var obj = {
                       documentoId:418,
@@ -2059,7 +2059,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 
                  return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
         } else {
-             console.log(">>>>>>>>>>>",obj);
+             
             throw {msj:"El documento no esta parametrizado para sincronizarse", status:404,
                    obj:{documento_despacho: {}}};
         }
@@ -2140,13 +2140,17 @@ function __sincronizarEncabezadoDocumento(obj, callback){
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
         } else if((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS")||
-                  (obj.pedido.identificacion_cliente === '255' && obj.pedido.tipo_id_cliente === "AS")||
-                  (obj.pedido.identificacion_cliente === '256' && obj.pedido.tipo_id_cliente === "AS")){//Santa Soafia
+                  (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS")||
+                  (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")){//Santa Soafia
             
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
+        } else if((obj.pedido.identificacion_cliente === '900470642' && obj.pedido.tipo_id_cliente === "NIT")){//cucuta
+            
+            url = G.constants.WS().DOCUMENTOS.CUCUTA.E008;
         }
     } 
-  console.log("url ",url);
+  
+    console.log("Url envio ",url);
         
     var resultado;
     
@@ -2156,16 +2160,13 @@ function __sincronizarEncabezadoDocumento(obj, callback){
         observacion:obj.observacion,    
         documentoId:obj.documentoId
     };
-    obj.error = false;
-    
+    obj.error = false; 
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
-console.log(">>>>>>>>>>>>>>>>>bodegasMovimientoTmp>>>>>>>>>>>>>>>>>>>>>");
         return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
-console.log("cabecera result >>>>>>",result);
         obj.resultadoEncabezado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
            throw {msj:/*result.return.descripcion["$value"]*/"Se ha generado un error sincronizando el documento", status:403, obj:{}}; 
@@ -2181,27 +2182,17 @@ console.log("cabecera result >>>>>>",result);
         callback(false, obj);
         
     }).fail(function(err) {
-        console.log("cabecera errerr >>>>>>",err);
         obj.error = true;
         obj.tipo = '0';
-        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>> error __sincronizarEncabezadoDocumento ", err);
+        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){            
             callback(err);
         });
     }).done();
 }
 
 function __sincronizarDetalleDocumento(obj, callback){
-//    var producto = obj.detalle[0];
     var def = G.Q.defer();  
     obj.error = false;
-    
-//    if(!producto){
-//        callback(false);
-//        return;
-//    }
-    
-    //var url = (obj.tipoPedido === 1)? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
     var url = "";
     var soloPrecioVenta = true;
     
@@ -2211,7 +2202,7 @@ function __sincronizarDetalleDocumento(obj, callback){
         
     } else {
         
-        if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
+        if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena 
             url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
             soloPrecioVenta = false;
 
@@ -2220,10 +2211,13 @@ function __sincronizarDetalleDocumento(obj, callback){
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
         } else if((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS")||
-                  (obj.pedido.identificacion_cliente === '255' && obj.pedido.tipo_id_cliente === "AS")||
-                  (obj.pedido.identificacion_cliente === '256' && obj.pedido.tipo_id_cliente === "AS")){//Santa Soafia
+                  (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS")||
+                  (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")){//Santa Soafia
             
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
+        } else if((obj.pedido.identificacion_cliente === '900470642' && obj.pedido.tipo_id_cliente === "NIT")){//cucuta
+            
+            url = G.constants.WS().DOCUMENTOS.CUCUTA.E008;
         }
     }
    
@@ -2255,20 +2249,14 @@ function __sincronizarDetalleDocumento(obj, callback){
      "productos": productos
  };
  
- console.log(">>>>>>>>>>__sincronizarDetalleDocumento22  >>>>>>>>>>>>>>>>>>",JSON.stringify(detalle));
-
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
         return G.Q.ninvoke(client, "bodegasMovimientoTmpD",detalle);
     }).
     spread(function(result,raw,soapHeader){
-console.log("result detalle ",result);
-console.log("result raw ",raw);
-console.log("result soapHeader ",soapHeader);
         obj.resultadoDetalle = result.return.descripcion["$value"];
         obj.error = false;
         
-        console.log("Duana obj.resultadoDetalle :: ",obj.resultadoDetalle);
         //Asi fallen los productos se debe continuar con el proceso
         if(!result.return.estado["$value"]){
            //throw {msj:"Resultado sincronización: "+result.return.descripcion["$value"], status:403, obj:{}}; 
@@ -2278,13 +2266,9 @@ console.log("result soapHeader ",soapHeader);
         def.resolve();
         
     }).fail(function(err) {
-        console.log(">>>>>>>>>>>>>>>>error generado __sincronizarDetalleDocumento ", err);
         callback(err);
     }).
     done(function(){
-        /* console.log("finally de >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> __sincronizarDetalleDocumento ", obj.parametros, url);
-       console.log("resultado detalle ", obj.resultadoDetalle);
-       console.log("***************************************************************************");*/
        obj.tipo = '1';
        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).then(function(){
            obj.detalle.splice(0,1);

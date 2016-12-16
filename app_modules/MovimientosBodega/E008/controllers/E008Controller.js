@@ -2195,6 +2195,8 @@ function __sincronizarDetalleDocumento(obj, callback){
     obj.error = false;
     var url = "";
     var soloPrecioVenta = true;
+    var producto = obj.detalle[0];
+    var def = G.Q.defer();  
     
         //Clinica Rey David
     if(parseInt(obj.tipoPedido) !== 1){

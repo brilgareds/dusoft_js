@@ -1,46 +1,466 @@
-<div class="container">       
-    <div id="loginbox"  class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
-        <div class="panel panel-primary" >
-            <div class="panel-heading">
-                <div class="panel-title">Dusoft - Iniciar Sesion</div>
-                <div style="float:right; font-size: 80%; position: relative; top:-17px;"><a href="#recuperarContrasenia" style="color: #fff">Olvidó Contraseña?</a></div>
-            </div>     
-              <form id="loginform" class="form-horizontal" name="loginform" role="form">
-                <div style="padding-top:30px" class="panel-body" >
+    <div  id="inicio" login-directive>
 
-                    <alert type="danger"  class="col-sm-12 alert alert-danger" ng-show="mostrarmensaje">{{msgerror}}</alert>
+        <!--INICIO NAV-->
+        <nav id="mainNav" class="navbar navbar-fixed-top nnav" >
 
-                    <div class="col-xs-6 col-sm-6 col-md-6 separator social-login-box" style="width: 200px; height: 116px; position: relative;"> <br />
-                        <img src="/images/Very-Basic-Lock-icon.png" style="position: absolute; top: -11px;">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only" style="color: white;">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                    </button>
+                    <img src="../../images/login/box_login.png" class="logoNav" /><a class="navbar-brand page-scroll" href="#page-top" style="color: white;">Dusoft</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="navbar-collapse collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right" >
+                        <li class="listasli">
+                            <a class="page-scroll"  href="#" >Nuestras App</a>
+                        </li>
+
+                        <li class="listasli">
+                            <a class="page-scroll" href="#">Manuales</a>
+                        </li>
+                        <li class="listasli">
+                            <a href="#" ng-click="abrirVentanaLogin()" >Iniciar Sesion</a>
+
+                        </li>
+
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+
+
+
+
+
+
+
+        <!-- INICIO SLIDER-->
+        <div>   
+            
+            <div  id="slides_control">
+                <div>
+                    <carousel interval="myInterval" active="true">
+                        <slide ng-repeat="slide in slides" index="$index" class="carouselSlide">
+                            <img ng-src="{{slide.image}}" style="margin:auto;">
+                            <div class="carousel-caption">
+                                <h4>{{slide.text}}</h4>
+                            </div>
+                        </slide>
+                    </carousel>
+                </div>
+                 <a id="linkSection" class="btn btn-primary btn-xl page-scroll botonmas">Ver más</a>
+            </div>
+
+            <br>
+        </div>
+
+        <br>
+
+        <!-- SECTION MISION & VISION-->
+        <section id="mision" style="background-color:#cccccc;">
+            <div class="container">
+                <div class="row">
+
+                    <div class="moto-cell  col-lg-6" >
+                        <div data-grid-type="xs" class="moto-widget moto-widget-row row-gutter-0">
+                            <div class="container-fluid">
+                                <div class="row ">
+                                    <div class="moto-cell col-xs-3">
+                                        <div class="moto-widget moto-widget-text moto-preset-default moto-spacing-top-auto moto-spacing-right-auto moto-spacing-bottom-auto moto-spacing-left-auto" >
+                                            <div>
+                                                <p  class="moto-text_system_5 sr-icons numeroMisionVision">01<br></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="moto-cell col-xs-9" >
+                                        <div class="moto-widget moto-widget-text moto-preset-default moto-spacing-top-small moto-spacing-right-auto moto-spacing-bottom-small moto-spacing-left-small" >
+                                            <div class="moto-widget-text-content">
+                                                <p class="moto-text_system_6" style="font-family: inherit; font-size: 25px; color: black;">MISION<br></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="moto-widget moto-widget-text moto-preset-default moto-spacing-top-auto moto-spacing-right-auto moto-spacing-bottom-small moto-spacing-left-small">
+                                            <div class="moto-widget-text-content moto-widget-text-editable">
+                                                <p class="moto-text_system_9" style="color: white">Somos una organización conformada por un equipo humano competente y comprometido a mejorar la calidad de vida de las personas proporcionando a nuestros clientes institucionales y comerciales medicamentos, dispositivos médicos y servicios de dispensación con oportunidad,  costo racional y altos estándares de calidad.</p>
+                                            </div>
+                                        </div>
+                                        <div class="moto-widget moto-widget-divider moto-preset-default moto-align-left moto-spacing-top-small moto-spacing-right-auto moto-spacing-bottom-large moto-spacing-left-small" >                    
+                                            <hr class="moto-widget-divider-line">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
 
-                  
 
-                        <div style="margin-bottom: 25px" class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                            <input id="login-username" name="login-username" type="text" popover-placement="right" popover="Requerido" popover-trigger="focus" required class="form-control"  placeholder="Usuario" required ng-model="usuario"  >                                        
+                    <div class="moto-cell col-lg-6">
+                        <div data-grid-type="xs" class="moto-widget moto-widget-row row-gutter-0">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="moto-cell col-xs-3">
+                                        <div class="moto-widget moto-widget-text moto-preset-default moto-spacing-top-auto moto-spacing-right-auto moto-spacing-bottom-auto moto-spacing-left-auto">
+                                            <div>
+                                                <p class="moto-text_system_5 sr-icons numeroMisionVision">02<br></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="moto-cell col-xs-9">
+                                        <div class="moto-widget moto-widget-text moto-preset-default moto-spacing-top-small moto-spacing-right-auto moto-spacing-bottom-small moto-spacing-left-small">
+                                            <div class="moto-widget-text-content moto-widget-text-editable">
+                                                <p class="moto-text_system_6" style="font-family: inherit;  font-size: 25px; color: black;">VISION<br></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="moto-widget moto-widget-text moto-preset-default moto-spacing-top-auto moto-spacing-right-auto moto-spacing-bottom-small moto-spacing-left-small">
+                                            <div class="moto-widget-text-content moto-widget-text-editable">
+                                                <p class="moto-text_system_9" style="color: white">Nos proyectamos como la organización líder en el país en la prestación de servicios de dispensación y comercialización de medicamentos y dispositivos médicos reconocida por suministrar a nuestros clientes soluciones eficientes, rentables y adaptada a sus necesidades.</p>
+                                            </div>
+                                        </div>
+                                        <div class="moto-widget moto-widget-divider moto-preset-default moto-align-left moto-spacing-top-small moto-spacing-right-auto moto-spacing-bottom-large moto-spacing-left-small">                     
+                                            <hr class="moto-widget-divider-line">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        <div style="margin-bottom: 25px" class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="login-password" popover-placement="right" popover="Requerido" popover-trigger="focus" type="password" required class="form-control"  placeholder="Contraseña" required ng-model="clave">
-                        </div>                                        
-                       
+                </div>
+            </div>
+        </section>
 
 
-                </div>    
-                <div class="panel-footer">
+        <!-- INICIO SECTION COLABORADORES-->
+        <section>
+            <div class="col-sm-12">
+                <div class="container">
                     <div class="row">
-                        <div style="margin-top:10px; padding-right:32px;" class="form-group">                         
-                            <div class="pull-right">
-                                <button id="btn-fbsignup" type="submit" class="btn btn-primary" name="btnentrar" ng-disabled="loginform.$invalid" ng-click="autenticar(usuario, clave)"><i class="icon-facebook"></i> Iniciar </button>
-                            </div>  
+                        <div class="col-lg-12 text-center">
+                            <h2 class="section-heading" style="font-family: inherit;">COLABORADORES</h2>
+                            <hr class="moto-widget-divider-line">
+
                         </div>
                     </div>
                 </div>
-            </form>  
-        </div>  
+            </div>
+
+            <div class="moto-widget moto-widget-row row-fixed">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="moto-cell col-sm-4">
+
+                            <!--IMAGEN Y DESCRIPCION-->
+                            <div data-grid-type="xs" class="moto-widget moto-widget-row row-gutter-0">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="moto-cell col-xs-3">
+                                            <div>
+
+                                                <img   src="../../images/login/tablett.jpg" class=" moto-widget-image-picture">
+                                            </div>
+                                        </div>
+
+                                        <div class="moto-cell col-xs-9">
+                                            <div style="margin-left: 17%; margin-top: 10%;">
+                                                <p class="moto-text_system_12">
+                                                    <span class="moto-color3_3 tituloSeccion">Ingenieros de desarrollo</span><br>
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--CUADRO DE MENSAJE-->
+                            <div style="background-color: #cccccc; padding: 5%; border-radius: 2%; margin-top: 3%; ">
+
+                                <div class="row">
+                                    <div class="moto-cell col-sm-3">                                            
+                                        <i class="fa fa-quote-left fa-4x"></i>
+                                    </div>
+
+                                    <div class="moto-cell col-sm-9">
+                                        <div>
+                                            <p><span class="moto-color5_5">Eduar Garcia<br>Cristian Ardila<br>Andres M Gonzalez</span>
+                                            </p>
+                                        </div>
+                                    </div>    
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="moto-cell col-sm-4">
+
+                            <!--IMAGEN Y DESCRIPCION 2-->
+                            <div data-grid-type="xs" class="moto-widget moto-widget-row row-gutter-0">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="moto-cell col-xs-3" style=" margin-top: 1%">
+                                            <div>
+                                                <img   src="../../images/login/tablett.jpg" class=" moto-widget-image-picture">
+                                            </div>
+                                        </div>
+
+                                        <div class="moto-cell col-xs-9">
+                                            <div style="margin-left: 17%; margin-top: 10%;">
+                                                <p class="moto-text_system_12">
+                                                    <span class="moto-color3_3 tituloSeccion">Ingenieros de soporte</span><br>
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--CUADRO DE MENSAJE-->
+                            <div style="background-color: #cccccc; padding: 5%; border-radius: 2%; margin-top: 3%; ">
+
+                                <div class="row">
+                                    <div class="moto-cell col-sm-3">                                            
+                                        <i class="fa fa-quote-left fa-4x"></i>
+                                    </div>
+
+                                    <div class="moto-cell col-sm-9">
+                                        <div>
+                                            <p><span class="moto-color5_5">Pedro Meneses<br>David Sanchez<br>Carlos Cordoba<br>Karen Acosta</span>
+                                            </p>
+                                        </div>
+                                    </div>    
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="moto-cell col-sm-4" >
+
+                            <!--IMAGEN Y DESCRIPCION 3-->
+                            <div data-grid-type="xs" class="moto-widget moto-widget-row row-gutter-0">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="moto-cell col-xs-3" style=" margin-top: 1%">
+                                            <div>
+
+                                                <img  src="../../images/login/tablett.jpg" class=" moto-widget-image-picture">
+                                            </div>
+                                        </div>
+
+                                        <div class="moto-cell col-xs-9">
+                                            <div style="margin-left: 17%; margin-top: 10%;">
+                                                <p class="moto-text_system_12">
+                                                    <span class="moto-color3_3 tituloSeccion">Coordinador de sistemas</span><br>
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--CUADRO DE MENSAJE-->
+                            <div style="background-color: #cccccc; padding: 5%; border-radius: 2%; margin-top: 3%; ">
+
+                                <div class="row">
+                                    <div class="moto-cell col-sm-3">                                            
+                                        <i class="fa fa-quote-left fa-4x"></i>
+                                    </div>
+
+                                    <div class="moto-cell col-sm-9">
+                                        <div>
+                                            <p><span class="moto-color5_5">Mauricio Barrios</span>
+                                            </p>
+                                        </div>
+                                    </div>    
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION BENEFICIOS-->
+        <section class="services contenido">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h2 class="section-heading" style="font-family: inherit;">BENEFICIOS</h2>
+                        <hr class="moto-widget-divider-line">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3">
+                        <div class="service-box">
+                            <div class="iconosParContenedor">
+                                <i class="fa fa-4x fa-android text-primary sr-icons iconosPar"></i>
+                                <i class="fa fa-4x fa-apple text-primary sr-icons iconosPar"></i>
+                            </div>
+
+                            <h3>Android & iOS</h3><br>
+                            <p class="text-muted">Desarrollo de  aplicaciones nativas a la medida utilizando los avances tecnologicos con el fin de prestar un mejor servicio a nuestros clientes</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <div class="service-box">
+                            <i class="fa fa-4x fa-paper-plane text-primary sr-icons iconos"></i>
+                            <h3>Envio de correos y notificaciones</h3>
+                            <p class="text-muted">Envio de correos a nuestros clientes desde la aplicacion y sistema de notificaciones en linea con el cual podemos conocer los estados de un documento en tiempo real</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <div class="service-box">
+                            <i class="fa fa-4x fa-lock text-primary sr-icons iconos"></i>
+                            <h3>Herramientas de tecnología</h3><br>
+                            <p class="text-muted">Informacion crucial de la empresa protegida con token de seguridad entre otras.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <div class="service-box">
+                            <i class="fa fa-4x fa-commenting text-primary sr-icons iconos"></i>
+                            <h3 style="text-align: center;">Chat</h3><br>
+                            <p class="text-muted">Facilitar la comunicacion con nuestros clientes por medio de chat-empresarial creado a la medida el cual se puede utilizar en dispositivos Android y IOS.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION IMAGENES-->
+        <section class="no-padding imagenescoll">
+            <div class="container-fluid ">
+                <div class="row no-gutter popup-gallery ">
+                    <div class="col-lg-4 col-sm-6 ">
+                        <a href="#" class="portfolio-box">
+                            <img src="../../images/login/portfolio/thumbnails/farmaceutica.jpg" class="img-responsive" alt="">
+                            <div class="portfolio-box-caption sectimag">
+                                <div class="portfolio-box-caption-content">
+                                    <div class="project-name ">
+                                        Manejo de inventario
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-sm-6">
+                        <a href="#" class="portfolio-box">
+                            <img src="../../images/login/portfolio/thumbnails/bodegas.jpg" class="img-responsive" alt="">
+                            <div class="portfolio-box-caption sectimag">
+                                <div class="portfolio-box-caption-content">
+
+                                    <div class="project-name">
+                                        Logistica
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-sm-6">
+                        <a href="#" class="portfolio-box">
+                            <img src="../../images/login/portfolio/thumbnails/tablet.png" class="img-responsive" alt="">
+                            <div class="portfolio-box-caption sectimag">
+                                <div class="portfolio-box-caption-content">
+
+                                    <div class="project-name">
+                                        Aplicaciones moviles
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-sm-6">
+                        <a href="#" class="portfolio-box">
+                            <img src="../../images/login/portfolio/thumbnails/teclado.jpg" class="img-responsive" alt="">
+                            <div class="portfolio-box-caption sectimag">
+                                <div class="portfolio-box-caption-content">
+
+                                    <div class="project-name">
+                                        Ingenieria de software
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-sm-6">
+                        <a href="#" class="portfolio-box">
+                            <img src="../../images/login/portfolio/thumbnails/estadisticas.jpg" class="img-responsive" alt="">
+                            <div class="portfolio-box-caption sectimag">
+                                <div class="portfolio-box-caption-content">
+
+                                    <div class="project-name">
+                                        Reportes y Estadisticas
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-sm-6">
+                        <a href="#" class="portfolio-box">
+                            <img src="../../images/login/portfolio/thumbnails/inventario.jpg" class="img-responsive" alt="">
+                            <div class="portfolio-box-caption sectimag">
+                                <div class="portfolio-box-caption-content">
+                                    <div class="project-name">
+                                        Lectores de código de barras
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECTION CONTACTANOS-->
+        <section class="contactanos">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 text-center">
+                        <h2 class="section-heading">Contáctanos</h2>
+                        <hr class="moto-widget-divider-line">
+                        <p></p>
+                    </div>
+                    <div class="col-lg-4 col-lg-offset-2 text-center">
+                        <i class="fa fa-phone fa-3x sr-contact"></i>
+                        <p>488-20-20</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <i class="fa fa-envelope-o fa-3x sr-contact"></i>
+                        <p><a style="color: blue;" href="http://www.duanaltda.com" target="_blank">www.duanaltda.com</a></p>
+                    </div>
+
+
+                </div>
+                <div>
+                    <p class="text-center" style="font-size: 13px; margin: 0 15% 0 15%">
+                        Política de Privacidad | Política de Uso | Reglamento DUMIAN MEDICAL S.A.S.
+                        Todos los usuarios de nuestros servicios en línea sujeta a la Declaración de Privacidad y acepta quedar obligado por los Términos de Servicio.
+                        © 2012 Dumian Medical S.A.S.. Todos los derechos reservados.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!--FLECHA DE SCROLL-->
+        <i class="arriba fa fa-sort-asc fa-4x"></i>
+
     </div>
-</div>
 

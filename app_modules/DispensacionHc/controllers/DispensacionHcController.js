@@ -863,7 +863,8 @@ DispensacionHc.prototype.listarTipoFormula = function(req, res){
            throw 'Consulta sin resultados';
         }
         
-    }).fail(function(err){      
+    }).fail(function(err){     
+       console.log("err controller.listarTipoFormula ", err);    
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -946,21 +947,20 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
           return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});
              
     }).then(function(resultado){ 
-       
-         console.log("TODO PENDIENTE OKJ ", resultado);                         
+                            
         if(resultado[0].numeroentrega === 0 && resultado[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
-            console.log("TODO PENDIENTE OKJ 2 ", resultado);              
+                     
             def.resolve();             
         }
-        //console.log("resultado DEBE ACTUALIZAR EL TIPO FORMULA------->>>>>>>> #1 ", resultado);
-                   
+                    
     }).then(function(resultado){
-        console.log("TODO PENDIENTE OKJ 3 ", resultado);              
+                  
         res.send(G.utils.r(req.url, 'La formula ha quedado con todos sus medicamentos pendientes', 200, {}));
         
    }) .fail(function(err){
+       console.log("err [controller.guardarTodoPendiente]:", err);    
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -1224,7 +1224,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
          
     }).fail(function(err){  
-        console.log("TERCER RESULTADO OJO #3 ", err);
+        console.log("err [Controller.realizarEntregaFormula]: ", err);
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();    
 };

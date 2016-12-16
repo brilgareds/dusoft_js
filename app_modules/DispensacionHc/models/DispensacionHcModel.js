@@ -41,7 +41,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         "a.numero_total_entregas",
                         "a.numero_entrega_actual",
                         G.knex.raw("CASE WHEN (\
-                                                SELECT distinct(usuario_id) as usuario_id \
+                                                SELECT count(distinct(usuario_id)) as usuario_id \
                                                 FROM hc_dispensacion_medicamentos_tmp \n\
                                                 WHERE evolucion_id = a.evolucion_id ) = 1 THEN '1' \n\
                                                 ELSE '0' END AS formula_en_proceso"),

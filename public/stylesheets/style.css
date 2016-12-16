@@ -798,7 +798,7 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 }
 
 .panelTitulo{
-    display:inline;
+    display:inline;    
 }
 
 .panelHeaderLogo{

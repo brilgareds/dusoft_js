@@ -172,10 +172,10 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 // se consulta el total de existencias del producto seleccionado
                                 that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, {}, function(err, stock_producto) {
 
-                                    stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
+                                    stock = (stock_producto && stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                     //Producto bloqueado por compras, stock se deja en 0 para la formula de disponible
-                                    if (stock_producto[0].estado === '0' && estadoAprobacion !== '1') {
+                                    if (stock_producto  && stock_producto[0].estado === '0' && estadoAprobacion !== '1') {
                                         stock = 0;
                                     }
                                     // Se aplica la Formula de Disponibilidad producto
@@ -209,9 +209,9 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     callback(err, {
                                         codigo_producto: codigo_producto,
                                         disponible_bodega: disponible_bodega,
-                                        estado: stock_producto[0].estado,
+                                        estado: (stock_producto) ? stock_producto[0].estado : '0',
                                         //Se regresa el stock asi el producto este inactivo.
-                                        stock: (stock_producto.length === 1) ? stock_producto[0].existencia : 0
+                                        stock: (stock_producto && stock_producto.length === 1) ? stock_producto[0].existencia : 0
                                     }
                                     );
 

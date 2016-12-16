@@ -328,9 +328,6 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
         query.where("a.usuario_id", parametros.usuario_id);
     }
     
-    /*query.orderBy("c.nombre", "ASC").limit(G.settings.limit).
-    offset((parametros.pagina - 1) * G.settings.limit);*/
-    
     query.orderBy("b.fecha_modificacion", "DESC").then(function(resultado){
         
         var parametros = {
@@ -668,21 +665,6 @@ function __insertarUsuariosEnConversacion(parametros, callback){
     }).fail(function(err){
         callback(err);
     }).done();
-    
-    
-    /*G.knex("chat_conversacion_usuarios").
-    insert({"id_conversacion":parametros.conversacionId, "usuario_id":usuario.id}).
-    then(function(resultado){
-        
-        var time = setTimeout(function(){
-            parametros.usuarios.splice(0,1);
-            __insertarUsuariosEnConversacion(parametros, callback);
-            clearTimeout(time);
-        },0);
-        
-    }).catch(function(err){
-        callback(err);       
-    });  */
 }
 
 function __insertarUsuariosEnGrupo(parametros, callback){

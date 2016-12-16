@@ -208,6 +208,7 @@ ChatController.prototype.guardarConversacion = function(req, res) {
     var that = this;
     var args = req.body.data;
     
+    console.log("usuarios >>>>>>>>>>>>>>>>>>>>> ", args.chat.usuarios);
     
     if (!args.chat  || !args.chat.usuarios || !args.chat.usuario_id ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));

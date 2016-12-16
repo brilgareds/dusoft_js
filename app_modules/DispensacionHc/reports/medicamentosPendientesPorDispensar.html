@@ -1,3 +1,5 @@
+<!--
+
 <html>
     <head>
         <title>&nbsp;</title>
@@ -41,25 +43,7 @@
                             <td  colspan="1" align="left"   >NOMBRE COMPLETO: </td>
                             <td  colspan="3" align="left"   >{{:detalle.nombres}} {{:detalle.apellidos}}</td>
                         </tr>
-                     <!--   <tr>
-                            <td  align="left">EDAD:</td>
-                            <td  align="left" >{{:detalle.edad}} &nbsp; A&Ntilde;OS </td>
-
-                            <td  colspan="1" align="left">SEXO: </td>
-                            <td  colspan="1" align="left">{{:detalle.sexo}}
-                            </td>
-                        </tr>  //-->
-                     <!--  <tr>
-                            <td  align="left">TELEFONO:</td>
-                            <td  align="left" > {{:detalle.residencia_telefono}} </td>
-
-                            <td  colspan="1" align="left">DIRECCION: </td>
-                            <td  colspan="1" align="left">{{:detalle.residencia_direccion}}</td>
-                        </tr> //-->
-                      <!--  <tr>
-                            <td  align="left">PROFESIONAL:</td>
-                            <td  align="left"  colspan="3" >  {{:profesional.tipo_id_tercero}} {{:profesional.tercero_id}}  &nbsp; - {{:profesional.nombre}} {{:profesional.descripcion}}
-                        </tr> //-->
+                     
 
                         <tr>
                             <td  align="left">TIPO FORMULA:</td>
@@ -70,7 +54,7 @@
             </tr>
         </table>
 
-    <center><h3>- Medicamento Pendientes -</h3></center><p class="normal_10AN">MEDICAMENTOS PENDIENTES</p>
+    <p class="normal_10AN">MEDICAMENTOS PENDIENTES</p>
     <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
         <table width="100%" cellspacing="2">
             <tr>
@@ -119,5 +103,116 @@
     </BODY>
 </HTML>
 
+//-->
 
+<html>
+    <head>
+        <style>
 
+            td{
+                font-size:8px;
+            }
+            
+            .title{
+                font-weight:bold;
+                font-family:"Times New Roman", Georgia, Serif;;
+                font-size:10px;
+            }
+            
+            .docInfo{
+                float:right;
+                font-size:9px;
+            }
+            
+            .footer{
+                margin-top:120px;
+                width:100%;
+            }
+            
+            .cantidad{
+                text-align:center;
+            }
+            
+            .fecha_pedido{
+                margin-left:20px;
+            }
+        </style>
+        
+        <link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css">
+        
+    </head>
+    <body>
+       
+        <br>
+        <p class="normal_10AN">DATOS FORMULA -- ENTREGA DE MEDICAMENTOS </p>
+        
+        <table class="table table-bordered" width='100%'>
+            <thead>
+                    <tr>
+                        <td  align="left" width="10%">FECHA DE REGISTRO:</td>
+                        <td  align="left" width="15%">{{:detalle.fecha_registro}}</td>
+                        <td  align="left" width="10%">FECHA DE FORMULA:</td>
+                        <td  align="left" width="15%">{{:detalle.fecha_formulacion}}</td>
+                        <td  align="right" width="45%">NUMERO DE DESPACHO:</td>
+                        <td  align="left" width="5%">{{:detalle.numero_formula }}</td>
+                    </tr>
+                    <tr>
+                        <td  align="left">IDENTIFICACION:</td>
+                        <td  align="left" > {{:detalle.tipo_id_paciente}}  {{:detalle.paciente_id}} </td>
+                        <td  colspan="1" align="left"   >NOMBRE COMPLETO: </td>
+                        <td  colspan="3" align="left"   >{{:detalle.nombres}} {{:detalle.apellidos}}</td>
+                    </tr>
+                    <tr>
+                        <td  align="left">TIPO FORMULA:</td>
+                        <td  align="left"  colspan="3" >{{:detalle.descripcion_tipo_formula}}</td> 
+                    </tr>
+            </thead>         
+        </table>
+         
+        </br>
+        
+       <table class="table table-bordered" width='100%'>
+            <thead>
+                <tr>
+                    <th width='20'  class='title'>Codigo</th>
+                    <th width='60%' class='title'>Medicamento</th>
+                    <th width='20%' class='title'>Cantidad</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                    {{for productosPendientes}}
+                    <tr>
+                        <td colspan="1">{{:codigo_medicamento}}</td>
+                        <td colspan="1" >{{:descripcion_prod}}</td>
+                        <td colspan="1" >{{:cantidad_entrega}}</td>
+                    </tr>
+                    {{/for}}
+            </tbody>
+        </table>
+        
+        
+        <table class='footer'>
+            <tr align='center'>
+                <td>
+                    
+                </td>
+                <td>
+                    _______________________________
+                </td>
+               
+            </tr>
+            <tr align='center'>
+                <td>
+                   Digitado por: {{:detalle.nombre}} 
+                </td>
+                <td>
+                   Firma del paciente
+                </td>
+               
+            </tr>
+        </table>
+           
+           
+    </body>
+</html>

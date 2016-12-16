@@ -42,13 +42,25 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         "a.numero_entrega_actual",
                         G.knex.raw("CASE WHEN (\
                                                 SELECT count(distinct(usuario_id)) as usuario_id \
-                                                FROM hc_dispensacion_medicamentos_tmp \n\
-                                                WHERE evolucion_id = a.evolucion_id ) = 1 THEN '1' \n\
-                                                ELSE '0' END AS formula_en_proceso"),
-                        G.knex.raw("CASE WHEN (\
+                                                FROM hc_dispensacion_medicamentos_tmp \
+                                                WHERE evolucion_id = a.evolucion_id) = 1 THEN (\n\
+                                            CASE WHEN (\
                                                 SELECT count(distinct(usuario_id)) as usuario_id \
                                                 FROM hc_dispensacion_medicamentos_tmp \n\
-                                                WHERE evolucion_id = a.evolucion_id ) = 0 THEN (\
+                                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+ obj.usuarioId +") = 1 THEN '0' \n\
+                                                ELSE '1' END ) \n\
+                                        WHEN (\
+                                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \
+                                                WHERE evolucion_id = a.evolucion_id) = 0 THEN '0' END AS formula_en_proceso"),
+                        G.knex.raw("CASE WHEN (\
+                                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \
+                                                WHERE evolucion_id = a.evolucion_id) = 1 THEN (\
+                                    CASE WHEN (\
+                                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+ obj.usuarioId +") = 1 THEN (\
                         CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
                                 CASE \
@@ -67,14 +79,41 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '1' THEN '3' \
                                     WHEN a.sw_pendiente = '2' THEN '4' END\
                                 ) \
-                         END ) ELSE '5' END AS estado_entrega"),
+                         END ) ELSE '5' END ) \n\
+                        WHEN (\
+                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                WHERE evolucion_id = a.evolucion_id) = 0 THEN (\
+                        CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+                            THEN (\
+                                CASE \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL OR a.sw_pendiente = '1' THEN(\
+                                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
+                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '0'\
+                                             WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN '1'\
+                                             ELSE '2' END\
+                                        )\
+                                    WHEN a.sw_pendiente = '2' THEN '4' END\
+                                )\
+                        WHEN a.sw_finalizado = '1'\
+                            THEN (\
+                                 CASE \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN '3' \
+                                    WHEN a.sw_pendiente = '1' THEN '3' \
+                                    WHEN a.sw_pendiente = '2' THEN '4' END\
+                                ) \
+                         END ) END  AS estado_entrega"),
         
         
         
                         G.knex.raw("CASE WHEN (\
                                                 SELECT count(distinct(usuario_id)) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \
+                                                WHERE evolucion_id = a.evolucion_id) = 1 THEN ( \n\
+                                    CASE WHEN (\
+                                                SELECT count(distinct(usuario_id)) as usuario_id \
                                                 FROM hc_dispensacion_medicamentos_tmp \n\
-                                                WHERE evolucion_id = a.evolucion_id ) = 0 THEN (\
+                                                WHERE evolucion_id = a.evolucion_id and usuario_id = "+obj.usuarioId +") = 1 THEN (\
                         CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
                             THEN (\
                                 CASE \
@@ -89,11 +128,34 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         WHEN a.sw_finalizado = '1'\
                             THEN (\
                                  CASE \
-                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tratamiento finalizado' \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tto finalizo' \
                                     WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \
-                        END ) ELSE 'Formula en proceso' END AS descripcion_estado_entrega"),
+                        END ) ELSE 'Proceso' END )\n\
+                         WHEN (\
+                                SELECT count(distinct(usuario_id)) as usuario_id \
+                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                WHERE evolucion_id = a.evolucion_id) = 0 THEN (\n\
+                            CASE WHEN a.sw_finalizado = '0' OR a.sw_finalizado is NULL\
+                            THEN (\
+                                CASE \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL  OR a.sw_pendiente = '1' THEN(\
+                                        CASE WHEN TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') <= TO_CHAR(now(),'YYYY-MM-DD')\
+                                         and TO_CHAR(now(),'YYYY-MM-DD') <= TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Activa'\
+                                        WHEN TO_CHAR(now(),'YYYY-MM-DD') > TO_CHAR(a.fecha_maxima_entrega,'YYYY-MM-DD') THEN 'Refrendar'\
+                                        ELSE 'Falta ' || EXTRACT(DAY FROM  a.fecha_minima_entrega - timestamp 'now()')+1 || ' Dias' END\
+                                        )\
+                                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
+                                ) \
+                        WHEN a.sw_finalizado = '1'\
+                            THEN (\
+                                 CASE \
+                                    WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tto finalizo' \
+                                    WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
+                                    WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
+                                ) \
+                        END ) END  AS descripcion_estado_entrega"),
         
                         "a.sw_pendiente as sw_estado"
                         ];
@@ -154,7 +216,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                 
     query.limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){   
-         console.log("resultado [listarFormulas]: ", resultado);
+         
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFormulas]: ", err);

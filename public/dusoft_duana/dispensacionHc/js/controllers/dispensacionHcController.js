@@ -354,19 +354,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     {field: '#Formula', width: "7%", displayName: '#Formula', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroFormula}}</p></div>'},
                      
-                    {field: '#Identificacion', width: "7%", displayName: '#Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente()}} {{ row.entity.mostrarPacientes()[0].getPacienteId()}}</p></div>'},
+                    {field: '#Identificacion', width: "8%", displayName: '#Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente()}} {{ row.entity.mostrarPacientes()[0].getPacienteId()}}</p></div>'},
 
                     {displayName: 'Paciente',   cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }}</p> </div>'},   
   
-                    {displayName: 'F.Formulacion',  width: "7%",  cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()}}</p></div>'},
+                    {displayName: 'F.Formulacion',  width: "8%",  cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()}}</p></div>'},
                         
-                    {displayName: 'F.Finalizacion',  width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()}}</p></div>'},
+                    {displayName: 'F.Finalizacion',  width: "8%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaFinalizacion()}}</p></div>'},
                     
-                    {displayName: 'F.Entrega', width: "7%",  cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()}}</p></div>'},
+                    //{displayName: 'F.Entrega', width: "7%",  cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()}}</p></div>'},
                     
-                    {displayName: '#Entregas', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()}}</p></div>'},
+                    {displayName: '#Entregas', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}} - {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()}}</p></div>'},
                     
-                     {displayName: '#Actual', width: "5%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}}</p></div>'},
+                    //{displayName: '#Actual', width: "5%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}}</p></div>'},
                      
                    {field: 'Ajuste', width: "7%", displayName: 'Ajuste',
                     cellTemplate: '<div class="col-xs-12 " > \
@@ -380,11 +380,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     /> </div>'},
                         
                         
-                    {displayName: 'Medico', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].getMedico()}}</p></div>'},
+                    //{displayName: 'Medico', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].getMedico()}}</p></div>'},
                     
-                    {displayName: 'Plan', width: "7%",   cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()}}</p></div>'},
+                    {displayName: 'Plan', width: "10%",   cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()}}</p></div>'},
                     
-                    {displayName: 'Tipo', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()}}</p></div>'},
+                    {displayName: 'Tipo', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()}}</p></div>'},
                    
                      {displayName: "Opc", width:"7%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
@@ -428,7 +428,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                   </div>'
                        },
                        
-                       {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()',  displayName: "Estado", cellClass: "txt-center",
+                       {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', width: "8%", displayName: "Estado", cellClass: "txt-center",
                         cellTemplate: "<button type='button' \n\
                                     ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
                                    <span ng-class=''></span>  {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 

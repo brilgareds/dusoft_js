@@ -89,6 +89,10 @@ div.flecha
 
 /**** Angular ****/
 
+.listasli a{
+   display:block!important;
+   color:white;
+}
 
 .tituloSeccion{
     font-size: 17px;

@@ -109,6 +109,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
             
             $scope.abrirVentanaLogin = function(){
+                console.log("abrirVentanaLogin ");
                     $scope.opts = {
                     backdrop: true,
                     backdropClick: true,

@@ -1,17 +1,44 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
-    controllers.controller('Logincontroller', ['$scope', 'Usuario', "Request", "localStorageService",
-        function($scope, Usuario, Request, localStorageService) {
+    controllers.controller('Logincontroller', ['$scope', 'Usuario', "Request", "localStorageService","$modal","AlertService",
+        function($scope, Usuario, Request, localStorageService, $modal, AlertService) {
 
             console.log("init login controller");
             $scope.usuario = "";
             $scope.clave = "";
             $scope.mostrarmensaje = false;
             $scope.ocultar_formulario = true;
+            $scope.slides = [];
+            $scope.myInterval = 5000;
+            $scope.loginform = {};
+            $scope.formularioLogin = true;
+            
+            $scope.slides.push(
+                {
+                    image: '../../images/login/imgchat.png',
+                    text: "",
+                    id: 0
+                },
+                {
+                    image: '../../images/login/imgdbodega.png',
+                    text: "",
+                    id: 1
+                },
+                {
+                    image: '../../images/login/dusoftbodega.png',
+                    text: "",
+                    id: 2
+                },
+                {
+                    image: '../../images/login/imgpedido.png',
+                    text: "",
+                    id: 3
+                }
+            );
 
-            $scope.autenticar = function() {
-                
-                if ($scope.loginform.$invalid) {
+            $scope.autenticar = function(usuario, clave) {
+                console.log("usuario ", usuario, " clave ", clave)
+                if (usuario.length === 0 || clave === 0) {
                     return;
                 }
                 
@@ -27,8 +54,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     },
                     data: {
                         login: {
-                            usuario: $scope.usuario,
-                            contrasenia: $scope.clave,
+                            usuario: usuario,
+                            contrasenia: clave,
                             device:"web"
                         }
                     }
@@ -38,6 +65,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         localStorageService.add("session", JSON.stringify(datos.obj.sesion));
                         window.location = "../home/";
                     } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", datos.msj || "Ha ocurrido un error...");
                         $scope.mostrarmensaje = true;
                         $scope.msgerror = datos.msj || "Ha ocurrido un error...";
                     }
@@ -46,8 +74,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
             
 
-            $scope.recuperarContrasenia = function() {
-                if ($scope.forgoutform.$invalid) {
+            $scope.recuperarContrasenia = function(usuario) {
+                if (usuario.length === 0) {
                     return;
                 }
 
@@ -58,12 +86,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     },
                     data: {
                         login: {
-                            usuario: $scope.usuario
+                            usuario: usuario
                         }
                     }
                 };
                 
-                console.log("usuario ", $scope.usuario);
 
                 Request.realizarRequest("/forgout", "POST", obj, function(datos) {
                     
@@ -72,11 +99,33 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         $scope.ocultar_formulario = false;
                         $scope.usuario="";
                         $scope.msj = datos.msj;
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Se ha enviado un correo con la nueva contraseña");
+                        
                     } else {
                         $scope.mostrarmensaje = true;
                         $scope.msgerror = datos.msj || "Ha ocurrido un error...";
                     }
                 });
             };
+            
+            $scope.abrirVentanaLogin = function(){
+                console.log("abrirVentanaLogin ");
+                    $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    transclude: true,   
+                    windowClass: 'contenedorLogin',
+                    templateUrl:"views/ventanaLogin.html" ,
+                    scope: $scope,
+                    controller:["$scope", "$modalInstance", function($scope, $modalInstance ){
+                        $scope.onCerrarVentana = function(){
+                            $modalInstance.close();
+                        }
+                    }]
+                };
+                var modalInstance = $modal.open($scope.opts);
+            }
         }]);
 });

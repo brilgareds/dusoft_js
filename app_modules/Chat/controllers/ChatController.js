@@ -208,6 +208,7 @@ ChatController.prototype.guardarConversacion = function(req, res) {
     var that = this;
     var args = req.body.data;
     
+    console.log("usuarios >>>>>>>>>>>>>>>>>>>>> ", args.chat.usuarios);
     
     if (!args.chat  || !args.chat.usuarios || !args.chat.usuario_id ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -362,7 +363,7 @@ ChatController.prototype.guardarMensajeConversacion = function(req, res) {
         var usuarioEnConversacion = false;
         
         for(var i in _usuarios){
-            if(args.chat.usuario_id === _usuarios[i].usuario_id){
+            if(parseInt(args.chat.usuario_id) === parseInt(_usuarios[i].usuario_id)){
                 usuarioEnConversacion = true;
                 break;
             }
@@ -388,7 +389,7 @@ ChatController.prototype.guardarMensajeConversacion = function(req, res) {
         mensajeGuardado = _mensajeGuardado;
         
         var detalle = mensajeGuardado[0];
-        detalle.id_conversacion = args.chat.id_conversacion;
+        detalle.id_conversacion = parseInt(args.chat.id_conversacion);
         return G.Q.ninvoke(that.eventChat,"onNotificarMensaje",detalle, usuarios, args.chat.usuario_id);
         
     }).then(function(){

@@ -261,9 +261,10 @@ ChatModel.prototype.guardarConversacion = function(parametros, callback) {
     G.Q.nfcall(__verificarConversacionPorUsuarios, parametros).then(function(conversacion){
         
         usuariosExistentes = (conversacion.length === 0) ? false : true; 
-        console.log("usuarios encontrados ", conversacion);
         
-        if(parametros.id_conversacion === 0 && !usuariosExistentes){
+        console.log("id conversacion ", parametros.id_conversacion, " usuarios existentens ", usuariosExistentes);
+        
+        if(parseInt(parametros.id_conversacion) === 0 && !usuariosExistentes){
             promesa = G.Q.ninvoke(that, "insertarConversacion", parametros);
         } else {
             
@@ -284,7 +285,8 @@ ChatModel.prototype.guardarConversacion = function(parametros, callback) {
         return promesa;
         
     }).then(function(resultado){
-        parametros.conversacionId = (parametros.id_conversacion === 0) ? resultado[0] : parametros.id_conversacion;
+        console.log("resultado despues de validar ", resultado);
+        parametros.conversacionId = resultado[0];
         
         if(usuariosExistentes){
             def.resolve();
@@ -327,9 +329,6 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
     if(parametros.usuario_id){
         query.where("a.usuario_id", parametros.usuario_id);
     }
-    
-    /*query.orderBy("c.nombre", "ASC").limit(G.settings.limit).
-    offset((parametros.pagina - 1) * G.settings.limit);*/
     
     query.orderBy("b.fecha_modificacion", "DESC").then(function(resultado){
         
@@ -562,6 +561,7 @@ ChatModel.prototype.modificarConversacion = function(parametros, callback) {
     G.knex("chat_conversacion").
     where('id', parametros.id_conversacion).
     update(parametros.campos).
+    returning("id").
     then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
@@ -668,21 +668,6 @@ function __insertarUsuariosEnConversacion(parametros, callback){
     }).fail(function(err){
         callback(err);
     }).done();
-    
-    
-    /*G.knex("chat_conversacion_usuarios").
-    insert({"id_conversacion":parametros.conversacionId, "usuario_id":usuario.id}).
-    then(function(resultado){
-        
-        var time = setTimeout(function(){
-            parametros.usuarios.splice(0,1);
-            __insertarUsuariosEnConversacion(parametros, callback);
-            clearTimeout(time);
-        },0);
-        
-    }).catch(function(err){
-        callback(err);       
-    });  */
 }
 
 function __insertarUsuariosEnGrupo(parametros, callback){

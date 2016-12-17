@@ -138,6 +138,37 @@
             }
         </style>
         
+        <style media="print">
+
+            td{
+                font-size:6px;
+            }
+            
+            .title{
+                font-weight:bold;
+                font-family: "Homer Simpson", cursive;
+                font-size:6px;
+            }
+            
+            .docInfo{
+                float:right;
+                font-size:5px;
+            }
+            
+            .footer{
+                margin-top:120px;
+                width:100%;
+            }
+            
+            .cantidad{
+                text-align:center;
+            }
+            
+            .fecha_pedido{
+                margin-left:20px;
+            }
+        </style>
+        
         <link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css">
         
     </head>
@@ -149,21 +180,21 @@
         <table class="table table-bordered" width='100%'>
             <thead>
                     <tr>
-                        <td  align="left" width="10%">FECHA DE REGISTRO:</td>
-                        <td  align="left" width="15%">{{:detalle.fecha_registro}}</td>
-                        <td  align="left" width="10%">FECHA DE FORMULA:</td>
-                        <td  align="left" width="15%">{{:detalle.fecha_formulacion}}</td>
-                        <td  align="right" width="45%">NUMERO DE DESPACHO:</td>
-                        <td  align="left" width="5%">{{:detalle.numero_formula }}</td>
+                        <td  align="left" width="10%"  class='title'>FECHA DE REGISTRO:</td>
+                        <td  align="left" width="15%"  class='title'>{{:detalle.fecha_registro}}</td>
+                        <td  align="left" width="10%"  class='title'>FECHA DE FORMULA:</td>
+                        <td  align="left" width="15%"  class='title'>{{:detalle.fecha_formulacion}}</td>
+                        <td  align="right" width="45%" class='title'>NUMERO DE DESPACHO:</td>
+                        <td  align="left" width="5%"   class='title'>{{:detalle.numero_formula }}</td>
                     </tr>
                     <tr>
-                        <td  align="left">IDENTIFICACION:</td>
-                        <td  align="left" > {{:detalle.tipo_id_paciente}}  {{:detalle.paciente_id}} </td>
-                        <td  colspan="1" align="left"   >NOMBRE COMPLETO: </td>
-                        <td  colspan="3" align="left"   >{{:detalle.nombres}} {{:detalle.apellidos}}</td>
+                        <td  align="left"  class='title'>IDENTIFICACION:</td>
+                        <td  align="left"  class='title'> {{:detalle.tipo_id_paciente}}  {{:detalle.paciente_id}} </td>
+                        <td  colspan="1" align="left"    class='title'>NOMBRE COMPLETO: </td>
+                        <td  colspan="3" align="left"    class='title'>{{:detalle.nombres}} {{:detalle.apellidos}}</td>
                     </tr>
                     <tr>
-                        <td  align="left">TIPO FORMULA:</td>
+                        <td  align="left"  class='title'>TIPO FORMULA:</td>
                         <td  align="left"  colspan="3" >{{:detalle.descripcion_tipo_formula}}</td> 
                     </tr>
             </thead>         

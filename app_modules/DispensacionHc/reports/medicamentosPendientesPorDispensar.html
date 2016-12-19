@@ -1,4 +1,3 @@
-<!--
 
 <html>
     <head>
@@ -19,29 +18,29 @@
         </script>
     </head>
     <body>
-        <br>
+        
         <p class="normal_10AN">DATOS FORMULA -- ENTREGA DE MEDICAMENTOS </p>
 
         <table width="100%" border ='0' >
             <tr>
                 <td align="center">
-                    <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+                    <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8px">
                         <tr >
-                            <td  align="left" width="10%">FECHA DE REGISTRO:</td>
-                            <td  align="left" width="15%">{{:detalle.fecha_registro}}</td>
+                            <td>FECHA DE REGISTRO:</td>
+                            <td>{{:detalle.fecha_registro}}</td>
                             
-                            <td  align="left" width="10%">FECHA DE FORMULA:</td>
-                            <td  align="left" width="15%">{{:detalle.fecha_formulacion}}</td>
-                            
-                            <td  align="right" width="45%">NUMERO DE DESPACHO:</td>
-                            <td  align="left" width="5%">{{:detalle.numero_formula }}</td>
+                            <td>FECHA DE FORMULA:</td>
+                            <td>{{:detalle.fecha_formulacion}}</td>
+                                  
+                            <td># DESPACHO:</td>
+                            <td>{{:detalle.numero_formula }}</td>
                         </tr>
                         <tr>
-                            <td  align="left">IDENTIFICACION:</td>
-                            <td  align="left" > {{:detalle.tipo_id_paciente}}  {{:detalle.paciente_id}} </td>
+                            <td>IDENTIFICACION:</td>
+                            <td> {{:detalle.tipo_id_paciente}}  {{:detalle.paciente_id}} </td>
 
-                            <td  colspan="1" align="left"   >NOMBRE COMPLETO: </td>
-                            <td  colspan="3" align="left"   >{{:detalle.nombres}} {{:detalle.apellidos}}</td>
+                            <td>NOMBRE : </td>
+                            <td>{{:detalle.nombres}} {{:detalle.apellidos}}</td>
                         </tr>
                      
 
@@ -55,11 +54,11 @@
         </table>
 
     <p class="normal_10AN">MEDICAMENTOS PENDIENTES</p>
-    <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+    <table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:8px">
         <table width="100%" cellspacing="2">
             <tr>
                 <td align="center">
-                    <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+                    <table width="100%" class="label" style="font-variant: small-caps; font-size:80%">
                         <tr>
                             <td><U>CODIGO</U></td>
                             <td colspan="2" ><U>MEDICAMENTO</U></td>
@@ -80,7 +79,7 @@
                 </td>
             </tr>
         </table>
-        <div align='right'>Digitado por: {{:detalle.nombre}} </div><table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+        <div align='right'>Digitado por: {{:detalle.nombre}} </div><table width="100%" class="label" border ='0' style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6px">
             <tr class="label"  valign="bottom" >
                 <td align="LEFT" height="50">________________________________________</td>
             </tr>
@@ -93,157 +92,13 @@
             </tr>
         </table>
         <br>
-        <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px">
+        <table width="100%" class="label" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:70%">
             <tr align='right'>
-                <td align="rigth" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:9px"></td>
+                <td align="rigth" style="font-family: sans_serif, Verdana, helvetica, Arial; font-size:6px"></td>
             </tr>
 
         </table>
         <div id = "btnImprimir"><input type="button" name="imprimir" value="Imprimir" onclick="imprimir()" ></div>
     </BODY>
 </HTML>
-
-//-->
-
-<html>
-    <head>
-        <style>
-
-            td{
-                font-size:10px;
-            }
-            
-            .title{
-                font-weight:bold;
-                font-family:"Times New Roman", Georgia, Serif;;
-                font-size:10px;
-            }
-            
-            .docInfo{
-                float:right;
-                font-size:9px;
-            }
-            
-            .footer{
-                margin-top:120px;
-                width:100%;
-            }
-            
-            .cantidad{
-                text-align:center;
-            }
-            
-            .fecha_pedido{
-                margin-left:20px;
-            }
-        </style>
-        
-        <style media="print">
-
-            td{
-                font-size:6px;
-            }
-            
-            .title{
-                font-weight:bold;
-                font-family: "Homer Simpson", cursive;
-                font-size:6px;
-            }
-            
-            .docInfo{
-                float:right;
-                font-size:5px;
-            }
-            
-            .footer{
-                margin-top:120px;
-                width:100%;
-            }
-            
-            .cantidad{
-                text-align:center;
-            }
-            
-            .fecha_pedido{
-                margin-left:20px;
-            }
-        </style>
-        
-        <link rel="stylesheet" href="{{:serverUrl}}stylesheets/bootstrap.min.css">
-        
-    </head>
-    <body>
-       
-        <br>
-        <p class="normal_10AN">DATOS FORMULA -- ENTREGA DE MEDICAMENTOS </p>
-        
-        <table class="table table-bordered" width='100%'>
-            <thead>
-                    <tr>
-                        <td  align="left" width="10%"  class='title'>FECHA DE REGISTRO:</td>
-                        <td  align="left" width="15%"  class='title'>{{:detalle.fecha_registro}}</td>
-                        <td  align="left" width="10%"  class='title'>FECHA DE FORMULA:</td>
-                        <td  align="left" width="15%"  class='title'>{{:detalle.fecha_formulacion}}</td>
-                        <td  align="right" width="45%" class='title'>NUMERO DE DESPACHO:</td>
-                        <td  align="left" width="5%"   class='title'>{{:detalle.numero_formula }}</td>
-                    </tr>
-                    <tr>
-                        <td  align="left"  class='title'>IDENTIFICACION:</td>
-                        <td  align="left"  class='title'> {{:detalle.tipo_id_paciente}}  {{:detalle.paciente_id}} </td>
-                        <td  colspan="1" align="left"    class='title'>NOMBRE COMPLETO: </td>
-                        <td  colspan="3" align="left"    class='title'>{{:detalle.nombres}} {{:detalle.apellidos}}</td>
-                    </tr>
-                    <tr>
-                        <td  align="left"  class='title'>TIPO FORMULA:</td>
-                        <td  align="left"  colspan="3" >{{:detalle.descripcion_tipo_formula}}</td> 
-                    </tr>
-            </thead>         
-        </table>
-         
-        </br>
-        
-       <table class="table table-bordered" width='100%'>
-            <thead>
-                <tr>
-                    <th width='20'  class='title'>Codigo</th>
-                    <th width='60%' class='title'>Medicamento</th>
-                    <th width='20%' class='title'>Cantidad</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                    {{for productosPendientes}}
-                    <tr>
-                        <td colspan="1">{{:codigo_medicamento}}</td>
-                        <td colspan="1" >{{:descripcion_prod}}</td>
-                        <td colspan="1" >{{:cantidad_entrega}}</td>
-                    </tr>
-                    {{/for}}
-            </tbody>
-        </table>
-        
-        
-        <table class='footer'>
-            <tr align='center'>
-                <td>
-                    
-                </td>
-                <td>
-                    _______________________________
-                </td>
-               
-            </tr>
-            <tr align='center'>
-                <td>
-                   Digitado por: {{:detalle.nombre}} 
-                </td>
-                <td>
-                   Firma del paciente
-                </td>
-               
-            </tr>
-        </table>
-           
-           
-    </body>
-</html>
+ 

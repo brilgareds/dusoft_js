@@ -35,17 +35,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                           }    
                        };  
                dispensacionHcService.consultarMovimientoFormulasPaciente(obj,function(data){
-
+                   
                    if(data.status === 200){ 
+                        
+                        if(data.obj.consultar_movimiento_formula_paciente.length> 0){
+                            $scope.listaMovimientoFormulasPaciente = dispensacionHcService.renderListarMovimientoFormulasPaciente(data.obj);
+                        }else{
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "No se registran movimientos"); 
+                        }
+                        
+                    }else{                         
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                    }
 
-                       $scope.listaMovimientoFormulasPaciente = dispensacionHcService.renderListarMovimientoFormulasPaciente(data.obj);
-                       
-                   }else{                         
-                      AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
-                   }
 
-
-               });   //dispensacionMovimientoFormulasPaciente
+               });    
 
 
            };

@@ -3376,7 +3376,7 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
         parametros.filtros, 
         parametros.filtroAvanzado)
         .then(function(resultado){
-            //rowCount = 1;
+            
                 console.log("producto.cantidad_solicitada ", producto.cantidad_solicitada);
                 console.log("producto.codigo_producto ", producto.codigo_producto);
                 console.log("resultado[0].cantidad_disponible ", resultado[0].cantidad_disponible);
@@ -3494,7 +3494,8 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
     console.log("***********__validar_datos_productos_archivo_plano*************");
     
     var producto = productos[index];
-     
+    var productoUnidadMedida = "";
+    var def = G.Q.defer();
     if (!producto) {
         callback(productos_validos, productos_invalidos);
         return;
@@ -3543,7 +3544,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
         filtro,
         1, filtros, filtroAvanzado).then(function(lista_productos){
     
-        index++;
+        //index++;
       
         if (lista_productos.length === 0) {
             productos_invalidos.push(producto);
@@ -3551,24 +3552,69 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             return;
         } else {
 
-            var _producto = lista_productos[0];
+           var _producto = lista_productos[0];
             producto.codigo_producto = _producto.codigo_producto;
             producto.iva = _producto.iva;
             producto.precio_venta = _producto.precio_producto;
             producto.tipo_producto = _producto.tipo_producto_id;
-          
-            __validarPrecioReguladoPlano(that, parametros, function(valido, productoValido) {
-          
-                if (valido) {
-                    productos_validos.push(producto);
-                } else {
-                    productos_invalidos.push(producto);
-                }
-                __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-                return;
-            });
+            
+            console.log("ENTRO POR A QUI OK")
+            
+            return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros)
+        
         }
-    });
+    }).then(function(resultado){
+            console.log("NUEVO RESULTADO ",resultado);
+            
+        /**
+         * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
+        **/
+        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
+
+        if(precioVenta.valido){
+            productoUnidadMedida = producto;
+            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
+
+        }else{
+            productoUnidadMedida = producto;
+            productos_invalidos.push(producto);
+            def.resolve();
+        }
+       
+            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
+                return;
+            
+    }) .then(function(resultado) {
+        index++;
+        
+        console.log("1) resultado ", resultado)
+        if(!resultado){
+            
+            setTimeout(function() {
+                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
+            }, 0);
+            
+        } else if (resultado.length > 0 && resultado[0].valido === '1') {
+             console.log("2) resultado ", resultado)
+            productos_validos.push(productoUnidadMedida);
+
+            setTimeout(function() {
+                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
+            }, 0);
+
+        }else{
+            console.log("3) resultado ", productoUnidadMedida)
+            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
+            producto.cantidadValida = false;
+            productos_invalidos.push(productoUnidadMedida);
+
+            setTimeout(function() {
+                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
+            }, 0);
+        } 
+    }).fail(function(err){  
+    console.log("error ----->>>> ", err)    
+    }).done(); 
 };
 
 /**
@@ -3631,18 +3677,18 @@ function __validarPrecioVenta(producto, resultado, tipo) {
  *              que se adicionaran a la cotizacion a traves de un archivo plano
  *
  */
-function __validarPrecioReguladoPlano(contexto, obj, callback) {
+function __validarPrecioReguladoPlano(obj, callback) {
 
-    var that = contexto;
+    var that = this;
     var precioVenta;
     var precioRegulado;
     var precioPactado;
     var valido;
     var costoCompra;
 
-    that.m_productos.consultarPrecioReguladoProducto(obj, function(err, rows) {
+    /*that.m_productos.consultarPrecioReguladoProducto(obj, function(err, rows) {
 
-        var resultado = __validarPrecioVenta("", rows, 1)
+        var resultado = __validarPrecioVenta("", rows, 1)*/
         /*valido = true;
          precioVenta = Number(rows[0].precio_producto);
          precioRegulado = Number(rows[0].precio_regulado);
@@ -3661,8 +3707,23 @@ function __validarPrecioReguladoPlano(contexto, obj, callback) {
          }        */
 
 
-        callback(resultado.valido, rows);
-    });
+        /*callback(resultado.valido, rows);
+    });*/
+    G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', obj).then(function(resultado){
+       
+       /**
+         * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
+         */
+        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
+
+        if (precioVenta.valido) {
+            return  {resultado:resultado.valido, resultado:resultado};
+        } else {
+            throw {msj:precioVenta.msj, status:403};
+        }
+    }).fail(function(err) {
+         
+    }).done();
 }
 
 

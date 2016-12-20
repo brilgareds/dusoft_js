@@ -1562,8 +1562,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});   
     }).then(function(resultado){ 
-        
-         console.log("TODO PENDIENTE VALIDAR ", resultado);
+         
          if(resultado[0].numeroentrega === 1 && resultado[0].sw_pendiente === 2){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
@@ -1575,7 +1574,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
         
     }).fail(function(err){ 
-     console.log("TERCER RESULTADO OJO #3 ", err);
+     console.log("err [realizarEntregaFormulaPendientes]: ", err);
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done(); 
 };

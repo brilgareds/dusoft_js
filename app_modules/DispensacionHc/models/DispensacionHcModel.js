@@ -265,7 +265,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientesDispensados = function
       callback(false, resultado);
     }).catch(function(err){         
          console.log("err [listarMedicamentosPendientesDispensados]: ", err);
-      callback(err)
+      callback(err);
     });            
 };
  
@@ -516,7 +516,7 @@ DispensacionHcModel.prototype.listarUltimaDispensacionFormula = function(obj,cal
                      .where(G.knex.raw("entrega.fecha_entrega ilike '%'||(SELECT fecha_ultima_entrega FROM dispensacion_estados WHERE evolucion_id = "+obj.evolucionId+")||'%'"));
                         
         query.then(function(resultado){    
-            console.log(" resultado [listarUltimaDispensacionFormula]: ", resultado);
+             
         callback(false, resultado);
      
         }).catch(function(err){        
@@ -906,7 +906,7 @@ DispensacionHcModel.prototype.listarMedicamentosPendientes = function(obj,callba
             callback(false, resultado)
         }).catch(function(err){        
             console.log("err [listarMedicamentosPendientes]: ", err);
-            callback(err)
+            callback(err);
         });  
 };
 
@@ -1737,8 +1737,7 @@ DispensacionHcModel.prototype.profesionalFormula = function(obj,callback){
 DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(obj,callback){
  
     var campo = "";
-    //console.log("parametros ", parametros);
-   
+    
     if(obj.estado === 0){
         campo = "sw_estado";
     }else{
@@ -1762,7 +1761,7 @@ DispensacionHcModel.prototype.consultarProductosTodoPendiente = function(obj,cal
         callback(false, resultado)
     }).catch(function(err){   
         console.log("err [consultarProductosTodoPendiente]: ", err);
-        callback(err)
+        callback(err);
     });   
 };
 /**
@@ -3149,7 +3148,7 @@ function __insertarTemporalFarmacia(producto, transaccion, callback) {
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){ 
-           console.log("resultado [__insertarTemporalFarmacia]: ****// ", resultado);
+           
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarTemporalFarmacia]: ", err);
@@ -3184,7 +3183,7 @@ function __insertarBodegasDocumentos(obj, transaccion, callback){
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){  
-        console.log("resultado [__insertarBodegasDocumentos]: ", resultado);  
+           
             callback(false, resultado);
     }).catch(function(err){
         console.log("err (/catch) [__insertarBodegasDocumentos]: ", err);         

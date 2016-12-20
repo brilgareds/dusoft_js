@@ -404,7 +404,9 @@ define(["angular", "js/controllers",
                     //setPrecioVentaAnterior 1101E0740001
                     producto.setContrato(data.contrato);
                     producto.set_cantidad_disponible(data.cantidad_disponible);
-
+                    producto.setUnidadMedida(data.unidad_medida);
+                    
+                    
                     $scope.Empresa.set_productos(producto);
                     
                 });
@@ -441,7 +443,11 @@ define(["angular", "js/controllers",
              */
             $scope.solicitar_producto = function(producto) {
                       
-               
+              console.log("******************************************"); 
+              console.log("******************************************"); 
+              console.log("******************************************"); 
+              console.log("******************************************");
+              console.log("solicitar producto ", producto);
             if(producto.precio_venta > 0){
                 /*  var val = producto.precio_venta;
                  /*   var clean = val.replace(/[^0-9\.]/g, '');

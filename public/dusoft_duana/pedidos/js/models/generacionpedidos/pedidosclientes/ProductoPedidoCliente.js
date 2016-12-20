@@ -24,6 +24,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.precioVentaIva = 0;
                 this.cantidadPendiente = 0;
                 this.cantidadPendienteDespachar = 0;
+                this.unidadMedida = 0;
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
@@ -265,6 +266,21 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoPedidoCliente.prototype.get_valor_total_con_iva = function() {
                 return this.valor_total_con_iva;
+            };
+            
+            
+            /**
+             * +Descripcion Funcion encargada de settear la unidad de medica de 
+             *              un producto
+             */
+            ProductoPedidoCliente.prototype.setUnidadMedida = function(unidadMedida) {
+                this.unidadMedida = unidadMedida;
+                return this;
+            };
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.getUnidadMedida = function() {               
+                return this.unidadMedida;
             };
 
             return this;

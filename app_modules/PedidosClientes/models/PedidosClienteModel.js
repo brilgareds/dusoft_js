@@ -1247,6 +1247,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 b.estado,\
                 c.costo_ultima_compra,\
                 CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
+                ,b.unidad_medida\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
@@ -1294,7 +1295,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).then(function(resultado) {
-            
+            console.log("resultado [listar_productos]: >> ", resultado);
         callback(false, resultado);
     }). catch (function(err) {
             console.log("err [listar_productos]: ", err);

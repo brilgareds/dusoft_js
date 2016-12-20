@@ -1182,6 +1182,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 parametros["5"] = '%' + termino_busqueda + '%';
             }else{
                 filtroProducto = "AND (a.codigo_producto = :5)";
+                console.log("filtroProducto ", filtroProducto);
                 parametros["5"] = termino_busqueda;
             }
              //console.log("EL ARREGLO ", filtros.numero[0]);
@@ -1295,7 +1296,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).then(function(resultado) {
-            console.log("resultado [listar_productos]: >> ", resultado);
+            //console.log("resultado [listar_productos]: >> ", resultado);
         callback(false, resultado);
     }). catch (function(err) {
             console.log("err [listar_productos]: ", err);

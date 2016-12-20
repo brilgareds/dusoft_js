@@ -623,7 +623,16 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         "tercero_id":cotizacion.cliente.id
     };
     
-    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function(tercero) {
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
+            .then(function(resultado) {
+        
+        if (resultado.length > 0 && resultado[0].valido === '1') {
+            return G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj);
+        }else {
+            throw {msj:"La cantidad no corresponde a la unidad de medida", status:403};          
+        }
+
+    }).then(function(tercero) {
        
         if(tercero[0].tipo_bloqueo_id !== '1'){
             throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:403};
@@ -2023,8 +2032,17 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         tipo: '1',
         pendiente: 0
     };
+    
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
+            .then(function(resultado) {
+        
+        if (resultado.length > 0 && resultado[0].valido === '1') {
+            return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros);
+        }else {
+            throw "La cantidad no corresponde a la unidad de medida";          
+        }
 
-    G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function(resultado) {
+    }).then(function(resultado) {
 
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
@@ -3335,13 +3353,17 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
 function __disponibilidadProductos(that, index, productos,parametros, callback) {
    
     var producto = productos[index];   
-        
+    var def = G.Q.defer();   
+    var productoUnidadMedida = "";
     if (!producto) {       
         
         callback(false,productosSinDisponible);//rowCount  
         return;                     
     }  
-                                           
+    console.log(" ***** __disponibilidadProductos *******");                                       
+    console.log(" ***** __disponibilidadProductos *******");                                       
+    console.log(" ***** __disponibilidadProductos *******");
+    
      parametros.filtro.termino_busqueda =  producto.codigo_producto;           
     
      G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
@@ -3352,27 +3374,66 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
         parametros.filtro,
         parametros.pagina,
         parametros.filtros, 
-        parametros.filtroAvanzado).then(function(resultado){
+        parametros.filtroAvanzado)
+        .then(function(resultado){
             //rowCount = 1;
-            if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){                          
+                console.log("producto.cantidad_solicitada ", producto.cantidad_solicitada);
+                console.log("producto.codigo_producto ", producto.codigo_producto);
+                console.log("resultado[0].cantidad_disponible ", resultado[0].cantidad_disponible);
+            if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){   
+                productoUnidadMedida = resultado[0];
                 resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                 productosSinDisponible.push(resultado[0]);           
-                          
+                def.resolve();     
             }else{
                 resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
-                productosDisponibles.push(resultado[0]);               
+                productoUnidadMedida = resultado[0];
+                //productosDisponibles.push(resultado[0]); 
+                return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
+
             }
             
             
-         }).fail(function(err){      
+         })                                                         
+                 
+        .then(function(resultado){
+            
+            console.log("resultado [__disponibilidadProductos]: ", resultado);
+            index++;  
+        
+            if(!resultado){
+
+                setTimeout(function() {
+                    __disponibilidadProductos(that, index, productos,parametros, callback);
+                }, 0);
+
+            } else if (resultado.length > 0 && resultado[0].valido === '1') {
+                console.log("resultado [productosSinDisponible]: ", resultado);               
+                productosDisponibles.push(productoUnidadMedida);
+                setTimeout(function() {
+                    __disponibilidadProductos(that, index, productos,parametros, callback);
+                }, 0);
+
+            } else { 
+                console.log("resultado [productosDisponibles]: ", resultado);
+                producto.mensajeError = "La cantidad ingresada no es valida para el producto";
+                producto.cantidadValida = false;
+                productosSinDisponible.push(productoUnidadMedida);
+
+                setTimeout(function() {
+                    __disponibilidadProductos(that, index, productos,parametros, callback);
+                }, 0);
+            }
+
+        }).fail(function(err){      
        }).done(); 
        //console.log("productosSinDisponible --> ", productosSinDisponible); 
              
     
-    index++;
+    /*index++;
     setTimeout(function() {
         __disponibilidadProductos(that, index, productos,parametros, callback);
-    }, 800);
+    }, 800);*/
    
 };
 
@@ -3401,6 +3462,7 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
 
                 producto.tipoProductoId = existe_producto[0].tipo_producto_id;
                 producto.descripcion = existe_producto[0].descripcion_producto;
+                producto.cantidadSolicitada = cantidad_solicitada;
                 productos_validos.push(producto);
 
             } else {

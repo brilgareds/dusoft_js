@@ -19,6 +19,7 @@ var E008Controller = function(movimientos_bodegas, m_e008, e_e008, pedidos_clien
     this.log_e008 = log_e008;
 };
 
+
 // Generar Cabecera del Documento Temporal de CLIENTES
 E008Controller.prototype.documentoTemporalClientes = function(req, res) {
 
@@ -2007,7 +2008,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
     if(args.documento_despacho.background){
         res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, {movimientos_bodegas: {}}));
     }
-    
+
     var modeloPedido = (tipoPedido === 1)? that.m_pedidos_clientes : that.m_pedidos_farmacias;
     
     G.Q.ninvoke(modeloPedido, "consultar_pedido", numeroPedido).then(function(resultado){
@@ -2017,20 +2018,33 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
         if((tipoPedido !== 1 && pedido.farmacia_id === '01') || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE") || 
            (tipoPedido === 1 && pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC") ||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")||
-           (tipoPedido === 1 && pedido.identificacion_cliente === '900228989' && pedido.tipo_id_cliente === "NIT")){
-           
+           (tipoPedido === 1 && pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS") ||
+           (tipoPedido === 1 && pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")||
+           (tipoPedido === 1 && pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")||
+           (tipoPedido === 1 && pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS")||
+           (tipoPedido === 1 && pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")){
+
            
            if(tipoPedido === 1){
-               
-                if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){
+                if((pedido.identificacion_cliente === '505' && pedido.tipo_id_cliente === "AS")){//Clinica las peñitas
                     bodega = "BD";
-                } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){
+                } else if((pedido.identificacion_cliente === '1083' && pedido.tipo_id_cliente === "CC")){//Clinica las peñitas
                     bodega = "BC";
-                }
-           }
-       
+                }else if((pedido.identificacion_cliente === '254' && pedido.tipo_id_cliente === "AS")){//santasofia
+                    bodega = "1";
+                }else if((pedido.identificacion_cliente === '258' && pedido.tipo_id_cliente === "AS")){//santasofia
+                    bodega = "2";
+                }else if((pedido.identificacion_cliente === '259' && pedido.tipo_id_cliente === "AS")){//santasofia
+                    bodega = "3";
+                }else if((pedido.identificacion_cliente === '900470642' && pedido.tipo_id_cliente === "NIT")){//cucuta
+                    bodega = "FG";
+                }else if((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE")){//cartagena
+                    bodega = "BF";
+                }              
                 
+           }
+          
+           
                 var obj = {
                       documentoId:418,
                       prefijoDocumento : prefijoDocumento,
@@ -2045,7 +2059,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
 
                  return G.Q.nfcall(__sincronizarDocumentoDespacho, obj);
         } else {
-             console.log(">>>>>>>>>>>",obj);
+             
             throw {msj:"El documento no esta parametrizado para sincronizarse", status:404,
                    obj:{documento_despacho: {}}};
         }
@@ -2055,7 +2069,7 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                     res.send(G.utils.r(req.url, 'Se ha sincronizado el documento', 200, 
                                    {movimientos_bodegas: {}}));
                 }
-
+        
     }).fail(function(err){
         console.log("error generando sincronizacion de documento ", err);
         if(!args.documento_despacho.background){
@@ -2090,7 +2104,7 @@ function __sincronizarDocumentoDespacho(obj, callback){
         return G.Q.ninvoke(obj.contexto.m_e008,"obtenerTotalDetalleDespacho",obj);
         
     }).then(function(detalle){
-        obj.detalle = detalle;        
+        obj.detalle = detalle;    
         return G.Q.nfcall(__sincronizarEncabezadoDocumento,obj);
         
     }).then(function(resultado){
@@ -2125,13 +2139,18 @@ function __sincronizarEncabezadoDocumento(obj, callback){
                   (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
+        } else if((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS")||
+                  (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS")||
+                  (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")){//Santa Soafia
             
-        }else if(obj.pedido.identificacion_cliente ==='900228989' && obj.pedido.tipo_id_cliente === "NIT"){//Santa Sofia
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",url);
+        } else if((obj.pedido.identificacion_cliente === '900470642' && obj.pedido.tipo_id_cliente === "NIT")){//cucuta
+            
+            url = G.constants.WS().DOCUMENTOS.CUCUTA.E008;
         }
     } 
-    
+  
+    console.log("Url envio ",url);
         
     var resultado;
     
@@ -2141,16 +2160,13 @@ function __sincronizarEncabezadoDocumento(obj, callback){
         observacion:obj.observacion,    
         documentoId:obj.documentoId
     };
-    obj.error = false;
-    
+    obj.error = false; 
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
-console.log(">>>>>>>>>>>>>>>>>bodegasMovimientoTmp>>>>>>>>>>>>>>>>>>>>>");
         return G.Q.ninvoke(client, "bodegasMovimientoTmp", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
-console.log("result >>>>>>",result);
         obj.resultadoEncabezado = result.return.descripcion["$value"];
         if(!result.return.estado["$value"]){
            throw {msj:/*result.return.descripcion["$value"]*/"Se ha generado un error sincronizando el documento", status:403, obj:{}}; 
@@ -2166,29 +2182,21 @@ console.log("result >>>>>>",result);
         callback(false, obj);
         
     }).fail(function(err) {
-        console.log("cabecera errerr >>>>>>",err);
         obj.error = true;
         obj.tipo = '0';
-        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>> error __sincronizarEncabezadoDocumento ", err);
+        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).finally(function(){            
             callback(err);
         });
     }).done();
 }
 
 function __sincronizarDetalleDocumento(obj, callback){
-//    var producto = obj.detalle[0];
     var def = G.Q.defer();  
     obj.error = false;
-    
-//    if(!producto){
-//        callback(false);
-//        return;
-//    }
-    
-    //var url = (obj.tipoPedido === 1)? G.constants.WS().DOCUMENTOS.CARTAGENA.E008 :G.constants.WS().DOCUMENTOS.COSMITET.E008;
     var url = "";
     var soloPrecioVenta = true;
+    var producto = obj.detalle[0];
+    var def = G.Q.defer();  
     
         //Clinica Rey David
     if(parseInt(obj.tipoPedido) !== 1){
@@ -2196,7 +2204,7 @@ function __sincronizarDetalleDocumento(obj, callback){
         
     } else {
         
-        if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena
+        if(obj.pedido.identificacion_cliente === '10490' && obj.pedido.tipo_id_cliente === "CE"){ //Cartagena 
             url = G.constants.WS().DOCUMENTOS.CARTAGENA.E008;
             soloPrecioVenta = false;
 
@@ -2204,6 +2212,14 @@ function __sincronizarDetalleDocumento(obj, callback){
                   (obj.pedido.identificacion_cliente === '505' && obj.pedido.tipo_id_cliente === "AS")){
 
             url = G.constants.WS().DOCUMENTOS.PENITAS.E008;
+        } else if((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS")||
+                  (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS")||
+                  (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")){//Santa Soafia
+            
+            url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
+        } else if((obj.pedido.identificacion_cliente === '900470642' && obj.pedido.tipo_id_cliente === "NIT")){//cucuta
+            
+            url = G.constants.WS().DOCUMENTOS.CUCUTA.E008;
         }
     }
    
@@ -2235,8 +2251,6 @@ function __sincronizarDetalleDocumento(obj, callback){
      "productos": productos
  };
  
- console.log(">>>>>>>>>>__sincronizarDetalleDocumento22  >>>>>>>>>>>>>>>>>>",JSON.stringify(detalle));
-
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
         return G.Q.ninvoke(client, "bodegasMovimientoTmpD",detalle);
@@ -2245,7 +2259,6 @@ function __sincronizarDetalleDocumento(obj, callback){
         obj.resultadoDetalle = result.return.descripcion["$value"];
         obj.error = false;
         
-        console.log("Duana obj.resultadoDetalle :: ",obj.resultadoDetalle);
         //Asi fallen los productos se debe continuar con el proceso
         if(!result.return.estado["$value"]){
            //throw {msj:"Resultado sincronización: "+result.return.descripcion["$value"], status:403, obj:{}}; 
@@ -2255,13 +2268,9 @@ function __sincronizarDetalleDocumento(obj, callback){
         def.resolve();
         
     }).fail(function(err) {
-        console.log(">>>>>>>>>>>>>>>>error generado __sincronizarDetalleDocumento ", err);
         callback(err);
     }).
     done(function(){
-        /* console.log("finally de >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> __sincronizarDetalleDocumento ", obj.parametros, url);
-       console.log("resultado detalle ", obj.resultadoDetalle);
-       console.log("***************************************************************************");*/
        obj.tipo = '1';
        G.Q.ninvoke(obj.contexto.log_e008, "ingresarLogsSincronizacionDespachos", obj).then(function(){
            obj.detalle.splice(0,1);

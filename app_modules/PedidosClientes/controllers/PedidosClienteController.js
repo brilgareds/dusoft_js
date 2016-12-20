@@ -401,7 +401,8 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
         laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
         numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
-        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido,
+        filtro_producto: 0
     };
 
 
@@ -2828,7 +2829,8 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
         laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
         numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
-        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido,
+        filtro_producto: 0
     };
 
      var filtroAvanzado = {
@@ -2956,7 +2958,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
 
-            throw  'Error actualizando la observacion de cartera';
+            throw  'Error actualizando la observacion de cartera';  
             return;
 
         }
@@ -2965,10 +2967,10 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
-         *              se procede a registrarlo, de lo contrario solo lo actualizara
+         *              se procede a registrarlo, de lo contrario solo lo actualizara  
          */
 
-        if (estado_pedido === 1) { //estado_pedido = 4
+        if (estado_pedido === 1) { //estado_pedido = 4  
 
             if (resultado.length === 1) {
                 return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogAutorizarPedido);
@@ -3280,7 +3282,8 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
         laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
         numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
-        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido,
+        filtro_producto: 1
     };
 
      var filtroAvanzado = {
@@ -3444,7 +3447,8 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
         termino_busqueda: producto.codigo_producto,
         laboratorio_id: (cotizacion.laboratorio_id === undefined) ? '' : cotizacion.laboratorio_id,
         numero_cotizacion: (cotizacion.numero_cotizacion === undefined) ? '' : cotizacion.numero_cotizacion,
-        numero_pedido: (cotizacion.numero_pedido === undefined) ? '' : cotizacion.numero_pedido
+        numero_pedido: (cotizacion.numero_pedido === undefined) ? '' : cotizacion.numero_pedido,
+        filtro_producto: 0
     };
 
     var filtroAvanzado = {

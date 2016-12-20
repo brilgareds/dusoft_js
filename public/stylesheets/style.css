@@ -43,9 +43,8 @@ body{
 
 .bodybg{
 
-    background-image:url(../images/lock.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-image:url(../images/login/fondo.jpg);
+    background-repeat: repeat;
 }
 
 
@@ -790,6 +789,38 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 
 .highlightedText {
     background: yellow;
+}
+
+
+.logoNav, .logoNavPanel{
+    width: 40px;
+    display: inline;
+    float: left;
+    margin-right: 5px;
+    padding: 5px;
+}
+
+.panelTitulo{
+    display:inline;    
+}
+
+.panelHeaderLogo{
+   padding: 1px 7px 1px 7px;
+}
+
+.mensajePaginaAutorizacion{
+    font-size: 21px;
+}
+
+.logoNavPanel{
+    float:none;
+    width: 37px;
+}
+
+.imgNoAutorizado{
+    width: 150px;
+    top: -23px;
+    position: absolute
 }
 
 /*

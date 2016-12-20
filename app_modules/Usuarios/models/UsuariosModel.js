@@ -65,7 +65,7 @@ UsuariosModel.prototype.obtenerUsuarioPorLogin = function(login, callback) {
     var sql = "SELECT * FROM system_usuarios a where a.usuario = :1; ";
     
     G.knex.raw(sql, {1:login}).then(function(resultado){
-        callback(false, (resultado.rows.length > 0) ? resultado.rows[0] : null);
+        callback(false, (resultado.rows.length > 0) ? resultado.rows : null);
 
     }).catch(function(err){
         callback(err);
@@ -78,9 +78,11 @@ UsuariosModel.prototype.cambiar_contrasenia = function(usuario, contrasenia, cal
     var sql = "UPDATE system_usuarios SET passwd=MD5( :2 ) WHERE usuario = :1";
     
     G.knex.raw(sql, {1:usuario, 2:contrasenia}).then(function(resultado){
-        callback(false, resultado.rows);
+        console.log("resultaod ", resultado,  resultado.rows);
+        callback(false, resultado);
 
     }).catch(function(err){
+        console.log("error al cambiar clave ", err);
         callback(err);
     });
 };

@@ -18,11 +18,27 @@ requirejs.config({
         tree:"../../../../javascripts/jstree",
         loader:"../includes/loader/loader",
         storage:"../../javascripts/angular/storage",
-        httpinterceptor:"../includes/http/HttpInterceptor"
+        httpinterceptor:"../includes/http/HttpInterceptor",
+        jqueryEasing:"../../javascripts/jquery-easing",
+        animate:"../../javascripts/animate"
+        //creative:"../../javascripts/creative",
+        //scrollReveal:"../../javascripts/scrollreveal"
     },
     shim: {
         "angular": {
             exports: "angular"
+        },
+        "jqueryEasing":{
+            deps:["jquery", "bootstrapjs"]
+        },
+       /* "scrollReveal":{
+            deps:["jquery", "jqueryEasing"]
+        },
+        "creative":{
+            deps:["scrollReveal"]
+        },*/
+        "animate":{
+            deps:["angular"]
         },
         "route": {
             deps: ["angular"]

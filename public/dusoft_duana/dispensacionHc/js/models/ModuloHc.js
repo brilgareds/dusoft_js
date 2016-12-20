@@ -11,8 +11,8 @@ define(["angular", "js/models", "includes/classes/Modulo"], function (angular, m
             
             ModuloHc.prototype = Object.create(Modulo.getClass().prototype);
             
-            ModuloHc.prototype.agregarEntregas = function(formula){
-                this.entregas.push(formula);
+            ModuloHc.prototype.agregarEntregas = function(entrega){
+                this.entregas.push(entrega);
              };
              
              ModuloHc.prototype.mostrarEntregas = function(){

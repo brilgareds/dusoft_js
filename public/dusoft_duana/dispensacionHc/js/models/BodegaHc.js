@@ -12,8 +12,8 @@ define(["angular", "js/models", "includes/classes/Bodega"], function (angular, m
             BodegaHc.prototype = Object.create(Bodega.getClass().prototype);
             
             
-            BodegaHc.prototype.agregarUsuarios = function(producto){
-                this.usuarios.push(producto);
+            BodegaHc.prototype.agregarUsuarios = function(usuario){
+                this.usuarios.push(usuario);
              };
              
              BodegaHc.prototype.mostrarUsuarios = function(){

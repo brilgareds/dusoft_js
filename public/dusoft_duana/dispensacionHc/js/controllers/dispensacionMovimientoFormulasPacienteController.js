@@ -22,21 +22,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             *              de formulas del paciente
             * @fecha 2016/12/02 YYYY/MM/DD
             */
-           that.consultarMovimientoFormulasPaciente = function(){                        
+            that.consultarMovimientoFormulasPaciente = function(){                        
 
-               var obj = {                   
+                var obj = {                   
                            session: $scope.session,
                            data: {
                               consultar_movimiento_formula_paciente: {
                                    tipoIdPaciente:detallePaciente.tipoIdPaciente,
                                    pacienteId: detallePaciente.pacienteId,
 
-                              }
-                          }    
-                       };  
-               dispensacionHcService.consultarMovimientoFormulasPaciente(obj,function(data){
+                                }
+                            }    
+                        };  
+                dispensacionHcService.consultarMovimientoFormulasPaciente(obj,function(data){
                    
-                   if(data.status === 200){ 
+                    if(data.status === 200){ 
                         
                         if(data.obj.consultar_movimiento_formula_paciente.length> 0){
                             $scope.listaMovimientoFormulasPaciente = dispensacionHcService.renderListarMovimientoFormulasPaciente(data.obj);
@@ -47,19 +47,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }else{                         
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
                     }
-
-
-               });    
-
-
-           };
+                });    
+            };
            
            
            /**
             * +Descripcion Se visualiza la tabla con todas las aprobaciones
             *              por parte del personal de seguridad
             */
-          $scope.listaMovimientoFormulaPaciente = {
+            $scope.listaMovimientoFormulaPaciente = {
               data: 'listaMovimientoFormulasPaciente',
               enableColumnResize: true,
               enableRowSelection: false,
@@ -92,8 +88,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-
-
             callback();
         };
                   

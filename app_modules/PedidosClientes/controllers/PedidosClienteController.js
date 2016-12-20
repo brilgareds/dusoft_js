@@ -774,10 +774,19 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
          *               4 activo (desaprobado por cartera)
          */
         if (resultado[0].estado === '1' || resultado[0].estado === '4') {
-
-            return  G.Q.ninvoke(that.m_pedidos_clientes, 'modificar_detalle_cotizacion', cotizacion, producto);
+            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
+            
         } else {
             throw 'La cotizacion debe encontrarse activa o desaprobada por cartera';
+        }
+
+    }).then(function(resultado) {
+        console.log("VALIDAR UNIDAD DE MEDIDA")
+        if (resultado.length > 0 && resultado[0].valido === '1') {
+            return  G.Q.ninvoke(that.m_pedidos_clientes, 'modificar_detalle_cotizacion', cotizacion, producto);
+            
+        }else {
+            throw  "La cantidad no corresponde a la unidad de medida";          
         }
 
     }).then(function(resultado) {
@@ -2675,10 +2684,20 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
          *               estado_pedido (Estado de solicitud ) 0
          */
         if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
+            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
+ 
         } else {
             throw ("El pedido debe estar activo o para autorizar nuevamente por cartera");
         }
+    }).then(function(resultado){
+         
+        if (resultado.length > 0 && resultado[0].valido === '1') {
+             return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
+     
+        }else {
+            throw "La cantidad no corresponde a la unidad de medida";          
+        }
+        
     }).then(function(resultado) {
 
         if (resultado.length > 0) {
@@ -3360,10 +3379,7 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
         callback(false,productosSinDisponible);//rowCount  
         return;                     
     }  
-    console.log(" ***** __disponibilidadProductos *******");                                       
-    console.log(" ***** __disponibilidadProductos *******");                                       
-    console.log(" ***** __disponibilidadProductos *******");
-    
+   
      parametros.filtro.termino_busqueda =  producto.codigo_producto;           
     
      G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
@@ -3376,10 +3392,7 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
         parametros.filtros, 
         parametros.filtroAvanzado)
         .then(function(resultado){
-            
-                console.log("producto.cantidad_solicitada ", producto.cantidad_solicitada);
-                console.log("producto.codigo_producto ", producto.codigo_producto);
-                console.log("resultado[0].cantidad_disponible ", resultado[0].cantidad_disponible);
+             
             if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){   
                 productoUnidadMedida = resultado[0];
                 resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
@@ -3388,8 +3401,8 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
             }else{
                 resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
                 productoUnidadMedida = resultado[0];
-                //productosDisponibles.push(resultado[0]); 
-                return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
+                
+                return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
 
             }
             
@@ -3489,10 +3502,7 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
  */
 function __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback) {
 
-    console.log("***********__validar_datos_productos_archivo_plano*************");
-    console.log("***********__validar_datos_productos_archivo_plano*************");
-    console.log("***********__validar_datos_productos_archivo_plano*************");
-    
+     
     var producto = productos[index];
     var productoUnidadMedida = "";
     var def = G.Q.defer();
@@ -3557,15 +3567,13 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             producto.iva = _producto.iva;
             producto.precio_venta = _producto.precio_producto;
             producto.tipo_producto = _producto.tipo_producto_id;
-            
-            console.log("ENTRO POR A QUI OK")
+             
             
             return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros)
         
         }
     }).then(function(resultado){
-            console.log("NUEVO RESULTADO ",resultado);
-            
+             
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
         **/
@@ -3586,8 +3594,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             
     }) .then(function(resultado) {
         index++;
-        
-        console.log("1) resultado ", resultado)
+         
         if(!resultado){
             
             setTimeout(function() {
@@ -3595,7 +3602,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             }, 0);
             
         } else if (resultado.length > 0 && resultado[0].valido === '1') {
-             console.log("2) resultado ", resultado)
+             
             productos_validos.push(productoUnidadMedida);
 
             setTimeout(function() {
@@ -3603,7 +3610,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             }, 0);
 
         }else{
-            console.log("3) resultado ", productoUnidadMedida)
+           
             producto.mensajeError = "La cantidad ingresada no es valida para el producto";
             producto.cantidadValida = false;
             productos_invalidos.push(productoUnidadMedida);
@@ -3613,7 +3620,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             }, 0);
         } 
     }).fail(function(err){  
-    console.log("error ----->>>> ", err)    
+    console.log("error[__validar_datos_productos_archivo_plano]: ", err)    
     }).done(); 
 };
 
@@ -3668,62 +3675,6 @@ function __validarPrecioVenta(producto, resultado, tipo) {
     }
 
     return {valido: valido, msj: msj}
-}
-
-/**
- * @author Cristian Ardila
- * @fecha  04/04/2016
- * +Descripcion Metodo encargado de consultar el precio regulado de los productos
- *              que se adicionaran a la cotizacion a traves de un archivo plano
- *
- */
-function __validarPrecioReguladoPlano(obj, callback) {
-
-    var that = this;
-    var precioVenta;
-    var precioRegulado;
-    var precioPactado;
-    var valido;
-    var costoCompra;
-
-    /*that.m_productos.consultarPrecioReguladoProducto(obj, function(err, rows) {
-
-        var resultado = __validarPrecioVenta("", rows, 1)*/
-        /*valido = true;
-         precioVenta = Number(rows[0].precio_producto);
-         precioRegulado = Number(rows[0].precio_regulado);
-         precioPactado = Number(rows[0].precio_pactado);
-         costoCompra  = Number(rows[0].costo_ultima_compra);
-
-         if(rows[0].sw_regulado ==='1'){
-         if(precioVenta > precioRegulado || precioPactado > precioRegulado){
-         valido = false;
-         }
-         }
-         if(rows[0].sw_regulado !=='1' && precioPactado ===0){
-         if(precioVenta < costoCompra){
-         valido = false;
-         }
-         }        */
-
-
-        /*callback(resultado.valido, rows);
-    });*/
-    G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', obj).then(function(resultado){
-       
-       /**
-         * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
-         */
-        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
-
-        if (precioVenta.valido) {
-            return  {resultado:resultado.valido, resultado:resultado};
-        } else {
-            throw {msj:precioVenta.msj, status:403};
-        }
-    }).fail(function(err) {
-         
-    }).done();
 }
 
 

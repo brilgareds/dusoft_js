@@ -31,7 +31,8 @@ define([
     "models/AprobacionDespacho",
     "controllers/ValidacionDespachosController",
     "controllers/ValidacionDespachoDetalleController",
-    "services/ValidacionDespachosService"
+    "services/ValidacionDespachosService",
+    "webNotification"
 ], function(angular) {
 
         /* App Module and its dependencies */
@@ -46,7 +47,8 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'nvd3ChartDirectives'
+        'nvd3ChartDirectives',
+        'angular-web-notification'
     ]);
 
     validaciondespachos.urlRouterProvider;

@@ -25,7 +25,9 @@ requirejs.config({
         httpinterceptor:"../includes/http/HttpInterceptor",
         d3:"../../javascripts/charts/d3.min",
         nvd3:"../../javascripts/charts/nv.d3.min",
-        chart:"../../javascripts/charts/angularjs-nvd3-directives.min"
+        chart:"../../javascripts/charts/angularjs-nvd3-directives.min",
+        desktopNotify:"../../javascripts/notifications/desktop-notify-min",
+        webNotification:"../../javascripts/notifications/angular-web-notification"
     },
     shim: {
         "angular": {
@@ -70,6 +72,12 @@ requirejs.config({
         },
         "chart":{
             deps:["angular","nvd3"]
+        },
+        "desktopNotify":{
+            deps:["angular"]
+        },
+        "webNotification":{
+            deps:["desktopNotify"]
         }
     }
 });

@@ -257,6 +257,7 @@ Autorizaciones.prototype.insertarAutorizacionProductos = function(req, res) {
     }
     
     G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametrosPermisos).then(function(parametrizacion){
+
         
       opciones=parametrizacion.modulosJson.productos_en_pedidos.opciones;//.sw_cambiar_estado
       

@@ -217,7 +217,9 @@ define(["angular", "js/models"], function(angular, models) {
                 return new Usuario(id, usuario, nombre);
             };
 
-
+            this.getClass = function(){
+                return Usuario;
+            };
             return this;
 
         });

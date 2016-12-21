@@ -601,8 +601,11 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 
 .app-modal-window-xlg .modal-dialog{
     width:98%;
-}
+}       
 
+.app-modal-window-ls .modal-dialog{
+    width:48%;
+}
 
 
 .chatGrid, .panelConversacion{
@@ -798,7 +801,7 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 }
 
 .panelTitulo{
-    display:inline;
+    display:inline;    
 }
 
 .panelHeaderLogo{

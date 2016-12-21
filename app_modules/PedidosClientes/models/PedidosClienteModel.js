@@ -1175,8 +1175,15 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         }
 
         if (filtros.tipo_busqueda === 2) {
-            filtroProducto = "AND (a.codigo_producto " + G.constants.db().LIKE + " :5)";
-            parametros["5"] = '%' + termino_busqueda + '%';
+            /*filtroProducto = "AND (a.codigo_producto " + G.constants.db().LIKE + " :5)";
+            parametros["5"] = '%' + termino_busqueda + '%';*/
+            if(filtro.filtro_producto === 0){
+                filtroProducto = "AND (a.codigo_producto " + G.constants.db().LIKE + " :5)";
+                parametros["5"] = '%' + termino_busqueda + '%';
+            }else{
+                filtroProducto = "AND (a.codigo_producto = :5)";
+                parametros["5"] = termino_busqueda;
+            }
              //console.log("EL ARREGLO ", filtros.numero[0]);
             if(filtros.numero[0] !== null){
                 if(filtros.tipo === 1){

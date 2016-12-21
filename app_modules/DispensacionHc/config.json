@@ -1,0 +1,32 @@
+{
+    "module": "DispensacionHc",
+    "dependency": {
+        "controllers": [{
+                "dispensacion_hc_controller": {
+                    "module": "DispensacionHc",
+                    "controller": "DispensacionHcController",
+                    "alias": "c_dispensacion_hc"
+                }
+            }],
+        "models": [{
+                "dispensacion_hc_model": {
+                    "module": "DispensacionHc",
+                    "model": "DispensacionHcModel",
+                    "alias": "m_dispensacion_hc"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+         "events": [{
+                "dispensacion_hc_events": {
+                    "module": "DispensacionHc",
+                    "event": "DispensacionHcEvents",
+                    "alias": "e_dispensacion_hc"
+                }
+            }],
+        "cronJobs": []
+    }
+}

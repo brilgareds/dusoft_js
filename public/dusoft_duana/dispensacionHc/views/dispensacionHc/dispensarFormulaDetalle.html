@@ -1,0 +1,185 @@
+
+    <div ng-controller="dispensacionHcDetalleController">
+      
+         
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <div class="pull-left">
+                            <h4 class="text-center"><strong>Informacion Formula</strong></h4>
+                        </div>
+                       
+                    </div>
+                    <div class="panel-body">                    
+                        <div class="row">
+                            
+                               
+                            <div class="col-md-3">
+
+                                 <fieldset>
+                                    <legend><strong>Documento</strong></legend> 
+                                    <div class="row">  
+                                        <div class="col-md-7" style="margin-top: -14px">                                          
+                                            <h4>
+                                                    {{root.detalleFormula[0].mostrarPacientes()[0].getTipoIdPaciente() }} {{  root.detalleFormula[0].mostrarPacientes()[0].getPacienteId() }}
+                                                </h4>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>                        
+                              <div class="col-md-3">
+
+                                 <fieldset>
+                                    <legend><strong>Paciente</strong></legend> 
+                                    <div class="row">  
+                                        <div class="col-md-7" style="margin-top: -14px">                                        
+                                             <h4>
+                                                 {{root.detalleFormula[0].mostrarPacientes()[0].getNombres() }} {{root.detalleFormula[0].mostrarPacientes()[0].getApellidos()}}
+                                             </h4>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>  
+                            
+                           <div class="col-md-2">
+
+                                 <fieldset>
+                                    <legend><strong>Fecha registro</strong></legend> 
+                                    <div class="row">  
+                                        <div class="col-md-7" style="margin-top: -14px">                                          
+                                            <h4>{{root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].getFechaRegistro()}}</h4>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>                     
+                             <div class="col-md-2">
+
+                                 <fieldset>
+                                    <legend><strong>Fecha formula</strong></legend> 
+                                    <div class="row">  
+                                        <div class="col-md-7" style="margin-top: -14px">                                          
+                                            <h4>{{root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()}}</h4>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>                       
+                            <div class="col-md-2">
+                                <fieldset>
+                                    <legend><strong>Evolucion</strong></legend> 
+                                    <div class="row">
+                                        <div class="col-md-7" style="margin-top: -14px">  
+                                            <h4>{{root.detalleFormula[0].mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()}}</h4>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                         
+                            
+                            
+                        </div>
+                        
+                                             
+                        <!-- -->
+                        <div class="row">  
+                            <div class="col-md-12">
+                                <tabset>
+                                    <tab heading="Dispensar medicamentos" >
+                                        <br>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading clearfix">
+                                                <div class="pull-center">
+                                                    <h4 class="text-center"><strong>Medicamentos solicitados</strong></h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">  
+                                            <div class="col-md-12">
+                                                
+                                                <div class="table-responsive" >
+                                                    <div class="defaultGrid grid-responsive" ng-grid="listaMedicamentosFormulados" style="clear:both; height: 350px;" > </div>
+                                               </div>
+   
+                                            </div>
+                                        </div>   
+                                    </tab>                        
+                                                              
+                                </tabset>
+                                
+                                
+                                
+                                <br>
+                                <div ng-if="medicamentosTemporales.length > '0'">
+                                
+                                        <div class="panel panel-default" >
+                                            <div class="panel-heading clearfix">
+                                                <div class="pull-center">
+                                                    <h4 class="text-center"><strong>Medicamentos temporales</strong></h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">  
+                                            <div class="col-md-12">
+                                                
+                                                <div class="table-responsive" >
+                                                    <div class="defaultGrid grid-responsive" ng-grid="listaMedicamentosTemporales" style="clear:both; height: 350px;" > </div>
+                                               </div>
+   
+                                            </div>
+                                        </div>   
+                                                         
+                                                              
+                              
+                                </div>
+                                
+                                
+                                
+                               
+                                <!--Acciones Cotizacion/ Pedido -->    
+                                <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
+                                    
+                                    
+                                     <button class="btn btn-default" ng-click="regresarListaFormulas()" >
+                                        <span class="glyphicon glyphicon-ok" ></span> volver
+                                    </button>
+                                    
+                                   
+                                    <button class="btn btn-default"  ng-click="ventanaTipoEntregaFormula(1)" ng-if="medicamentosTemporales.length > '0'">
+                                        <span class="glyphicon glyphicon-cog" ></span> Realizar entrega
+                                    </button>
+                                    
+                                     <button class="btn btn-default"  ng-click="imprimirMedicamentosPendientes()" ng-if="showBtnImprimir">
+                                        <span class="glyphicon glyphicon-cog" ></span> Imprimir pendientes
+                                    </button>
+                                    
+                                    <button class="btn btn-default"  ng-click="imprimirMedicamentosDispensados()" ng-if="showBtnImprimir">
+                                        <span class="glyphicon glyphicon-cog" ></span> Imprimir dispensados
+                                    </button>
+                                    
+                                    <button class="btn btn-default"  ng-click="ventanaRegistrarEvento()" ng-if="showBotonRegistrarEvento">
+                                        <span class="glyphicon glyphicon-cog" ></span> Registrar evento
+                                    </button>
+                                    
+                                    <button  class="btn btn-default"  ng-click="ventanaTipoEntregaFormula(2)" ng-disabled="medicamentosTemporales.length > 0">
+                                        <span class="glyphicon glyphicon-cog" ></span> Todo pendiente 
+                                    </button>
+                                </div>                              
+                            </div>
+                        </div>
+                    </div>
+                </div>       
+            </div>
+        </div>
+        <div  class="slide" slide-content open-callback="gestionar_productos_clientes" close-callback="cerrar_gestion_productos_clientes"   >
+            <div ng-include src="slideurl"  ></div>
+        </div>
+   
+    <visualizar-reporte></visualizar-reporte>
+
+
+
+
+
+         </div>
+

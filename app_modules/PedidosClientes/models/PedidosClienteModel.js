@@ -1650,7 +1650,7 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion
             .del().then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
-         console.log("err [eliminar_producto_cotizacion]: ", error);
+        console.log("err [eliminar_producto_cotizacion]: ", error);
         callback(error);
     });
 };
@@ -1683,7 +1683,7 @@ PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizaci
 
         callback(false, resultado.rows, resultado);
     }). catch (function(error) {
-         console.log("err [observacion_cartera_cotizacion]: ", error);
+        console.log("err [observacion_cartera_cotizacion]: ", error);
         callback(error);
     });
 };
@@ -1750,6 +1750,7 @@ PedidosClienteModel.prototype.eliminarDetalleCotizacion = function(cotizacion, c
     G.knex('ventas_ordenes_pedidos_tmp').where('pedido_cliente_id_tmp', cotizacion).del().then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [eliminarDetalleCotizacion]: ", error);
         callback(error);
     });
 };
@@ -1772,6 +1773,7 @@ PedidosClienteModel.prototype.consultaCotizacionEnPedido = function(cotizacion, 
     }).select('pedido_cliente_id_tmp').then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [consultaCotizacionEnPedido]: ", error);
         callback(error);
     });
 };
@@ -1802,6 +1804,7 @@ PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_p
     }).then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [actualizarEstadoPedido]: ", error);
         callback(error);
     });
 };
@@ -1821,7 +1824,6 @@ PedidosClienteModel.prototype.actualizarEstadoPedido = function(pedido, estado_p
  */
 PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero_pedido, callback) {
 
-
     G.knex.select(
             G.knex.raw('sum(ventas_ordenes_pedidos_d_tmp.valor_unitario * ventas_ordenes_pedidos_d_tmp.numero_unidades) as valor_total_cotizacion')
             ).from('ventas_ordenes_pedidos_d_tmp').leftJoin('ventas_ordenes_pedidos',
@@ -1829,7 +1831,7 @@ PedidosClienteModel.prototype.consultarTotalValorPedidoCliente = function(numero
             'ventas_ordenes_pedidos.pedido_cliente_id_tmp').where('ventas_ordenes_pedidos.pedido_cliente_id', numero_pedido).then(function(rows) {
         callback(false, rows);
     }). catch (function(err) {
-
+        console.log("err [consultarTotalValorPedidoCliente]: ", err);
         callback(err);
     });
 };
@@ -1848,6 +1850,7 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
     }).select('estado').then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [consultarEstadoPedido]: ", error);
         callback(error);
     });
 };
@@ -1869,6 +1872,7 @@ PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(nume
     }).select('pedido_cliente_id_tmp').then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [consultarProductoDetalleCotizacion]: ", error);
         callback(error);
     });
 };
@@ -1890,6 +1894,7 @@ PedidosClienteModel.prototype.consultarProductoDetallePedido = function(pedido, 
     }).select('pedido_cliente_id').then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [consultarProductoDetallePedido]: ", error);
         callback(error);
     });
 };
@@ -1924,6 +1929,7 @@ PedidosClienteModel.prototype.consultarEstadoPedidoEstado = function(numero_pedi
     }).select('estado', 'estado_pedido').then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [consultarProductoPedido]", error);
         callback(error);
     });
 };
@@ -1943,6 +1949,7 @@ PedidosClienteModel.prototype.consultarExistenciaPedidoCotizacion = function(num
     }).select('pedido_cliente_id_tmp').then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [consultarExistenciaPedidoCotizacion]", error);
         callback(error);
     });
 };
@@ -1964,8 +1971,8 @@ PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizac
     }).select('estado', 'usuario_id').then(function(rows) {
 
         callback(false, rows);
-    }). catch (function(error) {
-
+    }). catch (function(error){
+        console.log("err [consultarEstadoCotizacion]", error);
         callback(error);
     });
 };
@@ -1988,6 +1995,7 @@ PedidosClienteModel.prototype.actualizarCabeceraCotizacion = function(cotizacion
     }).then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {
+        console.log("err [actualizarCabeceraCotizacion]", error);
         callback(error);
     });
 

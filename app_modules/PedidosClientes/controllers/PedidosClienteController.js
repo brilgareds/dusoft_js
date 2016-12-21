@@ -1331,24 +1331,21 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
              *               4 activo (desaprobado por cartera)
              *               0 Empezando a crear la cotizacion
              */
-            console.log("rows 1", rows.length);
+             
             if (rows.length === 0 || rows[0].estado === '1' || rows[0].estado === '4') {
 
-                 console.log("rows 2", rows.length);
+                 
                 __subir_archivo_plano(req.files, function(error, contenido) {
 
-                     console.log("__subir_archivo_plano 2 (contenido)", contenido);
-                     console.log("__subir_archivo_plano 2 (error)", error);
+                      
                     if (!error) {
                         console.log("__validar_productos_archivo_plano");
                        
                         __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
-                             console.log("__validar_productos_archivo_plano  (productos_validos)", productos_validos);
-                             console.log("__validar_productos_archivo_plano 2 (productos_invalidos)", productos_invalidos);
+                              
                             cantidad_productos = productos_validos.length;
-                             console.log("cantidad_productos ", cantidad_productos);
-                             console.log("limite_productos ", limite_productos);
+                             
                             if (cantidad_productos > limite_productos) {
 
                                 res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
@@ -1356,12 +1353,8 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                             }
                               
                             __validar_datos_productos_archivo_plano(that, cotizacion, productos_validos, [], [], 0, function(_productos_validos, _productos_invalidos) {
-                                console.log("********__validar_datos_productos_archivo_plano****");
-                                console.log("********__validar_datos_productos_archivo_plano****");
-                                console.log("********__validar_datos_productos_archivo_plano****");
-                                
-                                 console.log("cotizacion ", _productos_validos);
-                                 console.log("_productos_invalidos ", _productos_invalidos);
+                                 
+                                 
                                 if (_productos_validos.length === 0) {
                                     res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedidos_clientes: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
                                     return;
@@ -3273,11 +3266,8 @@ var productosSinDisponible = [];
 var productosDisponibles = [];
 PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
 
-
     var that = this;
-
-    var args = req.body.data;
-    
+    var args = req.body.data;    
     productosSinDisponible = [];
     
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
@@ -3407,9 +3397,7 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
             }
             
             
-         })                                                         
-                 
-        .then(function(resultado){
+        }).then(function(resultado){
             
             console.log("resultado [__disponibilidadProductos]: ", resultado);
             index++;  
@@ -3440,14 +3428,7 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
 
         }).fail(function(err){      
        }).done(); 
-       //console.log("productosSinDisponible --> ", productosSinDisponible); 
-             
-    
-    /*index++;
-    setTimeout(function() {
-        __disponibilidadProductos(that, index, productos,parametros, callback);
-    }, 800);*/
-   
+       
 };
 
 /*

@@ -1068,7 +1068,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
               
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
-                                observacion: observacion,tipoVariable : 0};
+                                observacion: observacion,tipoVariable : 0,usuarioId : usuario};
                               
    
     
@@ -1406,7 +1406,10 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var def = G.Q.defer();
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
-                                observacion: observacion,tipoVariable : 0};
+                                observacion: observacion,tipoVariable : 0,usuarioId : usuario};
+                            
+                            
+                            
     var bodegasDocTodoPendiente;                           
       //console.log("parametrosReformular:::: ", parametrosReformular);
         G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',{evolucionId:evolucionId, estado: 1}).then(function(resultado){

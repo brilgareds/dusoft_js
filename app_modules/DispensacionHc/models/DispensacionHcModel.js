@@ -3497,7 +3497,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                                G.knex.raw("max(fecha_finalizacion) as fecha_finalizacion"),
                                G.knex.raw("CASE \
                                WHEN(\
-                               	    SELECT max(distinct(hp.todo_pendiente))   \
+                               	    SELECT max(distinct(hp.todo_pendiente))\
                                	    FROM hc_pendientes_por_dispensar hp   \
                               	    WHERE hp.evolucion_id = hc.evolucion_id \
                                     AND hp.bodegas_doc_id is null \
@@ -3505,7 +3505,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                                     AND hp.sw_estado not in(2)\
                                ) = 0 THEN 1  \
                                WHEN(\
-                                    SELECT max(distinct(hp.todo_pendiente))    \
+                                    SELECT max(distinct(hp.todo_pendiente))\
                                     FROM hc_pendientes_por_dispensar hp   \
                                     WHERE hp.evolucion_id = hc.evolucion_id \
                                     AND hp.bodegas_doc_id is null \

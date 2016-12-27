@@ -14,7 +14,10 @@ define(["angular"], function (angular) {
                 'REGISTRAR_APROBACION': BASE_URL + '/ValidacionDespachos/registrarAprobacion',
                 'OBTENER_DOCUMENTO': BASE_URL + '/movBodegas/E008/obtenerDocumento',
                 'CONSULTAR_DOCUMENTOS_USUARIOS': BASE_URL + '/movBodegas/consultarDocumentosUsuario',
-                'CONSULTAR_DOCUMENTO_APROBADO': BASE_URL + '/ValidacionDespachos/validarExistenciaDocumento'
+                'CONSULTAR_DOCUMENTO_APROBADO': BASE_URL + '/ValidacionDespachos/validarExistenciaDocumento',
+                'ADJUNTAR_IMAGEN': BASE_URL + '/ValidacionDespachos/adjuntarImagen',
+                'LISTAR_IMAGENES': BASE_URL + '/ValidacionDespachos/listarImagenes',
+                'ELIMINAR_IMAGEN': BASE_URL + '/ValidacionDespachos/eliminarImagen',
             }
         }
 

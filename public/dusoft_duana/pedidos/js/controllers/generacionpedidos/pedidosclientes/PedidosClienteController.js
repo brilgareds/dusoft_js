@@ -1222,13 +1222,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     </div>\
                     <div class="modal-body row">\
                         <div class="col-md-12">\
-                            <h4 >Lista productos sin disponibilidad.</h4>\
+                            <h4 >Lista productos (sin disponibilidad - error unidad de medida).</h4>\
                             <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                 <div class="list-group">\
                                     <a ng-repeat="producto in productos_no_disponible" \
                                     class="list-group-item defaultcursor" href="javascript:void(0)">\
                                         Cantidad solicitada ({{ producto.cantidad_solicitada}})\
-                                        Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
+                                        Cantidad disponible ({{ producto.cantidad_disponible}}) \
+                                        Unidad de medida ({{producto.unidad_medida}}) para el codigo ({{ producto.codigo_producto}}) \
                                     </a>\
                                 </div>\
                             </div>\

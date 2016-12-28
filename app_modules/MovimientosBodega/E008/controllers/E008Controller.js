@@ -2046,8 +2046,8 @@ E008Controller.prototype.sincronizarDocumentoDespacho = function(req, res){
                     bodega = "FG";
                     documentoId=51;
                 }else if((pedido.identificacion_cliente === '10490' && pedido.tipo_id_cliente === "CE")){//cartagena
-                    bodega = "BF";
-                    documentoId=418;
+                    bodega = "BD";
+                    documentoId=445;
                 }              
                 
            }

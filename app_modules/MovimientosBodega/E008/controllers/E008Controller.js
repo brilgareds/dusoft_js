@@ -2150,7 +2150,7 @@ function __sincronizarEncabezadoDocumento(obj, callback){
         } else if((obj.pedido.identificacion_cliente === '254' && obj.pedido.tipo_id_cliente === "AS")||
                   (obj.pedido.identificacion_cliente === '258' && obj.pedido.tipo_id_cliente === "AS")||
                   (obj.pedido.identificacion_cliente === '259' && obj.pedido.tipo_id_cliente === "AS")){//Santa Soafia
-            usuarioId="4769";
+           // usuarioId="4769";
             url = G.constants.WS().DOCUMENTOS.SANTASOFIA.E008;
         } else if((obj.pedido.identificacion_cliente === '900470642' && obj.pedido.tipo_id_cliente === "NIT")){//cucuta
             usuarioId="1394";

@@ -29,7 +29,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         G.knex.raw("'1' as sw_entrega_med"),
                         G.knex.raw("TO_CHAR(a.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion"),
                         G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') as fecha_formulacion"),
-                        "e.nombre",
+                        "e.nombre_medico as nombre",
                         "a.numero_entrega_actual",
                         "a.numero_total_entregas",
                         G.knex.raw("TO_CHAR(a.fecha_entrega,'YYYY-MM-DD') as fecha_entrega"),
@@ -171,9 +171,10 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                             this.on("b.tipo_bloqueo_id", "f.tipo_bloqueo_id")
                                 .on(G.knex.raw("f.estado='1'"))
 
-                }).innerJoin("system_usuarios AS e", 
+                }).leftJoin("medico_formula AS e", 
                         function(){
-                            this.on("a.medico_id", "e.usuario_id")
+                            this.on("a.medico_id", "e.tercero_id")
+                                .on("a.evolucion_id", "e.evolucion_id");
                 }).innerJoin("eps_afiliados AS g", 
                         function(){
                             this.on("g.afiliado_tipo_id","b.tipo_id_paciente")

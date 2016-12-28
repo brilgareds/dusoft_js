@@ -1,3 +1,15 @@
 .contenedorfiltrocombobox{
     width: 100%;
 }
+
+.btnImagen{
+    margin-left: 10px;
+    position: absolute;
+    top:12px;
+    left:0px;
+    z-index: 2000;
+}
+
+.imagenAprobacion{
+    width: 100%;
+}

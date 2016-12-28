@@ -18,7 +18,7 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
         subfijo = "OR";
     }
     // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
-    var sql = "b.empresa_id, b.razon_social, prefijo, numero, cantidad_cajas, cantidad_neveras, observacion, sw_otras_salidas, fecha_registro, c.nombre \
+    var sql = "a.id_aprobacion_planillas, b.empresa_id, b.razon_social, prefijo, numero, cantidad_cajas, cantidad_neveras, observacion, sw_otras_salidas, fecha_registro, c.nombre \
                FROM aprobacion_despacho_planillas a INNER JOIN empresas b ON a.empresa_id = b.empresa_id \
                INNER JOIN system_usuarios c ON a.usuario_id = c.usuario_id\n\
                WHERE "+fecha+"\
@@ -49,7 +49,76 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
     });
 };
 
-//
+/*
+ * @author : Eduar Garcia
+ * @fecha:  26/12/2016
+ * Descripcion :  Permite insertar el registro de una imagen
+ */
+ValidacionDespachosModel.prototype.agregarImagen = function(obj, callback) {
+    
+    G.knex("aprobacion_despacho_planillas_imagenes").
+    returning("id").
+    insert({"id_aprobacion":obj.id_aprobacion, "path":obj.path}).
+    then(function(resultado){
+        
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    }); 
+};
+
+/*
+ * @author : Eduar Garcia
+ * @fecha:  26/12/2016
+ * Descripcion :  Permite eliminar el registro de una imagen
+ */
+ValidacionDespachosModel.prototype.eliminarImagen = function(obj, callback) {
+    
+    G.knex("aprobacion_despacho_planillas_imagenes").
+    del().
+    where("id", obj.id).
+    then(function(resultado){
+        
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    }); 
+};
+
+
+
+
+/*
+* funcion que realiza consulta a la tabla Empresas
+* @param {type} callback
+* @returns {datos de consulta}
+*/
+// json
+ValidacionDespachosModel.prototype.listarImagenes = function (obj,callback) {
+
+    var column = [
+        "id",
+        "id_aprobacion",
+        "path"
+    ];
+
+    var query = G.knex.column(column)
+    .select()
+    .from('aprobacion_despacho_planillas_imagenes')
+    .where("id_aprobacion", obj.id_aprobacion)
+    .then(function (rows) {
+        callback(false, rows);
+
+    }).catch(function (error) {
+        callback(error);
+    }).done();
+};
+
+
 /*
  * @author : Cristian Ardila
  * @fecha:  05/11/2015
@@ -58,12 +127,12 @@ ValidacionDespachosModel.prototype.listarDespachosAprobados = function(obj, call
 ValidacionDespachosModel.prototype.registrarAprobacion = function(obj, callback) {
  
  var sql = "INSERT INTO aprobacion_despacho_planillas (empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras,observacion,sw_otras_salidas, fecha_registro, usuario_id) \
-                 VALUES ( :1, :2, :3, :4, :5, :6, :7, NOW(), :8 );";
+                 VALUES ( :1, :2, :3, :4, :5, :6, :7, NOW(), :8 ) returning id_aprobacion_planillas;";
 
     G.knex.raw(sql, {1:obj.empresa_id, 2:obj.prefijo, 3:obj.numero, 4:obj.cantidad_cajas, 5:obj.cantidad_neveras, 
                      6:obj.observacion, 7: obj.estado, 8: obj.usuario_id}).
      then(function(resultado){
-       callback(false, resultado);
+       callback(false, resultado.rows[0]);
     }).catch(function(err){
         
        callback(err);

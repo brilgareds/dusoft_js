@@ -70,6 +70,137 @@ ValidacionDespachos.prototype.listarDespachosAprobados = function(req, res) {
 
 };
 
+/**
+ * @author Eduar Garcia
+ * @fecha  26/12/2016
+ * +Descripcion Metodo encargado de listar las imagenes de una aprobacion
+ * aprobados
+ */
+ValidacionDespachos.prototype.listarImagenes = function(req, res) {
+   
+    var that = this;
+
+    var args = req.body.data;    
+
+    if (args.validacionDespachos === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
+        return;
+    }
+
+    if (args.validacionDespachos.id_aprobacion === undefined) {
+        res.send(G.utils.r(req.url, 'El id de la aprobacion no esta definido ', 404, {}));
+        return;
+    }
+
+    var aprobacion = args.validacionDespachos.id_aprobacion;    
+    
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'listarImagenes', {id_aprobacion:aprobacion}).then(function(resultado) {
+
+        return res.send(G.utils.r(req.url, 'Listado de imagenes', 200, {imagenes: resultado}));
+
+    }).fail(function(err) {
+
+        res.send(G.utils.r(req.url, 'Error en el registro', 500, {validacionDespachos: {}}));
+
+    }).done();
+
+};
+
+/**
+ * @author Eduar Garcia
+ * @fecha  26/12/2016
+ * +Descripcion Metodo encargado de invocar el modelo para listar los despachos
+ * aprobados
+ */
+ValidacionDespachos.prototype.adjuntarImagen = function(req, res) {
+   
+
+    var that = this;
+
+    var args = req.body.data;    
+
+    if (args.validacionDespachos === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
+        return;
+    }
+
+    if (!args.validacionDespachos.id_aprobacion || !args.validacionDespachos.prefijo || !args.validacionDespachos.numero) {
+        res.send(G.utils.r(req.url, 'Algunos campos obligatorios estan vacios ', 404, {}));
+        return;
+    }
+
+    var aprobacion = args.validacionDespachos.id_aprobacion; 
+    var prefijo = args.validacionDespachos.prefijo;
+    var numero = args.validacionDespachos.numero;
+    var file = req.files.file;
+    var rutaTmp = file.path;
+    var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + prefijo + "-" + numero  + "/" + file.name;
+
+    if (G.fs.existsSync(rutaTmp)) {
+        G.Q.nfcall(G.fs.copy, rutaTmp, rutaNueva).then(function() {
+            return  G.Q.nfcall(G.fs.unlink, rutaTmp);
+        }).then(function() {
+            
+            var obj = {
+                id_aprobacion : aprobacion,
+                path : prefijo + "-" + numero + "/" + file.name
+            };
+            
+            return G.Q.ninvoke(that.m_ValidacionDespachos, 'agregarImagen', obj)
+            
+        }).then(function(){
+            res.send(G.utils.r(req.url, 'Imagen guardada', 200, {validacionDespachos: {}}));
+            
+        }).fail(function(err) {
+            G.fs.unlinkSync(rutaNueva);
+            res.send(G.utils.r(req.url, 'Error guardando la imagen', 500, {validacionDespachos: {}}));
+        }).done();
+
+    } else {
+        res.send(G.utils.r(req.url, 'Error guardando la imagen', 500, {validacionDespachos: {}}));
+    }
+
+};
+
+
+/**
+ * @author Eduar Garcia
+ * @fecha  26/12/2016
+ * +Descripcion Metodo para eliminar una imagen de la aprobacion
+ */
+ValidacionDespachos.prototype.eliminarImagen = function(req, res) {
+   
+
+    var that = this;
+
+    var args = req.body.data;    
+
+    if (args.validacionDespachos === undefined) {
+        res.send(G.utils.r(req.url, 'Variable (validacionDespachos) no esta definida', 404, {}));
+        return;
+    }
+
+    if (!args.validacionDespachos.id || !args.validacionDespachos.path) {
+        res.send(G.utils.r(req.url, 'Algunos campos obligatorios estan vacios ', 404, {}));
+        return;
+    }
+
+    var id = args.validacionDespachos.id; 
+    var path = args.validacionDespachos.path;
+
+    G.Q.ninvoke(that.m_ValidacionDespachos, 'eliminarImagen', {id:id}).then(function(resultado) {
+        var rutaNueva = G.dirname + G.settings.carpeta_aprobacion_despachos + path;
+        G.fs.unlinkSync(rutaNueva);
+        return res.send(G.utils.r(req.url, 'Eliminacion exitosa', 200, {imagenes: resultado}));
+
+    }).fail(function(err) {
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Error al eliminar la imagen', 500, {validacionDespachos: {}}));
+
+    }).done();
+
+};
+
 
 /*
  * funcion para consultar empresas

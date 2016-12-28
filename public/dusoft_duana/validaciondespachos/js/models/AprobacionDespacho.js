@@ -11,10 +11,10 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
 
             function AprobacionDespacho(bodegas_doc_id, prefijo, numero, fecha_registro) {
                 Documento.getClass().call(this, bodegas_doc_id, prefijo, numero, fecha_registro);
-                
+                this.id = 0;
                 this.bodegas_doc_id = bodegas_doc_id;
-                this.prefijo = prefijo;
-                this.numero = numero;
+                this.prefijo = prefijo || "";
+                this.numero = numero || 0;
                 this.fecha_registro = fecha_registro;
                 this.cantidadCajas = 0;
                 this.cantidadNeveras = 0;
@@ -23,7 +23,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.razon_social;
                 this.empresaId;
                 this.usuario;
-                
+                this.imagenes = [];
                 
             };
             
@@ -31,15 +31,25 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             AprobacionDespacho.prototype = Object.create(Documento.getClass().prototype);
             
             
+            AprobacionDespacho.prototype.setId = function (id) {
+               this.id = id;
+            };
+            
+            AprobacionDespacho.prototype.getId = function () {
+                return this.id;
+            };
+            
             AprobacionDespacho.prototype.getPrefijo = function () {
                 return this.prefijo;
+            };
+            
+            AprobacionDespacho.prototype.setPrefijo = function (prefijo) {
+                this.prefijo = prefijo;
             };
             
             AprobacionDespacho.prototype.getNumero = function () {
                 return this.numero;
             };
-            
-            
             
             AprobacionDespacho.prototype.setEmpresaId = function (empresaId) {
                this.empresaId = empresaId;
@@ -75,6 +85,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             AprobacionDespacho.prototype.setCantidadCajas = function (cantidadCajas) {
                 this.cantidadCajas = cantidadCajas;
             };
+            
             AprobacionDespacho.prototype.getCantidadCajas = function () {
                 return this.cantidadCajas;
             };
@@ -83,20 +94,31 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             AprobacionDespacho.prototype.setCantidadNeveras = function (cantidadNeveras) {
                 this.cantidadNeveras = cantidadNeveras;
             };
+            
             AprobacionDespacho.prototype.getCantidadNeveras = function () {
                 return this.cantidadNeveras;
             };
 
-
-
             AprobacionDespacho.prototype.setEstado = function (estado) {
                 this.estado = estado;
             };
+            
             AprobacionDespacho.prototype.getEstado = function() {
                 return this.estado;
             };
 
+            AprobacionDespacho.prototype.agregarImagen = function(imagen) {
+                this.imagenes.push(imagen);
+            };
             
+            AprobacionDespacho.prototype.obtenerImagenes = function() {
+                return this.imagenes;
+            };
+            
+            AprobacionDespacho.prototype.vaciarImagenes = function() {
+                this.imagenes = [];
+            };
+           
            
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {
                 return new AprobacionDespacho(bodegas_doc_id, prefijo, numero, fecha_registro);

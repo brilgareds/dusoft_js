@@ -72,6 +72,10 @@ define(["angular", "js/models"], function(angular, models) {
             return this.prefijo;
         };
         
+        Documento.prototype.setPrefijo = function(prefijo) {
+            this.prefijo = prefijo;
+        };
+        
         Documento.prototype.get_numero = function() {
             return this.numero;
         };

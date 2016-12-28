@@ -31,4 +31,19 @@ module.exports = function(app, di_container) {
     app.post('/api/ValidacionDespachos/validarExistenciaDocumento', function(req, res){
        c_ValidacionDespachos.validarExistenciaDocumento(req, res); 
     });
+    
+    app.post('/api/ValidacionDespachos/adjuntarImagen', function(req, res){
+       c_ValidacionDespachos.adjuntarImagen(req, res); 
+    });
+    
+    app.post('/api/ValidacionDespachos/listarImagenes', function(req, res){
+       c_ValidacionDespachos.listarImagenes(req, res); 
+    });
+    
+    app.post('/api/ValidacionDespachos/eliminarImagen', function(req, res){
+       c_ValidacionDespachos.eliminarImagen(req, res); 
+    });
+    
+    
+    
 };

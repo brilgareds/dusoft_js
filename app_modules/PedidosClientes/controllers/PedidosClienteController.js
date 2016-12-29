@@ -2925,8 +2925,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         }
 
     }).then(function(resultado) {
-        
-        console.log("ESTE ES EL PRODUCTO A ELIMINAR ", producto);
+       
         if (resultado.length > 0) {
             
             if (resultado[0].estado === '1' && 

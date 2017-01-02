@@ -159,7 +159,7 @@ if (cluster.isMaster) {
     var io = require('socket.io').listen(server);
     var container = intravenous.create();
 
-
+    io.set('heartbeat timeout', 10);
     /*=========================================
      * Configuracion Sockets.io
      * =========================================*/

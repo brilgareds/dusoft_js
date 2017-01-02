@@ -237,8 +237,8 @@ module.exports = function(app, di_container) {
     // ======== Events E008 ========
     io.sockets.on('connection', function(socket) {
 
-        console.log('=== onConnection E008 ====');
-        console.log(socket.id);
+        /*console.log('=== onConnection E008 ====');
+        console.log(socket.id);*/
 
         var socket_id = socket.id;
         socket.on('onObtenerTiempoSeparacionCliente', function(datos) {
@@ -251,8 +251,8 @@ module.exports = function(app, di_container) {
 
         socket.on('disconnect', function() {
             // reconnect
-            console.log('============= onDisConnection E008 =============');
-            console.log(socket.id);
+           /* console.log('============= onDisConnection E008 =============');
+            console.log(socket.id);*/
         });
     });
 

@@ -156,7 +156,7 @@ if (cluster.isMaster) {
 
     var app = express();
     var server = app.listen(G.settings.server_port);
-    var io = require('socket.io').listen(server);
+    var io = require('socket.io').listen(server,  { pingTimeout: 4000, pingInterval: 4000 }); 
     var container = intravenous.create();
 
     io.set('heartbeat timeout', 10);

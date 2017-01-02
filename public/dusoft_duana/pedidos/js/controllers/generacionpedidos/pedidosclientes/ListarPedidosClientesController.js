@@ -816,8 +816,8 @@ define(["angular", "js/controllers",
                     pedido.setTieneDespacho(data.tiene_despacho).
                             setDespachoEmpresaId(data.despacho_empresa_id).
                             setDespachoPrefijo(data.despacho_prefijo).
-                            setDespachoNumero(data.despacho_numero);
-                   
+                            setDespachoNumero(data.despacho_numero).
+                            setFacturaFiscal(data.factura_fiscal);
                     $scope.Empresa.set_pedidos(pedido);
                 });
 
@@ -833,6 +833,7 @@ define(["angular", "js/controllers",
                     {field: 'get_descripcion_estado_actual_pedido()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
                         cellTemplate: "<button type='button' ng-class='agregar_clase_pedido(row.entity.estado_actual_pedido)'> <span ng-class='agregar_restricion_pedido(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
+                    {field: 'getFacturaFiscal()', displayName: 'Factura', width: "10%"},
                     {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
                     {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
                     {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%"},

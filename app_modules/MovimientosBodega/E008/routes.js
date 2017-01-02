@@ -249,7 +249,8 @@ module.exports = function(app, di_container) {
             e_e008.onObtenerTiempoSeparacionFarmacias(socket_id, datos);
         });
 
-        socket.on('disconnect', function() {
+        socket.on('disconnect', function(data) {
+            console.log("onDisconnect with data ", data);
             // reconnect
            /* console.log('============= onDisConnection E008 =============');
             console.log(socket.id);*/

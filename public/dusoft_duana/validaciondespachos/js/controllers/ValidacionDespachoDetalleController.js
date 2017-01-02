@@ -45,7 +45,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.documentoDespachoAprobado = AprobacionDespacho.get();
             $scope.despachoId = 0;
-
+            
             $scope.cargarEmpresaSession = function () {
 
                 if ($scope.datos_view.seleccionarOtros) {
@@ -356,6 +356,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                             if (data.status === 200) {
                                 var resultado = data.obj.validacionDespachos[0];
+                                console.log("ESTO QUE ES ", resultado);
                                 var empresa = EmpresaAprobacionDespacho.get(resultado.razon_social, resultado.empresa_id);
                                 $scope.datos_view.empresaSeleccionada = empresa;
                                 $scope.despachoId = resultado.id_aprobacion_planillas;
@@ -535,9 +536,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 for (var i in empresas) {
                     var _empresa = EmpresaAprobacionDespacho.get(empresas[i].razon_social, empresas[i].empresa_id);
                     $scope.empresas.push(_empresa);
-                }
+                }   
+                
+                
             };
-
+                   
             /*
              * funcion ejecuta listarCentroUtilidad
              * @returns {lista CentroUtilidad}
@@ -573,6 +576,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.init = function () {
+                
+                var session = angular.copy(Sesion.getUsuarioActual().getEmpresa());
+                var empresaSeleccionadas = EmpresaAprobacionDespacho.get(session.nombre, session.codigo);           
+                    $scope.datos_view.empresaSeleccionada = empresaSeleccionadas;
+                var prefijoSeleccionados = AprobacionDespacho.get(1, "EFC", "0", "");
+                    prefijoSeleccionados.set_descripcion("-DESPACHOS A FARMACIAS Y CLIENTES");
+                    $scope.datos_view.prefijoList = prefijoSeleccionados;
+                   
             };
             that.init();
 

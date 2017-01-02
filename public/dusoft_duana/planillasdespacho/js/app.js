@@ -52,7 +52,9 @@ define([
     
     
     "includes/helpersdirectives/visualizarReporte",
-    "includes/validation/NgValidateEvents"
+    "includes/validation/NgValidateEvents",
+    //Service notificaciones
+    "webNotification"
 ], function(angular) {
 
     /* App Module and its dependencies */
@@ -68,7 +70,8 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'flow'
+        'flow',
+        'angular-web-notification'
     ]);
 
     planillas_despachos.urlRouterProvider;

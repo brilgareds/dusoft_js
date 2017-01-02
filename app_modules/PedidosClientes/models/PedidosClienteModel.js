@@ -639,7 +639,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     });
 
     query.andWhere(function() {
-        this.where(G.knex.raw("a.fecha_registro >= ?", [new Date().getFullYear() + "-01-01 00:00:00"]));
+        this.where(G.knex.raw("a.fecha_registro >= ?", [ (new Date().getFullYear() - 1) + "-01-12 00:00:00"]));
     });
 
     if (filtro.numeroPedido) {

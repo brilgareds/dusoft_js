@@ -2925,11 +2925,11 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         }
 
     }).then(function(resultado) {
-
+       
         if (resultado.length > 0) {
             
             if (resultado[0].estado === '1' && 
-                (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8') 
+                (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8' && producto.cantidadPendiente > 0) 
                  || resultado[0].estado === '4' && disponibilidadProducto === 0
                  || resultado[0].estado === '4' && disponibilidadProducto < producto.cantidad_solicitada
                  ) {
@@ -2937,13 +2937,14 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
                 return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 
             } else {
-                throw 'El pedido debe estar activo o para autorizar nuevamente por cartera';
+                throw 'El pedido debe <br>\n'+ '1. estar activo <br>\n'+ ' 2. para autorizar nuevamente por cartera <br>\n'+ ' 3. contener pendientes';
                 return;
             }
 
         } else {
             throw 'Error interno';
         }
+        
     }).then(function(resultado) {
 
         if (resultado.length > 0) {

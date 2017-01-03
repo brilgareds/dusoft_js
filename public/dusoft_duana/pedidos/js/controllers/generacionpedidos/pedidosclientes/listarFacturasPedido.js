@@ -35,7 +35,7 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'Pedido', width: "30%", displayName: 'Pedido', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.pedido_cliente_id}}</p></div>'},
                     {field: 'Factura', width: "35%", displayName: 'Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.factura_fiscal}}</p></div>'},
-                    {field: 'Fecha', width: "35%", displayName: 'Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro}}</p></div>'},
+                    {field: 'Fecha factura', width: "35%", displayName: 'Fecha factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro}}</p></div>'},
                     
                 ]
             };

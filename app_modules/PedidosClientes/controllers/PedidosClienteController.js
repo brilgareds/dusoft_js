@@ -88,8 +88,20 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     if (args.pedidos_clientes.pagina_actual === '') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
         return;
+    }       
+    
+    /*if (args.pedidos_clientes.fecha_inicial === undefined || args.pedidos_clientes.fecha_final === undefined) {
+        res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final no estan definidas', 404, {}));
+        return;
+    }*/
+    var fecha_inicial;
+    var fecha_final;
+    if (args.pedidos_clientes.fecha_inicial !== undefined || args.pedidos_clientes.fecha_final !== undefined) {
+          fecha_inicial = args.pedidos_clientes.fecha_inicial;
+          fecha_final = args.pedidos_clientes.fecha_final;  
     }
-
+    
+    
     var empresa_id = args.pedidos_clientes.empresa_id;
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
@@ -108,7 +120,14 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     }
     var filtro = args.pedidos_clientes.filtro;
 
-    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido, estadoSolicitud, function(err, lista_pedidos_clientes) {
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, 
+                                                    termino_busqueda, 
+                                                    filtro, 
+                                                    pagina_actual, 
+                                                    estadoPedido, 
+                                                    estadoSolicitud,
+                                                    fecha_inicial,
+                                                    fecha_final, function(err, lista_pedidos_clientes) {
 
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
 

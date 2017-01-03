@@ -21,22 +21,25 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  *  @fecha 2017-01-02
  */
 PedidosCliente.prototype.listarFacturasPedido = function(req, res){
-    
+     
     var that = this;
     var args = req.body.data;
-    
-    if (args.pedidos_clientes === undefined || args.pedidos_clientes.termino_busqueda === undefined || args.pedidos_clientes.pagina_actual === undefined) {
+       
+    if (args.pedidos_clientes === undefined ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {pedidos_clientes: []}));
         return;
     }
     
-    if (args.pedidos_clientes.pedido_cliente_id === undefined) {
+    if (args.pedidos_clientes.numeroPedido === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de pedido', 404, {pedidos_clientes: []}));
         return;
     }
-    var parametros = {pedido: args.pedidos_clientes.pedido_cliente_id}
-    G.Q.ninvoke(that.m_dispensacion_hc,'listarFacturasPedido', parametros).then(function(resultado){
-      
+    
+    var pedido = args.pedidos_clientes.numeroPedido;
+  
+    var parametros = {pedido: pedido};
+    G.Q.ninvoke(that.m_pedidos_clientes,'listarFacturasPedido', parametros).then(function(resultado){
+     
         if(resultado.length > 0){
        
            res.send(G.utils.r(req.url, 'Consulta facturas', 200, {listar_tipo_documento:resultado}));

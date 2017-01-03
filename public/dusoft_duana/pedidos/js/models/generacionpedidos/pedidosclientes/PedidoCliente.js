@@ -29,6 +29,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.estadoSolicitud;
                 this.tipoPedido;
                 this.facturaFiscal;
+                this.estadoFacturaFiscal;
             };
 
             PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);
@@ -310,6 +311,17 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 return this.facturaFiscal;
             };
             
+            
+            
+            
+            PedidoCliente.prototype.setEstadoFacturaFiscal = function(estadoFacturaFiscal) {
+                this.estadoFacturaFiscal = estadoFacturaFiscal;
+                return this;
+            };
+
+            PedidoCliente.prototype.getEstadoFacturaFiscal = function() {
+                return this.estadoFacturaFiscal;
+            };
             
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {
                 return new PedidoCliente(empresa_id, centro_utilidad_id, bodega_id);

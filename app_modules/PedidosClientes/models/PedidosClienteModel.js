@@ -159,6 +159,20 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                     ) as fac ) is null THEN 'NO FACTURADO'\
                     ELSE 'FACTURADO' END as factura_fiscal "
                 ),
+        G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
+                    SELECT distinct(invfa.factura_fiscal) as factura_fiscal\
+                              FROM inv_facturas_agrupadas_despacho as invfa\
+                              INNER JOIN inv_facturas_agrupadas_despacho_d as invfad \
+                              ON invfa.prefijo = invfad.prefijo \
+                              AND invfa.factura_fiscal = invfad.factura_fiscal\
+                              AND invfad.pedido_cliente_id = a.pedido_cliente_id\
+                    UNION\
+                    SELECT distinct(factura_fiscal) as factura_fiscal\
+                    FROM inv_facturas_despacho as b \
+                    WHERE b.pedido_cliente_id = a.pedido_cliente_id\
+                    ) as fac ) is null THEN '0'\
+                    ELSE '1' END as estado_factura_fiscal "
+                ),
         
         "a.empresa_id",
         "a.centro_destino as centro_utilidad_id",
@@ -266,14 +280,15 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
  *  @author Cristian Ardila
  *  @fecha 2017-01-02
  */
-PedidosClienteModel.prototype.listarFacturasPedido = function(callback){
+PedidosClienteModel.prototype.listarFacturasPedido = function(obj,callback){
     
      var subColQuery = [G.knex.raw("distinct(invfa.factura_fiscal) as factura_fiscal"), 
-                    "invfad.pedido_cliente_id",
-                    "invfa.fecha_registro"];
+                        "invfad.pedido_cliente_id as pedido_cliente_id",
+                        "invfa.fecha_registro as fecha_registro"];
+                    
      var subQuery = G.knex.select(subColQuery)
                 .from("inv_facturas_agrupadas_despacho as invfa")
-                .innerJoin("inv_facturas_agrupadas_despacho_d", 
+                .innerJoin("inv_facturas_agrupadas_despacho_d as invfad", 
                     function() {
                         this.on("invfa.prefijo","invfad.prefijo")
                             .on("invfa.factura_fiscal","invfad.factura_fiscal")
@@ -282,17 +297,17 @@ PedidosClienteModel.prototype.listarFacturasPedido = function(callback){
                     this.select([G.knex.raw("distinct(factura_fiscal) as factura_fiscal"),
                                 "b.pedido_cliente_id",
                                 "b.fecha_registro"])
-                        .from('inv_facturas_despacho as b')
+                        .from('inv_facturas_despacho as b');
                         
                 }).as("fac");
      
-    var query = G.knex.select(["fac.pedido_cliente_id", "fac.factura_fiscal", "fac.fecha_registro"])
+    var query = G.knex.select(["fac.pedido_cliente_id", "fac.factura_fiscal",  G.knex.raw("to_char(fac.fecha_registro, 'YYYY-MM-DD HH12:MI:SS') as fecha_registro")])
                         .from(subQuery)
-                        .where('fac.pedido_cliente_id',57342)
+                        .where('fac.pedido_cliente_id',obj.pedido);
                 
     query.then(function(resultado){ 
-             
-        callback(false, resultado)
+        //console.log("resultado [listarFacturasPedido]:", resultado);     
+        callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFacturasPedido]:", err);
         callback(err);

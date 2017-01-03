@@ -33,9 +33,11 @@ define(["angular", "js/controllers",
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'Pedido', width: "30%", displayName: 'Pedido', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.pedido_cliente_id}}</p></div>'},
-                    {field: 'Factura', width: "35%", displayName: 'Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.factura_fiscal}}</p></div>'},
-                    {field: 'Fecha factura', width: "35%", displayName: 'Fecha factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.fecha_registro}}</p></div>'},
+                
+                    {field: 'pedido_cliente_id', displayName: 'No. Pedido', width: "30%"},
+                    {field: 'factura_fiscal', displayName: 'No. Factura', width: "35%"},
+                    {field: 'fecha_registro', displayName: 'F. Factura', width: "35%"}
+                   
                     
                 ]
             };

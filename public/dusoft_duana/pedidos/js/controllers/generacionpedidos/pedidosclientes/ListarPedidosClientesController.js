@@ -816,13 +816,66 @@ define(["angular", "js/controllers",
                     pedido.setTieneDespacho(data.tiene_despacho).
                             setDespachoEmpresaId(data.despacho_empresa_id).
                             setDespachoPrefijo(data.despacho_prefijo).
-                            setDespachoNumero(data.despacho_numero);
-                   
+                            setDespachoNumero(data.despacho_numero).
+                            setFacturaFiscal(data.factura_fiscal).
+                            setEstadoFacturaFiscal(data.estado_factura_fiscal);
                     $scope.Empresa.set_pedidos(pedido);
                 });
 
             };
+            
+            
+            that.ventanaFacturasPedido = function(pedido) {
+                
+                console.log("pedido ", pedido);
+               
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/generacionpedidos/pedidosclientes/listarfacturaspedido.html',
+                    scope: $scope,                  
+                    controller: "listarFacturasPedido",
+                    resolve: {
+                        pedido: function() {
+                            return pedido;
+                        }
+                    }           
+                };
+                var modalInstance = $modal.open($scope.opts);   
 
+                modalInstance.result.then(function(){ 
+                },function(){});  
+
+            };
+            /**
+             * +Descripcion Servicio encargado de listar las facturas de un pedido
+             * @author Cristian Manuel Ardila
+             * @fecha 2017-01-03 YYYY-MM-DD
+             */
+            $scope.ventanaFacturasPedido = function(entity){
+                
+                //console.log("entity ", entity.numero_pedido);
+                
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            numeroPedido: entity.numero_pedido
+                        }
+                    }
+                };
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_FORMULA_PEDIDO, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                       
+                        that.ventanaFacturasPedido(data.obj.listar_tipo_documento)
+                    }
+
+                });
+                //LISTAR_FORMULA_PEDIDO
+            };
+            
             $scope.lista_pedidos_clientes = {
                 data: 'Empresa.get_pedidos()',
                 enableColumnResize: true,
@@ -833,6 +886,7 @@ define(["angular", "js/controllers",
                     {field: 'get_descripcion_estado_actual_pedido()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
                         cellTemplate: "<button type='button' ng-class='agregar_clase_pedido(row.entity.estado_actual_pedido)'> <span ng-class='agregar_restricion_pedido(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
+                    {field: 'getFacturaFiscal()', displayName: 'Factura', width: "10%"},
                     {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
                     {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
                     {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%"},
@@ -840,11 +894,12 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li  ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
                                                 <li ng-if="row.entity.getEstadoActualPedido() == \'0\' || row.entity.getEstadoActualPedido() == \'8\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_email_pedidos }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                                <li ng-if="row.entity.getEstadoFacturaFiscal() == 1"><a href="javascript:void(0);" ng-click="ventanaFacturasPedido(row.entity)" >Listar facturas</a></li>\
                                                 <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
                                             </li>\

@@ -431,3 +431,9 @@ button.btnTipo{
     width: 75%;
     padding-top: 8px;
 }
+
+.gridStyle3 {
+    border: 1px solid rgb(212,212,212);
+    width: 585px;
+    height: 200px;
+}

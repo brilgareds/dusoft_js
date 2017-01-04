@@ -37,7 +37,8 @@ define(["angular",
                 usuarioActual:Usuario.getUsuarioActual(),
                 terminoBusqueda:"",
                 mensajeNotificacion: localStorageService.get("mensajeNotificacion") || undefined,
-                moduloChat : (moduloChat)? moduloChat.opciones : {}  
+                moduloChat : (moduloChat)? moduloChat.opciones : {},
+                pagina: 1
             };
                         
             $scope.root.listaConversaciones = {
@@ -267,7 +268,7 @@ define(["angular",
                             error:true
                         };
                         
-                        self.agregarDetalleConversacion(mensaje);
+                        self.agregarDetalleConversacion(mensaje, true);
                         $scope.$emit("onMensajeNuevo", mensaje, Usuario.getUsuarioActual());
                     }
                     
@@ -299,7 +300,7 @@ define(["angular",
                
                 //Conversacion actual
                 if(data.mensaje.id_conversacion === conversacion.getId()){
-                    self.agregarDetalleConversacion(data.mensaje);
+                    self.agregarDetalleConversacion(data.mensaje, true);
                     
                 } else {
                    
@@ -332,7 +333,8 @@ define(["angular",
                     session: $scope.root.session,
                     data: {
                         chat: {
-                            id_conversacion: conversacion.getId()
+                            id_conversacion: conversacion.getId(),
+                            pagina:$scope.root.pagina
                         }
                     }
                 };
@@ -344,7 +346,14 @@ define(["angular",
                         
                         for(var i in _conversaciones){
                             var _conversacion = _conversaciones[i];
-                            self.agregarDetalleConversacion(_conversacion);
+                            
+                            if($scope.root.pagina === 1){
+                                
+                                self.agregarDetalleConversacion(_conversacion);
+                            } else {
+                                self.agregarDetalleConversacion(_conversacion, true);
+                            }
+                            
                         }
                         
                         $scope.root.conversacionSeleccioanda = true;
@@ -365,7 +374,7 @@ define(["angular",
             * +Descripcion Agrega un mensaje insertado por el usuario
             * @fecha 2016-09-08
             */ 
-            self.agregarDetalleConversacion = function(_conversacion){
+            self.agregarDetalleConversacion = function(_conversacion, agregarAlFinal){
                 var conversacion = ConversacionDetalle.get(
                         _conversacion.id_conversacion, _conversacion.usuario,
                         _conversacion.mensaje, _conversacion.archivo_adjunto,
@@ -375,8 +384,8 @@ define(["angular",
                 if(_conversacion.error){
                     conversacion.setMensaje("<span style='color:red'>"+conversacion.getMensaje()+"</span>");
                 }
-
-               $scope.root.conversacionSeleccionada.agregarDetalle(conversacion);
+               
+               $scope.root.conversacionSeleccionada.agregarDetalle(conversacion, agregarAlFinal);
             };
             
             /*

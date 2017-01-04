@@ -485,6 +485,9 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
         });
     }
     
+    query.limit(G.settings.limit).
+    offset((parametros.pagina - 1) * G.settings.limit).
+    orderBy("a.fecha_mensaje", "desc");
     query.then(function(resultado){
         
         callback(false, resultado);

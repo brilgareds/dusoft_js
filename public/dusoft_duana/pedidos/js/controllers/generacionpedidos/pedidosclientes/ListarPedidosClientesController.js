@@ -309,10 +309,12 @@ define(["angular", "js/controllers",
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
 
                 if (terminoBusqueda) {
-
+                    console.log("ENTRO A QUI O NOOOOOOOOOOOOOOOOOO ", terminoBusqueda)
+                    localStorageService.add("terminoBusquedaPedido", null);
                     $scope.datos_view.filtro = terminoBusqueda.filtro_actual_cotizacion;
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
-
+                    console.log("$scope.datos_view.filtro ", $scope.datos_view.filtro);
+                    console.log("terminoBusqueda.busqueda ", terminoBusqueda.busqueda);
                 }
                 // $scope.datos_view.filtro = {nombre: "Numero", tipo_busqueda: 0};
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {

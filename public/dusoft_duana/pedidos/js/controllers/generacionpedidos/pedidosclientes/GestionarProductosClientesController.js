@@ -70,7 +70,8 @@ define(["angular", "js/controllers",
 
             // Gestionar Cotizaciones
             that.gestionar_cotizaciones = function(callback) {
-
+                
+                 localStorageService.add("cotizacion", null);
                 if ($scope.Pedido.get_numero_cotizacion() === 0) {
                     //Crear Cotizacion y Agregar Productos
                     $scope.insertar_cabercera_cotizacion(function(continuar) {

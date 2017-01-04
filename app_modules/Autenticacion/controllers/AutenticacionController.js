@@ -76,6 +76,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     var nombre_usuario = args.login.usuario;
     var contrasenia = args.login.contrasenia;
     var device = (args.login.device === undefined) ? '' : args.login.device;
+    var appId = (args.login.appId === undefined) ? 'dusoft-web' : args.login.appId;
     var socket = args.login.socket;
 
 
@@ -91,6 +92,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
                 usuario = usuario[0];
                 usuario.socket = socket;
                 usuario.device = device;
+                usuario.appId = appId;
                 
 
                 G.auth.set(usuario, function(err, sesion_usuario) {
@@ -126,10 +128,13 @@ Autenticacion.prototype.lockScreen = function(req, res) {
 Autenticacion.prototype.sessions = function(req, res) {
 
     var that = this;
+    console.log("app id here ", req.body);
+    var args = req.body.data;
 
     var usuario = req.session.user;
+    var appId = args.appId;
 
-    G.auth.getSessionsUser(usuario.usuario_id, function(err, sessions) {
+    G.auth.getSessionsUserByApp({usuario_id:usuario.usuario_id, appId:appId}, function(err, sessions) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Erros listando sesiones del usuario', 200, { sessions : []}));

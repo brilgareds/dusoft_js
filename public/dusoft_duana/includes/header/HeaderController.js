@@ -598,11 +598,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             });
             
             socket.on("onNotificacionChat", function(data){
+                console.log("on new chat hereeeee");
                 var mensaje = data.mensaje;
                 
                 var chat =  localStorageService.get("chat");
                 
-                console.log("documento is hidden ", document.hidden, chat)
                 
                 if(chat && chat.estado === '1' && !document.hidden){
                     return;
@@ -640,7 +640,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                    usuario_id: obj_session.usuario_id,
                    auth_token: obj_session.auth_token,
                    socket_id: socketid,
-                   device:"web"
+                   device:"web",
+                   appId: "dusoft-web"
                 };
                 
                 //localStorageService.set("socketid", socketid);

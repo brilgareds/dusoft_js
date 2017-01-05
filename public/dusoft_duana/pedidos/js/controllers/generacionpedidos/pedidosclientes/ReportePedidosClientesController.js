@@ -145,7 +145,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.enviar_email = function(callback) {
 
                 var url = '';
-
+                var obj;
                 // Enviar Email Reporte Cotizacion
                 if ($scope.datos_view.pedido_seleccionado.get_numero_cotizacion() > 0) {
 
@@ -196,6 +196,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 });
             };
+            
+            
+           
+             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.$$watchers = null;
+                
+               console.log("$stateChangeStart ReportePedidosClientesController")
+                 socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);                
+            });
+
 
         }]);
 });

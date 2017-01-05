@@ -1675,7 +1675,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-
+                
+                socket.remove(['onNotificarProgresoArchivoPlanoClientes','onListarEstadoCotizacion','onListarEstadoPedido']);
+                console.log("$stateChangeStart PedidosClienteController");
+                  
                 $scope.$$watchers = null;
                 // set localstorage
                 localStorageService.add("cotizacion", null);

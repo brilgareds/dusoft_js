@@ -77,7 +77,11 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
  */
 PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCotizacion) {
   
-
+  console.log("**********PedidosClientesEvents.prototype.onNotificarEstadoCotizacion***************");
+  console.log("**********PedidosClientesEvents.prototype.onNotificarEstadoCotizacion***************");
+  console.log("**********PedidosClientesEvents.prototype.onNotificarEstadoCotizacion***************");
+  console.log("**********PedidosClientesEvents.prototype.onNotificarEstadoCotizacion***************");
+  
     var that = this;
   
     this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {

@@ -22,7 +22,7 @@ define(["angular", "js/controllers",
                 Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
-
+            
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
                 /**
@@ -164,6 +164,7 @@ define(["angular", "js/controllers",
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
                         callback(true);
+                         socket.remove(['onListarEstadoCotizacion']);
                     } else {
                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         callback(false);
@@ -175,10 +176,6 @@ define(["angular", "js/controllers",
             // Insertar Productos al pedido
             that.insertar_detalle_pedido = function(callback) {
                 
-                console.log("that.insertar_detalle_pedido ")
-                console.log("that.insertar_detalle_pedido ")
-                console.log("that.insertar_detalle_pedido ")
-                console.log("that.insertar_detalle_pedido ")
                 
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
@@ -655,7 +652,11 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                console.log("$stateChangeStart GestionarProductosClientesController");
+                //socket.remove(['onListarEstadoPedido']);
+                //socket.remove(['onListarEstadoCotizacion']);
                 //$scope.datos_form = null;
+                //socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);
             });
         }]);
 });

@@ -192,10 +192,10 @@ define(["angular", "js/controllers",
 
             //Acciones Botones
             $scope.gestionar_cotizacion_cliente = function() {
-
+               
                 localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0'});
                 $state.go('Cotizaciones');
-            };
+            };    
 
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
                 $scope.datos_view.filtro_actual_cotizacion = $scope.datos_view.filtro;
@@ -309,12 +309,11 @@ define(["angular", "js/controllers",
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
 
                 if (terminoBusqueda) {
-                    console.log("ENTRO A QUI O NOOOOOOOOOOOOOOOOOO ", terminoBusqueda)
+                    
                     localStorageService.add("terminoBusquedaPedido", null);
                     $scope.datos_view.filtro = terminoBusqueda.filtro_actual_cotizacion;
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
-                    console.log("$scope.datos_view.filtro ", $scope.datos_view.filtro);
-                    console.log("terminoBusqueda.busqueda ", terminoBusqueda.busqueda);
+                    
                 }
                 // $scope.datos_view.filtro = {nombre: "Numero", tipo_busqueda: 0};
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {
@@ -1071,7 +1070,8 @@ define(["angular", "js/controllers",
              *               actualizando el nuevo estado de la cotizacion
              */
             socket.on("onListarEstadoCotizacion", function(datos) {
-
+                
+                console.log("Resultado de onListarEstadoCotizacion ", datos);
                 if (datos.status === 200) {
                     var estado = ['Inactivo', 'Activo', 'Anulado', 'Aprobado cartera', 'No autorizado por cartera', 'Tiene un pedido', 'Se solicita autorizacion']
                     $scope.Empresa.get_cotizaciones().forEach(function(data) {
@@ -1088,8 +1088,12 @@ define(["angular", "js/controllers",
                         if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
                             $scope.notificacionClientesAutorizar++;
                             that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + datos.obj.numeroCotizacion);
+                            console.log("LA NOTIFICACION SOLICITUD POR A QUI ES onListarEstadoCotizacion");
+                            socket.remove(['onListarEstadoCotizacion']);
                         }
+                            
                     }
+                    
                 }
             });
 
@@ -1119,6 +1123,8 @@ define(["angular", "js/controllers",
                         $scope.notificacionPedidoAutorizar++;
                         if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
                             that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido);
+                            console.log("LA NOTIFICACION SOLICITUD POR A QUI ES onListarEstadoPedido");
+                            socket.remove(['onListarEstadoPedido']);
                         }
                     }
                 }
@@ -1198,8 +1204,13 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-
-                socket.removeAllListeners();
+                
+               console.log("$stateChangeStart ListarPedidosClientesController")
+               socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);     
+                //socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);
+                 
+                 //,'onListarPedidosClientes','onListarEstadoPedido'
+                //socket.removeAllListeners();                    
             });
 
         }]);

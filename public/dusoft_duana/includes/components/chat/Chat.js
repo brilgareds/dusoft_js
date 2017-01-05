@@ -23,6 +23,7 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                 self.realizarScrollInferior();
             });
             
+            
             scope.$on("onTabConversaciones",function(){
                 var tab = $(".headerConversaciones");
                 
@@ -65,7 +66,7 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
             self.obtenerDiferenciaScroll = function(){
                 var panel = $(".panelConversacion");
                 var scrollActual =  panel.outerHeight();
-                var total = panel[0].scrollHeight - panel.scrollTop();
+                var total = ((panel[0]) ? panel[0].scrollHeight : 0) - panel.scrollTop();
                 var diferencia = total / scrollActual;
                                 
                 return diferencia;

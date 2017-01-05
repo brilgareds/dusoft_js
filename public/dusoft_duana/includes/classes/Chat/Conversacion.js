@@ -91,15 +91,20 @@ define(["angular", "js/models"], function(angular, models) {
             
         };
         
-        Conversacion.prototype.agregarDetalle = function(mensaje) {
+        Conversacion.prototype.agregarDetalle = function(mensaje, agregarALFinal) {
             
             /*for(var i in this.detalle){
                 if(mensaje.getId() === this.detalle[i].getId()){
                     return;
                 }
             }*/
-            
-            this.detalle.push(mensaje);
+            if(agregarALFinal){
+                this.detalle.unshift(mensaje);
+            } else {
+                this.detalle.push(mensaje);
+                
+                
+            }
             
         };
         

@@ -97,6 +97,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
 
                 G.auth.set(usuario, function(err, sesion_usuario) {
                     if (err) {
+                        console.log("error generado ", err);
                         res.send(G.utils.r(req.url, 'No se ha podido Autenticar el Usuario', 500, {sesion: {}}));
                     } else {
                         sesion_usuario.admin = usuario.sw_admin;

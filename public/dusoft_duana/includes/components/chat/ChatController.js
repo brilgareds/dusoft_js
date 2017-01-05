@@ -184,6 +184,7 @@ define(["angular",
             * @fecha 2016-09-09
             */
             $scope.onTraerConversaciones = function(){
+                $scope.root.pagina = 1;
                 self.onTraerConversaciones();
                 $scope.$emit("onTabConversaciones");
                 localStorageService.remove("mensajeNotificacion");
@@ -230,6 +231,11 @@ define(["angular",
                     self.onTraerConversaciones();
                 }
             };
+            
+            $scope.cargarMasDetalle = function(){
+                $scope.root.pagina++;
+                self.listarDetalleConversacion($scope.root.conversacionSeleccionada);
+            }
             
            /**
             * @author Eduar Garcia
@@ -300,7 +306,7 @@ define(["angular",
                
                 //Conversacion actual
                 if(data.mensaje.id_conversacion === conversacion.getId()){
-                    self.agregarDetalleConversacion(data.mensaje, true);
+                    self.agregarDetalleConversacion(data.mensaje, false);
                     
                 } else {
                    
@@ -328,8 +334,13 @@ define(["angular",
             */
             self.listarDetalleConversacion = function(conversacion){
                $scope.root.conversacionSeleccionada = conversacion;
-               $scope.root.conversacionSeleccionada.vaciarDetalle();
-               var obj = {
+               
+               if($scope.root.pagina === 1){
+                   $scope.root.conversacionSeleccionada.vaciarDetalle();
+               }
+               
+               
+                var obj = {
                     session: $scope.root.session,
                     data: {
                         chat: {
@@ -347,20 +358,19 @@ define(["angular",
                         for(var i in _conversaciones){
                             var _conversacion = _conversaciones[i];
                             
-                            if($scope.root.pagina === 1){
-                                
-                                self.agregarDetalleConversacion(_conversacion);
-                            } else {
-                                self.agregarDetalleConversacion(_conversacion, true);
-                            }
+
+                            self.agregarDetalleConversacion(_conversacion, true);
                             
                         }
                         
                         $scope.root.conversacionSeleccioanda = true;
                         
-                        $timeout(function(){
-                            $scope.$emit("realizarScrollInferior");
-                        },500);
+                        if($scope.root.pagina === 1){
+                            
+                            $timeout(function(){
+                                $scope.$emit("realizarScrollInferior");
+                            },500);
+                        }
                         
                         
                     }

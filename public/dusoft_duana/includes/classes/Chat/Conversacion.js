@@ -99,9 +99,10 @@ define(["angular", "js/models"], function(angular, models) {
                 }
             }*/
             if(agregarALFinal){
-                this.detalle.push(mensaje);
-            } else {
                 this.detalle.unshift(mensaje);
+            } else {
+                this.detalle.push(mensaje);
+                
                 
             }
             

@@ -24,14 +24,6 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
             });
             
             
-            $(document).on('scroll', '.panelConversacion', function() {
-                console.log('scrolling'); // you *really* don't want to alert in a scroll
-            });
-            
-            $(".panelConversacion").scroll(function() {
-               console.log('scroll happened');
-            });
-            
             scope.$on("onTabConversaciones",function(){
                 var tab = $(".headerConversaciones");
                 

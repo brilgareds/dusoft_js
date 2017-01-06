@@ -56,7 +56,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         login: {
                             usuario: usuario,
                             contrasenia: clave,
-                            device:"web"
+                            device:"web",
+                            appId:"dusoft-web"
                         }
                     }
                 };

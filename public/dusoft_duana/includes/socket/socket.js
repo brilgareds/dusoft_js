@@ -48,7 +48,6 @@ define(["angular","js/services", "socket"], function(angular, services, io){
             },
             //Remueve los listeners registrados en los controladores
             removeAllListeners: function (eventName, callback) {
-                
                 for(var i in socket.$events){
                     if(!esEventoPrivado(i)){
                         socket.$events[i] = null;
@@ -68,18 +67,8 @@ define(["angular","js/services", "socket"], function(angular, services, io){
             },
             
             remove:function(listeners){
-                
                 for(var i in listeners){
-                    
-                    for(var ii in socket.$events){
-                        
-                        if(ii === listeners[i]){
-                            
-                            socket.$events[ii] = null;
-                            delete  socket.$events[ii];
-                        }
-                        
-                    }
+                    socket.off(listeners[i]);
                 }
                 
             }

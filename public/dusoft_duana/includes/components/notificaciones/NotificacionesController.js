@@ -7,13 +7,14 @@ define(["angular",
     controllers.controller('NotificacionesController', [
         '$scope', '$rootScope', 'Request',
         'API', "socket", "AlertService",
-        '$state', "Usuario", 'URL','webNotification',
+        '$state', "Usuario", 'URL','webNotification', 'Conversacion',
         function($scope, $rootScope, Request,
                 API, socket, AlertService,
-                $state, Usuario, URL, webNotification) {
+                $state, Usuario, URL, webNotification, Conversacion) {
 
             var self = this;
-            
+            $rootScope.conversacionesSinLeer = [];
+            $rootScope.conversacionSeleccionada = Conversacion.get();
             
             /*
              * @Author: Eduar
@@ -92,6 +93,54 @@ define(["angular",
                 });
             };
             
+            
+            
+            $rootScope.conversacionConNotificacion = function(conversacionId){
+                var conversaciones = $rootScope.conversacionesSinLeer;
+                
+                for(var i in conversaciones){
+                    if(conversaciones[i] === conversacionId){
+                        return true;
+                    }
+                }
+                
+                return false;
+            };
+            
+            $rootScope.removerNotificacion = function(conversacionId){
+                var conversaciones = $rootScope.conversacionesSinLeer;
+                
+                for(var i in conversaciones){
+                    if(conversaciones[i] === conversacionId){
+                        conversaciones.splice(i, 1);
+                        self.enviarNuevaNotificacion(conversacionId);
+                        break;
+                    }
+                }
+                console.log("conversaciones remover ", conversaciones);
+                
+            };
+            
+            $rootScope.agregarNotificacion = function(conversacionId){
+                var conversaciones = $rootScope.conversacionesSinLeer;
+                
+                for(var i in conversaciones){
+                    if(conversaciones[i] === conversacionId){
+                        return false;
+                    }
+                }
+                
+                conversaciones.push(conversacionId);
+                self.enviarNuevaNotificacion(conversacionId);
+                //$rootScope.$emit("onConversacionesSinLeer", conversaciones);
+            };
+            
+            self.enviarNuevaNotificacion = function(conversacionId){
+                if(conversacionId !== $rootScope.conversacionSeleccionada.getId()){
+                    
+                    $rootScope.$emit("onConversacionesSinLeer", $rootScope.conversacionesSinLeer);
+                }
+            };
             
             
         }]);

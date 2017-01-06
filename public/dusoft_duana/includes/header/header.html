@@ -78,8 +78,8 @@
                        
                     </span>
                 </button>
-                <button type="button" class="btn btn-default btnOpenChatPanel" ng-click="onBtnChat()" ng-disabled="deshabilitarBtnChat">
-                    <i class="glyphicon glyphicon-comment"></i>
+                <button type="button" class="btn btn-default btnOpenChatPanel" ng-class="{'blink' : conversacionesSinLeer.length > 0}" ng-click="onBtnChat()" ng-disabled="deshabilitarBtnChat">
+                    <i class="glyphicon glyphicon-comment"> <span ng-if="conversacionesSinLeer.length > 0">{{conversacionesSinLeer.length}}</span></i>
                 </button>
 
             </div>

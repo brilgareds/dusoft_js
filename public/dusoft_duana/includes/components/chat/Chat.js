@@ -1,7 +1,7 @@
 
 define(["angular","js/directive", "includes/components/chat/ChatController"], function(angular, directive){
 
-    directive.directive('chat', [function() {
+    directive.directive('chat', ["$rootScope",function($rootScope) {
 
         var directive = {};
         
@@ -38,11 +38,10 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
             });
             
             scope.$on("onMensajeNuevo",function(e, mensaje, usuario){
-                console.log("on mensaje nuevo >>>>>>>>>>>>>>>>>>>>", mensaje, usuario);
                 self.realizarScrollSiEsNecesario();
                 
                 //Valida que no sea el usuario que emitio el mensaje
-                if(mensaje.usuario !== usuario.getNombreUsuario()){
+                if(mensaje.id_conversacion !== $rootScope.conversacionSeleccionada.getId()){
                     
                     if(!$(".tabConversaciones").hasClass("active")){
                         $(".headerConversaciones").addClass("blink");

@@ -20,6 +20,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
            
             
             var obj_session = localStorageService.get("session");
+            $scope.conversacionesSinLeer = $rootScope.conversacionesSinLeer;
             
             if (!obj_session){
                 window.location = "../pages/401.html";
@@ -580,6 +581,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
                 localStorageService.set("chat", {estado:'1'});
             };
+            
+            $rootScope.$on("onConversacionesSinLeer", function(e, data){
+                $scope.conversacionesSinLeer = data;
+            });
 
             self.obtenerModuloActual = function(state) {
                 var obj = $scope.Usuario.getObjetoModulos();
@@ -598,39 +603,44 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             });
             
             socket.on("onNotificacionChat", function(data){
-                console.log("on new chat hereeeee");
                 var mensaje = data.mensaje;
+                               
+                localStorageService.set("mensajeNotificacion", mensaje);
                 
-                var chat =  localStorageService.get("chat");
-                
-                
-                if(chat && chat.estado === '1' && !document.hidden){
-                    return;
+                var chat =  localStorageService.get("chat");              
+                if(!chat || chat.estado !== '1') {
+                    self.abrirChat();
+                } else if(mensaje.id_conversacion !== $rootScope.conversacionSeleccionada.getId()) {
+                    $rootScope.agregarNotificacion(mensaje.id_conversacion);
                 }
                 
-                var onHide;
-                               
-                webNotification.showNotification(mensaje.usuario+ " dice: ", {
-                    body: mensaje.mensaje,
-                    icon: '/images/logo.png',
-                    onClick: function onNotificationClicked() {
-                        localStorageService.set("mensajeNotificacion", mensaje);
-                        self.abrirChat();
-                        onHide();
-                        window.focus();
-                    },
-                    autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
-                }, function onShow(error, hide) {
-                    if (error) {
-                        console.log('Error interno: al mostrar ventana de web notifications ' + error.message);
-                    } else {
-                         onHide =  hide;
-                        setTimeout(function hideNotification() {
-                           onHide();
-                           //manually close the notification (you can skip this if you use the autoClose option)
-                        }, 30000);
-                    }
-                });
+                if(document.hidden){
+                    
+                    var onHide;
+
+                    webNotification.showNotification(mensaje.usuario+ " dice: ", {
+                        body: mensaje.mensaje,
+                        icon: '/images/logo.png',
+                        onClick: function onNotificationClicked() {
+                            
+                            self.abrirChat();
+                            onHide();
+                            window.focus();
+                        },
+                        autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+                    }, function onShow(error, hide) {
+                        if (error) {
+                            console.log('Error interno: al mostrar ventana de web notifications ' + error.message);
+                        } else {
+                             onHide =  hide;
+                            setTimeout(function hideNotification() {
+                               onHide();
+                               //manually close the notification (you can skip this if you use the autoClose option)
+                            }, 30000);
+                        }
+                    });
+                }
+                
             });
 
             //evento de coneccion al socket

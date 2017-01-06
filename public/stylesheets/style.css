@@ -734,6 +734,7 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 .blink {
   animation: blink-animation 1s steps(5, start) infinite;
   -webkit-animation: blink-animation 1s steps(5, start) infinite;
+  color:red;
 }
 @keyframes blink-animation {
   to {

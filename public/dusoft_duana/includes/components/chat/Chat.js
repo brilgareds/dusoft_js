@@ -23,6 +23,11 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                 self.realizarScrollInferior();
             });
             
+            angular.element(".panelConversacion").bind('scroll',function(){
+                console.log(' --- You scrolled - do $digest() ---')
+                $scope.$digest();
+            })
+            
             
             scope.$on("onTabConversaciones",function(){
                 var tab = $(".headerConversaciones");

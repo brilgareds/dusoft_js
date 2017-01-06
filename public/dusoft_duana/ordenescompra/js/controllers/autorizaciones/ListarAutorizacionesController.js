@@ -102,7 +102,7 @@ define(["angular", "js/controllers",
              */
             $scope.onBuscarPedidos = function() {
                 $scope.rootPedidosFarmacias.paginaactual = 1;
-                self.buscarPedidos();
+                //self.buscarPedidos();
             };
 
             /*

@@ -742,11 +742,11 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                     function() {
                         this.on("hc.codigo_medicamento", "med.codigo_medicamento")
 
-                }).innerJoin("inv_med_cod_principios_activos AS pric", 
+                }).leftJoin("inv_med_cod_principios_activos AS pric", 
                     function() {
                         this.on("med.cod_principio_activo", "pric.cod_principio_activo")
 
-                }).innerJoin("inventarios_productos AS invp",
+                }).leftJoin("inventarios_productos AS invp",
                     function(){
                         this.on("hc.codigo_medicamento", "invp.codigo_producto")
                 }).join("hc_medicamentos_recetados_amb AS a", function(){
@@ -1149,7 +1149,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                         this.andWhere(G.knex.raw("h.subclase_id='" + obj.principioActivo + "' "))
                                        
                                     }else{
-                                        this.andWhere(G.knex.raw("and b.codigo_producto ='" + obj.producto + "' "))
+                                        this.andWhere(G.knex.raw("b.codigo_producto ='" + obj.producto + "' "))
                                        
                                     }
                                     
@@ -1204,7 +1204,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                         this.andWhere(G.knex.raw("h.subclase_id='" + obj.principioActivo + "' "))
                                        
                                     }else{
-                                        this.andWhere(G.knex.raw("and b.codigo_producto ='" + obj.producto + "' "))
+                                        this.andWhere(G.knex.raw("b.codigo_producto ='" + obj.producto + "' "))
                                        
                                     }
                                     

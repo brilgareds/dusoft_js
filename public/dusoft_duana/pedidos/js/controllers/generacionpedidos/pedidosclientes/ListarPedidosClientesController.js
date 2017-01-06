@@ -1088,8 +1088,8 @@ define(["angular", "js/controllers",
                         if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
                             $scope.notificacionClientesAutorizar++;
                             that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + datos.obj.numeroCotizacion);
-                            console.log("LA NOTIFICACION SOLICITUD POR A QUI ES onListarEstadoCotizacion");
-                            socket.remove(['onListarEstadoCotizacion']);
+                            console.log("LA NOTIFICACION SOLICITUD POR A QUI ES onListarEstadoCotizacion [socket]:: ", socket);
+                            //socket.remove(['onListarEstadoCotizacion']);
                         }
                             
                     }
@@ -1124,7 +1124,7 @@ define(["angular", "js/controllers",
                         if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
                             that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido);
                             console.log("LA NOTIFICACION SOLICITUD POR A QUI ES onListarEstadoPedido");
-                            socket.remove(['onListarEstadoPedido']);
+                            //socket.remove(['onListarEstadoPedido']);
                         }
                     }
                 }
@@ -1162,7 +1162,7 @@ define(["angular", "js/controllers",
 
 
             that.init(function() {
-
+                
                 if (!Sesion.getUsuarioActual().getEmpresa()) {
                     AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
                 } else {
@@ -1194,6 +1194,7 @@ define(["angular", "js/controllers",
                             that.buscar_pedidos('', '');
 
                             $scope.datos_view.inactivarTab = true;
+                            
                         }
                     }
                 }
@@ -1206,7 +1207,8 @@ define(["angular", "js/controllers",
                 $scope.$$watchers = null;
                 
                console.log("$stateChangeStart ListarPedidosClientesController")
-               socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);     
+                  socket.remove(['onListarEstadoCotizacion']);  
+                  socket.remove(['onListarEstadoPedido']);  
                 //socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);
                  
                  //,'onListarPedidosClientes','onListarEstadoPedido'

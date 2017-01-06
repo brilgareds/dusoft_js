@@ -202,8 +202,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 
-               console.log("$stateChangeStart ReportePedidosClientesController")
-                 socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);                
             });
 
 

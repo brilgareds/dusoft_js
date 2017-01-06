@@ -1088,8 +1088,7 @@ define(["angular", "js/controllers",
                         if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
                             $scope.notificacionClientesAutorizar++;
                             that.notificarSolicitud("Solicitud aprobacion", "Cotización # " + datos.obj.numeroCotizacion);
-                            console.log("LA NOTIFICACION SOLICITUD POR A QUI ES onListarEstadoCotizacion [socket]:: ", socket);
-                            //socket.remove(['onListarEstadoCotizacion']);
+                             
                         }
                             
                     }
@@ -1123,8 +1122,7 @@ define(["angular", "js/controllers",
                         $scope.notificacionPedidoAutorizar++;
                         if ($scope.datos_view.opciones.sw_notificar_aprobacion === true) {
                             that.notificarSolicitud("Solicitud aprobacion", "Pedido # " + datos.obj.numero_pedido);
-                            console.log("LA NOTIFICACION SOLICITUD POR A QUI ES onListarEstadoPedido");
-                            //socket.remove(['onListarEstadoPedido']);
+                            
                         }
                     }
                 }
@@ -1205,14 +1203,9 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                
-               console.log("$stateChangeStart ListarPedidosClientesController")
-                  socket.remove(['onListarEstadoCotizacion']);  
-                  socket.remove(['onListarEstadoPedido']);  
-                //socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);
                  
-                 //,'onListarPedidosClientes','onListarEstadoPedido'
-                //socket.removeAllListeners();                    
+                socket.remove(['onListarEstadoCotizacion','onListarPedidosClientes','onListarEstadoPedido']);  
+                                     
             });
 
         }]);

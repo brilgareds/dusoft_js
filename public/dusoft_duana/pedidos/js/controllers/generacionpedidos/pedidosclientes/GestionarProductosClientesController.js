@@ -652,11 +652,7 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                console.log("$stateChangeStart GestionarProductosClientesController");
-                //socket.remove(['onListarEstadoPedido']);
-                //socket.remove(['onListarEstadoCotizacion']);
-                //$scope.datos_form = null;
-                //socket.remove(['onListarEstadoCotizacion','onListarEstadoPedido']);
+               
             });
         }]);
 });

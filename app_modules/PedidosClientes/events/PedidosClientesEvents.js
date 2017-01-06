@@ -77,10 +77,7 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
  */
 PedidosClientesEvents.prototype.onNotificarEstadoCotizacion = function(numeroCotizacion) {
   
-  console.log("**********PedidosClientesEvents.prototype.onNotificarEstadoCotizacion***************");
-  console.log("**********PedidosClientesEvents.prototype.onNotificarEstadoCotizacion***************");
-  console.log("**********PedidosClientesEvents.prototype.onNotificarEstadoCotizacion***************");
-  console.log("**********PedidosClientesEvents.prototype.onNotificarEstadoCotizacion***************");
+  
   
     var that = this;
   

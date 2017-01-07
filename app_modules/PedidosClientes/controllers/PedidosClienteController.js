@@ -615,12 +615,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
  * +Descripcion : Metodo encargado de insertar los productos en una cotizacion
  */
 PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
-
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    
+ 
     var that = this;
 
     var args = req.body.data;

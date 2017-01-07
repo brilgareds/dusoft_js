@@ -5,14 +5,14 @@
                 <tabset>
                     <tab  ng-if="datos_view.inactivarTab" ng-click="cargarListaNotificacionCotizacion('')">
                         <tab-heading>
-                            <i class="glyphicon glyphicon-time"></i> Cotizaciones
+                            <i class="glyphicon glyphicon-list"></i> Cotizaciones
                         </tab-heading>
                         <br> 
                         <div ng-include="'views/generacionpedidos/pedidosclientes/listarcotizacionesclientes.html'"></div>
                     </tab>                        
                     <tab  ng-if="datos_view.inactivarTab" active="datos_view.activarTabPedidos" >
                         <tab-heading ng-click="cargarListaPedidos('','')" >
-                             Pedidos Clientes 
+                            <i class="glyphicon glyphicon-list"></i> Pedidos Clientes 
                              <!--<span ng-show="notificacionClientesAutorizar > 0" class="badge badge-warning">{{notificacionClientesAutorizar}}</span>//-->
                          <!--   <i class="glyphicon glyphicon-th"></i> Pedidos Clientes//-->
                         </tab-heading>

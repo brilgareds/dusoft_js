@@ -549,10 +549,13 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 
                 var chat =  localStorageService.get("chat");
                 console.log("estado chat ", chat);
+                $rootScope.$emit("onToogleChat", {forzarAbrir:true});
                 
                 if(chat && chat.estado === '1'){
                     return;
                 }
+                
+                
                 
                 $scope.opts = {
                     backdrop: true,

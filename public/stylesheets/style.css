@@ -667,12 +667,24 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
 .tabChat .chatBody{
     height: 525px;
 }
-.tabChat .btnCloseChat{
+.tabChat .btnCloseChat, .tabChat .toogleChat{
     display: none;
 }
 
 .tabChat .btnVentanaCompletaChat{
     display: none;
+}
+
+.btnVentanaCompletaChat{
+    margin-left: 5px;
+}
+
+.chatClosed{
+    bottom:-406px!important;
+}
+
+.chatOpened{
+    bottom:0px!important;
 }
 
 .tabChat .topBarChat{

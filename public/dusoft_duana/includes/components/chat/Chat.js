@@ -23,22 +23,40 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                 self.realizarScrollInferior();
             });
             
+            
+            $(document).on("click", ".toogleChat", function(){
+                self.onToogleChat({});
+            });
+            
+            $rootScope.$on("onToogleChat",function(e, data){
+                self.onToogleChat(data);
+            });
+            
             angular.element(".panelConversacion").bind('scroll',function(){
                 console.log(' --- You scrolled - do $digest() ---')
                 $scope.$digest();
-            })
+            });
             
             
             scope.$on("onTabConversaciones",function(){
                 var tab = $(".headerConversaciones");
+                var barChat = $(".iconoToogle");
                 
                 if(tab.hasClass("blink")){
                     tab.removeClass("blink");
+                }
+                
+                if(barChat.hasClass("blink")){
+                    barChat.removeClass("blink");
                 }
             });
             
             scope.$on("onMensajeNuevo",function(e, mensaje, usuario){
                 self.realizarScrollSiEsNecesario();
+                
+                if($(".contenedorChat").hasClass("chatClosed")){
+                    $(".iconoToogle").addClass("blink");
+                }
                 
                 //Valida que no sea el usuario que emitio el mensaje
                 if(mensaje.id_conversacion !== $rootScope.conversacionSeleccionada.getId()){
@@ -46,9 +64,32 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                     if(!$(".tabConversaciones").hasClass("active")){
                         $(".headerConversaciones").addClass("blink");
                     }
+                    
                 }
                 
             });
+            
+            self.onToogleChat = function(data){
+                var contenedorChat = $(".contenedorChat");
+                var icono = $(".iconoToogle");
+                var iconoAbrir  = "glyphicon glyphicon-chevron-up";
+                var iconoCerrar = "glyphicon glyphicon-minus";
+                icono.removeClass("blink");
+                
+                if(!contenedorChat.hasClass("chatClosed") && !data.forzarAbrir){
+                    
+                    contenedorChat.removeClass("chatOpened");
+                    icono.removeClass(iconoCerrar);
+                    contenedorChat.addClass("chatClosed");
+                    icono.addClass(iconoAbrir);
+                    
+                } else {
+                    contenedorChat.removeClass("chatClosed");
+                    icono.removeClass(iconoAbrir);
+                    contenedorChat.addClass("chatOpened");
+                    icono.addClass(iconoCerrar);
+                }
+            };
                  
             scope.$on("realizarScrollInferior",function(){
                 self.realizarScrollInferior();

@@ -1331,7 +1331,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 d.descripcion as descripcion_tipo_producto,\
                 b.codigo_cum,\
                 b.codigo_invima,\
-                b.vencimiento_codigo_invima,\
+                to_char(b.vencimiento_codigo_invima, 'yyyy-mm-dd') as vencimiento_codigo_invima,\
                 b.porc_iva as iva,\
                 a.existencia::integer as existencia,\
                 coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\

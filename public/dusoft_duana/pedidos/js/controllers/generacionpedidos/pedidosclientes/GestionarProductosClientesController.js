@@ -509,7 +509,10 @@ define(["angular", "js/controllers",
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
                         cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
-                    {field: 'codigo_invima', displayName: 'Reg.Invima', width: "80", cellClass: "gridNumber"},
+                    {field: '#Cod.invima/F.Ven', width: "200", displayName: '#Cod.invima/F.Ven', 
+                        cellTemplate: '<div class="col-xs-16 ">\n\
+                            <p class="text-uppercase">{{row.entity.codigo_invima}} / {{row.entity.fecha_vencimiento_invima}}</p></div>'},
+                  
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\

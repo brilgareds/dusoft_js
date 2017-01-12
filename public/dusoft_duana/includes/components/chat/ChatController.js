@@ -1,7 +1,7 @@
 define(["angular",
     "js/controllers",
     'includes/Constants/Url', 'includes/classes/Chat/Conversacion', 'includes/classes/Chat/ConversacionDetalle',
-    "includes/components/gruposChat/GruposChatController"], function(angular, controllers) {
+    "includes/components/gruposChat/GruposChatController", "includes/components/chat/chatScroll"], function(angular, controllers) {
 
     controllers.controller('ChatController', [
         '$scope', '$rootScope', 'Request',
@@ -240,9 +240,18 @@ define(["angular",
                 }
             };
             
-            $scope.cargarMasDetalle = function(){
+            $scope.$on("onScrollChat", function(){
+                $scope.cargarMasDetalle(function(elementosTraidos){
+                    if(elementosTraidos){
+                        
+                        $scope.$broadcast("onMantenerScroll");
+                    }
+                });
+            });
+            
+            $scope.cargarMasDetalle = function(callback){
                 $scope.root.pagina++;
-                self.listarDetalleConversacion($scope.root.conversacionSeleccionada);
+                self.listarDetalleConversacion($scope.root.conversacionSeleccionada, callback);
             };
             
            /**
@@ -343,7 +352,7 @@ define(["angular",
             * +Descripcion Realiza peticion al API para traer el detalle de una conversacion
             * @fecha 2016-09-05
             */
-            self.listarDetalleConversacion = function(conversacion){
+            self.listarDetalleConversacion = function(conversacion, callback){
                $scope.root.conversacionSeleccionada = conversacion;
                $rootScope.conversacionSeleccionada = conversacion;
                
@@ -384,9 +393,13 @@ define(["angular",
                             },500);
                         }
                         
+                        if(callback){
+                            callback((_conversaciones.length > 0 ? true : false));
+                        }
                         
                     }
                     
+
 
                 });
             };
@@ -398,7 +411,7 @@ define(["angular",
             */ 
             self.agregarDetalleConversacion = function(_conversacion, agregarAlFinal){
                 var conversacion = ConversacionDetalle.get(
-                        _conversacion.id_conversacion, _conversacion.usuario,
+                        _conversacion.id, _conversacion.usuario,
                         _conversacion.mensaje, _conversacion.archivo_adjunto,
                         _conversacion.fecha_mensaje
                 );

@@ -32,9 +32,8 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                 self.onToogleChat(data);
             });
             
-            angular.element(".panelConversacion").bind('scroll',function(){
+            $(document).on('scroll', ".tab-content",function(){
                 console.log(' --- You scrolled - do $digest() ---')
-                $scope.$digest();
             });
             
             

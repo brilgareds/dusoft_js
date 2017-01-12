@@ -40,6 +40,8 @@ define(["angular",
                 moduloChat : (moduloChat)? moduloChat.opciones : {},
                 pagina: 1
             };
+            
+            
                         
             $scope.root.listaConversaciones = {
                 data: 'root.conversaciones',
@@ -53,7 +55,9 @@ define(["angular",
                     
                     row.entity.setNotificacion(false);
                     
+                    
                     if(row.selected){
+                        $rootScope.removerNotificacion(row.entity.getId());
                         self.listarDetalleConversacion(row.entity);
                     }
                     
@@ -68,13 +72,17 @@ define(["angular",
                                         </button>'
                     },
                     {field: 'getNombre()', displayName: 'Participantes', cellClass:"ngCellText",
-                        cellTemplate:"<div ng-class=\"{'blink' : row.entity.tieneNotificacion()}\">{{row.entity.getNombre()}}</div>"},
+                        cellTemplate:"<div ng-class=\"{'blink' : conversacionConNotificacion(row.entity)}\">{{row.entity.getNombre()}}</div>"},
                     {field: 'getFechaCreacion()', cellClass:"ngCellText", displayName: 'Fecha', width:100, 
-                        cellTemplate:"<div ng-class=\"{'blink' : row.entity.tieneNotificacion()}\">{{row.entity.getFechaCreacion()}}</div>"}
+                        cellTemplate:"<div ng-class=\"{'blink' : conversacionConNotificacion(row.entity)}\">{{row.entity.getFechaCreacion()}}</div>"}
 
                 ]
 
             };
+           
+           $scope.conversacionConNotificacion = function(conversacion){
+               return $rootScope.conversacionConNotificacion(conversacion.getId());
+           };
             
           /**
             * @author Eduar Garcia
@@ -110,8 +118,8 @@ define(["angular",
                 
                 
                 window.open(
-                    '/dusoft_duana/chat/#/Admin',
-                    '_blank' // <- This is what makes it open in a new window.
+                    '/dusoft_duana/chat/#/ChatDusoft',
+                    '_blank' 
                 );
             };
             
@@ -235,7 +243,7 @@ define(["angular",
             $scope.cargarMasDetalle = function(){
                 $scope.root.pagina++;
                 self.listarDetalleConversacion($scope.root.conversacionSeleccionada);
-            }
+            };
             
            /**
             * @author Eduar Garcia
@@ -288,10 +296,13 @@ define(["angular",
                     var conversacion =  $scope.root.conversaciones[i];
                     
                     if(id ===  conversacion.getId()){
+                        
                         conversacion.setNotificacion(true);
+                        $rootScope.agregarNotificacion(conversacion.getId());
                     }
                 }
             };
+            
             
            /**
             * @author Eduar Garcia
@@ -334,6 +345,7 @@ define(["angular",
             */
             self.listarDetalleConversacion = function(conversacion){
                $scope.root.conversacionSeleccionada = conversacion;
+               $rootScope.conversacionSeleccionada = conversacion;
                
                if($scope.root.pagina === 1){
                    $scope.root.conversacionSeleccionada.vaciarDetalle();

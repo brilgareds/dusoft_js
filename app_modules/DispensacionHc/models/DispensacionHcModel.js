@@ -12,7 +12,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
     var colSubQuery = [G.knex.raw("'0' AS tipo_formula"),
                         "a.tipo_formula as transcripcion_medica",
                         G.knex.raw("CASE WHEN (a.tipo_formula='0' or a.tipo_formula ='2') THEN 'FORMULACION' ELSE 'TRANSCRIPCION' END AS descripcion_tipo_formula"),
-                        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS fecha_registro"),
+                        G.knex.raw("TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') AS fecha_registro"),
                         "a.tipo_id_paciente",
                         "a.paciente_id",
                         G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS registro"),
@@ -1339,9 +1339,10 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     G.knex.raw("to_char(fv.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),
                     "fv.lote",
                     "fv.ubicacion_id",
-                    G.knex.raw("CASE WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) = 30 THEN 0\
+                    G.knex.raw("CASE WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) <= 30 \
+                    and extract(days from (fv.fecha_vencimiento - timestamp 'now()')) > 1 THEN 0 \
                      WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) <= 1 THEN 1\
-                    ELSE 2 END as estado_producto"),
+                     WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) > 30 THEN 2 END as estado_producto"),
                     G.knex.raw("extract(days from (fv.fecha_vencimiento - timestamp 'now()')) as cantidad_dias")]; 
     var query = G.knex.column(columna)
                 .select()
@@ -1384,7 +1385,8 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                  .orderBy("fv.fecha_vencimiento","ASC");
                   
     query.then(function(resultado){  
-        callback(false, resultado)
+        console.log("resultado [existenciasBodegas]: ", resultado);
+        callback(false, resultado);
     }).catch(function(err){ 
         console.log("err [existenciasBodegas]: ", err);
         callback(err);

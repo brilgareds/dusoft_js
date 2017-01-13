@@ -492,7 +492,7 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 enableColumnResize: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: 120,
+                    {field: 'codigo_producto', displayName: 'Código', width: 140,
                         
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.get_tipo_producto() == 1" >N</span>\
@@ -540,7 +540,7 @@ define(["angular", "js/controllers",
                                        validacion-numero-entero \
                                        class="form-control grid-inline-input" \n\
                                        name="" id="" /> </div>'},
-                    {width: "50", displayName: "Opcion", cellClass: "txt-center",
+                    {width: "60", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '     <button  ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
 

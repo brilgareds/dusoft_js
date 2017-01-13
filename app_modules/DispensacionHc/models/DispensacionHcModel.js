@@ -1385,7 +1385,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                  .orderBy("fv.fecha_vencimiento","ASC");
                   
     query.then(function(resultado){  
-        console.log("resultado [existenciasBodegas]: ", resultado);
+      
         callback(false, resultado);
     }).catch(function(err){ 
         console.log("err [existenciasBodegas]: ", err);

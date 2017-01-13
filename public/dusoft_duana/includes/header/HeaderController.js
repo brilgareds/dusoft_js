@@ -555,8 +555,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     return;
                 }
                 
-                
-                
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,

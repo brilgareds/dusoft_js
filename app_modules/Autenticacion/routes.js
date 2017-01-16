@@ -30,6 +30,10 @@ module.exports = function(app, di_container) {
         c_auth.sessions(req, res);
     });
     
+    app.post('/api/guardarTokenPush', function(req, res) {
+        c_auth.guardarTokenPush(req, res);
+    });
+    
 
     // Events 
     io.sockets.on('connection', function(socket) {

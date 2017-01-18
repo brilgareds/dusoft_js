@@ -43,6 +43,12 @@ module.exports = function(app, di_container) {
         socket.on('onActualizarSesion', function(datos) {
             e_auth.onActualizarSesion(datos);
         });
+        
+        socket.on('guardarTokenPush', function(datos) {
+            e_auth.guardarTokenPush(datos);
+        });
+        
+        
     });
 
     io.sockets.on('chatDevice', function(socket) {

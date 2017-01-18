@@ -614,6 +614,29 @@ ChatModel.prototype.removerUsuarioConversacion = function(parametros, callback) 
 
 /**
 * @author Eduar Garcia
+* +Descripcion Obtiene el token de un usuario en la aplicacion del chat
+* @params obj: {appId, usuario_id}
+* @fecha 2017-01-17
+*/
+ChatModel.prototype.obtenerIdDispositivoPorUsuario = function(parametros, callback) {
+    G.knex.distinct(G.knex.raw('ON (a.device_id) a.*')).
+    from("system_usuarios_sesiones as a").
+    innerJoin("aplicaciones as b", "b.id", "a.id_aplicacion").
+    where('a.usuario_id', parametros.usuario_id).
+    andWhere('b.token', parametros.token).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });  
+};
+/*select distinct on (a.device_id) a.* from system_usuarios_sesiones a 
+inner join aplicaciones as b on b.id = a.id_aplicacion
+where a.usuario_id = 1350 and b.token = 'dusoft-chat'*/
+
+/**
+* @author Eduar Garcia
 * +Descripcion Funcion recursiva para obtener titulo de un arreglo de conversaciones
 * @params obj: Object conversaciones {conversaciones, index, contexto}
 * @fecha 2016-09-07

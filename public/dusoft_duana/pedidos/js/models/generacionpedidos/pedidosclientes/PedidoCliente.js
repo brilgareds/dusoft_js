@@ -30,6 +30,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.tipoPedido;
                 this.facturaFiscal;
                 this.estadoFacturaFiscal;
+                this.filtroEstadoFacturado = false;
             };
 
             PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);
@@ -321,6 +322,18 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 
             PedidoCliente.prototype.getEstadoFacturaFiscal = function() {
                 return this.estadoFacturaFiscal;
+            };
+            
+            
+            
+            
+             PedidoCliente.prototype.setFiltroEstadoFacturado = function(filtroEstadoFacturado) {
+                this.filtroEstadoFacturado = filtroEstadoFacturado;
+                return this;
+            };
+
+            PedidoCliente.prototype.getFiltroEstadoFacturado = function() {
+                return this.filtroEstadoFacturado;
             };
             
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {

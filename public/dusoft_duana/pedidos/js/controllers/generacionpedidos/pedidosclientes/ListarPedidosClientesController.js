@@ -103,7 +103,7 @@ define(["angular", "js/controllers",
                 opciones: Sesion.getUsuarioActual().getModuloActual().opciones,
                 inactivarTab: false
             };
-
+            $scope.listarFacuras = false;
             /**
              * +Descripcion Menu desplegable para filtar en la busqueda de
              *              una cotizacion
@@ -482,6 +482,7 @@ define(["angular", "js/controllers",
             // Pedidos
             $scope.buscador_pedidos = function(ev) {
                 if (ev.which === 13) {
+                    
                     that.buscar_pedidos('', '');
                 }
             };
@@ -681,7 +682,7 @@ define(["angular", "js/controllers",
                         data: {
                             pedidos_clientes: {
                                 empresa_id: $scope.Pedido.get_empresa_id(),
-                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),                            
                                 bodega_id: $scope.Pedido.get_bodega_id(),
                                 contrato_cliente_id: cotizacion.getCliente().contrato_id, //894
                                 pagina_actual: 1,
@@ -739,7 +740,9 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             that.buscar_pedidos = function(estado, estadoSolicitud) {
-
+                
+              
+                
                 //Se obtiene el criterio de busqueda a traves del local storage
                 //con el objetivo de que el usuario al modificar un pedido
                 //y regrese al listado de todos los pedidos, conserve el filtro
@@ -764,6 +767,7 @@ define(["angular", "js/controllers",
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_pedidos, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00",
+                            filtroEstadoFacturado: $scope.Pedido.getFiltroEstadoFacturado(),
                             termino_busqueda: $scope.datos_view.termino_busqueda_pedidos,
                             pagina_actual: $scope.datos_view.pagina_actual_pedidos,
                             estado_pedido: estado,
@@ -774,11 +778,11 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
-
+                     
                     $scope.datos_view.ultima_busqueda_pedidos = $scope.datos_view.termino_busqueda_pedidos;
 
                     if (data.status === 200) {
-
+                        
                         $scope.datos_view.cantidad_items_pedidos = data.obj.pedidos_clientes.length;
 
                         if ($scope.datos_view.paginando_pedidos && $scope.datos_view.cantidad_items_pedidos === 0) {
@@ -876,6 +880,7 @@ define(["angular", "js/controllers",
                 });
                 //LISTAR_FORMULA_PEDIDO
             };
+           
             
             $scope.lista_pedidos_clientes = {
                 data: 'Empresa.get_pedidos()',
@@ -887,7 +892,7 @@ define(["angular", "js/controllers",
                     {field: 'get_descripcion_estado_actual_pedido()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
                         cellTemplate: "<button type='button' ng-class='agregar_clase_pedido(row.entity.estado_actual_pedido)'> <span ng-class='agregar_restricion_pedido(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
-                    {field: 'getFacturaFiscal()', displayName: 'Factura', width: "10%"},
+                    {field: 'getFacturaFiscal()', displayName: 'Factura', width:  "10%", visible:  true},
                     {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
                     {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
                     {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%"},
@@ -912,8 +917,7 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
-
-
+             
             $scope.onTraerLogsPedidos = function(pedido) {
 
                 var empresa = Sesion.getUsuarioActual().getEmpresa();

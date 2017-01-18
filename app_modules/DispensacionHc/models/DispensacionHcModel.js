@@ -9,10 +9,10 @@ var DispensacionHcModel = function() {};
  */
 DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
      
-    var colSubQuery = [G.knex.raw("'0' AS tipo_formula"),
+    var colSubQuery = [G.knex.raw(" DISTINCT '0' AS tipo_formula"),
                         "a.tipo_formula as transcripcion_medica",
                         G.knex.raw("CASE WHEN (a.tipo_formula='0' or a.tipo_formula ='2') THEN 'FORMULACION' ELSE 'TRANSCRIPCION' END AS descripcion_tipo_formula"),
-                        G.knex.raw("TO_CHAR(a.fecha_minima_entrega,'YYYY-MM-DD') AS fecha_registro"),
+                        G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS fecha_registro"),
                         "a.tipo_id_paciente",
                         "a.paciente_id",
                         G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS registro"),

@@ -92,9 +92,11 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
      
     var fecha_inicial;
     var fecha_final;
+    
     if (args.pedidos_clientes.fecha_inicial !== undefined || args.pedidos_clientes.fecha_final !== undefined) {
           fecha_inicial = args.pedidos_clientes.fecha_inicial;
           fecha_final = args.pedidos_clientes.fecha_final;  
+          args.pedidos_clientes.filtros.filtroEstadoFacturado = args.pedidos_clientes.filtroEstadoFacturado;  
     }
     
     

@@ -41,7 +41,13 @@ define(["angular",
                 pagina: 1
             };
             
-            
+            $scope.root.filtros = [
+                {nombre : "Historial", historial:true},                
+                {nombre : "Usuario", usuario:true}
+            ];
+          
+            $scope.root.filtro  = $scope.root.filtros[0];
+          
                         
             $scope.root.listaConversaciones = {
                 data: 'root.conversaciones',
@@ -83,6 +89,10 @@ define(["angular",
            $scope.conversacionConNotificacion = function(conversacion){
                return $rootScope.conversacionConNotificacion(conversacion.getId());
            };
+           
+            $scope.onSeleccionFiltro = function(filtro){
+                $scope.root.filtro = filtro;
+            };
             
           /**
             * @author Eduar Garcia
@@ -435,7 +445,8 @@ define(["angular",
                     data: {
                         chat: {
                             usuario_id: Usuario.getUsuarioActual().getId(),
-                            termino_busqueda:$scope.root.terminoBusqueda
+                            termino_busqueda:$scope.root.terminoBusqueda,
+                            filtro:$scope.root.filtro
                         }
                     }
                 };

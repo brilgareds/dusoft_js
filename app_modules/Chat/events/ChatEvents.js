@@ -38,7 +38,6 @@ ChatEvents.prototype.onNotificarMensaje = function(mensaje, usuarios, usuarioEmi
                 
         }
         
-        console.log("notificaciones a enviar ", usuariosANotificar);
         that.enviarNotificacionPush({usuarios:usuariosANotificar, mensaje:mensaje});
         
         callback(false);
@@ -68,7 +67,8 @@ ChatEvents.prototype.enviarNotificacionPush = function(parametros) {
             def.resolve();
             console.log("no se pudo obtener el device id para el usuario ", usuario);
             
-        } else {            
+        } else {        
+            console.log("enviar notificacion a ", usuario, " con token ", resultado[0].device_id);
             var mensaje = {
                 to: resultado[0].device_id,
                 collapse_key: parametros.mensaje.id_conversacion+"", 

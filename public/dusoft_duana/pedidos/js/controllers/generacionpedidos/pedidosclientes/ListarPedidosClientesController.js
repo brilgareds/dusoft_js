@@ -371,7 +371,7 @@ define(["angular", "js/controllers",
              * @param {type} estado
              */
             $scope.cargarListaNotificacionCotizacion = function(estado) {
- 
+                $scope.datos_view.termino_busqueda_cotizaciones  = '';
                 that.buscar_cotizaciones(estado);
                 $scope.notificacionClientesAutorizar = 0;
 
@@ -767,7 +767,7 @@ define(["angular", "js/controllers",
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_pedidos, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00",
-                            filtroEstadoFacturado: $scope.Pedido.getFiltroEstadoFacturado(),
+                            //filtroEstadoFacturado: $scope.Pedido.getFiltroEstadoFacturado(),
                             termino_busqueda: $scope.datos_view.termino_busqueda_pedidos,
                             pagina_actual: $scope.datos_view.pagina_actual_pedidos,
                             estado_pedido: estado,
@@ -970,9 +970,8 @@ define(["angular", "js/controllers",
              * @param {type} estadoSolicitud
              */
             $scope.cargarListaNotificacionPedidos = function(estado, estadoSolicitud) {
-
+                $scope.datos_view.termino_busqueda_pedidos = '';
                 that.buscar_pedidos(estado, estadoSolicitud);
-
                 $scope.notificacionPedidoAutorizar = 0;
             };
 

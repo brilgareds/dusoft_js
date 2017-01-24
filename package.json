@@ -14,11 +14,13 @@
     "date-utils": "~1.2.15",
     "db-migrate": "0.6.4",
     "express": "3.4.7",
+    "fcm-push": "^1.1.2",
     "fs-extra": "~0.12.0",
     "intravenous": "latest",
     "j": "^0.4.3",
     "jade": "*",
     "jinq": "^1.6.0",
+    "json2csv": "~3.4.2",
     "jsreport": "0.2.1",
     "jsreport-client": "*",
     "knex": "^0.11.5",
@@ -27,12 +29,11 @@
     "nodemailer": "^0.6.1",
     "pg": "2.x",
     "pg-query": "0.x",
+    "promise": "~7.1.1",
     "q": "*",
     "soap": "^0.13.0",
     "socket.io": "1.4.5",
     "socket.io-client": "1.4.5",
-    "xls-to-json": "*",
-    "json2csv": "~3.4.2",
-    "promise": "~7.1.1"
+    "xls-to-json": "*"
   }
 }

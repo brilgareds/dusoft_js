@@ -23,6 +23,8 @@ ChatEvents.prototype.onNotificarMensaje = function(mensaje, usuarios, usuarioEmi
                 var _usuario = usuarios[ii];
                 
                 if(_session.usuario_id === _usuario.usuario_id /*&& _session.usuario_id !== usuarioEmite*/){
+                    mensaje.socket_id = _session.socket_id;
+                    mensaje.usuarioEmite = usuarioEmite;
                     that.io.to(_session.socket_id).emit('onNotificarMensaje', {mensaje: mensaje});
                     that.io.to(_session.socket_id).emit('onNotificacionChat', {mensaje: mensaje});
 

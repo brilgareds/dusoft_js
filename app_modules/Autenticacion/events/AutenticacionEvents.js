@@ -30,7 +30,7 @@ AutenticacionEvents.prototype.onActualizarSesion = function(datos) {
     console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
     var that = this;
     G.auth.update(datos, function(){
-        that.io.to(datos.socket_id).emit('onSesionActualizada', {});
+        that.io.to(datos.socket_id).emit('onSesionActualizada', datos);
     });
 };
 

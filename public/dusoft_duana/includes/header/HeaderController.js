@@ -441,6 +441,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                 Request.realizarRequest('/api/logout', "POST", {session: $scope.session, data: {}}, function(data) {
                     localStorageService.remove("session");
+                    localStorageService.remove("socketsIds");
                     var llavesMemoria = localStorageService.keys();
                     var llavesPermanentes = ["centro_utilidad_usuario", "bodega_usuario"];
                     
@@ -615,31 +616,46 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     $rootScope.agregarNotificacion(mensaje.id_conversacion);
                 }
                 
-                if(document.hidden){
+                
+                
+                //Evita mostrar la notificacion a el mismo usuario
+                if(document.hidden && parseInt(mensaje.usuarioEmite) !== parseInt($scope.Usuario.getId())){
+                    var socketArray = localStorageService.get("socketsIds");
                     
-                    var onHide;
+                    if(!socketArray){
+                        return;
+                    }
+                    
+                    console.log("array de sockets a revisar ", socketArray, " con socket actual ", $rootScope.socketId);
+                    
+                    if($rootScope.socketId === socketArray[0]){
+                        
+                        var onHide;
 
-                    webNotification.showNotification(mensaje.usuario+ " dice: ", {
-                        body: mensaje.mensaje,
-                        icon: '/images/logo.png',
-                        onClick: function onNotificationClicked() {
-                            
-                            self.abrirChat();
-                            onHide();
-                            window.focus();
-                        },
-                        autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
-                    }, function onShow(error, hide) {
-                        if (error) {
-                            console.log('Error interno: al mostrar ventana de web notifications ' + error.message);
-                        } else {
-                             onHide =  hide;
-                            setTimeout(function hideNotification() {
-                               onHide();
-                               //manually close the notification (you can skip this if you use the autoClose option)
-                            }, 30000);
-                        }
-                    });
+                        webNotification.showNotification(mensaje.usuario+ " dice: ", {
+                            body: mensaje.mensaje,
+                            icon: '/images/logo.png',
+                            tag:"1",
+                            onClick: function onNotificationClicked() {
+
+                                self.abrirChat();
+                                onHide();
+                                window.focus();
+                            },
+                            autoClose: 30000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+                        }, function onShow(error, hide) {
+                            if (error) {
+                                console.log('Error interno: al mostrar ventana de web notifications ' + error.message);
+                            } else {
+                                 onHide =  hide;
+                                setTimeout(function hideNotification() {
+                                   onHide();
+                                   //manually close the notification (you can skip this if you use the autoClose option)
+                                }, 30000);
+                            }
+                        });
+                    }
+                    
                 }
                 
             });
@@ -654,12 +670,46 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                    device:"web",
                    appId: "dusoft-web"
                 };
-                
                 //localStorageService.set("socketid", socketid);
                 socket.emit("onActualizarSesion", socket_session);
             });
             
-
+            
+            socket.on("onSesionActualizada", function(data){
+                
+                var socketId = data.socket_id;
+                $rootScope.socketId = socketId;
+                
+                var socketArray = localStorageService.get("socketsIds");
+                
+                if(!socketArray){
+                    socketArray = [];
+                }
+                
+                socketArray.push(socketId);
+                
+                localStorageService.set("socketsIds", JSON.stringify(socketArray));
+            });
+            
+            $(window).on('beforeunload', function(){
+                var socketArray = localStorageService.get("socketsIds");
+                
+                if(socketArray){
+                    
+                    var index = socketArray.indexOf($rootScope.socketId);
+                    
+                    if(index !== -1){
+                        console.log("remove index ", socketArray.indexOf($rootScope.socketId), " socke ", $rootScope.socketId);
+                        socketArray.splice(socketArray.indexOf($rootScope.socketId),1);
+                        localStorageService.set("socketsIds", JSON.stringify(socketArray));
+                        
+                    }
+                }
+                
+                
+            });
+            
+            
             self.traerUsuarioPorId(obj_session.usuario_id, function() {
                 var empresa_id = obj_session.empresa_id;
 

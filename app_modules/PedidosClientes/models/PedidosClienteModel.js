@@ -147,8 +147,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     
      if (fecha_inicial !== undefined) {
         
-        if(filtro.filtroEstadoFacturado){
-            facturaFiscal = G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
+        //if(filtro.filtroEstadoFacturado){
+            /*facturaFiscal = G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
                         SELECT distinct(invfa.factura_fiscal) as factura_fiscal\
                                   FROM inv_facturas_agrupadas_despacho as invfa\
                                   INNER JOIN inv_facturas_agrupadas_despacho_d as invfad \
@@ -161,9 +161,11 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
                         WHERE b.pedido_cliente_id = a.pedido_cliente_id\
                         ) as fac ) is null THEN 'NO FACTURADO'\
                         ELSE 'FACTURADO' END as factura_fiscal "
-                    );
-
-            estadoFacturaFiscal = G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
+                    );*/
+            facturaFiscal = G.knex.raw("CASE WHEN estado_factura_fiscal = 0 THEN 'NO FACTURADO' ELSE 'FACTURADO' END as factura_fiscal ");
+            
+            estadoFacturaFiscal = "estado_factura_fiscal";
+            /*estadoFacturaFiscal = G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
                         SELECT distinct(invfa.factura_fiscal) as factura_fiscal\
                                   FROM inv_facturas_agrupadas_despacho as invfa\
                                   INNER JOIN inv_facturas_agrupadas_despacho_d as invfad \
@@ -176,16 +178,16 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
                         WHERE b.pedido_cliente_id = a.pedido_cliente_id\
                         ) as fac ) is null THEN '0'\
                         ELSE '1' END as estado_factura_fiscal "
-                    );
+                    );*/
          
-        }else{
+        /*}else{
             
             facturaFiscal =   G.knex.raw("'-----------' as factura_fiscal");    
             estadoFacturaFiscal =  G.knex.raw("'00' as estado_factura_fiscal");
             
-        }
+        }*/
     }
-    var columns = [
+    var columns = [ 
         facturaFiscal,
         estadoFacturaFiscal,
         "a.empresa_id",

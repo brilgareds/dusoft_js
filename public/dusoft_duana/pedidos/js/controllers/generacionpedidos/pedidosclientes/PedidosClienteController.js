@@ -502,9 +502,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 return disabled;
             };
             $scope.buscar_productos = function() {
+                
+                console.log("gestionar_cotizaciones GENERAR_PEDIDO_BODEGA_FARMACIA")
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido
+                        }
+                    }
+                };
+                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA, "POST", obj, function(data) {
+                     
+                      console.log("FARMACIAS ", data)
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
-                $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
-                $scope.$emit('gestionar_productos_clientes');
+                
+                })
+                /*$scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
+                $scope.$emit('gestionar_productos_clientes');*/
             };
             $scope.cerrar_busqueda_productos = function() {
 

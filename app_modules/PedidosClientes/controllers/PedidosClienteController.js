@@ -499,6 +499,215 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 };
 
 
+PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
+    
+    
+    console.log("*************PedidosCliente.prototype.generarPedidoBodegaFarmacia********************");
+    console.log("*************PedidosCliente.prototype.generarPedidoBodegaFarmacia********************");
+    console.log("*************PedidosCliente.prototype.generarPedidoBodegaFarmacia********************");
+    
+    var that = this;
+    var objFarmacia = {
+        cotizacion: {
+            descripcion: '',
+            descripcionTipoPedido: '',
+            empresa_id: '03',
+            centro_utilidad_id: '1 ',
+            bodega_id: '03',
+            numero_cotizacion: 0,
+            observacion: 'ESTA PRUEBA CON JSON QUEMADO',
+            productos: [{
+			codigo_producto: '1101G0222238',
+			descripcion: 'KAPTIN 600MG CAPSULA | CAJA X 100. LEGRAND',
+			existencia: 428,
+			costoAnterior: 0,
+			costo: 0,
+			costoPenultimaCompra: 0,
+			costoUltimaCompra: 0,
+			precioVenta: 0,
+			precioVentaAnterior: '440.00',
+			precioMinimo: 0,
+			precioMaximo: 0,
+			responsable: '',
+			descripcionAccion: '',
+			cantidadSolicitada: 0,
+			cantidadActual: 0,
+			fechaModificacion: '',
+			codigoFormaFarmacologico: '',
+			concentracion: 0,
+			molecula: '',
+			laboratorio: '',
+			autorizado: '',
+			codigo_cum: '019942434-04',
+			codigo_invima: '2014M-0003076-R1',
+			fecha_vencimiento_invima: '2020-01-27',
+			iva: '0.000',
+			precio_regulado: '1284.00',
+			precio_venta: '528.0000',
+			cantidad_disponible: 301,
+			cantidad_solicitada: '1',
+			estado: '1',
+			tipo_producto: '1',
+			descripcion_tipo_producto: 'Normales',
+			valor_total_sin_iva: 0,
+			valor_iva: 0,
+			valor_total_con_iva: 0,
+			cantidad_inicial: 0,
+			precioVentaIva: 0,
+			cantidadPendiente: 0,
+			cantidadPendienteDespachar: 0,
+			unidadMedida: 10,
+			sw_regulado: '1',
+			sw_pactado: false,
+			contrato: true
+		},{
+			codigo_producto: '1101M0443248',
+			descripcion: 'KAPTIN 600MG CAPSULA | CAJA X 100. LEGRAND',
+			existencia: 428,
+			costoAnterior: 0,
+			costo: 0,
+			costoPenultimaCompra: 0,
+			costoUltimaCompra: 0,
+			precioVenta: 0,
+			precioVentaAnterior: '440.00',
+			precioMinimo: 0,
+			precioMaximo: 0,
+			responsable: '',
+			descripcionAccion: '',
+			cantidadSolicitada: 0,
+			cantidadActual: 0,
+			fechaModificacion: '',
+			codigoFormaFarmacologico: '',
+			concentracion: 0,
+			molecula: '',
+			laboratorio: '',
+			autorizado: '',
+			codigo_cum: '019942434-04',
+			codigo_invima: '2014M-0003076-R1',
+			fecha_vencimiento_invima: '2020-01-27',
+			iva: '0.000',
+			precio_regulado: '1284.00',
+			precio_venta: '528.0000',
+			cantidad_disponible: 301,
+			cantidad_solicitada: '1',
+			estado: '1',
+			tipo_producto: '1',
+			descripcion_tipo_producto: 'Normales',
+			valor_total_sin_iva: 0,
+			valor_iva: 0,
+			valor_total_con_iva: 0,
+			cantidad_inicial: 0,
+			precioVentaIva: 0,
+			cantidadPendiente: 0,
+			cantidadPendienteDespachar: 0,
+			unidadMedida: 10,
+			sw_regulado: '1',
+			sw_pactado: false,
+			contrato: true
+		}],
+                subtotal: 0,
+                valor_iva: 0,
+                total: 0,
+                tipo_producto: '1',
+                descripcion_tipo_producto: '',
+                observacion_cartera: '',
+                aprobado_cartera: '0',
+                estado_cotizacion: '',
+                descripcion_estado_cotizacion: '',
+                estado: '0',
+                tieneDespacho: false,
+                despachoEmpresaId: '',
+                despachoPrefijo: '',
+                despachoNumero: 0,
+                filtroEstadoFacturado: false,
+                vendedor: {
+                        nombre_tercero: 'CAICEDO CASTAÑO TATIANAS',
+                        tipo_id_tercero: 'CC ',
+                        id: '67039648',
+                        direccion: '',
+                        telefono: '3104680998',
+                        tipo_pais_id: '',
+                        tipo_departamento_id: '',
+                        tipo_municipio_id: '',
+                        pais: '',
+                        departamento: '',
+                        municipio: ''
+                },
+                cliente: {
+                        nombre_tercero: 'DIME CLINICA NEUROCARDIOVASCULAR S.A.SSS',
+                        tipo_id_tercero: 'NIT',
+                        id: '800024390',
+                        direccion: 'AV 5 NORTE # 20N-75',
+                        telefono: '6600160',
+                        tipo_pais_id: '',
+                        tipo_departamento_id: '',
+                        tipo_municipio_id: '',
+                        pais: '',
+                        departamento: 'VALLE DEL CAUCA',
+                        municipio: 'CALI',
+                        contrato_id: 301,
+                        tipoBloqueoId: '1',
+                        _uiSelectChoiceDisabled: false
+                },
+                fecha_registro: '30/01/2017',
+                usuario_id: 1350
+        }  
+};
+    var obj = {
+        "tipo_id_tercero":objFarmacia.cotizacion.cliente.tipo_id_tercero,
+        "tercero_id":objFarmacia.cotizacion.cliente.id
+    };
+    
+    G.Q.ninvoke(that, "__insertarCotizacion", obj, objFarmacia.cotizacion).then(function(resultado){
+        
+        objFarmacia.cotizacion.numero_cotizacion =  resultado.pedidos_clientes.numero_cotizacion;
+        return G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,objFarmacia.cotizacion, objFarmacia.cotizacion.productos);
+               
+    }).then(function(resultado){   
+           console.log("resultado [__insertarDetalleCotizacion]: ", resultado)
+        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: objFarmacia.cotizacion.numero_cotizacion}}));
+    }).fail(function(err){
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    });      
+    
+};
+
+function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, productos, callback) {
+    
+    console.log("*******__insertarDetalleCotizacion**************");
+    
+    var producto = productos[index];
+        console.log("producto ", producto);
+    if (!producto) {   
+        callback(false);
+        return; 
+    }  
+    
+    /*return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros);
+        }
+
+    }).then(function(resultado){
+       
+        
+        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
+
+        if (precioVenta.valido) {
+            return  G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion);
+        } else {
+            throw {msj:precioVenta.msj, status:403};
+        }*/
+   G.Q.ninvoke(that.m_pedidos_clientes,'insertar_detalle_cotizacion',cotizacion,producto).then(function(resultado){
+      
+    }).fail(function(err){
+         console.log("err (/fail) [__insertarDetalleCotizacion]: ", err);
+    }).done();              
+      
+    index++;
+  
+    setTimeout(function() {
+        __insertarProductosFarmaciaCotizacion(that, index,cotizacion, productos, callback);
+    }, 300);   
+};
 /*
  * Autor : Camilo Orozco
  * Descripcion : Insertar cotizacion
@@ -583,6 +792,20 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         "tercero_id":cotizacion.cliente.id
     };
     
+    G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, resultado));
+    }).fail(function(err){
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    });
+    
+};
+
+
+PedidosCliente.prototype.__insertarCotizacion = function(obj, cotizacion, callback){
+    
+    console.log("****PedidosCliente.prototype.__insertarCotizacion**************");
+    var that = this;
+    
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).            
     then(function(tercero){
                 
@@ -595,7 +818,8 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     }).spread(function(rows, result){
         
         var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
-        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
+        callback(false,{pedidos_clientes: {numero_cotizacion: numero_cotizacion}}) ;
+        
         
     }).fail(function(err){
         var msj = "Erro Interno";
@@ -606,9 +830,10 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
             status = err.status;
         }
         
-        res.send(G.utils.r(req.url, msj, status, {pedidos_clientes: {}}));
+        callback(err, {status:status, msj:msj});
+       
     }).done();
-
+    
 };
 
 /*
@@ -668,12 +893,28 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     
     cotizacion.usuario_id = req.session.user.usuario_id;
    
-    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+    
+    
+    G.Q.ninvoke(that, "__insertarDetalleCotizacion", cotizacion,producto).then(function(resultado){
+        res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
+    }).fail(function(err){
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    });
+
+};
+
+
+
+PedidosCliente.prototype.__insertarDetalleCotizacion = function(cotizacion,producto, callback){
+     
+    var that = this;
     
     var obj = {
         "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
         "tercero_id":cotizacion.cliente.id
     };
+    
+    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
     
     G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
             .then(function(resultado) {
@@ -734,7 +975,8 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         if (resultado.rowCount === 0) {
             throw {msj:'Error al registrar el producto', status:403};
         } else {
-            res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
+            callback(false, {status:200, msj:'Producto registrado correctamente', data:{pedidos_clientes:{}}});
+            //res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
         }
 
     }).fail(function(err) {
@@ -746,13 +988,12 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
             msj = err.msj;
             status = err.status;
         }
+        callback(err, {status:status, msj:msj});
         
-        res.send(G.utils.r(req.url, msj, status, {pedidos_clientes: {}}));
         //res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
-
+     
 };
-
 
 
 /*

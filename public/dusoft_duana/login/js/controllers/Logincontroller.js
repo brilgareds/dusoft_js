@@ -41,11 +41,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 if (usuario.length === 0 || clave === 0) {
                     return;
                 }
-                
-                if(localStorageService.get("session")){
-                    window.location = "../home/";
-                    return;
-                }
+               
 
                 var obj = {
                     session: {
@@ -56,7 +52,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         login: {
                             usuario: usuario,
                             contrasenia: clave,
-                            device:"web"
+                            device:"web",
+                            appId:"dusoft-web"
                         }
                     }
                 };
@@ -127,5 +124,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
                 var modalInstance = $modal.open($scope.opts);
             }
+            
+            if(localStorageService.get("session")){
+                window.location = "../home/";
+                return;
+            }
         }]);
+    
 });

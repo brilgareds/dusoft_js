@@ -28,6 +28,9 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.despachoNumero = 0;
                 this.estadoSolicitud;
                 this.tipoPedido;
+                this.facturaFiscal;
+                this.estadoFacturaFiscal;
+                this.filtroEstadoFacturado = false;
             };
 
             PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);
@@ -297,7 +300,42 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             PedidoCliente.prototype.getTipoPedido = function() {
                 return this.tipoPedido;
             };
+            
+            
+            
+            PedidoCliente.prototype.setFacturaFiscal = function(facturaFiscal) {
+                this.facturaFiscal = facturaFiscal;
+                return this;
+            };
 
+            PedidoCliente.prototype.getFacturaFiscal = function() {
+                return this.facturaFiscal;
+            };
+            
+            
+            
+            
+            PedidoCliente.prototype.setEstadoFacturaFiscal = function(estadoFacturaFiscal) {
+                this.estadoFacturaFiscal = estadoFacturaFiscal;
+                return this;
+            };
+
+            PedidoCliente.prototype.getEstadoFacturaFiscal = function() {
+                return this.estadoFacturaFiscal;
+            };
+            
+            
+            
+            
+             PedidoCliente.prototype.setFiltroEstadoFacturado = function(filtroEstadoFacturado) {
+                this.filtroEstadoFacturado = filtroEstadoFacturado;
+                return this;
+            };
+
+            PedidoCliente.prototype.getFiltroEstadoFacturado = function() {
+                return this.filtroEstadoFacturado;
+            };
+            
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {
                 return new PedidoCliente(empresa_id, centro_utilidad_id, bodega_id);
             };

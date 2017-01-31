@@ -884,7 +884,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
     leftJoin("zonas_bodegas as j", "b.zona_id", "j.id").
     where(function(){
         
-        this.where(G.knex.raw("a.fecha_registro >= ?",[new Date().getFullYear()+"-01-01 00:00:00"]));
+        this.where(G.knex.raw("a.fecha_registro >= ?",[ (new Date().getFullYear() - 1) +"-01-12 00:00:00"]));
 
         /*=========================================================================*/
         // Se implementa este filtro, para poder filtrar los pedidos del clientes 
@@ -935,6 +935,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         return registros;
         
     }).then(function(rows){
+        console.log("query ", query.toSQL());
         callback(false, rows, query.totalRegistros);
     }).
     catch(function(err){

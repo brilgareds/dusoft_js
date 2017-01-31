@@ -344,7 +344,7 @@ ChatModel.prototype.obtenerConversaciones = function(parametros, callback) {
         conversaciones = _conversaciones;
         
         if(parametros.termino_busqueda && parametros.termino_busqueda.length > 0){
-            return G.Q.nfcall(__filtrarDetalleConversaciones, {conversaciones:conversaciones, index:0, contexto:that, termino_busqueda:parametros.termino_busqueda});
+            return G.Q.nfcall(__filtrarDetalleConversaciones, {conversaciones:conversaciones, index:0, contexto:that, termino_busqueda:parametros.termino_busqueda, filtro: parametros.filtro});
         }
        
         
@@ -373,6 +373,7 @@ function __filtrarDetalleConversaciones(parametros, callback){
     }
     
     conversacion.termino_busqueda = parametros.termino_busqueda;
+    conversacion.filtro = parametros.filtro;
     
     G.Q.ninvoke(parametros.contexto, "obtenerDetalleConversacion", conversacion).then(function(resultado){
         
@@ -478,13 +479,19 @@ ChatModel.prototype.obtenerDetalleConversacion = function(parametros, callback) 
     
     if(parametros.termino_busqueda && parametros.termino_busqueda.length > 0){
         query.andWhere(function() {
-
-            this.where(G.knex.raw("a.mensaje"), G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
-            //orWhere("b.usuario", G.constants.db().LIKE, "%" + parametros.terminoBusqueda + "%");
-
+                        
+            if(parametros.filtro && parametros.filtro.usuario){ 
+                this.where("b.usuario", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+            } else {
+                this.where(G.knex.raw("a.mensaje"), G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+            }
+            
         });
     }
-    
+        
+    query.limit(G.settings.limit).
+    offset((parametros.pagina - 1) * G.settings.limit).
+    orderBy("a.fecha_mensaje", "desc");
     query.then(function(resultado){
         
         callback(false, resultado);
@@ -608,6 +615,29 @@ ChatModel.prototype.removerUsuarioConversacion = function(parametros, callback) 
         callback(err);       
     });  
 };
+
+/**
+* @author Eduar Garcia
+* +Descripcion Obtiene el token de un usuario en la aplicacion del chat
+* @params obj: {appId, usuario_id}
+* @fecha 2017-01-17
+*/
+ChatModel.prototype.obtenerIdDispositivoPorUsuario = function(parametros, callback) {
+    G.knex.distinct(G.knex.raw('ON (a.device_id) a.*')).
+    from("system_usuarios_sesiones as a").
+    innerJoin("aplicaciones as b", "b.id", "a.id_aplicacion").
+    where('a.usuario_id', parametros.usuario_id).
+    andWhere('b.token', parametros.token).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });  
+};
+/*select distinct on (a.device_id) a.* from system_usuarios_sesiones a 
+inner join aplicaciones as b on b.id = a.id_aplicacion
+where a.usuario_id = 1350 and b.token = 'dusoft-chat'*/
 
 /**
 * @author Eduar Garcia

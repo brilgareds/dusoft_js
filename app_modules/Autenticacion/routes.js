@@ -30,15 +30,25 @@ module.exports = function(app, di_container) {
         c_auth.sessions(req, res);
     });
     
+    app.post('/api/guardarTokenPush', function(req, res) {
+        c_auth.guardarTokenPush(req, res);
+    });
+    
 
     // Events 
     io.sockets.on('connection', function(socket) {
-
+        
         e_auth.onConnected(socket.id);
 
         socket.on('onActualizarSesion', function(datos) {
             e_auth.onActualizarSesion(datos);
         });
+        
+        socket.on('guardarTokenPush', function(datos) {
+            e_auth.guardarTokenPush(datos);
+        });
+        
+        
     });
 
     io.sockets.on('chatDevice', function(socket) {

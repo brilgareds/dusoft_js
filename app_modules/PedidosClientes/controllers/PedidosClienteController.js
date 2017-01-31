@@ -15,6 +15,46 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
 };
 
 /**
+ * +Descripcion Controlador encargado de consultar la lista de facturas
+ *              de un pedido
+ *  @author Cristian Ardila
+ *  @fecha 2017-01-02
+ */
+PedidosCliente.prototype.listarFacturasPedido = function(req, res){
+     
+    var that = this;
+    var args = req.body.data;
+       
+    if (args.pedidos_clientes === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    if (args.pedidos_clientes.numeroPedido === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de pedido', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
+    var pedido = args.pedidos_clientes.numeroPedido;
+  
+    var parametros = {pedido: pedido};
+    G.Q.ninvoke(that.m_pedidos_clientes,'listarFacturasPedido', parametros).then(function(resultado){
+     
+        if(resultado.length > 0){
+       
+           res.send(G.utils.r(req.url, 'Consulta facturas', 200, {listar_tipo_documento:resultado}));
+        }else{
+           throw 'Consulta sin resultados';
+        }
+      
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+    
+    
+};
+/**
  * @api {post} /api/PedidosClientes/listarPedidos Listar Pedidos
  * @apiName Listar Pedidos Clientes
  * @apiGroup PedidosClientes
@@ -48,8 +88,18 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     if (args.pedidos_clientes.pagina_actual === '') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
         return;
+    }       
+     
+    var fecha_inicial;
+    var fecha_final;
+    
+    if (args.pedidos_clientes.fecha_inicial !== undefined || args.pedidos_clientes.fecha_final !== undefined) {
+          fecha_inicial = args.pedidos_clientes.fecha_inicial;
+          fecha_final = args.pedidos_clientes.fecha_final;  
+          //args.pedidos_clientes.filtros.filtroEstadoFacturado = args.pedidos_clientes.filtroEstadoFacturado;  
     }
-
+    
+    
     var empresa_id = args.pedidos_clientes.empresa_id;
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
@@ -68,7 +118,14 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     }
     var filtro = args.pedidos_clientes.filtro;
 
-    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, estadoPedido, estadoSolicitud, function(err, lista_pedidos_clientes) {
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, 
+                                                    termino_busqueda, 
+                                                    filtro, 
+                                                    pagina_actual, 
+                                                    estadoPedido, 
+                                                    estadoSolicitud,
+                                                    fecha_inicial,
+                                                    fecha_final, function(err, lista_pedidos_clientes) {
 
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
 
@@ -560,12 +617,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
  * +Descripcion : Metodo encargado de insertar los productos en una cotizacion
  */
 PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
-
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    
+ 
     var that = this;
 
     var args = req.body.data;

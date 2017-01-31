@@ -1,7 +1,7 @@
 define(["angular",
     "js/controllers",
     'includes/Constants/Url', 'includes/classes/Chat/Conversacion', 'includes/classes/Chat/ConversacionDetalle',
-    "includes/components/gruposChat/GruposChatController"], function(angular, controllers) {
+    "includes/components/gruposChat/GruposChatController", "includes/components/chat/chatScroll"], function(angular, controllers) {
 
     controllers.controller('ChatController', [
         '$scope', '$rootScope', 'Request',
@@ -37,8 +37,17 @@ define(["angular",
                 usuarioActual:Usuario.getUsuarioActual(),
                 terminoBusqueda:"",
                 mensajeNotificacion: localStorageService.get("mensajeNotificacion") || undefined,
-                moduloChat : (moduloChat)? moduloChat.opciones : {}  
+                moduloChat : (moduloChat)? moduloChat.opciones : {},
+                pagina: 1
             };
+            
+            $scope.root.filtros = [
+                {nombre : "Historial", historial:true},                
+                {nombre : "Usuario", usuario:true}
+            ];
+          
+            $scope.root.filtro  = $scope.root.filtros[0];
+          
                         
             $scope.root.listaConversaciones = {
                 data: 'root.conversaciones',
@@ -52,7 +61,9 @@ define(["angular",
                     
                     row.entity.setNotificacion(false);
                     
+                    
                     if(row.selected){
+                        $rootScope.removerNotificacion(row.entity.getId());
                         self.listarDetalleConversacion(row.entity);
                     }
                     
@@ -67,12 +78,20 @@ define(["angular",
                                         </button>'
                     },
                     {field: 'getNombre()', displayName: 'Participantes', cellClass:"ngCellText",
-                        cellTemplate:"<div ng-class=\"{'blink' : row.entity.tieneNotificacion()}\">{{row.entity.getNombre()}}</div>"},
+                        cellTemplate:"<div ng-class=\"{'blink' : conversacionConNotificacion(row.entity)}\">{{row.entity.getNombre()}}</div>"},
                     {field: 'getFechaCreacion()', cellClass:"ngCellText", displayName: 'Fecha', width:100, 
-                        cellTemplate:"<div ng-class=\"{'blink' : row.entity.tieneNotificacion()}\">{{row.entity.getFechaCreacion()}}</div>"}
+                        cellTemplate:"<div ng-class=\"{'blink' : conversacionConNotificacion(row.entity)}\">{{row.entity.getFechaCreacion()}}</div>"}
 
                 ]
 
+            };
+           
+           $scope.conversacionConNotificacion = function(conversacion){
+               return $rootScope.conversacionConNotificacion(conversacion.getId());
+           };
+           
+            $scope.onSeleccionFiltro = function(filtro){
+                $scope.root.filtro = filtro;
             };
             
           /**
@@ -109,8 +128,8 @@ define(["angular",
                 
                 
                 window.open(
-                    '/dusoft_duana/chat/#/Admin',
-                    '_blank' // <- This is what makes it open in a new window.
+                    '/dusoft_duana/chat/#/ChatDusoft',
+                    '_blank' 
                 );
             };
             
@@ -183,6 +202,7 @@ define(["angular",
             * @fecha 2016-09-09
             */
             $scope.onTraerConversaciones = function(){
+                $scope.root.pagina = 1;
                 self.onTraerConversaciones();
                 $scope.$emit("onTabConversaciones");
                 localStorageService.remove("mensajeNotificacion");
@@ -230,6 +250,20 @@ define(["angular",
                 }
             };
             
+            $scope.$on("onScrollChat", function(){
+                $scope.cargarMasDetalle(function(elementosTraidos){
+                    if(elementosTraidos){
+                        
+                        $scope.$broadcast("onMantenerScroll");
+                    }
+                });
+            });
+            
+            $scope.cargarMasDetalle = function(callback){
+                $scope.root.pagina++;
+                self.listarDetalleConversacion($scope.root.conversacionSeleccionada, callback);
+            };
+            
            /**
             * @author Eduar Garcia
             * +Descripcion Realiza peticion al API guardar mensaje del usuario
@@ -267,7 +301,7 @@ define(["angular",
                             error:true
                         };
                         
-                        self.agregarDetalleConversacion(mensaje);
+                        self.agregarDetalleConversacion(mensaje, true);
                         $scope.$emit("onMensajeNuevo", mensaje, Usuario.getUsuarioActual());
                     }
                     
@@ -281,10 +315,13 @@ define(["angular",
                     var conversacion =  $scope.root.conversaciones[i];
                     
                     if(id ===  conversacion.getId()){
+                        
                         conversacion.setNotificacion(true);
+                        $rootScope.agregarNotificacion(conversacion.getId());
                     }
                 }
             };
+            
             
            /**
             * @author Eduar Garcia
@@ -299,7 +336,7 @@ define(["angular",
                
                 //Conversacion actual
                 if(data.mensaje.id_conversacion === conversacion.getId()){
-                    self.agregarDetalleConversacion(data.mensaje);
+                    self.agregarDetalleConversacion(data.mensaje, false);
                     
                 } else {
                    
@@ -325,14 +362,21 @@ define(["angular",
             * +Descripcion Realiza peticion al API para traer el detalle de una conversacion
             * @fecha 2016-09-05
             */
-            self.listarDetalleConversacion = function(conversacion){
+            self.listarDetalleConversacion = function(conversacion, callback){
                $scope.root.conversacionSeleccionada = conversacion;
-               $scope.root.conversacionSeleccionada.vaciarDetalle();
-               var obj = {
+               $rootScope.conversacionSeleccionada = conversacion;
+               
+               if($scope.root.pagina === 1){
+                   $scope.root.conversacionSeleccionada.vaciarDetalle();
+               }
+               
+               
+                var obj = {
                     session: $scope.root.session,
                     data: {
                         chat: {
-                            id_conversacion: conversacion.getId()
+                            id_conversacion: conversacion.getId(),
+                            pagina:$scope.root.pagina
                         }
                     }
                 };
@@ -344,18 +388,28 @@ define(["angular",
                         
                         for(var i in _conversaciones){
                             var _conversacion = _conversaciones[i];
-                            self.agregarDetalleConversacion(_conversacion);
+                            
+
+                            self.agregarDetalleConversacion(_conversacion, true);
+                            
                         }
                         
                         $scope.root.conversacionSeleccioanda = true;
                         
-                        $timeout(function(){
-                            $scope.$emit("realizarScrollInferior");
-                        },500);
+                        if($scope.root.pagina === 1){
+                            
+                            $timeout(function(){
+                                $scope.$emit("realizarScrollInferior");
+                            },500);
+                        }
                         
+                        if(callback){
+                            callback((_conversaciones.length > 0 ? true : false));
+                        }
                         
                     }
                     
+
 
                 });
             };
@@ -365,9 +419,9 @@ define(["angular",
             * +Descripcion Agrega un mensaje insertado por el usuario
             * @fecha 2016-09-08
             */ 
-            self.agregarDetalleConversacion = function(_conversacion){
+            self.agregarDetalleConversacion = function(_conversacion, agregarAlFinal){
                 var conversacion = ConversacionDetalle.get(
-                        _conversacion.id_conversacion, _conversacion.usuario,
+                        _conversacion.id, _conversacion.usuario,
                         _conversacion.mensaje, _conversacion.archivo_adjunto,
                         _conversacion.fecha_mensaje
                 );
@@ -375,8 +429,8 @@ define(["angular",
                 if(_conversacion.error){
                     conversacion.setMensaje("<span style='color:red'>"+conversacion.getMensaje()+"</span>");
                 }
-
-               $scope.root.conversacionSeleccionada.agregarDetalle(conversacion);
+               
+               $scope.root.conversacionSeleccionada.agregarDetalle(conversacion, agregarAlFinal);
             };
             
             /*
@@ -391,7 +445,8 @@ define(["angular",
                     data: {
                         chat: {
                             usuario_id: Usuario.getUsuarioActual().getId(),
-                            termino_busqueda:$scope.root.terminoBusqueda
+                            termino_busqueda:$scope.root.terminoBusqueda,
+                            filtro:$scope.root.filtro
                         }
                     }
                 };

@@ -33,6 +33,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.empresasFarmacias = [];
                 this.empresasUsuario = [];
                 this.seleccionado = false;
+                this.socketId = "";
             }
             
                                  
@@ -42,6 +43,14 @@ define(["angular", "js/models"], function(angular, models) {
 
             Usuario.prototype.getToken = function(){
                 return this.token;
+            };
+            
+            Usuario.prototype.setSocketId = function(socketId){
+                this.socketId = socketId;
+            };
+
+            Usuario.prototype.getSocketId = function(){
+                return this.socketId;
             };
 
             Usuario.prototype.setUsuarioId = function(usuario_id){

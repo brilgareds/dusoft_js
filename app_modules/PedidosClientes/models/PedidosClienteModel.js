@@ -80,7 +80,15 @@ var PedidosClienteModel = function(productos, m_pedidos_logs) {
 // 8 - Auditado con Pdtes
 // 9 - En Zona con Pdtes
 /*=========================================================================*/
-PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina, estadoPedido, estadoSolicitud, callback) {
+PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, 
+                                                                termino_busqueda, 
+                                                                filtro, 
+                                                                pagina, 
+                                                                estadoPedido, 
+                                                                estadoSolicitud,
+                                                                fecha_inicial,
+                                                                fecha_final,
+                                                                callback) {
 
     var estado = "";
 
@@ -130,8 +138,58 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
             estado = '10';
         }
     }
-
-    var columns = [
+    
+    
+            
+    var facturaFiscal =   G.knex.raw("'FF' as factura_fiscal");
+    
+    var estadoFacturaFiscal =  G.knex.raw("'00' as estado_factura_fiscal");
+    
+     if (fecha_inicial !== undefined) {
+        
+        //if(filtro.filtroEstadoFacturado){
+            /*facturaFiscal = G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
+                        SELECT distinct(invfa.factura_fiscal) as factura_fiscal\
+                                  FROM inv_facturas_agrupadas_despacho as invfa\
+                                  INNER JOIN inv_facturas_agrupadas_despacho_d as invfad \
+                                  ON invfa.prefijo = invfad.prefijo \
+                                  AND invfa.factura_fiscal = invfad.factura_fiscal\
+                                  AND invfad.pedido_cliente_id = a.pedido_cliente_id\
+                        UNION\
+                        SELECT distinct(factura_fiscal) as factura_fiscal\
+                        FROM inv_facturas_despacho as b \
+                        WHERE b.pedido_cliente_id = a.pedido_cliente_id\
+                        ) as fac ) is null THEN 'NO FACTURADO'\
+                        ELSE 'FACTURADO' END as factura_fiscal "
+                    );*/
+            facturaFiscal = G.knex.raw("CASE WHEN estado_factura_fiscal = 0 THEN 'NO FACTURADO' ELSE 'FACTURADO' END as factura_fiscal ");
+            
+            estadoFacturaFiscal = "estado_factura_fiscal";
+            /*estadoFacturaFiscal = G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
+                        SELECT distinct(invfa.factura_fiscal) as factura_fiscal\
+                                  FROM inv_facturas_agrupadas_despacho as invfa\
+                                  INNER JOIN inv_facturas_agrupadas_despacho_d as invfad \
+                                  ON invfa.prefijo = invfad.prefijo \
+                                  AND invfa.factura_fiscal = invfad.factura_fiscal\
+                                  AND invfad.pedido_cliente_id = a.pedido_cliente_id\
+                        UNION\
+                        SELECT distinct(factura_fiscal) as factura_fiscal\
+                        FROM inv_facturas_despacho as b \
+                        WHERE b.pedido_cliente_id = a.pedido_cliente_id\
+                        ) as fac ) is null THEN '0'\
+                        ELSE '1' END as estado_factura_fiscal "
+                    );*/
+         
+        /*}else{
+            
+            facturaFiscal =   G.knex.raw("'-----------' as factura_fiscal");    
+            estadoFacturaFiscal =  G.knex.raw("'00' as estado_factura_fiscal");
+            
+        }*/
+    }
+    var columns = [ 
+        facturaFiscal,
+        estadoFacturaFiscal,
         "a.empresa_id",
         "a.centro_destino as centro_utilidad_id",
         "a.bodega_destino as bodega_id",
@@ -171,21 +229,28 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
         "f.descripcion as descripcion_tipo_producto",
         G.knex.raw("'1' as tipo_pedido")
+        
     ];
-
+      
+            
     var query = G.knex.column(columns).from("ventas_ordenes_pedidos as a").innerJoin("terceros as b", function() {
         this.on("a.tipo_id_tercero", "b.tipo_id_tercero").on("a.tercero_id", "b.tercero_id");
     }).innerJoin("vnts_vendedores as c", function() {
         this.on("a.tipo_id_vendedor", "c.tipo_id_vendedor").on("a.vendedor_id", "c.vendedor_id");
     }).leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as d", "a.pedido_cliente_id", "d.pedido_cliente_id").where(function() {
-        this.where("a.empresa_id", empresa_id);
-
+        this.where("a.empresa_id", empresa_id)
+        
+        if (fecha_inicial !== undefined) {
+             this.where(G.knex.raw("a.fecha_registro between '"+ fecha_inicial + "' and '"+ fecha_final +"'"));
+        }
+       
         if (estado !== "") {
             this.where("a.estado_pedido", estado);
         }
     }).
             leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.pedido_cliente_id", "e.pedido_cliente_id").
             innerJoin("inv_tipo_producto as f", "a.tipo_producto", "f.tipo_producto_id").
+             
             andWhere(function() {
 
         if (filtro) {
@@ -217,10 +282,11 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
             offset((pagina - 1) * G.settings.limit);
     //La base del 170 no responde con un orderby,  por esa razon se condiciona para produccion
     if (G.program.prod) {
-        query.orderByRaw("4 DESC");
+        query.orderByRaw("6 DESC");
     }
 
     query.then(function(rows) {
+         
         callback(false, rows);
     }). catch (function(err) {
         console.log("err [listar_pedidos_clientes]: ", err);
@@ -228,7 +294,46 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     });
 };
 
+/**
+ * +Descripcion Model encargado de consultar la lista de facturas
+ *              de un pedido
+ *  @author Cristian Ardila
+ *  @fecha 2017-01-02
+ */
+PedidosClienteModel.prototype.listarFacturasPedido = function(obj,callback){
+    
+     var subColQuery = [G.knex.raw("distinct(invfa.factura_fiscal) as factura_fiscal"), 
+                        "invfad.pedido_cliente_id as pedido_cliente_id",
+                        "invfa.fecha_registro as fecha_registro"];
+                    
+     var subQuery = G.knex.select(subColQuery)
+                .from("inv_facturas_agrupadas_despacho as invfa")
+                .innerJoin("inv_facturas_agrupadas_despacho_d as invfad", 
+                    function() {
+                        this.on("invfa.prefijo","invfad.prefijo")
+                            .on("invfa.factura_fiscal","invfad.factura_fiscal")
 
+                }).union(function(){
+                    this.select([G.knex.raw("distinct(factura_fiscal) as factura_fiscal"),
+                                "b.pedido_cliente_id",
+                                "b.fecha_registro"])
+                        .from('inv_facturas_despacho as b');
+                        
+                }).as("fac");
+     
+    var query = G.knex.select(["fac.pedido_cliente_id", "fac.factura_fiscal",  G.knex.raw("to_char(fac.fecha_registro, 'YYYY-MM-DD HH12:MI:SS') as fecha_registro")])
+                        .from(subQuery)
+                        .where('fac.pedido_cliente_id',obj.pedido);
+                
+    query.then(function(resultado){ 
+        //console.log("resultado [listarFacturasPedido]:", resultado);     
+        callback(false, resultado);
+    }).catch(function(err){    
+        console.log("err [listarFacturasPedido]:", err);
+        callback(err);
+    });
+    
+};
 /**
  * @author Eduar Garcia
  * +Descripcion: Metodo usado por el crontab de pedidos para borrar temporales todas las noches
@@ -639,7 +744,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     });
 
     query.andWhere(function() {
-        this.where(G.knex.raw("a.fecha_registro >= ?", [new Date().getFullYear() + "-01-01 00:00:00"]));
+        this.where(G.knex.raw("a.fecha_registro >= ?", [ (new Date().getFullYear() - 1) + "-01-12 00:00:00"]));
     });
 
     if (filtro.numeroPedido) {
@@ -1235,7 +1340,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 d.descripcion as descripcion_tipo_producto,\
                 b.codigo_cum,\
                 b.codigo_invima,\
-                b.vencimiento_codigo_invima,\
+                to_char(b.vencimiento_codigo_invima, 'yyyy-mm-dd') as vencimiento_codigo_invima,\
                 b.porc_iva as iva,\
                 a.existencia::integer as existencia,\
                 coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\

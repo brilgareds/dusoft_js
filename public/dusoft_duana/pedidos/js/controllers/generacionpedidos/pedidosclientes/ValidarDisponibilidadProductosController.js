@@ -39,6 +39,8 @@ define(["angular", "js/controllers",
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 //$scope.datos_form = null;
+                socket.remove(['onCerrarVentanaCartera']);
+                //socket.removeAllListeners();
             });
         }]);
 });

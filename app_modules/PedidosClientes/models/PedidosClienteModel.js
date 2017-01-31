@@ -1497,45 +1497,6 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
 
 };
 
-/*PedidosClienteModel.prototype.__insertarProductosFarmaciaCotizacion = function(cotizacion, producto, callback) {
-    
-    var that = this;
-      
-    G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,cotizacion,producto).then(function(resultado){
-        callback(false, resultado);
-      
-    }). catch (function(err) {
-        console.log("err [insertar_detalle_cotizacion]", err);
-        callback(err);     
-    });
-
-};
-
-
-function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, productos, callback) {
-    
-    console.log("*******__insertarDetalleCotizacion**************");
-    
-    var producto = productos[index];
-        console.log("producto ", producto);
-    if (!producto) {   
-        callback(false);
-        return; 
-    }  
-     
-   G.Q.ninvoke(that,'insertar_detalle_cotizacion',cotizacion,producto).then(function(resultado){
-      
-    }).fail(function(err){
-         console.log("err (/fail) [__insertarDetalleCotizacion]: ", err);
-    }).done();              
-      
-    index++;
-  
-    setTimeout(function() {
-        __insertarProductosFarmaciaCotizacion(that, index,cotizacion, productos, callback);
-    }, 300);   
-};*/
-
 
 /*
  * Author : Camilo Orozco

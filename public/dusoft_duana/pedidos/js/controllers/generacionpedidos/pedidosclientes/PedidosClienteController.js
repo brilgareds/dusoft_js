@@ -503,14 +503,61 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.buscar_productos = function() {
 
-                $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
-                $scope.$emit('gestionar_productos_clientes');
-                /* console.log("gestionar_cotizaciones GENERAR_PEDIDO_BODEGA_FARMACIA")
+                /*$scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
+                $scope.$emit('gestionar_productos_clientes');*/
+                 console.log("gestionar_cotizaciones GENERAR_PEDIDO_BODEGA_FARMACIA");
+                var pedido =  {
+                       empresa_id: '03', //OK
+                       centro_utilidad_id: '1 ', //OK
+                       bodega_id: '03', //OK
+                       numero_cotizacion: 0, //OK
+                       observacion: 'ESTA PRUEBA CON JSON QUEMADO',//OK
+
+                        productos: [
+                            {
+                            codigo_producto: '1101G0222238', //OK			
+                            iva: '0.000', //OK
+                            precio_venta: '1283.00', //OK
+                            cantidad_solicitada: '1', //OK			
+                            precioVentaIva: 100,// OK Enviar este valor desde farmacias OK 
+
+                           },
+                           {
+                            codigo_producto: '1101M0443248', //ok			
+                            iva: '0.000', //OK
+                            precio_venta: '528.000', //OK
+                            cantidad_solicitada: '1', //OK			
+                            precioVentaIva: 89850, // OK Enviar este valor desde farmacias OK 
+
+                            }
+                        ],
+                        subtotal: 529283,
+                        valor_iva: 0,
+                        total: 529283, ///SE ENVIA EL TOTAL DE VALOR DE LOS PRODUCTOS
+                        tipo_producto: '1', //OK
+                        aprobado_cartera: '0',
+                        estado_cotizacion: '',
+                        estado: '0',
+                        vendedor: {
+                                tipo_id_tercero: 'CC ', //OK
+                                id: '67039648' //OK
+                        },
+                        cliente: {
+                                tipo_id_tercero: 'NIT', //OK
+                                id: '800024390', //OK
+                                contrato_id: 301, //// >
+                                tipoBloqueoId: '1' //OK
+                         },
+                        fecha_registro: '30/01/2017',
+                        usuario_id: 1350 //OK
+                    }  
+                
+                    
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
-                            cotizacion: $scope.Pedido
+                            cotizacion: pedido
                         }
                     }
                 };
@@ -520,7 +567,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                 
-                })*/
+                })
             };
             $scope.cerrar_busqueda_productos = function() {
 

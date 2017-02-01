@@ -2638,12 +2638,7 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
  * Descripcion : Modificar detalle pedido
  */
 PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
-
-    /*console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");*/
-    
+ 
     var that = this;
 
     var args = req.body.data;
@@ -2836,7 +2831,6 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
  * @returns {Number}
  */
 function __totalNuevoPrecioVenta(pedido) {
-
 
     var productos = pedido.productos;
     var totalPrecioVenta = 0;
@@ -4010,17 +4004,20 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
 
 /*****************EL QUE GENERA TODO *************************************/
 
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de automatizar todo el proceso de cotizacion
+ *              y pedido, generando el pedido sin las previas autorizaciones
+ *              de cartera
+ * @fecha 01/02/2017 (DD/MM/YYYY)
+ */
 PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
-    
-    
-    console.log("*************PedidosCliente.prototype.generarPedidoBodegaFarmacia********************");
-    console.log("*************PedidosCliente.prototype.generarPedidoBodegaFarmacia********************");
+     
     console.log("*************PedidosCliente.prototype.generarPedidoBodegaFarmacia********************");
     
     var that = this;
     var args = req.body.data;
-    
-    console.log("ESTOS SON LOS PARAMETROS ", args);
+     
     // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
@@ -4112,6 +4109,8 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
          
     
     }).then(function(resultado){
+        
+       cotizacion.total = __totalNuevoPrecioVenta(cotizacion); 
         
        return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
         

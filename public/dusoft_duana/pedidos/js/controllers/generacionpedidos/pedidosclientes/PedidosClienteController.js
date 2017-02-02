@@ -501,10 +501,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     disabled = true;
                 return disabled;
             };
-            $scope.buscar_productos = function() {
+            $scope.buscar_productos2 = function() {
 
-               /* $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
-                $scope.$emit('gestionar_productos_clientes');*/
+                $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
+                $scope.$emit('gestionar_productos_clientes');
+            };
+            
+            
+              $scope.buscar_productos = function() {
+ 
                 console.log("gestionar_cotizaciones GENERAR_PEDIDO_BODEGA_FARMACIA");
                 var pedido =  {
                   
@@ -521,6 +526,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         {
                         codigo_producto: '1101D0471598',		                       
                         cantidad_solicitada: '1'			
+                        },
+                        {
+                        codigo_producto: '1101E0381868',		                       
+                        cantidad_solicitada: '1'	  
                         },
                         {
                         codigo_producto: '1101G0222238', 
@@ -558,14 +567,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
+                
+                var mensaje = "";
                  Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA, "POST", obj, function(data) {
                      
-                    console.log("FARMACIAS ", data)
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-
-                
-                })
+                    if(data.status === 200){
+                        
+                        mensaje = data.msj;
+                        //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj );
+                        //console.log("data ", data);
+                    }
+                    
+                    if(data.status === 403){
+                    
+                        //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                        //console.log("data ", data);
+                        
+                        data.obj.pedidos_clientes.productos_invalidos.forEach(function(producto){
+                            mensaje += producto.mensajeError+ " para el codigo ("+ producto.codigo_producto+") Precio venta ("+producto.precio_venta+") \n";
+                        });
+                    }
+                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);    
+                     console.log("PRODUCTOS INVALIDOS SON ", mensaje);
+                });
             };
+            
+            
             $scope.cerrar_busqueda_productos = function() {
 
                 $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});

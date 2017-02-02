@@ -4207,45 +4207,13 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
     }) .then(function(resultado){
         
         console.log("PEDIDO GENERADO OK ");
-        return res.send(G.utils.r(req.url, 'Se genera el pedido correctamente', 200, {pedidos_clientes: {cotizacion: cotizacion.numero_cotizacion}}));
+        return res.send(G.utils.r(req.url, 'Se genera el pedido correctamente', 200, {pedidos_clientes: {pedido: resultado}}));
     
     }).fail(function(err){
         console.log("err ", err)
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
     });
-    /*G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
-            .then(function(productos_validos,productos_invalidos){
-        
-        if(productos_validos[1].length > 0){
-             throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos_validos[1]}}; 
-            
-            return;
-        }
-        
-        return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
-               
-    }).then(function(resultado){
-      
-        cotizacion.numero_cotizacion =  resultado.pedidos_clientes.numero_cotizacion;
-        return G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,cotizacion, cotizacion.productos);
-         
     
-    }).then(function(resultado){
-        
-       cotizacion.total = __totalNuevoPrecioVenta(cotizacion); 
-       //cotizacion.subtotal = __totalNuevoPrecioVenta(cotizacion); 
-        
-       return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
-        
-    }) .then(function(resultado){
-        
-        console.log("PEDIDO GENERADO OK ");
-        return res.send(G.utils.r(req.url, 'Se genera el pedido correctamente', 200, {pedidos_clientes: {cotizacion: cotizacion.numero_cotizacion}}));
-    
-    }).fail(function(err){
-        console.log("err ", err)
-        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-    }); */
 };
 
 

@@ -3967,6 +3967,7 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
     var producto = productos[index];
        
     if (!producto) {   
+       
         callback(false,productos_validos,productos_invalidos);
         return; 
     }                
@@ -3974,7 +3975,7 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
     index++;
     var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
       G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function(resultado){
-       
+     
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
         **/
@@ -4003,6 +4004,90 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
 
 
 /*****************EL QUE GENERA TODO *************************************/
+
+
+
+
+
+
+
+function __precioVentaProductos(that, index, cotizacion, callback){
+    
+    var producto = cotizacion.productos[index];
+       
+    if (!producto) {   
+        callback(false,cotizacion);
+        return; 
+    }                
+     
+    index++;
+    /**
+    * +Descripcion Parametros exclusivos para consultar la disponibilidad 
+    *              que tiene el producto
+    */
+    var filtro = {
+        tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto,
+        termino_busqueda: producto.codigo_producto,
+        laboratorio_id: (cotizacion.laboratorio_id === undefined) ? '' : cotizacion.laboratorio_id,
+        numero_cotizacion: (cotizacion.numero_cotizacion === undefined) ? '' : cotizacion.numero_cotizacion,
+        numero_pedido: (cotizacion.numero_pedido === undefined) ? '' : cotizacion.numero_pedido,
+        filtro_producto: 0
+    };
+
+    var filtroAvanzado = {
+        molecula: cotizacion.molecula,
+        laboratorio_id: cotizacion.laboratorio_id,
+        codigoProducto: cotizacion.codigoProducto,
+        descripcionProducto: cotizacion.descripcionProducto,
+        concentracion: cotizacion.concentracion,
+        tipoBusqueda: 0,
+        tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto
+    };
+  
+    var filtros = '';
+    
+   /**
+     * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
+     *               siempre y cuando el pedido tenga el
+     *               estado (Estado del Pedido ) 1
+     *               estado_pedido (Estado de solicitud ) 0 pero anterior a esto
+     *               se validara de que el pedido al menos quede con un solo pro-
+     *               ducto
+     */
+    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+    
+    G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
+        cotizacion.empresa_id,
+        cotizacion.centro_utilidad_id,
+        cotizacion.bodega_id,
+        cotizacion.cliente.contrato_id,
+        filtro,
+        1, filtros, filtroAvanzado).then(function(lista_productos){
+    
+        //index++;
+       
+
+           var _producto = lista_productos[0];
+            producto.codigo_producto = _producto.codigo_producto;
+            producto.iva = _producto.iva;
+            producto.precio_venta = _producto.precio_producto;
+            producto.tipo_producto = _producto.tipo_producto_id;
+            producto.precioVentaIva = _producto.precio_producto;
+             
+            
+            
+        setTimeout(function() {
+               __precioVentaProductos(that,index, cotizacion, callback);
+       }, 300); 
+        
+    }).fail(function(err){
+         console.log("err (/fail) [__precioVentaProductos]: ", err);
+    }).done();
+    
+    
+
+}
+
 
 /**
  * @author Cristian Manuel Ardila
@@ -4090,8 +4175,45 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
         "tercero_id":cotizacion.cliente.id
     };
-          
-    G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
+    
+    
+    G.Q.nfcall(__precioVentaProductos,that,0, cotizacion).then(function(cotizacion){
+        
+        return G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
+        
+    }).then(function(productos){
+         
+         if(productos[1].length > 0){
+             throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos[1]}}; 
+            
+            return;
+        }
+        
+        return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
+        
+    }).then(function(resultado){
+      
+        cotizacion.numero_cotizacion =  resultado.pedidos_clientes.numero_cotizacion;
+        return G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,cotizacion, cotizacion.productos);
+         
+    
+    }).then(function(resultado){
+        
+       cotizacion.total = __totalNuevoPrecioVenta(cotizacion); 
+       //cotizacion.subtotal = __totalNuevoPrecioVenta(cotizacion); 
+        
+       return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
+        
+    }) .then(function(resultado){
+        
+        console.log("PEDIDO GENERADO OK ");
+        return res.send(G.utils.r(req.url, 'Se genera el pedido correctamente', 200, {pedidos_clientes: {cotizacion: cotizacion.numero_cotizacion}}));
+    
+    }).fail(function(err){
+        console.log("err ", err)
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+    /*G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
             .then(function(productos_validos,productos_invalidos){
         
         if(productos_validos[1].length > 0){
@@ -4111,6 +4233,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
     }).then(function(resultado){
         
        cotizacion.total = __totalNuevoPrecioVenta(cotizacion); 
+       //cotizacion.subtotal = __totalNuevoPrecioVenta(cotizacion); 
         
        return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
         
@@ -4122,7 +4245,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
     }).fail(function(err){
         console.log("err ", err)
         res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-    }); 
+    }); */
 };
 
 

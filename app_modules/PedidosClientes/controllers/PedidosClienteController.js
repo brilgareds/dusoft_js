@@ -1836,9 +1836,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-    
-    
-    console.log(" SE GENERA EL PEDIDO ", args.pedidos_clientes);
+     
     // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
@@ -1854,7 +1852,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
     //cotizacion.usuario_id = req.session.user.usuario_id;
     that.pedidoGenerado;
-    var autorizacion = {};
+   
     /**
      * +Descripcion: Funcion encargada de verificar si el numero de cotizacion
      *               ya tiene un pedido asignado
@@ -1877,7 +1875,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         if (resultado.length > 0) {
 
             cotizacion.usuario_id = resultado[0].usuario_id;
-        
+           
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
              **/
@@ -1886,15 +1884,29 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
                 return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
 
             } else {
-                throw 'La cotizacion no se encuentra aprobada por cartera';
+                throw {msj:'La cotizacion no se encuentra aprobada por cartera', status:500};
+               
                 return;
             }
 
         } else {
-            throw 'Ha ocurrido un error';
+             throw {msj:'Ha ocurrido un error', status:500};
         }
 
-    }).then(function(resultado) {
+    }).then(function(resultado){
+       
+        return G.Q.ninvoke(that, "__asignarResponsablesPedidos", cotizacion, resultado);
+        
+    }).then(function(resultado){         
+     
+        res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
+    }).fail(function(err){
+       
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    });
+    
+}
+    /*.then(function(resultado) {
 
         that.pedidoGenerado = resultado;
         return G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', resultado.numero_pedido, resultado.estado, null, cotizacion.usuario_id);
@@ -1953,7 +1965,8 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
-};
+};*/
+
 
 /**
  * +Descripcion: funcion que guarda el pedido de productos bloqueados
@@ -4173,8 +4186,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         "tercero_id":cotizacion.cliente.id
     };
     that.pedidoGenerado;
-    var notificacion;
-    var autorizacion = {};
+
     G.Q.nfcall(__precioVentaProductos,that,0, cotizacion).then(function(cotizacion){
         
         return G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
@@ -4197,110 +4209,37 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
     
     }).then(function(resultado){
         
-       cotizacion.total = __totalNuevoPrecioVenta(cotizacion); 
-      
-       //return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
-        
-        return  G.Q.ninvoke(that, "__generarPedido", autorizacion, cotizacion);
+       cotizacion.total = __totalNuevoPrecioVenta(cotizacion);      
+       return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
         
     }).then(function(resultado){
-        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, resultado));
-    }).fail(function(err){
-       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
-    });
-    
-    /*.then(function(resultado) {
+         
+        return G.Q.ninvoke(that, "__asignarResponsablesPedidos",cotizacion, resultado);
         
-        console.log("resultado [generar_pedido_cliente]:: ", resultado);
-        
-        that.pedidoGenerado = resultado;
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', resultado.numero_pedido, resultado.estado, null, cotizacion.usuario_id);
-
-
-    }).then(function(resultado) {
-        
-        console.log("resultado [asignar_responsables_pedidos]:: ", resultado);
-        
-        if (resultado.length > 0) {
-
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado], '1');
-
-        } else {
-            throw {msj:'Se ha Generado un Error en la Asignacion de Responsables', status:401, pedidos_clientes:{}}; 
-          
-        }
-
-
-    }).then(function(resultado) {
-        
-        console.log("that.pedidoGenerado ", that.pedidoGenerado);
-        console.log("resultado [terminar_estado_pedido]:: ", resultado);
-        
-        if (resultado.rowCount > 0) {
-            
-            var cliente = 0;
-                
-            autorizacion.farmacia = cliente;
-            autorizacion.empresa_id = cotizacion.empresa_id;
-            autorizacion.numero_pedido = that.pedidoGenerado.numero_pedido;
-            
-            notificacion = {
-                aliasModulo: 'productos_en_pedidos',
-                opcionModulo: "sw_ver_notificaciones",
-                titulo: "Autorizaciones Pedidos Clientes",
-                mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
-            };
-            
-            return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);
-        }
-                                
-    }).then(function(resultado) {    
-                
-        console.log("resultado [__guardarAutorizacion]:: ", resultado);
-                
-        if(resultado){
-            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
-            G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                
-        }
-           
-
-        that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-        return res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + that.pedidoGenerado.numero_pedido, 200, {pedidos_clientes: that.pedidoGenerado}));
-        return;
-    
-        }).fail(function(err){
-        console.log("err ", err)
-        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
-    });*/
-    
-};
-
-
-/*
-G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion).then(function(resultado){
-        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, resultado));
-    }).fail(function(err){
-       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
-    });
-    
-};
-*/
-PedidosCliente.prototype.__generarPedido = function(autorizacion, cotizacion, callback){
-    
-    console.log("****PedidosCliente.prototype.__generarPedido**************");
-    var that = this;
-    G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion).then(function(resultado) {
+    }).then(function(resultado){
      
-        console.log("resultado [generar_pedido_cliente]:: ", resultado);
-        
-        that.pedidoGenerado = resultado;
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', resultado.numero_pedido, resultado.estado, null, cotizacion.usuario_id);
+        res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
+    }).fail(function(err){
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    });
+  
+};
 
 
-    }).then(function(resultado) {
-        
-        console.log("resultado [asignar_responsables_pedidos]:: ", resultado);
-        
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de asignar el responsable del pedido, actualizar
+ *              el estado terminado del pedido, y si es el caso almacenar los productos
+ *              proximos a autorizar
+ * @fecha 03/02/2017 (DD/MM/YYYY)
+ */
+PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedidoGenerado, callback){
+     
+    var that = this;
+    that.pedidoGenerado = pedidoGenerado;
+    var autorizacion = {};
+    G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', pedidoGenerado.numero_pedido, pedidoGenerado.estado, null, cotizacion.usuario_id).then(function(resultado) {
+         
         if (resultado.length > 0) {
 
             return G.Q.ninvoke(that.m_pedidos_clientes, 'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado], '1');
@@ -4310,12 +4249,8 @@ PedidosCliente.prototype.__generarPedido = function(autorizacion, cotizacion, ca
           
         }
 
-
     }).then(function(resultado) {
-        
-        console.log("that.pedidoGenerado ", that.pedidoGenerado);
-        console.log("resultado [terminar_estado_pedido]:: ", resultado);
-        
+         
         if (resultado.rowCount > 0) {
             
             var cliente = 0;
@@ -4323,39 +4258,36 @@ PedidosCliente.prototype.__generarPedido = function(autorizacion, cotizacion, ca
             autorizacion.farmacia = cliente;
             autorizacion.empresa_id = cotizacion.empresa_id;
             autorizacion.numero_pedido = that.pedidoGenerado.numero_pedido;
-            
-            notificacion = {
+             
+            return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);
+        }
+                                
+    }).then(function(resultado) {    
+        
+        var notificacion = {
                 aliasModulo: 'productos_en_pedidos',
                 opcionModulo: "sw_ver_notificaciones",
                 titulo: "Autorizaciones Pedidos Clientes",
                 mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
             };
+        
+        console.log("LA NOTIFICACION ES ", notificacion);
             
-            return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);
-        }
-                                
-    }).then(function(resultado) {    
-                
-        console.log("resultado [__guardarAutorizacion]:: ", resultado);
-                
         if(resultado){
             that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
             G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                
         }
-           
-
+            
         that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-          callback(false, {status:200, msj:'Pedido Generado Correctamente No. ' + that.pedidoGenerado.numero_pedido, data:{pedidos_clientes:that.pedidoGenerado}});
-        //return res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + that.pedidoGenerado.numero_pedido, 200, {pedidos_clientes: that.pedidoGenerado}));
-        //return;
-    
+          callback(false, {status:200, msj:'Pedido Generado Correctamente No . ' + that.pedidoGenerado.numero_pedido, data:{pedidos_clientes:that.pedidoGenerado}});
+         
         }).fail(function(err){
         var msj = "Erro Interno";
         var status = 500;
         
         if(err.status){
             msj = err.msj;
-            status = err.status;
+            status = err.status;    
         }
         
         callback(err, {status:status, msj:msj});

@@ -523,14 +523,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         codigo_producto: '041A0604797',			                     
                         cantidad_solicitada: '1'
                         },
-                        {
+                        /*{
                         codigo_producto: '1101D0471598',		                       
                         cantidad_solicitada: '1'			
                         },
                         {
                         codigo_producto: '1101E0381868',		                       
                         cantidad_solicitada: '1'	  
-                        },
+                        },*/
                         {
                         codigo_producto: '1101G0222238', 
                         cantidad_solicitada: '10'

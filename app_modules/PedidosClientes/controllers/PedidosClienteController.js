@@ -1905,68 +1905,8 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
     });
     
-}
-    /*.then(function(resultado) {
-
-        that.pedidoGenerado = resultado;
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', resultado.numero_pedido, resultado.estado, null, cotizacion.usuario_id);
-
-
-    }).then(function(resultado) {
-
-        if (resultado.length > 0) {
-
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado], '1');
-
-        } else {
-
-            throw 'Se ha Generado un Error en la Asignacion de Responsables';
-        }
-
-
-    }).then(function(resultado) {
-         
-        if (resultado.rowCount > 0) {
-            
-            var cliente = 0;          
-            autorizacion.farmacia = cliente;
-            autorizacion.empresa_id = cotizacion.empresa_id;
-            autorizacion.numero_pedido = that.pedidoGenerado.numero_pedido;
- 
-            return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);
-
-        } else {
-
-            throw 'Error finalizando el estado del pedido';
-        }
-
-
-    }).then(function(resultado) {    
-          
-        var notificacion = {
-            aliasModulo: 'productos_en_pedidos',
-            opcionModulo: "sw_ver_notificaciones",
-            titulo: "Autorizaciones Pedidos Clientes",
-            mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
-        };
-            
-        if(resultado){
-            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
-            G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                
-        }
-       
-        that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-        res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + that.pedidoGenerado.numero_pedido, 200, {pedidos_clientes: that.pedidoGenerado}));
-        return;
-            
-            
-        }).fail(function(err) {
-
-        res.send(G.utils.r(req.url, err, 500, {}));
-    }).done();
-
-};*/
-
+};
+   
 
 /**
  * +Descripcion: funcion que guarda el pedido de productos bloqueados
@@ -4238,7 +4178,9 @@ PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedi
     var that = this;
     that.pedidoGenerado = pedidoGenerado;
     var autorizacion = {};
-    G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', pedidoGenerado.numero_pedido, pedidoGenerado.estado, null, cotizacion.usuario_id).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', pedidoGenerado.numero_pedido, pedidoGenerado.estado, null, cotizacion.usuario_id)
+   
+    .then(function(resultado) {
          
         if (resultado.length > 0) {
 
@@ -4260,6 +4202,9 @@ PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedi
             autorizacion.numero_pedido = that.pedidoGenerado.numero_pedido;
              
             return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);
+        }else {
+            throw {msj:'Error finalizando el estado del pedido', status:401, pedidos_clientes:{}}; 
+          
         }
                                 
     }).then(function(resultado) {    
@@ -4270,9 +4215,7 @@ PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedi
                 titulo: "Autorizaciones Pedidos Clientes",
                 mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
             };
-        
-        console.log("LA NOTIFICACION ES ", notificacion);
-            
+         
         if(resultado){
             that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
             G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                

@@ -570,7 +570,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
                 var mensaje = "";
                  Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA, "POST", obj, function(data) {
-                     
+                     console.log("data API.PEDIDOS ", data);
                     if(data.status === 200){
                         
                         mensaje = data.msj;

@@ -4133,6 +4133,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         
     }).then(function(productos){
          
+         
          if(productos[1].length > 0){
              throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos[1]}}; 
             
@@ -4171,10 +4172,11 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         return G.Q.ninvoke(that, "__asignarResponsablesPedidos",cotizacion, resultado);
         
     }).then(function(resultado){
-     
+        console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK resultado ", resultado);
         res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
     }).fail(function(err){
-       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+         console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK err ", err);
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
     });
   
 };

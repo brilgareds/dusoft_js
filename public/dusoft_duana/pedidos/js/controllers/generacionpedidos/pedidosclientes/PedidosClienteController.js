@@ -501,98 +501,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     disabled = true;
                 return disabled;
             };
-            $scope.buscar_productos2 = function() {
+            $scope.buscar_productos = function() {
 
                 $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
                 $scope.$emit('gestionar_productos_clientes');
             };
-            
-            
-              $scope.buscar_productos = function() {
- 
-                console.log("gestionar_cotizaciones GENERAR_PEDIDO_BODEGA_FARMACIA");
-                var pedido =  {
-                  
-                    empresa_id: '03', //OK
-                    centro_utilidad_id: '1 ', //OK
-                    bodega_id: '03', //OK
-                    numero_cotizacion: 0, //OK
-                    observacion: 'NUEVA PRUEBA ',//OK
-                    productos: [
-                        {
-                        codigo_producto: '041A0604797',			                     
-                        cantidad_solicitada: '1'
-                        },
-                        /*{
-                        codigo_producto: '1101D0471598',		                       
-                        cantidad_solicitada: '1'			
-                        },
-                        {
-                        codigo_producto: '1101E0381868',		                       
-                        cantidad_solicitada: '1'	  
-                        },*/
-                        {
-                        codigo_producto: '1101G0222238', 
-                        cantidad_solicitada: '10'
-                       },
-                       {
-                        codigo_producto: '1101M0443248', 		                      
-                        cantidad_solicitada: '1'
-                        }
-                    ],
-                    tipo_producto: '1',                  
-                    observacion_cartera: '',
-                    aprobado_cartera: '0',
-                    estado_cotizacion: '',                   
-                    estado: '0',
-                    vendedor: {
-                        tipo_id_tercero: 'CC ', //OK
-                        id: '67039648' //OK
-                    },
-                    cliente: {
-                        tipo_id_tercero: 'NIT', //OK
-                        id: '800024390', //OK
-                        contrato_id: 301, //// >
-                        tipoBloqueoId: '1' //OK
-                     },
-                    fecha_registro: '30/01/2017',
-                    usuario_id: 1350 //OK
-                    }; 
-           
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            cotizacion: pedido
-                        }
-                    }
-                };
-                
-                var mensaje = "";
-                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA, "POST", obj, function(data) {
-                     console.log("data API.PEDIDOS ", data);
-                    if(data.status === 200){
-                        
-                        mensaje = data.msj;
-                        //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj );
-                        //console.log("data ", data);
-                    }
-                    
-                    if(data.status === 403){
-                    
-                        //AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                        //console.log("data ", data);
-                        
-                        data.obj.pedidos_clientes.productos_invalidos.forEach(function(producto){
-                            mensaje += producto.mensajeError+ " para el codigo ("+ producto.codigo_producto+") Precio venta ("+producto.precio_venta+") \n";
-                        });
-                    }
-                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);    
-                     console.log("PRODUCTOS INVALIDOS SON ", mensaje);
-                });
-            };
-            
-            
+             
             $scope.cerrar_busqueda_productos = function() {
 
                 $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});

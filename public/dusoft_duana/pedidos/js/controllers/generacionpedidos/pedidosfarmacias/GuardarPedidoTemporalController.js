@@ -168,14 +168,15 @@ define(["angular", "js/controllers",
                     session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
-                            numero_pedido: farmacia.getCodigo() + farmacia.getCentroUtilidadSeleccionado().getCodigo() + producto.getCodigoProducto(),
+                            numero_pedido: farmacia.getCodigo() + farmacia.getCentroUtilidadSeleccionado().getCodigo() + producto.getCodigoProducto()
+                                           + producto.getEmpresaOrigenProducto()+ producto.getCentroUtilidadOrigenProducto()+ producto.getBodegaOrigenProducto(),
                             farmaciaDestino:farmacia,
                             producto:producto
-                            
+                           
                         }
                     }
                 };
-
+                console.log("guardarDetallePedidoTemporal>>>>>>>>>>>>>>>>>>>>>>>>>>>>",obj.data.pedidos_farmacias);
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         pedido.agregarProductoSeleccionado(producto);
@@ -238,7 +239,11 @@ define(["angular", "js/controllers",
                             empresa_id: farmacia.getCodigo(),
                             centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            codigo_producto: producto.getCodigoProducto()
+                            codigo_producto: producto.getCodigoProducto(),
+                            empresa_origen_producto: producto.getEmpresaOrigenProducto(),
+                            centro_utilidad_origenProducto: producto.getCentroUtilidadOrigenProducto(),
+                            bodega_origen_producto: producto.getBodegaOrigenProducto()
+                            
                         }
                     }
                 };
@@ -297,8 +302,9 @@ define(["angular", "js/controllers",
              */
             self.mostrarProductosNoValidos = function(productos, callback){
                 $scope.productosInvalidos = [];
-                
+                 console.log("mostrarProductosNoValidos ");
                 for (var i in productos) {
+                    console.log("productos ",productos[i]);
                     var _producto = productos[i];
                     var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion || "?").
                                                               setCantidadSolicitada(_producto.cantidad_solicitada).
@@ -511,6 +517,15 @@ define(["angular", "js/controllers",
                  $scope.rootPedidoFarmaciaTemporal.progresoArchivo = 1; 
                  var nombreArchivo = $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.files[0].name;
                  var extension = nombreArchivo.substr(nombreArchivo.indexOf("."),nombreArchivo.length);   
+                 
+                var empresa_id='0';
+                var centro_utilidad_id='0';
+                var bodega_id='0';
+                if(!$scope.root.bodegaMultiple.bools){
+                 empresa_id=pedido.getFarmaciaOrigen().getCodigo()!==undefined? pedido.getFarmaciaOrigen().getCodigo():0;
+                 centro_utilidad_id=pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo()!==undefined?pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo():0;
+                 bodega_id=pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()!==undefined?pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo():0;
+                }
                    
                  self.guardarEncabezadoPedidoTemporal(function(creacionCompleta) {
                     if (creacionCompleta) {
@@ -518,9 +533,9 @@ define(["angular", "js/controllers",
                         
                          $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.opts.query.data = JSON.stringify({
                                 pedidos_farmacias: {
-                                    empresa_origen_id: pedido.getFarmaciaOrigen().getCodigo(),
-                                    centro_utilidad_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo(),
-                                    bodega_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                                    empresa_origen_id: empresa_id,
+                                    centro_utilidad_origen_id: centro_utilidad_id,
+                                    bodega_origen_id: bodega_id,
                                     empresa_destino_id: pedido.getFarmaciaDestino().getCodigo(),
                                     centro_utilidad_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
                                     bodega_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),

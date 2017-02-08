@@ -32,6 +32,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
                                             </div>'
                     },
+                    {field: 'nombreBodega', displayName: 'Bodega', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                     {field: 'existenciasFarmacia', displayName: 'Exist. Farmacia', width: "8%"},
                     {field: 'totalExistenciasFarmacias', displayName: 'Total Exist. Farmacia', width: "11%"},
@@ -72,7 +73,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     {nombre: "Descripcion", tipo_busqueda: 0},
                     {nombre: "Molecula", tipo_busqueda: 1},
                     {nombre: "Codigo", tipo_busqueda: 2}
-                ];
+                ];                           
 
                 $scope.rootSeleccionProductoFarmacia.filtro = $scope.rootSeleccionProductoFarmacia.filtros[0];
 
@@ -93,8 +94,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                             setDisponibilidadBodega(_producto.disponibilidad_bodega).
                             setEstado(_producto.estado).setEnFarmaciaSeleccionada(_producto.en_farmacia_seleccionada).
                             setTipoProductoId(_producto.tipo_producto_id).
-                            setCantidadSolicitada(_producto.cantidad_solicitada);
-
+                            setCantidadSolicitada(_producto.cantidad_solicitada).
+                            setNombreBodega(_producto.nombre_bodega).
+                            setEmpresaOrigenProducto(_producto.empresa_id).
+                            setCentroUtilidadOrigenProducto(_producto.centro_utilidad).
+                            setBodegaOrigenProducto(_producto.bodega);
                     $scope.root.pedido.agregarProducto(producto);
 
                 }
@@ -111,18 +115,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 $scope.rootSeleccionProductoFarmacia.filtro.termino_busqueda = $scope.rootSeleccionProductoFarmacia.termino_busqueda;
                 $scope.rootSeleccionProductoFarmacia.filtro.tipo_producto = $scope.rootSeleccionProductoFarmacia.tipoProducto;
 
+                var empresa_id='0';
+                var centro_utilidad_id='0';
+                var bodega_id='0';
+                if(!$scope.root.bodegaMultiple.bools){
+                 empresa_id=$scope.root.pedido.getFarmaciaOrigen().getCodigo()!==undefined?$scope.root.pedido.getFarmaciaOrigen().getCodigo():0;
+                 centro_utilidad_id=$scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo()!==undefined?$scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo():0;
+                 bodega_id=$scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()!==undefined?$scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo():0;
+                }
+
                 var obj = {
                     session: $scope.root.session,
                     data: {
                         productos: {
                             pagina_actual: $scope.rootSeleccionProductoFarmacia.paginaactual,
-                            empresa_id: $scope.root.pedido.getFarmaciaOrigen().getCodigo(),
-                            centro_utilidad_id: $scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo(),
-                            bodega_id: $scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            empresa_id: empresa_id,
+                            centro_utilidad_id: centro_utilidad_id,
+                            bodega_id: bodega_id,
                             empresa_destino_id: $scope.root.pedido.getFarmaciaDestino().getCodigo(),
                             centro_utilidad_destino_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_destino_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            filtro: $scope.rootSeleccionProductoFarmacia.filtro
+                            filtro: $scope.rootSeleccionProductoFarmacia.filtro,
+                            multibodega: $scope.root.bodegaMultiple.bools
                         }
                     }
                 };
@@ -193,6 +207,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
 
             self.validarIngresoProducto = function(producto, callback) {
                 var pedido = $scope.root.pedido;
+console.log("comparar temporal ",pedido);
+console.log("comparar producto ",producto);
 
                 if (pedido.esProductoSeleccionado(producto)) {
 
@@ -225,7 +241,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              * @param {function} callback
              * +Descripcion: Verifica si el producto no esta bloqueado por otro usuario
              */
-
+            
             self.verificarBloqueoProducto = function(callback) {
                 var obj = {
                     session: $scope.root.session,
@@ -233,7 +249,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                         usuario_bloqueo: {
                             farmacia_id: $scope.root.pedido.getFarmaciaDestino().getCodigo(),
                             centro_utilidad_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
-                            codigo_producto: $scope.root.pedido.getProductoSeleccionado().getCodigoProducto()
+                            codigo_producto: $scope.root.pedido.getProductoSeleccionado().getCodigoProducto(),
+                            empresaOrigenProducto: $scope.root.pedido.getProductoSeleccionado().getEmpresaOrigenProducto(),
+                            centroUtilidadOrigenProducto: $scope.root.pedido.getProductoSeleccionado().getCentroUtilidadOrigenProducto(),
+                            bodegaOrigenProducto: $scope.root.pedido.getProductoSeleccionado().getBodegaOrigenProducto()
                         }
                     }
                 };
@@ -345,8 +364,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                         pedido.setProductoSeleccionado(angular.copy(producto));
 
                         self.validarIngresoProducto(producto, function(validacion) {
-
+                          console.log("validacion.valido ",validacion.valido);
+                          console.log("validacion.valido ",producto);
                             if (validacion.valido) {
+                                console.log("validacion.valido ",validacion.valido);
                                 if (pedido.get_numero_pedido()) {
                                     $scope.$emit("insertarProductoPedido", pedido);
                                 } else {

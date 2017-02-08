@@ -156,7 +156,10 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             for(var i in this.productosSeleccionados){
                 var _producto = this.productosSeleccionados[i];
                 
-                if(_producto.getCodigoProducto() === producto.getCodigoProducto()){
+                if(_producto.getCodigoProducto() === producto.getCodigoProducto() && 
+                   _producto.getEmpresaOrigenProducto() === producto.getEmpresaOrigenProducto() &&
+                   _producto.getCentroUtilidadOrigenProducto() === producto.getCentroUtilidadOrigenProducto() &&
+                   _producto.getBodegaOrigenProducto() === producto.getBodegaOrigenProducto()){
                     _producto.setCantidadPendiente(_producto.getCantidadPendiente() + producto.getCantidadPendiente());
                     return true;
                 }

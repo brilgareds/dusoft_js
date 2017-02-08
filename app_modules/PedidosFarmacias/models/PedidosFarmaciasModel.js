@@ -120,16 +120,19 @@ PedidosFarmaciasModel.prototype.guardarEncabezadoTemporal = function(empresa_des
 
 
 PedidosFarmaciasModel.prototype.guardarDetalleTemporal = function(numeroPedido, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, codigo_producto,
-                                                                  cantidad_solicitada, tipoProductoId, cantidadPendiente, usuario_id, callback) {
+                                                                  cantidad_solicitada, tipoProductoId, cantidadPendiente, usuario_id, 
+                                                                  empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,nombreBodega,callback) {
                                                                       
       var that = this;
       
-      that.existe_registro_detalle_temporal(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, codigo_producto, usuario_id, function(err, resultado){
+      that.existe_registro_detalle_temporal(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, codigo_producto, usuario_id, 
+                                            empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,function(err, resultado){
           if (resultado.length > 0 && parseInt(resultado[0].cantidad_registros) === 0) {
               
               that.insertar_detalle_pedido_farmacia_temporal( numeroPedido, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, codigo_producto,
-                                                         cantidad_solicitada, tipoProductoId, cantidadPendiente, usuario_id, function(err, rows, result) {
-                   
+                                                              cantidad_solicitada, tipoProductoId, cantidadPendiente, usuario_id, 
+                                                              empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,nombreBodega,
+                                                            function(err, rows, result) {
                    callback(err, rows);
               });
               
@@ -166,14 +169,18 @@ PedidosFarmaciasModel.prototype.obtenerCantidadProductosEnTemporal = function(em
 };
 
 
-PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
+PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, 
+                                                                            empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,callback)
 {
+    console.log("empresa_idempresa_idempresa_idempresa_idempresa_id  ",empresa_id);
     var sql = "SELECT COUNT(farmacia_id) as cantidad_registros FROM solicitud_pro_a_bod_prpal_tmp WHERE \
-               farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and codigo_producto = :4 and usuario_id = :5";
+               farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and codigo_producto = :4 and usuario_id = :5\
+               and empresa_origen_producto = :6 and centro_utilidad_origen_producto = :7 and bodega_origen_producto = :8 ";
     
-    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:codigo_producto, 5:usuario_id}).then(function(resultado){
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:codigo_producto, 5:usuario_id , 6:empresa_origen_producto , 7:centro_utilidad_origen_producto , 8:bodega_origen_producto}).then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
+        console.log("existe_registro_detalle_temporal error  ",err);
         callback(err);
     });
 };
@@ -224,20 +231,24 @@ PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(emp
 };
 
 
-PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  tipo_producto_id, cantidad_pendiente, usuario_id, callback) {
+PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  
+                                                                                     tipo_producto_id, cantidad_pendiente, usuario_id,empresa_origen_producto,centro_utilidad_origen_producto,
+                                                                                     bodega_origen_producto,nombreBodega, callback) {
 
 
     var that = this;
     
     G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto,{cantidad:cantidad_solicitada, codigo_producto:codigo_producto}).then(function(resultado){
-        //console.log("producto validcion ", resultado);
+        
         if(resultado.length > 0 && resultado[0].valido === '1'){
             
-            var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, cantidad_pendiente, usuario_id ) \
-            VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 ) ;";
-            
+            var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, \
+                        tipo_producto, cantidad_pendiente, usuario_id,empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,nombre_bodega) \
+            VALUES ( :1, :2, :3, :4, :5, :6, :7, :8, :9 , :10, :11, :12 , :13) ;";
+       
             return  G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:codigo_producto, 
-                                     6:cantidad_solicitada,  7:tipo_producto_id, 8:cantidad_pendiente, 9:usuario_id});
+                                     6:cantidad_solicitada,  7:tipo_producto_id, 8:cantidad_pendiente, 9:usuario_id , 10:empresa_origen_producto,
+                                     11:centro_utilidad_origen_producto, 12:bodega_origen_producto, 13:nombreBodega});
         } else {
             throw {msj:"La cantidad ingresada del producto no es valida", status:403};
         }
@@ -284,12 +295,29 @@ PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(em
 
 PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
-    var sql = "SELECT codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion_producto, cantidad_solic::integer as cantidad_solicitada, cantidad_pendiente, tipo_producto as tipo_producto_id\
-                FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4 order by cantidad_pendiente asc";
+    var sql = "SELECT codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion_producto, cantidad_solic::integer as cantidad_solicitada, cantidad_pendiente, tipo_producto as tipo_producto_id,\
+                empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto,nombre_bodega\
+               FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4 order by cantidad_pendiente asc";
  
     G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:usuario_id}).then(function(resultado){
         callback(false, resultado.rows);
-    }).catch(function(err){
+    }).catch(function(err){ 
+        callback(err);
+    });
+
+};
+
+PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal_a_clientes = function(parametros, callback)
+{
+    var sql = "SELECT codigo_producto, cantidad_solic::integer as cantidad_solicitada\
+               FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and usuario_id = :4 \
+               and empresa_origen_producto != :5 and centro_utilidad_origen_producto != :6 and bodega_origen_producto != :7 \
+               order by cantidad_pendiente asc";
+ 
+    G.knex.raw(sql, {1:parametros.empresa_id, 2:parametros.centro_utilidad_id, 3:parametros.bodega_id, 4:parametros.usuario_id, 
+                     5:parametros.empresa_origen_producto, 6: parametros.centro_utilidad_origen_producto, 7: parametros.bodega_origen_producto}).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){ 
         callback(err);
     });
 
@@ -307,13 +335,16 @@ PedidosFarmaciasModel.prototype.eliminar_registro_encabezado_temporal = function
     });
 };
 
-PedidosFarmaciasModel.prototype.eliminar_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
+PedidosFarmaciasModel.prototype.eliminar_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, empresa_origen_producto,
+                                                                centro_utilidad_origenProducto, bodega_origen_producto, callback)
 {
-    var sql = "DELETE FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and codigo_producto = :4 and usuario_id = :5";
+    var sql = "DELETE FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = :1 and centro_utilidad = :2 and bodega = :3 and codigo_producto = :4 and usuario_id = :5 and\n\
+                                                               empresa_origen_producto = :6 and  centro_utilidad_origen_producto = :7 and bodega_origen_producto = :8";
 
-    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:codigo_producto, 5:usuario_id}).then(function(resultado){
+    G.knex.raw(sql, {1:empresa_id, 2:centro_utilidad_id, 3:bodega_id, 4:codigo_producto, 5:usuario_id, 6:empresa_origen_producto, 7:centro_utilidad_origenProducto, 8:bodega_origen_producto }).then(function(resultado){
         callback(false, resultado.rows);
     }).catch(function(err){
+        console.log("eliminar_registro_detalle_temporal err",err);
         callback(err);
     });
 };
@@ -345,13 +376,13 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, ce
 
 };
 
-PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback) {
+PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, callback) {
     
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
                 SELECT :1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic from solicitud_pro_a_bod_prpal_tmp \
-                WHERE farmacia_id = :2 and centro_utilidad = :3 and bodega = :4 and usuario_id = :5";
+                WHERE farmacia_id = :2 and centro_utilidad = :3 and bodega = :4 and usuario_id = :5 and empresa_origen_producto = :6 and centro_utilidad_origen_producto = :7 and boedga_origen_producto = :8 ";
 
-    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:usuario_id}).then(function(resultado){
+    G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:usuario_id, 6:empresa_origen_id, 7:centro_utilidad_origen_id, 8:bodega_origen_id}).then(function(resultado){
         callback(false, resultado.rows, resultado);
     }).catch(function(err){
         callback(err);
@@ -1450,7 +1481,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
                         else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
                 coalesce(j.existencias_farmacia, 0) as existencias_farmacia,\
-                b.unidad_medida\
+                b.unidad_medida,\
+                (select descripcion from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
@@ -1496,7 +1528,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                     ORDER BY 1 ASC \
                 ) j on j.codigo_producto = c.codigo_producto\
                 where a.empresa_id= :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + sql_filtro;
-
+                
 
     /*var sql = " b.codigo_producto,\
                 a.empresa_id,\
@@ -1561,6 +1593,27 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     }).catch(function(err){
         callback(err);
     });
+    
+};
+
+PedidosFarmaciasModel.prototype.listarBodegasPedidos = function(callback) {
+    var estado='1'; 
+    var columnas = [
+        "a.empresa_id", 
+        "a.centro_utilidad as centro_utilidad_id", 
+        "a.bodega as bodega_id",
+        "a.orden"
+    ];    
+    G.knex.column(columnas).
+    from("bodegas_pedidos as a").
+    where("a.estado",estado).
+    orderByRaw("orden desc").
+    then(function(rows){
+       callback(false, rows);
+    }).
+    catch(function(err){
+        callback(err);
+    }).done();
     
 };
 

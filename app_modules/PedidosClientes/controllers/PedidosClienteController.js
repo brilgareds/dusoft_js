@@ -499,6 +499,7 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 };
 
 
+
 /*
  * Autor : Camilo Orozco
  * Descripcion : Insertar cotizacion
@@ -583,6 +584,19 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         "tercero_id":cotizacion.cliente.id
     };
     
+    G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, resultado));
+    }).fail(function(err){
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    });
+    
+};
+
+PedidosCliente.prototype.__insertarCotizacion = function(obj, cotizacion, callback){
+    
+    console.log("****PedidosCliente.prototype.__insertarCotizacion**************");
+    var that = this;
+    
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).            
     then(function(tercero){
                 
@@ -595,7 +609,8 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     }).spread(function(rows, result){
         
         var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
-        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
+        callback(false,{pedidos_clientes: {numero_cotizacion: numero_cotizacion}}) ;
+        
         
     }).fail(function(err){
         var msj = "Erro Interno";
@@ -606,10 +621,12 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
             status = err.status;
         }
         
-        res.send(G.utils.r(req.url, msj, status, {pedidos_clientes: {}}));
+        callback(err, {status:status, msj:msj});
+       
     }).done();
-
+    
 };
+
 
 /*
  * @autor : Cristian Manuel Ardila Troches
@@ -1819,7 +1836,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-
+     
     // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
@@ -1835,7 +1852,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
     //cotizacion.usuario_id = req.session.user.usuario_id;
     that.pedidoGenerado;
-
+   
     /**
      * +Descripcion: Funcion encargada de verificar si el numero de cotizacion
      *               ya tiene un pedido asignado
@@ -1858,7 +1875,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         if (resultado.length > 0) {
 
             cotizacion.usuario_id = resultado[0].usuario_id;
-        
+           
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
              **/
@@ -1867,77 +1884,29 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
                 return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
 
             } else {
-                throw 'La cotizacion no se encuentra aprobada por cartera';
+                throw {msj:'La cotizacion no se encuentra aprobada por cartera', status:500};
+               
                 return;
             }
 
         } else {
-            throw 'Ha ocurrido un error';
+             throw {msj:'Ha ocurrido un error', status:500};
         }
 
-    }).then(function(resultado) {
-
-        that.pedidoGenerado = resultado;
-        return G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', resultado.numero_pedido, resultado.estado, null, cotizacion.usuario_id);
-
-
-    }).then(function(resultado) {
-
-        if (resultado.length > 0) {
-
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado], '1');
-
-        } else {
-
-            throw 'Se ha Generado un Error en la Asignacion de Responsables';
-        }
-
-
-    }).then(function(resultado) {
-
-        if (resultado.length > 0) {
-            var cliente = 0;
-            var autorizacion = {};
-            autorizacion.farmacia = cliente;
-            autorizacion.empresa_id = cotizacion.empresa_id;
-            autorizacion.numero_pedido = that.pedidoGenerado.numero_pedido;
-
-
-
-            var notificacion = {
-                aliasModulo: 'productos_en_pedidos',
-                opcionModulo: "sw_ver_notificaciones",
-                titulo: "Autorizaciones Pedidos Clientes",
-                mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
-            };
-
-            G.Q.nfcall(__guardarAutorizacion, that, autorizacion).then(function(resultado) {     
-                if(resultado){
-                that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
-                G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                
-                }
-                res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
-            }).fail(function(err) {
-                res.send(G.utils.r(req.url, 'Error Finalizando el Registro de la Autorizacion', 500, {documento_temporal: {}}));
-            });
-
-
-            that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-            res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + that.pedidoGenerado.numero_pedido, 200, {pedidos_clientes: that.pedidoGenerado}));
-            return;
-
-        } else {
-
-            throw 'Error finalizando el estado del pedido';
-        }
-
-
-    }).fail(function(err) {
-
-        res.send(G.utils.r(req.url, err, 500, {}));
-    }).done();
-
+    }).then(function(resultado){
+       
+        return G.Q.ninvoke(that, "__asignarResponsablesPedidos", cotizacion, resultado);
+        
+    }).then(function(resultado){         
+     
+        res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
+    }).fail(function(err){
+       
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    });
+    
 };
+   
 
 /**
  * +Descripcion: funcion que guarda el pedido de productos bloqueados
@@ -2619,12 +2588,7 @@ PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
  * Descripcion : Modificar detalle pedido
  */
 PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
-
-    /*console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");*/
-    
+ 
     var that = this;
 
     var args = req.body.data;
@@ -2817,7 +2781,6 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
  * @returns {Number}
  */
 function __totalNuevoPrecioVenta(pedido) {
-
 
     var productos = pedido.productos;
     var totalPrecioVenta = 0;
@@ -3906,8 +3869,387 @@ function __productosPedidos(parametros, callback) {
 
         callback(error);
     });
+};
+
+
+
+/***********************PROCESO (METODO INVOCADO DESDE EL MODULO DE FARMACIAS******/
+
+/**
+ * +Descripcion Metodo encargado de insertar los productos en el detalle del pedido
+ * @fecha 30/01/2017
+ * @author Cristian Ardila 
+ */
+function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, productos, callback) {
+    
+    console.log("*******__insertarProductosFarmaciaCotizacion**************");
+    
+    var producto = productos[index];
+        //console.log("producto ", producto);
+    if (!producto) {   
+        callback(false);
+        return; 
+    }  
+     
+   G.Q.ninvoke(that.m_pedidos_clientes,'insertar_detalle_cotizacion',cotizacion,producto).then(function(resultado){
+      
+    }).fail(function(err){
+         console.log("err (/fail) [__insertarProductosFarmaciaCotizacion]: ", err);
+    }).done();              
+      
+    index++;     
+  
+    setTimeout(function() {
+        __insertarProductosFarmaciaCotizacion(that, index,cotizacion, productos, callback);
+    }, 300);   
+};
+
+
+ 
+/**
+ * +Descripcion Metodo encargado de validar los productos enviados desde el modulo
+ *              de farmacia, validacion consiste en precio regulado etc 
+ * @fecha 30/01/2017
+ * @author Cristian Ardila 
+ */
+function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, productos, productos_validos,productos_invalidos, callback) {
+     
+    var producto = productos[index];
+       
+    if (!producto) {   
+       
+        callback(false,productos_validos,productos_invalidos);
+        return; 
+    }                
+     
+    index++;
+    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+      G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function(resultado){
+     
+        /**
+         * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
+        **/
+        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
+       
+        if(precioVenta.valido){
+            productos_validos.push(producto);  
+        }else{
+            
+            producto.mensajeError = precioVenta.msj;
+            productos_invalidos.push(producto);
+            
+        }
+             
+    }).fail(function(err){
+         console.log("err (/fail) [__validarProductosPedidosBodegaFarmacia]: ", err);
+    }).done();
+    
+    
+     setTimeout(function() {
+            __validarProductosPedidosBodegaFarmacia(that,index, cotizacion, productos, productos_validos, productos_invalidos, callback);
+    }, 300);      
+};
+
+
+
+
+/*****************EL QUE GENERA TODO *************************************/
+
+
+
+
+
+
+
+function __precioVentaProductos(that, index, cotizacion, callback){
+    
+    var producto = cotizacion.productos[index];
+       
+    if (!producto) {   
+        callback(false,cotizacion);
+        return; 
+    }                
+     
+    index++;
+    /**
+    * +Descripcion Parametros exclusivos para consultar la disponibilidad 
+    *              que tiene el producto
+    */
+    var filtro = {
+        tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto,
+        termino_busqueda: producto.codigo_producto,
+        laboratorio_id: (cotizacion.laboratorio_id === undefined) ? '' : cotizacion.laboratorio_id,
+        numero_cotizacion: (cotizacion.numero_cotizacion === undefined) ? '' : cotizacion.numero_cotizacion,
+        numero_pedido: (cotizacion.numero_pedido === undefined) ? '' : cotizacion.numero_pedido,
+        filtro_producto: 0
+    };
+
+    var filtroAvanzado = {
+        molecula: cotizacion.molecula,
+        laboratorio_id: cotizacion.laboratorio_id,
+        codigoProducto: cotizacion.codigoProducto,
+        descripcionProducto: cotizacion.descripcionProducto,
+        concentracion: cotizacion.concentracion,
+        tipoBusqueda: 0,
+        tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto
+    };
+  
+    var filtros = '';
+    
+   /**
+     * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
+     *               siempre y cuando el pedido tenga el
+     *               estado (Estado del Pedido ) 1
+     *               estado_pedido (Estado de solicitud ) 0 pero anterior a esto
+     *               se validara de que el pedido al menos quede con un solo pro-
+     *               ducto
+     */
+    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+    
+    G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
+        cotizacion.empresa_id,
+        cotizacion.centro_utilidad_id,
+        cotizacion.bodega_id,
+        cotizacion.cliente.contrato_id,
+        filtro,
+        1, filtros, filtroAvanzado).then(function(lista_productos){
+    
+        //index++;
+       
+
+           var _producto = lista_productos[0];
+            producto.codigo_producto = _producto.codigo_producto;
+            producto.iva = _producto.iva;
+            producto.precio_venta = _producto.precio_producto;
+            producto.tipo_producto = _producto.tipo_producto_id;
+            producto.precioVentaIva = _producto.precio_producto;
+             
+            
+            
+        setTimeout(function() {
+               __precioVentaProductos(that,index, cotizacion, callback);
+       }, 300); 
+        
+    }).fail(function(err){
+         console.log("err (/fail) [__precioVentaProductos]: ", err);
+    }).done();
+    
+    
+
 }
-;
+
+
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de automatizar todo el proceso de cotizacion
+ *              y pedido, generando el pedido sin las previas autorizaciones
+ *              de cartera
+ * @fecha 01/02/2017 (DD/MM/YYYY)
+ */
+PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
+     
+    console.log("*************PedidosCliente.prototype.generarPedidoBodegaFarmacia********************");
+    
+    var that = this;
+    var args = req.body.data;
+     
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Cliente
+    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cliente === '') {
+        res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Vendedor
+    if (args.pedidos_clientes.cotizacion.vendedor === undefined || args.pedidos_clientes.cotizacion.vendedor === '') {
+        res.send(G.utils.r(req.url, 'Vendedor No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+
+    // Empresa, Centro Utilidad,  Bodega
+    if (!cotizacion.empresa_id || !cotizacion.centro_utilidad_id || !cotizacion.bodega_id) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Validar Cliente
+    if (cotizacion.cliente.tipo_id_tercero === undefined || cotizacion.cliente.id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Validar Vendedor
+    if (cotizacion.vendedor.tipo_id_tercero === undefined || cotizacion.vendedor.id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Observaciones
+    if (cotizacion.tipo_producto === undefined || cotizacion.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_producto u observacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Empresa, Centro Utilidad,  Bodega
+    if (cotizacion.empresa_id === '' || cotizacion.centro_utilidad_id === '' || cotizacion.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
+        return;
+    }
+    // Validar Cliente
+    if (cotizacion.cliente.tipo_id_tercero === '' || cotizacion.cliente.id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
+        return;
+    }
+
+    // Validar Vendedor
+    if (cotizacion.vendedor.tipo_id_tercero === '' || cotizacion.vendedor.id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
+        return;
+    }
+
+    // Observaciones
+    if (cotizacion.tipo_producto === '' || cotizacion.observacion === '') {
+        res.send(G.utils.r(req.url, 'tipo_producto u observacion esta vacia', 404, {}));
+        return;
+    }
+
+    cotizacion.usuario_id = req.session.user.usuario_id;
+    var obj = {
+        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
+        "tercero_id":cotizacion.cliente.id
+    };
+    var pedidoGenerado;
+     
+    G.Q.nfcall(__precioVentaProductos,that,0, cotizacion).then(function(cotizacion){
+        
+        return G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
+        
+    }).then(function(productos){
+         
+         
+         if(productos[1].length > 0){
+             throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos[1]}}; 
+            
+            return;
+        }
+        
+        return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
+        
+    }).then(function(resultado){
+      
+        cotizacion.numero_cotizacion =  resultado.pedidos_clientes.numero_cotizacion;
+        return G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,cotizacion, cotizacion.productos);
+         
+    
+    }).then(function(resultado){
+        
+        cotizacion.total = __totalNuevoPrecioVenta(cotizacion);  
+        
+        var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion,  cotizacion.productos, cotizacion.usuario_id, "Se solicita aprobacion", cotizacion.total, 0, 0);
+        return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logTrazabilidadVentas', paramLogCliente);
+        
+    }).then(function(resultado){    
+        
+        var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, "APROBADO AUTOMATICAMENTE", cotizacion.total, 0, 1);
+
+            return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);
+ 
+    }).then(function(resultado){
+        
+           
+       return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
+        
+          
+    }).then(function(resultado){
+         
+        return G.Q.ninvoke(that, "__asignarResponsablesPedidos",cotizacion, resultado);
+        
+    }).then(function(resultado){
+        console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK resultado ", resultado);
+        res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
+    }).fail(function(err){
+         console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK err ", err);
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+  
+};
+
+
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de asignar el responsable del pedido, actualizar
+ *              el estado terminado del pedido, y si es el caso almacenar los productos
+ *              proximos a autorizar
+ * @fecha 03/02/2017 (DD/MM/YYYY)
+ */
+PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedidoGenerado, callback){
+     
+    var that = this;
+    that.pedidoGenerado = pedidoGenerado;
+    var autorizacion = {};
+    G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', pedidoGenerado.numero_pedido, pedidoGenerado.estado, null, cotizacion.usuario_id)
+   
+    .then(function(resultado) {
+         
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado], '1');
+        } else {
+            throw {msj:'Se ha Generado un Error en la Asignacion de Responsables', status:401, pedidos_clientes:{}};           
+        }
+
+    }).then(function(resultado) {
+         
+        if (resultado.rowCount > 0) {
+            
+            var cliente = 0;             
+            autorizacion.farmacia = cliente;
+            autorizacion.empresa_id = cotizacion.empresa_id;
+            autorizacion.numero_pedido = that.pedidoGenerado.numero_pedido;
+             
+            return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);
+        }else {
+            throw {msj:'Error finalizando el estado del pedido', status:401, pedidos_clientes:{}};          
+        }
+                                
+    }).then(function(resultado) {    
+        
+        var notificacion = {
+                aliasModulo: 'productos_en_pedidos',
+                opcionModulo: "sw_ver_notificaciones",
+                titulo: "Autorizaciones Pedidos Clientes",
+                mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
+            };
+         
+        if(resultado){
+            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
+            G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                
+        }
+            
+        that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
+          callback(false, {status:200, msj:'Pedido Generado Correctamente No . ' + that.pedidoGenerado.numero_pedido, data:{pedidos_clientes:that.pedidoGenerado}});
+         
+        }).fail(function(err){
+            var msj = "Erro Interno";
+            var status = 500;
+
+            if(err.status){
+                msj = err.msj;
+                status = err.status;    
+            }
+
+            callback(err, {status:status, msj:msj});
+       
+    }).done();
+    
+};
+
 
 PedidosCliente.$inject = ["m_pedidos_clientes",
     "e_pedidos_clientes",

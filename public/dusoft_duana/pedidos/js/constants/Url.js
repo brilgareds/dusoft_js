@@ -76,7 +76,8 @@ define(["angular"], function(angular) {
                     'ENVIAR_NOTIFICACION_PEDIDOS_CLIENTES' : BASE_URL + '/PedidosClientes/enviarNotificacionPedidosClientes',
                     'PRODUCTOS_COTIZACION': BASE_URL + '/PedidosClientes/ProductosCotizacion',
                     'VALIDAR_DISPONIBILIDAD': BASE_URL + '/PedidosClientes/validarDisponibilidad',
-                    'LISTAR_FORMULA_PEDIDO': BASE_URL +'/PedidosClientes/listarFacturasPedido'
+                    'LISTAR_FORMULA_PEDIDO': BASE_URL +'/PedidosClientes/listarFacturasPedido',
+                    'GENERAR_PEDIDO_BODEGA_FARMACIA': BASE_URL +'/PedidosClientes/generarPedidoBodegaFarmacia',
                     
                     
                 },

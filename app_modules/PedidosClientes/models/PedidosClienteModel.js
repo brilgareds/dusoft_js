@@ -1105,7 +1105,7 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido, e
                where  pedido_cliente_id = :1 and estado :: integer in(" + estados + ") and (sw_terminado is null or sw_terminado = '0')";
 
     G.knex.raw(sql, {1: numero_pedido, 2: terminado}).then(function(resultado) {
-        callback(false, resultado.rows, resultado);
+        callback(false, resultado);
     }).catch(function(err){
         console.log("err [terminar_estado_pedido]: ", err);
         callback(err);

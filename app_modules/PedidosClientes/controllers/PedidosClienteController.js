@@ -478,8 +478,21 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
     var filtros = args.pedidos_clientes.filtro;
     var pagina = args.pedidos_clientes.pagina_actual;
-
-    that.m_pedidos_clientes.listar_productos(empresa_id,
+    
+    var objBodegaPedido={sw_modulo:'0'};     
+    G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegas){
+        
+         //console.log("PEDIDOS FARMACIAS LISTA BODEGAS ", bodegas);  
+         
+     return G.Q.ninvoke(that.m_pedidos_clientes, "listar_productos",
+     empresa_id,centro_utilidad,bodega,contrato_cliente,filtro,pagina,filtros, filtroAvanzado,bodegas);
+          
+   }).then(function(resultado){
+         //console.log("bodegasPedidos [resultado]: ", resultado);
+    }).fail(function(err){      
+         console.log("bodegasPedidos ", err);
+    }).done();
+    /*that.m_pedidos_clientes.listar_productos(empresa_id,
         centro_utilidad,
         bodega,
         contrato_cliente,
@@ -495,8 +508,29 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
                 res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
                 return;
             }
-        });
+        });*/
+        
+        
 };
+
+ 
+
+ 
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+/*******************************************************************************/
+
+
+
+
 
 
 /*

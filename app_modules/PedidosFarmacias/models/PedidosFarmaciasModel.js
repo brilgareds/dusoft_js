@@ -1596,8 +1596,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     
 };
 
-PedidosFarmaciasModel.prototype.listarBodegasPedidos = function(callback) {
-    var estado='1'; 
+PedidosFarmaciasModel.prototype.listarBodegasPedidos = function(objBodegaPedido,callback) {
+    var estado='1';
     var columnas = [
         "a.empresa_id", 
         "a.centro_utilidad as centro_utilidad_id", 
@@ -1607,6 +1607,7 @@ PedidosFarmaciasModel.prototype.listarBodegasPedidos = function(callback) {
     G.knex.column(columnas).
     from("bodegas_pedidos as a").
     where("a.estado",estado).
+    andWhere("a.sw_modulo",objBodegaPedido.sw_modulo).
     orderByRaw("orden desc").
     then(function(rows){
        callback(false, rows);

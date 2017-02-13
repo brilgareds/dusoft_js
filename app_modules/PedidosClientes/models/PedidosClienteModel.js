@@ -1249,9 +1249,19 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Modificacion: Se migra a KNEX.js
  * @fecha: 04/12/2015 6:10 pm
  */
-PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, filtros, filtroAvanzado, callback) {
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, filtros, filtroAvanzado, bodegas,callback) {
 
-
+    /*
+    var bodegasIn = [];
+    
+    bodegas.forEach(function(rows){
+      console.log('(empresa_id IN( "\'" '+rows.empresa_id+' "\'" )');
+    //bodegasIn.push("(empresa_id IN( \'"+rows.empresa_id+"\' ) and centro_utilidad IN('"+rows.centro_utilidad_id+"') and bodega IN('"+rows.bodega_id+"')");
+       //console.log("ESTAS SON centro_utilidad ", rows.centro_utilidad_id);
+        //console.log("ESTAS SON bodegas ", rows.bodega_id);
+    });
+    console.log("bodegasIn ", bodegasIn)
+    */
     var filtroProducto = "";
     var filtroNumeroCotizacion = "";
     var filtroNumeroPedido = "";

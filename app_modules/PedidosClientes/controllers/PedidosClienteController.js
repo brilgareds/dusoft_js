@@ -478,8 +478,50 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
     var filtros = args.pedidos_clientes.filtro;
     var pagina = args.pedidos_clientes.pagina_actual;
-    
     var objBodegaPedido={sw_modulo:'0'};     
+    G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
+         
+       /* var parametros = {
+             empresa_destino_id: empresa_destino_id, 
+             centro_utilidad_destino_id: centro_utilidad_destino_id, 
+             bodega_destino_id: bodega_destino_id,
+             pagina_actual: pagina_actual, 
+             filtro: filtro
+        };
+     
+      if(empresa_id!=='0' && centro_utilidad!=='0' && bodega!=='0'){
+          var bodegas = {
+              empresa_id : empresa_id,
+              centro_utilidad_id :centro_utilidad,
+              bodega_id :bodega
+          };
+          var bodegasPedidos=[];
+          bodegasPedidos.push(bodegas);
+      }*/
+        console.log("----------bodegasPedidos -------------------", bodegasPedidos);
+      return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos,[],empresa_id,
+        centro_utilidad,
+        bodega,
+        contrato_cliente,
+        filtro,
+        pagina,
+        filtros, filtroAvanzado);                        
+
+    }).then(function(productos){
+        
+        return G.Q.nfcall(__productosBodegas,that, 0, productos,[]);
+     
+     
+    }).then(function(productos){
+          
+        res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: productos.sort(dynamicSort("codigo_producto"))}}));
+        return;
+                            
+      
+    }).fail(function(err) {
+           res.send(G.utils.r(req.url, 'Error Listado de Bodegas Pedidos', 500, {listarBodegasPedidos: {}}));
+    }).done();  
+   /** var objBodegaPedido={sw_modulo:'0'};     
     G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegas){
         
          //console.log("PEDIDOS FARMACIAS LISTA BODEGAS ", bodegas);  
@@ -488,10 +530,11 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
      empresa_id,centro_utilidad,bodega,contrato_cliente,filtro,pagina,filtros, filtroAvanzado,bodegas);
           
    }).then(function(resultado){
-         //console.log("bodegasPedidos [resultado]: ", resultado);
+        res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: resultado}}));
+        return;
     }).fail(function(err){      
          console.log("bodegasPedidos ", err);
-    }).done();
+    }).done();*/
     /*that.m_pedidos_clientes.listar_productos(empresa_id,
         centro_utilidad,
         bodega,
@@ -508,9 +551,120 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
                 res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
                 return;
             }
-        });*/
+        });*/                      
         
         
+};
+
+
+function dynamicSort(property) {
+    var sortOrder = 1;
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    return function (a,b) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+    }
+}
+
+function __productosBodegas(that, index, productos,listaProductos, callback) {
+     
+    var producto = productos[index];
+        
+    if (!producto) {  
+       
+        callback(false,listaProductos);
+        return; 
+    }  
+     producto.forEach(function(row){        
+        listaProductos.push(row);
+     });
+    index++;
+    setTimeout(function() {
+       __productosBodegas(that, index, productos,listaProductos, callback);
+   }, 300);
+       
+};
+
+function __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
+        centro_utilidad,
+        bodega,
+        contrato_cliente,
+        filtro,
+        pagina,
+        filtros, filtroAvanzado, callback) {
+     
+    var bodegas = bodegasPedidos[index];
+        
+    if (!bodegas) {  
+       
+        callback(false,listaProductos);
+        return; 
+    }  
+     
+     //console.log("bodegasPedidos **** ", bodegas);
+     
+            index++;
+            
+                       
+    G.Q.ninvoke(that.m_pedidos_clientes, "listar_productos",
+     bodegas.empresa_id,bodegas.centro_utilidad_id,bodegas.bodega_id,contrato_cliente,filtro,pagina,filtros, filtroAvanzado,bodegas).then(function(resultado){
+                  //console.log("bodegasPedidos [resultado]:: ", resultado);
+            if (resultado.length > 0) {
+                 
+                  listaProductos.push(resultado);
+                 
+            }
+            
+            setTimeout(function() {
+                       __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
+            centro_utilidad,
+            bodega,
+            contrato_cliente,
+            filtro,
+            pagina,
+            filtros, filtroAvanzado, callback);
+                       }, 300);
+                       
+        }).fail(function(err){
+         console.log("err (/fail) [__bodegasPedidos]: ", err);
+    }).done();        
+            
+   /* G.Q.ninvoke(that.m_pedidos_clientes, "listar_productos",
+        bodegas.empresa_id,
+        bodegas.centro_utilidad_id,
+        bodegas.bodega_id,
+        contrato_cliente,
+        filtro,
+        pagina,
+        filtros, filtroAvanzado).then(function(resultado){
+                  
+            if (resultado.length > 0) {
+                 
+                  listaProductos.push(resultado);
+                 
+            }
+            
+            index++;
+            setTimeout(function() {
+                       __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
+            centro_utilidad,
+            bodega,
+            contrato_cliente,
+            filtro,
+            pagina,
+            filtros, filtroAvanzado, callback);
+                       }, 300);
+                      
+    }).fail(function(err){
+         console.log("err (/fail) [__bodegasPedidos]: ", err);
+    }).done();  */
+    
+     
+                 
+      
 };
 
  

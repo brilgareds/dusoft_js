@@ -1252,15 +1252,23 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
 PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, filtros, filtroAvanzado, bodegas,callback) {
 
     /*
-    var bodegasIn = [];
     
+   
+    var bodegasIn = [];
+    var empresasIN = "";
+    var ultimaPosicion = 0;
+    var condicionMultipleBodega = "";
     bodegas.forEach(function(rows){
-      console.log('(empresa_id IN( "\'" '+rows.empresa_id+' "\'" )');
-    //bodegasIn.push("(empresa_id IN( \'"+rows.empresa_id+"\' ) and centro_utilidad IN('"+rows.centro_utilidad_id+"') and bodega IN('"+rows.bodega_id+"')");
+     
+    empresasIN += "( a.empresa_id IN( '"+rows.empresa_id+"' ) and a.centro_utilidad IN('"+rows.centro_utilidad_id+"') and a.bodega IN('"+rows.bodega_id+"') OR ";
+    //bodegasIn.push("(empresa_id IN( '"+rows.empresa_id+"' ) and centro_utilidad IN('"+rows.centro_utilidad_id+"') and bodega IN('"+rows.bodega_id+"')");
        //console.log("ESTAS SON centro_utilidad ", rows.centro_utilidad_id);
         //console.log("ESTAS SON bodegas ", rows.bodega_id);
     });
-    console.log("bodegasIn ", bodegasIn)
+  
+    ultimaPosicion = empresasIN.lastIndexOf("OR");
+    condicionMultipleBodega = empresasIN.substring(0,ultimaPosicion);
+    console.log("condicionMultipleBodega ", condicionMultipleBodega);
     */
     var filtroProducto = "";
     var filtroNumeroCotizacion = "";
@@ -1270,7 +1278,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1: empresa, 2: centro_utilidad_id, 3: bodega_id, 4: contrato_cliente_id};
-    
+     
     if (filtroAvanzado.tipoBusqueda === 0) {
 
         if (tipo_producto !== undefined && tipo_producto !== '') {

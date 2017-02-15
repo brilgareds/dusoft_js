@@ -1353,6 +1353,9 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 c.costo_ultima_compra,\
                 CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
                 ,b.unidad_medida,\
+                a.empresa_id,\
+                a.centro_utilidad,\
+                a.bodega,\
                 (select descripcion from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
@@ -1483,7 +1486,13 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
  */
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
 
+    console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
+    console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
+    console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
+    
 
+    console.log("cotizacion ", cotizacion.numero_cotizacion);
+    console.log("producto ", producto);
     var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, \n\
                 codigo_producto, \
                 porc_iva, \
@@ -1502,9 +1511,9 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
                      4: producto.cantidad_solicitada, 
                      5: producto.precio_venta, 
                      6: cotizacion.usuario_id,
-                     7: cotizacion.empresa_id,
-                     8: cotizacion.centro_utilidad_id,
-                     9: cotizacion.bodega_id}).
+                     7: producto.empresaIdProducto,
+                     8: producto.centroUtilidadProducto,
+                     9: producto.bodegaProducto}).
             then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
@@ -1525,10 +1534,12 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
  */
 PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion, producto, callback) {
 
-
     G.knex('ventas_ordenes_pedidos_d_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .andWhere('codigo_producto', producto.codigo_producto)
+            .andWhere('empresa_origen_producto', producto.empresaIdProducto)
+            .andWhere('centro_utilidad_origen_producto', producto.centroUtilidadProducto)
+            .andWhere('bodega_origen_producto', producto.bodegaProducto)
             .update({
         porc_iva: producto.iva,
         numero_unidades: producto.cantidad_solicitada,
@@ -1737,7 +1748,11 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 a.valor_unitario, \
                 (a.numero_unidades * a.valor_unitario) as subtotal,\
                 (a.numero_unidades * (a.valor_unitario * (a.porc_iva/100))) as valor_iva,\
-                ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total\
+                ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\n\
+                a.empresa_origen_producto,\n\
+                a.centro_utilidad_origen_producto,\n\
+                a.bodega_origen_producto,\
+                (SELECT descripcion FROM bodegas WHERE empresa_id = a.empresa_origen_producto AND centro_utilidad = a.centro_utilidad_origen_producto  AND bodega = a.bodega_origen_producto) as nombre_bodega\
                 FROM ventas_ordenes_pedidos_d_tmp AS a\
                 WHERE pedido_cliente_id_tmp = :1 and \
                 (\
@@ -1986,11 +2001,14 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
  * @Funciones que hacen uso del model :
  *  --PedidosCliente.prototype.insertarDetalleCotizacion
  */
-PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(numero_pedido, codigo_producto, callback) {
-
+PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(numero_pedido, producto, callback) {
+     
     G.knex('ventas_ordenes_pedidos_d_tmp').where({
         pedido_cliente_id_tmp: numero_pedido,
-        codigo_producto: codigo_producto
+        codigo_producto: producto.codigo_producto,
+        empresa_origen_producto: producto.empresaIdProducto,
+        centro_utilidad_origen_producto: producto.centroUtilidadProducto,
+        bodega_origen_producto: producto.bodegaProducto,
     }).select('pedido_cliente_id_tmp').then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {

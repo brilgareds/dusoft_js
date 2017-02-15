@@ -299,11 +299,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
-
+                    console.log("PRODUCTOS ", data);
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
                     producto.set_cantidad_inicial(data.cantidad_solicitada);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                    producto.setNombreBodega(data.nombre_bodega);
+                    producto.setEmpresaIdProducto(data.empresa_origen_producto);
+                    producto.setCentroUtilidadProducto(data.centro_utilidad_origen_producto);
+                    producto.setBodegaProducto(data.bodega_origen_producto);
                     producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
+                                                   
                     $scope.Pedido.set_productos(producto);
                 });
 
@@ -371,7 +376,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
-                    console.log("data productos  ", data);
+                    console.log("data productos ****** ", data);
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.porcentaje_iva);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     producto.set_cantidad_inicial(data.cantidad_solicitada);
@@ -860,7 +865,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                  </div>',
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
-                    {field: 'getDescripcion()', displayName: 'Descripcion', width: "30%"},
+                    {field: 'getDescripcion()', displayName: 'Descripcion', width: "25%"},
+                    {field: 'getNombreBodega()', displayName: 'Bodega', width: "10%"},
                     {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> \n\
                                        <input type="text" ng-disabled="habilitar_eliminacion_producto() || Pedido.getEstado() ==5 || Pedido.getEstadoSolicitud() == 8" \n\
@@ -886,7 +892,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                      class="form-control grid-inline-input" \n\
                      name="" id="" /> </div>'},*/
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
-                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter: 'currency : "$"'},
+                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "8%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "8%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
@@ -895,7 +901,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <button class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_modificacion_producto() }}" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
-                ]
+                ]   
             };
 
             /**
@@ -1570,8 +1576,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 17/11/2016
              */
             $scope.generar_pedido_cliente = function() {
-
-                var obj = {
+                
+                console.log("**********scope.generar_pedido_cliente************");
+                console.log("**********scope.generar_pedido_cliente************");
+                console.log("**********scope.generar_pedido_cliente************");
+                console.log("**********scope.generar_pedido_cliente************");
+                console.log("$scope.Pedido ", $scope.Pedido);
+                
+                /*var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
@@ -1591,7 +1603,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         AlertService.mostrarMensaje("warning", data.msj);
                         //$scope.volver_cotizacion();
                     }
-                });
+                });*/
             };
             
             /**

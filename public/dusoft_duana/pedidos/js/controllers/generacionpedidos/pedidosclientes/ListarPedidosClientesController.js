@@ -239,7 +239,7 @@ define(["angular", "js/controllers",
                     busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
                     filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion });
                 
-                localStorageService.add("multiple_pedido",{multiple_pedido:0});
+                localStorageService.add("multiple_pedido",{multiple_pedido:1});
                 $state.go('Cotizaciones');      
             };
 
@@ -249,7 +249,7 @@ define(["angular", "js/controllers",
                 localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),
                     busqueda: $scope.datos_view.termino_busqueda_pedidos,
                     filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido });
-                localStorageService.add("multiple_pedido",{multiple_pedido:1});
+                localStorageService.add("multiple_pedido",{multiple_pedido:0});
                 $state.go('PedidoCliente');
             };
 
@@ -347,7 +347,7 @@ define(["angular", "js/controllers",
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
 
                 if (terminoBusqueda) {
-                    
+                                   
                     localStorageService.add("terminoBusquedaPedido", null);
                     $scope.datos_view.filtro = terminoBusqueda.filtro_actual_cotizacion;
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;

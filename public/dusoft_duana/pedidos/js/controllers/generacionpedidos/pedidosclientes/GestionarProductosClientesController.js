@@ -132,6 +132,8 @@ define(["angular", "js/controllers",
             // Insertar Productos a la Cotizacion
             that.insertar_detalle_cotizacion = function(callback) {
                 
+                
+                console.log("$scope.Pedido ", $scope.Pedido);
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
@@ -142,7 +144,7 @@ define(["angular", "js/controllers",
                 var precioVentaIva = precioVenta + valorTotalIva;
 
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
-
+                                                
 
                 var obj = {
                     session: $scope.session,
@@ -154,9 +156,7 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-                
-                console.log("Validar detalle cotizacion", obj);
-
+                 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
@@ -298,11 +298,6 @@ define(["angular", "js/controllers",
 
             that.buscar_productos_clientes = function() {
                 
-                console.log("*********that.buscar_productos_clientes***************");
-                console.log("*********that.buscar_productos_clientes***************");
-                console.log("*********that.buscar_productos_clientes  multiple_pedido***************");
-                
-                
                 that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
                 
                 var obj = {};
@@ -414,7 +409,9 @@ define(["angular", "js/controllers",
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     producto.setUnidadMedida(data.unidad_medida);
                     producto.setNombreBodega(data.nombre_bodega);
-                    
+                    producto.setEmpresaIdProducto(data.empresa_id);
+                    producto.setCentroUtilidadProducto(data.centro_utilidad);
+                    producto.setBodegaProducto(data.bodega);
                     
                     $scope.Empresa.set_productos(producto);
                     
@@ -452,7 +449,7 @@ define(["angular", "js/controllers",
              */
             $scope.solicitar_producto = function(producto) {
              
-            
+                $scope.Pedido.limpiar_productos();
                 if(producto.precio_venta > 0){
                     /*  var val = producto.precio_venta;
                      /*   var clean = val.replace(/[^0-9\.]/g, '');

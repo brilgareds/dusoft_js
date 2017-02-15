@@ -843,7 +843,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
          *               4 activo (desaprobado por cartera)
          */
         if (rows[0].estado === '1' || rows[0].estado === '4') {
-            return  G.Q.ninvoke(that.m_pedidos_clientes, 'consultarProductoDetalleCotizacion', cotizacion.numero_cotizacion, producto.codigo_producto);
+            return  G.Q.ninvoke(that.m_pedidos_clientes, 'consultarProductoDetalleCotizacion', cotizacion.numero_cotizacion, producto);
         } else {
              throw {msj:'La cotizacion debe encontrarse activa o desaprobada por cartera', status:403};
         }

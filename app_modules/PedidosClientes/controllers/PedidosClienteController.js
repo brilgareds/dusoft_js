@@ -477,22 +477,19 @@ console.log("*************PedidosCliente.prototype.listarProductosClientes******
         tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
     };
-
-    console.log("args.pedidos_clientes ", estadoMultiplePedido);
+ 
     var filtros = args.pedidos_clientes.filtro;
     var pagina = args.pedidos_clientes.pagina_actual;
-    var objBodegaPedido={sw_modulo:'0'};     
+    var objBodegaPedido={sw_modulo:'0'}; 
+    
     G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
-      
-     console.log("1- bodegasPedidos ", bodegasPedidos);
+       
       if(estadoMultiplePedido === 0){
-          console.log("2- bodegasPedidos ", bodegasPedidos);
+         
           bodegasPedidos = [];
           bodegasPedidos [0] = {empresa_id:empresa_id, centro_utilidad_id: centro_utilidad, bodega_id : bodega, orden: 1 } 
-          console.log("3- bodegasPedidos ", bodegasPedidos);
+         
       }
-      
-      console.log("4- bodegasPedidos ", bodegasPedidos);
        
       return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos,[],empresa_id,
         centro_utilidad,
@@ -516,39 +513,7 @@ console.log("*************PedidosCliente.prototype.listarProductosClientes******
     }).fail(function(err) {
            res.send(G.utils.r(req.url, 'Error Listado de Bodegas Pedidos', 500, {listarBodegasPedidos: {}}));
     }).done();  
-   /** var objBodegaPedido={sw_modulo:'0'};     
-    G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegas){
-        
-         //console.log("PEDIDOS FARMACIAS LISTA BODEGAS ", bodegas);  
-         
-     return G.Q.ninvoke(that.m_pedidos_clientes, "listar_productos",
-     empresa_id,centro_utilidad,bodega,contrato_cliente,filtro,pagina,filtros, filtroAvanzado,bodegas);
-          
-   }).then(function(resultado){
-        res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: resultado}}));
-        return;
-    }).fail(function(err){      
-         console.log("bodegasPedidos ", err);
-    }).done();*/
-    /*that.m_pedidos_clientes.listar_productos(empresa_id,
-        centro_utilidad,
-        bodega,
-        contrato_cliente,
-        filtro,
-        pagina,
-        filtros, filtroAvanzado,
-        function(err, lista_productos) {
-
-            if (err) {
-                res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));
-                return;
-            } else {
-                res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
-                return;
-            }
-        });*/                      
-        
-        
+   
 };
 
 /**
@@ -621,7 +586,7 @@ function __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
     index++;
                         
     G.Q.ninvoke(that.m_pedidos_clientes, "listar_productos",
-     bodegas.empresa_id,bodegas.centro_utilidad_id,bodegas.bodega_id,contrato_cliente,filtro,pagina,filtros, filtroAvanzado,bodegas).then(function(resultado){
+     bodegas.empresa_id,bodegas.centro_utilidad_id,bodegas.bodega_id,contrato_cliente,filtro,pagina,filtros, filtroAvanzado).then(function(resultado){
       
             if (resultado.length > 0) {
                  

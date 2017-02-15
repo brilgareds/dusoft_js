@@ -124,12 +124,14 @@ define(["angular", "js/controllers",
                 
                
                 if(opcion.tipo_pedido === 0){   
-                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0', multiple_pedido: 0});
+                    localStorageService.add("multiple_pedido",{multiple_pedido:0});
+                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0' });
                     $state.go('Cotizaciones');
                 }
-                
+                                                         
                 if(opcion.tipo_pedido === 1){    
-                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0', multiple_pedido: 1});
+                    localStorageService.add("multiple_pedido",{multiple_pedido:1});
+                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0' });
                     $state.go('Cotizaciones');
                  
                 }
@@ -235,8 +237,10 @@ define(["angular", "js/controllers",
                 localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(),
                     cartera: '0',
                     busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
-                    filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion});
-                $state.go('Cotizaciones');
+                    filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion });
+                
+                localStorageService.add("multiple_pedido",{multiple_pedido:0});
+                $state.go('Cotizaciones');      
             };
 
             $scope.modificar_pedido_cliente = function(pedido) {
@@ -244,7 +248,8 @@ define(["angular", "js/controllers",
 
                 localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),
                     busqueda: $scope.datos_view.termino_busqueda_pedidos,
-                    filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido});
+                    filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido });
+                localStorageService.add("multiple_pedido",{multiple_pedido:1});
                 $state.go('PedidoCliente');
             };
 

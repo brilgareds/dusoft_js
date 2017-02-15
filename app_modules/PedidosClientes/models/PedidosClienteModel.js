@@ -1249,25 +1249,8 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Modificacion: Se migra a KNEX.js
  * @fecha: 04/12/2015 6:10 pm
  */
-PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, filtros, filtroAvanzado, bodegas,callback) {
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, filtros, filtroAvanzado,callback) {
 
-    /*
-    var bodegasIn = [];
-    var empresasIN = "";
-    var ultimaPosicion = 0;
-    var condicionMultipleBodega = "";
-    bodegas.forEach(function(rows){
-     
-    empresasIN += "( a.empresa_id IN( '"+rows.empresa_id+"' ) and a.centro_utilidad IN('"+rows.centro_utilidad_id+"') and a.bodega IN('"+rows.bodega_id+"') OR ";
-    //bodegasIn.push("(empresa_id IN( '"+rows.empresa_id+"' ) and centro_utilidad IN('"+rows.centro_utilidad_id+"') and bodega IN('"+rows.bodega_id+"')");
-       //console.log("ESTAS SON centro_utilidad ", rows.centro_utilidad_id);
-        //console.log("ESTAS SON bodegas ", rows.bodega_id);
-    });
-  
-    ultimaPosicion = empresasIN.lastIndexOf("OR");
-    condicionMultipleBodega = empresasIN.substring(0,ultimaPosicion);
-    console.log("condicionMultipleBodega ", condicionMultipleBodega);
-    */
     var filtroProducto = "";
     var filtroNumeroCotizacion = "";
     var filtroNumeroPedido = "";
@@ -1501,10 +1484,27 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
 
 
-    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario,usuario_id,fecha_registro) \
-                 VALUES ( :1, :2, :3, :4, :5, :6, NOW() ) ; ";
+    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, \n\
+                codigo_producto, \
+                porc_iva, \
+                numero_unidades, \
+                valor_unitario,\
+                usuario_id,\
+                fecha_registro,\
+                empresa_origen_producto,\
+                centro_utilidad_origen_producto,\
+                bodega_origen_producto)\
+                 VALUES ( :1, :2, :3, :4, :5, :6, NOW(), :7, :8, :9 ) ; ";
 
-    G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 2: producto.codigo_producto, 3: producto.iva, 4: producto.cantidad_solicitada, 5: producto.precio_venta, 6: cotizacion.usuario_id}).
+    G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 
+                     2: producto.codigo_producto, 
+                     3: producto.iva, 
+                     4: producto.cantidad_solicitada, 
+                     5: producto.precio_venta, 
+                     6: cotizacion.usuario_id,
+                     7: cotizacion.empresa_id,
+                     8: cotizacion.centro_utilidad_id,
+                     9: cotizacion.bodega_id}).
             then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {

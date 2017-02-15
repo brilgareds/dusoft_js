@@ -22,7 +22,7 @@ define(["angular", "js/controllers",
                 Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
-            
+            that.estadoMultipleCotizacion = "";
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
                 /**
@@ -131,7 +131,7 @@ define(["angular", "js/controllers",
 
             // Insertar Productos a la Cotizacion
             that.insertar_detalle_cotizacion = function(callback) {
-
+                
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
@@ -149,11 +149,13 @@ define(["angular", "js/controllers",
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
-                            producto: $scope.datos_form.producto_seleccionado
+                            producto: $scope.datos_form.producto_seleccionado,
+                            estadoMultiplePedido:  that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
                         }
                     }
                 };
-
+                
+                console.log("Validar detalle cotizacion", obj);
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
 
@@ -296,8 +298,13 @@ define(["angular", "js/controllers",
 
             that.buscar_productos_clientes = function() {
                 
-                var estadoMultiplePedido = localStorageService.get("cotizacion");
-                //numero_cotizacion: [$scope.Pedido.get_numero_cotizacion()], tipo:1
+                console.log("*********that.buscar_productos_clientes***************");
+                console.log("*********that.buscar_productos_clientes***************");
+                console.log("*********that.buscar_productos_clientes  multiple_pedido***************");
+                
+                
+                that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
+                
                 var obj = {};
                 $scope.rootSeleccionProducto.filtro.numero = [$scope.Pedido.get_numero_pedido()];
                 $scope.rootSeleccionProducto.filtro.tipo = 2;
@@ -324,7 +331,7 @@ define(["angular", "js/controllers",
                                 descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
                                 concentracion: $scope.datos_form.concentracionProductoAvanzado,
                                 tipoBusqueda: $scope.datos_form.tipoBusqueda,
-                                estadoMultiplePedido: estadoMultiplePedido.multiple_pedido
+                                estadoMultiplePedido: that.estadoMultipleCotizacion.multiple_pedido
                             }
                         }
                     };
@@ -335,7 +342,7 @@ define(["angular", "js/controllers",
                 if ($scope.datos_form.ultima_busqueda !== $scope.datos_form.termino_busqueda) {
                     $scope.datos_form.pagina_actual = 1;
                 }
-
+                //var estadoMultiplePedido = localStorageService.get("pedido");
                 if ($scope.datos_form.tipoBusqueda === 0) {
                     obj = {
                         session: $scope.session,
@@ -358,16 +365,15 @@ define(["angular", "js/controllers",
                                 descripcionProducto: '',
                                 concentracion: '',
                                 tipoBusqueda: $scope.datos_form.tipoBusqueda,
-                                estadoMultiplePedido: estadoMultiplePedido.multiple_pedido
+                                estadoMultiplePedido:  that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
                                 
                                 
                             }
                         }
                     };
                 }
-              
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
-
+                 
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data){
 
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
 

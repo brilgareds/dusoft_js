@@ -409,6 +409,9 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  */
 PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
+console.log("*************PedidosCliente.prototype.listarProductosClientes**********************");
+console.log("*************PedidosCliente.prototype.listarProductosClientes**********************");
+console.log("*************PedidosCliente.prototype.listarProductosClientes**********************");
 
     var that = this;
 
@@ -452,7 +455,7 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
     var bodega = args.pedidos_clientes.bodega_id;
     var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
-
+    var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
     var filtro = {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
@@ -475,30 +478,22 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
     };
 
-
+    console.log("args.pedidos_clientes ", estadoMultiplePedido);
     var filtros = args.pedidos_clientes.filtro;
     var pagina = args.pedidos_clientes.pagina_actual;
     var objBodegaPedido={sw_modulo:'0'};     
     G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
-         
-       /* var parametros = {
-             empresa_destino_id: empresa_destino_id, 
-             centro_utilidad_destino_id: centro_utilidad_destino_id, 
-             bodega_destino_id: bodega_destino_id,
-             pagina_actual: pagina_actual, 
-             filtro: filtro
-        };
-     
-      if(empresa_id!=='0' && centro_utilidad!=='0' && bodega!=='0'){
-          var bodegas = {
-              empresa_id : empresa_id,
-              centro_utilidad_id :centro_utilidad,
-              bodega_id :bodega
-          };
-          var bodegasPedidos=[];
-          bodegasPedidos.push(bodegas);
-      }*/
-        console.log("----------bodegasPedidos -------------------", bodegasPedidos);
+      
+     console.log("1- bodegasPedidos ", bodegasPedidos);
+      if(estadoMultiplePedido === 0){
+          console.log("2- bodegasPedidos ", bodegasPedidos);
+          bodegasPedidos = [];
+          bodegasPedidos [0] = {empresa_id:empresa_id, centro_utilidad_id: centro_utilidad, bodega_id : bodega, orden: 1 } 
+          console.log("3- bodegasPedidos ", bodegasPedidos);
+      }
+      
+      console.log("4- bodegasPedidos ", bodegasPedidos);
+       
       return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos,[],empresa_id,
         centro_utilidad,
         bodega,
@@ -508,7 +503,7 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         filtros, filtroAvanzado);                        
 
     }).then(function(productos){
-        
+                                                       
         return G.Q.nfcall(__productosBodegas,that, 0, productos,[]);
      
      
@@ -556,8 +551,13 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         
 };
 
-
+/**
+ * +Descripcion Metodo encargado de ordenar los elementos de un arreglo
+ *              en orden descendente
+ *  @author http://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value-in-javascript
+ */
 function dynamicSort(property) {
+    
     var sortOrder = 1;
     if(property[0] === "-") {
         sortOrder = -1;
@@ -569,6 +569,12 @@ function dynamicSort(property) {
     }
 }
 
+/**
+ * +Descripcion: Metodo encargado de unificar los arreglos de productos que
+ *               lleguen
+ *  @author Andres Mauricio Tascon
+ *  @fecha 15/02/2017
+ */
 function __productosBodegas(that, index, productos,listaProductos, callback) {
      
     var producto = productos[index];
@@ -588,6 +594,14 @@ function __productosBodegas(that, index, productos,listaProductos, callback) {
        
 };
 
+/**
+ * +Descripcion Metodo encargado de consultar los productos segun las bodegas
+ *              enviadas lo cual por cada consulta por bodega generara un arreglo
+ *              diferente posteriormente se almacenan en un nuevo arreglo de productos
+ *              
+ *  @author Cristian Ardila
+ *  @fecha 15/02/2017            
+ */
 function __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
         centro_utilidad,
         bodega,
@@ -603,15 +617,12 @@ function __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
         callback(false,listaProductos);
         return; 
     }  
-     
-     //console.log("bodegasPedidos **** ", bodegas);
-     
-            index++;
-            
-                       
+      
+    index++;
+                        
     G.Q.ninvoke(that.m_pedidos_clientes, "listar_productos",
      bodegas.empresa_id,bodegas.centro_utilidad_id,bodegas.bodega_id,contrato_cliente,filtro,pagina,filtros, filtroAvanzado,bodegas).then(function(resultado){
-                  //console.log("bodegasPedidos [resultado]:: ", resultado);
+      
             if (resultado.length > 0) {
                  
                   listaProductos.push(resultado);
@@ -631,40 +642,7 @@ function __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
         }).fail(function(err){
          console.log("err (/fail) [__bodegasPedidos]: ", err);
     }).done();        
-            
-   /* G.Q.ninvoke(that.m_pedidos_clientes, "listar_productos",
-        bodegas.empresa_id,
-        bodegas.centro_utilidad_id,
-        bodegas.bodega_id,
-        contrato_cliente,
-        filtro,
-        pagina,
-        filtros, filtroAvanzado).then(function(resultado){
-                  
-            if (resultado.length > 0) {
-                 
-                  listaProductos.push(resultado);
-                 
-            }
-            
-            index++;
-            setTimeout(function() {
-                       __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
-            centro_utilidad,
-            bodega,
-            contrato_cliente,
-            filtro,
-            pagina,
-            filtros, filtroAvanzado, callback);
-                       }, 300);
-                      
-    }).fail(function(err){
-         console.log("err (/fail) [__bodegasPedidos]: ", err);
-    }).done();  */
     
-     
-                 
-      
 };
 
  

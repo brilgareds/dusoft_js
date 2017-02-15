@@ -59,9 +59,9 @@ define(["angular", "js/controllers",
                     tipoBusqueda: 0
                 };
 
-                $scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
+                //$scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
                 that.buscar_laboratorios();
-
+                $scope.Empresa.limpiar_productos();
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
@@ -288,13 +288,15 @@ define(["angular", "js/controllers",
                     that.buscar_productos_clientes();
                 }
 
-            };
+            };   
 
             $scope.onSeleccionFiltro = function(filtro) {
                 $scope.rootSeleccionProducto.filtro = filtro;
             };
 
             that.buscar_productos_clientes = function() {
+                
+                var estadoMultiplePedido = localStorageService.get("cotizacion");
                 //numero_cotizacion: [$scope.Pedido.get_numero_cotizacion()], tipo:1
                 var obj = {};
                 $scope.rootSeleccionProducto.filtro.numero = [$scope.Pedido.get_numero_pedido()];
@@ -321,7 +323,8 @@ define(["angular", "js/controllers",
                                 codigoProducto: $scope.datos_form.codigoProductoAvanzado,
                                 descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
                                 concentracion: $scope.datos_form.concentracionProductoAvanzado,
-                                tipoBusqueda: $scope.datos_form.tipoBusqueda
+                                tipoBusqueda: $scope.datos_form.tipoBusqueda,
+                                estadoMultiplePedido: estadoMultiplePedido.multiple_pedido
                             }
                         }
                     };
@@ -354,7 +357,8 @@ define(["angular", "js/controllers",
                                 codigoProducto: '',
                                 descripcionProducto: '',
                                 concentracion: '',
-                                tipoBusqueda: $scope.datos_form.tipoBusqueda
+                                tipoBusqueda: $scope.datos_form.tipoBusqueda,
+                                estadoMultiplePedido: estadoMultiplePedido.multiple_pedido
                                 
                                 
                             }
@@ -403,6 +407,7 @@ define(["angular", "js/controllers",
                     producto.setContrato(data.contrato);
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     producto.setUnidadMedida(data.unidad_medida);
+                    producto.setNombreBodega(data.nombre_bodega);
                     
                     
                     $scope.Empresa.set_productos(producto);
@@ -508,6 +513,8 @@ define(["angular", "js/controllers",
                     {field: 'descripcion', displayName: 'Nombre',
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
                         cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
+                    
+                    {field: 'nombreBodega', displayName: 'Bodega', width: "90"},
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
                     {field: '#Cod.invima/F.Ven', width: "200", displayName: '#Cod.invima/F.Ven', 
                         cellTemplate: '<div class="col-xs-16 ">\n\
@@ -655,6 +662,7 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                console.log("DIOS ES BUENO");
                
             });
         }]);

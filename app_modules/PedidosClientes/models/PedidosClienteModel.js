@@ -1252,8 +1252,6 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
 PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, filtros, filtroAvanzado, bodegas,callback) {
 
     /*
-    
-   
     var bodegasIn = [];
     var empresasIN = "";
     var ultimaPosicion = 0;
@@ -1371,7 +1369,8 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 b.estado,\
                 c.costo_ultima_compra,\
                 CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
-                ,b.unidad_medida\
+                ,b.unidad_medida,\
+                (select descripcion from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\

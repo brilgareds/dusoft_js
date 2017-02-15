@@ -25,6 +25,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.cantidadPendiente = 0;
                 this.cantidadPendienteDespachar = 0;
                 this.unidadMedida = 0;
+                this.nombreBodega = "";
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
@@ -282,6 +283,26 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoPedidoCliente.prototype.getUnidadMedida = function() {               
                 return this.unidadMedida;
             };
+            
+            
+            
+            
+            
+            
+            /**
+             * +Descripcion metodo encargado de setear el nombre de la bodega de donde
+             *              se obtendra el producto
+             */
+            ProductoPedidoCliente.prototype.setNombreBodega = function(nombreBodega) {
+                this.nombreBodega = nombreBodega;
+                return this;
+            };
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.getNombreBodega = function() {               
+                return this.nombreBodega;
+            };
+            
 
             return this;
         }]);

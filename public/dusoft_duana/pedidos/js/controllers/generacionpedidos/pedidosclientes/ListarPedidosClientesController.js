@@ -95,6 +95,13 @@ define(["angular", "js/controllers",
                     {nombre: "Cliente", tipo_busqueda: 1},
                     {nombre: "Vendedor", tipo_busqueda: 2}
                 ],
+                opcion_pedido: [
+                    {descripcion: "Crear",tipo_pedido: 0},
+                    {descripcion: "Crear multiple",tipo_pedido: 1}              
+                ],
+                opcion_inicial: {descripcion: "Seleccione",tipo_pedido: -1},
+                    
+                
                 filtro: {nombre: "Numero", tipo_busqueda: 0},
                 filtro_pedido: {nombre: "Numero", tipo_busqueda: 0},
                 filtro_actual_cotizacion: {},
@@ -104,6 +111,32 @@ define(["angular", "js/controllers",
                 inactivarTab: false
             };
             $scope.listarFacuras = false;
+            
+            
+            /**
+             * +Descripcion Menu desplegable para seleccionar el tipo de cotizacion
+             *              que desee realizar el usario,
+             *              0 = Cotizacion
+             *              1 = Cotizacion multiple
+             */
+            $scope.onSeleccionOpcionPedido = function(opcion) {
+                $scope.datos_view.opcion_inicial = opcion;
+                
+               
+                if(opcion.tipo_pedido === 0){   
+                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0', multiple_pedido: 0});
+                    $state.go('Cotizaciones');
+                }
+                
+                if(opcion.tipo_pedido === 1){    
+                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0', multiple_pedido: 1});
+                    $state.go('Cotizaciones');
+                 
+                }
+                 
+            };
+            
+            
             /**
              * +Descripcion Menu desplegable para filtar en la busqueda de
              *              una cotizacion

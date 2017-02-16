@@ -1400,7 +1400,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;
-
+    console.log("------parametros ------------- ", parametros);
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).then(function(resultado) {
@@ -1486,13 +1486,13 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
  */
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
 
+    /*console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
     console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
-    console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
-    console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
+    console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");*/
     
 
-    console.log("cotizacion ", cotizacion.numero_cotizacion);
-    console.log("producto ", producto);
+    //console.log("cotizacion ", cotizacion);
+    //console.log("producto ", producto);
     var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, \n\
                 codigo_producto, \
                 porc_iva, \

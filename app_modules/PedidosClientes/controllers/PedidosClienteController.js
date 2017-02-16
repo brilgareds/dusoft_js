@@ -964,7 +964,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
         }
 
     }).then(function(resultado) {
-        console.log("VALIDAR UNIDAD DE MEDIDA")
+        
         if (resultado.length > 0 && resultado[0].valido === '1') {
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'modificar_detalle_cotizacion', cotizacion, producto);
             
@@ -1405,7 +1405,6 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
 };
 
 
-
 /*
  * Autor : Camilo Orozco
  * Descripcion : Cargar Archivo Plano
@@ -1493,14 +1492,223 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     var cantidad_productos = 0;
     var limite_productos = 60;
     var usuario = req.session.user;
+    var _productosPlanoInvalidos = "";
+    var _productosPlanoValidadosValido = "";
+    var _productosPlanoValidadosInvalido = "";
+    var def = G.Q.defer();
+    /**
+     * +Descripcion Consulta si la formula esta en estado activa o inactiva, ni no existe
+     *              proseguira a crearse en los siguientes metodos
+     */
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function(resultado) {
+          
+        /**
+         * +Descripcion: Se valida si el estado de la cotizacion es
+         *               1 activo
+         *               4 activo (desaprobado por cartera)
+         */    
+        if (resultado.length === 0 || resultado[0].estado === '1' || resultado[0].estado === '4') {
+            
+            return G.Q.nfcall(__subir_archivo_plano, req.files);
+          
+        } else {
+            throw {msj:'La cotizacion debe encontrarse activa o desaprobada por cartera', status:500};
+        }
+    
+    }).then(function(producto){
+       
+        if(producto.length > 0){
+           
+            return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, producto, [], []);
+             
+        }else{
+            throw {msj:"El archivo esta vacio", status:500}; 
+        }
+         
+        
+         
+    }).then(function(productosPlano){
+        
+        _productosPlanoInvalidos = productosPlano[1];
+        
+        if (productosPlano[0].length > limite_productos) {
+            throw {msj:"Lista de Productos excede el limite permitido 25 productos por pedido", status:400};
+            
+        }else{
+            return G.Q.nfcall(__validar_datos_productos_archivo_plano, that, cotizacion, productosPlano[0], [], [],0);
+                               
+        }                                 
+    
+    }).then(function(productosPlanoValidados){
+            _productosPlanoValidadosValido = productosPlanoValidados[0];
+            _productosPlanoValidadosInvalido = productosPlanoValidados[1];
+        
+        if (_productosPlanoValidadosValido.length === 0) {
+            throw {msj:'Lista de Productos', status:200, data: {pedidos_clientes: {
+                        productos_validos: productosPlanoValidados[0], 
+                        productos_invalidos: productosPlanoValidados[0].concat(_productosPlanoInvalidos)
+                    }}}
+            
+            return;
+        }
+
+        return G.Q.ninvoke(that.m_pedidos_clientes, "consultar_detalle_cotizacion", cotizacion, '');
+        
+    }).then(function(resultadoConsultaDetalle){
+      
+        if (resultadoConsultaDetalle.length > limite_productos) {
+            throw {msj:'Lista de Productos excede el limite permitido 25 productos por pedido ', status:400, data:{pedidos_clientes: {}}};
+            return;
+        }   
+        
+        return G.Q.nfcall(__agrupar_productos_por_tipo,_productosPlanoValidadosValido,[],0);
+                          
+    }).then(function(resultadoProductosAgrupados){
+         
+        cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(resultadoProductosAgrupados)[0] : cotizacion.tipo_producto;
+
+        _productosPlanoValidadosValido = resultadoProductosAgrupados[cotizacion.tipo_producto];
+        
+        if (_productosPlanoValidadosValido === undefined || _productosPlanoValidadosValido.length === 0) {
+            throw {msj:'Lista de Productos', status:200, data: {pedidos_clientes: {
+                        productos_validos: _productosPlanoValidadosValido, 
+                        productos_invalidos: _productosPlanoValidadosInvalido.concat(_productosPlanoInvalidos)
+                    }}}
+            return;
+        }    
+        
+        if (cotizacion.numero_cotizacion === 0) {            
+            return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);         
+        } else {           
+            def.resolve();
+        };
+         
+    }).then(function(rows, result){
+         
+        console.log("*********** rows ===== ", rows);
+        //console.log("cotizacion ", cotizacion);
+        cotizacion.numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
+        
+        //return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, _productosPlanoValidadosValido, _productosPlanoValidadosInvalido);
+                         
+    }).then(function(resultado){
+         
+        throw {msj:'Cotizacion creada correctamente', status:200, data: {pedidos_clientes: {
+                        numero_cotizacion: cotizacion.numero_cotizacion,
+                        productos_validos: _productosPlanoValidadosValido, 
+                        productos_invalidos: _productosPlanoValidadosInvalido.concat(_productosPlanoInvalidos)
+                    }}} 
+        return;
+        
+    }).fail(function(err) {
+        
+        console.log("err ", err);
+        var msj = "Erro Interno";
+        var status = 500;
+        
+        if(err.status){
+            msj = err.msj;
+            status = err.status;
+        }
+        
+        
+        res.send(G.utils.r(req.url, msj, status, err.data));
+    }).done();
+    
+    };
+
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Cargar Archivo Plano
+ */
+PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
+    
+    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
+    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
+    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
+    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
+    
+    var that = this;
+
+    var args = req.body.data;
+
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Cliente
+    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cliente === '') {
+        res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Vendedor
+    if (args.pedidos_clientes.cotizacion.vendedor === undefined || args.pedidos_clientes.cotizacion.vendedor === '') {
+        res.send(G.utils.r(req.url, 'Vendedor No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+
+    // Empresa, Centro Utilidad,  Bodega
+    if (cotizacion.empresa_id === undefined || cotizacion.centro_utilidad_id === undefined || cotizacion.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Validar Cliente
+    if (cotizacion.cliente.tipo_id_tercero === undefined || cotizacion.cliente.id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Validar Vendedor
+    if (cotizacion.vendedor.tipo_id_tercero === undefined || cotizacion.vendedor.id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Observaciones
+    if (cotizacion.tipo_producto === undefined || cotizacion.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_producto u observacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Empresa, Centro Utilidad,  Bodega
+    if (cotizacion.empresa_id === '' || cotizacion.centro_utilidad_id === '' || cotizacion.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
+        return;
+    }
+    // Validar Cliente
+    if (cotizacion.cliente.tipo_id_tercero === '' || cotizacion.cliente.id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
+        return;
+    }
+
+    // Validar Vendedor
+    if (cotizacion.vendedor.tipo_id_tercero === '' || cotizacion.vendedor.id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
+        return;
+    }
+
+    // Observaciones
+    if (/*cotizacion.tipo_producto === '' ||*/ cotizacion.observacion === '') {
+        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+        return;
+    }
+
+    cotizacion.usuario_id = req.session.user.usuario_id;
+
+    var cantidad_productos = 0;
+    var limite_productos = 60;
+    var usuario = req.session.user;
 
 
     that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
-
-
-        console.log("rows ", rows);
-        console.log("cotizacion.numero_cotizacion ", cotizacion.numero_cotizacion);
-        console.log("err ", err);
+ 
         /**
          * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
          *               satisfactoriamente
@@ -3620,9 +3828,50 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
  * Descripcion : Validar que los cÃ³digos de los productos del archivo plano sean validos.
  *
  */
-function __validar_productos_archivo_plano(contexto, filas, callback) {
+function __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback) {
+ 
+    var producto = filas[index];
+    if (!producto) {       
+        callback(false,productosValidos, productosInvalidos);
+        return;
+    }
+     
+    /**
+     * +Descripcion Funcion encargada de modificar el detalle del pedido
+     */
+    G.Q.ninvoke(that.m_productos, 'validar_producto',producto.codigo).then(function(resultado) {
+         
+        var productoValidos = {codigo_producto: producto.codigo, cantidad_solicitada: producto.cantidad};
 
-    var that = contexto;
+            if (resultado.length > 0 && producto.cantidad > 0) {
+
+                productoValidos.tipoProductoId = resultado[0].tipo_producto_id;
+                productoValidos.descripcion = resultado[0].descripcion_producto;
+                productoValidos.cantidadSolicitada = producto.cantidad;
+                productosValidos.push(productoValidos);
+
+            } else {
+                productoValidos.mensajeError = "No existe en inventario";
+                productoValidos.existeInventario = false;
+                productosInvalidos.push(productoValidos);
+
+            }
+        
+      
+    
+    }).fail(function(error) {
+
+        callback(error);
+    });
+
+     
+        index++;
+        setTimeout(function() {
+            
+            __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback);
+    }, 300);
+ 
+ /*   var that = contexto;
 
     var productos_validos = [];
     var productos_invalidos = [];
@@ -3649,15 +3898,14 @@ function __validar_productos_archivo_plano(contexto, filas, callback) {
                 productos_invalidos.push(producto);
 
             }
-
+                                                                      
             if (--i === 0) {
                 callback(productos_validos, productos_invalidos);
             }
         });
-    });
+    });*/
 
-}
-;
+};
 
 
 
@@ -3672,7 +3920,8 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
     var productoUnidadMedida = "";
     var def = G.Q.defer();
     if (!producto) {
-        callback(productos_validos, productos_invalidos);
+          
+        callback(false,productos_validos, productos_invalidos);
         return;
     }
     
@@ -3738,19 +3987,24 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
         
         }
     }).then(function(resultado){
-             
+         
+        if(!resultado || resultado === undefined){
+            
+            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
+                return;
+        } 
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
         **/
         var precioVenta = __validarPrecioVenta(producto, resultado, 0);
-
+       
         if(precioVenta.valido){
             productoUnidadMedida = producto;
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
 
         }else{
             productoUnidadMedida = producto;
-            productos_invalidos.push(producto);
+            productos_invalidos.push(productoUnidadMedida);
             def.resolve();
         }
        
@@ -3767,7 +4021,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
             }, 0);
             
         } else if (resultado.length > 0 && resultado[0].valido === '1') {
-             
+            
             productos_validos.push(productoUnidadMedida);
 
             setTimeout(function() {
@@ -3847,7 +4101,31 @@ function __validarPrecioVenta(producto, resultado, tipo) {
  * Autor : Camilo Orozco
  * Descripcion : Separar productos segun sea su tipo ej. Normales, Alto Costo, Controlados etc.
  */
-function __agrupar_productos_por_tipo(contexto, productos, callback) {
+function __agrupar_productos_por_tipo(productos,productosAgrupados,index, callback) {
+
+
+    var producto = productos[index];
+    
+    if(!producto){
+        
+        callback(false, productosAgrupados)
+    }
+   
+    if(producto){
+        
+        if (productosAgrupados[producto.tipo_producto]) {
+            productosAgrupados[producto.tipo_producto].push(producto);
+        } else {
+            productosAgrupados[producto.tipo_producto] = [producto];
+        }
+    }    
+     index++;
+  
+    setTimeout(function() {
+        __agrupar_productos_por_tipo(productos,productosAgrupados,index, callback)
+    }, 300); 
+}
+/*function __agrupar_productos_por_tipo(contexto, productos, callback) {
 
     var that = contexto;
     var productos_validos = [];
@@ -3870,7 +4148,7 @@ function __agrupar_productos_por_tipo(contexto, productos, callback) {
 
     callback(productos_agrupados);
 }
-;
+;*/
 
 
 /*

@@ -154,7 +154,7 @@ define(["angular", "js/controllers",
                             producto: $scope.datos_form.producto_seleccionado,
                             estadoMultiplePedido:  that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
                         }
-                    }
+                    }                
                 };
                  
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {

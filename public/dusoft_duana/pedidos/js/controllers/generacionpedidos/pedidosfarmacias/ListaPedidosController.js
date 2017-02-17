@@ -79,9 +79,11 @@ define(["angular",
                 enableRowSelection: false,
                 enableHighlighting:true,
                 columnDefs: [
-                    {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center", visible: $scope.rootPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos,
+                    {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center", visible: $scope.rootPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos, width: "8%",
                         cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
-                    {field: 'numero_pedido', displayName: 'Número Pedido'},
+                    {field: 'numero_pedido', displayName: 'Número Pedido', cellClass: "txt-center", width: "8%", 
+                        cellTemplate: "<div>{{row.entity.numero_pedido}}<a ng-if='row.entity.getNumeroPedidoCliente()>0' title='Numero Pedido Cliente'> - {{row.entity.getNumeroPedidoCliente()}}</a></div>"},
+                   
                     {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Farmacia'},
                     {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()', displayName: 'Bodega'},
                     {field: 'farmaciaDestino.getZona()', displayName: 'Zona'},

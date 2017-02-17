@@ -92,11 +92,7 @@ define(["angular", "js/controllers",
                                                 </div>'
                     },
                     {field: 'descripcion', displayName: 'Descripción', width: "50%"},
-                    {field: 'bodega', displayName: 'Bodega',visible:$scope.root.bodegaMultiple.bools,width:400,
-                        cellTemplate : ' <div class="col-xs-6">\n\
-                                            {{row.entity.getNombreBodega()}} \n\
-                                         </div>'
-                    },
+                    {field: 'getNombreBodega()', displayName: 'Bodega', width:"10%"},
                     {field: 'getCantidadSolicitada()', displayName: 'Solicitado'},
                     {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:false,

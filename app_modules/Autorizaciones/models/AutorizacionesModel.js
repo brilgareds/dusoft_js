@@ -34,7 +34,7 @@ AutorizacionesModel.prototype.insertarAutorizacionProductos = function(obj, call
 * @fecha 2016-05-25
 */
 AutorizacionesModel.prototype.modificarAutorizacionProductos = function(obj, callback) {
-    console.log("se modifica modificarAutorizacionProductos>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+    
     var sql = " UPDATE \
                 autorizaciones_productos_pedidos SET \
 		estado = :1 ,fecha_verificacion=NOW(),usuario_id = :2	\
@@ -189,7 +189,6 @@ AutorizacionesModel.prototype.eliminaProductosRepetidosAutorizados = function(ob
     query.then(function(resultado) {
        callback(false, resultado.rows);
      }).catch (function(err) {
-        console.log("error sql",err);
         callback(err);
      });
 };

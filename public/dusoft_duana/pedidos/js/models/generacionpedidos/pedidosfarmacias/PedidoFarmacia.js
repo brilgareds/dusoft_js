@@ -17,6 +17,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.esTemporal = false;
             this.valido = false;
             this.tipoPedido;
+            this.numeroPedidoCliente;
             
             //0 = ver , 1 = modificacion y 2 = modificacion especial
             this.tipoModificacion = '0';
@@ -191,6 +192,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoFarmacia.prototype.getValido = function() {
             return this.valido;
+        };
+        
+        PedidoFarmacia.prototype.setNumeroPedidoCliente = function(numeroPedidoCliente) {
+            this.numeroPedidoCliente = numeroPedidoCliente;
+            return this;
+        };
+        
+        PedidoFarmacia.prototype.getNumeroPedidoCliente = function() {
+            return this.numeroPedidoCliente;
         };
         
         this.get = function() {

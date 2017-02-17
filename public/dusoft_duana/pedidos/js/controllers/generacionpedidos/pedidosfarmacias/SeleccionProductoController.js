@@ -31,13 +31,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                                                 <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
                                             </div>'
-                    },
-                    {field: 'nombreBodega', displayName: 'Bodega', width: "10%"},
+                    },                    
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
+                    {field: 'nombreBodega', displayName: 'Bodega', width: "8%"},
                     {field: 'existenciasFarmacia', displayName: 'Exist. Farmacia', width: "8%"},
-                    {field: 'totalExistenciasFarmacias', displayName: 'Total Exist. Farmacia', width: "11%"},
+                    {field: 'totalExistenciasFarmacias', displayName: 'Total Exist. Farmacia', width: "8%"},
                     {field: 'existencia', displayName: 'Exist. Bodega', width: "8%"},
-                    {field: 'disponibilidadBodega', displayName: 'Disponible'},
+                    {field: 'disponibilidadBodega', displayName: 'Disponible', width: "5%"},
                     {field: 'cantidadSolicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                         cellTemplate: ' <div class="col-xs-12">\n\
                                                 <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input"\
@@ -111,7 +111,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              * +Descripcion: metodo que hace la peticion para traer los productos de la empresa seleccionada en el pedido
              */
             self.buscarProductos = function(callback) {
-
+                
                 $scope.rootSeleccionProductoFarmacia.filtro.termino_busqueda = $scope.rootSeleccionProductoFarmacia.termino_busqueda;
                 $scope.rootSeleccionProductoFarmacia.filtro.tipo_producto = $scope.rootSeleccionProductoFarmacia.tipoProducto;
 
@@ -160,7 +160,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 });
 
             };
-
+            
 
             /*
              * @Author: Eduar
@@ -293,8 +293,8 @@ console.log("comparar producto ",producto);
              * +Descripcion: Evento que espera que el slide termine la animacion
              */
             $scope.root.mostrarSeleccionProductoCompleto = $scope.$on("seleccionProductoCompleto", function(e, datos) {
-                self.init();
-                self.buscarProductos();
+               self.init();
+               self.buscarProductos();
             });
 
             /*

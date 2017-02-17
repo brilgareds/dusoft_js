@@ -178,9 +178,9 @@
                     </tab-heading>
 
                     <div class="input-group navbar-form ">
-
-                        <div >
-                             <button type="button" ng-disabled="(!root.pedido.getValido() && !root.bodegaMultiple.bools) || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnCrearPedido}}" ng-if="!root.pedido.get_numero_pedido()">
+<!--&& !root.bodegaMultiple.bools-->
+                        <div >                                 
+                             <button type="button" ng-disabled="(!root.pedido.getValido() ) || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnCrearPedido}}" ng-if="!root.pedido.get_numero_pedido()">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Productos
                             </button>
                             

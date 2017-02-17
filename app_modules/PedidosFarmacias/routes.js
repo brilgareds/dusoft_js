@@ -177,6 +177,10 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosFarmacias/anularPendienteProducto', function(req, res) {
         c_pedidos_farmacias.anularPendienteProducto(req, res);
     });
+    
+    app.post('/api/PedidosFarmacias/generarPedidoModuloCliente', function(req, res) {
+        c_pedidos_farmacias.generarPedidoModuloCliente(req, res);
+    });
 
     // ================= GET =======================
 

@@ -1932,8 +1932,8 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
         var estado_pedido='10';
         thats.m_pedidos_clientes.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function(_err) { 
             if (_err){
-            res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
-            return;
+            //res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
+            callback(_err);
             }
          });
         autorizacion.productos = producto;

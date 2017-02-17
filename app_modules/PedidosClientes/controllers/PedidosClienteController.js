@@ -1349,11 +1349,7 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
     }
 
     cotizacion.usuario_id = req.session.user.usuario_id;
-
-
-    // consultarTotalProductosCotizacion
-
-
+ 
     /**
      * +Descripcion: Se permitira ejecutar la accion de eliminar_producto_cotizacion
      *               siempre y cuando la cotizacion tenga el estado (Estado del Pedido ) 1
@@ -1402,36 +1398,31 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
     }).done();
 
 
-};
+};                                
 
 
 /*
  * Autor : Camilo Orozco
  * Descripcion : Cargar Archivo Plano
  */
-PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
-    
-    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
-    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
-    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
-    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
-    
+PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
+  
+  console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
+  console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
+  console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
+  
     var that = this;
-
     var args = req.body.data;
-
     // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
         return;
     }
-
     // Cliente
     if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cliente === '') {
         res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
         return;
     }
-
     // Vendedor
     if (args.pedidos_clientes.cotizacion.vendedor === undefined || args.pedidos_clientes.cotizacion.vendedor === '') {
         res.send(G.utils.r(req.url, 'Vendedor No Estan Definidos', 404, {}));
@@ -1439,31 +1430,26 @@ PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
     }
 
     var cotizacion = args.pedidos_clientes.cotizacion;
-
     // Empresa, Centro Utilidad,  Bodega
     if (cotizacion.empresa_id === undefined || cotizacion.centro_utilidad_id === undefined || cotizacion.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
         return;
     }
-
     // Validar Cliente
     if (cotizacion.cliente.tipo_id_tercero === undefined || cotizacion.cliente.id === undefined) {
         res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }
-
     // Validar Vendedor
     if (cotizacion.vendedor.tipo_id_tercero === undefined || cotizacion.vendedor.id === undefined) {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }
-
     // Observaciones
     if (cotizacion.tipo_producto === undefined || cotizacion.observacion === undefined) {
         res.send(G.utils.r(req.url, 'tipo_producto u observacion No Estan Definidos', 404, {}));
         return;
     }
-
     // Empresa, Centro Utilidad,  Bodega
     if (cotizacion.empresa_id === '' || cotizacion.centro_utilidad_id === '' || cotizacion.bodega_id === '') {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
@@ -1474,13 +1460,11 @@ PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
         res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
         return;
     }
-
     // Validar Vendedor
     if (cotizacion.vendedor.tipo_id_tercero === '' || cotizacion.vendedor.id === '') {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
         return;
     }
-
     // Observaciones
     if (/*cotizacion.tipo_producto === '' ||*/ cotizacion.observacion === '') {
         res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
@@ -1488,13 +1472,43 @@ PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
     }
 
     cotizacion.usuario_id = req.session.user.usuario_id;
- 
+     //cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
+     
     var limite_productos = 60;
     var usuario = req.session.user;
     var _productosPlanoInvalidos = "";
     var _productosPlanoValidadosValido = "";
     var _productosPlanoValidadosInvalido = "";
     var def = G.Q.defer();
+   
+   /*var objBodegaPedido={sw_modulo:'0'}; 
+    var empresa_id = args.pedidos_clientes.empresa_id;
+    var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
+    var bodega = args.pedidos_clientes.bodega_id; 
+    var contrato_cliente = args.pedidos_clientes.cotizacion.cliente.contrato_id;
+    var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
+    var filtro = {
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
+        termino_busqueda: args.pedidos_clientes.termino_busqueda,
+        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
+        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido,
+        filtro_producto: 0
+    };
+ 
+    var filtroAvanzado = {
+        molecula: args.pedidos_clientes.molecula,
+        laboratorio_id: args.pedidos_clientes.laboratorio_id,
+        codigoProducto: args.pedidos_clientes.codigoProducto,
+        descripcionProducto: args.pedidos_clientes.descripcionProducto,
+        concentracion: args.pedidos_clientes.concentracion,
+        tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
+    };
+ 
+    var filtros = args.pedidos_clientes.filtro;
+    var pagina = args.pedidos_clientes.pagina_actual;*/
+    
     
     /**
      * +Descripcion Consulta si la formula esta en estado activa o inactiva, ni no existe
@@ -1540,20 +1554,19 @@ PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
            /**
             * +Descripcion Se verifica el precio de venta del producto, si es regulado
             */
-           return G.Q.nfcall(__validar_datos_productos_archivo_plano, that, cotizacion, productosPlano[0], [], [],0);
-                               
+           return G.Q.nfcall(__validar_datos_productos_archivo_plano, that, cotizacion, productosPlano[0], [], [],0);                               
         }                                 
     
     }).then(function(productosPlanoValidados){
-            _productosPlanoValidadosValido = productosPlanoValidados[0];
-            _productosPlanoValidadosInvalido = productosPlanoValidados[1];
+        
+        _productosPlanoValidadosValido = productosPlanoValidados[0];
+        _productosPlanoValidadosInvalido = productosPlanoValidados[1];
         
         if (_productosPlanoValidadosValido.length === 0) {
             throw {msj:'Lista de Productos', status:200, data: {pedidos_clientes: {
                         productos_validos: productosPlanoValidados[0], 
                         productos_invalidos: productosPlanoValidados[0].concat(_productosPlanoInvalidos)
-                    }}}
-            
+                    }}};          
             return;
         }
 
@@ -1588,10 +1601,10 @@ PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);         
         } else {           
             def.resolve();
-        };
+        }
          
     }).then(function(rows, result){
-
+         
         cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;        
         return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, _productosPlanoValidadosValido, _productosPlanoValidadosInvalido);
                          
@@ -1606,7 +1619,7 @@ PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
         
     }).fail(function(err) {
         
-        console.log("err ", err);
+        console.log("err [cotizacionArchivoPlano]:", err);
         var msj = "Erro Interno";
         var status = 500;
         
@@ -1618,218 +1631,72 @@ PedidosCliente.prototype.cotizacionArchivoPlanoOriginal = function(req, res) {
     }).done();
     
 };
-
-
-/*
- * Autor : Camilo Orozco
- * Descripcion : Cargar Archivo Plano
- */
-PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
-    
-    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
-    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
-    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
-    console.log("********PedidosCliente.prototype.cotizacionArchivoPlano**********");
-    
-    var that = this;
-
-    var args = req.body.data;
-
-    // Cotizacion
-    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
-        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
-        return;
-    }
-
-    // Cliente
-    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cliente === '') {
-        res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
-        return;
-    }
-
-    // Vendedor
-    if (args.pedidos_clientes.cotizacion.vendedor === undefined || args.pedidos_clientes.cotizacion.vendedor === '') {
-        res.send(G.utils.r(req.url, 'Vendedor No Estan Definidos', 404, {}));
-        return;
-    }
-
-    var cotizacion = args.pedidos_clientes.cotizacion;
-
-    // Empresa, Centro Utilidad,  Bodega
-    if (cotizacion.empresa_id === undefined || cotizacion.centro_utilidad_id === undefined || cotizacion.bodega_id === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
-        return;
-    }
-
-    // Validar Cliente
-    if (cotizacion.cliente.tipo_id_tercero === undefined || cotizacion.cliente.id === undefined) {
-        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
-        return;
-    }
-
-    // Validar Vendedor
-    if (cotizacion.vendedor.tipo_id_tercero === undefined || cotizacion.vendedor.id === undefined) {
-        res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
-        return;
-    }
-
-    // Observaciones
-    if (cotizacion.tipo_producto === undefined || cotizacion.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'tipo_producto u observacion No Estan Definidos', 404, {}));
-        return;
-    }
-
-    // Empresa, Centro Utilidad,  Bodega
-    if (cotizacion.empresa_id === '' || cotizacion.centro_utilidad_id === '' || cotizacion.bodega_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
-        return;
-    }
-    // Validar Cliente
-    if (cotizacion.cliente.tipo_id_tercero === '' || cotizacion.cliente.id === '') {
-        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
-        return;
-    }
-
-    // Validar Vendedor
-    if (cotizacion.vendedor.tipo_id_tercero === '' || cotizacion.vendedor.id === '') {
-        res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
-        return;
-    }
-
-    // Observaciones
-    if (/*cotizacion.tipo_producto === '' ||*/ cotizacion.observacion === '') {
-        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
-        return;
-    }
-
-    cotizacion.usuario_id = req.session.user.usuario_id;
-
-    var cantidad_productos = 0;
-    var limite_productos = 60;
-    var usuario = req.session.user;
-
-
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
  
-        /**
-         * +Descripcion: Se valida que se haya consultado el estado de la cotizacion
-         *               satisfactoriamente
-         */
-
-        if (!err) {
-
-            /**
-             * +Descripcion: Se valida si el estado de la cotizacion es
-             *               1 activo
-             *               4 activo (desaprobado por cartera)
-             *               0 Empezando a crear la cotizacion
-             */
-             
-            if (rows.length === 0 || rows[0].estado === '1' || rows[0].estado === '4') {
-
-                 
-                __subir_archivo_plano(req.files, function(error, contenido) {
-
-                      
-                    if (!error) {
-                        console.log("__validar_productos_archivo_plano");
-                       
-                        __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
-
-                              
-                            cantidad_productos = productos_validos.length;
-                             
-                            if (cantidad_productos > limite_productos) {
-
-                                res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
-                                return;
-                            }
-                              
-                            __validar_datos_productos_archivo_plano(that, cotizacion, productos_validos, [], [], 0, function(_productos_validos, _productos_invalidos) {
-                                 
-                                 
-                                if (_productos_validos.length === 0) {
-                                    res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedidos_clientes: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
-                                    return;
-                                }
-
-
-                                // Validar que si suben varios archivos, siempre se limite la cantidad de productos a ingresar ala cotizacion
-                                that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, '', function(err, lista_productos) {
-
-
-                                    if (lista_productos.length > limite_productos) {
-
-
-                                        res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
-                                        return;
-                                    }
-
-                                    __agrupar_productos_por_tipo(that, _productos_validos, function(productos_agrupados) {
-
-                                        cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(productos_agrupados)[0] : cotizacion.tipo_producto;
-
-                                        _productos_validos = productos_agrupados[cotizacion.tipo_producto];
-
-                                        if (_productos_validos === undefined || _productos_validos.length === 0) {
-                                            res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedidos_clientes: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
-                                            return;
-                                        }
-
-                                        var i = _productos_validos.length;
-                                        var index = 1;
-                                        var cantidad = _productos_validos.length;
-
-                                        //  console.log("cotizacion ", cotizacion);
-                                        if (cotizacion.numero_cotizacion === 0) {
-                                            //Crear cotizacion e insertar productos
-                                            that.m_pedidos_clientes.insertar_cotizacion(cotizacion, function(err, rows, result) {
-
-                                                if (err) {
-                                                    res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {}}));
-                                                    return;
-                                                } else {
-
-                                                    cotizacion.numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
-
-                                                    __insertarDetalleCotizacion(that, 0, usuario, cotizacion, _productos_validos, _productos_invalidos, function() {
-
-                                                        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
-                                                        return;
-                                                    });
-                                                }
-                                            });
-                                        } else {
-                                            // Insertar productos a la cotizacion
-
-                                            __insertarDetalleCotizacion(that, 0, usuario, cotizacion, _productos_validos, _productos_invalidos, function() {
-
-                                                res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
-                                                return;
-                                            });
-
-                                        }
-                                    });
-                                });
-                            });
-                        });
-                    } else {
-                        res.send(G.utils.r(req.url, 'Error subiendo el archivo plano', 404, {}));
-                        return;
-                    }
-                });
-            } else {
-                res.send(G.utils.r(req.url, 'La cotizacion debe encontrarse activa o desaprobada por cartera', 500, {pedidos_clientes: []}));
-                return;
-            }
-        } else {
-            res.send(G.utils.r(req.url, 'Ha ocurrido un error !!!!', 500, {pedidos_clientes: []}));
-            return;
+/**
+ * @author Andres Mauricio Tascon Gonzales
+ * +Descripcion funcion que encargada de seleccionar el arreglo con los productos 
+ *              seleccionados de las diferentes bodegas parametrizadas dependiendo 
+ *              de su existencia. 
+ * @fecha 17/02/2017 DD/MM/YYYY
+ */
+function __productosSeleccionado(that, index, productos,listaProductos,control,callback) {
+    
+    var producto = productos[index];
+     
+    if (!producto) {  
+        if(control.cantidad_solicitada>control.sumaTotalExis){
+            listaProductos=[];
+            listaProductos[0]={cantidad_total_bodegas:control.sumaTotalExis,disponibilidad_bodega:control.sumaTotalExis};
+        }else{
+          listaProductos[0].cantidad_total_bodegas=control.sumaTotalExis; 
         }
-    });
+        
+       //valido si en la primera no hubo existencia y en la segunda no ingreso o no habia producto
+        callback(false,listaProductos);
+        return; 
+    }  
+            productos[index].unidad_medida=productos[index].unidad_medida>0?productos[index].unidad_medida:1;
+            if(productos[index].existencia>=0 && productos[index].existencia >= productos[index].unidad_medida){
+
+              if(productos[index].existencia>=control.diferenciaExis){                  
+                  if(control.dosBodegas===1){  
+                    productos[index].cantidad_en_bodega=control.diferenciaExis;
+                    listaProductos.push(productos[index]);
+                    var cantidadBodega= productos[index].existencia-(productos[index].existencia%productos[index].unidad_medida);
+                    control.sumaTotalExis+=cantidadBodega;
+                    listaProductos[0].cantidad_total_bodegas=control.sumaTotalExis;
+                    callback(false,listaProductos);
+                    return;
+                  }else{
+                    productos[index].cantidad_en_bodega=control.diferenciaExis;
+                    listaProductos.push(productos[index]);
+                    control.sumaTotalExis+=productos[index].existencia;
+                    listaProductos[0].cantidad_total_bodegas=control.sumaTotalExis;
+                    callback(false,listaProductos);
+                    return;
+                  }                                          
+              }else{
+                  control.dosBodegas=1;
+                  var cantidadBodega= productos[index].existencia-(productos[index].existencia%productos[index].unidad_medida)
+                  control.diferenciaExis=control.diferenciaExis-cantidadBodega;
+                  productos[index].cantidad_en_bodega=cantidadBodega;
+                  listaProductos.push(productos[index]);
+                  control.sumaTotalExis+=cantidadBodega;
+              }
+            }
+
+    index++;
+    setTimeout(function() {
+       __productosSeleccionado(that, index, productos,listaProductos,control,callback);
+   }, 300);
+       
 };
-
-
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de insertar un arreglo de productos en la tabla
+ *              ventas_ordenes_pedidos_d_tmp
+ * 
+ */
 function __insertarDetalleCotizacion(that, index, usuario, cotizacion, _productos_validos, _productos_invalidos, callback) {
 
     var producto = _productos_validos[index];
@@ -3860,54 +3727,15 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
             }
         
       
-    
     }).fail(function(error) {
 
         callback(error);
     });
-
-     
         index++;
-        setTimeout(function() {
-            
+        setTimeout(function() {           
             __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback);
     }, 300);
- 
- /*   var that = contexto;
-
-    var productos_validos = [];
-    var productos_invalidos = [];
-    var i = filas.length;
-
-    filas.forEach(function(row) {
-        var codigo_producto = row.codigo || '';
-        var cantidad_solicitada = row.cantidad || 0;
-
-        that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
-
-            var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
-
-            if (existe_producto.length > 0 && cantidad_solicitada > 0) {
-
-                producto.tipoProductoId = existe_producto[0].tipo_producto_id;
-                producto.descripcion = existe_producto[0].descripcion_producto;
-                producto.cantidadSolicitada = cantidad_solicitada;
-                productos_validos.push(producto);
-
-            } else {
-                producto.mensajeError = "No existe en inventario";
-                producto.existeInventario = false;
-                productos_invalidos.push(producto);
-
-            }
-                                                                      
-            if (--i === 0) {
-                callback(productos_validos, productos_invalidos);
-            }
-        });
-    });*/
-
-};
+ };
 
 
 
@@ -4045,7 +3873,7 @@ function __validar_datos_productos_archivo_plano(that, cotizacion, productos, pr
     }).fail(function(err){  
     console.log("error[__validar_datos_productos_archivo_plano]: ", err)    
     }).done(); 
-};
+};                                              
 
 /**
  * @author Cristian Ardila
@@ -4102,62 +3930,35 @@ function __validarPrecioVenta(producto, resultado, tipo) {
 
 
 /*
- * Autor : Camilo Orozco
- * Descripcion : Separar productos segun sea su tipo ej. Normales, Alto Costo, Controlados etc.
+ * @author Camilo Orozco
+ * +Descripcion Separar productos segun sea su tipo ej. Normales, Alto Costo, Controlados etc.
  */
 function __agrupar_productos_por_tipo(productos,productosAgrupados,index, callback) {
 
-
     var producto = productos[index];
     
-    if(!producto){
-        
+    if(!producto){       
         callback(false, productosAgrupados)
     }
    
-    if(producto){
-        
+    if(producto){       
         if (productosAgrupados[producto.tipo_producto]) {
             productosAgrupados[producto.tipo_producto].push(producto);
         } else {
             productosAgrupados[producto.tipo_producto] = [producto];
         }
     }    
-     index++;
+    index++;
   
     setTimeout(function() {
         __agrupar_productos_por_tipo(productos,productosAgrupados,index, callback)
     }, 300); 
 }
-/*function __agrupar_productos_por_tipo(contexto, productos, callback) {
-
-    var that = contexto;
-    var productos_validos = [];
-    var productos_invalidos = [];
-
-    if (productos.length === 0) {
-        callback(productos_validos, productos_invalidos);
-        return;
-    }
-
-    var productos_agrupados = {};
-
-    productos.forEach(function(row) {
-        if (productos_agrupados[row.tipo_producto]) {
-            productos_agrupados[row.tipo_producto].push(row);
-        } else {
-            productos_agrupados[row.tipo_producto] = [row];
-        }
-    });
-
-    callback(productos_agrupados);
-}
-;*/
 
 
 /*
- * Autor : Camilo Orozco
- * Descripcion : Generar reporte decotizaciones
+ * @author Camilo Orozco
+ * +Descripcion Generar reporte decotizaciones
  */
 function _generar_reporte_cotizacion(rows, callback) {
 

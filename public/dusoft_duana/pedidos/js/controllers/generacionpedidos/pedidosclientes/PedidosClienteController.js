@@ -1007,12 +1007,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.opciones_archivo = $flow;
             };
             $scope.subir_archivo_plano = function() {
+               
                 $scope.datos_view.progresoArchivo = 2;
 
                 $scope.opciones_archivo.opts.query.data = JSON.stringify({
                     pedidos_clientes: {
-                        cotizacion: $scope.Pedido
-                    }
+                        cotizacion: $scope.Pedido,
+                        estadoMultiplePedido: localStorageService.get("multiple_pedido").multiple_pedido                  }
                 });
                 $scope.opciones_archivo.upload();
             };

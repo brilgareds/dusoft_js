@@ -629,7 +629,6 @@ function __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
 
 
 
-
 /*
  * Autor : Camilo Orozco
  * Descripcion : Insertar cotizacion
@@ -714,6 +713,19 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         "tercero_id":cotizacion.cliente.id
     };
     
+    G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion).then(function(resultado){
+        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, resultado));
+    }).fail(function(err){
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    });
+    
+};
+
+PedidosCliente.prototype.__insertarCotizacion = function(obj, cotizacion, callback){
+    
+    console.log("****PedidosCliente.prototype.__insertarCotizacion**************");
+    var that = this;
+    
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).            
     then(function(tercero){
                 
@@ -726,7 +738,8 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     }).spread(function(rows, result){
         
         var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
-        res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
+        callback(false,{pedidos_clientes: {numero_cotizacion: numero_cotizacion}}) ;
+        
         
     }).fail(function(err){
         var msj = "Erro Interno";
@@ -737,11 +750,11 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
             status = err.status;
         }
         
-        res.send(G.utils.r(req.url, msj, status, {pedidos_clientes: {}}));
+        callback(err, {status:status, msj:msj});
+       
     }).done();
-
+    
 };
-
 /*
  * @autor : Cristian Manuel Ardila Troches
  * @fecha 02/12/2015
@@ -2103,7 +2116,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
     }).then(function(resultado) {
 
-        if (resultado.length > 0) {
+        if (resultado.rowCount > 0) {
             var cliente = 0;
             var autorizacion = {};
             autorizacion.farmacia = cliente;
@@ -2171,7 +2184,7 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
         var estado_pedido='10';
         thats.m_pedidos_clientes.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function(_err) { 
             if (_err){
-            res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
+            throw 'Se ha generado un error interno code 2';
             return;
             }
          });
@@ -4393,7 +4406,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
          
     
     }).then(function(resultado){
-        
+        console.log("resultado [__insertarProductosFarmaciaCotizacion]: ", resultado)
         cotizacion.total = __totalNuevoPrecioVenta(cotizacion);  
         
         var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion,  cotizacion.productos, cotizacion.usuario_id, "Se solicita aprobacion", cotizacion.total, 0, 0);
@@ -4401,13 +4414,14 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         
     }).then(function(resultado){    
         
+        console.log("resultado [logTrazabilidadVentas]: ", resultado)
         var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, "APROBADO AUTOMATICAMENTE", cotizacion.total, 0, 1);
 
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);
  
     }).then(function(resultado){
         
-           
+            console.log("resultado [logAprobacionCotizacion]: ", resultado)
        return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
         
           
@@ -4438,10 +4452,15 @@ PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedi
     var that = this;
     that.pedidoGenerado = pedidoGenerado;
     var autorizacion = {};
+    
+    console.log("cotizacion ", cotizacion);
+    console.log("pedidoGenerado ", pedidoGenerado);
+    
     G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', pedidoGenerado.numero_pedido, pedidoGenerado.estado, null, cotizacion.usuario_id)
    
     .then(function(resultado) {
          
+         console.log("resultado [asignar_responsables_pedidos]: ", resultado)
         if (resultado.length > 0) {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado], '1');
         } else {
@@ -4450,6 +4469,7 @@ PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedi
 
     }).then(function(resultado) {
          
+         console.log("resultado [terminar_estado_pedido]", resultado)
         if (resultado.rowCount > 0) {
             
             var cliente = 0;             
@@ -4463,7 +4483,7 @@ PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedi
         }
                                 
     }).then(function(resultado) {    
-        
+        console.log("resultado ", resultado)
         var notificacion = {
                 aliasModulo: 'productos_en_pedidos',
                 opcionModulo: "sw_ver_notificaciones",
@@ -4490,7 +4510,7 @@ PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedi
 
             callback(err, {status:status, msj:msj});
        
-    }).done();
+    }).done(); 
     
 };
 

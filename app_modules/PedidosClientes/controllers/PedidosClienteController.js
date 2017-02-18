@@ -1645,7 +1645,30 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
             def.resolve();
         }
          
-    }).then(function(rows, result){
+    })/*.then(function(rows, result){
+        
+       console.log("******************************************************" );
+       console.log("******************************************************" );
+       console.log("******************************************************" );
+       console.log("******************************************************" );
+         // +Descripcion A  QUI SE INTENTARA OBTENER LOS MULTIPLES PEDIDOS
+         
+        //cotizacion.productos = _productosPlanoValidadosValido;
+        console.log("cotizacion ", cotizacion)
+        //return G.Q.ninvoke(that, "__listarProductosClientes",cotizacion)
+       return;
+       
+    }).then(function(resultado){
+        
+        console.log("************************** [__listarProductosClientes]: " );
+        
+       // console.log("resultado ", resultado)
+        
+    })*/
+        
+            
+            
+            .then(function(rows, result){
          
         cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;        
         return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, _productosPlanoValidadosValido, _productosPlanoValidadosInvalido);

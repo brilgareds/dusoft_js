@@ -408,11 +408,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  * Descripcion : Buscar productos para la solictid de una cotizacion o pedido
  */
 PedidosCliente.prototype.listarProductosClientes = function(req, res) {
-
-console.log("*************PedidosCliente.prototype.listarProductosClientes**********************");
-console.log("*************PedidosCliente.prototype.listarProductosClientes**********************");
-console.log("*************PedidosCliente.prototype.listarProductosClientes**********************");
-
+ 
     var that = this;
 
     var args = req.body.data;
@@ -989,7 +985,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
 
         if (resultado > 0) {
 
-            res.send(G.utils.r(req.url, 'Se modifica el pedido satisfactoriamenteo', 200, {pedidos_clientes: {}}));
+            res.send(G.utils.r(req.url, 'Se modifica la cotizacion satisfactoriamenteo', 200, {pedidos_clientes: {}}));
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
 
         } else {
@@ -1391,7 +1387,7 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
          */
         if (resultado[0].estado === '1' || resultado[0].estado === '4') {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_producto_cotizacion', cotizacion, producto);
-        } else {
+        } else {                                      
             throw 'Para modificar la cotizacion debe estar activa o desaprobada por cartera';
             return;
         }
@@ -2154,7 +2150,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
 
     }).fail(function(err) {
-
+        console.log("err [generarPedido]: ", err)
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
@@ -2341,7 +2337,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 
         } else {
-            throw 'El pedido debe encontrarse activo Ã³ para autorizar nuevamente por cartera';
+            throw 'El pedido debe encontrarse activo ó para autorizar nuevamente por cartera';
         }
     }).then(function(rows) {
 
@@ -2397,7 +2393,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
             if (estado_pedido === 1) { //estado_pedido
 
                 that.e_pedidos_clientes.onNotificarEstadoPedido(pedido.numero_pedido, estado_pedido);
-                res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
+                res.send(G.utils.r(req.url, 'Producto aniadido correctamente ', 200, {pedidos_clientes: {}}));
                 return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
             } else {
                  
@@ -4140,9 +4136,6 @@ function __productosPedidos(parametros, callback) {
 
 
 /*********************************GENERAR PEDIDO DESDE FARMACIAS *******************************/
-
-
-
 /**
  * +Descripcion Metodo encargado de validar los productos enviados desde el modulo
  *              de farmacia, validacion consiste en precio regulado etc 
@@ -4304,9 +4297,7 @@ function __precioVentaProductos(that, index, cotizacion, callback){
  * @fecha 01/02/2017 (DD/MM/YYYY)
  */
 PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
-     
-    console.log("*************PedidosCliente.prototype.generarPedidoBodegaFarmacia********************");
-    
+      
     var that = this;
     var args = req.body.data;
      

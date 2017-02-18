@@ -1779,13 +1779,16 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
  *  --PedidosCliente.prototype.eliminarProductoCotizacion
  * Modificacion: Se migra a KNEX.js
  * @fecha: 04/12/2015 2:43 pm
- */
+ */                        
 PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion, producto, callback)
 {
 
     G.knex('ventas_ordenes_pedidos_d_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .andWhere('codigo_producto', producto.codigo_producto)
+            .andWhere('empresa_origen_producto', producto.empresaIdProducto)
+            .andWhere('centro_utilidad_origen_producto', producto.centroUtilidadProducto)
+            .andWhere('bodega_origen_producto', producto.bodegaProducto)
             .del().then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {

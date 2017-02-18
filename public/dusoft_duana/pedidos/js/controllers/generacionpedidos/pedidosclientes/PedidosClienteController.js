@@ -508,7 +508,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.buscar_productos = function() {
                 
-                 var pedido =  {                 
+                 /*var pedido =  {                 
                     empresa_id: '03', 
                     centro_utilidad_id: '1 ',
                     bodega_id: '03',
@@ -521,7 +521,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         {codigo_producto: '1101M0443248',cantidad_solicitada: '1'},	
                         {codigo_producto: '1101D0471598',cantidad_solicitada: '1'},
                         {codigo_producto: '1101E0381868',cantidad_solicitada: '1'} */                        
-                    ],
+                    /*],
                     tipo_producto: '1',                  
                     observacion_cartera: '',
                     aprobado_cartera: '0',
@@ -562,9 +562,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);    
                    
-                });
-                /*$scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
-                $scope.$emit('gestionar_productos_clientes');*/
+                });*/
+                $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
+                $scope.$emit('gestionar_productos_clientes');
             };
             $scope.cerrar_busqueda_productos = function() {
 
@@ -1571,6 +1571,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
             that.generarObservacionCartera = function(aprobado){               
                 
+                console.log("****************gestionar_pedido************************");
+                console.log("****************gestionar_pedido************************");
+                console.log("****************gestionar_pedido************************");
+                
                 var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);
@@ -1604,6 +1608,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                 console.log("DESAPROBADO CARTERA ", data);
+                console.log("$scope.Pedido.get_numero_cotizacion() ", $scope.Pedido.get_numero_cotizacion() );
                     if (data.status === 200) {
                         /*Se valida si es una cotizacion y entonces se procede
                          a crear el pedido*/
@@ -1632,14 +1637,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 17/11/2016
              */
             $scope.generar_pedido_cliente = function() {
-                
-                console.log("**********scope.generar_pedido_cliente************");
-                console.log("**********scope.generar_pedido_cliente************");
-                console.log("**********scope.generar_pedido_cliente************");
-                console.log("**********scope.generar_pedido_cliente************");
-                console.log("$scope.Pedido ", $scope.Pedido);
-                
-                /*var obj = {
+               
+                var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
@@ -1659,7 +1658,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         AlertService.mostrarMensaje("warning", data.msj);
                         //$scope.volver_cotizacion();
                     }
-                });*/
+                });
             };
             
             /**

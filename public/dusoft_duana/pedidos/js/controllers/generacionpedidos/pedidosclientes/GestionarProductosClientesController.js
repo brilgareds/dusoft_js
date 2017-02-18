@@ -371,7 +371,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data){
 
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
-
+                  
                     if (data.status === 200) {
 
                         $scope.datos_form.cantidad_items = data.obj.pedidos_clientes.lista_productos.length;
@@ -380,11 +380,16 @@ define(["angular", "js/controllers",
                             if ($scope.datos_form.pagina_actual > 0) {
                                 $scope.datos_form.pagina_actual--;
                             }
-                            AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
-                            return;
+                            /*AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                            return;*/
                         }
-
+                        
                         that.render_productos(data.obj.pedidos_clientes.lista_productos);
+                    }else{
+                        
+                        AlertService.mostrarMensaje("warning", data.msj.err);
+                        return;
+                        
                     }
                 });
             };

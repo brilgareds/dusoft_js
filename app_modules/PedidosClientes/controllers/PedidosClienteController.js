@@ -447,11 +447,45 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         args.pedidos_clientes.molecula = '';
     }
 
+       
+  
+    G.Q.ninvoke(that, "__listarProductosClientes",args).then(function(resultado){
+       
+        res.send(G.utils.r(req.url, resultado.msj, resultado.status,
+         {
+             pedidos_clientes: 
+                     { 
+                         lista_productos: resultado.data.productos.sort(dynamicSort("codigo_producto"))
+                    }
+                }
+            )
+        );
+        
+        return;
+                            
+      
+    }).fail(function(err) {
+       
+        res.send(G.utils.r(req.url, {err:err.msj, status:err.status}, {}));
+      
+    }).done();  
+   
+};                                                        
+
+/**
+ * @author Cristian Manuel Ardila
+ * +Descripcion Metodo encargado de listar los productos
+ */
+PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
+     
+    var that = this;
+    
     var empresa_id = args.pedidos_clientes.empresa_id;
     var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
     var bodega = args.pedidos_clientes.bodega_id;
     var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
     var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
+    
     var filtro = {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
@@ -460,10 +494,7 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido,
         filtro_producto: 0
     };
-
-
-
-
+ 
     var filtroAvanzado = {
         molecula: args.pedidos_clientes.molecula,
         laboratorio_id: args.pedidos_clientes.laboratorio_id,
@@ -476,40 +507,70 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
  
     var filtros = args.pedidos_clientes.filtro;
     var pagina = args.pedidos_clientes.pagina_actual;
-    var objBodegaPedido={sw_modulo:'0'}; 
     
-    G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
-       
-      if(estadoMultiplePedido === 0){
-         
-          bodegasPedidos = [];
-          bodegasPedidos [0] = {empresa_id:empresa_id, centro_utilidad_id: centro_utilidad, bodega_id : bodega, orden: 1 } 
-         
-      }
-       
-      return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos,[],empresa_id,
-        centro_utilidad,
-        bodega,
-        contrato_cliente,
-        filtro,
-        pagina,
-        filtros, filtroAvanzado);                        
+    
+    var parametros = {estadoMultiplePedido: estadoMultiplePedido, 
+                      empresa_id: empresa_id, 
+                      centro_utilidad: centro_utilidad,
+                      bodega: bodega,
+                      contrato_cliente:contrato_cliente,
+                      filtro:filtro,
+                      pagina:pagina,
+                      filtros:filtros, 
+                      filtroAvanzado:filtroAvanzado
+                  };
 
-    }).then(function(productos){
-                                                       
+    var objBodegaPedido={sw_modulo:'0'}; 
+     
+    G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
+         
+        if(estadoMultiplePedido === 0){
+
+            bodegasPedidos = [];
+            bodegasPedidos [0] = {empresa_id:empresa_id, centro_utilidad_id: centro_utilidad, bodega_id : bodega, orden: 1 } 
+
+        }
+        if(bodegasPedidos.length === 0){
+
+             throw {msj:'No hay bodegas parametrizadas', status:401, pedidos_clientes:{}};   
+        }
+        return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos,[],empresa_id,
+            centro_utilidad,
+            bodega,
+            contrato_cliente,
+            filtro,
+            pagina,
+            filtros, filtroAvanzado); 
+        
+
+    }).then(function(productos) {
+         
         return G.Q.nfcall(__productosBodegas,that, 0, productos,[]);
-     
-     
-    }).then(function(productos){
+        
+                                
+    }).then(function(productos) {    
+           
+        if(productos.length > 0){
           
-        res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: productos.sort(dynamicSort("codigo_producto"))}}));
-        return;
-                            
+          callback(false, {status:200, msj:'Lista de productos', data:{productos:productos}});
       
-    }).fail(function(err) {
-           res.send(G.utils.r(req.url, 'Error Listado de Bodegas Pedidos', 500, {listarBodegasPedidos: {}}));
-    }).done();  
-   
+        }else{
+            throw {msj:'El producto no existe', status:401, pedidos_clientes:{}};   
+        }
+         
+        }).fail(function(err){
+            var msj = "Erro Interno";
+            var status = 500;
+
+            if(err.status){
+                msj = err.msj;
+                status = err.status;    
+            }
+            
+            callback(err, {status:status, msj:msj, data:{productos:{}}});
+       
+    }).done(); 
+    
 };
 
 /**
@@ -1489,34 +1550,6 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     var _productosPlanoValidadosValido = "";
     var _productosPlanoValidadosInvalido = "";
     var def = G.Q.defer();
-   
-   /*var objBodegaPedido={sw_modulo:'0'}; 
-    var empresa_id = args.pedidos_clientes.empresa_id;
-    var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
-    var bodega = args.pedidos_clientes.bodega_id; 
-    var contrato_cliente = args.pedidos_clientes.cotizacion.cliente.contrato_id;
-    var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
-    var filtro = {
-        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
-        termino_busqueda: args.pedidos_clientes.termino_busqueda,
-        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
-        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
-        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido,
-        filtro_producto: 0
-    };
- 
-    var filtroAvanzado = {
-        molecula: args.pedidos_clientes.molecula,
-        laboratorio_id: args.pedidos_clientes.laboratorio_id,
-        codigoProducto: args.pedidos_clientes.codigoProducto,
-        descripcionProducto: args.pedidos_clientes.descripcionProducto,
-        concentracion: args.pedidos_clientes.concentracion,
-        tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
-        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
-    };
- 
-    var filtros = args.pedidos_clientes.filtro;
-    var pagina = args.pedidos_clientes.pagina_actual;*/
     
     
     /**
@@ -1551,7 +1584,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
         }else{
             throw {msj:"El archivo esta vacio", status:500, data: {pedidos_clientes: {}}};
         }
-          
+              
     }).then(function(productosPlano){
 
         _productosPlanoInvalidos = productosPlano[1];

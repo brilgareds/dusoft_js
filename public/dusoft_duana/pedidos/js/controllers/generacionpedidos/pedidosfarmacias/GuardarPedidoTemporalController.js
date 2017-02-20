@@ -464,8 +464,8 @@ define(["angular", "js/controllers",
             } else {
                 self.generarPedido(0);
             }
-//              self.prubapedidodecliente();           
-              console.log(nuevosDatos);
+             // self.prubapedidodecliente();           
+//              console.log(nuevosDatos);
         }; 
           
           

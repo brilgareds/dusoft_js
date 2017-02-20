@@ -1284,9 +1284,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
             if(filtro.filtro_producto === 0){
                 filtroProducto = "AND (a.codigo_producto " + G.constants.db().LIKE + " :5)";
                 parametros["5"] = '%' + termino_busqueda + '%';
+                   
             }else{
                 filtroProducto = "AND (a.codigo_producto = :5)";
-                console.log("filtroProducto ", filtroProducto);
+                 
                 parametros["5"] = termino_busqueda;
             }
              //console.log("EL ARREGLO ", filtros.numero[0]);
@@ -1400,7 +1401,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;
-    console.log("------parametros ------------- ", parametros);
+    /*console.log("------parametros ------------- ", parametros);
+    console.log("------filtro ------------- ", filtro);
+    console.log("------filtros ------------- ", filtros);*/
+    //console.log("------filtroAvanzado ------------- ", filtroAvanzado);
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).then(function(resultado) {

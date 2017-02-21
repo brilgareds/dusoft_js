@@ -1489,14 +1489,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
  *                 PedidosClienteController __insertarDetalleCotizacion()
  */
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
-
-    /*console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
-    console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");
-    console.log("*********PedidosClienteModel.prototype.insertar_detalle_cotizacion**************");*/
-    
-
-    console.log("cotizacion ", cotizacion);
-    console.log("cotizacion ", producto);
+   //console.log("cotizacion ", producto);
     //console.log("producto ", producto);
     var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, \n\
                 codigo_producto, \

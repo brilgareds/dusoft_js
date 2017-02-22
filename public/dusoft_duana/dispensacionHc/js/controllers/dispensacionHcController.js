@@ -767,7 +767,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        }    
                     };    
                     dispensacionHcService.listarMedicamentosDispensados(obj,function(data){
-                            console.log("data [consultaMedicamentosDispensados]: ", data);
+                            
                         if (data.status === 200) {
                             var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;                          
                             $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");

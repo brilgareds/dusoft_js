@@ -3571,7 +3571,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
          "b.medico_id",  
          G.knex.raw("TO_CHAR(b.fecha_registro,'YYYY-MM-DD') as fecha_registro"),  
          G.knex.raw("TO_CHAR(b.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion"),  
-         G.knex.raw("TO_CHAR(b.fecha_ultima_entrega,'YYYY-MM-DD') as fecha_ultima_entrega")
+          G.knex.raw("b.fecha_ultima_entrega as fecha_ultima_entrega")
      ];
      
     var subQueryMovFormulaB = G.knex.select(campoSubQueryMovFormulaB)

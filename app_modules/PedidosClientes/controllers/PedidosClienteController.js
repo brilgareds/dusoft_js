@@ -1655,18 +1655,19 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
             return;
         }                                                               
       
-        return G.Q.nfcall(__agrupar_productos_por_tipo,_productosPlanoValidadosValido[0],{},0);
+        return G.Q.nfcall(__agrupar_productos_por_tipo,_productosPlanoValidadosValido,{},0);
                           
     }).then(function(resultadoProductosAgrupados){
         //console.log("resultadoProductosAgrupados ", resultadoProductosAgrupados);
         cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(resultadoProductosAgrupados): cotizacion.tipo_producto;
          
-        _productosPlanoValidadosValido[0] = resultadoProductosAgrupados[cotizacion.tipo_producto];
+        _productosPlanoValidadosValido = resultadoProductosAgrupados[cotizacion.tipo_producto];
         
-        if (_productosPlanoValidadosValido[0] === undefined || _productosPlanoValidadosValido[0].length === 0) {
+        if (_productosPlanoValidadosValido === undefined || _productosPlanoValidadosValido.length === 0) {
             throw {msj:'Lista de Productos', status:200, data: {pedidos_clientes: {
-                        productos_validos: _productosPlanoValidadosValido[0], 
-                        productos_invalidos: _productosPlanoValidadosInvalido[0] === undefined ? _productosInvalidosNoExistentes : _productosPlanoValidadosInvalido[0].concat(_productosInvalidosNoExistentes)
+                        productos_validos: _productosPlanoValidadosValido, 
+                        productos_invalidos: _productosPlanoValidadosInvalido === undefined ? 
+                        _productosInvalidosNoExistentes : _productosPlanoValidadosInvalido.concat(_productosInvalidosNoExistentes)
                     }}};
             return;
         }    
@@ -1681,23 +1682,37 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
       
     }).then(function(rows, result){
         
-        cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;        
-        return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, _productosPlanoValidadosValido[0], []);
-                         
+        //cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;        
+        //return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, _productosPlanoValidadosValido, []);
+        
+       G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, _productosPlanoValidadosValido, _productosValidosExistentes,[],[])
+        
+        
+        return;
+    //console.log("TODOS LOS PRODUCTOS OK ", _productosPlanoValidadosValido);
+    //console.log("_productosValidosExistentes ", _productosValidosExistentes);
+    
     }).then(function(resultado){
         
-        //console.log("resultado [__insertarDetalleCotizacion]: ", resultado);
+        
+    })
+            
+            
+            
+            .then(function(resultado){
+        
+        console.log("resultado [__insertarDetalleCotizacion]: ", resultado);
         var productosDuplicadosInvalidos = resultado;
         var productosInvalidosTodos;
         
         if(productosDuplicadosInvalidos.length > 0){
-            productosInvalidosTodos = _productosPlanoValidadosInvalido[0] === undefined 
+            productosInvalidosTodos = _productosPlanoValidadosInvalido === undefined 
                                 ? productosDuplicadosInvalidos.concat(_productosInvalidosNoExistentes) :
-                                _productosPlanoValidadosInvalido[0].concat(productosDuplicadosInvalidos).concat(_productosInvalidosNoExistentes);
+                                _productosPlanoValidadosInvalido.concat(productosDuplicadosInvalidos).concat(_productosInvalidosNoExistentes);
         }else{
-            productosInvalidosTodos =  _productosPlanoValidadosInvalido[0] === undefined 
+            productosInvalidosTodos =  _productosPlanoValidadosInvalido === undefined 
                                 ? _productosInvalidosNoExistentes :
-                                _productosPlanoValidadosInvalido[0].concat(_productosInvalidosNoExistentes);
+                                _productosPlanoValidadosInvalido.concat(_productosInvalidosNoExistentes);
         }
       
         throw {msj:'Cotizacion creada correctamente', status:200, data: {pedidos_clientes: {
@@ -1722,8 +1737,95 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     }).done();
     
 };
-              
-              
+   
+function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,productos_validos,productos_invalidos,callback){
+      
+    var producto = productosSolicitados[index];
+    var totalDisponible = 0;
+    if (!producto) {      
+        console.log("productos_validos ", productos_validos);
+        //console.log("productos_invalidos ", productos_invalidos);
+        callback(false,productos_validos, productos_invalidos);
+        return;
+    }
+    
+   /* if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){   
+                productoUnidadMedida = resultado[0];
+                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                productosSinDisponible.push(resultado[0]);           
+                def.resolve();     
+            }else{
+                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                productoUnidadMedida = resultado[0];
+                
+                return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
+
+            }*/
+    productos.forEach(function(row) {
+        
+        //Se valida que el codigo del producto del plano corresponda al listado de productos
+        if(row.codigo_producto === producto.codigo_producto ){
+            
+           //Se valida que haya cantidad disponible en el listado
+           //if(row.cantidad_disponible > 0){
+               
+               totalDisponible += parseInt(row.cantidad_disponible);
+              // productos_validos.push(row);
+               //totalDisponible += parseInt(row.cantidad_disponible);
+                //Se valida que la disponibilidad sea mayor a la solicitada
+                /*if(row.cantidad_disponible >= producto.cantidad_solicitada){
+
+                    productos_validos.push(row);
+                }*/
+            
+                 
+            //}
+                
+            /*else{
+                productos_invalidos.push(row);
+            }*/
+        }
+       
+       
+        
+    });
+    
+    
+    if(totalDisponible > producto.cantidad_solicitada){
+        
+        productos.forEach(function(row) {
+             
+             if(row.codigo_producto === producto.codigo_producto ){
+                 
+                 /*productos.forEach(function(row2) {
+                     
+                     if(row.cantidad_disponible > row2.cantidad_disponible ){
+                         productos_validos.push(row);
+                     }
+                     
+                 });*/
+                 /*if(row.cantidad_disponible >= producto.cantidad_solicitada){
+                      productos_validos.push(row);
+                 }*/
+                 
+                 
+             }
+             
+        });
+        console.log("row.codigo_producto " + producto.codigo_producto  + "totalDisponible " + totalDisponible);
+    }
+     
+    index++;
+    __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,productos_validos,productos_invalidos,callback);
+     
+ };
+ 
+ /**
+  * @author Cristian Ardila
+  * +Descripcion Metodo encargado de adicionar al arreglo general de los productos
+  *             la cantidad solicitada a cada producto
+  * @fecha 22/02/2017
+  */
  function __agregarCantidadSolicitadaProducto(that, index, productos, _productosValidosExistentes,productos_validos,productos_invalidos,callback){
       
     var producto = _productosValidosExistentes[index];
@@ -1750,9 +1852,14 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
      
  };
  
- 
- 
-              
+ /**
+  * @author Cristian Ardila
+  * +Descripcion Metodo encargado de validar el producto si este cumple con
+  *              - Unidad de medida
+  *              - Precio regulado
+  *              - Precio de venta
+  * @fecha 22/02/2017
+  */             
  function __cantidadSolicitadaProducto(that, index,obj, productos, productosValidos,productosInvalidos,callback ){
      
     var producto = productos[index];

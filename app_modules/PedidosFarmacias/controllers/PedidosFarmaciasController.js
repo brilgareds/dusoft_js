@@ -2605,7 +2605,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
 
                         var control = {cantidad_solicitada: productoAgrupado.cantidad_solicitada, sumaTotalExis: 0, diferenciaExis: productoAgrupado.cantidad_solicitada, dosBodegas: 0};
                         __productosSeleccionado(that, 0, _productoStock2, [], datos, control, function(err, productos) {
-                          
+                            
                               var _producto = (productos.length > 0) ? productos[0] : null;
 
                                 if (!_producto) {
@@ -2726,7 +2726,7 @@ function __productosGuardarTemporal(that, index, datos, productoAgrupado, produc
  * @returns arreglo con los productos seleccionados de las diferentes bodegas parametrizadas dependiendo de su existencia. 
  */
 function __productosSeleccionado(that, index, productos,listaProductos, datos,control,callback) {
-    
+  
     var producto = productos[index];
      
     if (!producto) {  
@@ -2742,28 +2742,31 @@ function __productosSeleccionado(that, index, productos,listaProductos, datos,co
         return; 
     }  
             productos[index].unidad_medida=productos[index].unidad_medida>0?productos[index].unidad_medida:1;
-            if(productos[index].existencia>=0 && productos[index].existencia >= productos[index].unidad_medida){
+            if(productos[index].disponibilidad_bodega>=0 && productos[index].disponibilidad_bodega >= productos[index].unidad_medida){
 
-              if(productos[index].existencia>=control.diferenciaExis){                  
+              if(productos[index].disponibilidad_bodega>=control.diferenciaExis){                  
                   if(control.dosBodegas===1){  
+                        console.log("productos  2");
                     productos[index].cantidad_en_bodega=control.diferenciaExis;
                     listaProductos.push(productos[index]);
-                    var cantidadBodega= productos[index].existencia-(productos[index].existencia%productos[index].unidad_medida);
+                    var cantidadBodega= productos[index].disponibilidad_bodega-(productos[index].disponibilidad_bodega%productos[index].unidad_medida);
                     control.sumaTotalExis+=cantidadBodega;
                     listaProductos[0].cantidad_total_bodegas=control.sumaTotalExis;
                     callback(false,listaProductos);
                     return;
                   }else{
+                        console.log("productos   1");
                     productos[index].cantidad_en_bodega=control.diferenciaExis;
                     listaProductos.push(productos[index]);
-                    control.sumaTotalExis+=productos[index].existencia;
+                    control.sumaTotalExis+=productos[index].disponibilidad_bodega;
                     listaProductos[0].cantidad_total_bodegas=control.sumaTotalExis;
                     callback(false,listaProductos);
                     return;
                   }                                          
               }else{
+                  console.log("productos   3");
                   control.dosBodegas=1;
-                  var cantidadBodega= productos[index].existencia-(productos[index].existencia%productos[index].unidad_medida)
+                  var cantidadBodega= productos[index].disponibilidad_bodega-(productos[index].disponibilidad_bodega%productos[index].unidad_medida)
                   control.diferenciaExis=control.diferenciaExis-cantidadBodega;
                   productos[index].cantidad_en_bodega=cantidadBodega;
                   listaProductos.push(productos[index]);

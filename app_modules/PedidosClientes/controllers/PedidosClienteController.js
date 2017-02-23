@@ -92,9 +92,11 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
      
     var fecha_inicial;
     var fecha_final;
+    
     if (args.pedidos_clientes.fecha_inicial !== undefined || args.pedidos_clientes.fecha_final !== undefined) {
           fecha_inicial = args.pedidos_clientes.fecha_inicial;
           fecha_final = args.pedidos_clientes.fecha_final;  
+          //args.pedidos_clientes.filtros.filtroEstadoFacturado = args.pedidos_clientes.filtroEstadoFacturado;  
     }
     
     
@@ -615,12 +617,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
  * +Descripcion : Metodo encargado de insertar los productos en una cotizacion
  */
 PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
-
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    console.log("********PedidosCliente.prototype.insertarDetalleCotizacion**************");
-    
+ 
     var that = this;
 
     var args = req.body.data;

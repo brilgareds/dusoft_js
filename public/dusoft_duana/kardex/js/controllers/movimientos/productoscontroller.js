@@ -263,13 +263,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             return producto;
                         },
                         centroUtilidad: function() {
-                            return  centro.getCodigo();
+                            return  $scope.filtro.centro_seleccion;
                         },
                         bodega: function() {
-                            return centro.getBodegaSeleccionada().getCodigo();
+                            return $scope.filtro.bodega_seleccion;
                         },
                         empresaId:function(){
-                            return empresa.getCodigo();
+                            return $scope.filtro.empresa_seleccion;
                         }
                     }
                 };

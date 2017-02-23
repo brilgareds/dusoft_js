@@ -1073,16 +1073,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             // Cancelar la cotizacion
             $scope.volver_cotizacion = function() {
                 var cotizacion = localStorageService.get("cotizacion");
-
+                console.log("cotizacion ------///--->>>>>", cotizacion);                     
                 if (cotizacion) {
 
-                    localStorageService.add("terminoBusqueda", {busqueda: cotizacion.busqueda, filtro_actual_cotizacion: cotizacion.filtro_actual_cotizacion});
+                    localStorageService.add("terminoBusqueda", {busqueda: cotizacion.numero_cotizacion, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0}});
                 }
 
                 var pedido = localStorageService.get("pedido");
 
                 if (pedido) {
-                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.busqueda, activar: true, filtro_actual_pedido: pedido.filtro_actual_pedido});
+                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
 
                 }
 
@@ -1090,6 +1090,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             //Aceptar la cotizacion
             $scope.aceptar_cotizacion = function() {
+                var cotizacion = localStorageService.get("cotizacion");
+                
+                if (cotizacion) {
+                    var parametros = {busqueda: cotizacion.numero_cotizacion,
+                                pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
+                            };
+                    localStorageService.add("terminoBusqueda", parametros);
+                }    
+
+                /*var pedido = localStorageService.get("pedido");
+
+                if (pedido) {
+                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.busqueda, activar: true, filtro_actual_pedido: pedido.filtro_actual_pedido});
+
+                }*/
                 that.actualizarCabeceraPedidoCliente();
                 $state.go('ListarPedidosClientes');
             };
@@ -1442,13 +1457,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
             $scope.gestion_cartera = function(aprobado, denegar) {
                
-                //$scope.Pedido.getTipoPedido()               
+                var cotizacion = localStorageService.get("cotizacion");
+                    
+                if (cotizacion) {
+                   
+                    var parametros = {busqueda: cotizacion.numero_cotizacion,
+                                pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
+                            };
+                    
+                    localStorageService.add("terminoBusqueda", parametros);
+                }
+
+                var pedido = localStorageService.get("pedido");
+
+                if (pedido) {
+                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
+
+                }              
                 $scope.ocultarOpciones = 0;               
                 if(denegar === 1){                                           
                     that.autorizarCotizacionCartera(aprobado,denegar);
                 }else{
                     that.autorizarCotizacionCartera(aprobado,denegar);                   
-                }               
+                }     
+                //$state.go('ListarPedidosClientes');
             };
             
             /**
@@ -1514,12 +1546,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         /*Se valida si es una cotizacion y entonces se procede
                          a crear el pedido*/
                         if ($scope.Pedido.get_numero_cotizacion() > 0) {
-
-                            var parametros = {busqueda: cotizacion.busqueda,
-                                pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
-                            };
-
-                            localStorageService.add("terminoBusqueda", parametros);
+                             
                             $scope.generar_pedido_cliente();
                             //$scope.gestionar_pedido();
                         }
@@ -1648,7 +1675,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-
+                
+                socket.remove(['onNotificarProgresoArchivoPlanoClientes']);
+               
                 $scope.$$watchers = null;
                 // set localstorage
                 localStorageService.add("cotizacion", null);

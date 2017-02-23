@@ -80,6 +80,7 @@
 
         <button title="Cerrar" class="btn btn-default btn-xs btnCloseChat pull-right" ng-click="$parent.onCerrarChat()"><span class="glyphicon glyphicon-remove"></span></button>
         <button title="Ventana completa" class="btn btn-default btn-xs pull-right btnVentanaCompletaChat" ng-click="onAbrirVentanaCompleta()"><span class="glyphicon glyphicon-resize-full" "></span></button>
+        <button class="btn btn-default btn-xs pull-right toogleChat"><span class="glyphicon glyphicon-minus iconoToogle"></span></button>
         
         
     </div>
@@ -92,14 +93,35 @@
                     <i class="glyphicon glyphicon-list" ></i> <b></b>
                 </tab-heading>
                 <br>
-                <div class="input-group navbar-form" style="padding-right: 0px;">
+                <!--div class="input-group navbar-form" style="padding-right: 0px;">
 
                     <input type="text" class="form-control pull-right" ng-keypress="onBuscarConversaciones($event)" ng-model="root.terminoBusqueda" placeholder="Buscar" />
                     <div class="input-group-btn" >
                         <button class="btn btn-default" type="submit" ng-click="onBuscarConversaciones({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                     </div>
 
-                </div>
+                </div-->
+                <div>
+                    <div class="input-group">
+
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span ng-bind="root.filtro.nombre"></span> <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="filtro in root.filtros">
+                                    <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)"><span ng-bind="filtro.nombre"></span></a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <input type="text" class="form-control pull-right" 
+                               ng-keypress="onBuscarConversaciones($event)" ng-model="root.terminoBusqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+
+                        <div class="input-group-btn">
+                            <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarConversaciones({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </div>     
+                <br/>
                 <div class="defaultGrid chatGrid" ng-grid="root.listaConversaciones">
 
                 </div>
@@ -111,8 +133,10 @@
                    <i class="glyphicon glyphicon-comment"></i> <b> </b>
                 </tab-heading>
                 <br>
-                <div class="panelConversacion">
-                    <div ng-repeat="detalle in root.conversacionSeleccionada.detalle" class="contenedorDetalle" ng-class="($index % 2 == 0) ? 'detallePar' : 'detalleInpar'">
+                <!--button class="btn btn-default col-md-12" ng-click="cargarMasDetalle()" style="margin-bottom: 20px;">Cargar Más</button-->
+                <div class="panelConversacion" chat-scroll>
+                    
+                    <div id="{{detalle.getId()}}" ng-repeat="detalle in root.conversacionSeleccionada.detalle" class="contenedorDetalle" ng-class="($index % 2 == 0) ? 'detallePar' : 'detalleInpar'">
                         <div>
                             <label ng-if="detalle.getUsuario() == root.usuarioActual.getNombreUsuario()">Yo</label>
                             <label ng-if="detalle.getUsuario() != root.usuarioActual.getNombreUsuario()">{{detalle.getUsuario()}}</label>

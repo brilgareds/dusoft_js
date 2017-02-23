@@ -9,7 +9,7 @@ var DispensacionHcModel = function() {};
  */
 DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
      
-    var colSubQuery = [G.knex.raw("'0' AS tipo_formula"),
+    var colSubQuery = [G.knex.raw(" DISTINCT '0' AS tipo_formula"),
                         "a.tipo_formula as transcripcion_medica",
                         G.knex.raw("CASE WHEN (a.tipo_formula='0' or a.tipo_formula ='2') THEN 'FORMULACION' ELSE 'TRANSCRIPCION' END AS descripcion_tipo_formula"),
                         G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY-MM-DD') AS fecha_registro"),
@@ -742,11 +742,11 @@ DispensacionHcModel.prototype.listarMedicamentosFormulados = function(obj,callba
                     function() {
                         this.on("hc.codigo_medicamento", "med.codigo_medicamento")
 
-                }).innerJoin("inv_med_cod_principios_activos AS pric", 
+                }).leftJoin("inv_med_cod_principios_activos AS pric", 
                     function() {
                         this.on("med.cod_principio_activo", "pric.cod_principio_activo")
 
-                }).innerJoin("inventarios_productos AS invp",
+                }).leftJoin("inventarios_productos AS invp",
                     function(){
                         this.on("hc.codigo_medicamento", "invp.codigo_producto")
                 }).join("hc_medicamentos_recetados_amb AS a", function(){
@@ -1149,7 +1149,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                         this.andWhere(G.knex.raw("h.subclase_id='" + obj.principioActivo + "' "))
                                        
                                     }else{
-                                        this.andWhere(G.knex.raw("and b.codigo_producto ='" + obj.producto + "' "))
+                                        this.andWhere(G.knex.raw("b.codigo_producto ='" + obj.producto + "' "))
                                        
                                     }
                                     
@@ -1204,7 +1204,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                                         this.andWhere(G.knex.raw("h.subclase_id='" + obj.principioActivo + "' "))
                                        
                                     }else{
-                                        this.andWhere(G.knex.raw("and b.codigo_producto ='" + obj.producto + "' "))
+                                        this.andWhere(G.knex.raw("b.codigo_producto ='" + obj.producto + "' "))
                                        
                                     }
                                     
@@ -1339,9 +1339,10 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     G.knex.raw("to_char(fv.fecha_vencimiento,'YYYY-MM-DD') AS fecha_vencimiento"),
                     "fv.lote",
                     "fv.ubicacion_id",
-                    G.knex.raw("CASE WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) = 30 THEN 0\
+                    G.knex.raw("CASE WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) <= 30 \
+                    and extract(days from (fv.fecha_vencimiento - timestamp 'now()')) > 1 THEN 0 \
                      WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) <= 1 THEN 1\
-                    ELSE 2 END as estado_producto"),
+                     WHEN extract(days from (fv.fecha_vencimiento - timestamp 'now()')) > 30 THEN 2 END as estado_producto"),
                     G.knex.raw("extract(days from (fv.fecha_vencimiento - timestamp 'now()')) as cantidad_dias")]; 
     var query = G.knex.column(columna)
                 .select()
@@ -1384,7 +1385,8 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                  .orderBy("fv.fecha_vencimiento","ASC");
                   
     query.then(function(resultado){  
-        callback(false, resultado)
+      
+        callback(false, resultado);
     }).catch(function(err){ 
         console.log("err [existenciasBodegas]: ", err);
         callback(err);
@@ -3569,7 +3571,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
          "b.medico_id",  
          G.knex.raw("TO_CHAR(b.fecha_registro,'YYYY-MM-DD') as fecha_registro"),  
          G.knex.raw("TO_CHAR(b.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion"),  
-         G.knex.raw("TO_CHAR(b.fecha_ultima_entrega,'YYYY-MM-DD') as fecha_ultima_entrega")
+          G.knex.raw("b.fecha_ultima_entrega as fecha_ultima_entrega")
      ];
      
     var subQueryMovFormulaB = G.knex.select(campoSubQueryMovFormulaB)

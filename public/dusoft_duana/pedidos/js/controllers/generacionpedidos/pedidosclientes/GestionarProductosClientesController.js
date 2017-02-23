@@ -22,7 +22,7 @@ define(["angular", "js/controllers",
                 Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
-
+            
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
                 /**
@@ -70,7 +70,8 @@ define(["angular", "js/controllers",
 
             // Gestionar Cotizaciones
             that.gestionar_cotizaciones = function(callback) {
-
+                
+                 localStorageService.add("cotizacion", null);
                 if ($scope.Pedido.get_numero_cotizacion() === 0) {
                     //Crear Cotizacion y Agregar Productos
                     $scope.insertar_cabercera_cotizacion(function(continuar) {
@@ -163,6 +164,7 @@ define(["angular", "js/controllers",
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
                         callback(true);
+                         socket.remove(['onListarEstadoCotizacion']);
                     } else {
                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         callback(false);
@@ -174,10 +176,6 @@ define(["angular", "js/controllers",
             // Insertar Productos al pedido
             that.insertar_detalle_pedido = function(callback) {
                 
-                console.log("that.insertar_detalle_pedido ")
-                console.log("that.insertar_detalle_pedido ")
-                console.log("that.insertar_detalle_pedido ")
-                console.log("that.insertar_detalle_pedido ")
                 
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
@@ -494,7 +492,7 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 enableColumnResize: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: 120,
+                    {field: 'codigo_producto', displayName: 'Código', width: 140,
                         
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.get_tipo_producto() == 1" >N</span>\
@@ -511,7 +509,10 @@ define(["angular", "js/controllers",
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
                         cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
                     {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
-                    {field: 'codigo_invima', displayName: 'Reg.Invima', width: "80", cellClass: "gridNumber"},
+                    {field: '#Cod.invima/F.Ven', width: "200", displayName: '#Cod.invima/F.Ven', 
+                        cellTemplate: '<div class="col-xs-16 ">\n\
+                            <p class="text-uppercase">{{row.entity.codigo_invima}} / {{row.entity.fecha_vencimiento_invima}}</p></div>'},
+                  
                     {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
@@ -539,7 +540,7 @@ define(["angular", "js/controllers",
                                        validacion-numero-entero \
                                        class="form-control grid-inline-input" \n\
                                        name="" id="" /> </div>'},
-                    {width: "50", displayName: "Opcion", cellClass: "txt-center",
+                    {width: "60", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '     <button  ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
 
@@ -654,7 +655,7 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
-                //$scope.datos_form = null;
+               
             });
         }]);
 });

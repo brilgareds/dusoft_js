@@ -30,14 +30,14 @@
                         <li>
                             <div class="navbar-content" style="background-color: white;">
                                 <div class="row">
-                                    <div class="col-md-5">
+                                    <div class="col-md-4" style="text-align: center; padding: 2px;">
 
 
 
                                         <img ng-show="Usuario.rutaAvatar != ''" ng-src="{{Usuario.getRutaAvatar()}}"  style="height:  80px;"  />
 
                                     </div>
-                                    <div class="col-md-7">
+                                    <div class="col-md-8">
                                         <span>{{::Usuario.usuario}}</span>
 
                                         <div class="divider">
@@ -78,8 +78,8 @@
                        
                     </span>
                 </button>
-                <button type="button" class="btn btn-default btnOpenChatPanel" ng-click="onBtnChat()" ng-disabled="deshabilitarBtnChat">
-                    <i class="glyphicon glyphicon-comment"></i>
+                <button type="button" class="btn btn-default btnOpenChatPanel" ng-class="{'blink' : conversacionesSinLeer.length > 0}" ng-click="onBtnChat()" ng-disabled="deshabilitarBtnChat">
+                    <i class="glyphicon glyphicon-comment"> <span ng-if="conversacionesSinLeer.length > 0">{{conversacionesSinLeer.length}}</span></i>
                 </button>
 
             </div>

@@ -421,7 +421,7 @@ define(["angular",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.Empresa.vaciarPedidosFarmacia();
-                socket.removeAllListeners();
+                socket.remove(["onListarPedidosFarmacias"]);
             });
 
 

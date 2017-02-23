@@ -1,10 +1,11 @@
 
-var Autenticacion = function(usuarios, emails) {
+var Autenticacion = function(usuarios, emails, m_auth) {
 
     console.log("Modulo Autenticacion Cargado ");
 
     this.m_usuarios = usuarios;
     this.emails = emails;
+    this.m_auth = m_auth;
 };
 
 
@@ -97,6 +98,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
 
                 G.auth.set(usuario, function(err, sesion_usuario) {
                     if (err) {
+                        console.log("error generado ", err);
                         res.send(G.utils.r(req.url, 'No se ha podido Autenticar el Usuario', 500, {sesion: {}}));
                     } else {
                         sesion_usuario.admin = usuario.sw_admin;
@@ -106,6 +108,24 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
             }
         }
     });
+};
+
+Autenticacion.prototype.guardarTokenPush = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    
+    console.log("arguments >>>>>>>>>>>>>> ", args.autenticacion);
+
+    G.Q.ninvoke(that.m_auth,'guardarTokenPush', args.autenticacion).then(function() {
+        
+        res.send(G.utils.r(req.url, 'Token dispositivo guardado', 200, {}));
+      
+    }).fail(function(err) {
+        console.log("ocurrio un error ", err);
+        res.send(G.utils.r(req.url, 'Error al guardar el token del dispositivo', 500, {usuarios: {}}));
+    }).done();
+
 };
 
 Autenticacion.prototype.lockScreen = function(req, res) {
@@ -286,6 +306,6 @@ Autenticacion.prototype.logoutUsuario = function(req, res) {
     });
 };
 
-Autenticacion.$inject = ["m_usuarios", "emails"];
+Autenticacion.$inject = ["m_usuarios", "emails", "m_auth"];
 
 module.exports = Autenticacion;

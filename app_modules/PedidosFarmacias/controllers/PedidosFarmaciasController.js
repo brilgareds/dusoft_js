@@ -1610,6 +1610,7 @@ PedidosFarmacias.prototype.eliminarPedidoTemporal = function(req, res) {
 };
 
 /*
+ * @autor AMG
  * @param {type} req
  * @param {type} res
  * @returns {undefined}

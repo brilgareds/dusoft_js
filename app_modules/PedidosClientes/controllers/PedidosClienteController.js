@@ -4496,7 +4496,7 @@ function __precioVentaProductos(that, index, cotizacion, callback){
  * @fecha 01/02/2017 (DD/MM/YYYY)
  */
 PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
-      
+           
     var that = this;
     var args = req.body.data;
      

@@ -1,7 +1,7 @@
 define(["angular",
     "js/controllers",
     'includes/Constants/Url', 'includes/classes/Chat/Conversacion', 'includes/classes/Chat/ConversacionDetalle',
-    "includes/components/gruposChat/GruposChatController", "includes/components/chat/chatScroll"], function(angular, controllers) {
+    "includes/components/gruposChat/GruposChatController", "includes/components/chat/ChatScroll"], function(angular, controllers) {
 
     controllers.controller('ChatController', [
         '$scope', '$rootScope', 'Request',

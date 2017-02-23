@@ -1,5 +1,20 @@
 var DispensacionHcModel = function() {};
 
+DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
+{
+    var sql = "select to_char(fecha, 'yyyy-mm-dd')as fecha\
+				from \
+	       (SELECT CAST('"+parametros.fecha+"' AS DATE) "+parametros.operacion+" CAST('"+parametros.dias+" days' AS INTERVAL) as fecha)as d;";
+ 
+    G.knex.raw(sql).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        console.log("error intervalo_Fecha_formula ",err);
+        callback(err);
+    });
+
+};
+
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016

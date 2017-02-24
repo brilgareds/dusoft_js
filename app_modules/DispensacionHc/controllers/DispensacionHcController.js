@@ -6,7 +6,7 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     this.m_usuarios = m_usuarios;
     
     var formato = 'YYYY-MM-DD';
-    var fechaEntrega = G.moment("2016-10-02").add(30, 'day').format(formato);
+    var fechaEntrega = G.moment("2016-10-10").add(30, 'day').format(formato);
     console.log("fechaEntrega ", fechaEntrega);
      __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
          
@@ -1383,7 +1383,7 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
     }*/
     
     console.log("cantidad_dias_habiles " + cantidad_dias_habiles + " === " + parseInt(dias_vigencia));
-    while (parseInt(cantidad_dias_habiles) <parseInt(dias_vigencia)) {
+    while (parseInt(cantidad_dias_habiles) < parseInt(dias_vigencia)) {
         callback(false, fechaMaximaI);
         return;
     }

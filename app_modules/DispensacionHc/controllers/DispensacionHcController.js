@@ -1132,7 +1132,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             fechaEntrega = G.moment(now).add(30, 'day').format(formato);
             fechaMinima  = G.moment(now).add(25, 'day').format(formato);
             
-            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
+            //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
+           return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
             
     }).then(function(resultado){
         
@@ -1232,6 +1233,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
 
 
 
+/*
+
 function __calcularMaximaFechaEntregaFormula(obj, callback){
     var url =  G.constants.WS().DISPENSACION_HC.FECHA_MAXIMA ;
     var resultado;
@@ -1272,8 +1275,63 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
        
     }).done();
 }
+*/
 
- 
+function __obtener_dias_habiles(fecha_base, dias_vigencia, callback) {
+    var execPhp = require('exec-php');
+    execPhp('/var/www/CalculoFechas.class.php', function(error, php, outprint) {
+        php.obtenerdiashabiles(fecha_base, dias_vigencia, function(err, result, output, printed) {
+            callback(false, result);
+        });
+    });
+};
+
+//PedidosCliente.prototype.sumarDiasHabiles=function(fecha_base, dias_vigencia) {
+function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
+    var execPhp = require('exec-php');
+
+    var parametros = {fecha: fecha_base, operacion: '+', dias: dias_vigencia};
+    var cantidad_dias_habiles;
+    var fechaMaximaI;
+
+    G.Q.ninvoke(that.m_dispensacion_hc, 'intervalo_fecha', parametros).then(function(fechaMaximaIs) {
+        fechaMaximaI = fechaMaximaIs[0].fecha;
+
+        return G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI);
+
+    }).then(function(cantidad_dias_habiles) {
+
+        return G.Q.nfcall(__fechaMaximaI, cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base);
+
+    }).then(function(fechaMaximaI) {
+        
+        callback(false, {fechaMaxima:fechaMaximaI});
+
+    }).fail(function(err) {
+        callback(false, err);
+    }).done();
+};
+
+function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base, callback) {
+
+    if (cantidad_dias_habiles == dias_vigencia) {
+        callback(false, fechaMaximaI);
+        return;
+    }
+    var fecha = [];
+    fecha = fechaMaximaI.split("-");
+
+    fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + fecha[2];
+
+    G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI).then(function(respuesta) {
+
+        setTimeout(function() {
+            fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + (parseInt(fecha[2]) + 1);
+            __fechaMaximaI(respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
+        }, 0);
+
+    });
+}
 
 
 /*
@@ -1481,8 +1539,8 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         //Variables para calcular la fecha maxima de entrega de una formula
         fechaEntrega = G.moment(now).add(30, 'day').format(formato);
         fechaMinima   = G.moment(now).add(25, 'day').format(formato);
-
-        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
+          return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+        //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
         
     }).then(function(resultado){
         
@@ -2121,7 +2179,8 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
       opciones=parametrizacion.modulosJson.dispensar_formulas.opciones;
        
         if(opciones.sw_ajustar_entrega_formula){
-            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
+                  return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+            //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
         }else{
             throw {state:403, msj:"El usuario no tiene permisos para modificar"};
         } 
@@ -2393,8 +2452,8 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
                 }
                 
             }
-           
-        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
+           return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+        //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
            
         }else{                            
            throw 'Error al almacenar la formula';
@@ -2402,7 +2461,9 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
       
         
     }) .then(function(resultado){
-             console.log("4) resultado [__calcularMaximaFechaEntregaFormula]: ", parametros);
+ 
+            console.log("__sumarDiasHabiles [resultado]: ", resultado)
+ 
             if(fechaUltimaEntrega === null ){  
                 
                 fechaMaxima = resultado.fechaMaxima; 

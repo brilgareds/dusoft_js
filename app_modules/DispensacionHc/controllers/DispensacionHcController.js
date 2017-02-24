@@ -7,11 +7,16 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     
     var formato = 'YYYY-MM-DD';
      var fechaEntrega = G.moment("2017-01-24").add(30, 'day').format(formato);
-     __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
+    /* __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
          
          console.log("resultado [__sumarDiasHabiles]: ---->>>>> ", resultado);
          
-     })
+     })*/
+    __calcularMaximaFechaEntregaFormula({fecha_base:fechaEntrega,dias_vigencia:3}, function(resultado){
+        
+        console.log("resultado [__calcularMaximaFechaEntregaFormula]: ", resultado)
+        
+    });
   //  this.m_pedidos_clientes_log = m_pedidos_clientes_log;
 };
 
@@ -1241,7 +1246,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
 
 
 
-/*
+
 
 function __calcularMaximaFechaEntregaFormula(obj, callback){
     var url =  G.constants.WS().DISPENSACION_HC.FECHA_MAXIMA ;
@@ -1255,6 +1260,7 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
     };
     obj.error = false;
     
+    console.log("parametros ", parametros);
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {
@@ -1262,7 +1268,7 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
         return G.Q.ninvoke(client, "SumarDiasHabiles", obj.parametros);
     }).
     spread(function(result,raw,soapHeader){
-                
+                console.log("result ", result);
         if(!result.return.msj["$value"]){
             throw {msj:"Se ha generado un error", status:403, obj:{}}; 
         } else {            
@@ -1272,18 +1278,19 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
         
     }).
    then(function(){
-      
+       console.log("obj ", obj);
         callback(false, obj);
         
     }).fail(function(err) {
         
         obj.error = true;
         obj.tipo = '0';
+        console.log("err ", err);
         callback(err);
        
     }).done();
 }
-*/
+
 
 function __obtener_dias_habiles(fecha_base, dias_vigencia, callback) {
     console.log("*************__obtener_dias_habiles***********************");

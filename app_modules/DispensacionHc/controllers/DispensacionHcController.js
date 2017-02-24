@@ -1400,7 +1400,7 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
            
         setTimeout(function() {
           
-            __fechaMaximaI(respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
+            __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base, callback);
         }, 0);
 
         

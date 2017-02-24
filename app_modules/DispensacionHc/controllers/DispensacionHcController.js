@@ -1307,7 +1307,7 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
         
         callback(false, {fechaMaxima:fechaMaximaI});
 
-    }).fail(function(err) {
+    }).fail(function(err) {   
         callback(false, err);
     }).done();
 };

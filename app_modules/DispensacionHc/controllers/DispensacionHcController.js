@@ -1350,6 +1350,27 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
 function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base, callback) {
     
     
+  /*  while(cantidad_dias_habiles < dias_vigencia){   
+			 fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + fecha[2];
+     console.log("fechaMaximaI  ARMANDO ", fechaMaximaI);
+    G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI).then(function(respuesta) {
+        
+      
+             var fecha = [];
+            fecha = fechaMaximaI.split("-");
+            fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + (parseInt(fecha[2]) + 1);
+            console.log("fechaMaximaI  fecha[0] ", fecha[0]);
+            console.log("fechaMaximaI  fecha[1] ", fecha[1]);
+            console.log("fechaMaximaI  fecha[2] ", fecha[2]);
+            
+            __fechaMaximaI(respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
+       
+
+    });
+			
+    } */
+	
+        
     console.log("dias_vigencia ", dias_vigencia);
     console.log("fechaMaximaI ", fechaMaximaI);
     console.log("fecha_base ", fecha_base);
@@ -1372,17 +1393,23 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
     fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + fecha[2];
      console.log("fechaMaximaI  ARMANDO ", fechaMaximaI);
     G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI).then(function(respuesta) {
-
-        setTimeout(function() {
-            fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + (parseInt(fecha[2]) + 1);
+          fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + (parseInt(fecha[2]) + 1);
             console.log("fechaMaximaI  fecha[0] ", fecha[0]);
             console.log("fechaMaximaI  fecha[1] ", fecha[1]);
             console.log("fechaMaximaI  fecha[2] ", fecha[2]);
-            
+           
+        setTimeout(function() {
+          
             __fechaMaximaI(respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
         }, 0);
 
-    });
+        
+    }).fail(function(err){
+        
+       callback(true, err);
+
+        
+    }).done();
 }
 
 

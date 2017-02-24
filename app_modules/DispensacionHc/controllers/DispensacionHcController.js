@@ -2150,6 +2150,155 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
 }
 
 
+DispensacionHc.prototype.insertarFormulasDispensacionEstadosAutomatico = function(req, res){
+    
+    console.log("********DispensacionHc.prototype.insertarFormulasDispensacionEstadosAutomatico*****************");
+    console.log("********DispensacionHc.prototype.insertarFormulasDispensacionEstadosAutomatico*****************");
+    console.log("********DispensacionHc.prototype.insertarFormulasDispensacionEstadosAutomatico*****************");
+   
+    var that = this;
+    var args = req.body.data;
+    
+    if (!args.insertar_formulas_dispensacion_estados_automatico ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {ajustar_numero_entrega_formula: []}));
+        return;
+    }
+      
+    
+    G.Q.ninvoke(that.m_dispensacion_hc, "listarEvoluciones").then(function(resultado){
+        
+        return G.Q.nfcall(__insertarEvoluciones,that, 0, resultado);
+       
+        
+    }).then(function(resultado){
+        //return res.send(G.utils.r(req.url, 'DATOS ALMACENADOS EXITOSAMENTE', 200, {insertar_formulas_dispensacion_estados:{}}));
+        //console.log("resultado [__insertarEvoluciones]: ", resultado)
+    }).fail(function(error){
+        
+    }).done();
+    
+    
+};
+ 
+function __insertarEvoluciones(that, index, evoluciones, callback){
+     
+    var evolucion = evoluciones[index];
+   
+    if(!evolucion){
+        
+        callback(false);
+        
+        return;
+    }
+    index++;  
+     
+    var parametros={ evolucionId: evolucion.evolucion_id,filtro: {tipo: 'EV', descripcion: 'Evolucion'}}; 
+    
+    var formato = 'YYYY-MM-DD';
+    var fechaEntrega;
+    var fechaMinima;
+    var fechaMaxima;
+    var fechaFormulacion;
+    var fechaUltimaEntrega;
+    var estadoFinalizacionFormula;
+    
+   G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros).then(function(resultado){   
+          console.log("resultado [consultarFormulaAntecedentes]: ", resultado);      
+       if(resultado.length > 0){
+            fechaFormulacion = resultado[0].fecha_formulacion;
+             return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucion.evolucion_id,numeroEntregaActual:1});
+           
+        }else{
+            throw 'La formula no existe'
+        }
+     
+    }).then(function(resultado){
+           console.log("resultado [consultarUltimaEntregaFormula]: ", resultado);
+        if(resultado.length > 0){
+            throw 'La formula ya ha sido generada'
+                         
+        }else{
+            //
+            return  G.Q.ninvoke(that.m_dispensacion_hc,'consultarDispensacionesFormula', { evolucionId: evolucion.evolucion_id,filtro: {tipo: 'EV', descripcion: 'Evolucion'}})
+        }
+        
+        
+         
+    }).then(function(resultado){ 
+         console.log("resultado [consultarDispensacionesFormula]: ", resultado);
+        if(resultado.length > 0){
+              fechaUltimaEntrega = resultado[0].fecha_entrega;
+              estadoFinalizacionFormula = resultado[0].sw_finalizado;
+            if(resultado[0].fecha_entrega === null ){  
+                
+                fechaEntrega = fechaFormulacion;  
+                fechaMinima  = fechaFormulacion; 
+            }else{         
+                
+                if(resultado[0].sw_finalizado === 1){
+                    fechaEntrega = fechaFormulacion;   
+                    fechaMinima  = fechaFormulacion; 
+                }else{
+                    fechaEntrega = G.moment(resultado[0].fecha_entrega).add(30, 'day').format(formato);  
+                    fechaMinima   = G.moment(resultado[0].fecha_entrega).add(25,'days').format(formato);
+                }
+                
+            }
+           
+        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
+           
+        }else{                            
+           throw 'Error al almacenar la formula';
+        }
+      
+        
+    }) .then(function(resultado){
+              console.log("resultado [__calcularMaximaFechaEntregaFormula]: ", resultado);
+            if(fechaUltimaEntrega === null ){  
+                
+                fechaMaxima = resultado.fechaMaxima; 
+                
+            }else{         
+                
+                if(estadoFinalizacionFormula === 1){
+                    fechaMaxima = fechaFormulacion; 
+                    
+                }else{
+                    fechaMaxima = resultado.fechaMaxima; 
+                }
+                
+            }
+        var parametrosFechaMinimaMaxima=
+            {
+               evolucionId:evolucion.evolucion_id,
+               fechaEntrega:fechaEntrega, 
+               fechaMinima:fechaMinima, 
+               fechaMaxima:fechaMaxima,
+               numeroEntrega: 0
+              };
+         
+        return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarFechaMinimaMaxima', parametrosFechaMinimaMaxima)
+        
+    }).then(function(resultado){
+         console.log("resultado [actualizarFechaMinimaMaxima]: ", resultado)
+      // return res.send(G.utils.r(req.url, 'DATOS ALMACENADOS EXITOSAMENTE', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
+      
+       setTimeout(function() {
+        __insertarEvoluciones(that, index, evoluciones, callback);
+        }, 0);
+      
+    }) .fail(function(err){  
+        console.log("err [insertarFormulasDispensacionEstados]: ", err)    
+       //res.send(G.utils.r(req.url, err, 500, {}));
+       
+       setTimeout(function() {
+        __insertarEvoluciones(that, index, evoluciones, callback);
+        }, 0);
+    }).done();
+   
+}
+
+
 
 
 /**
@@ -2161,6 +2310,11 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
  *              
  */  
 DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res){
+    
+    console.log("***************DispensacionHc.prototype.insertarFormulasDispensacionEstados*******************");
+    console.log("***************DispensacionHc.prototype.insertarFormulasDispensacionEstados*******************");
+    console.log("***************DispensacionHc.prototype.insertarFormulasDispensacionEstados*******************");
+    
     
     var that = this;
     var args = req.body.data;
@@ -2183,12 +2337,9 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
      
     var terminoBusqueda = args.insertar_formulas_dispensacion_estados.terminoBusqueda;
     var filtro = args.insertar_formulas_dispensacion_estados.filtro;
-   
-   
-    var parametros={ 
-                    evolucionId: terminoBusqueda,
-                    filtro: filtro};
-               
+    
+    var parametros={filtro: filtro};
+       
     var formato = 'YYYY-MM-DD';
     var fechaEntrega;
     var fechaMinima;
@@ -2196,8 +2347,15 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     var fechaFormulacion;
     var fechaUltimaEntrega;
     var estadoFinalizacionFormula;
-   G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros).then(function(resultado){   
-         
+    
+   G.Q.ninvoke(that.m_dispensacion_hc, "consultarEvolucionFormula",{terminoBusqueda:terminoBusqueda, filtro: filtro}).then(function(resultado){
+    
+        parametros.evolucionId = resultado[0].evolucion_id;
+        console.log("1) resultado [consultarEvolucionFormula]: ", parametros);
+        return  G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros);
+    
+   }).then(function(resultado){
+         console.log("2) resultado [consultarFormulaAntecedentes]: ", parametros);
         if(resultado.length > 0){
             fechaFormulacion = resultado[0].fecha_formulacion;
              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:parametros.evolucionId,numeroEntregaActual:1});
@@ -2207,7 +2365,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         }
             
     }).then(function(resultado){
-       
+       console.log("3) resultado [consultarUltimaEntregaFormula]: ", parametros);
         if(resultado.length > 0){
             throw 'La formula ya ha sido generada'
                          
@@ -2244,7 +2402,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
       
         
     }) .then(function(resultado){
-            
+             console.log("4) resultado [__calcularMaximaFechaEntregaFormula]: ", parametros);
             if(fechaUltimaEntrega === null ){  
                 
                 fechaMaxima = resultado.fechaMaxima; 
@@ -2261,7 +2419,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
             }
         var parametrosFechaMinimaMaxima=
             {
-               evolucionId:terminoBusqueda,
+               evolucionId:parametros.evolucionId,
                fechaEntrega:fechaEntrega, 
                fechaMinima:fechaMinima, 
                fechaMaxima:fechaMaxima,

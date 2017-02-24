@@ -80,7 +80,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.root.visibleListaEstados = false;
                     $scope.root.visibleBotonBuscador = true;
                 };
-                  
+                 
+                 $scope.onMostrarTipoFormula = function(){
+                     
+                     console.log("onMostrarTipoFormula ")
+                 }
                 
                  /**
                   * +Descripcion Filtros para tipo de documento
@@ -88,7 +92,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                   **/
                   $scope.root.filtros = [                
                     {tipo: 'EV',descripcion: "Evolucion"},
-                    {tipo: 'FO',descripcion: "Formula"} 
+                    //{tipo: 'FO',descripcion: "Formula"} 
+                    {tipo: '0',descripcion: "Formulacion"},
+                    {tipo: '1',descripcion: "Transcripcion"},
+                    {tipo: '2',descripcion: "Form. Insumo"},
+                    {tipo: '3',descripcion: "Trans. Insumo"} 
                   ];
                  
                   $scope.root.filtro = $scope.root.filtros[0]; 
@@ -753,7 +761,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  * para consultar los medicamentos dispensados           
                  * @fecha  2016-10-12
                  */
-                that.consultaMedicamentosDispensados = function(parametro,estado){
+                that.consultaMedicamentosDispensados2 = function(parametro,estado){
 
                     var obj = {                   
                         session: $scope.session,
@@ -797,7 +805,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         fechaFinal:   $filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
                                    }
                                }    
-                            };    
+                            };       
                     dispensacionHcService.insertarFormulasDispensacionEstados(obj,function(data){
 
                         if(data.status === 200){                        
@@ -811,6 +819,32 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }); 
 
                 };
+                
+                 
+                $scope.insertarFormulasDispensacionEstados2 = function(){
+                    
+                    
+                    var obj = {                   
+                                session: $scope.session,
+                                data: {
+                                   insertar_formulas_dispensacion_estados_automatico: {
+                                         
+                                   }
+                               }    
+                            };    
+                    dispensacionHcService.insertarFormulasDispensacionEstadosAutomatico(obj,function(data){
+
+                        if(data.status === 200){                        
+                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                          
+                        }else{                         
+                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                        }
+
+
+                    });
+                }
+                     
                      
                 /**
                 * @author Cristian Ardila

@@ -1,5 +1,40 @@
 var DispensacionHcModel = function() {};
 
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de consultar la evolucion de una formula
+ * @controller DispensacionHc.prototype.insertarFormulasDispensacionEstados
+ */
+DispensacionHcModel.prototype.consultarEvolucionFormula = function(obj,callback){
+   
+    var query = G.knex.distinct('evolucion_id')
+          .select()
+          .from('hc_formulacion_antecedentes')
+          .where(function() {
+                   
+                    if((obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
+                      
+                        this.where(G.knex.raw("transcripcion_medica = " + obj.filtro.tipo))
+                            .andWhere(G.knex.raw("numero_formula::varchar = " + obj.terminoBusqueda));
+                       
+                   }
+                   
+          });
+           
+          query.then(function(resultado){ 
+             
+        callback(false, resultado)
+    }).catch(function(err){    
+        console.log("err [consultarEvolucionFormula]:", err);
+        callback(err);
+    });
+    
+};
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
@@ -196,18 +231,33 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
                     }
                     
-                    if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
+                   /* if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
                         this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
                             .andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda));
                        
+                   }*/
+                    if((obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
+                       
+                        //this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
+                        this.andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda))
+                            .andWhere(G.knex.raw("a.tipo_formula = " + obj.filtro.tipo));
+                       
                    }
+                   
                    
                    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
                         this.andWhere("a.evolucion_id",obj.terminoBusqueda)
                        
                    }
                    
-                   if(obj.filtro.tipo !== 'EV' && obj.filtro.tipo !== 'FO'){
+                   if(obj.filtro.tipo !== 'EV' && !(obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3')//obj.filtro.tipo !== 'FO' 
+                           ){
                         this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
                             .andWhere("a.tipo_id_paciente ",obj.filtro.tipo)
                             .andWhere(G.knex.raw("a.paciente_id::varchar = " + obj.terminoBusqueda));
@@ -217,7 +267,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                 
     query.limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){   
-         
+        // console.log("resultado [listarFormulas]: ", resultado);
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFormulas]: ", err);
@@ -595,6 +645,8 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
             callback(err);
         });
 }
+
+
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
@@ -1006,7 +1058,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                    
     var subQuery = G.knex.select(colSubQueryB)
                            .from("hc_formulacion_despachos_medicamentos_pendientes as dc")
-                           .join("dispensacion_estados AS hc", function(){
+                           .join("hc_formulacion_antecedentes AS hc", function(){//dispensacion_estados
                                this.on("dc.evolucion_id","=","hc.evolucion_id")
                            })
                            .innerJoin("bodegas_documentos AS d", function(){
@@ -1054,7 +1106,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     var query = G.knex.column('*').from(subQuery) .union(function(){
                                  this.select(colSubQueryA)
                            .from("hc_formulacion_despachos_medicamentos as dc")
-                           .join("dispensacion_estados AS hc", function(){
+                           .join("hc_formulacion_antecedentes AS hc", function(){ //dispensacion_estados
                                this.on("dc.evolucion_id","=","hc.evolucion_id")
                            })
                            .innerJoin("bodegas_documentos AS d", function(){
@@ -1220,7 +1272,8 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
             .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))
             .orderBy("a.fecha_registro","desc").limit(limite);
           
-        queryS.then(function(resultado){             
+        queryS.then(function(resultado){    
+            //console.log("resultado consultarUltimoRegistroDispensacion: ", resultado);   
             callback(false, resultado);
         }).catch(function(err){      
             console.log("err consultarUltimoRegistroDispensacion: ", err);   
@@ -1325,8 +1378,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     "invsinv.descripcion as molecula",
                     "invmcf.descripcion as forma_farmacologica",
                     "invci.descripcion as laboratorio",
-                    "invci.descripcion as laboratorio",
-                    G.knex.raw("fc_descripcion_producto_alterno(fv.codigo_producto) as producto"),
+                    "invp.descripcion as producto",//G.knex.raw("fc_descripcion_producto(fv.codigo_producto) as producto"),
                     "med.cod_principio_activo",
                     "fv.empresa_id",
                     "fv.centro_utilidad",
@@ -3238,7 +3290,7 @@ DispensacionHcModel.prototype.consultarFormulaAntecedentes = function(obj,callba
     }).select(columna).then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
-        console.log("err[consultarDispensacionesFormula]: ", error);
+        console.log("err[consultarFormulaAntecedentes]: ", error);
         callback(error);
     });
     
@@ -3775,6 +3827,20 @@ DispensacionHcModel.prototype.actualizarFechaMinimaMaxima = function(obj, callba
         console.log("err (/catch) [actualizarFechaMinimaMaxima]: ", err);      
         callback({err:err, msj: "Error actualizarFechaMinimaMaxima"});
     }); 
+};
+
+DispensacionHcModel.prototype.listarEvoluciones = function(callback){
+   G.knex.select(G.knex.raw('distinct(evolucion_id) as evolucion_id'))
+                .from("hc_formulacion_antecedentes")
+          .where(G.knex.raw("fecha_formulacion between '2017-02-22' and '2017-02-22'"))
+          .then(function(resultado){                
+            
+        callback(false, resultado)
+    }).catch(function(err){    
+        console.log("err [listarTipoDocumento]:", err);
+        callback(err);
+    });
+    
 };
 
 

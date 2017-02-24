@@ -15,7 +15,17 @@ define(["angular", "js/services"], function(angular, services) {
 
             var self = this;
             
-           
+            
+            /**
+            * +DESCRIPCION FUNCION EXCLUSIVA PARA ALMACENAR LAS FORMULAS EN LA TABLA
+            *              DE DISPENSACION_ESTADOS
+            */
+            self.insertarFormulasDispensacionEstadosAutomatico = function(obj, callback){
+                
+                Request.realizarRequest(API.DISPENSACIONHC.INSERTAR_FORMULAS_DISPENSACION_ESTADOS_AUTOMATICO,"POST", obj, function(data){    
+                    callback(data);                        
+                });
+            };
                
             /**
             * +DESCRIPCION FUNCION EXCLUSIVA PARA ALMACENAR LAS FORMULAS EN LA TABLA
@@ -556,7 +566,7 @@ define(["angular", "js/services"], function(angular, services) {
                     var _lote = productoLote.existenciasBodegas[i];
                    
                     var Lote  = LoteHc.get(_lote.lote,_lote.fecha_vencimiento, _lote.existencia_actual); 
-                                
+                    
                     var Producto = ProductosHc.get(_lote.codigo_producto,_lote.producto, 0);  
                         Producto.setConcentracion(_lote.concentracion);
                         Producto.setMolecula(_lote.molecula);

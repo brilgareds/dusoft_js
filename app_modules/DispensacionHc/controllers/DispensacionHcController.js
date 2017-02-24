@@ -1279,6 +1279,9 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
 
 function __obtener_dias_habiles(fecha_base, dias_vigencia, callback) {
     console.log("*************__obtener_dias_habiles***********************");
+    
+    console.log("fecha_base ", fecha_base);
+    console.log("dias_vigencia ", dias_vigencia);
     var execPhp = require('exec-php');
     execPhp('/var/www/CalculoFechas.class.php', function(error, php, outprint) {
         php.obtenerdiashabiles(fecha_base, dias_vigencia, function(err, result, output, printed) {
@@ -1299,7 +1302,6 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
     console.log("*************__sumarDiasHabiles***********************");
     console.log("*************__sumarDiasHabiles***********************");
     
-    var execPhp = require('exec-php');
     var parametros = {fecha: fecha_base, operacion: '+', dias: dias_vigencia};
     var fechaMaximaI;
 
@@ -1319,13 +1321,19 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
 
     }).fail(function(err) {   
         
-        console.log("err [__sumarDiasHabiles]: ", err);
-        callback(false, err);
+        console.log("ERROR [__sumarDiasHabiles]: ", err);
+        callback(err);
     }).done();
 };
 
 function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base, callback) {
-
+    
+    if(fechaMaximaI <=0){
+        
+        callback(true, fechaMaximaI);
+        return;
+        
+    }
     if (cantidad_dias_habiles == dias_vigencia) {
         callback(false, fechaMaximaI);
         return;

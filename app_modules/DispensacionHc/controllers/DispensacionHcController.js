@@ -1352,6 +1352,7 @@ function __fechaMaximaI(index,cantidad_dias_habiles, dias_vigencia, fechaMaximaI
     
     
     if(index === cantidad_dias_habiles){
+         console.log("fechaMaximaI ", fechaMaximaI)
         callback(false, fechaMaximaI);
         return;      
     }                                 
@@ -1361,7 +1362,10 @@ function __fechaMaximaI(index,cantidad_dias_habiles, dias_vigencia, fechaMaximaI
     fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + fecha[2];
     G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI).then(function(respuesta) {
             
-            console.log("respuesta ", respuesta);
+            var dia=('0'+(parseInt(fecha[2]) + 1)).slice(-2);
+         
+           
+            fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + dia;
             
             setTimeout(function() {
           

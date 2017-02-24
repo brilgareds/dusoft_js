@@ -1394,6 +1394,8 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
     // console.log("fechaMaximaI  ARMANDO ", fechaMaximaI);
     G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI).then(function(respuesta) {
          var dia=('0'+(parseInt(fecha[2]) + 1)).slice(-2);
+         
+         console.log("dia =================================== ", dia)
           fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + dia;
             /*console.log("fechaMaximaI  fecha[0] ", fecha[0]);
             console.log("fechaMaximaI  fecha[1] ", fecha[1]);

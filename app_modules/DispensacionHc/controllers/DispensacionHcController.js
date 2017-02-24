@@ -1335,7 +1335,7 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
     console.log("fechaMaximaI ", fechaMaximaI);
     console.log("fecha_base ", fecha_base);
     
-    if(fechaMaximaI <=0){
+    if(cantidad_dias_habiles <=0){
         
         callback(true, fechaMaximaI);
         return;

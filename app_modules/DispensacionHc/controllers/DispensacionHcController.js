@@ -6,7 +6,7 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     this.m_usuarios = m_usuarios;
     
     var formato = 'YYYY-MM-DD';
-     var fechaEntrega = G.moment("2017-01-24").add(30, 'day').format(formato);
+     var fechaEntrega = G.moment("2016-12-01").add(30, 'day').format(formato);
      console.log("fechaEntrega ", fechaEntrega);
      __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
          
@@ -1261,7 +1261,7 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
     };
     obj.error = false;
     
-    console.log("parametros ", parametros);
+    console.log("parametros ",  obj.parametros);
     //Se invoca el ws
     G.Q.nfcall(G.soap.createClient, url).
     then(function(client) {

@@ -1349,7 +1349,7 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
 
 function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base, callback) {
     
-    console.log("cantidad_dias_habiles ", cantidad_dias_habiles);
+    
     console.log("dias_vigencia ", dias_vigencia);
     console.log("fechaMaximaI ", fechaMaximaI);
     console.log("fecha_base ", fecha_base);
@@ -1360,6 +1360,8 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
         return;
         
     }
+    
+    console.log("cantidad_dias_habiles " + cantidad_dias_habiles + " === " + parseInt(dias_vigencia));
     if (parseInt(cantidad_dias_habiles) === parseInt(dias_vigencia)) {
         callback(false, fechaMaximaI);
         return;

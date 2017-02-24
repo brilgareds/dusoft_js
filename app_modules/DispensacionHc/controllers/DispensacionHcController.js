@@ -9,9 +9,7 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     var fechaEntrega = G.moment("2017-01-01").add(30, 'day').format(formato);
     console.log("fechaEntrega ", fechaEntrega);
      __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
-         
-         console.log("resultado [__sumarDiasHabiles]: ---->>>>> ", resultado);
-         
+          
      })
    /* __calcularMaximaFechaEntregaFormula({fecha_base:fechaEntrega,dias_vigencia:3}, function(resultado){
         
@@ -1294,7 +1292,6 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
 
 
 function __obtener_dias_habiles(fecha_base, dias_vigencia, callback) {
-    console.log("*************__obtener_dias_habiles***********************");
      
     var execPhp = require('exec-php');
     execPhp('/var/www/CalculoFechas.class.php', function(error, php, outprint) {

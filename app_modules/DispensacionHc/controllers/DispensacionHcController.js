@@ -1278,9 +1278,15 @@ function __calcularMaximaFechaEntregaFormula(obj, callback){
 */
 
 function __obtener_dias_habiles(fecha_base, dias_vigencia, callback) {
+    console.log("*************__obtener_dias_habiles***********************");
     var execPhp = require('exec-php');
     execPhp('/var/www/CalculoFechas.class.php', function(error, php, outprint) {
         php.obtenerdiashabiles(fecha_base, dias_vigencia, function(err, result, output, printed) {
+            console.log("***********obtenerdiashabiles***************");
+            console.log("err ", err);
+            console.log("result ", result);
+            console.log("output ", output);
+            console.log("printed ", printed);
             callback(false, result);
         });
     });
@@ -1288,26 +1294,32 @@ function __obtener_dias_habiles(fecha_base, dias_vigencia, callback) {
 
 //PedidosCliente.prototype.sumarDiasHabiles=function(fecha_base, dias_vigencia) {
 function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
+    
+    console.log("*************__sumarDiasHabiles***********************");
+    console.log("*************__sumarDiasHabiles***********************");
+    console.log("*************__sumarDiasHabiles***********************");
+    
     var execPhp = require('exec-php');
-
     var parametros = {fecha: fecha_base, operacion: '+', dias: dias_vigencia};
-    var cantidad_dias_habiles;
     var fechaMaximaI;
 
     G.Q.ninvoke(that.m_dispensacion_hc, 'intervalo_fecha', parametros).then(function(fechaMaximaIs) {
+        console.log("resultado [fechaMaximaIs]: ", fechaMaximaIs);
         fechaMaximaI = fechaMaximaIs[0].fecha;
 
         return G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI);
 
     }).then(function(cantidad_dias_habiles) {
-
+        console.log("resultado [cantidad_dias_habiles]: ", cantidad_dias_habiles);
         return G.Q.nfcall(__fechaMaximaI, cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base);
 
     }).then(function(fechaMaximaI) {
-        
+        console.log("resultado [__sumarDiasHabiles]: ", fechaMaximaI);
         callback(false, {fechaMaxima:fechaMaximaI});
 
     }).fail(function(err) {   
+        
+        console.log("err [__sumarDiasHabiles]: ", err);
         callback(false, err);
     }).done();
 };
@@ -1544,6 +1556,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
     }).then(function(resultado){
         
+        console.log("resultado [__sumarDiasHabiles]: ", resultado);
         if(temporales.length > 0){
             
             
@@ -2211,10 +2224,6 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
 
 DispensacionHc.prototype.insertarFormulasDispensacionEstadosAutomatico = function(req, res){
     
-    console.log("********DispensacionHc.prototype.insertarFormulasDispensacionEstadosAutomatico*****************");
-    console.log("********DispensacionHc.prototype.insertarFormulasDispensacionEstadosAutomatico*****************");
-    console.log("********DispensacionHc.prototype.insertarFormulasDispensacionEstadosAutomatico*****************");
-   
     var that = this;
     var args = req.body.data;
     
@@ -2262,7 +2271,7 @@ function __insertarEvoluciones(that, index, evoluciones, callback){
     var estadoFinalizacionFormula;
     
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros).then(function(resultado){   
-          console.log("resultado [consultarFormulaAntecedentes]: ", resultado);      
+              
        if(resultado.length > 0){
             fechaFormulacion = resultado[0].fecha_formulacion;
              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucion.evolucion_id,numeroEntregaActual:1});
@@ -2303,8 +2312,9 @@ function __insertarEvoluciones(that, index, evoluciones, callback){
                 }
                 
             }
-           
-        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
+          
+         return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+        //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
            
         }else{                            
            throw 'Error al almacenar la formula';
@@ -2312,7 +2322,7 @@ function __insertarEvoluciones(that, index, evoluciones, callback){
       
         
     }) .then(function(resultado){
-              console.log("resultado [__calcularMaximaFechaEntregaFormula]: ", resultado);
+             
             if(fechaUltimaEntrega === null ){  
                 
                 fechaMaxima = resultado.fechaMaxima; 
@@ -2339,7 +2349,7 @@ function __insertarEvoluciones(that, index, evoluciones, callback){
         return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarFechaMinimaMaxima', parametrosFechaMinimaMaxima)
         
     }).then(function(resultado){
-         console.log("resultado [actualizarFechaMinimaMaxima]: ", resultado)
+         
       // return res.send(G.utils.r(req.url, 'DATOS ALMACENADOS EXITOSAMENTE', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
       
        setTimeout(function() {
@@ -2369,12 +2379,7 @@ function __insertarEvoluciones(that, index, evoluciones, callback){
  *              
  */  
 DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res){
-    
-    console.log("***************DispensacionHc.prototype.insertarFormulasDispensacionEstados*******************");
-    console.log("***************DispensacionHc.prototype.insertarFormulasDispensacionEstados*******************");
-    console.log("***************DispensacionHc.prototype.insertarFormulasDispensacionEstados*******************");
-    
-    
+     
     var that = this;
     var args = req.body.data;
     
@@ -2410,11 +2415,11 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
    G.Q.ninvoke(that.m_dispensacion_hc, "consultarEvolucionFormula",{terminoBusqueda:terminoBusqueda, filtro: filtro}).then(function(resultado){
     
         parametros.evolucionId = resultado[0].evolucion_id;
-        console.log("1) resultado [consultarEvolucionFormula]: ", parametros);
+         
         return  G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros);
     
    }).then(function(resultado){
-         console.log("2) resultado [consultarFormulaAntecedentes]: ", parametros);
+         
         if(resultado.length > 0){
             fechaFormulacion = resultado[0].fecha_formulacion;
              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:parametros.evolucionId,numeroEntregaActual:1});
@@ -2424,7 +2429,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         }
             
     }).then(function(resultado){
-       console.log("3) resultado [consultarUltimaEntregaFormula]: ", parametros);
+        
         if(resultado.length > 0){
             throw 'La formula ya ha sido generada'
                          

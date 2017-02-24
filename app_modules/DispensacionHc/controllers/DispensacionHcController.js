@@ -1330,11 +1330,11 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
         return G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI);
 
     }).then(function(cantidad_dias_habiles) {
-        /*console.log("resultado [cantidad_dias_habiles]: ", cantidad_dias_habiles);
+       console.log("resultado [cantidad_dias_habiles]: ", cantidad_dias_habiles);
         console.log("resultado [dias_vigencia]: ", dias_vigencia);
         console.log("resultado [fechaMaximaI]: ", fechaMaximaI);
-        console.log("resultado [fecha_base]: ", fecha_base);*/
-        return G.Q.nfcall(__fechaMaximaI, cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base);
+        console.log("resultado [fecha_base]: ", fecha_base);
+         //return G.Q.nfcall(__fechaMaximaI, cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base);
 
     }).then(function(fechaMaximaI) {
         console.log("resultado [__sumarDiasHabiles]: ", fechaMaximaI);
@@ -1349,38 +1349,6 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
 
 function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base, callback) {
     
-    
-  /*  while(cantidad_dias_habiles < dias_vigencia){   
-			 fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + fecha[2];
-     console.log("fechaMaximaI  ARMANDO ", fechaMaximaI);
-    G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI).then(function(respuesta) {
-        
-      
-             var fecha = [];
-            fecha = fechaMaximaI.split("-");
-            fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + (parseInt(fecha[2]) + 1);
-            console.log("fechaMaximaI  fecha[0] ", fecha[0]);
-            console.log("fechaMaximaI  fecha[1] ", fecha[1]);
-            console.log("fechaMaximaI  fecha[2] ", fecha[2]);
-            
-            __fechaMaximaI(respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
-       
-
-    });
-			
-    } */
-	
-        
-    /*console.log("dias_vigencia ", dias_vigencia);
-    console.log("fechaMaximaI ", fechaMaximaI);
-    console.log("fecha_base ", fecha_base);*/
-    
-    /*if(cantidad_dias_habiles <=0){
-        
-        callback(true, fechaMaximaI);
-        return;
-        
-    }*/
     
     console.log("cantidad_dias_habiles " + cantidad_dias_habiles + " === " + parseInt(dias_vigencia));
     if (parseInt(cantidad_dias_habiles) === parseInt(dias_vigencia)) {

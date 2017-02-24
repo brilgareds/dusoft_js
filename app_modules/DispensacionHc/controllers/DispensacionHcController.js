@@ -6,7 +6,7 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     this.m_usuarios = m_usuarios;
     
     var formato = 'YYYY-MM-DD';
-     var fechaEntrega = G.moment("2016-12-01").add(30, 'day').format(formato);
+     var fechaEntrega = G.moment("2016-10-02").add(30, 'day').format(formato);
      console.log("fechaEntrega ", fechaEntrega);
      __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
          

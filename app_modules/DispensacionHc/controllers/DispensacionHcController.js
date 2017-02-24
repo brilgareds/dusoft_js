@@ -1144,8 +1144,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             fechaEntrega = G.moment(now).add(30, 'day').format(formato);
             fechaMinima  = G.moment(now).add(25, 'day').format(formato);
             
-            //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
-           return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
+           //return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
             
     }).then(function(resultado){
         
@@ -1596,8 +1596,8 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         //Variables para calcular la fecha maxima de entrega de una formula
         fechaEntrega = G.moment(now).add(30, 'day').format(formato);
         fechaMinima   = G.moment(now).add(25, 'day').format(formato);
-          return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
-        //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
+         // return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3});
         
     }).then(function(resultado){
         
@@ -2237,8 +2237,8 @@ DispensacionHc.prototype.ajustarNumeroEntregaFormula = function(req, res){
       opciones=parametrizacion.modulosJson.dispensar_formulas.opciones;
        
         if(opciones.sw_ajustar_entrega_formula){
-                  return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
-            //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
+                  //return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+            return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3})
         }else{
             throw {state:403, msj:"El usuario no tiene permisos para modificar"};
         } 
@@ -2358,8 +2358,8 @@ function __insertarEvoluciones(that, index, evoluciones, callback){
                 
             }
           
-         return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
-        //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
+        // return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
            
         }else{                            
            throw 'Error al almacenar la formula';
@@ -2511,8 +2511,8 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
                 
             }
             
-           return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
-        //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
+           //return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
+        return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
            
         }else{                            
            throw 'Error al almacenar la formula';

@@ -5,12 +5,12 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     this.e_dispensacion_hc = eventos_dispensacion;
     this.m_usuarios = m_usuarios;
     
-    var formato = 'YYYY-MM-DD';
+    /*var formato = 'YYYY-MM-DD';
     var fechaEntrega = G.moment("2017-01-01").add(30, 'day').format(formato);
     console.log("fechaEntrega ", fechaEntrega);
      __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
           
-     })
+     })*/
    /* __calcularMaximaFechaEntregaFormula({fecha_base:fechaEntrega,dias_vigencia:3}, function(resultado){
         
         console.log("resultado [__calcularMaximaFechaEntregaFormula]: ", resultado)
@@ -1305,9 +1305,7 @@ function __obtener_dias_habiles(fecha_base, dias_vigencia, callback) {
 
 //PedidosCliente.prototype.sumarDiasHabiles=function(fecha_base, dias_vigencia) {
 function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
-    
-    
-    
+     
     var parametros = {fecha: fecha_base, operacion: '+', dias: dias_vigencia};
     var fechaMaximaI;
         //console.log("parametros ", parametros);
@@ -1347,13 +1345,13 @@ function __fechaMaximaI(index,cantidad_dias_habiles, dias_vigencia, fechaMaximaI
     fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + fecha[2];
     G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI).then(function(respuesta) {
             
-            var dia=('0'+(parseInt(fecha[2]) + 1)).slice(-2);
-         
-           
-            fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + dia;
-            
-            setTimeout(function() {
-          
+        var dia=('0'+(parseInt(fecha[2]) + 1)).slice(-2);
+
+
+        fechaMaximaI = fecha[0] + '-' + fecha[1] + '-' + dia;
+
+        setTimeout(function() {
+
             __fechaMaximaI(index,respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
         }, 0);
         

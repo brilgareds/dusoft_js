@@ -2380,6 +2380,10 @@ function __insertarEvoluciones(that, index, evoluciones, callback){
  */  
 DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res){
      
+    console.log("***********DispensacionHc.prototype.insertarFormulasDispensacionEstados*********************");
+    console.log("***********DispensacionHc.prototype.insertarFormulasDispensacionEstados*********************");
+    console.log("***********DispensacionHc.prototype.insertarFormulasDispensacionEstados*********************");
+    
     var that = this;
     var args = req.body.data;
     
@@ -2412,6 +2416,8 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     var fechaUltimaEntrega;
     var estadoFinalizacionFormula;
     
+    console.log("parametros ", parametros);
+    
    G.Q.ninvoke(that.m_dispensacion_hc, "consultarEvolucionFormula",{terminoBusqueda:terminoBusqueda, filtro: filtro}).then(function(resultado){
     
         parametros.evolucionId = resultado[0].evolucion_id;
@@ -2419,7 +2425,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         return  G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros);
     
    }).then(function(resultado){
-         
+         console.log("resultado [consultarFormulaAntecedentes] ", parametros);
         if(resultado.length > 0){
             fechaFormulacion = resultado[0].fecha_formulacion;
              return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:parametros.evolucionId,numeroEntregaActual:1});
@@ -2429,7 +2435,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         }
             
     }).then(function(resultado){
-        
+         console.log("resultado [consultarUltimaEntregaFormula] ", parametros);
         if(resultado.length > 0){
             throw 'La formula ya ha sido generada'
                          
@@ -2439,6 +2445,8 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
          
     }).then(function(resultado){ 
          
+           console.log("resultado [consultarDispensacionesFormula] ", parametros);
+           
         if(resultado.length > 0){
               fechaUltimaEntrega = resultado[0].fecha_entrega;
               estadoFinalizacionFormula = resultado[0].sw_finalizado;
@@ -2495,7 +2503,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
         return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarFechaMinimaMaxima', parametrosFechaMinimaMaxima)
         
     }).then(function(resultado){
-        
+        console.log("resultado [actualizarFechaMinimaMaxima] ", resultado);
        return res.send(G.utils.r(req.url, 'DATOS ALMACENADOS EXITOSAMENTE', 200, {insertar_formulas_dispensacion_estados:resultado.rows}));
        
     }).fail(function(err){  

@@ -1334,7 +1334,7 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
         console.log("resultado [dias_vigencia]: ", dias_vigencia);
         console.log("resultado [fechaMaximaI]: ", fechaMaximaI);
         console.log("resultado [fecha_base]: ", fecha_base);
-         //return G.Q.nfcall(__fechaMaximaI, cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base);
+        return G.Q.nfcall(__fechaMaximaI,1, cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base);
 
     }).then(function(fechaMaximaI) {
         console.log("resultado [__sumarDiasHabiles]: ", fechaMaximaI);
@@ -1347,10 +1347,27 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
     }).done();
 };
 
-function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base, callback) {
+function __fechaMaximaI(index,cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base, callback) {
     
     
-    console.log("cantidad_dias_habiles " + cantidad_dias_habiles + " === " + parseInt(dias_vigencia));
+    
+    if(index === cantidad_dias_habiles){
+        callback(false, fechaMaximaI);
+        return;      
+    }
+    index++;
+    G.Q.nfcall(__obtener_dias_habiles, fecha_base, fechaMaximaI).then(function(respuesta) {
+            
+            console.log("respuesta ", respuesta);
+            
+            setTimeout(function() {
+          
+            __fechaMaximaI(respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
+        }, 0);
+        
+    });
+    
+   /* console.log("cantidad_dias_habiles " + cantidad_dias_habiles + " === " + parseInt(dias_vigencia));
     if (parseInt(cantidad_dias_habiles) === parseInt(dias_vigencia)) {
         callback(false, fechaMaximaI);
         return;
@@ -1369,7 +1386,7 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
             console.log("fechaMaximaI  fecha[1] ", fecha[1]);
             console.log("fechaMaximaI  fecha[2] ", fecha[2]);*/
            
-        setTimeout(function() {
+       /* setTimeout(function() {
           
             __fechaMaximaI(respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
         }, 0);
@@ -1380,7 +1397,7 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
        callback(true, err);
 
         
-    }).done();
+    }).done();*/
 }
 
 

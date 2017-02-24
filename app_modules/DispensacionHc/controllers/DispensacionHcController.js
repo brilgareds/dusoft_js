@@ -6,14 +6,14 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     this.m_usuarios = m_usuarios;
     
     var formato = 'YYYY-MM-DD';
-     var fechaEntrega = G.moment("2016-10-02").add(30, 'day').format(formato);
-     console.log("fechaEntrega ", fechaEntrega);
+    var fechaEntrega = G.moment("2016-10-02").add(30, 'day').format(formato);
+    console.log("fechaEntrega ", fechaEntrega);
      __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
          
          console.log("resultado [__sumarDiasHabiles]: ---->>>>> ", resultado);
          
      })
-    /*__calcularMaximaFechaEntregaFormula({fecha_base:fechaEntrega,dias_vigencia:3}, function(resultado){
+   /* __calcularMaximaFechaEntregaFormula({fecha_base:fechaEntrega,dias_vigencia:3}, function(resultado){
         
         console.log("resultado [__calcularMaximaFechaEntregaFormula]: ", resultado)
         

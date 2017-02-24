@@ -1383,7 +1383,7 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
     }*/
     
     console.log("cantidad_dias_habiles " + cantidad_dias_habiles + " === " + parseInt(dias_vigencia));
-    while (parseInt(cantidad_dias_habiles) < parseInt(dias_vigencia)) {
+    if (parseInt(cantidad_dias_habiles) === parseInt(dias_vigencia)) {
         callback(false, fechaMaximaI);
         return;
     }

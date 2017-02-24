@@ -1362,7 +1362,7 @@ function __fechaMaximaI(index,cantidad_dias_habiles, dias_vigencia, fechaMaximaI
             
             setTimeout(function() {
           
-            __fechaMaximaI(respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
+            __fechaMaximaI(index,respuesta, dias_vigencia, fechaMaximaI, fecha_base, callback);
         }, 0);
         
     });

@@ -2505,7 +2505,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
                     fechaEntrega = fechaFormulacion;   
                     fechaMinima  = fechaFormulacion; 
                 }else{
-                    fechaEntrega = G.moment("2016-10-02").add(30, 'day').format(formato); //resultado[0].fecha_entrega 
+                    fechaEntrega = G.moment(resultado[0].fecha_entrega ).add(30, 'day').format(formato); //resultado[0].fecha_entrega 
                     fechaMinima   = G.moment(resultado[0].fecha_entrega).add(25,'days').format(formato);
                 }
                 

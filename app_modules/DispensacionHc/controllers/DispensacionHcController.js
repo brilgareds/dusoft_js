@@ -1326,7 +1326,7 @@ function __sumarDiasHabiles(that, fecha_base, dias_vigencia,callback) {
         console.log("resultado [dias_vigencia]: ", dias_vigencia);
         console.log("resultado [fechaMaximaI]: ", fechaMaximaI);
         console.log("resultado [fecha_base]: ", fecha_base);
-        //return G.Q.nfcall(__fechaMaximaI, cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base);
+        return G.Q.nfcall(__fechaMaximaI, cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fecha_base);
 
     }).then(function(fechaMaximaI) {
         console.log("resultado [__sumarDiasHabiles]: ", fechaMaximaI);
@@ -1352,7 +1352,7 @@ function __fechaMaximaI(cantidad_dias_habiles, dias_vigencia, fechaMaximaI, fech
         return;
         
     }
-    if (cantidad_dias_habiles == dias_vigencia) {
+    if (parseInt(cantidad_dias_habiles) === parseInt(dias_vigencia)) {
         callback(false, fechaMaximaI);
         return;
     }

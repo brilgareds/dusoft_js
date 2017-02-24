@@ -1,9 +1,17 @@
 
 var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuarios) {
-
+    
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.e_dispensacion_hc = eventos_dispensacion;
     this.m_usuarios = m_usuarios;
+    
+    var formato = 'YYYY-MM-DD';
+     var fechaEntrega = G.moment("2016-10-02").add(30, 'day').format(formato);
+     __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
+         
+         console.log("resultado [__sumarDiasHabiles]: ---->>>>> ", resultado);
+         
+     })
   //  this.m_pedidos_clientes_log = m_pedidos_clientes_log;
 };
 
@@ -2484,6 +2492,7 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
                 }
                 
             }
+            
            return G.Q.nfcall(__sumarDiasHabiles,that,fechaEntrega,3);   
         //return G.Q.nfcall(__calcularMaximaFechaEntregaFormula,{fecha_base:fechaEntrega,dias_vigencia:3}); 
            

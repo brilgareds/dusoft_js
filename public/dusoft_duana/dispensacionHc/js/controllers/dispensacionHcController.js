@@ -401,7 +401,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 0 \
                                                     && root.estadoFormula == 0 \
                                                     && row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFormulaEnProceso() == 0">\n\
-                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n </a>\
+                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" class= "glyphicon glyphicon-tasks"> Dispensaci&oacute;n </a>\
                                             </li>\
                                             <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 \
                                                     && root.estadoFormula == 1 \n\
@@ -409,7 +409,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                     || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2 \
                                                     && root.estadoFormula == 1 \
                                                     && row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFormulaEnProceso() == 0">\
-                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a>\
+                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" class= "glyphicon glyphicon-eye-open" > Pendientes </a>\
                                             </li>\
                                             <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
                                                <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Todo </a>\

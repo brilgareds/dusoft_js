@@ -258,7 +258,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                        
                         //this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
                         this.andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda))
-                            .andWhere(G.knex.raw("a.tipo_formula = " + obj.filtro.tipo));
+                            .andWhere(G.knex.raw("a.transcripcion_medica = " + obj.filtro.tipo));
                        
                    }
                    

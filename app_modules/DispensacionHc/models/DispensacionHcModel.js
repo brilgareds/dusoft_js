@@ -261,8 +261,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                             .andWhere(G.knex.raw("a.transcripcion_medica = " + obj.filtro.tipo));
                        
                    }
-                   
-                   
+                    
                    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
                         this.andWhere("a.evolucion_id",obj.terminoBusqueda)
                        

@@ -761,7 +761,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  * para consultar los medicamentos dispensados           
                  * @fecha  2016-10-12
                  */
-                that.consultaMedicamentosDispensados2 = function(parametro,estado){
+                that.consultaMedicamentosDispensados = function(parametro,estado){
 
                     var obj = {                   
                         session: $scope.session,

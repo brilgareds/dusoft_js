@@ -1447,7 +1447,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                  .andWhere("fv.bodega", obj.bodega)
                  .andWhere("fv.existencia_actual",">", 0)
                  .andWhere(condicion,parametro)
-                 .andWhere(G.knex.raw("invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'"))
+                 //.andWhere(G.knex.raw("invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'"))
                  .orderBy("fv.fecha_vencimiento","ASC");
                   
     query.then(function(resultado){  

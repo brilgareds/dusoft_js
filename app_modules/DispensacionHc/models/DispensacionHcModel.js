@@ -202,7 +202,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                             THEN (\
                                  CASE \
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tto finalizo' \
-                                    WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
+                                    WHEN a.sw_pendiente = '1' THEN 'Tto finalizo' \
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \
                         END ) END  AS descripcion_estado_entrega"),

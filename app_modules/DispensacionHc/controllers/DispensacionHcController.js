@@ -2464,9 +2464,12 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
     console.log("parametros ", parametros);
     
    G.Q.ninvoke(that.m_dispensacion_hc, "consultarEvolucionFormula",{terminoBusqueda:terminoBusqueda, filtro: filtro}).then(function(resultado){
-    
-        parametros.evolucionId = resultado[0].evolucion_id;
-         
+       
+        if(resultado.length > 0){
+            parametros.evolucionId = resultado[0].evolucion_id;
+        }else{
+              throw 'La formula no existe'
+        }
         return  G.Q.ninvoke(that.m_dispensacion_hc,'consultarFormulaAntecedentes',parametros);
     
    }).then(function(resultado){

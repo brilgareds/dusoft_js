@@ -18,15 +18,13 @@ var DispensacionHcEvents = function(socket, dispensacion) {
  *  --PedidosCliente.prototype.solicitarAutorizacion
  *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  */
-DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(obj) {
+DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(obj,msj, status) {
   
   console.log("*******************NOTIFICAR ENTREGA FORMULA ************");
     var that = this;
-    var response = G.utils.r('onNotificarEntregaFormula', 'nuevo estado de cotizacion Actualizado', 200,
+    var response = G.utils.r('onNotificarEntregaFormula', msj, status,
                     {
-                        evolucionId: obj.terminoBusqueda,
-                        filtro: obj.filtro,
-                        empresa: obj.empresa,
+                        dispensacion: obj
                     });
     that.io.sockets.emit('onNotificarEntregaFormula', response);
     /*this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {

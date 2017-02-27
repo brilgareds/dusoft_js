@@ -1,9 +1,10 @@
 
-var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuarios) {
+var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuarios, e_dispensacion_hc) {
     
     this.m_dispensacion_hc = m_dispensacion_hc;
     this.e_dispensacion_hc = eventos_dispensacion;
     this.m_usuarios = m_usuarios;
+    this.e_dispensacion_hc = e_dispensacion_hc;
     
     /*var formato = 'YYYY-MM-DD';
     var fechaEntrega = G.moment("2017-01-01").add(30, 'day').format(formato);
@@ -1475,6 +1476,7 @@ DispensacionHc.prototype.descartarProductoPendiente  = function(req, res){
 
 DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
    
+   
     var that = this;
     var args = req.body.data;   
    
@@ -1521,12 +1523,12 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var def = G.Q.defer();
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
-                                observacion: observacion,tipoVariable : 0,usuarioId : usuario};
-                            
-                            
-                            
+                                observacion: observacion,tipoVariable : 0,usuarioId : usuario};                             
     var bodegasDocTodoPendiente;                           
-      //console.log("parametrosReformular:::: ", parametrosReformular);
+    that.e_dispensacion_hc.onNotificarEntregaFormula({},'Dispensacion en proceso...', 201);          
+    res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'}));  
+    
+    
         G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',{evolucionId:evolucionId, estado: 1}).then(function(resultado){
         
         if(resultado.length > 0){        
@@ -1690,7 +1692,12 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                       
     }).then(function(resultado){
         
-           res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
+         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId});
+        
+    }).then(function(resultado){    
+        console.log("EL RESULTADO ES [actualizarTipoFormula]: ", resultado);
+        that.e_dispensacion_hc.onNotificarEntregaFormula(resultado[0].formula_id,'Se realiza la dispensacion correctamente',200);   
+        //res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
         
     }).fail(function(err){ 
      console.log("err [realizarEntregaFormulaPendientes]: ", err);
@@ -2425,10 +2432,6 @@ function __insertarEvoluciones(that, index, evoluciones, callback){
  */  
 DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res){
      
-    console.log("***********DispensacionHc.prototype.insertarFormulasDispensacionEstados*********************");
-    console.log("***********DispensacionHc.prototype.insertarFormulasDispensacionEstados*********************");
-    console.log("***********DispensacionHc.prototype.insertarFormulasDispensacionEstados*********************");
-    
     var that = this;
     var args = req.body.data;
     
@@ -2607,6 +2610,6 @@ DispensacionHc.prototype.consultarMovimientoFormulasPaciente = function(req, res
 };
 
 
-DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc", "m_usuarios"];
+DispensacionHc.$inject = ["m_dispensacion_hc", "e_dispensacion_hc", "m_usuarios", "e_dispensacion_hc"];
 
 module.exports = DispensacionHc;

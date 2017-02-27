@@ -35,6 +35,28 @@ DispensacionHcModel.prototype.consultarEvolucionFormula = function(obj,callback)
     
 };
  
+ 
+/**                          
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener los diferentes tipos de formula
+ * @controller DispensacionHc.prototype.listarTipoFormula
+ */
+DispensacionHcModel.prototype.consultarNumeroFormula = function(obj,callback){
+     
+    var columna = [G.knex.raw("formula_id")];
+     
+    G.knex('dispensacion_estados').where({
+        evolucion_id: obj.evolucionId
+    }).select(columna).then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("err[consultarNumeroFormula]: ", error);
+        callback(error);
+    });
+    
+}; 
+ 
 DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
 {
     var sql = "select to_char(fecha, 'yyyy-mm-dd')as fecha\

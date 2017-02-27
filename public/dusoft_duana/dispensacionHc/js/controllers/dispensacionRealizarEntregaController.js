@@ -6,9 +6,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             "$filter",
             "localStorageService",
             "$state",
-            "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula","estadoTodoPendiente","tipoEstadoFormula",
+            "dispensacionHcService","$modalInstance","socket","estadoEntregaFormula","estadoTodoPendiente","tipoEstadoFormula","webNotification",
         function($scope, $rootScope, Request, API, AlertService, Usuario,                     
-                $timeout, $filter,localStorageService,$state,dispensacionHcService,$modalInstance,socket,estadoEntregaFormula, estadoTodoPendiente,tipoEstadoFormula) {
+                $timeout, $filter,localStorageService,$state,dispensacionHcService,
+                $modalInstance,socket,estadoEntregaFormula, estadoTodoPendiente,tipoEstadoFormula,webNotification) {
 
         var that = this;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
@@ -204,15 +205,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         };
         
         
-        /**
-         * @author Cristian Ardila
-         * @fecha  2016/08/03
-         * +Descripcion Metodo el cual invocara el servicio que permitira realizar
-         *              todo el proceso pertinente para dispensar una formula con
-         *              pendientes
-         *             
-         */
-        that.dispensacionPendientes = function(obj){
+        
+        /*that.dispensacionPendientes = function(obj){
             
             var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
             dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
@@ -234,8 +228,74 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
             });         
+        };*/
+            that.notificarSolicitud = function(title, body) {
+                
+                webNotification.showNotification(title, {
+                    body: body,
+                    icon: '/images/logo.png',
+                    onClick: function onNotificationClicked() {
+
+                    },
+                    autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+                }, function onShow(error, hide) {
+                    if (error) {
+                        window.alert('Error interno: ' + error.message);
+                    } else {
+
+                        setTimeout(function hideNotification() {
+
+                            hide(); //manually close the notification (you can skip this if you use the autoClose option)
+                        }, 90000);
+                    }
+                });
+            }
+        
+            /**
+            * @author Cristian Ardila
+            * @fecha  2016/08/03
+            * +Descripcion Metodo el cual invocara el servicio que permitira realizar
+            *              todo el proceso pertinente para dispensar una formula con
+            *              pendientes
+            *             
+            */
+            that.dispensacionPendientes = function(obj){
+            
+                var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
+                dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
+                $scope.cerrarVentana();
+                $state.go('DispensacionHc');
+                AlertService.mostrarMensaje("warning", data.msj);
+                 
+                if(data.status === 500){                       
+                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                }
+ 
+                socket.on("onNotificarEntregaFormula", function(datos) {
+
+                    if(datos.status === 201){
+                        AlertService.mostrarMensaje("success", datos.msj);
+                    }
+
+                    if(datos.status === 200){
+
+                        localStorageService.add("consultarFormulaPendientes",{
+                            evolucion: evolucionStorage.evolucionId,
+                            filtro:{tipo:'EV'},
+                            empresa: 'FD',
+                            pacienteId: evolucionStorage.pacienteId,
+                            tipoIdPaciente: evolucionStorage.tipoIdPaciente
+
+                        });
+                        that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion);
+
+                    }                    
+                });               
+            });         
         };
         
+        
+       
         /**
          * @author Cristian Ardila
          * @fecha  2016/08/03
@@ -250,7 +310,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
               
                 if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  
-                    $scope.$emit('emitRealizarEntregaFormula', {response: data});
+                    //$scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
                     $state.go('DispensacionHc');   
                     

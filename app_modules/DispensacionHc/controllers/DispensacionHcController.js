@@ -1084,7 +1084,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                                 observacion: observacion,tipoVariable : 0,usuarioId : usuario};
                               
    
-    that.e_dispensacion_hc.onNotificarEntregaFormula({},'Dispensacion en proceso...', 201);          
+    that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
     
     G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular).then(function(resultado){
@@ -1241,7 +1241,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         
     }).then(function(resultado){    
         
-        that.e_dispensacion_hc.onNotificarEntregaFormula(resultado[0].formula_id,'Se realiza la dispensacion correctamente',200);   
+        that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: resultado[0].formula_id},'Se realiza la dispensacion correctamente',200);   
         //res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
         
     })/*.then(function(resultado){
@@ -1518,6 +1518,8 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var observacion = args.realizar_entrega_formula.observacion;
     var usuario = req.session.user.usuario_id;
     var tipoFormula = args.realizar_entrega_formula.tipoFormula;
+    var tipoIdPaciente = args.realizar_entrega_formula.tipoIdPaciente;
+    var pacienteId = args.realizar_entrega_formula.pacienteId;
     var bodegasDocId;
     var planId;
     var variableParametrizacion;
@@ -1536,7 +1538,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0,usuarioId : usuario};                             
     var bodegasDocTodoPendiente;                           
-    that.e_dispensacion_hc.onNotificarEntregaFormula({},'Dispensacion en proceso...', 201);          
+    that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'}));  
     
     
@@ -1707,7 +1709,10 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         
     }).then(function(resultado){    
         
-        that.e_dispensacion_hc.onNotificarEntregaFormula(resultado[0].formula_id,'Se realiza la dispensacion correctamente',200);   
+        that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: resultado[0].formula_id, 
+                                                          evolucionId:evolucionId,
+                                                          tipoIdPaciente: tipoIdPaciente,
+                                                          pacienteId: pacienteId},'Se realiza la dispensacion correctamente',200);   
         //res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
         
     }).fail(function(err){ 
@@ -1839,12 +1844,15 @@ DispensacionHc.prototype.obtenerCabeceraFormula = function(req, res){
     }
     
     var parametros = {evolucionId:args.cabecera_formula.evolucion};
-            
-                
+    
+    that.e_dispensacion_hc.onNotificarCabeceraFormula({cabecera_formula:''},'Dispensacion en proceso...', 201);          
+    res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
+                  
     G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormula',parametros).then(function(resultado){
        
-        if(resultado.length > 0){ 
-              res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {cabecera_formula:resultado}));
+        if(resultado.length > 0){
+          that.e_dispensacion_hc.onNotificarCabeceraFormula({cabecera_formula:resultado},'Obteniendo cabecera',200);    
+         //res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {cabecera_formula:resultado}));
         }else{
            throw 'La cabecera de la formula no esta creada';
         }

@@ -18,28 +18,25 @@ var DispensacionHcEvents = function(socket, dispensacion) {
  *  --PedidosCliente.prototype.solicitarAutorizacion
  *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  */
-DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(obj,msj, status) {
+DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(result,msj, status) {
   
-  console.log("*******************NOTIFICAR ENTREGA FORMULA ************");
+    console.log("*******************NOTIFICAR ENTREGA FORMULA ************");
     var that = this;
-    var response = G.utils.r('onNotificarEntregaFormula', msj, status,
-                    {
-                        dispensacion: obj
-                    });
+    var response = G.utils.r('onNotificarEntregaFormula', msj, status, result);
+    console.log("response ", response);
     that.io.sockets.emit('onNotificarEntregaFormula', response);
-    /*this.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {
-      
-        if (!err) {
-          
-            var response = G.utils.r('onListarEstadoCotizacion', 'nuevo estado de cotizacion Actualizado', 200,
-                    {
-                        numeroCotizacion: numeroCotizacion,
-                        estado: rows
-                    });
-                    
-            that.io.sockets.emit('onListarEstadoCotizacion', response);
-        }
-    });*/
+     
+
+};
+
+DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj, status) {
+  
+    console.log("*******************NOTIFICAR CABECERA FORMULA ************");
+    var that = this;
+    var response = G.utils.r('onNotificarCabeceraFormula', msj, status, result);
+    console.log("response ", response);
+    that.io.sockets.emit('onNotificarCabeceraFormula', response);
+     
 
 };
 

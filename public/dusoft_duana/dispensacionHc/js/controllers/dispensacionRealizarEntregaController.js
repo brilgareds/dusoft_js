@@ -409,8 +409,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.dispensacionNormal = function(obj){
-            
-            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");          
+                   
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
                
                 AlertService.mostrarMensaje("warning", data.msj);
@@ -421,16 +420,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 socket.on("onNotificarEntregaFormula", function(datos) {
  
                     if(datos.status === 200){
-
-                        localStorageService.add("consultarFormulaPendientes",{
-                            evolucion: evolucionStorage.evolucionId,
-                            filtro:{tipo:'EV'},
-                            empresa: 'FD',
-                            pacienteId: evolucionStorage.pacienteId,
-                            tipoIdPaciente: evolucionStorage.tipoIdPaciente
-
-                        });
-                        that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, evolucionStorage);
+ 
+                        that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, 
+                        {evolucionId:datos.obj.evolucionId,
+                            tipoIdPaciente:datos.obj.tipoIdPaciente,
+                            pacienteId:datos.obj.pacienteId});
                         
                     }                    
                 }); 

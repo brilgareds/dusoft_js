@@ -1065,6 +1065,9 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     var observacion = args.realizar_entrega_formula.observacion;
     var usuario = req.session.user.usuario_id;
     var tipoFormula = args.realizar_entrega_formula.tipoFormula;
+    var tipoIdPaciente = args.realizar_entrega_formula.tipoIdPaciente;
+    var pacienteId = args.realizar_entrega_formula.pacienteId;
+       
     var bodegasDocId;
     var planId;
     var variableParametrizacion;
@@ -1241,7 +1244,11 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         
     }).then(function(resultado){    
         
-        that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: resultado[0].formula_id},'Se realiza la dispensacion correctamente',200);   
+        //that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: resultado[0].formula_id},'Se realiza la dispensacion correctamente',200);   
+         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: resultado[0].formula_id, 
+                                                          evolucionId:evolucionId,
+                                                          tipoIdPaciente: tipoIdPaciente,
+                                                          pacienteId: pacienteId},'Se realiza la dispensacion correctamente',200);   
         //res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
         
     })/*.then(function(resultado){

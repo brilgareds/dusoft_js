@@ -229,27 +229,86 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
             });         
         };*/
-            that.notificarSolicitud = function(title, body) {
+        /*
+         * @author Cristian Manuel Ardila
+         * +Descripcion Metodo encargado generar el reporte
+         * para consultar los medicamentos pendientes           
+         * @fecha  2016-10-12
+         */
+        that.consultaMedicamentosPendientes = function(parametros){
+
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                   listar_medicamentos_pendientes: {
+                        evolucion: parametros.evolucionId,
+                        tipoIdPaciente:parametros.tipoIdPaciente,
+                        pacienteId: parametros.pacienteId
+                   }
+                }    
+            };   
+
+            dispensacionHcService.listarMedicamentosPendientesPorDispensar(obj,function(data){
+ 
+                if (data.status === 200) {
+                    var nombre = data.obj.listar_medicamentos_pendientes.nombre_pdf;                    
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                }
+            });  
+        };
+            
+            
+        /*
+         * @author Cristian Manuel Ardila
+         * +Descripcion Metodo encargado generar el reporte
+         * para consultar los medicamentos dispensados           
+         * @fecha  2016-10-12
+         */
+        that.consultaMedicamentosDispensados = function(parametro,estado){
+
+            var obj = {                   
+                session: $scope.session,
+                data: {
+                   listar_medicamentos_dispensados: {
+                        evolucion: parametro.evolucionId,
+                        tipoIdPaciente:parametro.tipoIdPaciente,
+                        pacienteId: parametro.pacienteId,
+                        pendientes: estado
+                   }
+               }    
+            };    
+            dispensacionHcService.listarMedicamentosDispensados(obj,function(data){
+
+                if (data.status === 200) {
+                    var nombre = data.obj.listar_medicamentos_dispensados.nombre_pdf;                          
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                }
+            });  
+        };
+
                 
-                webNotification.showNotification(title, {
-                    body: body,
-                    icon: '/images/logo.png',
-                    onClick: function onNotificationClicked() {
+        that.notificarSolicitud = function(title, body, parametros) {
 
-                    },
-                    autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
-                }, function onShow(error, hide) {
-                    if (error) {
-                        window.alert('Error interno: ' + error.message);
-                    } else {
+            webNotification.showNotification(title, {
+                body: body,
+                icon: '/images/logo.png',
+                onClick: function onNotificationClicked() {
+                    that.consultaMedicamentosPendientes(parametros); 
+                    that.consultaMedicamentosDispensados(parametros,0);
+                },
+                autoClose: 90000 //auto close the notification after 2 seconds (you can manually close it via hide function)
+            }, function onShow(error, hide) {
+                if (error) {
+                    window.alert('Error interno: ' + error.message);
+                } else {
 
-                        setTimeout(function hideNotification() {
+                    setTimeout(function hideNotification() {
 
-                            hide(); //manually close the notification (you can skip this if you use the autoClose option)
-                        }, 90000);
-                    }
-                });
-            }
+                        hide(); //manually close the notification (you can skip this if you use the autoClose option)
+                    }, 90000);
+                }
+            });
+        }
         
             /**
             * @author Cristian Ardila
@@ -259,14 +318,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             *              pendientes
             *             
             */
-            that.dispensacionPendientes = function(obj){
+        that.dispensacionPendientes = function(obj){
             
-                var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
-                dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
+            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
+
+           dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
                 $scope.cerrarVentana();
                 $state.go('DispensacionHc');
                 AlertService.mostrarMensaje("warning", data.msj);
-                 
+
                 if(data.status === 500){                       
                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
                 }
@@ -287,11 +347,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             tipoIdPaciente: evolucionStorage.tipoIdPaciente
 
                         });
-                        that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion);
-
+                        that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, evolucionStorage);
                     }                    
                 });               
-            });         
+            });        
         };
         
         
@@ -307,10 +366,35 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");          
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
-              
-                if(data.status === 200){                   
+                
+                $scope.cerrarVentana();
+                $state.go('DispensacionHc');
+                AlertService.mostrarMensaje("warning", data.msj);
+                if(data.status === 500){                       
+                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                }
+ 
+                socket.on("onNotificarEntregaFormula", function(datos) {
+
+                    if(datos.status === 201){
+                        AlertService.mostrarMensaje("success", datos.msj);
+                    }
+
+                    if(datos.status === 200){
+
+                        localStorageService.add("consultarFormulaPendientes",{
+                            evolucion: evolucionStorage.evolucionId,
+                            filtro:{tipo:'EV'},
+                            empresa: 'FD',
+                            pacienteId: evolucionStorage.pacienteId,
+                            tipoIdPaciente: evolucionStorage.tipoIdPaciente
+
+                        });
+                        that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, evolucionStorage);
+                    }                    
+                }); 
+               /* if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  
-                    //$scope.$emit('emitRealizarEntregaFormula', {response: data});
                     $scope.cerrarVentana();
                     $state.go('DispensacionHc');   
                     
@@ -325,7 +409,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                       
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }
+                }*/
             });         
         };
         
@@ -447,7 +531,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         that.listarTipoFormulas();
         that.consultarMedicamentosTemporales();
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-
+            
+            socket.remove(['onNotificarEntregaFormula']);  
             $scope.$$watchers = null;
             // set localstorage
 

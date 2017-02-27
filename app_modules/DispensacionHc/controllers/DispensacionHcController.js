@@ -1084,6 +1084,8 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                                 observacion: observacion,tipoVariable : 0,usuarioId : usuario};
                               
    
+    that.e_dispensacion_hc.onNotificarEntregaFormula({},'Dispensacion en proceso...', 201);          
+    res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
     
     G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular).then(function(resultado){
         
@@ -1235,9 +1237,18 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                    
     }).then(function(resultado){
         
+         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId});
+        
+    }).then(function(resultado){    
+        
+        that.e_dispensacion_hc.onNotificarEntregaFormula(resultado[0].formula_id,'Se realiza la dispensacion correctamente',200);   
+        //res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
+        
+    })/*.then(function(resultado){
+        
            res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
          
-    }).fail(function(err){  
+    })*/.fail(function(err){  
         console.log("err [Controller.realizarEntregaFormula]: ", err);
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();    
@@ -1695,7 +1706,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
          return G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId});
         
     }).then(function(resultado){    
-        console.log("EL RESULTADO ES [actualizarTipoFormula]: ", resultado);
+        
         that.e_dispensacion_hc.onNotificarEntregaFormula(resultado[0].formula_id,'Se realiza la dispensacion correctamente',200);   
         //res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
         

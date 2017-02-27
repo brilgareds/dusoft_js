@@ -82,8 +82,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
                  
                  $scope.onMostrarTipoFormula = function(){
-                     
-                     console.log("onMostrarTipoFormula ")
+                      
                  }
                 
                  /**
@@ -935,8 +934,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                             }else{                                
                                 that.listarTipoDocumentos(function(){});    
-
-                                var resultadoStorage = localStorageService.get("consultarFormula");      
+                                
+                                /**
+                                 * +Descripcion Se comenta el proceso de impresion de formulas cuando
+                                 *              se realiza la dispensacion  
+                                */
+                                /*var resultadoStorage = localStorageService.get("consultarFormula");      
                                 var resultadoStoragePendientes = localStorageService.get("consultarFormulaPendientes");      
                                 var resultadoStorageTodoPendiente = localStorageService.get("formulaTodoPendiente");      
  
@@ -966,7 +969,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
  
                                 if(resultadoStorageTodoPendiente){
                                     that.imprimirMedicamentosPendientesLocalStorage(resultadoStorageTodoPendiente); 
-                                }
+                                }*/
                             }
                         }
                     }                                           

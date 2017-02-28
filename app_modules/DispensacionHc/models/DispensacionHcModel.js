@@ -751,7 +751,32 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
                         this.andWhere(G.knex.raw("hp.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
                     }
                     
-                    if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
+                    if((obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
+                       
+                        //this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
+                        this.andWhere(G.knex.raw("hf.numero_formula::varchar = " + obj.terminoBusqueda))
+                            .andWhere(G.knex.raw("hf.transcripcion_medica = " + obj.filtro.tipo));
+                       
+                    }
+                    
+                    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
+                         this.andWhere("hf.evolucion_id",obj.terminoBusqueda)
+                       
+                    }
+                   
+                   if(obj.filtro.tipo !== 'EV' && !(obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3')//obj.filtro.tipo !== 'FO' 
+                           ){
+                         this.andWhere("hf.tipo_id_paciente ",obj.filtro.tipo)
+                            .andWhere(G.knex.raw("hf.paciente_id::varchar = " + obj.terminoBusqueda));
+                    
+                  }
+                   /* if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
                         this.andWhere(G.knex.raw("hp.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
                             .andWhere(G.knex.raw("hf.numero_formula::varchar = " + obj.terminoBusqueda));
                        
@@ -767,7 +792,7 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
                             .andWhere("hf.tipo_id_paciente ",obj.filtro.tipo)
                             .andWhere(G.knex.raw("hf.paciente_id::varchar = " + obj.terminoBusqueda));
                     
-                  }
+                  }*/
                 });
                
             
@@ -2812,6 +2837,10 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
  */
 function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback) {
     
+    console.log("********__guardarBodegasDocumentosDetalle****************");
+    console.log("********__guardarBodegasDocumentosDetalle****************");
+    console.log("********__guardarBodegasDocumentosDetalle****************");
+    
     var producto = parametros.temporales[index];
    
     if (!producto) {       
@@ -2822,17 +2851,24 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
         
     G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, producto, transaccion).then(function(resultado){    
        
-       return  G.Q.nfcall(__actualizarExistenciasBodegas, producto, transaccion);
-        
-       
+        if(resultado >= 1){      
+            return  G.Q.nfcall(__actualizarExistenciasBodegas, producto, transaccion);      
+        }else{
+            throw 'Error al actualizar las existencias de los lotes por que no pueden ser menores a 0'
+        }
+         
     }).then(function(resultado){
         
-       return G.Q.nfcall(__insertarBodegasDocumentosDetalle,producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId,transaccion);
-   
+       if(resultado >= 1){      
+            return G.Q.nfcall(__insertarBodegasDocumentosDetalle,producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId,transaccion);
+        }else{
+            throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0'
+        }
+        
     
     }).then(function(resultado){
-      
         
+        console.log("A QUI [__insertarBodegasDocumentosDetalle] ", resultado)
         setTimeout(function() {
             __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback);
         }, 300);

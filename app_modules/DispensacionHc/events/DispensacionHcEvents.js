@@ -48,8 +48,8 @@ DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj,
 
 /**
  * @author Cristian Ardila
- * +Descripcion Evento invocado en el momento en que se realice la entrega de los
- *              medicamentos pendientes
+ * +Descripcion Evento invocado en el momento en que se realice el proceso que permite
+ *              dejar la formula en estado Todo pendiente
  * @fecha 2017-02-08
  */
 DispensacionHcEvents.prototype.onNotificarTodoPendienteFormula = function(result,msj, status) {

@@ -1145,6 +1145,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
             
     }).then(function(resultado){
           
+        //console.log("resultado [consultarProductoTemporal]: ", resultado);  
         if(resultado.length > 0){
              temporales = resultado;
              return G.Q.ninvoke(that.m_dispensacion_hc,'bloquearTabla');            
@@ -1180,7 +1181,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         if(temporales.length > 0){
             
          var parametrosGenerarDispensacion=
-                  {
+                {
                     parametro1:{ bodegasDocId:bodegasDocId, 
                         numeracion:numeracion, 
                         observacion:observacion, 
@@ -1193,15 +1194,16 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                         fechaMaxima:resultado.fechaMaxima,
                         actualizarFechaUltimaEntrega: actualizarFechaUltimaEntrega   
                     },
-                    
+
                     parametro2:{
-                            temporales: temporales, 
-                            usuario:usuario, 
-                            bodegasDocId:bodegasDocId, 
-                            numeracion:numeracion, 
-                            planId: planId},
-                       
-                  };
+                        temporales: temporales, 
+                        usuario:usuario, 
+                        bodegasDocId:bodegasDocId, 
+                        numeracion:numeracion, 
+                        planId: planId
+                    },
+
+                };
             
             
             /**

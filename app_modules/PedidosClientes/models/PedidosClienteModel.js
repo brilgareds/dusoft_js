@@ -1436,7 +1436,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         7: cotizacion.vendedor.id,
         8: '1',
         9: cotizacion.observacion,
-        10: cotizacion.tipo_producto,
+        10: cotizacion.tipo_producto[0],
         11: cotizacion.centro_utilidad_id,
         12: cotizacion.bodega_id,
         13: '',
@@ -1471,6 +1471,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
     //Pendiente revisar porque algunas veces llega en null el centro utilidad y bodega
     G.knex.raw(sql, parametros).
     then(function(resultado) { 
+        //console.log("resultado [insertar_cotizacion]: ", resultado)
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
         console.log("err [insertar_cotizacion]", err);

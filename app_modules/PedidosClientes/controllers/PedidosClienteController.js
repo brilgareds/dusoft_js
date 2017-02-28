@@ -1605,7 +1605,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
            return G.Q.nfcall(__validar_datos_productos_archivo_plano, that, args, _productosValidosExistentes, [], [],0);                               
         }                                 
     
-    }).then(function(productosPlanoValidados){
+    }).then(function(productosPlanoValidados){                    
        
         
         return G.Q.nfcall(__productosBodegas,that, 0, productosPlanoValidados[0],[]);
@@ -1658,7 +1658,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
         return G.Q.nfcall(__agrupar_productos_por_tipo,_productosPlanoValidadosValido,{},0);
                           
     }).then(function(resultadoProductosAgrupados){
-        //console.log("resultadoProductosAgrupados ", resultadoProductosAgrupados);
+        
         cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(resultadoProductosAgrupados): cotizacion.tipo_producto;
          
         _productosPlanoValidadosValido = resultadoProductosAgrupados[cotizacion.tipo_producto];
@@ -1685,18 +1685,19 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
         //cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;        
         //return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, _productosPlanoValidadosValido, []);
         
-       G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, _productosPlanoValidadosValido, _productosValidosExistentes,[],[])
+      return G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, _productosPlanoValidadosValido, _productosValidosExistentes,[],[])
         
         
-        return;
+        
     //console.log("TODOS LOS PRODUCTOS OK ", _productosPlanoValidadosValido);
     //console.log("_productosValidosExistentes ", _productosValidosExistentes);
     
     }).then(function(resultado){
         
+        console.log("resultado [__seleccionarProductoMultipleDisponibilidadMayor]: ", resultado)
         
     })
-            
+        /*    
             
             
             .then(function(resultado){
@@ -1723,7 +1724,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                     }}};
         return;
         
-    }).fail(function(err) {
+    })*/.fail(function(err) {
         
         console.log("err [cotizacionArchivoPlano]:", err);
         var msj = "Erro Interno";
@@ -1749,6 +1750,9 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
         return;
     }
     
+    
+    //console.log("productos ", productos);
+    //console.log("productosSolicitados ", productosSolicitados);
    /* if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){   
                 productoUnidadMedida = resultado[0];
                 resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
@@ -1812,7 +1816,7 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
              }
              
         });
-        console.log("row.codigo_producto " + producto.codigo_producto  + "totalDisponible " + totalDisponible);
+        //console.log("row.codigo_producto " + producto.codigo_producto  + "totalDisponible " + totalDisponible);
     }
      
     index++;

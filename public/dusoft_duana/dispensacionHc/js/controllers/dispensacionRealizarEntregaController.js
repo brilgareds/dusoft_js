@@ -160,8 +160,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     tipoEstadoFormula: tipoEstadoFormula,
                                     tipoIdPaciente:datos.obj.cabecera_formula[0].tipo_id_paciente,
                                     pacienteId: datos.obj.cabecera_formula[0].paciente_id
-
-                               }
+                                }
                             }    
                         };  
                          if(estadoEntregaFormula === 0){

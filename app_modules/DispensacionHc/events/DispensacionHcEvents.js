@@ -29,6 +29,12 @@ DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(result,msj, 
 
 };
 
+/**
+ * @author Cristian Ardila
+ * +Descripcion Evento invocado en el momento en que se realice la entrega de los
+ *              medicamentos pendientes
+ * @fecha 2017-02-08
+ */
 DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj, status) {
   
     console.log("*******************NOTIFICAR CABECERA FORMULA ************");
@@ -36,6 +42,23 @@ DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj,
     var response = G.utils.r('onNotificarCabeceraFormula', msj, status, result);
     console.log("response ", response);
     that.io.sockets.emit('onNotificarCabeceraFormula', response);
+     
+
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Evento invocado en el momento en que se realice la entrega de los
+ *              medicamentos pendientes
+ * @fecha 2017-02-08
+ */
+DispensacionHcEvents.prototype.onNotificarTodoPendienteFormula = function(result,msj, status) {
+  
+    console.log("*******************NOTIFICAR TODO PENDIENTES FORMULA ************");
+    var that = this;
+    var response = G.utils.r('onNotificarTodoPendienteFormula', msj, status, result);
+    console.log("response ", response);
+    that.io.sockets.emit('onNotificarTodoPendienteFormula', response);
      
 
 };

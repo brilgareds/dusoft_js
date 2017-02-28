@@ -236,7 +236,32 @@ define(["angular", "js/controllers"], function(angular, controllers) {
          *             
          */
         that.guardarTodoPendiente = function(obj){
-            var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
+            console.log("***********guardarTodoPendiente*******************");
+            console.log("***********guardarTodoPendiente*******************");
+            console.log("***********guardarTodoPendiente*******************");
+            
+            dispensacionHcService.guardarTodoPendiente(obj,function(data){
+                
+                AlertService.mostrarMensaje("warning", data.msj);
+
+                if(data.status === 500){                       
+                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                }
+ 
+                socket.on("onNotificarTodoPendienteFormula", function(datos) {
+                    
+                    console.log("datos ", datos);
+
+                    if(datos.status === 200){
+ 
+                        that.notificarSolicitud("Formula con pendientes lista", "Formula # " + datos.obj.dispensacion, 
+                        {evolucionId:datos.obj.evolucionId,
+                            tipoIdPaciente:datos.obj.tipoIdPaciente,
+                            pacienteId:datos.obj.pacienteId});
+                    }                    
+                });               
+            });
+           /* var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");
             dispensacionHcService.guardarTodoPendiente(obj,function(data){
               
                 if(data.status === 200){                   
@@ -256,7 +281,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }else{
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
-            });         
+            }); */        
         };
         
         
@@ -379,14 +404,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
            dispensacionHcService.realizarEntregaFormulaPendientes(obj,function(data){
                 
                 AlertService.mostrarMensaje("warning", data.msj);
-
-                if(data.status === 500){                       
-                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
-                }
  
                 socket.on("onNotificarEntregaFormula", function(datos) {
                     
-                    console.log("datos ", datos);
+                    console.log("datos [dispensacionPendientes]: ", datos);
 
                     if(datos.status === 200){
  
@@ -394,7 +415,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
                             pacienteId:datos.obj.pacienteId});
-                    }                    
+                    } 
+                    
+                    
+                    if(datos.status === 500){                       
+                        AlertService.mostrarMensaje("danger", datos.msj); 
+                    }
                 });               
             });    
         };
@@ -413,12 +439,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             dispensacionHcService.realizarEntregaFormula(obj,function(data){
                
                 AlertService.mostrarMensaje("warning", data.msj);
-                if(data.status === 500){                       
-                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
-                }
- 
+                 
                 socket.on("onNotificarEntregaFormula", function(datos) {
- 
+                    
+                    console.log("datos [dispensacionPendientes]: ", datos);
+                    
                     if(datos.status === 200){
  
                         that.notificarSolicitud("Entrega lista", "Formula # " + datos.obj.dispensacion, 
@@ -426,7 +451,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
                             pacienteId:datos.obj.pacienteId});
                         
-                    }                    
+                    }
+                    
+                    if(datos.status === 500){                       
+                        AlertService.mostrarMensaje("danger", datos.msj); 
+                    }
                 }); 
                /* if(data.status === 200){                   
                     AlertService.mostrarMensaje("success", data.msj);                  

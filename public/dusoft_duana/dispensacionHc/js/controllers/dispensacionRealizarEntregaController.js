@@ -239,10 +239,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             dispensacionHcService.guardarTodoPendiente(obj,function(data){
                 
                 AlertService.mostrarMensaje("warning", data.msj);
-
-                if(data.status === 500){                       
-                   AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
-                }
  
                 socket.on("onNotificarTodoPendienteFormula", function(datos) {
                      
@@ -252,7 +248,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         {evolucionId:datos.obj.evolucionId,
                             tipoIdPaciente:datos.obj.tipoIdPaciente,
                             pacienteId:datos.obj.pacienteId});
-                    }                    
+                    }
+                      
+                    if(datos.status === 500){                       
+                        AlertService.mostrarMensaje("danger", datos.msj); 
+                    }
                 });               
             });
            /* var evolucionStorage = localStorageService.get("dispensarFormulaDetalle");

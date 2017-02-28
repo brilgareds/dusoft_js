@@ -914,17 +914,20 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
     var pacienteId = args.realizar_entrega_formula.pacienteId;
     var parametrosGenerarDispensacion={evolucionId:evolucionId, tipoFormula:tipoFormula.tipo,usuario: usuario}
     var def = G.Q.defer();           
-    
+    var numeroFormula;
       
     that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: ''},'Guardando pendientes...', 201);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
     
-      
-   /**
-     * +Descripcion Se valida antes de dejar la formula con todo los productos pendientes, que no existan productos
-     *              en la tabla de temporales
-    */
-    G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1).then(function(resultado){
+      G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
+           numeroFormula = resultado[0].formula_id;
+           /**
+            * +Descripcion Se valida antes de dejar la formula con todo los productos pendientes, que no existan productos
+            *              en la tabla de temporales
+            */
+          return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductoTemporal',{evolucionId:evolucionId},1);
+          
+      }).then(function(resultado){
         
         if(resultado.length > 0){
             
@@ -932,21 +935,10 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
           
         }else{
             return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarEstadoFormula',parametrosGenerarDispensacion); 
-            //return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarTipoFormula',parametrosGenerarDispensacion)
+            
         }
      
-    })/*.then(function(resultado){
-        
-         if(resultado.rowCount === 0){
-            
-            throw 'Error al actualizar el tipo de formula'   
-            
-        }else{           
-            
-            return G.Q.ninvoke(that.m_dispensacion_hc, 'actualizarEstadoFormula',parametrosGenerarDispensacion);
-           
-        }  
-    })*/.then(function(resultado){
+    }).then(function(resultado){
         
         if(resultado.rowCount === 0){
              
@@ -977,19 +969,21 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
                     
     }).then(function(resultado){
         
-         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId});
-         
-    }).then(function(resultado){
+        console.log("resultado [actualizarTipoFormula]: ", resultado)
         
-        that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: resultado[0].formula_id, 
+        that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: numeroFormula, 
                                                           evolucionId:evolucionId,
                                                           tipoIdPaciente: tipoIdPaciente,
                                                           pacienteId: pacienteId},'La formula ha quedado con todos sus medicamentos pendientes',200); 
         //res.send(G.utils.r(req.url, 'La formula ha quedado con todos sus medicamentos pendientes', 200, {}));
-        
+         
    }) .fail(function(err){
-       console.log("err [controller.guardarTodoPendiente]:", err);    
-        res.send(G.utils.r(req.url, err, 500, {}));
+       console.log("err [controller.guardarTodoPendiente]:", err); 
+       that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: numeroFormula, 
+                                                          evolucionId:evolucionId,
+                                                          tipoIdPaciente: tipoIdPaciente,
+                                                          pacienteId: pacienteId},"Error al generar la formula como Todo pendiente. Formula # "+numeroFormula,500);
+        //res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
 

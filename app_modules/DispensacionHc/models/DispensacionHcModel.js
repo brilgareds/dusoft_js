@@ -1925,7 +1925,7 @@ DispensacionHcModel.prototype.actualizarTipoFormula = function(obj, callback) {
        callback(false, resultado);
     }).catch(function(err){    
        console.log("err (/catch) [actualizarTipoFormula]: ", err);
-       callback(err);
+       callback("Error al actualizar el tipo de formula");  
     });
 };
 

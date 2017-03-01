@@ -4352,7 +4352,7 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
     }                
      
     index++;
-    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_cliente_id};
       G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function(resultado){
      
         /**
@@ -4580,24 +4580,29 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
     
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function(tercero){
         
-        cotizacion.cliente.tipoBloqueoId = tercero[0].tipo_bloqueo_id;
-        
-        if(tercero[0].tipo_bloqueo_id !== '1'){
-            throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:404,pedidos_clientes:{}};
-        } else {
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
+        if(tercero.length > 0){
+            if(tercero[0].tipo_bloqueo_id !== '1'){
+                cotizacion.cliente.tipoBloqueoId = tercero[0].tipo_bloqueo_id;
+                throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:404,pedidos_clientes:{}};
+            } else {
+                return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
+            }
+        }else{
+            throw {msj:"El tercero no se encuentra registrado", status:404,pedidos_clientes:{}};
         }
         
     }).then(function(resultado){
         
-       
-        cotizacion.cliente.contrado_id = resultado[0].contrato_cliente_id;
-        cotizacion.cliente.contrato_cliente_id = resultado[0].contrato_cliente_id;
-       
-        if(resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0'){
-            return G.Q.nfcall(__precioVentaProductos,that,0, cotizacion);
+        if(resultado.length > 0){
+            if(resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0'){
+                cotizacion.cliente.contrado_id = resultado[0].contrato_cliente_id;
+                cotizacion.cliente.contrato_cliente_id = resultado[0].contrato_cliente_id;
+                return G.Q.nfcall(__precioVentaProductos,that,0, cotizacion);
+            }else{
+                throw {msj:"La farmacia no esta permitida para generar pedidos", status:404,pedidos_clientes:{}};
+            }
         }else{
-            throw {msj:"La farmacia no esta permitida para generar pedidos", status:404,pedidos_clientes:{}};
+            throw {msj:"El cliente no se encuentra registrado en la tabla de contratos", status:404,pedidos_clientes:{}};
         }
         
      }).then(function(resultado){
@@ -4622,7 +4627,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
          
     
     }).then(function(resultado){
-        console.log("resultado [__insertarProductosFarmaciaCotizacion]: ", resultado)
+        
         cotizacion.total = __totalNuevoPrecioVenta(cotizacion);  
         
         var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion,  cotizacion.productos, cotizacion.usuario_id, "Se solicita aprobacion", cotizacion.total, 0, 0);
@@ -4630,17 +4635,14 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         
     }).then(function(resultado){    
         
-        console.log("resultado [logTrazabilidadVentas]: ", resultado)
         var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, "APROBADO AUTOMATICAMENTE", cotizacion.total, 0, 1);
 
-            return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);
+        return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);
  
     }).then(function(resultado){
-        
-            console.log("resultado [logAprobacionCotizacion]: ", resultado)
-       return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
-        
           
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
+         
     }).then(function(resultado){
          
         return G.Q.ninvoke(that, "__asignarResponsablesPedidos",cotizacion, resultado);
@@ -4649,7 +4651,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK resultado ", resultado);
         res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
     }).fail(function(err){
-         console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK err ", err);
+         console.log("generarPedidoBodegaFarmacia ", err);
        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
     });
   

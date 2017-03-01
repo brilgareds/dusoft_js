@@ -31,7 +31,11 @@ define(["angular",
              * @param {object} obj
              * +Descripcion: Handler del boton crear pedido
              */
-            $scope.onIrVistaGuardarPedidoTemporal = function(){
+            $scope.onIrVistaGuardarPedidoTemporal = function(multiple){
+                localStorageService.add("bodegaMultiple",
+                        {
+                            multiple: multiple
+                        });
                 $state.go('GuardarPedidoTemporal');
             };
             

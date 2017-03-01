@@ -110,8 +110,9 @@ define(["angular", "js/services"], function(angular, services) {
                     estado_actual_pedido: obj.estado_actual_pedido || '',
                     estado_separacion: obj.estado_separacion || ''
                 };
-
+                
                 pedido.setDatos(datos_pedido);
+                pedido.setNumeroPedidoCliente(obj.pedido_cliente);
                 pedido.setDescripcion(obj.observacion);
 
                 var farmacia = FarmaciaPedido.get(

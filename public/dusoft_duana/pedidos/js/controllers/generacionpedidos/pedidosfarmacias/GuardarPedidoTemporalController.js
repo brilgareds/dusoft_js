@@ -12,8 +12,10 @@ define(["angular", "js/controllers",
                 $timeout, EmpresaPedidoFarmacia, ProductoPedidoFarmacia, $interval) {
 
             var self = this;
-
-
+            self.respuestaPedidoBodegaFarmacia;
+            $scope.numero_pedido_farmacia;
+            self.generarPedidoFarmacia=true;
+                    
             self.init = function() {
                 $scope.rootPedidoFarmaciaTemporal = {};
                 
@@ -168,14 +170,15 @@ define(["angular", "js/controllers",
                     session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
-                            numero_pedido: farmacia.getCodigo() + farmacia.getCentroUtilidadSeleccionado().getCodigo() + producto.getCodigoProducto(),
+                            numero_pedido: farmacia.getCodigo() + farmacia.getCentroUtilidadSeleccionado().getCodigo() + producto.getCodigoProducto()
+                                           + producto.getEmpresaOrigenProducto()+ producto.getCentroUtilidadOrigenProducto()+ producto.getBodegaOrigenProducto(),
                             farmaciaDestino:farmacia,
                             producto:producto
-                            
+                           
                         }
                     }
                 };
-
+                console.log("guardarDetallePedidoTemporal>>>>>>>>>>>>>>>>>>>>>>>>>>>>",obj.data.pedidos_farmacias);
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         pedido.agregarProductoSeleccionado(producto);
@@ -192,12 +195,13 @@ define(["angular", "js/controllers",
              * @Author: Eduar
              * +Descripcion: Realiza la peticion al API para generar un pedido dsde el temporal.
              */
-            self.generarPedido = function(){
+            self.generarPedido = function(pedidoCliente,callback){
+                console.log("generarPedido");
                 var pedido = $scope.root.pedido;
                 var farmacia = pedido.getFarmaciaDestino();
                 var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_FARMACIA;
-                
-                 var obj = {
+                pedidoCliente=(pedidoCliente===undefined||pedidoCliente===''||pedidoCliente===0)?0:pedidoCliente;
+                 var objGenerarPedido = {
                     session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
@@ -205,21 +209,100 @@ define(["angular", "js/controllers",
                             centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                             tipo_pedido: pedido.getProductosSeleccionados()[0].getTipoProductoId(),
-                            observacion:pedido.getDescripcion()
+                            observacion:pedido.getDescripcion(),
+                            pedidoCliente: pedidoCliente
                         }
                     }
                 };
+                
+                console.log("objGenerarPedido ",objGenerarPedido);
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
+                Request.realizarRequest(url, "POST", objGenerarPedido, function(data) {
                     if (data.status === 200) {
                        pedido.setNumeroPedido(data.obj.numero_pedido);
+                       $scope.numero_pedido_farmacia=data.obj.numero_pedido;
                        pedido.setEsTemporal(false);
+                       callback(data.obj.numero_pedido);
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error al crear el pedido");
                     }
                 });
             };
+              
+        /*
+         * @Author: AMGT
+         * +Descripcion: Realiza la peticion al API para generar un pedido desde el temporal de farmacia.
+         */
+        self.generarPedidoAutomaticoCliente = function(callback) {
+            var pedido = $scope.root.pedido.getProductosSeleccionados();
+            var empresa = $scope.root.session.empresaId;
+            var centro_utilidad = $scope.root.session.centroUtilidad;
+            var bodega = $scope.root.session.bodega;
+            var productos = [];
+            var f = new Date();
+            var fecha = f.getDate() + "/" + (f.getMonth() + 1) + "/" + f.getFullYear();
+            var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
+console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
+            for (var i in pedido) {
+                if (empresa !== pedido[i].empresaOrigenProducto || centro_utilidad !== pedido[i].centroUtilidadOrigenProducto || bodega !== pedido[i].bodegaOrigenProducto) {
+                    var producto = {codigo_producto: pedido[i].codigo_producto, cantidad_solicitada: pedido[i].cantidadSolicitada, empresaIdProducto: pedido[i].empresaOrigenProducto, centroUtilidadProducto: pedido[i].centroUtilidadOrigenProducto,bodegaProducto:pedido[i].bodegaOrigenProducto};
+                    productos.push(producto);
+                }
+            }
             
+            if(pedido.length===productos.length){
+             self.generarPedidoFarmacia=false;
+            }
+            
+            if (productos.length > 0) {
+                var cotizacions = {
+                    empresa_id: '03',
+                    centro_utilidad_id: '1 ',
+                    bodega_id: '03',
+                    numero_cotizacion: 0,
+                    observacion: 'Pedido Generado desde Duana',
+                    productos: productos,
+                    tipo_producto: pedido[0].getTipoProductoId(),
+                    observacion_cartera: '',
+                    aprobado_cartera: '0',
+                    estado_cotizacion: '',
+                    estado: '0',
+                    vendedor: {tipo_id_tercero: 'CC ', id: '67039648'}, //pedir a Mauricio
+                    cliente: {
+                        tipo_id_tercero: 'AS', ///pedir a Mauricio
+                        id: '800024390',
+                        contrato_id: 301,
+                        tipoBloqueoId: '1'
+                    },
+                    fecha_registro: fecha,
+                    usuario_id: $scope.root.session.usuario_id
+                };
+
+
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: cotizacions
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    callback(data);
+                });
+            } else {
+                var data = {
+                    status: 200, msj: 'No se asignaron productos para realizar Pedidos en Clientes',
+                    obj: {pedidos_clientes: {
+                            numero_pedido: 0
+                        }
+                    }
+                };
+                callback(data);
+            }
+        };
+
             /*
              * @Author: Eduar
              * @param {ProductoPedidoFarmacia} producto
@@ -238,7 +321,11 @@ define(["angular", "js/controllers",
                             empresa_id: farmacia.getCodigo(),
                             centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            codigo_producto: producto.getCodigoProducto()
+                            codigo_producto: producto.getCodigoProducto(),
+                            empresa_origen_producto: producto.getEmpresaOrigenProducto(),
+                            centro_utilidad_origenProducto: producto.getCentroUtilidadOrigenProducto(),
+                            bodega_origen_producto: producto.getBodegaOrigenProducto()
+                            
                         }
                     }
                 };
@@ -297,8 +384,9 @@ define(["angular", "js/controllers",
              */
             self.mostrarProductosNoValidos = function(productos, callback){
                 $scope.productosInvalidos = [];
-                
+                 console.log("mostrarProductosNoValidos ");
                 for (var i in productos) {
+                    console.log("productos ",productos[i]);
                     var _producto = productos[i];
                     var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion || "?").
                                                               setCantidadSolicitada(_producto.cantidad_solicitada).
@@ -362,9 +450,149 @@ define(["angular", "js/controllers",
              * @Author: Eduar
              * +Descripcion: Handler del boton generar pedido
              */
-            $scope.onGenerarPedido = function(){
-                self.generarPedido();
+          $scope.onGenerarPedido = function() {
+            if ($scope.root.bodegaMultiple.bools) {
+                self.generarPedidoAutomaticoCliente(function(datos) {
+                    var mensaje = '';
+                    if (datos.status === 200) {
+                        console.log("");
+                        mensaje = datos.msj;
+                        if(self.generarPedidoFarmacia){
+                        self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
+                           mensaje+="\n Pedido Farmacia No. "+ numero_pedido_farmacia;
+                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+                        });
+                        }else{
+                          mensaje+="\n No se genera Pedido en Farmacia. ";
+                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje); 
+                          self.eliminarPedidoTemporal();
+                        }
+                    }
+                    if (datos.status === 500) {
+                        mensaje = datos.msj;
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+                    }
+                    if (datos.status === 403) {
+                        datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
+                            mensaje += producto.mensajeError + " para el codigo (" + producto.codigo_producto + ") Precio venta (" + producto.precio_venta + ") \n";
+                        });
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+                    }
+                    
+                    
+                                     
+                });
+            } else {
+                self.generarPedido(0);
+            }
+          // self.prubapedidodecliente();           
+//              console.log(nuevosDatos);
+        }; 
+        
+        self.prubapedidodecliente = function() {
+        var pedido =  {                 
+                    empresa_id: '03', 
+                    centro_utilidad_id: '1 ',
+                    bodega_id: '03',
+                    numero_cotizacion: 0,
+                    observacion: 'NUEVA PRUEBA ',
+                    productos: [
+                        {codigo_producto: '158M0213132', cantidad_solicitada: '100', empresaIdProducto: '03', centroUtilidadProducto: '1 ',bodegaProducto:'03'},
+                        {codigo_producto: '1142M0012997', cantidad_solicitada: '1.', empresaIdProducto: '03', centroUtilidadProducto: '1 ',bodegaProducto:'03'},
+                        
+                        /*{codigo_producto: '1101G0222238',cantidad_solicitada: '10'},
+                        {codigo_producto: '1101M0443248',cantidad_solicitada: '1'},	
+                        {codigo_producto: '1101D0471598',cantidad_solicitada: '1'},
+                        {codigo_producto: '1101E0381868',cantidad_solicitada: '1'} */                        
+                    ],
+                    tipo_producto: '1',                  
+                    observacion_cartera: '',
+                    aprobado_cartera: '0',
+                    estado_cotizacion: '',                   
+                    estado: '0',
+                    vendedor: {tipo_id_tercero: 'CC ',id: '67039648'},
+                    cliente: {
+                        tipo_id_tercero: 'NIT',
+                        id: '800024390',
+                        contrato_id: 301,
+                        tipoBloqueoId: '1'
+                    },
+                    fecha_registro: '30/01/2017',
+                    usuario_id: 1350
+                }; 
+           
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: pedido
+                        }
+                    }
+                };
+                
+                var mensaje = "";
+                var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    
+                    if(data.status === 200){                       
+                        mensaje = data.msj;                       
+                    }
+                    
+                    if(data.status === 403){
+                        data.obj.pedidos_clientes.productos_invalidos.forEach(function(producto){
+                            mensaje += producto.mensajeError+ " para el codigo ("+ producto.codigo_producto+") Precio venta ("+producto.precio_venta+") \n";
+                        });
+                    }
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);    
+                   
+                });
+        }
+        
+        
+                        
+          /*
+             * @Author: andres
+             * +Descripcion: funcion de prueba para crear pedidos de farmacia automaticos
+             */
+            self.prubapedidodeclientes = function() {
+
+            var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
+
+            var obj = {
+                session: $scope.root.session,
+                data: {
+                    pedidos_farmacias: {
+                        //donde sale el producto
+                        empresa_origen_id: '03',
+                        centro_utilidad_origen_id: '1',
+                        bodega_origen_id: '06',
+                        //a donde va ir el producto
+                        empresa_destino_id: '03',
+                        centro_utilidad_destino_id: '1',
+                        bodega_destino_id: '03',
+                        //tipo de producto tipo_producto tipo_pedido (quemado)
+                        tipo_producto: '1',
+                        tipo_pedido: '1',
+                        //observacion(quemado)
+                        observacion: 'PEDIDO DESDE EL MODULO DE CLIENTE',
+                        //lista de productos que se van a pedir a Cosmitet
+                        productos: [{codigo: '199L0162820', cantidad: 100}, {codigo: '168A0010028', cantidad: 100}],
+                        //(quemado) va en 0        
+                        pedidoCliente: 0
+                    }
+                }
             };
+
+            Request.realizarRequest(url, "POST", obj, function(data) {
+                if (data.status === 200) {
+                    console.log("data.status", data.msj);
+                    AlertService.mostrarMensaje("warning", data.msj + " Numero " + data.obj.pedido_farmacia.pedido);
+                } else {
+                    AlertService.mostrarMensaje("warning", "NO se creó el pedido en farmacia");
+                }
+            });
+        };
+          
             
             /*
              * @Author: Eduar
@@ -511,6 +739,15 @@ define(["angular", "js/controllers",
                  $scope.rootPedidoFarmaciaTemporal.progresoArchivo = 1; 
                  var nombreArchivo = $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.files[0].name;
                  var extension = nombreArchivo.substr(nombreArchivo.indexOf("."),nombreArchivo.length);   
+                 
+                var empresa_id='0';
+                var centro_utilidad_id='0';
+                var bodega_id='0';
+                if(!$scope.root.bodegaMultiple.bools){
+                 empresa_id=pedido.getFarmaciaOrigen().getCodigo()!==undefined? pedido.getFarmaciaOrigen().getCodigo():0;
+                 centro_utilidad_id=pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo()!==undefined?pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo():0;
+                 bodega_id=pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()!==undefined?pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo():0;
+                }
                    
                  self.guardarEncabezadoPedidoTemporal(function(creacionCompleta) {
                     if (creacionCompleta) {
@@ -518,9 +755,9 @@ define(["angular", "js/controllers",
                         
                          $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.opts.query.data = JSON.stringify({
                                 pedidos_farmacias: {
-                                    empresa_origen_id: pedido.getFarmaciaOrigen().getCodigo(),
-                                    centro_utilidad_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo(),
-                                    bodega_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                                    empresa_origen_id: empresa_id,
+                                    centro_utilidad_origen_id: centro_utilidad_id,
+                                    bodega_origen_id: bodega_id,
                                     empresa_destino_id: pedido.getFarmaciaDestino().getCodigo(),
                                     centro_utilidad_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
                                     bodega_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),

@@ -3582,8 +3582,23 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                         this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
                         .on("hp.numeracion","bod.numeracion")
                     }).where("evolucion_id", obj.evolucionId)
+            }).as("a");
+            
+     var subQueryFechaRegistro = G.knex.select("bod.fecha_registro")  
+            .from("hc_formulacion_despachos_medicamentos AS hp")
+            .innerJoin("bodegas_documentos AS bod", function(){
+                this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
+                .on("hp.numeracion","bod.numeracion")
+            }).where("evolucion_id", obj.evolucionId)
+              .union(function(){
+                this.select("bod.fecha_registro")  
+                    .from("hc_formulacion_despachos_medicamentos_pendientes AS hp")
+                    .innerJoin("bodegas_documentos AS bod", function(){
+                        this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
+                        .on("hp.numeracion","bod.numeracion")
+                    }).where("evolucion_id", obj.evolucionId)
+                            .andWhere("bod.todo_pendiente", 1)
             }).as("a")
-    
     
     var numeroEntregaActualSubQuery = G.knex.select([G.knex.raw("sum(dispensados.numero_entregas)as numero_entregas"),
                                       "dispensados.evolucion_id"])
@@ -3611,7 +3626,11 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
     
     var campoFechaUltimaEntrega = G.knex.max("a.fecha_registro")
                              .from(subQueryA).as("fecha_ultima_entrega")
-          
+    
+    var campoFechaRegistro = G.knex.max("a.fecha_registro")
+                             .from(subQueryFechaRegistro).as("fecha_registro_formula")
+    
+    
     var campoSubQueryMovFormulaA = ["numero_formula as formula_id",   
                                "evolucion_id",  
                                "paciente_id",  
@@ -3641,7 +3660,8 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                                 ) = 1 THEN 2   \
                                ELSE 0 END as sw_pendiente"),
                                campoNumeroEntregaActual,
-                               campoFechaUltimaEntrega
+                               campoFechaUltimaEntrega,
+                               campoFechaRegistro
                             ]
     var subQueryMovFormulaA = G.knex.select(campoSubQueryMovFormulaA)
                                     .from("hc_formulacion_antecedentes as hc")
@@ -3666,11 +3686,12 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                    "a.sw_pendiente",  
                    "a.tipo_formula",  
                    G.knex.raw("CASE WHEN a.numero_total_entregas = a.numero_entrega_actual THEN 1 ELSE 0 END as sw_finalizado"),  
-                   G.knex.raw("CASE WHEN a.refrendar = 1 THEN (\
+                   G.knex.raw("a.fecha_registro_formula as fecha_entrega"), 
+                  /* G.knex.raw("CASE WHEN a.refrendar = 1 THEN (\
                    		SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion  \
                    		FROM medicamentos_refrendados   \
                     	WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula)   \
-                    	ELSE a.fecha_ultima_entrega END as fecha_entrega"),  
+                    	ELSE a.fecha_registro_formula END as fecha_entrega"), */ 
                    G.knex.raw("null as fecha_minima_entrega"),   
                    G.knex.raw("null as fecha_maxima_entrega"),   
                    "a.medico_id",  
@@ -3689,7 +3710,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
          "b.sw_pendiente",   
          "b.tipo_formula",  
          "b.sw_finalizado",  
-         "b.fecha_ultima_entrega as fecha_entrega",  
+         "b.fecha_entrega as fecha_entrega",  
          G.knex.raw("null as fecha_minima_entrega"),  
          G.knex.raw("null as fecha_maxima_entrega"),  
          "b.medico_id",  
@@ -3710,7 +3731,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
      
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){  
-            // console.log("resultado [consultarDispensacionEstadosFormula]:", resultado)  
+            //console.log("resultado [consultarDispensacionEstadosFormula]:", resultado)  
         return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion)
             
     }).then(function(resultado){       

@@ -3569,14 +3569,14 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
      
     //+Descripcion Query que consulta la ultima fecha de entrega de la formula
      
-    var subQueryA = G.knex.select(["bod.fecha_registro","bod.numero_entrega_actual"])  
+    var subQueryA = G.knex.select("bod.fecha_registro")  
             .from("hc_formulacion_despachos_medicamentos AS hp")
             .innerJoin("bodegas_documentos AS bod", function(){
                 this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
                 .on("hp.numeracion","bod.numeracion")
             }).where("evolucion_id", obj.evolucionId)
               .union(function(){
-                this.select(["bod.fecha_registro","bod.numero_entrega_actual"])  
+                this.select("bod.fecha_registro")  
                     .from("hc_formulacion_despachos_medicamentos_pendientes AS hp")
                     .innerJoin("bodegas_documentos AS bod", function(){
                         this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
@@ -3611,7 +3611,6 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
     
     var campoFechaUltimaEntrega = G.knex.max("a.fecha_registro")
                              .from(subQueryA).as("fecha_ultima_entrega")
-                             .where("a.numero_entrega_actual",">",0)
           
     var campoSubQueryMovFormulaA = ["numero_formula as formula_id",   
                                "evolucion_id",  
@@ -3711,7 +3710,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
      
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){  
-      
+            // console.log("resultado [consultarDispensacionEstadosFormula]:", resultado)  
         return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion)
             
     }).then(function(resultado){       

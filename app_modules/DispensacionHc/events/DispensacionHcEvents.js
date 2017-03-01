@@ -18,14 +18,12 @@ var DispensacionHcEvents = function(socket, dispensacion) {
  *  --PedidosCliente.prototype.solicitarAutorizacion
  *  --PedidosClienteController.prototype.modificarEstadoCotizacion
  */
-DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(result,msj, status) {
+DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(result,msj, status,usuario) {
   
-    console.log("*******************NOTIFICAR ENTREGA FORMULA ************");
+    console.log("*******************onNotificarEntregaFormula************");
     var that = this;
-    var response = G.utils.r('onNotificarEntregaFormula', msj, status, result);
-    console.log("response ", response);
-    that.io.sockets.emit('onNotificarEntregaFormula', response);
-     
+    var response = G.utils.r('onNotificarEntregaFormula', msj, status, result);  
+     __enviarNotificacion(that,usuario,response,"onNotificarEntregaFormula"); 
 
 };
 
@@ -35,14 +33,12 @@ DispensacionHcEvents.prototype.onNotificarEntregaFormula = function(result,msj, 
  *              medicamentos pendientes
  * @fecha 2017-02-08
  */
-DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj, status) {
+DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj, status,usuario) {
   
-    console.log("*******************NOTIFICAR CABECERA FORMULA ************");
+    console.log("*******************onNotificarCabeceraFormula************");
     var that = this;
-    var response = G.utils.r('onNotificarCabeceraFormula', msj, status, result);
-    console.log("response ", response);
-    that.io.sockets.emit('onNotificarCabeceraFormula', response);
-     
+    var response = G.utils.r('onNotificarCabeceraFormula', msj, status, result);   
+    __enviarNotificacion(that,usuario,response,"onNotificarCabeceraFormula"); 
 
 };
 
@@ -52,18 +48,35 @@ DispensacionHcEvents.prototype.onNotificarCabeceraFormula = function(result,msj,
  *              dejar la formula en estado Todo pendiente
  * @fecha 2017-02-08
  */
-DispensacionHcEvents.prototype.onNotificarTodoPendienteFormula = function(result,msj, status) {
-  
-    console.log("*******************NOTIFICAR TODO PENDIENTES FORMULA ************");
+DispensacionHcEvents.prototype.onNotificarTodoPendienteFormula = function(result,msj, status,usuario) {
+    
+    console.log("*******************onNotificarTodoPendienteFormula************");
     var that = this;
-    var response = G.utils.r('onNotificarTodoPendienteFormula', msj, status, result);
-    console.log("response ", response);
-    that.io.sockets.emit('onNotificarTodoPendienteFormula', response);
+    var response = G.utils.r('onNotificarTodoPendienteFormula', msj, status, result);   
+    __enviarNotificacion(that,usuario,response,"onNotificarTodoPendienteFormula");
      
 
 };
 
+/**
+ * @author Cristian Ardian
+ * +Descripcion Metodo encargado de validar el usuario actual de la session
+ *              para que solo a ese usuario se le envie la session
+ * @fecha 2017/01/03
+ */
+function __enviarNotificacion(that,usuario,response,socket){
+   
+    G.auth.getSessionsUser(usuario, function(err, sessions) {          
+         //Se recorre cada una de las sesiones abiertas por el usuario
+        sessions.forEach(function(session) {
+            console.log("emitir evento reportes ___________________________________________________");
+             //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+            that.io.to(session.socket_id).emit(socket,response);
+        });
 
+    });
+    
+}
 
 DispensacionHcEvents.$inject = ["socket", "m_dispensacion_hc"];
 

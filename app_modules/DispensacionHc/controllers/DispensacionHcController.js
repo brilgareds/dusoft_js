@@ -916,7 +916,7 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
     var def = G.Q.defer();           
     var numeroFormula;
       
-    that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: ''},'Guardando pendientes...', 201);          
+    that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: ''},'Guardando pendientes...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
     
       G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
@@ -974,7 +974,7 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
         that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: numeroFormula, 
                                                           evolucionId:evolucionId,
                                                           tipoIdPaciente: tipoIdPaciente,
-                                                          pacienteId: pacienteId},'La formula ha quedado con todos sus medicamentos pendientes',200); 
+                                                          pacienteId: pacienteId},'La formula ha quedado con todos sus medicamentos pendientes',200,usuario); 
         //res.send(G.utils.r(req.url, 'La formula ha quedado con todos sus medicamentos pendientes', 200, {}));
          
    }) .fail(function(err){
@@ -982,7 +982,7 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
        that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: numeroFormula, 
                                                           evolucionId:evolucionId,
                                                           tipoIdPaciente: tipoIdPaciente,
-                                                          pacienteId: pacienteId},"Error al generar la formula como Todo pendiente. Formula # "+numeroFormula,500);
+                                                          pacienteId: pacienteId},"Error al generar la formula como Todo pendiente. Formula # "+numeroFormula,500,usuario);
         //res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -1096,7 +1096,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
                                 observacion: observacion,tipoVariable : 0,usuarioId : usuario};
                               
    
-    that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201);          
+    that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
     
     
@@ -1262,14 +1262,18 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
          that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: numeroFormula, 
                                                           evolucionId:evolucionId,
                                                           tipoIdPaciente: tipoIdPaciente,
-                                                          pacienteId: pacienteId},'Se realiza la dispensacion correctamente',200);   
+                                                          pacienteId: pacienteId},'Se realiza la dispensacion correctamente',
+                                                          200,
+                                                          usuario);   
         
     }).fail(function(err){  
         console.log("err [Controller.realizarEntregaFormula]: ", err);
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: err, 
                                                           evolucionId:numeroFormula,
                                                           tipoIdPaciente: tipoIdPaciente,
-                                                          pacienteId: pacienteId},err + " Formula # "+ numeroFormula,500);
+                                                          pacienteId: pacienteId},err + " Formula # "+ numeroFormula,
+                                                          500,
+                                                          usuario);
     }).done();    
 };
 
@@ -1557,7 +1561,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0,usuarioId : usuario};                             
     var bodegasDocTodoPendiente;                           
-    that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201);          
+    that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'}));  
     
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
@@ -1733,7 +1737,9 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: numeroFormula, 
                                                           evolucionId:evolucionId,
                                                           tipoIdPaciente: tipoIdPaciente,
-                                                          pacienteId: pacienteId},'Se realiza la dispensacion correctamente',200);   
+                                                          pacienteId: pacienteId},'Se realiza la dispensacion correctamente',
+                                                          200,
+                                                          usuario);   
         //res.send(G.utils.r(req.url, 'Se realiza la dispensacion correctamente', 200, {dispensacion: resultado}));     
         
     }).fail(function(err){ 
@@ -1741,7 +1747,9 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: err, 
                                                           evolucionId:numeroFormula,
                                                           tipoIdPaciente: tipoIdPaciente,
-                                                          pacienteId: pacienteId},err + " Formula # "+ numeroFormula,500);
+                                                          pacienteId: pacienteId},err + " Formula # "+ numeroFormula,
+                                                          500,
+                                                          usuario);
        //res.send(G.utils.r(req.url, err, 500, {}));
     }).done(); 
 };
@@ -1867,16 +1875,16 @@ DispensacionHc.prototype.obtenerCabeceraFormula = function(req, res){
         res.send(G.utils.r(req.url, 'Se requiere la evolucion', 404, {cabecera_formula: []}));
         return;
     }
-    
+    var usuario = req.session.user.usuario_id;
     var parametros = {evolucionId:args.cabecera_formula.evolucion};
     
-    that.e_dispensacion_hc.onNotificarCabeceraFormula({cabecera_formula:''},'Dispensacion en proceso...', 201);          
+    that.e_dispensacion_hc.onNotificarCabeceraFormula({cabecera_formula:''},'Dispensacion en proceso...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
                   
     G.Q.ninvoke(that.m_dispensacion_hc,'obtenerCabeceraFormula',parametros).then(function(resultado){
        
         if(resultado.length > 0){
-          that.e_dispensacion_hc.onNotificarCabeceraFormula({cabecera_formula:resultado},'Obteniendo cabecera',200);    
+          that.e_dispensacion_hc.onNotificarCabeceraFormula({cabecera_formula:resultado},'Obteniendo cabecera',200,usuario);    
          //res.send(G.utils.r(req.url, 'lista de registros de eventos', 200, {cabecera_formula:resultado}));
         }else{
            throw 'La cabecera de la formula no esta creada';

@@ -156,7 +156,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                  + " "+ datos.obj.cabecera_formula[0].nombres
                                                  + " "+ datos.obj.cabecera_formula[0].apellidos,
                                     todoPendiente:0,
-                                    tipoFormula: seleccionTipoFormula,
+                                    tipoFormula: seleccionTipoFormula,                   
                                     tipoEstadoFormula: tipoEstadoFormula,
                                     tipoIdPaciente:datos.obj.cabecera_formula[0].tipo_id_paciente,
                                     pacienteId: datos.obj.cabecera_formula[0].paciente_id
@@ -590,7 +590,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         that.consultarMedicamentosTemporales();
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
             
-            socket.remove(['onNotificarEntregaFormula','onNotificarCabeceraFormula']);  
+            socket.remove(['onNotificarEntregaFormula','onNotificarCabeceraFormula','onNotificarTodoPendienteFormula']);  
             $scope.$$watchers = null;
             // set localstorage
 
@@ -598,5 +598,5 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                    
         });
 
-         }]);
+    }]);
 });

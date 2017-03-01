@@ -242,7 +242,7 @@ define(["angular", "js/controllers",
             var f = new Date();
             var fecha = f.getDate() + "/" + (f.getMonth() + 1) + "/" + f.getFullYear();
             var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
-
+console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
             for (var i in pedido) {
                 if (empresa !== pedido[i].empresaOrigenProducto || centro_utilidad !== pedido[i].centroUtilidadOrigenProducto || bodega !== pedido[i].bodegaOrigenProducto) {
                     var producto = {codigo_producto: pedido[i].codigo_producto, cantidad_solicitada: pedido[i].cantidadSolicitada, empresaIdProducto: pedido[i].empresaOrigenProducto, centroUtilidadProducto: pedido[i].centroUtilidadOrigenProducto,bodegaProducto:pedido[i].bodegaOrigenProducto};
@@ -269,7 +269,7 @@ define(["angular", "js/controllers",
                     estado: '0',
                     vendedor: {tipo_id_tercero: 'CC ', id: '67039648'}, //pedir a Mauricio
                     cliente: {
-                        tipo_id_tercero: 'NIT', ///pedir a Mauricio
+                        tipo_id_tercero: 'AS', ///pedir a Mauricio
                         id: '800024390',
                         contrato_id: 301,
                         tipoBloqueoId: '1'

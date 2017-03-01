@@ -525,7 +525,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     vendedor: {tipo_id_tercero: 'CC ',id: '67039648'},
                     cliente: {
                         tipo_id_tercero: 'NIT',
-                        id: '800024390'
+                        id: 0306 //'800024390'
                     },
                     fecha_registro: '30/01/2017',
                     usuario_id: 1350

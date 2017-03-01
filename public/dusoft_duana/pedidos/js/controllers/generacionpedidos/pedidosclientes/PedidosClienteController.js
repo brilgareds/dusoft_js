@@ -503,7 +503,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             $scope.buscar_productos = function() {
                 
-                var pedido =  {                 
+                /*  var pedido =  {                 
                     empresa_id: '03', 
                     centro_utilidad_id: '1 ',
                     bodega_id: '03',
@@ -516,7 +516,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         {codigo_producto: '1101M0443248',cantidad_solicitada: '1'},	
                         {codigo_producto: '1101D0471598',cantidad_solicitada: '1'},
                         {codigo_producto: '1101E0381868',cantidad_solicitada: '1'} */                        
-                   ],
+                 /*  ],
                     tipo_producto: '1',                  
                     observacion_cartera: '',
                     aprobado_cartera: '0',
@@ -524,8 +524,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     estado: '0',
                     vendedor: {tipo_id_tercero: 'CC ',id: '67039648'},
                     cliente: {
-                        tipo_id_tercero: 'NIT',
-                        id: 0306 //'800024390'
+                        tipo_id_tercero: 'AS',
+                        id: '0306' //'800024390'
                     },
                     fecha_registro: '30/01/2017',
                     usuario_id: 1350
@@ -559,9 +559,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);    
                    
-                });
-                /*$scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
-                $scope.$emit('gestionar_productos_clientes');*/
+                });*/
+                $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
+                $scope.$emit('gestionar_productos_clientes');
             };
              
             $scope.cerrar_busqueda_productos = function() {

@@ -250,7 +250,7 @@ define(["angular", "js/controllers",
                     productos.push(producto);
                 }
             }
-           
+           console.log("clienteFarmacia ",clienteFarmacia);
             if(pedido.length===productos.length){
              self.generarPedidoFarmacia=false;
             }
@@ -459,26 +459,29 @@ define(["angular", "js/controllers",
                         if(self.generarPedidoFarmacia){
                         self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
                            mensaje+="\n Pedido Farmacia No. "+ numero_pedido_farmacia;
-                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+//                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
                         });
                         }else{
                           mensaje+="\n No se genera Pedido en Farmacia. ";
-                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje); 
+//                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje); 
                           self.eliminarPedidoTemporal();
                         }
                     }
                     if (datos.status === 500) {
                         mensaje = datos.msj;
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+//                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+                    }
+                    if (datos.status === 403) {
+                        mensaje = datos.msj;
+//                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
                     }
                     if (datos.status === 403) {
                         datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
                             mensaje += producto.mensajeError + " para el codigo (" + producto.codigo_producto + ") Precio venta (" + producto.precio_venta + ") \n";
-                        });
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+                        });                       
                     }
                     
-                    
+                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
                                      
                 });
             } else {

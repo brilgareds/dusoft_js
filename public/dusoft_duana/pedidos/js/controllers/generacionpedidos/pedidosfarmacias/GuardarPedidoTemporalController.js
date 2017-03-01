@@ -241,26 +241,27 @@ define(["angular", "js/controllers",
             var productos = [];
             var f = new Date();
             var fecha = f.getDate() + "/" + (f.getMonth() + 1) + "/" + f.getFullYear();
+            var farmacia = $scope.root.pedido.getFarmaciaDestino();    
+            var clienteFarmacia  = empresa+''+ farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
             var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
-console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
             for (var i in pedido) {
                 if (empresa !== pedido[i].empresaOrigenProducto || centro_utilidad !== pedido[i].centroUtilidadOrigenProducto || bodega !== pedido[i].bodegaOrigenProducto) {
                     var producto = {codigo_producto: pedido[i].codigo_producto, cantidad_solicitada: pedido[i].cantidadSolicitada, empresaIdProducto: pedido[i].empresaOrigenProducto, centroUtilidadProducto: pedido[i].centroUtilidadOrigenProducto,bodegaProducto:pedido[i].bodegaOrigenProducto};
                     productos.push(producto);
                 }
             }
-            
+           
             if(pedido.length===productos.length){
              self.generarPedidoFarmacia=false;
             }
-            
+             
             if (productos.length > 0) {
                 var cotizacions = {
                     empresa_id: '03',
                     centro_utilidad_id: '1 ',
                     bodega_id: '03',
                     numero_cotizacion: 0,
-                    observacion: 'Pedido Generado desde Duana',
+                    observacion: 'Pedido Generado desde Farmacia',
                     productos: productos,
                     tipo_producto: pedido[0].getTipoProductoId(),
                     observacion_cartera: '',
@@ -269,10 +270,8 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
                     estado: '0',
                     vendedor: {tipo_id_tercero: 'CC ', id: '67039648'}, //pedir a Mauricio
                     cliente: {
-                        tipo_id_tercero: 'AS', ///pedir a Mauricio
-                        id: '800024390',
-                        contrato_id: 301,
-                        tipoBloqueoId: '1'
+                        tipo_id_tercero: 'AS', ///se determina que todos los clientes farmacia quedan creados con AS 
+                        id: clienteFarmacia,
                     },
                     fecha_registro: fecha,
                     usuario_id: $scope.root.session.usuario_id

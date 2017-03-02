@@ -457,10 +457,10 @@ define(["angular", "js/controllers",
                         mensaje = datos.msj;
                         if(self.generarPedidoFarmacia){
                         self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
-                           mensaje+="</br> Pedido Farmacia No. "+ numero_pedido_farmacia;
+                           mensaje+="\n Pedido Farmacia No. "+ numero_pedido_farmacia;
                         });
                         }else{
-                          mensaje+="</br> No se genera Pedido en Farmacia. ";
+                          mensaje+="\n No se genera Pedido en Farmacia. ";
                           self.eliminarPedidoTemporal();
                         }
                     }

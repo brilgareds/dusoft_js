@@ -1682,10 +1682,15 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
       
     }).then(function(rows, result){
         
+        console.log("********__productosValidosExtraidosPlano*****************");
+        console.log("********__productosValidosExtraidosPlano*****************");
+        console.log("********__productosValidosExtraidosPlano*****************");
+       productosPreparadosCotizacion = []; 
         //cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;        
         //return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, _productosPlanoValidadosValido, []);
         
-      return G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, _productosPlanoValidadosValido, _productosValidosExistentes,[],[])
+      return G.Q.nfcall(__productosValidosExtraidosPlano,that,0,_productosPlanoValidadosValido, _productosValidosExistentes)
+      //return G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, _productosPlanoValidadosValido, _productosValidosExistentes,[],[])
         
         
         
@@ -1693,8 +1698,8 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     //console.log("_productosValidosExistentes ", _productosValidosExistentes);
     
     }).then(function(resultado){
-        
-        console.log("resultado [__seleccionarProductoMultipleDisponibilidadMayor]: ", resultado)
+        console.log("productos_validos LOS ELEGIDOS losProductosSirven", productosPreparadosCotizacion);
+        //console.log("resultado [__seleccionarProductoMultipleDisponibilidadMayor]: ", resultado)
         
     })
         /*    
@@ -1738,19 +1743,106 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     }).done();
     
 };
-   
-function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,productos_validos,productos_invalidos,callback){
+  
+  /**
+   * 
+   * pongo esta __productosValidosExtraidosPlano en vez de esta __seleccionarProductoMultipleDisponibilidadMayor
+   */
+ function __productosValidosExtraidosPlano(that, index, productos,productosSolicitados,callback){
       
-    var producto = productosSolicitados[index];
-    var totalDisponible = 0;
-    if (!producto) {      
-        console.log("productos_validos ", productos_validos);
-        //console.log("productos_invalidos ", productos_invalidos);
-        callback(false,productos_validos, productos_invalidos);
+    var productoPlano = productosSolicitados[index];
+
+    if (!productoPlano) {      
+        
+        callback(false);
         return;
     }
+
+    index++;
+    G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, productos, productoPlano, obj ={cantidad_solicitada:0}).then(function(resultado){
+
+          __productosValidosExtraidosPlano(that, index, productos,productosSolicitados,callback);
+    }).fail(function(resultado){
+        callback(true);
+    }).done();   
+ }
+ 
+ 
+ /**
+  * Lo mas prudente es invocar esta funcion recursiva desde otra funcion recursiva que envie
+  *     solo una vez cada producto solicitado y de esta manera garantizo que no haya duplicidad
+  *     de productos en mi arreglo
+  */
+ var productosPreparadosCotizacion = [];
+function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,cantidad,callback){
     
+   
+    var producto = productos[index];
+    //var producto = productosSolicitados[index];
+    var totalDisponible = 0;
+    if (!producto) {      
+       
+        //console.log("productos_invalidos ", productos_invalidos);
+        callback(false,productosPreparadosCotizacion);
+        return;
+    }
+     index++;
+    //console.log("codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega);
+    //console.log("LOTES PRODUCTOS DISPONIBILIDAD ", producto.cantidad_disponible);
+     if(producto.codigo_producto === productosSolicitados.codigo_producto){
+         
+        if(producto.cantidad_disponible > 0){
+            
+            //console.log("TT codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega + " | Cantidad_solicitada " + producto.cantidad_solicitada);
+
+            if(producto.cantidad_disponible < productosSolicitados.cantidad_solicitada){
+            
+                producto.cantidad_solicitada = producto.cantidad_disponible;
+                cantidad.cantidad_solicitada = producto.cantidad_solicitada;
+                //productosSolicitados.cantidad_solicitada = producto.cantidad_disponible;
+                //productosSolicitados.cantidad_solicitada = producto.cantidad_disponible;
+                //console.log("< codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega + " | Cantidad_solicitada " + producto.cantidad_solicitada);
+                //console.log("PRODUCTOS DE LA LISTA ", producto.codigo_producto);
+                productosPreparadosCotizacion.push(producto);
+          
+            }
+            
+            if(producto.cantidad_disponible >= productosSolicitados.cantidad_solicitada){
+               
+               console.log(" -- producto.cantidad_solicitada ", producto.cantidad_solicitada);
+               console.log(" -- cantidad.cantidad_solicitada ", cantidad.cantidad_solicitada);
+               producto.cantidad_solicitada = productosSolicitados.cantidad_solicitada - cantidad.cantidad_solicitada === undefined ? 0: cantidad.cantidad_solicitada;
+                
+                //console.log(">= codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega + " | Cantidad_solicitada " + producto.cantidad_solicitada);
+                //console.log("PRODUCTOS DE LA LISTA ", producto.codigo_producto);
+                productosPreparadosCotizacion.push(producto);
+          
+            }  
+            
+        //console.log("codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega);
+        //console.log("PRODUCTOS DE LA LISTA ", producto.codigo_producto);
+        //productosPreparadosCotizacion.push(producto);
+          
+     
+        }
+     }
     
+   
+    __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,cantidad,callback);
+     
+    //console.log("productosSolicitados ", productosSolicitados);
+    
+  /*  productos.forEach(function(row) {
+        
+        if(row.codigo_producto === producto.codigo_producto){
+             console.log("codigo_producto: ", producto.codigo_producto)
+             console.log("Disponible: ", producto.cantidad_disponible)
+        }
+       
+    })*/
+    
+    //console.log("productoSolicitados: ", producto);
+    //console.log("productosSolicitados ", productosSolicitados);
     //console.log("productos ", productos);
     //console.log("productosSolicitados ", productosSolicitados);
    /* if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){   
@@ -1765,7 +1857,7 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
                 return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
 
             }*/
-    productos.forEach(function(row) {
+  /*  productos.forEach(function(row) {
         
         //Se valida que el codigo del producto del plano corresponda al listado de productos
         if(row.codigo_producto === producto.codigo_producto ){
@@ -1788,7 +1880,7 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
             /*else{
                 productos_invalidos.push(row);
             }*/
-        }
+        /*}
        
        
         
@@ -1813,15 +1905,13 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
                  }*/
                  
                  
-             }
+           /*  }
              
         });
         //console.log("row.codigo_producto " + producto.codigo_producto  + "totalDisponible " + totalDisponible);
-    }
+    }*/
      
-    index++;
-    __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,productos_validos,productos_invalidos,callback);
-     
+    
  };
  
  /**

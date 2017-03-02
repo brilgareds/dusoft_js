@@ -936,6 +936,12 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 estado_pedido = '7';
                 this.whereRaw(" g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id ) and  i.usuario_id = ?", [responsable]);
             }
+            
+            if (filtro.empresa){
+                this.where("a.empresa_destino", filtro.empresa.empresaId).
+                andWhere("a.centro_destino", filtro.empresa.centroUtilidad).
+                andWhere("a.bodega_destino", filtro.empresa.bodega);
+            }
         }
         
         this.where("a.estado", estado_pedido);

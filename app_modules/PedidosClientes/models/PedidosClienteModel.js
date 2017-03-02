@@ -6,6 +6,27 @@ var PedidosClienteModel = function(productos, m_pedidos_logs) {
     this.m_pedidos_logs = m_pedidos_logs;
 };
 
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar el estado de autorizacion de un cliente
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model :
+ *  --PedidosCliente.prototype.eliminarCotizacion
+ */
+PedidosClienteModel.prototype.consultarEstadoAutorizacionCliente = function(obj, callback) {
+
+    G.knex('vnts_contratos_clientes').where({
+        tipo_id_tercero: obj.tipo_id_tercero,
+        tercero_id: obj.tercero_id
+    }).select(['contrato_cliente_id','sw_autorizacion','sw_facturacion_agrupada']).then(function(rows) {
+        callback(false, rows);
+    }). catch (function(error) {
+        console.log("err [consultaCotizacionEnPedido]: ", error);
+        callback(error);
+    });
+};
+
+
 /**
  * @api {sql} listar_pedidos_clientes Pedidos Clientes
  * @apiName Pedidos Clientes
@@ -1105,7 +1126,7 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido, e
                where  pedido_cliente_id = :1 and estado :: integer in(" + estados + ") and (sw_terminado is null or sw_terminado = '0')";
 
     G.knex.raw(sql, {1: numero_pedido, 2: terminado}).then(function(resultado) {
-        callback(false, resultado.rows, resultado);
+        callback(false,resultado);
     }).catch(function(err){
         console.log("err [terminar_estado_pedido]: ", err);
         callback(err);
@@ -1249,8 +1270,7 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Modificacion: Se migra a KNEX.js
  * @fecha: 04/12/2015 6:10 pm
  */
-PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, filtros, filtroAvanzado, callback) {
-
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, filtros, filtroAvanzado,callback) {
 
     var filtroProducto = "";
     var filtroNumeroCotizacion = "";
@@ -1260,7 +1280,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1: empresa, 2: centro_utilidad_id, 3: bodega_id, 4: contrato_cliente_id};
-    
+     
     if (filtroAvanzado.tipoBusqueda === 0) {
 
         if (tipo_producto !== undefined && tipo_producto !== '') {
@@ -1285,9 +1305,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
             if(filtro.filtro_producto === 0){
                 filtroProducto = "AND (a.codigo_producto " + G.constants.db().LIKE + " :5)";
                 parametros["5"] = '%' + termino_busqueda + '%';
+                   
             }else{
                 filtroProducto = "AND (a.codigo_producto = :5)";
-                console.log("filtroProducto ", filtroProducto);
+                 
                 parametros["5"] = termino_busqueda;
             }
              //console.log("EL ARREGLO ", filtros.numero[0]);
@@ -1353,7 +1374,11 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 b.estado,\
                 c.costo_ultima_compra,\
                 CASE WHEN (SELECT con.contrato_cliente_id FROM vnts_contratos_clientes con WHERE con.contrato_cliente_id = :4 AND con.porcentaje_genericos > 0) is null then false else true end as contrato\
-                ,b.unidad_medida\
+                ,b.unidad_medida,\
+                a.empresa_id,\
+                a.centro_utilidad,\
+                a.bodega,\
+                (select descripcion from bodegas where bodega = a.bodega and empresa_id = a.empresa_id and centro_utilidad =a.centro_utilidad) as nombre_bodega\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
@@ -1397,7 +1422,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;
-
+    /*console.log("------parametros ------------- ", parametros);
+    console.log("------filtro ------------- ", filtro);
+    console.log("------filtros ------------- ", filtros);*/
+    //console.log("------filtroAvanzado ------------- ", filtroAvanzado);
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).then(function(resultado) {
@@ -1482,13 +1510,31 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
  *                 PedidosClienteController __insertarDetalleCotizacion()
  */
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
+   //console.log("cotizacion ", producto);
+    //console.log("producto ", producto);
+    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, \n\
+                codigo_producto, \
+                porc_iva, \
+                numero_unidades, \
+                valor_unitario,\
+                usuario_id,\
+                fecha_registro,\
+                empresa_origen_producto,\
+                centro_utilidad_origen_producto,\
+                bodega_origen_producto)\
+                 VALUES ( :1, :2, :3, :4, :5, :6, NOW(), :7, :8, :9 ) ; ";
 
-
-    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp (pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario,usuario_id,fecha_registro) \
-                 VALUES ( :1, :2, :3, :4, :5, :6, NOW() ) ; ";
-
-    G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 2: producto.codigo_producto, 3: producto.iva, 4: producto.cantidad_solicitada, 5: producto.precio_venta, 6: cotizacion.usuario_id}).
+    G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 
+                     2: producto.codigo_producto, 
+                     3: producto.iva, 
+                     4: producto.cantidad_solicitada, 
+                     5: producto.precio_venta, 
+                     6: cotizacion.usuario_id,
+                     7: producto.empresaIdProducto,
+                     8: producto.centroUtilidadProducto,
+                     9: producto.bodegaProducto}).
             then(function(resultado) {
+               
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [insertar_detalle_cotizacion]", err);
@@ -1508,10 +1554,12 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
  */
 PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion, producto, callback) {
 
-
     G.knex('ventas_ordenes_pedidos_d_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .andWhere('codigo_producto', producto.codigo_producto)
+            .andWhere('empresa_origen_producto', producto.empresaIdProducto)
+            .andWhere('centro_utilidad_origen_producto', producto.centroUtilidadProducto)
+            .andWhere('bodega_origen_producto', producto.bodegaProducto)
             .update({
         porc_iva: producto.iva,
         numero_unidades: producto.cantidad_solicitada,
@@ -1720,7 +1768,11 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 a.valor_unitario, \
                 (a.numero_unidades * a.valor_unitario) as subtotal,\
                 (a.numero_unidades * (a.valor_unitario * (a.porc_iva/100))) as valor_iva,\
-                ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total\
+                ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\n\
+                a.empresa_origen_producto,\n\
+                a.centro_utilidad_origen_producto,\n\
+                a.bodega_origen_producto,\
+                (SELECT descripcion FROM bodegas WHERE empresa_id = a.empresa_origen_producto AND centro_utilidad = a.centro_utilidad_origen_producto  AND bodega = a.bodega_origen_producto) as nombre_bodega\
                 FROM ventas_ordenes_pedidos_d_tmp AS a\
                 WHERE pedido_cliente_id_tmp = :1 and \
                 (\
@@ -1745,13 +1797,16 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
  *  --PedidosCliente.prototype.eliminarProductoCotizacion
  * Modificacion: Se migra a KNEX.js
  * @fecha: 04/12/2015 2:43 pm
- */
+ */                        
 PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion, producto, callback)
 {
 
     G.knex('ventas_ordenes_pedidos_d_tmp')
             .where('pedido_cliente_id_tmp', cotizacion.numero_cotizacion)
             .andWhere('codigo_producto', producto.codigo_producto)
+            .andWhere('empresa_origen_producto', producto.empresaIdProducto)
+            .andWhere('centro_utilidad_origen_producto', producto.centroUtilidadProducto)
+            .andWhere('bodega_origen_producto', producto.bodegaProducto)
             .del().then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
@@ -1969,11 +2024,14 @@ PedidosClienteModel.prototype.consultarEstadoPedido = function(numero_pedido, ca
  * @Funciones que hacen uso del model :
  *  --PedidosCliente.prototype.insertarDetalleCotizacion
  */
-PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(numero_pedido, codigo_producto, callback) {
-
+PedidosClienteModel.prototype.consultarProductoDetalleCotizacion = function(numero_pedido, producto, callback) {
+     
     G.knex('ventas_ordenes_pedidos_d_tmp').where({
         pedido_cliente_id_tmp: numero_pedido,
-        codigo_producto: codigo_producto
+        codigo_producto: producto.codigo_producto,
+        empresa_origen_producto: producto.empresaIdProducto,
+        centro_utilidad_origen_producto: producto.centroUtilidadProducto,
+        bodega_origen_producto: producto.bodegaProducto,
     }).select('pedido_cliente_id_tmp').then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {

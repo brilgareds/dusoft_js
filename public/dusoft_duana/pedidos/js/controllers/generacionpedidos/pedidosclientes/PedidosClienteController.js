@@ -502,10 +502,68 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 return disabled;
             };
             $scope.buscar_productos = function() {
-
-                $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
-                $scope.$emit('gestionar_productos_clientes');
+                
+                var pedido =  {                 
+                    empresa_id: '03', 
+                    centro_utilidad_id: '1 ',
+                    bodega_id: '03',
+                    numero_cotizacion: 0,
+                    observacion: 'NUEVA PRUEBA ',
+                    productos: [
+                        {codigo_producto: '041A0604797', cantidad_solicitada: '1', empresaIdProducto: '03', centroUtilidadProducto: '1 ',bodegaProducto:'03'},
+                        
+                        /*{codigo_producto: '1101G0222238',cantidad_solicitada: '10'},
+                        {codigo_producto: '1101M0443248',cantidad_solicitada: '1'},	
+                        {codigo_producto: '1101D0471598',cantidad_solicitada: '1'},
+                        {codigo_producto: '1101E0381868',cantidad_solicitada: '1'} */                        
+                   ],
+                    tipo_producto: '1',                  
+                    observacion_cartera: '',
+                    aprobado_cartera: '0',
+                    estado_cotizacion: '',                   
+                    estado: '0',
+                    vendedor: {tipo_id_tercero: 'CC ',id: '67039648'},
+                    cliente: {
+                        tipo_id_tercero: 'NIT',
+                        id: 0306 //'800024390'
+                    },
+                    fecha_registro: '30/01/2017',
+                    usuario_id: 1350
+                }; 
+           
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: pedido
+                        }
+                    }
+                };
+                
+                var mensaje = "";
+                var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    
+                    if(data.status === 200){                       
+                        mensaje = data.msj;                       
+                    }
+                    
+                    if(data.status === 403){
+                        data.obj.pedidos_clientes.productos_invalidos.forEach(function(producto){
+                            mensaje += producto.mensajeError+ " para el codigo ("+ producto.codigo_producto+") Precio venta ("+producto.precio_venta+") \n";
+                        });
+                    }
+                    
+                    if(data.status === 404){                       
+                        mensaje = data.msj;                       
+                    }
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);    
+                   
+                });
+                /*$scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
+                $scope.$emit('gestionar_productos_clientes');*/
             };
+             
             $scope.cerrar_busqueda_productos = function() {
 
                 $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});

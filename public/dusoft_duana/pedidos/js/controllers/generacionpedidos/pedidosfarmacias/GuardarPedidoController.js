@@ -20,7 +20,7 @@ define(["angular", "js/controllers",
 
                 if (pedido) {
                     $scope.root.pedido.setTipoModificacion(pedido.tipoModificacion);
-                    
+                    $scope.root.bodegaMultiple = {bools:false};
                     $scope.root.lista_productos.columnDefs[4].visible = self.visualizarColumnaModificarCantidad();
                     
                     self.consultarEncabezadoPedido(pedido.numero_pedido, function(consultaEncabezado) {

@@ -174,7 +174,10 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '1' THEN '3' \
                                     WHEN a.sw_pendiente = '2' THEN '4' END\
                                 ) \
-                         END ) END  AS estado_entrega"),        
+                         END ) END  AS estado_entrega"),
+        
+        
+        
                         G.knex.raw("CASE WHEN (\
                                                 SELECT count(distinct(usuario_id)) as usuario_id \
                                                 FROM hc_dispensacion_medicamentos_tmp \
@@ -3714,15 +3717,6 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                                          )as ref)\
                             ELSE '0'\
                         END as estado_fecha_refrendacion"),
-                    /*CASE WHEN a.fecha_registro_formula IS NULL \
-                              THEN a.fecha_registro \
-                              ELSE*/
-                   //G.knex.raw("a.fecha_registro_formula as fecha_entrega"), 
-                  /* G.knex.raw("CASE WHEN a.refrendar = 1 THEN (\
-                   		SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion  \
-                   		FROM medicamentos_refrendados   \
-                    	WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula)   \
-                    	ELSE a.fecha_registro_formula END as fecha_entrega"), */ 
                    G.knex.raw("null as fecha_minima_entrega"),   
                    G.knex.raw("null as fecha_maxima_entrega"),   
                    "a.medico_id",  

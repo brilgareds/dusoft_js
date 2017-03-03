@@ -743,30 +743,50 @@ define(["angular", "js/controllers",
             });
 
             socket.on("onListarDocumentosTemporalesClientes", function(data) {
-
                 if (data.status === 200) {
-                    $scope.notificacionclientes++;
-                    for (var i in data.obj.documento_temporal_clientes) {
-                        var obj = data.obj.documento_temporal_clientes[i];
-                        var documento_temporal = that.crearDocumentoTemporal(obj, 1);
-                        documento_temporal.esDocumentoNuevo = true;
-                        $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
-                       
+                    var temporal = data.obj.documento_temporal_clientes[0];
+                    var empresa = Usuario.getUsuarioActual().getEmpresa(); 
+ 
+                    if(empresa.getCodigo() === temporal.empresa_id && 
+                       empresa.getCentroUtilidadSeleccionado().getCodigo() === temporal.centro_destino && 
+                       empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() === temporal.bodega_destino){
+                   
+
+                        $scope.notificacionclientes++;
+                        for (var i in data.obj.documento_temporal_clientes) {
+                            var obj = data.obj.documento_temporal_clientes[i];
+                            var documento_temporal = that.crearDocumentoTemporal(obj, 1);
+                            documento_temporal.esDocumentoNuevo = true;
+                            $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
+
+                        }
                     }
+                    
                 }
             });
 
             socket.on("onListarDocumentosTemporalesFarmacias", function(data) {
-
+                console.log("onListarDocumentosTemporalesFarmacias data for socket ", data);
                 if (data.status === 200) {
-                    $scope.notificacionfarmacias++;
-                    for (var i in data.obj.documento_temporal_farmacias) {
-                        var obj = data.obj.documento_temporal_farmacias[i];
-                        var documento_temporal = that.crearDocumentoTemporal(obj, 2);
-                        documento_temporal.esDocumentoNuevo = true;
-                        $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
+                    
+                    var temporal = data.obj.documento_temporal_farmacias[0];
+                    var empresa = Usuario.getUsuarioActual().getEmpresa(); 
+ 
+                    if(empresa.getCodigo() === temporal.empresa_destino && 
+                       empresa.getCentroUtilidadSeleccionado().getCodigo() === temporal.centro_destino && 
+                       empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo() === temporal.bodega_destino){
+                   
+                        $scope.notificacionfarmacias++;
+                        for (var i in data.obj.documento_temporal_farmacias) {
+                            var obj = data.obj.documento_temporal_farmacias[i];
+                            var documento_temporal = that.crearDocumentoTemporal(obj, 2);
+                            documento_temporal.esDocumentoNuevo = true;
+                            $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
 
+                        }
+                   
                     }
+                    
                 }
             });
             

@@ -1759,7 +1759,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     }
 
     index++;
-    G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, productos, productoPlano, obj ={cantidad_solicitada:0}).then(function(resultado){
+    G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, productos, productoPlano, obj ={codigo_producto:'',cantidad_solicitada:0, total_solicitado:0}).then(function(resultado){
 
           __productosValidosExtraidosPlano(that, index, productos,productosSolicitados,callback);
     }).fail(function(resultado){
@@ -1774,7 +1774,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
   *     de productos en mi arreglo
   */
  var productosPreparadosCotizacion = [];
-function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,cantidad,callback){
+function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,obj,callback){
     
    
     var producto = productos[index];
@@ -1792,33 +1792,59 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
      if(producto.codigo_producto === productosSolicitados.codigo_producto){
          
         if(producto.cantidad_disponible > 0){
-            
+          
             //console.log("TT codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega + " | Cantidad_solicitada " + producto.cantidad_solicitada);
 
             if(producto.cantidad_disponible < productosSolicitados.cantidad_solicitada){
-            
-                producto.cantidad_solicitada = producto.cantidad_disponible;
-                cantidad.cantidad_solicitada = producto.cantidad_solicitada;
+                console.log("Disponibilidad es menor a la cantidad solicitada");
+                
+                console.log("producto.cantidad_disponible = " +producto.cantidad_disponible +" < productosSolicitados.cantidad_solicitada = " +productosSolicitados.cantidad_solicitada);
+                if(obj.codigo_producto === producto.codigo_producto){
+                    console.log("Entra producto bodega 2 : " + obj.codigo_producto + " cantidad_solicitada : " + obj.cantidad_solicitada)
+                    producto.cantidad_solicitada -= obj.cantidad_solicitada;
+                    obj.total_solicitado += producto.cantidad_solicitada;
+                   /* if(productosSolicitados.cantidad_solicitada > obj.total_solicitado){
+                        
+                    }*/
+                }else{
+                    console.log("Nuevo producto bodega 1 : " + producto.codigo_producto + " cantidad_solicitada : " + producto.cantidad_solicitada + " bodega " + producto.bodega);
+                    producto.cantidad_solicitada = producto.cantidad_disponible;
+                    obj.cantidad_solicitada = producto.cantidad_solicitada; 
+                    obj.codigo_producto = producto.codigo_producto;
+                    obj.total_solicitado += producto.cantidad_solicitada;
+                }
+               
                 //productosSolicitados.cantidad_solicitada = producto.cantidad_disponible;
                 //productosSolicitados.cantidad_solicitada = producto.cantidad_disponible;
                 //console.log("< codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega + " | Cantidad_solicitada " + producto.cantidad_solicitada);
                 //console.log("PRODUCTOS DE LA LISTA ", producto.codigo_producto);
+                
+                //if(obj.total_solicitado <=)
                 productosPreparadosCotizacion.push(producto);
           
             }
             
-            if(producto.cantidad_disponible >= productosSolicitados.cantidad_solicitada){
-               
-               console.log(" -- producto.cantidad_solicitada ", producto.cantidad_solicitada);
-               console.log(" -- cantidad.cantidad_solicitada ", cantidad.cantidad_solicitada);
-               producto.cantidad_solicitada = productosSolicitados.cantidad_solicitada - cantidad.cantidad_solicitada === undefined ? 0: cantidad.cantidad_solicitada;
-                
-                //console.log(">= codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega + " | Cantidad_solicitada " + producto.cantidad_solicitada);
-                //console.log("PRODUCTOS DE LA LISTA ", producto.codigo_producto);
-                productosPreparadosCotizacion.push(producto);
+        if(producto.cantidad_disponible >= productosSolicitados.cantidad_solicitada){
+           console.log("producto.cantidad_disponible = " +producto.cantidad_disponible +" >= productosSolicitados.cantidad_solicitada = " +productosSolicitados.cantidad_solicitada);
+
+           if(obj.codigo_producto === producto.codigo_producto){
+               console.log("Entra producto bodega 2 : " + obj.codigo_producto + " cantidad_solicitada : " + obj.cantidad_solicitada + " bodega " + producto.bodega);
+               console.log("producto.cantidad_solicitada "+ producto.cantidad_solicitada);
+               producto.cantidad_solicitada -= obj.cantidad_solicitada;
+               obj.total_solicitado += producto.cantidad_solicitada;
+           }
+           obj.total_solicitado += producto.cantidad_solicitada;
+                //obj.total_solicitado += producto.cantidad_solicitada;
+           //console.log(" -- producto.cantidad_solicitada ", producto.cantidad_solicitada);
+          // console.log(" -- cantidad.cantidad_solicitada ", cantidad.cantidad_solicitada);
           
-            }  
-            
+            //console.log(">= codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega + " | Cantidad_solicitada " + producto.cantidad_solicitada);
+            //console.log("PRODUCTOS DE LA LISTA ", producto.codigo_producto);
+              
+            productosPreparadosCotizacion.push(producto);
+
+        }  
+            console.log("LA REFERENCIA OCULTA  ", obj);
         //console.log("codigo_producto = "+ producto.codigo_producto + " | cantidad_disponible " + producto.cantidad_disponible + " | bodega "+ producto.bodega);
         //console.log("PRODUCTOS DE LA LISTA ", producto.codigo_producto);
         //productosPreparadosCotizacion.push(producto);
@@ -1828,7 +1854,7 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
      }
     
    
-    __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,cantidad,callback);
+    __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados,obj,callback);
      
     //console.log("productosSolicitados ", productosSolicitados);
     

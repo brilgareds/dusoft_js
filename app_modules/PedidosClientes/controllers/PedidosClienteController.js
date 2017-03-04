@@ -480,7 +480,6 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
      
     var that = this;
     
-    console.log("args.pedidos_clientes ", args.pedidos_clientes)
     var empresa_id = args.pedidos_clientes.empresa_id;
     var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
     var bodega = args.pedidos_clientes.bodega_id;
@@ -1792,22 +1791,64 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
         return;
     }
      index++;
- 
+    
+    /**
+     * +Descripcion Se compara que el codigo del producto consultado de la lista
+     *              de productos segun la bodega, corresponda con el codigo del producto del plano
+     *              
+     */
     if(producto.codigo_producto === productosSolicitados.codigo_producto){
          
+        //Se valida de que haya cantidad disponible en la bodega
         if(producto.cantidad_disponible > 0){
-                        
+            
+            /*
+             * +Descripcion Se valida si la cantidad disponible en bodega es menor a la cantidad
+             *              solicitada
+             */            
             if(producto.cantidad_disponible < productosSolicitados.cantidad_solicitada){
-                 
+                
+                /*
+                * +Descripcion Se valida si el producto se encuentra en otra bodega 
+                *              y que la cantidad solicitada del producto del plano
+                *              sea mayor a la cantidad solicitada separada hasta 
+                *              el momento en bodegas diferentes para el mismo producto
+                *              
+                */                 
                 if(obj.codigo_producto === producto.codigo_producto && productosSolicitados.cantidad_solicitada > obj.total_solicitado ){
- 
+                    
                     if(productosSolicitados.cantidad_solicitada > obj.total_solicitado){
                         
+                        /*
+                         * +Descripcion Si la cantidad disponible que hay en bodega es 
+                         *              menor a la cantidad solicitada, se setea la cantidad solicitada del producto
+                         *              con el valor de la cantidad disponible, esto con el objetivo de que
+                         *              se separe una parte del producto de la bodega actual
+                         *              Ejemplo:
+                         *              cantidad solicitada = 15; cantidad disponible 5
+                         *              cantidad solicitada = 5; quedara pendiente 10 cantidades la cual se buscara en
+                         *              la otra bodega
+                         *              
+                         *              Si la cantidad disponible es mayor a la solicitada
+                         *              restele a la cantidad solicitada la cantidad acumulada separada hasta ahora
+                         *              del producto del plano en las bodegas donde se encuentre disponibilidad
+                         *              Ejmeplo
+                         *              cantidad solicitada = 100; cantidad separada hasta el momento = 60
+                         *              cantidad solicitada = 40; ya que se habia separado en la bodega anterior 60 cantidades
+                         */
                         if(producto.cantidad_disponible < productosSolicitados.cantidad_solicitada){
                             producto.cantidad_solicitada = producto.cantidad_disponible;
                         }else{
+                            
                             producto.cantidad_solicitada -= obj.cantidad_solicitada;
-                        }                      
+                        }  
+                        
+                        /**
+                         * +Descripcion Se valida la unidad de medida que requiere el producto
+                         *              para ser separado, si cumple con la unidad de medida el
+                         *              producto se almacenara en el arreglo De productos validos
+                         *              de lo contrario se almacenara en el arreglo de productos invalidos
+                         */
                         unidadMedida = producto.cantidad_solicitada%(producto.unidad_medida === null ? 1 : producto.unidad_medida ) ===0 ? 1 : 0;  
 
                         if(unidadMedida ===1 ){
@@ -1861,14 +1902,11 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
                }else{
 
                     obj.total_solicitado = 0;  
-
                     obj.cantidad_solicitada = producto.cantidad_solicitada; 
                     obj.codigo_producto = producto.codigo_producto;
-
                     unidadMedida = producto.cantidad_solicitada%(producto.unidad_medida === null ? 1 : producto.unidad_medida ) ===0 ? 1 : 0;  
 
                     if(unidadMedida ===1){
-
                         obj.total_solicitado += producto.cantidad_solicitada;
                         productosPreparadosCotizacion.push(producto);
                     }else{

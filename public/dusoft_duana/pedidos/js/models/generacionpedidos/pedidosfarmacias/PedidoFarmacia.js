@@ -17,6 +17,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.esTemporal = false;
             this.valido = false;
             this.tipoPedido;
+            this.numeroPedidoCliente;
             
             //0 = ver , 1 = modificacion y 2 = modificacion especial
             this.tipoModificacion = '0';
@@ -156,7 +157,10 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             for(var i in this.productosSeleccionados){
                 var _producto = this.productosSeleccionados[i];
                 
-                if(_producto.getCodigoProducto() === producto.getCodigoProducto()){
+                if(_producto.getCodigoProducto() === producto.getCodigoProducto() && 
+                   _producto.getEmpresaOrigenProducto() === producto.getEmpresaOrigenProducto() &&
+                   _producto.getCentroUtilidadOrigenProducto() === producto.getCentroUtilidadOrigenProducto() &&
+                   _producto.getBodegaOrigenProducto() === producto.getBodegaOrigenProducto()){
                     _producto.setCantidadPendiente(_producto.getCantidadPendiente() + producto.getCantidadPendiente());
                     return true;
                 }
@@ -188,6 +192,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoFarmacia.prototype.getValido = function() {
             return this.valido;
+        };
+        
+        PedidoFarmacia.prototype.setNumeroPedidoCliente = function(numeroPedidoCliente) {
+            this.numeroPedidoCliente = numeroPedidoCliente;
+            return this;
+        };
+        
+        PedidoFarmacia.prototype.getNumeroPedidoCliente = function() {
+            return this.numeroPedidoCliente;
         };
         
         this.get = function() {

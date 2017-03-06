@@ -204,11 +204,24 @@ module.exports = function(app, di_container) {
     
     
     
-     /**
-     * @author Cristian Ardila
-     * +Descripcion: Servicio para consultar la factura fiscal de un pedido
-     */
+    /**
+    * @author Cristian Ardila
+    * +Descripcion: Servicio para consultar la factura fiscal de un pedido
+    */
     app.post('/api/PedidosClientes/listarFacturasPedido', function(req, res) {
         c_pedidos_clientes.listarFacturasPedido(req, res);
+    });
+    
+    
+    
+    
+    /**
+    * @author Cristian Ardila
+    * +Descripcion: Servicio para generar un pedido sin que la cotizacion pase
+    *               por los procesos de autorizacion de cartera, esto con el objetivo
+    *               de que el servicio sea invocado desde el modulo de farmacias
+    */
+    app.post('/api/PedidosClientes/generarPedidoBodegaFarmacia', function(req, res) {
+        c_pedidos_clientes.generarPedidoBodegaFarmacia(req, res);
     });
 };

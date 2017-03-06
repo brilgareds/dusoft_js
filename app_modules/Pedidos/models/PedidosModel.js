@@ -412,7 +412,6 @@ function __obtenerEstadoAutorizacionProducto(params, callback){
  * +Descripcion: Funcion recursiva que permite crear los poductos por autorizar
  */
 function __guardarAutorizacionesProductosPedidos(params, callback) {
-    console.log("productos a guardar ", params.productos);
     var producto = params.productos[0];
     var def = G.Q.defer();
     

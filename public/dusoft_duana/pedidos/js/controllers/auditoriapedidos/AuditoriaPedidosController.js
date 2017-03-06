@@ -766,7 +766,6 @@ define(["angular", "js/controllers",
             });
 
             socket.on("onListarDocumentosTemporalesFarmacias", function(data) {
-                console.log("onListarDocumentosTemporalesFarmacias data for socket ", data);
                 if (data.status === 200) {
                     
                     var temporal = data.obj.documento_temporal_farmacias[0];

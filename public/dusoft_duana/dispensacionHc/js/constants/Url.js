@@ -46,7 +46,8 @@ define(["angular"], function (angular) {
                 * +DESCRIPCION FUNCION EXCLUSIVA PARA ALMACENAR LAS FORMULAS EN LA TABLA
                 *              DE DISPENSACION_ESTADOS
                 */
-               "INSERTAR_FORMULAS_DISPENSACION_ESTADOS": BASE_URL + "/DispensacionHc/insertarFormulasDispensacionEstados"
+               "INSERTAR_FORMULAS_DISPENSACION_ESTADOS": BASE_URL + "/DispensacionHc/insertarFormulasDispensacionEstados",
+               "INSERTAR_FORMULAS_DISPENSACION_ESTADOS_AUTOMATICO": BASE_URL + "/DispensacionHc/insertarFormulasDispensacionEstadosAutomatico"
 
             }
         }

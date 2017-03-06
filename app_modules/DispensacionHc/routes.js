@@ -161,6 +161,10 @@ module.exports = function(app, di_container) {
     });
     
     
+    app.post("/api/DispensacionHc/insertarFormulasDispensacionEstadosAutomatico", function(req, res){
+        c_dispensacion_hc.insertarFormulasDispensacionEstadosAutomatico(req, res);
+    });
+    
     
     
 };

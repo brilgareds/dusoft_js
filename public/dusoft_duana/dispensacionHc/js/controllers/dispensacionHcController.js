@@ -80,7 +80,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.root.visibleListaEstados = false;
                     $scope.root.visibleBotonBuscador = true;
                 };
-                  
+                 
+                 $scope.onMostrarTipoFormula = function(){
+                      
+                 }
                 
                  /**
                   * +Descripcion Filtros para tipo de documento
@@ -88,7 +91,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                   **/
                   $scope.root.filtros = [                
                     {tipo: 'EV',descripcion: "Evolucion"},
-                    {tipo: 'FO',descripcion: "Formula"} 
+                    //{tipo: 'FO',descripcion: "Formula"} 
+                    {tipo: '0',descripcion: "Formulacion"},
+                    {tipo: '1',descripcion: "Transcripcion"},
+                    {tipo: '2',descripcion: "Form. Insumo"},
+                    {tipo: '3',descripcion: "Trans. Insumo"} 
                   ];
                  
                   $scope.root.filtro = $scope.root.filtros[0]; 
@@ -393,7 +400,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                             <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega == 0 \
                                                     && root.estadoFormula == 0 \
                                                     && row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFormulaEnProceso() == 0">\n\
-                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" >Dispensaci&oacute;n </a>\
+                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" class= "glyphicon glyphicon-tasks"> Dispensaci&oacute;n </a>\
                                             </li>\
                                             <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 1 \
                                                     && root.estadoFormula == 1 \n\
@@ -401,7 +408,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                     || row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getEstado() == 2 \
                                                     && root.estadoFormula == 1 \
                                                     && row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFormulaEnProceso() == 0">\
-                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" >Pendientes </a>\
+                                               <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,1)" class= "glyphicon glyphicon-eye-open" > Pendientes </a>\
                                             </li>\
                                             <li ng-if="row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual() > 0 ">\
                                                <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Todo </a>\
@@ -797,7 +804,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         fechaFinal:   $filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
                                    }
                                }    
-                            };    
+                            };       
                     dispensacionHcService.insertarFormulasDispensacionEstados(obj,function(data){
 
                         if(data.status === 200){                        
@@ -811,6 +818,32 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }); 
 
                 };
+                
+                 
+                $scope.insertarFormulasDispensacionEstados2 = function(){
+                    
+                    
+                    var obj = {                   
+                                session: $scope.session,
+                                data: {
+                                   insertar_formulas_dispensacion_estados_automatico: {
+                                         
+                                   }
+                               }    
+                            };    
+                    dispensacionHcService.insertarFormulasDispensacionEstadosAutomatico(obj,function(data){
+
+                        if(data.status === 200){                        
+                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                          
+                        }else{                         
+                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj); 
+                        }
+
+
+                    });
+                }
+                     
                      
                 /**
                 * @author Cristian Ardila
@@ -901,8 +934,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                 AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                             }else{                                
                                 that.listarTipoDocumentos(function(){});    
-
-                                var resultadoStorage = localStorageService.get("consultarFormula");      
+                                
+                                /**
+                                 * +Descripcion Se comenta el proceso de impresion de formulas cuando
+                                 *              se realiza la dispensacion  
+                                */
+                                /*var resultadoStorage = localStorageService.get("consultarFormula");      
                                 var resultadoStoragePendientes = localStorageService.get("consultarFormulaPendientes");      
                                 var resultadoStorageTodoPendiente = localStorageService.get("formulaTodoPendiente");      
  
@@ -932,7 +969,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
  
                                 if(resultadoStorageTodoPendiente){
                                     that.imprimirMedicamentosPendientesLocalStorage(resultadoStorageTodoPendiente); 
-                                }
+                                }*/
                             }
                         }
                     }                                           

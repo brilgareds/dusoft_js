@@ -1,5 +1,77 @@
 var DispensacionHcModel = function() {};
+ 
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de consultar la evolucion de una formula
+ * @controller DispensacionHc.prototype.insertarFormulasDispensacionEstados
+ */
+DispensacionHcModel.prototype.consultarEvolucionFormula = function(obj,callback){
+   
+    var query = G.knex.distinct('evolucion_id')
+          .select()   
+          .from('hc_formulacion_antecedentes')
+          .where(function() {
+                   
+                    if((obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
+                      
+                        this.where(G.knex.raw("transcripcion_medica = " + obj.filtro.tipo))
+                            .andWhere(G.knex.raw("numero_formula::varchar = " + obj.terminoBusqueda));
+                       
+                   }
+                    
+          });
+           
+          query.then(function(resultado){ 
+             
+        callback(false, resultado)
+    }).catch(function(err){    
+        console.log("err [consultarEvolucionFormula]:", err);
+        callback(err);
+    });
+    
+};
+ 
+ 
+/**                          
+ * @author Cristian Ardila
+ * @fecha 09/06/2016 (DD-MM-YYYY)
+ * +Descripcion Modelo encargado de obtener los diferentes tipos de formula
+ * @controller DispensacionHc.prototype.listarTipoFormula
+ */
+DispensacionHcModel.prototype.consultarNumeroFormula = function(obj,callback){
+     
+    var columna = [G.knex.raw("formula_id")];
+     
+    G.knex('dispensacion_estados').where({
+        evolucion_id: obj.evolucionId
+    }).select(columna).then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("err[consultarNumeroFormula]: ", error);
+        callback(error);
+    });
+    
+}; 
+ 
+DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
+{
+    var sql = "select to_char(fecha, 'yyyy-mm-dd')as fecha\
+				from \
+	       (SELECT CAST('"+parametros.fecha+"' AS DATE) "+parametros.operacion+" CAST('"+parametros.dias+" days' AS INTERVAL) as fecha)as d;";
+ 
+    G.knex.raw(sql).then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        console.log("error intervalo_Fecha_formula ",err);
+        callback(err);
+    });
 
+};
+ 
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
@@ -152,7 +224,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                             THEN (\
                                  CASE \
                                     WHEN a.sw_pendiente = '0' OR a.sw_pendiente is NULL THEN 'Tto finalizo' \
-                                    WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
+                                    WHEN a.sw_pendiente = '1' THEN 'Tto finalizo' \
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \
                         END ) END  AS descripcion_estado_entrega"),
@@ -196,18 +268,32 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                         this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
                     }
                     
-                    if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
+                   /* if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
                         this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
                             .andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda));
                        
+                   }*/
+                    if((obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
+                       
+                        //this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
+                        this.andWhere(G.knex.raw("a.numero_formula::varchar = " + obj.terminoBusqueda))
+                            .andWhere(G.knex.raw("a.transcripcion_medica = " + obj.filtro.tipo));
+                       
                    }
-                   
+                    
                    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
                         this.andWhere("a.evolucion_id",obj.terminoBusqueda)
                        
                    }
                    
-                   if(obj.filtro.tipo !== 'EV' && obj.filtro.tipo !== 'FO'){
+                   if(obj.filtro.tipo !== 'EV' && !(obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3')//obj.filtro.tipo !== 'FO' 
+                           ){
                         this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
                             .andWhere("a.tipo_id_paciente ",obj.filtro.tipo)
                             .andWhere(G.knex.raw("a.paciente_id::varchar = " + obj.terminoBusqueda));
@@ -217,7 +303,7 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                 
     query.limit(G.settings.limit).
     offset((obj.paginaActual - 1) * G.settings.limit).then(function(resultado){   
-         
+        // console.log("resultado [listarFormulas]: ", resultado);
         callback(false, resultado);
     }).catch(function(err){    
         console.log("err [listarFormulas]: ", err);
@@ -595,6 +681,8 @@ DispensacionHcModel.prototype.listarTodoMedicamentosDispensados = function(obj,c
             callback(err);
         });
 }
+
+
 /**
  * @author Cristian Ardila
  * @fecha 20/05/2016
@@ -663,7 +751,32 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
                         this.andWhere(G.knex.raw("hp.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"));
                     }
                     
-                    if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
+                    if((obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3') && obj.terminoBusqueda !=="" ){
+                       
+                        //this.andWhere(G.knex.raw("a.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
+                        this.andWhere(G.knex.raw("hf.numero_formula::varchar = " + obj.terminoBusqueda))
+                            .andWhere(G.knex.raw("hf.transcripcion_medica = " + obj.filtro.tipo));
+                       
+                    }
+                    
+                    if(obj.filtro.tipo === 'EV' && obj.terminoBusqueda !==""){
+                         this.andWhere("hf.evolucion_id",obj.terminoBusqueda)
+                       
+                    }
+                   
+                   if(obj.filtro.tipo !== 'EV' && !(obj.filtro.tipo === '0'  ||
+                       obj.filtro.tipo === '1'  ||
+                       obj.filtro.tipo === '2'  ||
+                       obj.filtro.tipo === '3')//obj.filtro.tipo !== 'FO' 
+                           ){
+                         this.andWhere("hf.tipo_id_paciente ",obj.filtro.tipo)
+                            .andWhere(G.knex.raw("hf.paciente_id::varchar = " + obj.terminoBusqueda));
+                    
+                  }
+                   /* if(obj.filtro.tipo === 'FO' && obj.terminoBusqueda !==""){
                         this.andWhere(G.knex.raw("hp.fecha_registro between '"+ obj.fechaInicial + "' and '"+ obj.fechaFinal +"'"))
                             .andWhere(G.knex.raw("hf.numero_formula::varchar = " + obj.terminoBusqueda));
                        
@@ -679,7 +792,7 @@ DispensacionHcModel.prototype.listarFormulasPendientes = function(obj,callback){
                             .andWhere("hf.tipo_id_paciente ",obj.filtro.tipo)
                             .andWhere(G.knex.raw("hf.paciente_id::varchar = " + obj.terminoBusqueda));
                     
-                  }
+                  }*/
                 });
                
             
@@ -1006,7 +1119,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                    
     var subQuery = G.knex.select(colSubQueryB)
                            .from("hc_formulacion_despachos_medicamentos_pendientes as dc")
-                           .join("dispensacion_estados AS hc", function(){
+                           .join("hc_formulacion_antecedentes AS hc", function(){//dispensacion_estados
                                this.on("dc.evolucion_id","=","hc.evolucion_id")
                            })
                            .innerJoin("bodegas_documentos AS d", function(){
@@ -1054,7 +1167,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     var query = G.knex.column('*').from(subQuery) .union(function(){
                                  this.select(colSubQueryA)
                            .from("hc_formulacion_despachos_medicamentos as dc")
-                           .join("dispensacion_estados AS hc", function(){
+                           .join("hc_formulacion_antecedentes AS hc", function(){ //dispensacion_estados
                                this.on("dc.evolucion_id","=","hc.evolucion_id")
                            })
                            .innerJoin("bodegas_documentos AS d", function(){
@@ -1220,7 +1333,8 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
             .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))
             .orderBy("a.fecha_registro","desc").limit(limite);
           
-        queryS.then(function(resultado){             
+        queryS.then(function(resultado){    
+            //console.log("resultado consultarUltimoRegistroDispensacion: ", resultado);   
             callback(false, resultado);
         }).catch(function(err){      
             console.log("err consultarUltimoRegistroDispensacion: ", err);   
@@ -1325,8 +1439,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                     "invsinv.descripcion as molecula",
                     "invmcf.descripcion as forma_farmacologica",
                     "invci.descripcion as laboratorio",
-                    "invci.descripcion as laboratorio",
-                    G.knex.raw("fc_descripcion_producto_alterno(fv.codigo_producto) as producto"),
+                    "invp.descripcion as producto",//G.knex.raw("fc_descripcion_producto(fv.codigo_producto) as producto"),
                     "med.cod_principio_activo",
                     "fv.empresa_id",
                     "fv.centro_utilidad",
@@ -1381,7 +1494,7 @@ DispensacionHcModel.prototype.existenciasBodegas = function(obj,callback){
                  .andWhere("fv.bodega", obj.bodega)
                  .andWhere("fv.existencia_actual",">", 0)
                  .andWhere(condicion,parametro)
-                 .andWhere(G.knex.raw("invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'"))
+                 //.andWhere(G.knex.raw("invp.cod_forma_farmacologica "+G.constants.db().LIKE+"'%" + obj.codigoFormaFarmacologica + "%'"))
                  .orderBy("fv.fecha_vencimiento","ASC");
                   
     query.then(function(resultado){  
@@ -1812,7 +1925,7 @@ DispensacionHcModel.prototype.actualizarTipoFormula = function(obj, callback) {
        callback(false, resultado);
     }).catch(function(err){    
        console.log("err (/catch) [actualizarTipoFormula]: ", err);
-       callback(err);
+       callback("Error al actualizar el tipo de formula");  
     });
 };
 
@@ -2724,6 +2837,10 @@ function __insertarMedicamentosPendientes(that, index, productos,evolucionId,tod
  */
 function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback) {
     
+    console.log("********__guardarBodegasDocumentosDetalle****************");
+    console.log("********__guardarBodegasDocumentosDetalle****************");
+    console.log("********__guardarBodegasDocumentosDetalle****************");
+    
     var producto = parametros.temporales[index];
    
     if (!producto) {       
@@ -2734,17 +2851,24 @@ function __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, 
         
     G.Q.nfcall(__actualizarExistenciasBodegasLotesFv, producto, transaccion).then(function(resultado){    
        
-       return  G.Q.nfcall(__actualizarExistenciasBodegas, producto, transaccion);
-        
-       
+        if(resultado >= 1){      
+            return  G.Q.nfcall(__actualizarExistenciasBodegas, producto, transaccion);      
+        }else{
+            throw 'Error al actualizar las existencias de los lotes por que no pueden ser menores a 0'
+        }
+         
     }).then(function(resultado){
         
-       return G.Q.nfcall(__insertarBodegasDocumentosDetalle,producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId,transaccion);
-   
+       if(resultado >= 1){      
+            return G.Q.nfcall(__insertarBodegasDocumentosDetalle,producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId,transaccion);
+        }else{
+            throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0'
+        }
+        
     
     }).then(function(resultado){
-      
         
+        console.log("A QUI [__insertarBodegasDocumentosDetalle] ", resultado)
         setTimeout(function() {
             __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback);
         }, 300);
@@ -3238,7 +3362,7 @@ DispensacionHcModel.prototype.consultarFormulaAntecedentes = function(obj,callba
     }).select(columna).then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
-        console.log("err[consultarDispensacionesFormula]: ", error);
+        console.log("err[consultarFormulaAntecedentes]: ", error);
         callback(error);
     });
     
@@ -3458,8 +3582,23 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                         this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
                         .on("hp.numeracion","bod.numeracion")
                     }).where("evolucion_id", obj.evolucionId)
+            }).as("a");
+            
+     var subQueryFechaRegistro = G.knex.select("bod.fecha_registro")  
+            .from("hc_formulacion_despachos_medicamentos AS hp")
+            .innerJoin("bodegas_documentos AS bod", function(){
+                this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
+                .on("hp.numeracion","bod.numeracion")
+            }).where("evolucion_id", obj.evolucionId)
+              .union(function(){
+                this.select("bod.fecha_registro")  
+                    .from("hc_formulacion_despachos_medicamentos_pendientes AS hp")
+                    .innerJoin("bodegas_documentos AS bod", function(){
+                        this.on("hp.bodegas_doc_id","bod.bodegas_doc_id")
+                        .on("hp.numeracion","bod.numeracion")
+                    }).where("evolucion_id", obj.evolucionId)
+                            .andWhere("bod.todo_pendiente", 1)
             }).as("a")
-    
     
     var numeroEntregaActualSubQuery = G.knex.select([G.knex.raw("sum(dispensados.numero_entregas)as numero_entregas"),
                                       "dispensados.evolucion_id"])
@@ -3487,7 +3626,11 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
     
     var campoFechaUltimaEntrega = G.knex.max("a.fecha_registro")
                              .from(subQueryA).as("fecha_ultima_entrega")
-          
+    
+    var campoFechaRegistro = G.knex.max("a.fecha_registro")
+                             .from(subQueryFechaRegistro).as("fecha_registro_formula")
+    
+    
     var campoSubQueryMovFormulaA = ["numero_formula as formula_id",   
                                "evolucion_id",  
                                "paciente_id",  
@@ -3517,7 +3660,8 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                                 ) = 1 THEN 2   \
                                ELSE 0 END as sw_pendiente"),
                                campoNumeroEntregaActual,
-                               campoFechaUltimaEntrega
+                               campoFechaUltimaEntrega,
+                               campoFechaRegistro
                             ]
     var subQueryMovFormulaA = G.knex.select(campoSubQueryMovFormulaA)
                                     .from("hc_formulacion_antecedentes as hc")
@@ -3543,10 +3687,36 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                    "a.tipo_formula",  
                    G.knex.raw("CASE WHEN a.numero_total_entregas = a.numero_entrega_actual THEN 1 ELSE 0 END as sw_finalizado"),  
                    G.knex.raw("CASE WHEN a.refrendar = 1 THEN (\
-                   		SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion  \
-                   		FROM medicamentos_refrendados   \
-                    	WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula)   \
-                    	ELSE a.fecha_ultima_entrega END as fecha_entrega"),  
+                    SELECT CASE WHEN ref.fecha_refrendacion  >= \
+                                CASE WHEN a.fecha_registro_formula IS NULL \
+                                     THEN a.fecha_registro ELSE a.fecha_registro_formula END\
+                    		THEN ref.fecha_refrendacion\
+                    		    ELSE \
+                                    CASE WHEN a.fecha_registro_formula IS NULL \
+                                         THEN a.fecha_registro \
+                                         ELSE a.fecha_registro_formula END \
+                                    END\
+                                FROM (\
+                                    SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion\
+                                    FROM medicamentos_refrendados   \
+                                    WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula\
+                                    )as ref)\
+                    ELSE  a.fecha_registro_formula\
+                    END as fecha_entrega"), 
+                    G.knex.raw("CASE WHEN a.refrendar = 1 \
+                            THEN ( \
+                                 SELECT CASE WHEN ref.fecha_refrendacion  >=\
+                                             CASE WHEN a.fecha_registro_formula IS NULL \
+                                                  THEN a.fecha_registro ELSE a.fecha_registro_formula END\
+                                             THEN '1'\
+                                        ELSE '0' END\
+                                        FROM (\
+                                             SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion\
+                                             FROM medicamentos_refrendados   \
+                                             WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula\
+                                         )as ref)\
+                            ELSE '0'\
+                        END as estado_fecha_refrendacion"),
                    G.knex.raw("null as fecha_minima_entrega"),   
                    G.knex.raw("null as fecha_maxima_entrega"),   
                    "a.medico_id",  
@@ -3565,13 +3735,14 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
          "b.sw_pendiente",   
          "b.tipo_formula",  
          "b.sw_finalizado",  
-         "b.fecha_ultima_entrega as fecha_entrega",  
+         "b.fecha_entrega as fecha_entrega",  
          G.knex.raw("null as fecha_minima_entrega"),  
          G.knex.raw("null as fecha_maxima_entrega"),  
          "b.medico_id",  
          G.knex.raw("TO_CHAR(b.fecha_registro,'YYYY-MM-DD') as fecha_registro"),  
          G.knex.raw("TO_CHAR(b.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion"),  
-          G.knex.raw("b.fecha_ultima_entrega as fecha_ultima_entrega")
+          G.knex.raw("b.fecha_ultima_entrega as fecha_ultima_entrega"),
+          "estado_fecha_refrendacion"
      ];
      
     var subQueryMovFormulaB = G.knex.select(campoSubQueryMovFormulaB)
@@ -3586,7 +3757,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
      
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){  
-            
+        console.log("resultado model [consultarDispensacionEstadosFormula]:", resultado)  
         return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion)
             
     }).then(function(resultado){       
@@ -3601,13 +3772,13 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
 /**
  * @author Cristian Manuel Ardila Troches
  * +Descripcion Metodo encargado de insertar el movimiento de la formula en la tabla
- *              dispensacion_estados
+ *              dispensacion_estados                                                    
  * @fecha 2016-12-14 (YYYY-MM-DD)
  */
 DispensacionHcModel.prototype.insertarDispensacionEstadosFormula = function(obj, transaccion, callback) {
      
     var query = G.knex('dispensacion_estados')
-        .returning(["fecha_entrega","numero_entrega_actual","sw_finalizado"])
+        .returning(["fecha_entrega","numero_entrega_actual","sw_finalizado", "estado_fecha_refrendacion","fecha_registro"])
         .insert({formula_id:obj.formula_id,   
          evolucion_id:obj.evolucion_id,   
          paciente_id:obj.paciente_id,   
@@ -3624,11 +3795,13 @@ DispensacionHcModel.prototype.insertarDispensacionEstadosFormula = function(obj,
          medico_id:obj.medico_id,  
          fecha_registro:obj.fecha_registro,  
          fecha_finalizacion:obj.fecha_finalizacion,  
-         fecha_ultima_entrega:obj.fecha_ultima_entrega           
+         fecha_ultima_entrega:obj.fecha_ultima_entrega,          
+         estado_fecha_refrendacion:obj.estado_fecha_refrendacion          
         });
                    
     if(transaccion) 
         query.transacting(transaccion).then(function(resultado) {   
+            console.log("resultado model [insertarDispensacionEstadosFormula]:", resultado)  
             callback(false, resultado);
         }).catch (function(err) {
              console.log("err (/catch) [insertarDispensacionEstadosFormula]: ", err);  
@@ -3775,6 +3948,20 @@ DispensacionHcModel.prototype.actualizarFechaMinimaMaxima = function(obj, callba
         console.log("err (/catch) [actualizarFechaMinimaMaxima]: ", err);      
         callback({err:err, msj: "Error actualizarFechaMinimaMaxima"});
     }); 
+};
+
+DispensacionHcModel.prototype.listarEvoluciones = function(callback){
+   G.knex.select(G.knex.raw('distinct(evolucion_id) as evolucion_id'))
+                .from("hc_formulacion_antecedentes")
+          .where(G.knex.raw("fecha_formulacion between '2017-02-22' and '2017-02-22'"))
+          .then(function(resultado){                
+            
+        callback(false, resultado)
+    }).catch(function(err){    
+        console.log("err [listarTipoDocumento]:", err);
+        callback(err);
+    });
+    
 };
 
 

@@ -490,9 +490,9 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
-                enableColumnResize: true,
+                enableColumnResize:true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: 140,
+                    {field: 'codigo_producto', displayName: 'Código', width: "8%",
                         
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.get_tipo_producto() == 1" >N</span>\
@@ -505,20 +505,20 @@ define(["angular", "js/controllers",
                                                 <span class="glyphicon glyphicon-lock pull-right text-danger" ng-show="row.entity.estado == \'0\'" ></span>\
                                             </div>'
                     },
-                    {field: 'descripcion', displayName: 'Nombre',
+                    {field: 'descripcion', displayName: 'Nombre', width:"24%",
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
                         cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
-                    {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
-                    {field: '#Cod.invima/F.Ven', width: "200", displayName: '#Cod.invima/F.Ven', 
+                    {field: 'codigo_cum', displayName: 'Cum', width: "10%", cellClass: "gridNumber"},
+                    {field: '#Cod.invima/F.Ven', width: "10%", displayName: '#Cod.invima/F.Ven', 
                         cellTemplate: '<div class="col-xs-16 ">\n\
                             <p class="text-uppercase">{{row.entity.codigo_invima}} / {{row.entity.fecha_vencimiento_invima}}</p></div>'},
                   
-                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "130", cellFilter: "currency:'$ '",
+                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "8%", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\
                                        </div>'},
-                    {field: 'precio_venta', width: "150", displayName: "$ Venta", cellFilter: "number",
+                    {field: 'precio_venta', width: "12%", displayName: "$ Venta", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12" > <input ng-if="!row.entity.sw_pactado" type="text" select-on-click\
                      ng-model="row.entity.precio_venta" \
                      validacion-numero-entero\
@@ -530,17 +530,17 @@ define(["angular", "js/controllers",
                                                 </span><span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\n\
                         </div></div>'
                     },
-                    {field: 'iva', displayName: 'Iva', width: "80", cellClass: "gridNumber"},
-                    {field: 'existencia', displayName: 'Stock', width: "60", cellClass: "gridNumber"},
-                    {field: 'cantidad_disponible', displayName: 'Dispo.', width: "60", cellClass: "gridNumber"},
-                    {field: 'cantidad_solicitada', width: "80", displayName: 'Cantidad',
+                    {field: 'iva', displayName: 'Iva', width: "5%", cellClass: "gridNumber"},
+                    {field: 'existencia', displayName: 'Stock', width: "5%", cellClass: "gridNumber"},
+                    {field: 'cantidad_disponible', displayName: 'Dispo.', width: "5%", cellClass: "gridNumber"},
+                    {field: 'cantidad_solicitada', width: "8%", displayName: 'Cantidad',
                         cellTemplate: '<div class="col-xs-12"> \
                                       <input type="text" \
                                        ng-model="row.entity.cantidad_solicitada" \
                                        validacion-numero-entero \
                                        class="form-control grid-inline-input" \n\
                                        name="" id="" /> </div>'},
-                    {width: "60", displayName: "Opcion", cellClass: "txt-center",
+                    {width: "5%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '     <button  ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
 

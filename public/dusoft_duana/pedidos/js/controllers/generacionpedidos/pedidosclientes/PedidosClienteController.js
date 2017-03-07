@@ -95,7 +95,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var cotizacion = localStorageService.get("cotizacion");
                 var numeroCotizacion = 0;
                 var tipoCotizacionCartera;
-                console.log("cotizacion ><><<<<<<>>>>><>>>< ", cotizacion);
+                
                 if (cotizacion) {
                     numeroCotizacion = cotizacion.numero_cotizacion || 0;
                     tipoCotizacionCartera = cotizacion.tipoPedido;
@@ -299,7 +299,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
-                    console.log("PRODUCTOS ", data);
+                    
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
                     producto.set_cantidad_inicial(data.cantidad_solicitada);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
@@ -376,7 +376,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Pedido.limpiar_productos();
                 productos.forEach(function(data) {
-                    console.log("data productos ****** ", data);
+                    
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.porcentaje_iva);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     producto.set_cantidad_inicial(data.cantidad_solicitada);
@@ -744,7 +744,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     };
                 };
-                console.log("LOS DATOS ", obj);
+                
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -1089,7 +1089,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.datos_view.productos_validos = data.obj.pedidos_clientes.productos_validos;
                     $scope.datos_view.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
                     $scope.opciones_archivo.cancel();
-                    if ($scope.datos_view.productos_invalidos.length > 0) {
+                    $scope.datos_view.productosInvalidos = [];
+                    $scope.datos_view.productosInvalidosSinRepetir;
+                    //console.log("$scope.datos_view.productos_invalidos ", $scope.datos_view.productos_invalidos);
+                    
+                    $scope.datos_view.productos_invalidos.forEach(function(row){
+                        
+                        $scope.datos_view.productosInvalidos.push({codigo_producto:row.codigo_producto});
+                        
+                    });
+                    
+                    function removeDuplicates(originalArray, prop) {
+                        var newArray = [];
+                        var lookupObject  = {};
+
+                        for(var i in originalArray) {
+                           lookupObject[originalArray[i][prop]] = originalArray[i];
+                        }
+
+                        for(i in lookupObject) {
+                            newArray.push(lookupObject[i]);
+                        }
+                         return newArray;
+                    }
+                    
+                    $scope.datos_view.productosInvalidosSinRepetir =  removeDuplicates($scope.datos_view.productosInvalidos, "codigo_producto")
+                     
+                     console.log(" |||||||||||||||||| $scope.datos_view.productosInvalidosSinRepetir ", $scope.datos_view.productosInvalidosSinRepetir);
+                    if ($scope.datos_view.productosInvalidosSinRepetir.length > 0) {
 
                         $scope.opts = {
                             backdrop: true,
@@ -1105,7 +1132,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                 <h4 >Lista Productos NO validos.</h4>\
                                                 <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                                     <div class="list-group">\
-                                                        <a ng-repeat="producto in datos_view.productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                        <a ng-repeat="producto in datos_view.productosInvalidosSinRepetir" class="list-group-item defaultcursor" href="javascript:void(0)">\
                                                             {{ producto.codigo_producto}}\
                                                         </a>\
                                                     </div>\
@@ -1135,7 +1162,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             // Cancelar la cotizacion
             $scope.volver_cotizacion = function() {
                 var cotizacion = localStorageService.get("cotizacion");
-                console.log("cotizacion ------///--->>>>>", cotizacion);                     
+                            
                 if (cotizacion) {
 
                     localStorageService.add("terminoBusqueda", {busqueda: cotizacion.numero_cotizacion, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0}});
@@ -1570,10 +1597,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
            
             that.generarObservacionCartera = function(aprobado){               
-                
-                console.log("****************gestionar_pedido************************");
-                console.log("****************gestionar_pedido************************");
-                console.log("****************gestionar_pedido************************");
+             
                 
                 var obj = {};
                 var url = '';
@@ -1607,8 +1631,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                console.log("DESAPROBADO CARTERA ", data);
-                console.log("$scope.Pedido.get_numero_cotizacion() ", $scope.Pedido.get_numero_cotizacion() );
+               
                     if (data.status === 200) {
                         /*Se valida si es una cotizacion y entonces se procede
                          a crear el pedido*/

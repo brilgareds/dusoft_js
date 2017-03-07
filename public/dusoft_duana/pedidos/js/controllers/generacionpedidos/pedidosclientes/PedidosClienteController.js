@@ -1560,7 +1560,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
 
-                        console.log("data []: ", data);
+                        console.log("data []: ", data.obj.pedidos_clientes.lista_productos[0]);
                         
                 });
                  

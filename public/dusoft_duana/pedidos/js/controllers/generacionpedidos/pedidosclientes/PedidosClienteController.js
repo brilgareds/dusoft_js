@@ -284,7 +284,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
-                            termino_busqueda: $scope.datos_view.termino_busqueda_productos
+                            termino_busqueda: {termino_busqueda:$scope.datos_view.termino_busqueda_productos}
                         }
                     }
                 };
@@ -1115,7 +1115,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     
                     $scope.datos_view.productosInvalidosSinRepetir =  removeDuplicates($scope.datos_view.productosInvalidos, "codigo_producto")
                      
-                     console.log(" |||||||||||||||||| $scope.datos_view.productosInvalidosSinRepetir ", $scope.datos_view.productosInvalidosSinRepetir);
                     if ($scope.datos_view.productosInvalidosSinRepetir.length > 0) {
 
                         $scope.opts = {
@@ -1546,7 +1545,75 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
             $scope.gestion_cartera = function(aprobado, denegar) {
                
-                var cotizacion = localStorageService.get("cotizacion");
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido,
+                            termino_busqueda: {termino_busqueda:'1',
+                                               empresa_origen_id: $scope.Pedido.get_empresa_id(),
+                                               centro_utilidad_origen_id: $scope.Pedido.get_centro_utilidad_id(),
+                                               bodega_origen_id: $scope.Pedido.get_bodega_id()}
+                            
+                        }
+                    }
+                };
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
+
+                        console.log("data []: ", data);
+                        
+                });
+                 
+               
+                                
+               /* var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_farmacias: {
+
+                            empresa_origen_id: $scope.Pedido.get_empresa_id(),
+                            centro_utilidad_origen_id: $scope.Pedido.get_centro_utilidad_id(),
+                            bodega_origen_id: $scope.Pedido.get_bodega_id(),
+                            empresa_destino_id: '03',
+                            centro_utilidad_destino_id: '1',
+                            bodega_destino_id: '03', 
+                            tipo_producto:'1',
+                            tipo_pedido:'1',
+                            observacion:'PEDIDO DESDE EL MODULO DE CLIENTE',
+                            productos :[{codigo :'199L0162820' , cantidad:100}],       
+                            pedidoCliente:0
+                        }
+                    }
+                };*/
+                /*var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
+                
+                 var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_farmacias: {
+
+                            empresa_origen_id: '03',
+                            centro_utilidad_origen_id: '1',
+                            bodega_origen_id: '06',
+                            empresa_destino_id: '03',
+                            centro_utilidad_destino_id: '1',
+                            bodega_destino_id: '03', 
+                            tipo_producto:'1',
+                            tipo_pedido:'1',
+                            observacion:'PEDIDO DESDE EL MODULO DE CLIENTE',
+                            productos :[{codigo :'199L0162820' , cantidad:100}],       
+                            pedidoCliente:0
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                  
+                        console.log("data.status",data);
+                      
+                });*/
+               
+                /*var cotizacion = localStorageService.get("cotizacion");
                     
                 if (cotizacion) {
                    
@@ -1564,12 +1631,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 }              
                 $scope.ocultarOpciones = 0;               
-                if(denegar === 1){                                           
-                    that.autorizarCotizacionCartera(aprobado,denegar);
-                }else{
-                    that.autorizarCotizacionCartera(aprobado,denegar);                   
-                }     
-                //$state.go('ListarPedidosClientes');
+                
+                that.autorizarCotizacionCartera(aprobado,denegar);   */
+                
+                 
+                
             };
             
             /**

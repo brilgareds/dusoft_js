@@ -1738,7 +1738,30 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
  *  --PedidosCliente.prototype.reporteCotizacion
  */
 PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion, termino_busqueda, callback) {
-
+    
+    //var termino_busqueda = (termino_busqueda.termino_busqueda === undefined) ? '' : termino_busqueda.termino_busqueda;
+    
+    var objParametrosBusqueda = "";
+    var parametros;
+    var andSql = "";
+    
+    if(termino_busqueda.termino_busqueda === undefined || termino_busqueda.termino_busqueda === '' ){
+        console.log("termino_busqueda.termino_busqueda ", termino_busqueda.termino_busqueda)
+        objParametrosBusqueda = '';
+        parametros = {1: cotizacion.numero_cotizacion, 2: '%' + objParametrosBusqueda + '%'};
+        andSql = "";
+    }else{
+        
+        objParametrosBusqueda = '';
+        parametros = {1: cotizacion.numero_cotizacion, 
+                      2: '%' + objParametrosBusqueda + '%',
+                      5: termino_busqueda.bodega_origen_id};
+                  /*,
+                      3: termino_busqueda.empresa_origen_id,
+                      4: termino_busqueda.centro_utilidad_origen_id,*/
+        andSql = "  a.bodega_origen_producto != :5 AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+    }
+    
     var sql = " SELECT\
                 a.pedido_cliente_id_tmp as numero_cotizacion,\
                 a.codigo_producto,\
@@ -1752,16 +1775,20 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 a.empresa_origen_producto,\n\
                 a.centro_utilidad_origen_producto,\n\
                 a.bodega_origen_producto,\
-                (SELECT descripcion FROM bodegas WHERE empresa_id = a.empresa_origen_producto AND centro_utilidad = a.centro_utilidad_origen_producto  AND bodega = a.bodega_origen_producto) as nombre_bodega\
+                (SELECT descripcion FROM bodegas WHERE empresa_id = a.empresa_origen_producto AND centro_utilidad = a.centro_utilidad_origen_producto  AND bodega = a.bodega_origen_producto) as nombre_bodega,\
+                a.centro_utilidad_origen_producto,\
+                a.bodega_origen_producto,\
+                a.empresa_origen_producto\
                 FROM ventas_ordenes_pedidos_d_tmp AS a\
                 WHERE pedido_cliente_id_tmp = :1 and \
-                (\
+                "+andSql+"(\
                     a.codigo_producto ilike :2 or\
                     fc_descripcion_producto(a.codigo_producto) ilike :2 \
-                );";
+                ) ;";
+    
+    console.log("termino_busqueda ", termino_busqueda)
 
-
-    G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 2: '%' + termino_busqueda + '%'}).then(function(resultado) {
+    G.knex.raw(sql, parametros ).then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
         console.log("err [consultar_detalle_cotizacion]: ", err);

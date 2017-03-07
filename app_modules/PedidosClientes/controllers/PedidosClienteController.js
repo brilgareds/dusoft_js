@@ -1369,8 +1369,8 @@ PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
         return;
     }
 
-    var termino_busqueda = (args.pedidos_clientes.termino_busqueda === undefined) ? '' : args.pedidos_clientes.termino_busqueda;
-
+    var termino_busqueda = args.pedidos_clientes.termino_busqueda;
+                                               
     that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, termino_busqueda, function(err, lista_productos) {
 
         if (err) {
@@ -1644,7 +1644,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                     }}};          
             return;
         }  
-
+                               
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultar_detalle_cotizacion", cotizacion, '');
        
     }).then(function(resultadoConsultaDetalle){

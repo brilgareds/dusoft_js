@@ -546,15 +546,15 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
         
 
     }).then(function(productos) {
-         
+                                                     
         return G.Q.nfcall(__productosBodegas,that, 0, productos,[]);
         
                                 
     }).then(function(productos) {    
-           
+        
         if(productos.length > 0){
           
-          callback(false, {status:200, msj:'Lista de productos', data:{productos:productos}});
+          callback(false, {status:200, msj:'Lista de productos', data:{productos:productos.sort(dynamicSort("bodega"))}});
       
         }else{
             throw {msj:'El producto no existe', status:401, pedidos_clientes:{}};   
@@ -1554,7 +1554,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     var _productosPlanoValidadosInvalido = "";
     var def = G.Q.defer();
     var __productoSinDisponibilidadTotal = "";
-    
+    var _detalleCotizacion = "";
     /**
      * +Descripcion Consulta si la formula esta en estado activa o inactiva, ni no existe
      *              proseguira a crearse en los siguientes metodos
@@ -1596,7 +1596,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
         _productosInvalidosNoExistentes = productosPlano[1];
         _productosValidosExistentes = productosPlano[0];
         
-        if (productosPlano[0].length > limite_productos) {
+        if (productosPlano[0].length > limite_productos) {                          
             throw {msj:"Lista de Productos excede el limite permitido 25 productos por pedido", status:400, data: {pedidos_clientes: {}}};
             
         }else{
@@ -1646,9 +1646,10 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
         }  
 
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultar_detalle_cotizacion", cotizacion, '');
-        /**************************POR A QUI QUEDO OK ***********************************/
+       
     }).then(function(resultadoConsultaDetalle){
         
+        _detalleCotizacion = resultadoConsultaDetalle[0];
         if(resultadoConsultaDetalle.length > limite_productos){
             throw {msj:'Lista de Productos excede el limite permitido 25 productos por pedido ', status:400, data:{pedidos_clientes: {}}};
             return;
@@ -1686,8 +1687,12 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
         productosPreparadosCotizacionInvalidos = []; 
         
         return G.Q.nfcall(__productosValidosExtraidosPlano,that,0,_productosPlanoValidadosValido, _productosValidosExistentes)
-    
-    }).then(function(resultado){
+        //return G.Q.nfcall(__productosValidosExtraidosPlano2,that,0,_productosPlanoValidadosValido,_productosValidosExistentes,_detalleCotizacion)
+    })/*then(function(resultado){
+        
+        
+        console.log("productosPreparadosCotizacion ", productosPreparadosCotizacion);
+    })*/.then(function(resultado){
        
        //console.log("productosPreparadosCotizacion ", productosPreparadosCotizacion);
         productosPreparadosCotizacion.forEach(function(row){
@@ -1701,23 +1706,11 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                 }  
             });          
         });
-        //
-        //console.log("resultado [productosPreparadosCotizacion]: ", productosPreparadosCotizacion);
-        //console.log("resultado [__productosValidosExtraidosPlano]: ", _productosValidosExistentes);
-        
-        //console.log("productossss ", productossss)
+      
         return G.Q.nfcall(__validarTotalSolicitadoBodegas,that,0,productosPreparadosCotizacion,_productosValidosExistentes, [],[]);
         
     }).then(function(resultado){
-        
-        console.log("resultado Productos Validos   ", resultado[0]);
-        console.log("resultado Productos Invalidos   ", resultado[1]);
-    })
-                     
-                     
-                     
-    
-    /*.then(function(resultado){
+         
             
         __productoSinDisponibilidadTotal =  resultado[1];
 
@@ -1760,7 +1753,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                     }}};   
         return;
         
-    })*/.fail(function(err) {
+    }).fail(function(err) {
         
         console.log("err [cotizacionArchivoPlano]:", err);
         var msj = "Erro Interno";
@@ -1774,8 +1767,75 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     }).done();
     
 };
+ 
+ /*
+ 
+ function __productosValidosExtraidosPlano2(that,index,productos,productosSolicitados,_detalleCotizacion,callback){
+      
+    var productoDetalleCotizacion = _detalleCotizacion[index];
+    
+    var obj ={codigo_producto:'',cantidad_solicitada:0, total_solicitado:0, total_disponible:0}
+   
+    if (!productoDetalleCotizacion) {      
+        
+        callback(false);
+        return;
+    }
+    
+     index++;
+        productosSolicitados.forEach(function(row){
+            console.log("row.codigo_producto ", row.codigo_producto);
+            //console.log("productoPlano.codigo_producto ", productoPlano.codigo_producto);
+            if(row.codigo_producto === productoDetalleCotizacion.codigo_producto){
+                
+                obj.codigo_producto = productoDetalleCotizacion.codigo_producto;
+                obj.total_solicitado = productoDetalleCotizacion.cantidad_solicitada;
+            }            
+        });
+        
+   
+     G.Q.nfcall(__productosValidosExtraidosPlano,that, 0, productos,productosSolicitados,obj).then(function(resultado){
 
-/**
+        __productosValidosExtraidosPlano2(index,productos,productosSolicitados,_detalleCotizacion,callback);
+        
+    }).fail(function(resultado){
+        callback(true);
+    }).done();       
+    
+  } */
+ 
+ 
+ 
+  /**
+   * 
+   * pongo esta __productosValidosExtraidosPlano en vez de esta __seleccionarProductoMultipleDisponibilidadMayor
+   */
+ function __productosValidosExtraidosPlano(that, index, productos,productosSolicitados,callback){
+      
+    var productoPlano = productosSolicitados[index];
+    
+    var obj ={codigo_producto:'',cantidad_solicitada:0, total_solicitado:0, total_disponible:0}
+   
+    if (!productoPlano) {      
+        
+        callback(false);
+        return;
+    }
+    
+    
+    index++;
+
+    G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, productos, productoPlano, 
+            obj ).then(function(resultado){
+
+          __productosValidosExtraidosPlano(that, index, productos,productosSolicitados,callback);
+    }).fail(function(resultado){
+        callback(true);
+    }).done();   
+ };
+ 
+ 
+ /**
  * @author Cristian Ardila
  * +Descripcion Funcion que permite validar que la cantidad solicitada
  *              sea igual a la cantidad separada del producto en diferentes bodegas
@@ -1811,31 +1871,6 @@ function __validarTotalSolicitadoBodegas(that, index, productos,productosValidos
     __validarTotalSolicitadoBodegas(that, index, productos,productosValidosExistentes,productosValidos, productosInvalidos,callback)
       
   }
-
-  
-  /**
-   * 
-   * pongo esta __productosValidosExtraidosPlano en vez de esta __seleccionarProductoMultipleDisponibilidadMayor
-   */
- function __productosValidosExtraidosPlano(that, index, productos,productosSolicitados,callback){
-      
-    var productoPlano = productosSolicitados[index];
-
-    if (!productoPlano) {      
-        
-        callback(false);
-        return;
-    }
-
-    index++;
-    G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor,that, 0, productos, productoPlano, 
-            obj ={codigo_producto:'',cantidad_solicitada:0, total_solicitado:0, total_disponible:0}).then(function(resultado){
-
-          __productosValidosExtraidosPlano(that, index, productos,productosSolicitados,callback);
-    }).fail(function(resultado){
-        callback(true);
-    }).done();   
- }
  
  
  /**
@@ -1954,9 +1989,14 @@ function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos
             
             if(producto.cantidad_disponible >= productosSolicitados.cantidad_solicitada){
                 console.log("LA CANTIDAD SOLICITADA ", productosSolicitados.cantidad_solicitada)
+                console.log("producto.codigo_producto ", producto.codigo_producto);
+                        console.log("obj.codigo_producto ", obj.codigo_producto);
                if(obj.codigo_producto === producto.codigo_producto){
 
                     if(productosSolicitados.cantidad_solicitada > obj.total_solicitado){
+                        
+                        console.log("producto.cantidad_solicitada ", producto.cantidad_solicitada);
+                        console.log("obj.cantidad_solicitada ", obj.cantidad_solicitada);
                         
                         producto.cantidad_solicitada -= obj.cantidad_solicitada;
                         unidadMedida = producto.cantidad_solicitada%(producto.unidad_medida === null ? 1 : producto.unidad_medida ) ===0 ? 1 : 0;  
@@ -4191,143 +4231,13 @@ function __validar_productos_archivo_plano(that, index, filas, productosValidos,
 
 
 
-/*
- * Autor : Eduar garcia
- * Descripcion : Validar que los datos de los productos esten correctos, completos y que el valor de venta
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion encargada se obtener todo el detalle de los productos
+ *              del archivo plano
+ * @fecha 07/03/2017 DD/MM/YYYY         
  */
-function __validar_datos_productos_archivo_plano2(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback) {
-// G.Q.ninvoke(that, "__listarProductosClientes",args).then(function(lista_productos){
-     
-    var producto = productos[index];
-    var productoUnidadMedida = "";
-    var def = G.Q.defer();
-    if (!producto) {
-          
-        callback(false,productos_validos, productos_invalidos);
-        return;
-    }
-    
-     /**
-     * +Descripcion Parametros exclusivos para consultar la disponibilidad 
-     *              que tiene el producto
-     */
-    var filtro = {
-        tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto,
-        termino_busqueda: producto.codigo_producto,
-        laboratorio_id: (cotizacion.laboratorio_id === undefined) ? '' : cotizacion.laboratorio_id,
-        numero_cotizacion: (cotizacion.numero_cotizacion === undefined) ? '' : cotizacion.numero_cotizacion,
-        numero_pedido: (cotizacion.numero_pedido === undefined) ? '' : cotizacion.numero_pedido,
-        filtro_producto: 0
-    };
-
-    var filtroAvanzado = {
-        molecula: cotizacion.molecula,
-        laboratorio_id: cotizacion.laboratorio_id,
-        codigoProducto: cotizacion.codigoProducto,
-        descripcionProducto: cotizacion.descripcionProducto,
-        concentracion: cotizacion.concentracion,
-        tipoBusqueda: 0,
-        tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto
-    };
-  
-    var filtros = '';
-    
-   /**
-     * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
-     *               siempre y cuando el pedido tenga el
-     *               estado (Estado del Pedido ) 1
-     *               estado_pedido (Estado de solicitud ) 0 pero anterior a esto
-     *               se validara de que el pedido al menos quede con un solo pro-
-     *               ducto
-     */
-    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
-    
-    G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
-        cotizacion.empresa_id,
-        cotizacion.centro_utilidad_id,
-        cotizacion.bodega_id,
-        cotizacion.cliente.contrato_id,
-        filtro,
-        1, filtros, filtroAvanzado).then(function(lista_productos){
-    
-        //index++;
-      
-        if (lista_productos.length === 0) {
-            productos_invalidos.push(producto);
-            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            return;
-        } else {
-
-           var _producto = lista_productos[0];
-            producto.codigo_producto = _producto.codigo_producto;
-            producto.iva = _producto.iva;
-            producto.precio_venta = _producto.precio_producto;
-            producto.tipo_producto = _producto.tipo_producto_id;
-            producto.empresaIdProducto = cotizacion.empresa_id;
-            producto.centroUtilidadProducto = cotizacion.centro_utilidad_id;
-            producto.bodegaProducto = cotizacion.bodega_id;
-            
-            return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros)
-        
-        }
-    }).then(function(resultado){
-         
-        if(!resultado || resultado === undefined){
-            
-            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-                return;
-        } 
-        /**
-         * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
-        **/
-        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
-       
-        if(precioVenta.valido){
-            productoUnidadMedida = producto;
-            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
-
-        }else{
-            productoUnidadMedida = producto;
-            productos_invalidos.push(productoUnidadMedida);
-            def.resolve();
-        }
-       
-            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-                return;
-            
-    }) .then(function(resultado) {
-        index++;
-         
-        if(!resultado){
-            
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-            
-        } else if (resultado.length > 0 && resultado[0].valido === '1') {
-            
-            productos_validos.push(productoUnidadMedida);
-
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-
-        }else{
-           
-            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
-            producto.cantidadValida = false;
-            productos_invalidos.push(productoUnidadMedida);
-
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-        } 
-    }).fail(function(err){  
-    console.log("error[__validar_datos_productos_archivo_plano]: ", err)    
-    }).done(); 
-};                                              
-
-
 function __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback) {
   
     var producto = productos[index];
@@ -4348,7 +4258,7 @@ function __validar_datos_productos_archivo_plano(that, obj, productos, productos
     index++;
     G.Q.ninvoke(that, "__listarProductosClientes",obj).then(function(lista_productos){      
              
-        if (lista_productos.length === 0) {
+        if (lista_productos.length === 0) {                                    
            
            
             productos_invalidos.push(lista_productos.data.productos.sort(dynamicSort("codigo_producto")));                  
@@ -4357,29 +4267,19 @@ function __validar_datos_productos_archivo_plano(that, obj, productos, productos
             __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback);
             return;
         } else {
-           //console.log("SORT ", lista_productos.data.productos.sort(dynamicSort("codigo_producto")));
+          
             var _producto = lista_productos.data.productos.sort(dynamicSort("codigo_producto"));
                 producto.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id;
             
             productos_validos.push(_producto);
-               //_producto.parametros = parametros;
-             //return G.Q.nfcall(__productosSeleccionado,that, 0, _producto,[],[], producto);
-            
+               
         }
-         __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback); 
+        __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback); 
         
          
-    })/*.then(function(resultado){
-
-
-        if(resultado[1].length > 0){
-            productos_invalidos.push(resultado[1]);
-        }else{
-            productos_validos.push(resultado[0]);
-        }
-      __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback); 
-            
-    })*/.fail(function(err){  
+    }).fail(function(err){  
+       
+       __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback); 
     console.log("error[__validar_datos_productos_archivo_plano]: ", err)    
     }).done(); 
 };                                              

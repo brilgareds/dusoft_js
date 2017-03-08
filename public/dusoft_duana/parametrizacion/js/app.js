@@ -74,7 +74,7 @@ define([
             Parametrizacion.urlRouterProvider.otherwise(vistaDefecto);
 
             Parametrizacion.stateProvider
-                .state('OperariosBodega', {
+            .state('OperariosBodega', {
                 url: "/OperariosBodega",
                 text:"Operarios Bodega",
                 templateUrl: "views/OperariosBodega/listaOperarios.html",
@@ -113,7 +113,13 @@ define([
                 controller: "ListarUsuariosController",
                 parent_name:"ListarRoles"
                 
-            });
+            })
+            .state('Terceros', {
+                url: "/Terceros",
+                text:"Administración de terceros",
+                templateUrl: "views/OperariosBodega/listaOperarios.html",
+                controller: "OperariosBodegaController"
+            })
             
             if($location.path() === ""){
                 $state.go(vistaDefecto);

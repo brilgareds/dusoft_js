@@ -525,7 +525,8 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
     G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
          
         if(estadoMultiplePedido === 0){
-
+                                    
+                                    
             bodegasPedidos = [];
             bodegasPedidos [0] = {empresa_id:args.pedidos_clientes.cotizacion.empresa_id, 
                             centro_utilidad_id: args.pedidos_clientes.cotizacion.centro_utilidad_id, 
@@ -1351,7 +1352,7 @@ PedidosCliente.prototype.consultarCotizacion = function(req, res) {
  */
 PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
 
-
+console.log("********PedidosCliente.prototype.consultarDetalleCotizacion****************");
     var that = this;
 
     var args = req.body.data;
@@ -1370,18 +1371,23 @@ PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
     }
 
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
-                                               
-    that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, termino_busqueda, function(err, lista_productos) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+        
+    
+    G.Q.ninvoke(that.m_pedidos_clientes, "consultar_detalle_cotizacion", cotizacion, termino_busqueda).then(function(resultado){
+        console.log("resultado ", resultado[0].length);
+        if(resultado[0].length > 0){
+            res.send(G.utils.r(req.url, 'Cotizacion', 200, {pedidos_clientes: {lista_productos: resultado[0]}}));
             return;
-        } else {
-
-            res.send(G.utils.r(req.url, 'Cotizacion', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
+        }else{
+            throw 'Consulta sin resultados';
             return;
         }
-    });
+        
+    }).fail(function(err){
+        console.log("err ", err)
+         res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+   
 };
 
 

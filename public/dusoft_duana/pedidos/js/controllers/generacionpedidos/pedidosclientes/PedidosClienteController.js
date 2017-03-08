@@ -1542,78 +1542,78 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             *              el cual invocara al metodo (autorizarCotizacionCartera)
             * @fecha 30/09/2016
             */                
-           
-            $scope.gestion_cartera = function(aprobado, denegar) {
-               
-                var obj = {
+            that.consultarDetalleProductosCotizacion = function(callback){
+                
+                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
-                            termino_busqueda: {termino_busqueda:'1',
-                                               empresa_origen_id: $scope.Pedido.get_empresa_id(),
-                                               centro_utilidad_origen_id: $scope.Pedido.get_centro_utilidad_id(),
-                                               bodega_origen_id: $scope.Pedido.get_bodega_id()}
+                            termino_busqueda: {
+                                termino_busqueda:'1',
+                                empresa_origen_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_origen_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_origen_id: $scope.Pedido.get_bodega_id()
+                            }
                             
                         }
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
-
-                        console.log("data []: ", data.obj.pedidos_clientes.lista_productos[0]);
+                     
+                    if(data.status === 200){
+                        callback(true,data.obj.pedidos_clientes.lista_productos);
+                    }else{
+                        callback(false,data.obj.pedidos_clientes)
+                    }
                         
                 });
-                 
-               
-                                
-               /* var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_farmacias: {
-
-                            empresa_origen_id: $scope.Pedido.get_empresa_id(),
-                            centro_utilidad_origen_id: $scope.Pedido.get_centro_utilidad_id(),
-                            bodega_origen_id: $scope.Pedido.get_bodega_id(),
-                            empresa_destino_id: '03',
-                            centro_utilidad_destino_id: '1',
-                            bodega_destino_id: '03', 
-                            tipo_producto:'1',
-                            tipo_pedido:'1',
-                            observacion:'PEDIDO DESDE EL MODULO DE CLIENTE',
-                            productos :[{codigo :'199L0162820' , cantidad:100}],       
-                            pedidoCliente:0
-                        }
-                    }
-                };*/
-                /*var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
+            };
+            $scope.gestion_cartera = function(aprobado, denegar) {
                 
-                 var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_farmacias: {
-
-                            empresa_origen_id: '03',
-                            centro_utilidad_origen_id: '1',
-                            bodega_origen_id: '06',
-                            empresa_destino_id: '03',
-                            centro_utilidad_destino_id: '1',
-                            bodega_destino_id: '03', 
-                            tipo_producto:'1',
-                            tipo_pedido:'1',
-                            observacion:'PEDIDO DESDE EL MODULO DE CLIENTE',
-                            productos :[{codigo :'199L0162820' , cantidad:100}],       
-                            pedidoCliente:0
-                        }
-                    }
-                };
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                  
-                        console.log("data.status",data);
-                      
-                });*/
+               var cotizacion = localStorageService.get("cotizacion");
                
-                /*var cotizacion = localStorageService.get("cotizacion");
+               that.consultarDetalleProductosCotizacion(function(estado, resultado){
+                   
+                   if(estado){
+                       
+                       var obj = {
+                            session: $scope.session,
+                            data: {
+                                pedidos_farmacias: {
+
+                                    empresa_origen_id: $scope.Pedido.get_empresa_id(),
+                                    centro_utilidad_origen_id: $scope.Pedido.get_centro_utilidad_id(),
+                                    bodega_origen_id: $scope.Pedido.get_bodega_id(),
+                                    empresa_destino_id: resultado[0].empresa_origen_producto,
+                                    centro_utilidad_destino_id: resultado[0].centro_utilidad_origen_producto,
+                                    bodega_destino_id: resultado[0].bodega_origen_producto, 
+                                    tipo_producto:'1',
+                                    tipo_pedido:'1',
+                                    observacion:'PEDIDO DESDE EL MODULO DE CLIENTE',
+                                    productos :resultado,       
+                                    pedidoCliente:0
+                                }
+                            }
+                        };
+                        var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
+                
+                        Request.realizarRequest(url, "POST", obj, function(data) {
+
+                                console.log("data.status",data);
+
+                        });
+                        
+                    }else{
+                      
+                       console.log("ENTREGA NORMAL ")
+                       
+                    }
+                   
+                   
+               });
+                   
+                /*
                     
                 if (cotizacion) {
                    

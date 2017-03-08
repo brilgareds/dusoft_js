@@ -1744,29 +1744,30 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
     var objParametrosBusqueda = "";
     var parametros;
     var andSql = "";
-    
+    var campos = "";
     if(termino_busqueda.termino_busqueda === undefined || termino_busqueda.termino_busqueda === '' ){
         console.log("termino_busqueda.termino_busqueda ", termino_busqueda.termino_busqueda)
         objParametrosBusqueda = '';
         parametros = {1: cotizacion.numero_cotizacion, 2: '%' + objParametrosBusqueda + '%'};
         andSql = "";
+        campos = "a.codigo_producto,a.numero_unidades as cantidad_solicitada,"
     }else{
         
         objParametrosBusqueda = '';
         parametros = {1: cotizacion.numero_cotizacion, 
                       2: '%' + objParametrosBusqueda + '%',
-                      5: termino_busqueda.bodega_origen_id};
+                      3: termino_busqueda.bodega_origen_id};
                   /*,
                       3: termino_busqueda.empresa_origen_id,
                       4: termino_busqueda.centro_utilidad_origen_id,*/
-        andSql = "  a.bodega_origen_producto != :5 AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+        andSql = "  a.bodega_origen_producto != :3 AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+        campos = "a.codigo_producto as codigo,a.numero_unidades as cantidad,"
     }
     
     var sql = " SELECT\
                 a.pedido_cliente_id_tmp as numero_cotizacion,\
-                a.codigo_producto,\
+                "+campos+"\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                a.numero_unidades as cantidad_solicitada,\
                 a.porc_iva as iva,\
                 a.valor_unitario, \
                 (a.numero_unidades * a.valor_unitario) as subtotal,\

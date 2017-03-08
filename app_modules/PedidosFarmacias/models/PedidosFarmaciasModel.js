@@ -1110,7 +1110,7 @@ PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,
  */
 PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
 
-    var sql = " select \
+    var sql = " select distinct \
                 a.farmacia_id,\
                 c.razon_social,\
                 (select g.descripcion FROM bodegas g WHERE g.empresa_id = a.farmacia_id AND g.centro_utilidad = a.centro_utilidad AND g.bodega = a.bodega) as destino,\

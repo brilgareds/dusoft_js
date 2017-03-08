@@ -239,6 +239,8 @@ define(["angular", "js/controllers",
                     busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
                     filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion });
                 
+                
+                
                 localStorageService.add("multiple_pedido",{multiple_pedido:1});
                 $state.go('Cotizaciones');      
             };
@@ -279,15 +281,33 @@ define(["angular", "js/controllers",
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
                     return;
                 }
-              
+                
+                console.log("obj.get_numero_cotizacion() ", obj.get_numero_cotizacion())
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
+                    
+                    var url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
+                    var parametro = {
+                        session: $scope.session,
+                        data: {pedidos_clientes: {cotizacion: obj.get_numero_cotizacion()}}
+                    };
+
+                    Request.realizarRequest(url, "POST", parametro, function(data) {
+
+                        if (data.status === 200) {                            
+                             
+                            localStorageService.add("multiple_pedido",{multiple_pedido:data.obj.pedidos_clientes.estado_multiple_pedido});
+                        }
+                    });
+                    
+                    
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1', tipoPedido: obj.getTipoPedido()});
                     $state.go('Cotizaciones');
                 }
 
                 // Observacion cartera para el pedido
                 if (obj.get_numero_pedido() > 0) {
+                    localStorageService.add("multiple_pedido",{multiple_pedido:0});
                     localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1', tipoPedido: obj.getTipoPedido()});
                     $state.go('PedidoCliente');
                 }

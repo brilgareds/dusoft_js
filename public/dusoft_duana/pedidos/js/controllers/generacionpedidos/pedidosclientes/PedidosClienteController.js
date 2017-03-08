@@ -72,7 +72,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        $scope.Pedido.setEstado(data.obj.pedidos_clientes);
+                        $scope.Pedido.setEstado(data.obj.pedidos_clientes.estado);
 
                     }
                 });
@@ -1068,7 +1068,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.opciones_archivo.opts.query.data = JSON.stringify({
                     pedidos_clientes: {
                         cotizacion: $scope.Pedido,
-                        estadoMultiplePedido: localStorageService.get("multiple_pedido").multiple_pedido                  }
+                        estadoMultiplePedido: localStorageService.get("multiple_pedido").multiple_pedido 
+                    }
                 });
                 $scope.opciones_archivo.upload();
             };
@@ -1569,28 +1570,118 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         
                 });
             };
-            $scope.gestion_cartera = function(aprobado, denegar) {
+            
+            
+            that.actualizarEstadoProductoCotizacionBodegaCosmitet = function(productos){
+                //var cotizacion = localStorageService.get("cotizacion");
+                var obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                                productos: productos
+                            }
+                        }
+                    };
+                
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_PRODUCTO_COTIZACION_COSMITET, "POST", obj, function(data) {
+                     console.log("data ", data);
+                    if(data.status === 200){
+                        //callback(true,data.obj.pedidos_clientes.lista_productos);
+                    }else{
+                        //callback(false,data.obj.pedidos_clientes)
+                    }
+                        
+                });
+                
+                //
+                
+            };
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de generar el pedido en multiples bodegas
+             *              dependiendo si en la cotizacion hay productos separados
+             *              de la bodega cosmitet
+             *              de lo contrario se generara el pedido normal
+             */
+            that.generarPedidoBodegaMultiple = function(aprobado,denegar){
+                
+                that.consultarDetalleProductosCotizacion(function(estado, resultado){
                    
+                   console.log("resultado [consultarDetalleProductosCotizacion]: ", resultado);
+                    if($scope.Pedido.observacion_cartera.length > 0){
+                        if(estado){
+
+                            var obj = {
+                                session: $scope.session,
+                                data: {
+                                    pedidos_farmacias: {
+
+                                        empresa_origen_id:  resultado[0].empresa_origen_producto,
+                                        centro_utilidad_origen_id: resultado[0].centro_utilidad_origen_producto,
+                                        bodega_origen_id: resultado[0].bodega_origen_producto,
+                                        empresa_destino_id: $scope.Pedido.get_empresa_id(),
+                                        centro_utilidad_destino_id: $scope.Pedido.get_centro_utilidad_id(),
+                                        bodega_destino_id:  $scope.Pedido.get_bodega_id(),
+                                        tipo_producto:'1',
+                                        tipo_pedido:'1',
+                                        observacion:'PEDIDO DESDE EL MODULO DE CLIENTE (CLIENTE: ', //+ $scope.Pedido.cliente.nombre_tercero + "" +$scope.Pedido.cliente.tipo_id_tercero + ": " +$scope.Pedido.cliente.id +")",
+                                        productos :resultado,       
+                                        pedidoCliente:0
+                                    }
+                                }
+                            };
+
+                            var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
+
+                            Request.realizarRequest(url, "POST", obj, function(data) {
+
+                                if(data.status === 200){
+                                    
+                                    that.actualizarEstadoProductoCotizacionBodegaCosmitet(resultado);
+                                       //Se actualiza el estado de la cotizacion a 1
+                                    
+                                    //AlertService.mostrarVentanaAlerta("Mensaje EXITOSO", data.msj);
+                                    //that.autorizarCotizacionCartera(aprobado,denegar);
+                                }else{
+                                     AlertService.mostrarVentanaAlerta("Mensaje ERROR", data.msj);
+                                }
+                            });                      
+                        }else{                      
+                            that.autorizarCotizacionCartera(aprobado,denegar);                   
+                        }
+                    }else{
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe diligenciar la observacion");
+                    }
+                    
+                    
+               });               
+            };
+            
+            
+            
+            $scope.gestion_cartera = function(aprobado, denegar) {
+                
+                var multiplePedido = localStorageService.get("multiple_pedido").multiple_pedido;
                 var cotizacion = localStorageService.get("cotizacion");
                     
                 if (cotizacion) {
+                   
                     var parametros = {busqueda: cotizacion.numero_cotizacion,
                                 pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
-                            };                     
-                    localStorageService.add("terminoBusqueda", parametros);
-                }
+                            };                    
+                    localStorageService.add("terminoBusqueda", parametros);                 
+                    that.generarPedidoBodegaMultiple(aprobado, denegar);
+                    
+                };
 
                 var pedido = localStorageService.get("pedido");
 
                 if (pedido) {
                     localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
+
                 }              
-                $scope.ocultarOpciones = 0;               
-                
-                that.autorizarCotizacionCartera(aprobado,denegar);   
-                
-                 
-                
+                $scope.ocultarOpciones = 0;                    
             };
             
             /**
@@ -1619,46 +1710,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
             that.generarObservacionCartera = function(aprobado){               
               
-               that.consultarDetalleProductosCotizacion(function(estado, resultado){
-                   
-                   if(estado){
-                       
-                       var obj = {
-                            session: $scope.session,
-                            data: {
-                                pedidos_farmacias: {
-
-                                    empresa_origen_id: $scope.Pedido.get_empresa_id(),
-                                    centro_utilidad_origen_id: $scope.Pedido.get_centro_utilidad_id(),
-                                    bodega_origen_id: $scope.Pedido.get_bodega_id(),
-                                    empresa_destino_id: resultado[0].empresa_origen_producto,
-                                    centro_utilidad_destino_id: resultado[0].centro_utilidad_origen_producto,
-                                    bodega_destino_id: resultado[0].bodega_origen_producto, 
-                                    tipo_producto:'1',
-                                    tipo_pedido:'1',
-                                    observacion:'PEDIDO DESDE EL MODULO DE CLIENTE',
-                                    productos :resultado,       
-                                    pedidoCliente:0
-                                }
-                            }
-                        };
-                        var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
-                
-                        Request.realizarRequest(url, "POST", obj, function(data) {
-
-                                console.log("data.status",data);
-
-                        });
-                        
-                    }else{
-                      
-                       console.log("ENTREGA NORMAL ")
-                       
-                    }
-                   
-                   
-               });
-               /* var obj = {};
+                var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);
                 // Observacion cartera para cotizacion
@@ -1707,7 +1759,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         //$scope.volver_cotizacion();
                     }
-               });  */
+               }); 
                 
                 
             };

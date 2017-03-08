@@ -22,7 +22,7 @@ define(["angular", "js/controllers",
                 Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
-            that.estadoMultipleCotizacion = "";
+            //that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
                 /**
@@ -102,12 +102,14 @@ define(["angular", "js/controllers",
 
             // Insertar Encabezado Cotizacion
             $scope.insertar_cabercera_cotizacion = function(callback) {
-
+                var multiplePedido = localStorageService.get("multiple_pedido");
+              
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
-                            cotizacion: $scope.Pedido
+                            cotizacion: $scope.Pedido,
+                            estadoMultiplePedido:  multiplePedido === null ? 0 : multiplePedido.multiple_pedido
                         }
                     }
                 };
@@ -131,9 +133,7 @@ define(["angular", "js/controllers",
 
             // Insertar Productos a la Cotizacion
             that.insertar_detalle_cotizacion = function(callback) {
-                
-                
-                console.log("$scope.Pedido ", $scope.Pedido);
+                 
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
@@ -142,10 +142,8 @@ define(["angular", "js/controllers",
                 var valorIva = Number(productoSeleccionado.get_iva())
                 var valorTotalIva = (precioVenta * valorIva) / 100;
                 var precioVentaIva = precioVenta + valorTotalIva;
-
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
-                                                
-
+                         
                 var obj = {
                     session: $scope.session,
                     data: {

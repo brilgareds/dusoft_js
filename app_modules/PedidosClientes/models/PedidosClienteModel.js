@@ -6,6 +6,33 @@ var PedidosClienteModel = function(productos, m_pedidos_logs) {
     this.m_pedidos_logs = m_pedidos_logs;
 };
 
+
+/*
+ * @Autor : Cristian Ardila
+ * +Descripcion : Metodo encargado de actualizar el estado de un producto en la cotizacion
+ *                al momento de este ser generado como un pedido de cosmitet
+ * @fecha: 03/08/2017
+ * @Funciones que hacen uso del modelo:
+ *  --PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet
+ */
+PedidosClienteModel.prototype.actualizarProductoCotizacionBodegaCosmitet = function(producto,cotizacion, callback)
+{
+     
+
+    G.knex('ventas_ordenes_pedidos_d_tmp')
+            .where('pedido_cliente_id_tmp', cotizacion)
+            .update({
+        pedido_farmacia: 1,
+        codigo_producto: producto.codigo
+    }).then(function(resultado) {
+         console.log("resultado [actualizarProductoCotizacionBodegaCosmitet]: ", resultado);
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("err [actualizarProductoCotizacionBodegaCosmitet]: ", error);
+        callback(error);
+    });
+};
+
 /**
  * @api {sql} listar_pedidos_clientes Pedidos Clientes
  * @apiName Pedidos Clientes
@@ -1425,7 +1452,12 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
  * @fecha: 04/12/2015 2:43 pm
  */
 PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callback) {
-
+    
+    console.log("**********PedidosClienteModel.prototype.insertar_cotizacion****************");
+    console.log("**********PedidosClienteModel.prototype.insertar_cotizacion****************");
+    console.log("**********PedidosClienteModel.prototype.insertar_cotizacion****************");
+    
+    console.log("cotizacion ",cotizacion);
     var parametros = {
         1: cotizacion.empresa_id,
         2: cotizacion.cliente.tipo_id_tercero,
@@ -1443,7 +1475,8 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         14: '',
         15: cotizacion.centro_utilidad_id,
         16: cotizacion.bodega_id
-
+        //17: cotizacion.estadoMultiplePedido
+   
     };
 
     var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
@@ -2139,7 +2172,7 @@ PedidosClienteModel.prototype.consultarEstadoCotizacion = function(numeroCotizac
 
     G.knex('ventas_ordenes_pedidos_tmp').where({
         pedido_cliente_id_tmp: numeroCotizacion
-    }).select('estado', 'usuario_id').then(function(rows) {
+    }).select('estado', 'usuario_id', 'estado_multiple_pedido').then(function(rows) {
 
         callback(false, rows);
     }). catch (function(error){

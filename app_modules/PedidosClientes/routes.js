@@ -216,4 +216,15 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/generarPedidoBodegaFarmacia', function(req, res) {
         c_pedidos_clientes.generarPedidoBodegaFarmacia(req, res);
     });
+    
+    
+    
+    /**
+    * @author Cristian Ardila
+    * +Descripcion: Servicio encargado de actualizar el producto temporal que con
+    *               el cual se realizo un pedido para cosmitet
+    */
+    app.post('/api/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet', function(req, res) {
+        c_pedidos_clientes.actualizarProductoCotizacionBodegaCosmitet(req, res);
+    });
 };

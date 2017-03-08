@@ -1570,9 +1570,55 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
             $scope.gestion_cartera = function(aprobado, denegar) {
+                   
+                var cotizacion = localStorageService.get("cotizacion");
+                    
+                if (cotizacion) {
+                    var parametros = {busqueda: cotizacion.numero_cotizacion,
+                                pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
+                            };                     
+                    localStorageService.add("terminoBusqueda", parametros);
+                }
+
+                var pedido = localStorageService.get("pedido");
+
+                if (pedido) {
+                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
+                }              
+                $scope.ocultarOpciones = 0;               
                 
-               var cotizacion = localStorageService.get("cotizacion");
-               
+                that.autorizarCotizacionCartera(aprobado,denegar);   
+                
+                 
+                
+            };
+            
+            /**
+             * @author Cristian Manuel Ardila Troches
+             * +Descrpcion Metodo encargado de validar
+             * 1) validar la disponibilidad de cada producto, y si no hay disponibilidad
+             *    se mostrar una ventana modal con los posibles productos
+             *    de lo contrario se procedera a cambiarle el estado de la cotizacion
+             *    a estado (AUTORIZADO POR CARTERA)
+             *    y despues se invocara la funcion $scope.generar_pedido_cliente()
+             *    la cual generara el pedido
+             * @fecha 17/11/2016
+             */
+            that.generarPedidoCartera = function(aprobado,denegar){
+                
+                var productos = [];
+                
+                that.validarDisponibleProductosCotizacion(1,productos,function(estado){
+                    
+                    if(estado){                       
+                         that.generarObservacionCartera(aprobado);                      
+                    }
+                });
+                
+            };
+           
+            that.generarObservacionCartera = function(aprobado){               
+              
                that.consultarDetalleProductosCotizacion(function(estado, resultado){
                    
                    if(estado){
@@ -1612,60 +1658,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                    
                    
                });
-                   
-                /*
-                    
-                if (cotizacion) {
-                   
-                    var parametros = {busqueda: cotizacion.numero_cotizacion,
-                                pedido_creado: 1, filtro_actual_cotizacion: {nombre: "Numero", tipo_busqueda: 0},
-                            };
-                    
-                    localStorageService.add("terminoBusqueda", parametros);
-                }
-
-                var pedido = localStorageService.get("pedido");
-
-                if (pedido) {
-                    localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
-
-                }              
-                $scope.ocultarOpciones = 0;               
-                
-                that.autorizarCotizacionCartera(aprobado,denegar);   */
-                
-                 
-                
-            };
-            
-            /**
-             * @author Cristian Manuel Ardila Troches
-             * +Descrpcion Metodo encargado de validar
-             * 1) validar la disponibilidad de cada producto, y si no hay disponibilidad
-             *    se mostrar una ventana modal con los posibles productos
-             *    de lo contrario se procedera a cambiarle el estado de la cotizacion
-             *    a estado (AUTORIZADO POR CARTERA)
-             *    y despues se invocara la funcion $scope.generar_pedido_cliente()
-             *    la cual generara el pedido
-             * @fecha 17/11/2016
-             */
-            that.generarPedidoCartera = function(aprobado,denegar){
-                
-                var productos = [];
-                
-                that.validarDisponibleProductosCotizacion(1,productos,function(estado){
-                    
-                    if(estado){                       
-                         that.generarObservacionCartera(aprobado);                      
-                    }
-                });
-                
-            };
-           
-            that.generarObservacionCartera = function(aprobado){               
-             
-                
-                var obj = {};
+               /* var obj = {};
                 var url = '';
                 $scope.Pedido.set_aprobado_cartera(aprobado);
                 // Observacion cartera para cotizacion
@@ -1699,8 +1692,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                
                     if (data.status === 200) {
-                        /*Se valida si es una cotizacion y entonces se procede
-                         a crear el pedido*/
+                        //Se valida si es una cotizacion y entonces se procede
+                        // a crear el pedido
                         if ($scope.Pedido.get_numero_cotizacion() > 0) {
                              
                             $scope.generar_pedido_cliente();
@@ -1714,7 +1707,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                         //$scope.volver_cotizacion();
                     }
-               });  
+               });  */
                 
                 
             };

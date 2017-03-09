@@ -4579,7 +4579,7 @@ function __productosPedidos(parametros, callback) {
  * @author Cristian Ardila 
  */
 function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, productos, productos_validos,productos_invalidos, callback) {
-     
+                          
     var producto = productos[index];
        
     if (!producto) {   
@@ -4589,7 +4589,7 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
     }                
      
     index++;
-    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_cliente_id};
       G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function(resultado){
      
         /**
@@ -4605,15 +4605,17 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
             productos_invalidos.push(producto);
             
         }
-             
+        setTimeout(function() {
+            __validarProductosPedidosBodegaFarmacia(that,index, cotizacion, productos, productos_validos, productos_invalidos, callback);
+        }, 0);  
+    
     }).fail(function(err){
-         console.log("err (/fail) [__validarProductosPedidosBodegaFarmacia]: ", err);
+        callback({ msj:'Error al consultar el precio regulado de cada producto',  status:500,  pedidos_clientes:''});
+        console.log("err (/fail) [__validarProductosPedidosBodegaFarmacia]: ", err);
     }).done();
     
     
-     setTimeout(function() {
-            __validarProductosPedidosBodegaFarmacia(that,index, cotizacion, productos, productos_validos, productos_invalidos, callback);
-    }, 300);      
+        
 };
 
 
@@ -4692,19 +4694,18 @@ function __precioVentaProductos(that, index, cotizacion, callback){
      *               se validara de que el pedido al menos quede con un solo pro-
      *               ducto
      */
-    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_cliente_id};
+    
+    console.log("PARAMETROS ", parametros);
     
     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
         cotizacion.empresa_id,
         cotizacion.centro_utilidad_id,
         cotizacion.bodega_id,
-        cotizacion.cliente.contrato_id,
+        cotizacion.cliente.contrato_cliente_id,
         filtro,
         1, filtros, filtroAvanzado).then(function(lista_productos){
-    
-        //index++;
-       
-
+     
            var _producto = lista_productos[0];
             producto.codigo_producto = _producto.codigo_producto;
             producto.iva = _producto.iva;
@@ -4713,14 +4714,13 @@ function __precioVentaProductos(that, index, cotizacion, callback){
             producto.precioVentaIva = _producto.precio_producto;
             producto.sumaCantidadTotalSolicitadaBodega = 0;
             producto.sumaCantidadTotalDisponibleBodega = 0;
-             
-            
-            
+              
         setTimeout(function() {
                __precioVentaProductos(that,index, cotizacion, callback);
        }, 300); 
         
     }).fail(function(err){
+         callback({ msj:'Error al consultar el precio de venta de cada producto',  status:500,  pedidos_clientes:''});
          console.log("err (/fail) [__precioVentaProductos]: ", err);
     }).done();
     
@@ -4888,7 +4888,8 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK resultado ", resultado);
         res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
     }).fail(function(err){
-         console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK err ", err);
+         console.log("err msj ", err.msj);
+         console.log("err status ", err.status);
        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
     });
   

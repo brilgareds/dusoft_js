@@ -4625,9 +4625,7 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
  * @author Cristian Ardila 
  */
 function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, productos, callback) {
-    
-    console.log("*******__insertarProductosFarmaciaCotizacion**************");
-    
+   
     var producto = productos[index];
         //console.log("producto ", producto);
     if (!producto) {   
@@ -4636,16 +4634,19 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
     }  
      
    G.Q.ninvoke(that.m_pedidos_clientes,'insertar_detalle_cotizacion',cotizacion,producto).then(function(resultado){
-      
+       
+        setTimeout(function() {
+            __insertarProductosFarmaciaCotizacion(that, index,cotizacion, productos, callback);
+        }, 300);   
+       
     }).fail(function(err){
+         callback({ msj:'Error al insertar los productos en la cotizacion',  status:500,  pedidos_clientes:''});
          console.log("err (/fail) [__insertarProductosFarmaciaCotizacion]: ", err);
     }).done();              
       
     index++;     
   
-    setTimeout(function() {
-        __insertarProductosFarmaciaCotizacion(that, index,cotizacion, productos, callback);
-    }, 300);   
+   
 };
 
 
@@ -4811,8 +4812,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
         "tercero_id":cotizacion.cliente.id
     };
-    var pedidoGenerado;
-     
+    
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function(tercero){
         
         if(tercero.length > 0){
@@ -4850,8 +4850,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
             throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos[1]}}; 
             
             return;
-        }
-        
+        }       
         return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
         
     }).then(function(resultado){
@@ -4861,35 +4860,31 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
          
     
     }).then(function(resultado){
-        console.log("resultado [__insertarProductosFarmaciaCotizacion]: ", resultado)
+
         cotizacion.total = __totalNuevoPrecioVenta(cotizacion);  
         
         var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion,  cotizacion.productos, cotizacion.usuario_id, "Se solicita aprobacion", cotizacion.total, 0, 0);
         return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logTrazabilidadVentas', paramLogCliente);
         
     }).then(function(resultado){    
-        
-        console.log("resultado [logTrazabilidadVentas]: ", resultado)
+ 
         var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, "APROBADO AUTOMATICAMENTE", cotizacion.total, 0, 1);
-
-            return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);
+        return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);
  
     }).then(function(resultado){
-        
-            console.log("resultado [logAprobacionCotizacion]: ", resultado)
-       return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
-        
+         
+       return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);       
           
     }).then(function(resultado){
          
         return G.Q.ninvoke(that, "__asignarResponsablesPedidos",cotizacion, resultado);
         
     }).then(function(resultado){
-        console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK resultado ", resultado);
+        
         res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
+        
     }).fail(function(err){
-         console.log("err msj ", err.msj);
-         console.log("err status ", err.status);
+        console.log("err [generarPedidoBodegaFarmacia]: ", err);
        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
     });
   

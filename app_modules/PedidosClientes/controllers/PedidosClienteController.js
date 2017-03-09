@@ -3290,24 +3290,28 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
  */
 PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
 
+console.log("**********PedidosCliente.prototype.consultarEstadoCotizacion********************");
+console.log("**********PedidosCliente.prototype.consultarEstadoCotizacion********************");
+console.log("**********PedidosCliente.prototype.consultarEstadoCotizacion********************");
     var that = this;         
 
     var args = req.body.data;
 
     var numeroCotizacion = args.pedidos_clientes.cotizacion;
-
-    that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {
-
-        if (!err) {
+    
+    G.Q.ninvoke(that.m_pedidos_clientes,"consultarEstadoCotizacion", numeroCotizacion).then(function(rows){
+        
+        if(rows.length >0){
             res.send(G.utils.r(req.url, 'Consultando estado de la cotizacion', 200, {pedidos_clientes: rows[0]}));
-            return;
+        }else{
+            
+            throw 'No hay registros';
         }
-        else {
-            res.send(G.utils.r(req.url, '', 500, {pedidos_clientes: []}));
-            return;
-        }
-
-    });
+        
+    }).fail(function(err){
+        res.send(G.utils.r(req.url, err, 500, {pedidos_clientes: []}));
+    }).done();
+     
 };
 /*
  * Autor : Camilo Orozco

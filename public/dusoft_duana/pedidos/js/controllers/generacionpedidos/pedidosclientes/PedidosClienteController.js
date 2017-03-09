@@ -45,6 +45,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 btnSolicitarAutorizacionCartera: true,
             };
             $scope.notificacionPedidoAutorizar = 0;
+            
             that.consultarEstadoPedidoCotizacion = function(tipo, numero) {
 
                 var url = '';
@@ -57,7 +58,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         session: $scope.session,
                         data: {pedidos_clientes: {pedido: numero}}
                     };
-
                 }
 
                 if (tipo === 2) {
@@ -67,13 +67,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         session: $scope.session,
                         data: {pedidos_clientes: {cotizacion: numero}}
                     };
-
                 }
+                
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
+                 
                     if (data.status === 200) {
                         $scope.Pedido.setEstado(data.obj.pedidos_clientes.estado);
-
                     }
                 });
             };
@@ -1763,7 +1762,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
             };
            
-           
+                                            
             /**
              * @author Cristian Manuel Ardila Troches
              * +Descripcion Metodo encargado de generar el pedido

@@ -1563,7 +1563,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
         res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
         return;
     }
-
+    var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
     cotizacion.usuario_id = req.session.user.usuario_id;
      //cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
      
@@ -1626,15 +1626,12 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
             */
            return G.Q.nfcall(__validar_datos_productos_archivo_plano, that, args, _productosValidosExistentes, [], [],0);                               
         }                                                                       
-        
+                     
     
     }).then(function(productosPlanoValidados){                    
-       
         
         return G.Q.nfcall(__productosBodegas,that, 0, productosPlanoValidados[0],[]);
-        
-        
-        
+         
     }).then(function(resultado){
          
         return G.Q.nfcall(__agregarCantidadSolicitadaProducto,that, 0, resultado, _productosValidosExistentes,[],[]);
@@ -1728,7 +1725,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
             });          
         });
       
-        return G.Q.nfcall(__validarTotalSolicitadoBodegas,that,0,productosPreparadosCotizacion,_productosValidosExistentes, [],[]);
+        return G.Q.nfcall(__validarTotalSolicitadoBodegas,that,0,productosPreparadosCotizacion,_productosValidosExistentes, [],[],estadoMultiplePedido);
         
     }).then(function(resultado){
          
@@ -1826,9 +1823,11 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
  *              sea igual a la cantidad separada del producto en diferentes bodegas
  * @fecha 2017-03-06 YYYY-MM-DD
  */ 
-function __validarTotalSolicitadoBodegas(that, index, productos,productosValidosExistentes,productosValidos, productosInvalidos,callback){
+function __validarTotalSolicitadoBodegas(that, index, productos,productosValidosExistentes,productosValidos, productosInvalidos,estadoMultiplePedido,callback){
       
-    console.log("__validarTotalSolicitadoBodegas ");
+    console.log("**********************__validarTotalSolicitadoBodegas**************************** ");
+    console.log("**********************__validarTotalSolicitadoBodegas**************************** ");
+    console.log("**********************__validarTotalSolicitadoBodegas**************************** ");
     var producto = productosValidosExistentes[index];
 
     if (!producto) {      
@@ -1837,23 +1836,37 @@ function __validarTotalSolicitadoBodegas(that, index, productos,productosValidos
         return;
     }
     index++;
-    
+    console.log("producto [__validarTotalSolicitadoBodegas]: ", producto);
+    console.log("estadoMultiplePedido ", estadoMultiplePedido)
     productos.forEach(function(row){
+       
+       
+        if(producto.codigo_producto === row.codigo_producto){
 
-       if(producto.codigo_producto === row.codigo_producto){
-          
-           if(producto.totalSolicitado <= producto.totalDisponible){
+            if(estadoMultiplePedido === 1){
+                if(producto.totalSolicitado <= producto.totalDisponible ){//&& estadoMultiplePedido
 
-                productosValidos.push(row);
-           }else{
-                productosInvalidos.push(row);
-           }
+                     productosValidos.push(row);
+                }else{
+                     productosInvalidos.push(row);
+                }
 
-       }
+            }else{
+                
+                 if(producto.totalSolicitado <= producto.totalDisponible && producto.totalSolicitado === producto.cantidad_solicitada ){//&& estadoMultiplePedido
+
+                     productosValidos.push(row);
+                }else{
+                     productosInvalidos.push(row);
+                }
+                
+            }
+
+        }
 
     });
    
-    __validarTotalSolicitadoBodegas(that, index, productos,productosValidosExistentes,productosValidos, productosInvalidos,callback)
+    __validarTotalSolicitadoBodegas(that, index, productos,productosValidosExistentes,productosValidos, productosInvalidos,estadoMultiplePedido,callback)
       
   }
  

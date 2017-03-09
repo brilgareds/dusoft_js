@@ -4840,18 +4840,14 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
             throw {msj:"El cliente no se encuentra registrado en la tabla de contratos", status:404,pedidos_clientes:{}};
         }
         
-     })
+     }).then(function(resultado){
      
-     
-    G.Q.nfcall(__precioVentaProductos,that,0, cotizacion).then(function(cotizacion){
-        
         return G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
         
     }).then(function(productos){
          
-         
-         if(productos[1].length > 0){
-             throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos[1]}}; 
+        if(productos[1].length > 0){
+            throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos[1]}}; 
             
             return;
         }

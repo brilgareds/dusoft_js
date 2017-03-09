@@ -1,16 +1,292 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <label class="control-label">Tipo dirección</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoDireccion"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-12" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo dirección"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4" >
+        <label class="control-label">Pais</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.pais"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-12" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Pais"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Departamento</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.departamento"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Departamento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+</div>
+
+
+<div class="row contenedorCamposTercero" ng-if="root.tipoNaturaleza.codigo == 0">
+    
+    <div class="col-md-4">
+        <label class="control-label">Ciudad</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.ciudad"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Ciudad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Via principal</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.viaPrincipal"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Via principal"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Descripción via principal</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+</div>
+
+
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <label class="control-label">Via secundaria</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.viaSecundaria"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Via secundaria"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Descripción via secundaria</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Número predio</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Número predio" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+</div>
+
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <label class="control-label">Barrio</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Barrio" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4" >
+        <label class="control-label">Dirección</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Dirección" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+   
+</div>
+
+<hr />
+
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4" >
+        <label class="control-label">Tipo teléfono</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoTelefono"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo teléfono"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Tipo linea teléfonica</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoTelefono"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo linea teléfonica"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4" >
+        <label class="control-label">Número teléfono</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Número teléfonico" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+
+    
+</div>
+
+<hr />
+
+
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4" >
+        <label class="control-label">Tipo correo</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoCorreo"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo correo"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+
+    
+    <div class="col-md-4" >
+        <label class="control-label">Correo</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Correo" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+
+    
+</div>
+
+<hr />
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4" >
+        <label class="control-label">Tipo red social</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoRedSocial"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo red social"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+
+    
+    <div class="col-md-4" >
+        <label class="control-label">Descripción</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Descripción" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+
+    
+</div>

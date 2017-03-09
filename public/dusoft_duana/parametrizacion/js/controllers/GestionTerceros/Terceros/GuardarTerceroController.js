@@ -25,6 +25,20 @@ define(["angular",
                 ]
             };
             
+            $scope.listaContactos = {
+                data: 'usuarios',
+                multiSelect: false,
+                showFilter: true,
+                enableRowSelection: true,
+                columnDefs: [
+                    {field: 'nombre_usuario', displayName: 'Nombre'},
+                    {field: 'usuario', displayName: 'Correo'},
+                    {field: 'usuario', displayName: 'Tipo'}
+                ]
+
+            };
+            
+            
             $scope.root.tipoNaturaleza =  $scope.root.tiposNaturaleza[0];
             
             var self = this;

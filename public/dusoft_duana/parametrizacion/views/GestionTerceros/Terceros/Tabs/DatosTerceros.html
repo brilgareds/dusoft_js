@@ -1,6 +1,7 @@
 <div class="row contenedorCamposTercero">
     
     <div class="col-md-4">
+        <label class="control-label">Naturaleza</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tipoNaturaleza"  
                        theme="select2" 
@@ -16,6 +17,7 @@
     </div>
     
     <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+        <label class="control-label">Razón social</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Razón social" name="srch-term" id="srch-term" />
@@ -27,6 +29,7 @@
     </div>
     
     <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+        <label class="control-label">Nombre comercial</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Nombre comercial" name="srch-term" id="srch-term" />
@@ -37,7 +40,8 @@
         </p>
     </div>
     
-        <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+        <label class="control-label">Primer nombre</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Primer nombre" name="srch-term" id="srch-term" />
@@ -49,6 +53,7 @@
     </div>
     
     <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+        <label class="control-label">Segundo nombre</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Segundo nombre" name="srch-term" id="srch-term" />
@@ -65,6 +70,7 @@
 <div class="row contenedorCamposTercero" ng-if="root.tipoNaturaleza.codigo == 0">
     
     <div class="col-md-4">
+        <label class="control-label">Primer apellido</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Primer apellido" name="srch-term" id="srch-term" />
@@ -76,6 +82,7 @@
     </div>
     
     <div class="col-md-4">
+        <label class="control-label">Segundo apellido</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Segundo apellido" name="srch-term" id="srch-term" />
@@ -87,6 +94,7 @@
     </div>
     
     <div class="col-md-4">
+        <label class="control-label">Genero</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.genero"  
                        theme="select2" 
@@ -107,6 +115,7 @@
 <div class="row contenedorCamposTercero">
     
     <div class="col-md-4">
+        <label class="control-label">Tipo documento</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tipoDocumento"  
                        theme="select2" 
@@ -122,6 +131,7 @@
     </div>
     
     <div class="col-md-4">
+        <label class="control-label">Número identificación</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Número identificación" name="srch-term" id="srch-term" />
@@ -133,6 +143,7 @@
     </div>
     
     <div class="col-md-4">
+        <label class="control-label">Fecha expedición</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha Expedición" name="srch-term" id="srch-term" />
@@ -148,6 +159,7 @@
 <div class="row contenedorCamposTercero">
     
     <div class="col-md-4">
+        <label class="control-label">Fecha expiración</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha Expiración" name="srch-term" id="srch-term" />
@@ -159,6 +171,7 @@
     </div>
     
     <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+        <label class="control-label">Tipo organización</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tipoOrganizacion"  
                        theme="select2" 
@@ -173,6 +186,7 @@
     </div>
     
     <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+        <label class="control-label">Estado civil</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.estadoCivil"  
                        theme="select2" 
@@ -187,6 +201,7 @@
     </div>
     
     <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+        <label class="control-label">Nacionalidad</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.nacionalidad"  
                        theme="select2" 
@@ -201,6 +216,7 @@
     </div>
     
     <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+        <label class="control-label">Fecha nacimiento</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha nacimiento" name="srch-term" id="srch-term" />
@@ -217,6 +233,7 @@
 <div class="row contenedorCamposTercero" ng-if="root.tipoNaturaleza.codigo == 0">
     
     <div class="col-md-4" >
+        <label class="control-label">Nacionalidad</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.nacionalidad"  
                        theme="select2" 
@@ -231,9 +248,22 @@
     </div>
     
     <div class="col-md-4">
+        <label class="control-label">Razón social</label>
         <p class="input-group">
 
             <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Razón social" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Descripción</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Descripción" name="srch-term" id="srch-term" />
             <span class="input-group-btn">
 
                 <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
@@ -244,19 +274,4 @@
     
 </div>
 
-<div class="row contenedorCamposTercero">
-    <div class="col-md-4">
-        
-        <textarea class="contenedorDropdown" placeholder="Descripción" rows="8"></textarea>
-    </div>
-</div>
-<br>
-<br>
-<div class="row text-center">
-    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
-        <span class="glyphicon glyphicon-chevron-left" ></span>
-    </button>
-    <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
-        <span class="glyphicon glyphicon-chevron-right" ></span>
-    </button>
-</div>
+

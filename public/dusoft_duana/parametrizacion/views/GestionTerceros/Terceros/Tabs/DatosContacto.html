@@ -1,3 +1,82 @@
-<div class="row">
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <label class="control-label">Nombre</label>
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Nombre" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4" >
+        <label class="control-label">Tipo contacto</label>
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.pais"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-12" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo contacto"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Teléfono</label>
+       <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Teléfono" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
     
 </div>
+
+<div class="row contenedorCamposTercero">
+
+    <div class="col-md-4">
+        <label class="control-label">Correo</label>
+       <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Correo" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <label class="control-label">Descripción</label>
+       <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Descripción" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+</div>
+
+<hr />
+<h4>Lista de contactos</h4>
+<div class="table-responsive" >
+   <p class="input-group">
+    <div class="gridContactos grid-responsive" ng-grid="listaContactos">
+
+    </div>
+   <p>
+</div>
+

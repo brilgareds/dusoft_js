@@ -36,7 +36,25 @@ PedidosClienteModel.prototype.actualizarProductoCotizacionBodegaCosmitet = funct
     });
 };
 
+/*
+ * @author : Cristian Ardila
+ * Descripcion : Funcion encargada de consultar el estado de autorizacion de un cliente
+ * @fecha: 05/11/2015
+ * @Funciones que hacen uso del model :
+ *  --PedidosCliente.prototype.eliminarCotizacion
+ */
+PedidosClienteModel.prototype.consultarEstadoAutorizacionCliente = function(obj, callback) {
 
+    G.knex('vnts_contratos_clientes').where({
+        tipo_id_tercero: obj.tipo_id_tercero,
+        tercero_id: obj.tercero_id
+    }).select(['contrato_cliente_id','sw_autorizacion','sw_facturacion_agrupada']).then(function(rows) {
+        callback(false, rows);
+    }). catch (function(error) {
+        console.log("err [consultaCotizacionEnPedido]: ", error);
+        callback(error);
+    });
+};
 
 /*
  * Author : Camilo Orozco

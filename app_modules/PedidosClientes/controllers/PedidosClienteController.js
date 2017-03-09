@@ -4813,6 +4813,36 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
     };
     var pedidoGenerado;
      
+    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function(tercero){
+        
+        if(tercero.length > 0){
+            if(tercero[0].tipo_bloqueo_id !== '1'){
+                cotizacion.cliente.tipoBloqueoId = tercero[0].tipo_bloqueo_id;
+                throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:404,pedidos_clientes:{}};
+            } else {
+                return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
+            }
+        }else{
+            throw {msj:"El tercero no se encuentra registrado", status:404,pedidos_clientes:{}};
+        }
+        
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){
+            if(resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0'){
+                cotizacion.cliente.contrado_id = resultado[0].contrato_cliente_id;
+                cotizacion.cliente.contrato_cliente_id = resultado[0].contrato_cliente_id;
+                return G.Q.nfcall(__precioVentaProductos,that,0, cotizacion);
+            }else{
+                throw {msj:"La farmacia no esta permitida para generar pedidos", status:404,pedidos_clientes:{}};
+            }
+        }else{
+            throw {msj:"El cliente no se encuentra registrado en la tabla de contratos", status:404,pedidos_clientes:{}};
+        }
+        
+     })
+     
+     
     G.Q.nfcall(__precioVentaProductos,that,0, cotizacion).then(function(cotizacion){
         
         return G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])

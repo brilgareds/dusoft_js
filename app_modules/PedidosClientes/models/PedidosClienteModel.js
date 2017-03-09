@@ -78,7 +78,9 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
         parametros = {1: cotizacion.numero_cotizacion, 2: '%' + objParametrosBusqueda + '%'};
         andSql = "";
         campos = "a.codigo_producto,a.numero_unidades as cantidad_solicitada,"
-    }else{
+    }
+    
+    if(termino_busqueda.termino_busqueda === '1'){
         
         objParametrosBusqueda = '';
         parametros = {1: cotizacion.numero_cotizacion, 
@@ -91,6 +93,21 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
         andSql = "  a.bodega_origen_producto != :3 AND a.pedido_farmacia = :4 AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
         campos = "a.codigo_producto as codigo,a.numero_unidades as cantidad,"
     }
+    
+    if(termino_busqueda.termino_busqueda === '2'){
+        
+        objParametrosBusqueda = '';
+        parametros = {1: cotizacion.numero_cotizacion, 
+                      2: '%' + objParametrosBusqueda + '%',
+                      3: termino_busqueda.bodega_origen_id,
+                      4: '0'};
+                  /*,
+                      3: termino_busqueda.empresa_origen_id,
+                      4: termino_busqueda.centro_utilidad_origen_id,*/
+        andSql = "  a.bodega_origen_producto = :3 AND a.pedido_farmacia = :4 AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+         campos = "a.codigo_producto,a.numero_unidades as cantidad_solicitada,"
+    }
+    
     
     var sql = " SELECT\
                 a.pedido_cliente_id_tmp as numero_cotizacion,\

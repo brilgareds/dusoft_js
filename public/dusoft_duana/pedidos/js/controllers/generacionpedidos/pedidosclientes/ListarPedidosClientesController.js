@@ -574,7 +574,12 @@ define(["angular", "js/controllers",
                     data: {
                         pedidos_clientes: {
                             cotizacion: cotizacion,
-                            termino_busqueda: ''
+                            termino_busqueda: {
+                                termino_busqueda:'2',
+                                empresa_origen_id: cotizacion.empresa_id,
+                                centro_utilidad_origen_id: cotizacion.centro_utilidad_id,
+                                bodega_origen_id: cotizacion.bodega_id
+                            }
                         }
                     }
                 };

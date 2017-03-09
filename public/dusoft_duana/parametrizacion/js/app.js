@@ -20,6 +20,7 @@ define([
     "controllers/AdministracionPerfiles/Roles/ListarRolesController",
     "controllers/AdministracionPerfiles/Usuarios/ListarUsuariosController",
     "controllers/AdministracionPerfiles/Usuarios/AdministracionUsuariosController",
+    "controllers/GestionTerceros/Terceros/TercerosController",
     "models/OperariosBodegaModel/Operario",
     "includes/alert/Alert",
     "includes/header/HeaderController",
@@ -117,9 +118,16 @@ define([
             .state('Terceros', {
                 url: "/Terceros",
                 text:"Administración de terceros",
-                templateUrl: "views/OperariosBodega/listaOperarios.html",
-                controller: "OperariosBodegaController"
-            })
+                templateUrl: "views/GestionTerceros/Terceros/Terceros.html",
+                controller: "TercerosController"
+            }).
+            state('GuardarTercero', {
+                url: "/GuardarTercero",
+                text:"Guardar tercero",
+                templateUrl: "views/GestionTerceros/Terceros/GuardarTercero.html",
+                controller: "TercerosController",
+                parent_name:"Terceros"
+            });
             
             if($location.path() === ""){
                 $state.go(vistaDefecto);

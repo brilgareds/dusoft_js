@@ -1,0 +1,262 @@
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoNaturaleza"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Seleccionar Naturaleza"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Razón social" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Nombre comercial" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+        <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Primer nombre" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Segundo nombre" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+</div>
+
+
+<div class="row contenedorCamposTercero" ng-if="root.tipoNaturaleza.codigo == 0">
+    
+    <div class="col-md-4">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Primer apellido" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Segundo apellido" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.genero"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Genero"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="genero in  root.generos | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+</div>
+
+
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoDocumento"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       append-to-body = "true"
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo documento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Número identificación" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha Expedición" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+</div>
+
+<div class="row contenedorCamposTercero">
+    
+    <div class="col-md-4">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha Expiración" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.tipoOrganizacion"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Tipo organización"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.estadoCivil"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Estado civil"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.nacionalidad"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Nacionalidad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha nacimiento" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+    
+    
+</div>
+
+<div class="row contenedorCamposTercero" ng-if="root.tipoNaturaleza.codigo == 0">
+    
+    <div class="col-md-4" >
+        <p class="input-group contenedorDropdown">            
+            <ui-select ng-model="root.nacionalidad"  
+                       theme="select2" 
+                       class="form-control selectgeneral pull-left" 
+                       ng-change="onCambiarNaturaleza()">
+                <ui-select-match  placeholder="Nacionalidad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                </ui-select-choices>
+            </ui-select>  
+        </p>
+    </div>
+    
+    <div class="col-md-4">
+        <p class="input-group">
+
+            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Razón social" name="srch-term" id="srch-term" />
+            <span class="input-group-btn">
+
+                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </p>
+    </div>
+
+    
+</div>
+
+<div class="row contenedorCamposTercero">
+    <div class="col-md-4">
+        
+        <textarea class="contenedorDropdown" placeholder="Descripción" rows="8"></textarea>
+    </div>
+</div>
+<br>
+<br>
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>

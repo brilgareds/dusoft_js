@@ -69,3 +69,12 @@ textarea.observacion_modulo{
 .tablaRoles{
     clear:both;
 }
+
+.contenedorDropdown{
+    width: 100%;
+}
+
+.contenedorCamposTercero{
+    margin-bottom: 20px;
+    margin-top: 10px;
+}

@@ -1,0 +1,38 @@
+<div ng-controller="TercerosController">
+    <div> 
+        
+        <tabset>
+
+            <tab ng-controller="ListaTercerosController">
+                <tab-heading>
+                   <i class="glyphicon glyphicon-th"></i> <b> Terceros </b>
+                </tab-heading>
+                
+                <div ng-include src="'views/GestionTerceros/Terceros/ListaTerceros.html'"></div>
+
+            </tab>
+
+            <tab ng-controller="ListaProveedoresController" > 
+                <tab-heading >
+                   <i class="glyphicon glyphicon-time"></i> <b>Proveedores</b>
+                </tab-heading>
+                
+                <div ng-include src="'views/GestionTerceros/Proveedores/ListaProveedores.html'"></div>
+               
+            </tab>   
+            
+            <tab ng-controller="ListaClientesController" > 
+                <tab-heading >
+                   <i class="glyphicon glyphicon-time"></i> <b>Clientes</b>
+                </tab-heading>
+                
+                <div ng-include src="'views/GestionTerceros/Clientes/ListaClientes.html'"></div>
+               
+            </tab>   
+
+        </tabset>
+
+    </div>
+    
+
+</div>

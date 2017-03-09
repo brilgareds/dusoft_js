@@ -1561,7 +1561,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 };
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
-                     
+                      
                     if(data.status === 200){
                         callback(true,data.obj.pedidos_clientes.lista_productos);
                     }else{
@@ -1572,30 +1572,29 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             
             
-            that.actualizarEstadoProductoCotizacionBodegaCosmitet = function(productos){
+            that.actualizarEstadoProductoCotizacionBodegaCosmitet = function(productos,aprobado,denegar){
                 //var cotizacion = localStorageService.get("cotizacion");
                 var obj = {
                         session: $scope.session,
                         data: {
-                            pedidos_clientes: {
-                                cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                            pedidos_clientes: { 
                                 productos: productos
                             }
                         }
                     };
                 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_PRODUCTO_COTIZACION_COSMITET, "POST", obj, function(data) {
-                     console.log("data ", data);
+                     
                     if(data.status === 200){
-                        //callback(true,data.obj.pedidos_clientes.lista_productos);
+                        
+                        that.autorizarCotizacionCartera(aprobado,denegar);       
+                        
                     }else{
-                        //callback(false,data.obj.pedidos_clientes)
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                     }
                         
                 });
-                
-                //
-                
+                 
             };
             /**
              * @author Cristian Ardila
@@ -1638,11 +1637,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                                 if(data.status === 200){
                                     
-                                    that.actualizarEstadoProductoCotizacionBodegaCosmitet(resultado);
+                                    that.actualizarEstadoProductoCotizacionBodegaCosmitet(resultado,aprobado,denegar);
                                        //Se actualiza el estado de la cotizacion a 1
                                     
                                     //AlertService.mostrarVentanaAlerta("Mensaje EXITOSO", data.msj);
-                                    //that.autorizarCotizacionCartera(aprobado,denegar);
+                                    
                                 }else{
                                      AlertService.mostrarVentanaAlerta("Mensaje ERROR", data.msj);
                                 }
@@ -1782,7 +1781,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
-
+                    console.log("GENERAR EL PEDIDO DEL CLIENTE ", data)
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", "Se atendio la solicitud satisfactoriamente");
                         $scope.volver_cotizacion();

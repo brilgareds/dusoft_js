@@ -142,8 +142,10 @@ define(["angular", "js/controllers",
                 var valorIva = Number(productoSeleccionado.get_iva())
                 var valorTotalIva = (precioVenta * valorIva) / 100;
                 var precioVentaIva = precioVenta + valorTotalIva;
+
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
-                         
+                                                
+
                 var obj = {
                     session: $scope.session,
                     data: {

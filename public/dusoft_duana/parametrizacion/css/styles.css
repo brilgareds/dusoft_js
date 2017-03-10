@@ -82,3 +82,24 @@ textarea.observacion_modulo{
 .gridContactos{
     height: 300px;
 }
+
+.txtValorTerceros{
+    margin-left: 10px;
+}
+
+
+/* Extra Small */
+@media(max-width:767px){
+    .txtValorTerceros{
+        margin-top: 10px;
+        margin-left: 0px;
+    }
+}
+
+/* Small */
+@media(min-width:768px) and (max-width:991px){
+    .txtValorTerceros{
+        margin-top: 10px;
+        margin-left: 0px;
+    }
+}

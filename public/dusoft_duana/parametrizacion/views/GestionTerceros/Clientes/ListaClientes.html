@@ -1,0 +1,42 @@
+<div class="row" style="padding-top:10px;">
+    
+    <div class="col-md-2">
+        <p class="input-group" style="margin:0 0 2px">
+            <button type="button" class="btn btn-default" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="onIrVistaGuardarTercero()">
+            <span class="glyphicon glyphicon-ok"></span> Crear</button>          
+        </p> 
+    </div>
+
+    <div class="col-md-2 pull-right">
+
+        <div class="input-group">
+           <input type="text" class="form-control" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+
+
+             <div class="input-group-btn" >
+                <button class="btn btn-default pull-right" type="submit" ng-click="onKeySeparadosPress({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+
+             </div>
+         </div> 
+
+    </div>  
+</div>
+
+<div class="table-responsive" >
+   <p class="input-group">
+    <div class="defaultGrid grid-responsive" ng-grid="listaClientes">
+
+    </div>
+   <p>
+</div>
+
+<br/>
+
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>

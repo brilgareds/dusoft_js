@@ -13,6 +13,7 @@ define(["angular",
             var self = this;
             
             $scope.root = {
+                tabActual : 0,
                 tiposNaturaleza:[
                     {
                         codigo:"0",
@@ -22,7 +23,8 @@ define(["angular",
                         codigo:"1",
                         descripcion:"Juridica"
                     }
-                ]
+                ],
+                tabs: [false, false, false]
             };
             
             $scope.listaContactos = {
@@ -43,10 +45,30 @@ define(["angular",
             
             var self = this;
             
+            $scope.onTabChange = function(tab){
+                $scope.root.tabActual = tab;
+                
+                for(var _tab in $scope.root.tabs){   
+                    if(parseInt(_tab) === parseInt(tab)){
+                        $scope.root.tabs[_tab] = true;
+                    } else {
+                        $scope.root.tabs[_tab] = false;
+                    }
+                }                
+            };
+            
+            $scope.onBtnSiguiente = function(){
+                $scope.root.tabActual++;
+                $scope.onTabChange($scope.root.tabActual);
+            };  
+            
             $scope.onCambiarNaturaleza = function(){
                 console.log("tipo naturaleza ", $scope.root.tipoNaturaleza);
             };
-
+            
+            $scope.onBtnCancelar = function(){
+                $state.go("Terceros");
+            };
             
 
         }]);

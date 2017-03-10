@@ -15,7 +15,18 @@ define(["angular",
             $scope.root = {};
             var self = this;
 
-            
+            $scope.listaClientes = {
+                data: 'usuarios',
+                multiSelect: false,
+                showFilter: true,
+                enableRowSelection: true,
+                columnDefs: [
+                    {field: 'nombre_usuario', displayName: 'Nombre'},
+                    {field: 'usuario', displayName: 'Identificación'},
+                    {field: 'usuario', displayName: 'Dirección'}
+                ]
+
+            };
 
         }]);
         

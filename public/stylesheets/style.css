@@ -856,6 +856,12 @@ div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-co
     position: absolute
 }
 
+p.controlCompuesto, div.controlCompuesto{
+    border: 0px;
+    box-shadow: none;
+    padding-left: 0px;
+}
+
 /*
 ::-webkit-scrollbar
 {

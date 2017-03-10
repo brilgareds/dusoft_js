@@ -127,7 +127,15 @@ define([
                 templateUrl: "views/GestionTerceros/Terceros/GuardarTercero.html",
                 controller: "TercerosController",
                 parent_name:"Terceros"
+            })
+            .state('GuardarProveedor', {
+                url: "/GuardarProveedor",
+                text:"Guardar proveedor",
+                templateUrl: "views/GestionTerceros/Proveedores/GuardarProveedor.html",
+                controller: "GuardarProveedorController",
+                parent_name:"Terceros"
             });
+            
             
             if($location.path() === ""){
                 $state.go(vistaDefecto);

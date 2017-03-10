@@ -302,6 +302,7 @@ define(["angular", "js/controllers",
                     
                     
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1', tipoPedido: obj.getTipoPedido()});
+                    localStorageService.add("aprobarEstadoPedidoGenerarPedido",{estado:0});
                     $state.go('Cotizaciones');
                 }
 
@@ -309,6 +310,7 @@ define(["angular", "js/controllers",
                 if (obj.get_numero_pedido() > 0) {
                     localStorageService.add("multiple_pedido",{multiple_pedido:0});
                     localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1', tipoPedido: obj.getTipoPedido()});
+                    localStorageService.add("aprobarEstadoPedidoGenerarPedido",{estado:1});
                     $state.go('PedidoCliente');
                 }
             };

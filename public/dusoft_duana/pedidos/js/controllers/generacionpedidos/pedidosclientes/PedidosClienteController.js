@@ -1703,8 +1703,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              de lo contrario se generara el pedido normal
              */
             that.generarPedidoBodegaMultiple = function(aprobado,denegar){
-                
-                console.log("ESTADO DE APROBACION ", aprobado)
+                 
                 if(aprobado === 1 ){
                     that.consultarDetalleProductosCotizacion(function(estado, resultado){
 
@@ -1763,8 +1762,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
             
             $scope.gestion_cartera = function(aprobado, denegar) {
-                
-                var multiplePedido = localStorageService.get("multiple_pedido").multiple_pedido;
+              
+                var aprobarEstadoPedidoGenerarPedido = localStorageService.get("aprobarEstadoPedidoGenerarPedido");
+                   
                 var cotizacion = localStorageService.get("cotizacion");
                     
                 if (cotizacion) {
@@ -1776,14 +1776,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.generarPedidoBodegaMultiple(aprobado, denegar);
                     
                 };
-
+                
+                
                 var pedido = localStorageService.get("pedido");
 
                 if (pedido) {
                     localStorageService.add("terminoBusquedaPedido", {busqueda: pedido.numero_pedido, activar: true, filtro_actual_pedido: {nombre: "Numero", tipo_busqueda: 0}});
-                     //that.autorizarCotizacionCartera(aprobado,denegar);     
+                    
+                    if(aprobarEstadoPedidoGenerarPedido.estado === 1){
+                        that.autorizarCotizacionCartera(aprobado,denegar);   
+                    }
                 }              
-                $scope.ocultarOpciones = 0;                    
+                $scope.ocultarOpciones = 0;     
+                
             };
             
             /**
@@ -1987,6 +1992,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 //Se comento para no borrar el localstorage en modificar producto
                 // localStorageService.add("pedido", null);
                 localStorageService.get("estadoPedido", null);
+                localStorageService.add("aprobarEstadoPedidoGenerarPedido",null);
 
             });
         }]);

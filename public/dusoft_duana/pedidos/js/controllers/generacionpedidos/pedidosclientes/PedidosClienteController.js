@@ -1397,7 +1397,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                if(producto.bodegaProducto === bodega){
                    productosBodegaDuana.push(producto);
                }
-               console.log("producto ", producto)
+               //console.log("producto ", producto)
                
                __productosBodegaDuana(index,productos,productosBodegaDuana,bodega,callback);
                
@@ -1410,14 +1410,77 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * 
              **/
             that.validarDisponibleProductosCotizacion = function(estadoBoton,producto,callback) {
-                
-                
-                
-                __productosBodegaDuana(0,$scope.Pedido.productos,[],$scope.Pedido.get_bodega_id(), function(resultado){
+                                                      
+                __productosBodegaDuana(0,$scope.Pedido.productos,[],$scope.Pedido.get_bodega_id(), function(resultado, productosBodega){
                     
                     console.log("resultado ", resultado);
+                    console.log("productosBodega ", productosBodega)
                     
-                })
+                    
+                    var numeroPedidoCot;
+                    var tipoPedidoCot;
+                    if($scope.Pedido.get_numero_cotizacion() >0){
+                        numeroPedidoCot = $scope.Pedido.get_numero_cotizacion();
+                        tipoPedidoCot = 1;
+                    }
+
+                    if($scope.Pedido.get_numero_pedido() >0){
+                        numeroPedidoCot = $scope.Pedido.get_numero_pedido();
+                        tipoPedidoCot = 2;
+                    }
+                    var obj = {
+                        session: $scope.session,                                 
+                        data: {
+                            pedidos_clientes: {
+                                empresa_id: $scope.Pedido.get_empresa_id(),
+                                centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                                bodega_id: $scope.Pedido.get_bodega_id(),
+                                contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(), //894
+                                pagina_actual: 1,
+                                productos: producto.length > 0 ? producto : productosBodega,//$scope.Pedido.productos,//'0104030001', 
+                                tipo_producto: '',
+                                numero_cotizacion: '',
+                                numero_pedido: '',
+                                filtro: {nombre: 'codigo', tipo_busqueda: 2, numero: [numeroPedidoCot], tipo:tipoPedidoCot},
+                                //nuevo campos
+                                molecula: '',
+                                laboratorio_id: '',
+                                codigoProducto: '',
+                                descripcionProducto: '',
+                                concentracion: '',
+                                tipoBusqueda: 0,
+                                termino_busqueda: ''
+                            }
+                        }                                              
+                    };
+                   
+                    Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function(data) {
+                        console.log("DISPONIBILIDAD ", data);
+                        if (data.status === 200) {
+                            if(data.obj.pedidos_clientes.producto.length>0){ 
+                                
+                                var observacion="**Productos sin disponibilidad** \n";
+                                data.obj.pedidos_clientes.producto.forEach(function(info){
+                                    observacion +="Cantidad solicitada ("+info.cantidad_solicitada+")  Cantidad disponible ("+ info.cantidad_disponible+") para el codigo ("+ info.codigo_producto+") \n";
+
+                                });
+                                observacion+=$scope.Pedido.get_observacion_cartera();
+                                $scope.Pedido.set_observacion_cartera(observacion);
+                            }
+
+                           if(data.obj.pedidos_clientes.producto.length > 0){                           
+                             that.ventanaProductosSinDisponibilidad(estadoBoton,data.obj.pedidos_clientes.producto);                      
+                           }else{                          
+                               callback(true);
+                           }
+
+                        }else{                        
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Error en la consulta");                       
+                        }
+                    });
+                    
+                    
+                });
                /* console.log("producto  ----> ", $scope.Pedido.productos)
                 var productosBodegaDuana = [];
                 

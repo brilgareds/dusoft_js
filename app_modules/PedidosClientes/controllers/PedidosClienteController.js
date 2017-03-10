@@ -4087,7 +4087,7 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
         pagina:pagina,
         filtros:filtros, 
         filtroAvanzado:filtroAvanzado
-    };
+    };               
    
       var productos = args.pedidos_clientes.productos;
       

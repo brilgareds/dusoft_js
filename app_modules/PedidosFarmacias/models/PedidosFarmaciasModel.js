@@ -369,7 +369,6 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, ce
     G.knex.raw(sql, {1: empresa_id, 2: centro_utilidad_id, 3: bodega_id, 4: usuario_id, 5: observacion || "", 6: tipo_pedido, 7: pedido_cliente}).then(function(resultado) {
         callback(false, resultado.rows, resultado);
     }). catch (function(err) {
-        console.log(pedido_cliente + ") errorr ", err);
         callback(err);
     });
 
@@ -377,8 +376,9 @@ PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, ce
 
 PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, callback) {
     
-    var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
-                SELECT :1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic from solicitud_pro_a_bod_prpal_tmp \
+    var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente,\
+                empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto) \
+                SELECT :1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic,empresa_origen_producto,centro_utilidad_origen_producto,bodega_origen_producto from solicitud_pro_a_bod_prpal_tmp \
                 WHERE farmacia_id = :2 and centro_utilidad = :3 and bodega = :4 and usuario_id = :5 and empresa_origen_producto = :6 and centro_utilidad_origen_producto = :7 and bodega_origen_producto = :8 ";
 
     G.knex.raw(sql, {1:numero_pedido, 2:empresa_id, 3:centro_utilidad_id, 4:bodega_id, 5:usuario_id, 6:empresa_origen_id, 7:centro_utilidad_origen_id, 8:bodega_origen_id}).then(function(resultado){
@@ -1516,18 +1516,18 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                        ) aa group by 1,2\
 		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto \
                 left join(\
-                   SELECT aa.empresa_id, aa.codigo_producto, /*aa.centro_destino, aa.bodega_destino,*/ SUM(aa.total_reservado) as total_solicitado FROM(\
-                        select b.codigo_producto, a.empresa_destino as empresa_id, /*a.centro_destino as centro_destino, a.bogega_destino as bodega_destino,*/ SUM(cantidad_solic)::integer as total_reservado\
+                   SELECT aa.empresa_id, aa.codigo_producto, aa.bodega_origen_producto, SUM(aa.total_reservado) as total_solicitado FROM(\
+                        select b.codigo_producto, a.empresa_destino as empresa_id,b.bodega_origen_producto ,SUM(cantidad_solic)::integer as total_reservado\
                         from  solicitud_bodega_principal_aux a\
                         inner join solicitud_pro_a_bod_prpal_tmp b on a.farmacia_id = b.farmacia_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.usuario_id = b.usuario_id\
-                        group by 1,2\
+                        group by 1,2,3\
                         union\
-                        SELECT b.codigo_producto, a.empresa_id, /*a.centro_destino, a.bodega_destino,*/ sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
+                        SELECT b.codigo_producto, a.empresa_id, b.bodega_origen_producto, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
                         INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
                         WHERE  a.estado = '1'\
-                        GROUP BY 1,2\
-                    ) aa group by 1,2\
-                ) i on (a.empresa_id = i.empresa_id) and i.codigo_producto = c.codigo_producto\
+                        GROUP BY 1,2,3\
+                    ) aa group by 1,2,3\
+                ) i on (a.empresa_id = i.empresa_id) and i.codigo_producto = c.codigo_producto and a.bodega=i.bodega_origen_producto\
                 left join (\
                     select\
                     a.codigo_producto,\
@@ -1548,7 +1548,9 @@ console.log("parametros",parametros);
     offset((pagina - 1) * G.settings.limit).orderBy("b.codigo_producto", "ASC").then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        callback(err);
+    console.log("error biscat ",err);    
+    callback(err);
+        
     });
     
 };

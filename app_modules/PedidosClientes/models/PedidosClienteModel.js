@@ -1509,36 +1509,37 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     where a.contrato_cliente_id = :4\
                 ) g on c.codigo_producto = g.codigo_producto\
                 left join (\
-                    select aa.empresa_id, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
+                    select aa.empresa_id, aa.codigo_producto, aa.bodega_origen_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
                     from (\
-                      select a.empresa_id, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
+                      select a.empresa_id, b.codigo_producto, b.bodega_origen_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
                       from ventas_ordenes_pedidos a\
                       inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
                       where (b.numero_unidades - b.cantidad_despachada) > 0  and a.estado='1' "+filtroNumeroPedido+" \
-                      group by 1,2 \
+                      group by 1,2,3\
                       UNION\
-                      select a.empresa_destino as empresa_id, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
+                      select a.empresa_destino as empresa_id, b.codigo_producto,b.bodega_origen_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
                       from solicitud_productos_a_bodega_principal a \
                       inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
                       where b.cantidad_pendiente > 0 \
-                      group by 1,2\
-                    ) aa group by 1,2\
-                ) h on (a.empresa_id = h.empresa_id) and c.codigo_producto = h.codigo_producto\
+                      group by 1,2,3\
+                    ) aa group by 1,2,3\
+                ) h on (a.empresa_id = h.empresa_id) and c.codigo_producto = h.codigo_producto and (a.bodega = h.bodega_origen_producto)\
                 left join(\
-                   SELECT aa.empresa_id, aa.codigo_producto, SUM(aa.total_reservado) as total_solicitado FROM( \
-                        select b.codigo_producto, a.empresa_destino as empresa_id,  SUM(cantidad_solic)::integer as total_reservado\
+                   SELECT aa.empresa_id, aa.codigo_producto, aa.bodega_origen_producto, SUM(aa.total_reservado) as total_solicitado FROM( \
+                        select b.codigo_producto, a.empresa_destino as empresa_id, b.bodega_origen_producto, SUM(cantidad_solic)::integer as total_reservado\
                         from  solicitud_bodega_principal_aux a\
                         inner join solicitud_pro_a_bod_prpal_tmp b on a.farmacia_id = b.farmacia_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.usuario_id = b.usuario_id\
-                        group by 1,2\
+                        group by 1,2,3\
                         union\
-                        SELECT b.codigo_producto, a.empresa_id, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
+                        SELECT b.codigo_producto, a.empresa_id,b.bodega_origen_producto, sum(b.numero_unidades)::integer as total_reservado \
+                        from ventas_ordenes_pedidos_tmp a\
                         INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
                         WHERE  a.estado = '1' "+filtroNumeroCotizacion+" \
-                        GROUP BY 1,2\
-                    ) aa group by 1,2\
-                ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
+                        GROUP BY 1,2,3\
+                    ) aa group by 1,2,3\
+                ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto and (a.bodega = i.bodega_origen_producto) \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
-                 " + filtroProducto;
+                 " + filtroProducto;                                                     
     /*console.log("------parametros ------------- ", parametros);
     console.log("------filtro ------------- ", filtro);
     console.log("------filtros ------------- ", filtros);*/
@@ -2562,7 +2563,10 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                     numero_unidades, \
                     valor_unitario, \
                     usuario_id,    \
-                    fecha_registro\
+                    fecha_registro,\
+                    empresa_origen_producto,\
+                    centro_utilidad_origen_producto,\
+                    bodega_origen_producto\
                 )(\
                     SELECT \
                     :1 as numero_pedido, \
@@ -2571,7 +2575,10 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                     numero_unidades, \
                     valor_unitario, \
                     usuario_id,    \
-                    NOW() as fecha_registro\
+                    NOW() as fecha_registro,\
+                    empresa_origen_producto,\
+                    centro_utilidad_origen_producto,\
+                    bodega_origen_producto\
                     FROM ventas_ordenes_pedidos_d_tmp \
                     WHERE pedido_cliente_id_tmp = :2 \
                     AND empresa_origen_producto = :3 \

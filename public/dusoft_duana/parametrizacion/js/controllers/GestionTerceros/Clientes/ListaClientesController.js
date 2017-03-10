@@ -1,6 +1,7 @@
 define(["angular", 
     "js/controllers",
-    'includes/slide/slideContent'], function(angular, controllers) {
+    'includes/slide/slideContent',
+    "controllers/GestionTerceros/Clientes/GuardarClienteController"], function(angular, controllers) {
 
     controllers.controller('ListaClientesController', [
         '$scope', '$rootScope', 'Request',
@@ -26,6 +27,10 @@ define(["angular",
                     {field: 'usuario', displayName: 'Dirección'}
                 ]
 
+            };
+            
+            $scope.onIrVistaGuardarCliente = function(){
+                $state.go("GuardarCliente");
             };
 
         }]);

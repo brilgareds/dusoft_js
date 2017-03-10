@@ -82,6 +82,10 @@ div{
     background-color: #e7f2fa;
 }
 
+.contenedormenu {
+    z-index: 100!important;
+}
+
 
 .contenedorArbol{
     height: 100%;

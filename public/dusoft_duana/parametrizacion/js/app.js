@@ -134,6 +134,13 @@ define([
                 templateUrl: "views/GestionTerceros/Proveedores/GuardarProveedor.html",
                 controller: "GuardarProveedorController",
                 parent_name:"Terceros"
+            })
+            .state('GuardarCliente', {
+                url: "/GuardarCliente",
+                text:"Guardar cliente",
+                templateUrl: "views/GestionTerceros/Clientes/GuardarCliente.html",
+                controller: "GuardarClienteController",
+                parent_name:"Terceros"
             });
             
             

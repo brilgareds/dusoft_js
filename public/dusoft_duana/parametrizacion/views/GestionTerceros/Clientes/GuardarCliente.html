@@ -11,8 +11,7 @@
             </span>
         </p>
     </div>
-   
- 
+      
 </div>
 
 <hr />
@@ -51,29 +50,6 @@
     </div>
     
     <div class="col-md-4">
-        <label class="control-label">Excluir fletes</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tipoNaturaleza"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
-                       append-to-body = "true"
-                       ng-change="onCambiarNaturaleza()">
-                <ui-select-match  placeholder="Excluir fletes"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    
-    
-</div>
-
-
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4">
         <label class="control-label">Retefuente</label>
         <p class="input-group contenedorDropdown form-control controlCompuesto">            
             <ui-select ng-model="root.tipoNaturaleza"  
@@ -90,6 +66,11 @@
         </p>
          
     </div>
+    
+    
+</div>
+
+<div class="row contenedorCamposTercero">
     
     <div class="col-md-4">
         <label class="control-label">Rete ica</label>
@@ -126,11 +107,7 @@
         </p>
          
     </div>
-</div>
-
-<div class="row contenedorCamposTercero">
-   
- 
+    
     <div class="col-md-4">
         <label class="control-label">Impuesto cree</label>
         <p class="input-group contenedorDropdown form-control controlCompuesto">            
@@ -149,51 +126,19 @@
          
     </div>
     
-    <div class="col-md-4">
-        <label class="control-label">Divisa pago</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tipoNaturaleza"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
-                       append-to-body = "true"
-                       ng-change="onCambiarNaturaleza()">
-                <ui-select-match  placeholder="Divisa pago"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Divisa fact</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tipoNaturaleza"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
-                       append-to-body = "true"
-                       ng-change="onCambiarNaturaleza()">
-                <ui-select-match  placeholder="Divisa fact"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
 </div>
 
 <div class="row contenedorCamposTercero">
     
     <div class="col-md-4">
-        <label class="control-label">Tipo pago</label>
+        <label class="control-label">Unidad negocio</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tipoNaturaleza"  
                        theme="select2" 
                        class="form-control selectgeneral pull-left ui-select-z-index-11" 
                        append-to-body = "true"
                        ng-change="onCambiarNaturaleza()">
-                <ui-select-match  placeholder="Tipo pago"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                <ui-select-match  placeholder="Unidad negocio"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                 <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
                     <span ng-bind="tipoNaturaleza.descripcion"></span>
                 </ui-select-choices>
@@ -202,7 +147,7 @@
     </div>
     
     <div class="col-md-4">
-        <label class="control-label">Codigo ciuu</label>
+        <label class="control-label">Tipo cliente</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tipoNaturaleza"  
                        theme="select2" 
@@ -217,27 +162,6 @@
         </p>
     </div>
     
-    <div class="col-md-4">
-        <label class="control-label">Actividad</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tipoNaturaleza"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
-                       append-to-body = "true"
-                       ng-change="onCambiarNaturaleza()">
-                <ui-select-match  placeholder="Actividad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    
-    
-</div>
-
-<div class="row contenedorCamposTercero" >
     
     <div class="col-md-4" >
         <label class="control-label">Cuenta contable</label>
@@ -249,7 +173,10 @@
                 <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
             </span>
         </p>
-    </div>
+    </div>    
+</div>
+
+<div class="row contenedorCamposTercero" >
     
     <div class="col-md-4">
         <label class="control-label">Estado</label>

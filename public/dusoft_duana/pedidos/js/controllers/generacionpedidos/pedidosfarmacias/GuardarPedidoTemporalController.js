@@ -457,36 +457,38 @@ define(["angular", "js/controllers",
                         mensaje = datos.msj;
                         if(self.generarPedidoFarmacia){
                         self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
-                           mensaje+="\n Pedido Farmacia No. "+ numero_pedido_farmacia;
+                           mensaje+="<br> Pedido Farmacia No. "+ numero_pedido_farmacia;
+                           AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         });
                         }else{
-                          mensaje+="\n No se genera Pedido en Farmacia. ";
+                          mensaje+="<br> No se genera Pedido en Farmacia. ";
+                          AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                           self.eliminarPedidoTemporal();
                         }
                     }
                     if (datos.status === 500) {
                         mensaje = datos.msj;
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                     }
                     if (datos.status === 404) {
                         mensaje = datos.msj;
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                     }
                     if (datos.status === 403) {
                         datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
                             mensaje += producto.mensajeError + " para el Codigo (" + producto.codigo_producto + ") Precio venta (" + producto.precio_venta + ") \n";
+                            AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         });                       
-                    }
-                    
-                     AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-                                     
+                    }           
                 });
             } else {
                 self.generarPedido(0);
             }
-          // self.prubapedidodecliente();           
+         //  self.prubapedidodeclientes();           
 //              console.log(nuevosDatos);
         }; 
         
-        self.prubapedidodecliente = function() {
+        self.prubapedidodecliente2 = function() {
         var pedido =  {                 
                     empresa_id: '03', 
                     centro_utilidad_id: '1 ',
@@ -573,7 +575,7 @@ define(["angular", "js/controllers",
                         //observacion(quemado)
                         observacion: 'PEDIDO DESDE EL MODULO DE CLIENTE',
                         //lista de productos que se van a pedir a Cosmitet
-                        productos: [{codigo: '199L0162820', cantidad: 100}, {codigo: '168A0010028', cantidad: 100}],
+                        productos: [{codigo: '168D0501607', cantidad: 10}, {codigo: '199A0010047', cantidad: 10}],
                         //(quemado) va en 0        
                         pedidoCliente: 0
                     }

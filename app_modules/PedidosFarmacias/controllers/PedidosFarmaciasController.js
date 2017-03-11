@@ -1622,6 +1622,7 @@ PedidosFarmacias.prototype.generarPedidoModuloCliente = function(req, res) {
     var args = req.body.data;
     var ok = false;
     G.Q.nfcall(__generarTemporalAutomatico, that, req).then(function(resultado) {
+        console.log("generarPedidoModuloCliente ",resultado);
         ok = resultado;
         return ok;
     }).then(function(resultado) {
@@ -1807,16 +1808,8 @@ function __generarPedidoAutomatico(that, req, callback) {
         return G.Q.nfcall(__agruparProductosPorTipo, productosValidadosArchivo, [], 0);
 
     }).then(function(productosAgrupado) {
-
+        
         productosAgrupados = productosAgrupado;
-
-        return G.Q.ninvoke(that.m_pedidos_farmacias, "obtenerCantidadProductosEnTemporal", empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id,
-                req.session.user.usuario_id);
-
-    }).then(function(resultado) {
-
-        var cantidad = (resultado.length > 0) ? parseInt(resultado[0].cantidad_registros) : 0;
-        //Si hay un pedido temporal existente se toma el tipo de producto, de lo contrario se toma la primera agrupacion de tipos de productos del archivo
 
         var _productosAgrupados = (!tipoProducto) ? productosAgrupados[Object.keys(productosAgrupados)[0]] : productosAgrupados[tipoProducto];
 
@@ -1825,13 +1818,7 @@ function __generarPedidoAutomatico(that, req, callback) {
             return;
         }
 
-        if ((cantidad + _productosAgrupados.length) > 60) {
-            callback(true, 'La cantidad de productos no puede ser mayor a 60');
-        }
-        else
-        {
-            return G.Q.nfcall(__validarProductoArchivoPlano, that, args.pedidos_farmacias, _productosAgrupados, [], [], 0);
-        }
+         return G.Q.nfcall(__validarProductoArchivoPlano, that, args.pedidos_farmacias, _productosAgrupados, [], [], 0);//aqui se realiza la validacion
 
     }).then(function(validarProductos) {
         var productosValidados = validarProductos[0];

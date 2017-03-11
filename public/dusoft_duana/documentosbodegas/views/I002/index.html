@@ -4,15 +4,15 @@
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">
                     <div class="pull-left">
-                        <h3 class="text-center"><strong>Prefijo {{ DocumentoIngreso.get_prefijo() }}</strong></h3>
+                        <h4 class="text-center"><strong>Prefijo {{ DocumentoIngreso.get_prefijo() }}</strong></h4>
                     </div>
                     <div class="pull-right">
-                        <h3 class="text-center"><strong>No. Tmp # 000123 </strong></h3>
+                        <h4 class="text-center"><strong>No. Tmp # {{doc_tmp_id}}</strong></h4>
                     </div>
                 </div>
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
 
                             <fieldset>
                                 <legend>Proveedor</legend>      
@@ -29,7 +29,7 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <fieldset>
                                 <legend>Orden Compra</legend> 
                                 <div class="row">
@@ -44,10 +44,7 @@
                                 </div>
                             </fieldset>
                         </div>
-                    </div>
-                    <br>
-                    <div class="row">  
-                        <div class="col-md-6">
+                        <div class="col-md-4">
 
                             <fieldset>
                                 <legend>Observación</legend>                                 
@@ -58,19 +55,8 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-6">
-                            <fieldset>
-                                <legend>Fecha</legend> 
-                                <div class="row">
-                                    <div class="col-md-7">  
-                                        <h3><strong>{{ DocumentoIngreso.get_fecha_registro() }}</strong></h3>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-                    </div>   
-                    <br>
-                    <br>
+                    </div>
+                    <br> 
                     <div class="row">  
                         <div class="col-md-12">
 
@@ -101,7 +87,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="" style="height: 240px" ng-grid="lista_productos_ingresados" > </div>
+                                    <div class="" style="height: 240px" ng-grid="lista_productos_orden" > </div>
 
                                     <div class="row text-center col-md-12">
                                         <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
@@ -143,7 +129,22 @@
                                     <div class="" style="height: 240px" ng-grid="lista_productos_no_autorizados" > </div>
                                 </tab>                                
                             </tabset>
-
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div ng-if="true" class="modal-footer col-md-12" >
+                                        <button class="btn btn-default" ng-click="grabar_documento()">
+                                            <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
+                                        </button>
+                                    </div>
+                                </div>
+                            </div> 
+                            <br>
+                            <div class="row"> 
+                                <div class="col-md-12">
+                                    <div style="height: 240px" ng-grid="lista_productos_ingresados" > </div>                              
+                                </div>
+                            </div>
                             <div class="modal-footer col-md-12">
                                 <button class="btn btn-default" ng-click="cancelar_documento()">
                                     <span class="glyphicon glyphicon-remove" ></span> Cancelar

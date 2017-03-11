@@ -1516,18 +1516,18 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                        ) aa group by 1,2\
 		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto \
                 left join(\
-                   SELECT aa.empresa_id, aa.codigo_producto, /*aa.centro_destino, aa.bodega_destino,*/ SUM(aa.total_reservado) as total_solicitado FROM(\
-                        select b.codigo_producto, a.empresa_destino as empresa_id, /*a.centro_destino as centro_destino, a.bogega_destino as bodega_destino,*/ SUM(cantidad_solic)::integer as total_reservado\
+                   SELECT aa.empresa_id, aa.codigo_producto, aa.bodega_origen_producto, SUM(aa.total_reservado) as total_solicitado FROM(\
+                        select b.codigo_producto, a.empresa_destino as empresa_id,b.bodega_origen_producto ,SUM(cantidad_solic)::integer as total_reservado\
                         from  solicitud_bodega_principal_aux a\
                         inner join solicitud_pro_a_bod_prpal_tmp b on a.farmacia_id = b.farmacia_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.usuario_id = b.usuario_id\
-                        group by 1,2\
+                        group by 1,2,3\
                         union\
-                        SELECT b.codigo_producto, a.empresa_id, /*a.centro_destino, a.bodega_destino,*/ sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
+                        SELECT b.codigo_producto, a.empresa_id, b.bodega_origen_producto, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
                         INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
                         WHERE  a.estado = '1'\
-                        GROUP BY 1,2\
-                    ) aa group by 1,2\
-                ) i on (a.empresa_id = i.empresa_id) and i.codigo_producto = c.codigo_producto\
+                        GROUP BY 1,2,3\
+                    ) aa group by 1,2,3\
+                ) i on (a.empresa_id = i.empresa_id) and i.codigo_producto = c.codigo_producto and a.bodega=i.bodega_origen_producto\
                 left join (\
                     select\
                     a.codigo_producto,\
@@ -1548,7 +1548,9 @@ console.log("parametros",parametros);
     offset((pagina - 1) * G.settings.limit).orderBy("b.codigo_producto", "ASC").then(function(resultado){
         callback(false, resultado);
     }).catch(function(err){
-        callback(err);
+    console.log("error biscat ",err);    
+    callback(err);
+        
     });
     
 };

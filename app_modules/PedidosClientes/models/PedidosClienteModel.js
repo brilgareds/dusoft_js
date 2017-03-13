@@ -1151,7 +1151,7 @@ PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, num
  * */
 PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
 
-    var sql = " SELECT\
+    var sql = " SELECT distinct\
                 a.pedido_cliente_id as numero_pedido,\
                 b.numero_unidades as cantidad_solicitada,\
                 ((b.numero_unidades - b.cantidad_despachada)) as cantidad_pendiente,\

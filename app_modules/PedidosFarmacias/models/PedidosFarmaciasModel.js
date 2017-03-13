@@ -1110,7 +1110,7 @@ PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,
  */
 PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
 
-    var sql = " select \
+    var sql = " select distinct \
                 a.farmacia_id,\
                 c.razon_social,\
                 (select g.descripcion FROM bodegas g WHERE g.empresa_id = a.farmacia_id AND g.centro_utilidad = a.centro_utilidad AND g.bodega = a.bodega) as destino,\
@@ -1253,6 +1253,14 @@ PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = fun
         resultado.rows.forEach(function(row) {
 
             var cantidad_pendiente = parseInt(row.cantidad_pendiente);
+            
+            if(cantidad_pendiente < 0 ){
+                var msj = "la cantidad pendiente es invalida  para el pedido " + numero_pedido + " producto " + row.codigo_producto;
+                console.log(msj);
+                throw {msj:msj, status:403};
+                return;
+            }
+            
             sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
                         SET cantidad_pendiente = :1 WHERE solicitud_prod_a_bod_ppal_id = :2 AND\
                         codigo_producto = :3 ; ";

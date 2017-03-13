@@ -18,7 +18,9 @@ define(["angular",
             
             var self = this;
             
-         
+            $scope.onBtnCancelar = function(){
+                $state.go("Terceros");
+            };
 
         }]);
         

@@ -22,6 +22,10 @@ define(["angular",
             $scope.onIrVistaGuardarProveedor = function(){
                 $state.go("GuardarProveedor");
             };
+            
+            $scope.onBtnCancelar = function(){
+                $state.go("Terceros");
+            };
 
         }]);
         

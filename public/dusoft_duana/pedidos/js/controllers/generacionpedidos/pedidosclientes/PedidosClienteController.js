@@ -1761,7 +1761,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             
             
             
-            $scope.gestion_cartera = function(aprobado, denegar) {
+            $scope.gestion_cartera = function(aprobado, denegar) {  
               
                 var aprobarEstadoPedidoGenerarPedido = localStorageService.get("aprobarEstadoPedidoGenerarPedido");
                    

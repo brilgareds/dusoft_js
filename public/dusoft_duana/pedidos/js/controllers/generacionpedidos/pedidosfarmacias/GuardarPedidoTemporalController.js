@@ -450,41 +450,41 @@ define(["angular", "js/controllers",
              * +Descripcion: Handler del boton generar pedido
              */
           $scope.onGenerarPedido = function() {
-//            if ($scope.root.bodegaMultiple.bools) {
-//                self.generarPedidoAutomaticoCliente(function(datos) {
-//                    var mensaje = '';
-//                    if (datos.status === 200) {
-//                        mensaje = datos.msj;
-//                        if(self.generarPedidoFarmacia){
-//                        self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
-//                           mensaje+="\n Pedido Farmacia No. "+ numero_pedido_farmacia;
-//                           AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-//                        });
-//                        }else{
-//                          mensaje+="\n No se genera Pedido en Farmacia. ";
-//                          self.eliminarPedidoTemporal();
-//                          AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-//                        }
-//                    }
-//                    if (datos.status === 500) {
-//                        mensaje = datos.msj;
-//                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-//                    }
-//                    if (datos.status === 404) {
-//                        mensaje = datos.msj;
-//                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-//                    }
-//                    if (datos.status === 403) {
-//                        datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
-//                            mensaje += producto.mensajeError + " para el Codigo (" + producto.codigo_producto + ") Precio venta (" + producto.precio_venta + ") \n";
-//                        });    
-//                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-//                    }
-//                                     
-//                });
-//            } else {
-//                self.generarPedido(0);
-//            }
+            if ($scope.root.bodegaMultiple.bools) {
+                self.generarPedidoAutomaticoCliente(function(datos) {
+                    var mensaje = '';
+                    if (datos.status === 200) {
+                        mensaje = datos.msj;
+                        if(self.generarPedidoFarmacia){
+                        self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
+                           mensaje+="\n Pedido Farmacia No. "+ numero_pedido_farmacia;
+                           AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                        });
+                        }else{
+                          mensaje+="\n No se genera Pedido en Farmacia. ";
+                          self.eliminarPedidoTemporal();
+                          AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                        }
+                    }
+                    if (datos.status === 500) {
+                        mensaje = datos.msj;
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                    }
+                    if (datos.status === 404) {
+                        mensaje = datos.msj;
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                    }
+                    if (datos.status === 403) {
+                        datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
+                            mensaje += producto.mensajeError + " para el Codigo (" + producto.codigo_producto + ") Precio venta (" + producto.precio_venta + ") \n";
+                        });    
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                    }
+                                     
+                });
+            } else {
+                self.generarPedido(0);
+            }
            self.prubapedidodeclientes();           
 //              console.log(nuevosDatos);
         }; 

@@ -555,7 +555,7 @@ DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
         res.send(G.utils.r(req.url, 'La bodega esta llegando vacia ó nula', 404, {existenciasBodegas: []}));
         return;
     }
-    
+       
     var parametros={empresa_id: args.existenciasBodegas.empresa,
                     usuario_id:usuario,
                     modulos:['dispensar_formulas'], 

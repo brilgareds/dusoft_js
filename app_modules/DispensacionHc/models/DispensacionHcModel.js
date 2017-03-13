@@ -1116,12 +1116,29 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         "b.codigo_producto",
                         "g.usuario_id",
                         "g.usuario"];         
-                   
+    
+     var queryDispensacionEstados = G.knex.column(
+                                        [
+                                            G.knex.raw("distinct(evolucion_id) as evolucion_id"),
+                                            "tipo_id_paciente",
+                                            "paciente_id"
+                                        ]
+                                        
+                                         )
+                                        .select()
+                                        .from("hc_formulacion_antecedentes")
+                                        .where("tipo_id_paciente",obj.tipoIdPaciente)
+                                        .andWhere("paciente_id", obj.pacienteId).as("hc");
+    
     var subQuery = G.knex.select(colSubQueryB)
                            .from("hc_formulacion_despachos_medicamentos_pendientes as dc")
-                           .join("hc_formulacion_antecedentes AS hc", function(){//dispensacion_estados
+                           /*.join("hc_formulacion_antecedentes AS hc", function(){//dispensacion_estados
                                this.on("dc.evolucion_id","=","hc.evolucion_id")
-                           })
+                           })*/
+                           .join(queryDispensacionEstados, 
+                                function() {
+                                    this.on("dc.evolucion_id","=","hc.evolucion_id")
+                            })
                            .innerJoin("bodegas_documentos AS d", function(){
                                this.on("dc.bodegas_doc_id", "d.bodegas_doc_id")
                                .on("dc.numeracion","d.numeracion")
@@ -1167,9 +1184,13 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     var query = G.knex.column('*').from(subQuery) .union(function(){
                                  this.select(colSubQueryA)
                            .from("hc_formulacion_despachos_medicamentos as dc")
-                           .join("hc_formulacion_antecedentes AS hc", function(){ //dispensacion_estados
+                           /*.join("hc_formulacion_antecedentes AS hc", function(){ //dispensacion_estados
                                this.on("dc.evolucion_id","=","hc.evolucion_id")
-                           })
+                           })*/
+                            .join(queryDispensacionEstados, 
+                                function() {
+                                    this.on("dc.evolucion_id","=","hc.evolucion_id")
+                            })
                            .innerJoin("bodegas_documentos AS d", function(){
                                this.on("dc.bodegas_doc_id", "d.bodegas_doc_id")
                                .on("dc.numeracion","d.numeracion")
@@ -1333,8 +1354,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
             .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))
             .orderBy("a.fecha_registro","desc").limit(limite);
           
-        queryS.then(function(resultado){    
-            //console.log("resultado consultarUltimoRegistroDispensacion: ", resultado);   
+        queryS.then(function(resultado){       
             callback(false, resultado);
         }).catch(function(err){      
             console.log("err consultarUltimoRegistroDispensacion: ", err);   

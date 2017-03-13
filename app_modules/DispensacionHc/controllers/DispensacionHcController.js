@@ -556,6 +556,7 @@ DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
         return;
     }
        
+       
     var parametros={empresa_id: args.existenciasBodegas.empresa,
                     usuario_id:usuario,
                     modulos:['dispensar_formulas'], 

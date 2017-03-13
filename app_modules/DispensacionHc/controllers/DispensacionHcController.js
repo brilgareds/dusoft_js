@@ -6,18 +6,7 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     this.m_usuarios = m_usuarios;
     this.e_dispensacion_hc = e_dispensacion_hc;
     
-    /*var formato = 'YYYY-MM-DD';
-    var fechaEntrega = G.moment("2017-01-01").add(30, 'day').format(formato);
-    console.log("fechaEntrega ", fechaEntrega);
-     __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
-          
-     })*/
-   /* __calcularMaximaFechaEntregaFormula({fecha_base:fechaEntrega,dias_vigencia:3}, function(resultado){
-        
-        console.log("resultado [__calcularMaximaFechaEntregaFormula]: ", resultado)
-        
-    });*/
-  //  this.m_pedidos_clientes_log = m_pedidos_clientes_log;
+   
 };
 
 /*
@@ -540,11 +529,14 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
  * @author Cristian Ardila
  * @fecha 24/05/2016
  * +Descripcion Controlador encargado de consultar si el usuario cuenta con 
- *              privilegios para generar la accion
+ *              privilegios para autorizar los medicamentos confrontados
  *              
  */
 DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
-    
+   
+    console.log("*************DispensacionHc.prototype.usuarioPrivilegios**********************");
+    console.log("*************DispensacionHc.prototype.usuarioPrivilegios**********************");
+    console.log("*************DispensacionHc.prototype.usuarioPrivilegios**********************");
     var that = this;
     var args = req.body.data;
     var usuario = req.session.user.usuario_id;
@@ -564,21 +556,29 @@ DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
         return;
     }
     
-    var parametros={empresa: args.existenciasBodegas.empresa,
-                    centroUtilidad:args.existenciasBodegas.centroUtilidad, 
-                    bodega:args.existenciasBodegas.bodega,
-                    usuario:usuario              
+    var parametros={empresa_id: args.existenciasBodegas.empresa,
+                    usuario_id:usuario,
+                    modulos:['dispensar_formulas'], 
+                    convertirJSON:true,
+                    limpiarCache:true,
+                    guardarResultadoEnCache:false
                     };
-                    
- G.Q.ninvoke(that.m_dispensacion_hc,'usuarioPrivilegios', parametros).then(function(resultado){
         
-       if(resultado && resultado.length > 0){ 
-           res.send(G.utils.r(req.url, 'Usuario con privilegios de autorizar dispensacion', 200, {privilegios:resultado}));
-       }else{
-           throw "Consulta sin resultado";
-       }
+    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametros).then(function(parametrizacion){
+        
+        
+       var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.dispensar_formulas) ? parametrizacion.modulosJson.dispensar_formulas.opciones : undefined;
+        
+        if(opciones){
 
-}).fail(function(err){      
+            res.send(G.utils.r(req.url, 'Usuario con privilegios de autorizar dispensacion', 200, {privilegios:opciones}));
+
+        } else {
+
+            throw "Consulta sin resultado";
+        }
+   
+    }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };

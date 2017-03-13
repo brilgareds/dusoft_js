@@ -294,10 +294,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(data.status === 204) {  
                     
                     dispensacionHcService.usuarioPrivilegios(obj, function(privilegio){
-                            
+                   
                         if(privilegio.status === 200){
                            
-                            if(privilegio.obj.privilegios[0].sw_privilegios === '1'){
+                            if(privilegio.obj.privilegios.sw_privilegio_autorizar_confrontado){
                                 
                                that.ventanaAutorizaDispensacion(data, entity);   
                                

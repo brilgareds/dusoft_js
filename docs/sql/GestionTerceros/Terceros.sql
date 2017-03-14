@@ -38,10 +38,173 @@ CREATE TABLE "public"."nomenclatura_direccion" (
 ALTER TABLE "public"."nomenclatura_direccion"
   ALTER COLUMN "descripcion" SET STATISTICS 0;
 
+
+CREATE TABLE "public"."tipos_telefono" (
+  "id" SERIAL, 
+  "descripcion" TEXT NOT NULL
+) WITH OIDS;
+
+
+CREATE TABLE "public"."tipos_linea_telefonica" (
+  "id" INTEGER, 
+  "descripcion" VARCHAR(20) NOT NULL
+) WITH OIDS;
+
+ALTER TABLE "public"."tipos_linea_telefonica"
+  ALTER COLUMN "descripcion" SET STATISTICS 0;
+
+CREATE TABLE "public"."tercero_telefonos" (
+  "id" SERIAL, 
+  "tipo_id_tercero" CHAR(3), 
+  "tercero_id" CHAR(32), 
+  "tipo_telefono_id" INTEGER, 
+  "tipo_linea_telefonica_id" INTEGER, 
+  "numero" VARCHAR(20)
+) WITH OIDS;
+
+ALTER TABLE "public"."tercero_telefonos"
+  ALTER COLUMN "id" SET STATISTICS 0;
+
+ALTER TABLE "public"."tercero_telefonos"
+  ALTER COLUMN "tipo_id_tercero" SET STATISTICS 0;
+
+ALTER TABLE "public"."tercero_telefonos"
+  ALTER COLUMN "tercero_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."tercero_telefonos"
+  ALTER COLUMN "tipo_telefono_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."tercero_telefonos"
+  ALTER COLUMN "tipo_linea_telefonica_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."tercero_telefonos"
+  ALTER COLUMN "numero" SET STATISTICS 0;   
+
+
+ALTER TABLE "public"."tercero_telefonos"
+  ADD CONSTRAINT "tercero_telefonos_fk" FOREIGN KEY ("tipo_id_tercero", "tercero_id")
+    REFERENCES "public"."terceros"("tipo_id_tercero", "tercero_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+CREATE UNIQUE INDEX "tipos_telefono_id_key" ON "public"."tipos_telefono"
+("id");
+
+ALTER TABLE "public"."tercero_telefonos"
+  ADD CONSTRAINT "tercero_telefonos_fk1" FOREIGN KEY ("tipo_telefono_id")
+    REFERENCES "public"."tipos_telefono"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+CREATE UNIQUE INDEX "tipos_linea_telefonica_id_key" ON "public"."tipos_linea_telefonica"
+("id");
+
+ALTER TABLE "public"."tercero_telefonos"
+  ADD CONSTRAINT "tercero_telefonos_fk2" FOREIGN KEY ("tipo_linea_telefonica_id")
+    REFERENCES "public"."tipos_linea_telefonica"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+CREATE TABLE "public"."tipos_correo" (
+  "id" SERIAL, 
+  "descripcion" TEXT NOT NULL
+) WITH OIDS;
+
+ALTER TABLE "public"."tipos_correo"
+  ALTER COLUMN "descripcion" SET STATISTICS 0;
+
+
+
+CREATE TABLE "public"."tipos_redes_sociales" (
+  "id" SERIAL, 
+  "descripcion" TEXT
+) WITH OIDS;
+
+ALTER TABLE "public"."tipos_redes_sociales"
+  ALTER COLUMN "id" SET STATISTICS 0;
+
+ALTER TABLE "public"."tipos_redes_sociales"
+  ALTER COLUMN "descripcion" SET STATISTICS 0;
+
+
+CREATE TABLE "public"."tipos_contacto" (
+  "id" SERIAL, 
+  "descripcion" TEXT
+) WITH OIDS;
+
+ALTER TABLE "public"."tipos_contacto"
+  ALTER COLUMN "id" SET STATISTICS 0;
+
+ALTER TABLE "public"."tipos_contacto"
+  ALTER COLUMN "descripcion" SET STATISTICS 0;
+
+CREATE TABLE "public"."terceros_contactos" (
+  "id" SERIAL, 
+  "tipo_id_tercero" CHAR(3), 
+  "tercero_id" CHAR(32), 
+  "tipo_contacto_id" INTEGER, 
+  "nombre" VARCHAR(255), 
+  "telefono" VARCHAR(255), 
+  "correo" VARCHAR(255), 
+  "descripcion" TEXT
+) WITH OIDS;
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "id" SET STATISTICS 0;
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "tipo_id_tercero" SET STATISTICS 0;
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "tercero_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "tipo_contacto_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "nombre" SET STATISTICS 0;
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "telefono" SET STATISTICS 0;
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "correo" SET STATISTICS 0;
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "descripcion" SET STATISTICS 0;
+
+
+ALTER TABLE "public"."terceros_contactos"
+  ADD CONSTRAINT "terceros_contactos_fk" FOREIGN KEY ("tipo_id_tercero", "tercero_id")
+    REFERENCES "public"."terceros"("tipo_id_tercero", "tercero_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+CREATE UNIQUE INDEX "tipos_contacto_id_key" ON "public"."tipos_contacto"
+("id");
+
+ALTER TABLE "public"."terceros_contactos"
+  ADD CONSTRAINT "terceros_contactos_fk1" FOREIGN KEY ("tipo_contacto_id")
+    REFERENCES "public"."tipos_contacto"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
 /***************tablas ************************/
 
 ALTER TABLE "public"."terceros"
   ADD COLUMN "genero_id" INTEGER;
+
+ALTER TABLE "public"."terceros"
+  ADD COLUMN "estado_civil_id" INTEGER;
 
 CREATE UNIQUE INDEX "genero_id_key" ON "public"."genero"
 ("id");
@@ -86,8 +249,7 @@ ALTER TABLE "public"."terceros"
   ADD COLUMN "fecha_expiracion" TIMESTAMP(0) WITHOUT TIME ZONE;
 
 
-ALTER TABLE "public"."terceros"
-  ADD COLUMN "estado_civil_id" INTEGER;
+
 
 ALTER TABLE "public"."terceros"
   ADD COLUMN "fecha_nacimiento" TIMESTAMP(0) WITHOUT TIME ZONE;
@@ -141,3 +303,32 @@ ALTER TABLE "public"."terceros"
 
 ALTER TABLE "public"."terceros"
   ADD COLUMN "barrio" TEXT;
+
+ALTER TABLE "public"."terceros"
+  ADD COLUMN "tipo_correo_id" INTEGER;
+
+
+CREATE UNIQUE INDEX "tipos_correo_id_key" ON "public"."tipos_correo"
+("id");
+
+ALTER TABLE "public"."terceros"
+  ADD CONSTRAINT "terceros_fk5" FOREIGN KEY ("tipo_correo_id")
+    REFERENCES "public"."tipos_correo"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+ALTER TABLE "public"."terceros"
+  ADD COLUMN "tipo_red_social_id" INTEGER;
+
+
+CREATE UNIQUE INDEX "tipos_redes_sociales_id_key" ON "public"."tipos_redes_sociales"
+("id");
+
+ALTER TABLE "public"."terceros"
+  ADD CONSTRAINT "terceros_fk6" FOREIGN KEY ("tipo_red_social_id")
+    REFERENCES "public"."tipos_redes_sociales"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;

@@ -44,11 +44,17 @@ DispensacionHcModel.prototype.consultarEvolucionFormula = function(obj,callback)
  */
 DispensacionHcModel.prototype.consultarNumeroFormula = function(obj,callback){
      
-    var columna = [G.knex.raw("formula_id")];
+    var columna = [G.knex.raw("formula_id"),  
+                   G.knex.raw(" CASE WHEN b.tipo_formula is null THEN '0' ELSE '1' END as tipo_formula")];
      
-    G.knex('dispensacion_estados').where({
-        evolucion_id: obj.evolucionId
-    }).select(columna).then(function(resultado) {
+    G.knex.select(columna)
+        .from("dispensacion_estados AS a")
+        .innerJoin("hc_evoluciones AS b", 
+            function() {
+                this.on("a.evolucion_id", "b.evolucion_id")
+        }).where("a.evolucion_id", obj.evolucionId)
+  
+    .then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
         console.log("err[consultarNumeroFormula]: ", error);
@@ -56,6 +62,7 @@ DispensacionHcModel.prototype.consultarNumeroFormula = function(obj,callback){
     });
     
 }; 
+  
  
 DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
 {

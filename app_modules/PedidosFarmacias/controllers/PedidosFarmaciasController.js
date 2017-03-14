@@ -1640,8 +1640,8 @@ PedidosFarmacias.prototype.generarPedidoModuloCliente = function(req, res) {
                 {pedido_farmacia: {pedido: resultados.numero_pedido}}));
         return;
     }).fail(function(err) {
-        res.send(G.utils.r(req.url, 'Pedido Farmacia', 500, {pedido_farmacia: []}));
-        return;
+        res.send(G.utils.r(req.url, 'Pedido Farmacia', err.status, 
+                {pedido_farmacia: {productosInvalidos: err.productosInvalidos}}));
     }).done();
 };
 
@@ -1660,27 +1660,27 @@ function __generarPedidoAutomatico(that, req, callback) {
         var pedido_cliente = null;
 
     if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined || args.pedidos_farmacias.centro_utilidad_id === undefined || args.pedidos_farmacias.bodega_id === undefined) {
-        callback(true, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos');
+        throw {msj:"empresa_id, centro_utilidad_id o bodega_id no estan definidos", status:403};
         return;
     }
 
     if (args.pedidos_farmacias.tipo_pedido === undefined) {
-        callback(true, 'tipo_pedido no está definido');
+        throw {msj:"tipo_pedido no está definido", status:403};
         return;
     }
 
     if (args.pedidos_farmacias.empresa_id === '' || args.pedidos_farmacias.centro_utilidad_id === '' || args.pedidos_farmacias.bodega_id === '') {
-        callback(true, 'empresa_id, centro_utilidad_id o bodega_id están vacios');
+         throw {msj:"empresa_id, centro_utilidad_id o bodega_id están vacios", status:403};
         return;
     }
 
     if (args.pedidos_farmacias.tipo_pedido === '') {
-        callback(true, 'tipo_pedido está vacio');
+        throw {msj:"tipo_pedido está vacio", status:403};
         return;
     }
 
     if (args.pedidos_farmacias.pedidoCliente !== undefined || args.pedidos_farmacias.pedidoCliente !== '') {
-        pedido_cliente = args.pedidos_farmacias.pedidoCliente;
+        pedido_cliente = args.pedidos_farmacias.pedidoCliente;        
     }
 
         var empresa_id = args.pedidos_farmacias.empresa_id;
@@ -1697,30 +1697,49 @@ function __generarPedidoAutomatico(that, req, callback) {
         var autorizacion = {};
 
     G.Q.ninvoke(that.m_pedidos_farmacias, "insertarPedidoFarmacia", empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, pedido_cliente).spread(function(id_pedido,pedidos) {
-
+       
         numero_pedido = id_pedido[0].solicitud_prod_a_bod_ppal_id;
-        var responsable = null;//operario_array[0].operario_id;
-        return G.Q.ninvoke(that.m_pedidos_farmacias, "asignar_responsables_pedidos", numero_pedido, '0', responsable, usuario_id);
+        if(numero_pedido===''){
+            throw {msj:"No se creo el pedido en farmacia", status:403};
+        }else{
+            var responsable = null;//operario_array[0].operario_id;
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "asignar_responsables_pedidos", numero_pedido, '0', responsable, usuario_id);
+        }
+  
+    }).then(function(rows,responsable_estado_pedido) {
         
+        if(rows.length > 0){
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "terminar_estado_pedido", numero_pedido, ['0'], '1');
+        }else{
+            throw {msj:"No se asigno responsables al pedido", status:403}; 
+        }
+
     }).then(function(rows) {
         
-        return G.Q.ninvoke(that.m_pedidos_farmacias, "terminar_estado_pedido", numero_pedido, ['0'], '1');
-        
-    }).then(function(rows, results) {
-        
-        return G.Q.ninvoke(that.m_pedidos_farmacias, "insertarDetallePedidoFarmacia", numero_pedido, empresa_id, centro_utilidad_id,
+        if(rows[1].rowCount > 0){
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "insertarDetallePedidoFarmacia", numero_pedido, empresa_id, centro_utilidad_id,
                 bodega_id, usuario_id, empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id);
-           
-    }).then(function() {
-        
-        return G.Q.ninvoke(that.m_pedidos_farmacias, "eliminar_detalle_temporal_completo", empresa_id, centro_utilidad_id, bodega_id, usuario_id);
-        
-    }).then(function() {
-        
-        return G.Q.ninvoke(that.m_pedidos_farmacias, "eliminar_registro_encabezado_temporal", empresa_id, centro_utilidad_id, bodega_id, usuario_id);
-       
-    }).then(function() {
-        
+        }else{
+            throw {msj:"No se termino el estado del pedido", status:403}; 
+        }       
+      
+    }).then(function(rows) {
+        console.log("rows[1].rowCount",rows);
+        if(rows[1].rowCount > 0){
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "eliminar_detalle_temporal_completo", empresa_id, centro_utilidad_id, bodega_id, usuario_id);
+        }else{
+              throw {msj:"No insertarDetallePedidoFarmacia", status:403}; 
+        } 
+
+    }).then(function(rows) {
+        if(rows){
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "eliminar_registro_encabezado_temporal", empresa_id, centro_utilidad_id, bodega_id, usuario_id);
+        }else{
+              throw {msj:"No se elimino el encabezado del temporal", status:403}; 
+        }
+
+    }).then(function(rows) {
+        if(rows){
         var farmacia = 1;
        
         autorizacion.farmacia = farmacia;
@@ -1735,9 +1754,13 @@ function __generarPedidoAutomatico(that, req, callback) {
         };
       
        return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);
-        
+       
+       }else{
+              throw {msj:"No se elimino el encabezado del temporal", status:403}; 
+       }
+
     }).then(function(resultado) {
-     
+       
         if (resultado) {
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
          
@@ -1749,8 +1772,17 @@ function __generarPedidoAutomatico(that, req, callback) {
         return;
         
     }).fail(function(err) {
+       console.log("FAIL::::::::::: ",err);
+        var msj = "Error Interno";
+        var status = 500;
         
-        callback(true, err);
+        if(err.status){
+            msj = err.msj;
+            status = err.status;
+        }else{
+           msj = err;
+        }
+        callback({status:status, msj:msj});
         
     }).done();
 };
@@ -1771,12 +1803,12 @@ function __generarPedidoAutomatico(that, req, callback) {
     var session = req.body.session;
 
     if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_destino_id === undefined || args.pedidos_farmacias.centro_utilidad_destino_id === undefined || args.pedidos_farmacias.bodega_destino_id === undefined) {
-        callback(true, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos');
+        throw {msj:"empresa_id, centro_utilidad_id o bodega_id no estan definidos", status:403};
         return;
     }
 
     if (args.pedidos_farmacias.empresa_destino_id === '' || args.pedidos_farmacias.centro_utilidad_destino_id === '' || args.pedidos_farmacias.bodega_destino_id === '') {
-        callback(true, 'empresa_id, centro_utilidad_id o bodega_id están vacios');
+        throw {msj:"empresa_id, centro_utilidad_id o bodega_id están vacios", status:403};
         return;
     }
 
@@ -1799,37 +1831,85 @@ function __generarPedidoAutomatico(that, req, callback) {
         productosInvalidosArchivo = validarProductos[1];
 
         if (productosValidadosArchivo.length === 0) {
+            
+            throw {msj:"Lista de Productos vacios", status:403};
+            return;
 
-            callback(true, 'Lista de Productos');
+        }else{
+
+        return G.Q.nfcall(__agruparProductosPorTipo, productosValidadosArchivo, [], 0);
+        
+        }
+
+    }).then(function(productosAgrupado) {
+        
+        if (productosAgrupado.length >= 0) {
+
+            productosAgrupados = productosAgrupado;
+
+            return G.Q.ninvoke(that.m_pedidos_farmacias, "obtenerCantidadProductosEnTemporal", empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id,
+                    req.session.user.usuario_id);
+        } else {
+
+            throw {msj: "Productos agrupados vacios", status: 403};
             return;
 
         }
 
-        return G.Q.nfcall(__agruparProductosPorTipo, productosValidadosArchivo, [], 0);
+    }).then(function(resultado) {
 
-    }).then(function(productosAgrupado) {
-        
-        productosAgrupados = productosAgrupado;
+        var cantidad = (resultado.length > 0) ? parseInt(resultado[0].cantidad_registros) : 0;
+        //Si hay un pedido temporal existente se toma el tipo de producto, de lo contrario se toma la primera agrupacion de tipos de productos del archivo
 
         var _productosAgrupados = (!tipoProducto) ? productosAgrupados[Object.keys(productosAgrupados)[0]] : productosAgrupados[tipoProducto];
 
         if (!_productosAgrupados) {
-            callback(true, 'El pedido debe ser del mismo tipo');
+            throw {msj: "El pedido debe ser del mismo tipo", status: 403};
             return;
         }
 
-         return G.Q.nfcall(__validarProductoArchivoPlano, that, args.pedidos_farmacias, _productosAgrupados, [], [], 0);//aqui se realiza la validacion
+        if ((cantidad + _productosAgrupados.length) > 60) {
+            throw {msj: "La cantidad de productos no puede ser mayor a 60", status: 403};
+            return;
+        }
+        else
+        {
+            return G.Q.nfcall(__validarProductoArchivoPlano, that, args.pedidos_farmacias, _productosAgrupados, [], [], 0);
+        }
 
     }).then(function(validarProductos) {
+        
         var productosValidados = validarProductos[0];
         var productosInvalidos = validarProductos[1];
-        productosInvalidos = productosInvalidos.concat(productosInvalidosArchivo);
-        callback(false, true);
-        return;
+        
+        if (productosInvalidos.length >= 0) {
+            productosInvalidos = productosInvalidos.concat(productosInvalidosArchivo);
+            console.log("productosInvalidos  ",productosInvalidos);
+            throw {msj:"productosInvalidos",productosInvalidos:productosInvalidos, status: 500};
+            return;
+        } else {
+            callback(false, true);
+            return;
+        }
 
     }).fail(function(err) {
-  
-       callback(true, 'Error validando el archivo plano');
+    //   console.log("__generarTemporalAutomatico",err);
+    //   console.log("FAIL::::::::::: ",err);
+        var msj = "Error Interno";
+        var status = 500;
+        var productosInvalidos = [];
+        
+        if(err.status){
+            msj = err.msj;
+            status = err.status;
+            productosInvalidos=err.productosInvalidos;
+        }else{
+           msj = err;
+        }
+//        console.log("status:::",status);
+//        console.log("msj:::",msj);
+        callback({status:status, msj:msj, productosInvalidos: productosInvalidos});
+      // callback(true, err);
 
     }).done();
 

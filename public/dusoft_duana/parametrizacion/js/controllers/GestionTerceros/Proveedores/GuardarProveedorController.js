@@ -23,7 +23,12 @@ define(["angular",
                 {descripcion: "Cheque"}
             ];
             
-            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion handler del boton crear provedor o el boton de editar proveedor
+            * @params obj: {pagina, termino_busqueda}
+            * @fecha 2017-03-15
+            */
             $scope.onIrVistaGuardarProveedor = function(){
                 $state.go("GuardarProveedor");
             };

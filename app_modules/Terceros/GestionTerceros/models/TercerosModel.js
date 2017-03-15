@@ -12,49 +12,9 @@ var TercerosModel = function() {
  * @apiPermission autenticado
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
-TercerosModel.prototype.listar_clientes = function(empresa_id, termino_busqueda, paginacion, pagina, callback) {
+TercerosModel.prototype.obtenerParametrizacionFormularioTerceros = function(parametros, callback) {
 
-    var sql = " SELECT\
-                a.tipo_id_tercero,\
-                a.tercero_id,\
-                a.direccion,\
-                a.telefono,\
-                a.email,\
-                a.nombre_tercero,\
-                a.tipo_bloqueo_id,\
-                c.descripcion as bloqueo,\
-                COALESCE(d.contrato_cliente_id,(SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')) as contrato_cliente_id,\
-                g.pais,\
-                f.departamento,\
-                e.municipio,\
-                d.estado as estado_contrato,\
-                CASE when d.fecha_final >= CURRENT_TIMESTAMP THEN true ELSE false END as contrato_vigente\
-                FROM terceros as a\
-                JOIN terceros_clientes b ON a.tipo_id_tercero = b.tipo_id_tercero AND a.tercero_id = b.tercero_id AND b.empresa_id = :1 \
-                LEFT JOIN inv_tipos_bloqueos c ON a.tipo_bloqueo_id = c.tipo_bloqueo_id\
-                LEFT JOIN vnts_contratos_clientes as d ON a.tipo_id_tercero = d.tipo_id_tercero AND a.tercero_id = d.tercero_id AND d.empresa_id = :1 AND d.estado='1'\
-                LEFT JOIN tipo_mpios e ON a.tipo_pais_id = e.tipo_pais_id AND a.tipo_dpto_id = e.tipo_dpto_id AND a.tipo_mpio_id = e.tipo_mpio_id\
-                LEFT JOIN tipo_dptos f ON e.tipo_pais_id = f.tipo_pais_id AND e.tipo_dpto_id = f.tipo_dpto_id\
-                LEFT JOIN tipo_pais g ON f.tipo_pais_id = g.tipo_pais_id\
-                WHERE \
-                (   a.tercero_id "+G.constants.db().LIKE+" :2 OR \
-                    a.nombre_tercero "+G.constants.db().LIKE+" :2 \
-                )";
-    
-    
-    
-    var query = G.knex.raw(sql, {1:empresa_id, 2:"%" + termino_busqueda + "%"});
-    
-    if (paginacion) {
-        // Paginacion
-       query.limit(G.settings.limit).offset((pagina - 1) * G.settings.limit);
-    }
-    
-    query.then(function(resultado){
-       callback(false, resultado.rows, resultado);
-    }).catch(function(err){
-        callback(err);
-    });
+
     
 };
 

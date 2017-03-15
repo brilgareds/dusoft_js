@@ -198,6 +198,17 @@ ALTER TABLE "public"."terceros_contactos"
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
 
+CREATE TABLE "public"."tipo_direccion" (
+  "id" SERIAL, 
+  "descripcion" TEXT
+) WITH OIDS;
+
+ALTER TABLE "public"."tipo_direccion"
+  ALTER COLUMN "id" SET STATISTICS 0;
+
+ALTER TABLE "public"."tipo_direccion"
+  ALTER COLUMN "descripcion" SET STATISTICS 0;
+
 /***************tablas ************************/
 
 ALTER TABLE "public"."terceros"
@@ -332,3 +343,25 @@ ALTER TABLE "public"."terceros"
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
+
+
+ALTER TABLE "public"."terceros"
+  ADD COLUMN "tipo_direccion_id" INTEGER;
+
+CREATE UNIQUE INDEX "tipo_direccion_id_key" ON "public"."tipo_direccion"
+("id");
+
+ALTER TABLE "public"."terceros"
+  ADD CONSTRAINT "terceros_fk7" FOREIGN KEY ("tipo_direccion_id")
+    REFERENCES "public"."tipo_direccion"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+
+
+ALTER TABLE "public"."nomenclatura_direccion"
+  ADD COLUMN "codigo" VARCHAR(10);
+
+ALTER TABLE "public"."nomenclatura_direccion"
+  ALTER COLUMN "codigo" SET NOT NULL;

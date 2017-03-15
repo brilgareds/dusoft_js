@@ -24,35 +24,7 @@ Terceros.prototype.obtenerParametrizacionFormularioTerceros = function(req, res)
         return;
     }
 
-    // Autor .  Camilo Orozco
-    // Se implementa esta condicion para permitir mostrar los terceros tanto en un select como en una tabla
-    // En un select NO se requiere paginacion, mientras que en la tabla si, por lo tanto 
-    // cuando se requiere paginar se envia en parametro paginacion en True.
-    if (args.terceros.paginacion !== undefined && args.terceros.paginacion === true) {
-
-        if (args.terceros.pagina_actual === undefined || args.terceros.pagina_actual === '' || args.terceros.pagina_actual === '0' ) {
-            res.send(G.utils.r(req.url, 'pagina_actual no están definidas o es cero', 404, {}));
-            return;
-        }
-    }
-
-    if (args.terceros.empresa_id === '' ) {
-        res.send(G.utils.r(req.url, 'empresa_id está vacio.', 404, {}));
-        return;
-    }
-
-    var empresa_id = args.terceros.empresa_id;
-    var termino_busqueda = (args.terceros.termino_busqueda === undefined) ? '' : args.terceros.termino_busqueda;
-    var paginacion = (args.terceros.paginacion === undefined) ? false : args.terceros.paginacion;
-    var pagina_actual = (args.terceros.pagina_actual === undefined) ? '' : args.terceros.pagina_actual;
     
-    that.m_terceros.listar_terceros(empresa_id, termino_busqueda, paginacion, pagina_actual, function(err, listado_terceros) {
-        if (err)
-            res.send(G.utils.r(req.url, 'Error Consultando Terceros', 500, {}));
-        else
-            res.send(G.utils.r(req.url, 'Listado de Terceros', 200, {listado_terceros: listado_terceros}));
-    });
-
 };
 
 Terceros.prototype.listarTercerosCiudad = function(req, res) {

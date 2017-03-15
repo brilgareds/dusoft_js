@@ -4,40 +4,6 @@ var ChatModel = function() {
 
 /**
 * @author Eduar Garcia
-* +Descripcion consulta los grupos del chat, permite tener un termino de busqueda
-* @params obj: {pagina, termino_busqueda}
-* @fecha 2016-08-29
-*/
-ChatModel.prototype.listarGrupos = function(parametros, callback) {
-    
-    var sql =  "a.id, a.nombre, to_char(a.fecha_creacion, 'yyyy-mm-dd') as fecha_creacion, a.estado, \
-                CASE WHEN a.estado = '0' THEN 'Inactivo' WHEN a.estado = '1' THEN 'Activo' END AS descripcion_estado,\
-                (SELECT COUNT(b.grupo_id) AS total FROM chat_grupos_usuarios b\
-                WHERE b.grupo_id = a.id) AS numero_integrantes from chat_grupos a ";
-    
-    var query = G.knex.select(G.knex.raw(sql));
-    
-    if(parametros.termino_busqueda.length > 0){
-        query.where("a.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
-    } 
-    
-    if(parametros.estado){
-        query.where("estado", parametros.estado)
-    }
-    
-    query.limit(G.settings.limit).
-    offset((parametros.pagina - 1) * G.settings.limit).
-    then(function(resultado){
-        callback(false, resultado);
-    }).catch(function(err){
-        console.log("error sql",err);
-        callback(err);       
-    });   
-};
-
-
-/**
-* @author Eduar Garcia
 * +Descripcion Cambie el estado de un usuario en un grupo
 * @params obj: {pagina, termino_busqueda}
 * @fecha 2016-08-29
@@ -117,6 +83,41 @@ ChatModel.prototype.modificarGrupo = function(parametros, callback) {
     });
     
 };
+
+
+/**
+* @author Eduar Garcia
+* +Descripcion consulta los grupos del chat, permite tener un termino de busqueda
+* @params obj: {pagina, termino_busqueda}
+* @fecha 2016-08-29
+*/
+ChatModel.prototype.listarGrupos = function(parametros, callback) {
+    
+    var sql =  "a.id, a.nombre, to_char(a.fecha_creacion, 'yyyy-mm-dd') as fecha_creacion, a.estado, \
+                CASE WHEN a.estado = '0' THEN 'Inactivo' WHEN a.estado = '1' THEN 'Activo' END AS descripcion_estado,\
+                (SELECT COUNT(b.grupo_id) AS total FROM chat_grupos_usuarios b\
+                WHERE b.grupo_id = a.id) AS numero_integrantes from chat_grupos a ";
+    
+    var query = G.knex.select(G.knex.raw(sql));
+    
+    if(parametros.termino_busqueda.length > 0){
+        query.where("a.nombre", G.constants.db().LIKE, "%" + parametros.termino_busqueda + "%");
+    } 
+    
+    if(parametros.estado){
+        query.where("estado", parametros.estado)
+    }
+    
+    query.limit(G.settings.limit).
+    offset((parametros.pagina - 1) * G.settings.limit).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });   
+};
+
 
 
 /**

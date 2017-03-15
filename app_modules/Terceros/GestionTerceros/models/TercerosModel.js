@@ -14,7 +14,23 @@ var TercerosModel = function() {
  */
 TercerosModel.prototype.obtenerParametrizacionFormularioTerceros = function(parametros, callback) {
 
+    
+    
+};
 
+TercerosModel.prototype.obtenerGeneros = function(parametros, callback) {
+    var columns = [
+        "a.id",
+        "a.descripcion"
+    ];
+    
+    G.knex.column(columns).
+    from("genero as a").then(function(generos){
+        callback(false, generos);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+    
     
 };
 

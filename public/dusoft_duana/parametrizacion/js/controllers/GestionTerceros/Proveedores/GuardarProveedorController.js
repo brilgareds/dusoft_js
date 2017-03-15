@@ -18,6 +18,11 @@ define(["angular",
             
             var self = this;
             
+            $scope.root.tiposPago = [
+                {descripcion: "Abono"},
+                {descripcion: "Cheque"}
+            ];
+            
             
             $scope.onIrVistaGuardarProveedor = function(){
                 $state.go("GuardarProveedor");

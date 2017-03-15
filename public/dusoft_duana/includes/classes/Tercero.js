@@ -16,8 +16,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.pais = "";
             this.departamento = "";
             this.municipio = "";
-        }
-        ;
+        };
         
         //Operaciones Get de parámetros iniciales de creación de Tercero
         Tercero.prototype.getNombre = function(){

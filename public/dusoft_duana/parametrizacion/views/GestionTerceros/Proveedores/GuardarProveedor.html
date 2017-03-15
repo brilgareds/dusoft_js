@@ -188,14 +188,14 @@
     <div class="col-md-4">
         <label class="control-label">Tipo pago</label>
         <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tipoNaturaleza"  
+            <ui-select multiple ng-model="root.tipoPgo"  
                        theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-12 multiSelectTerceros" 
                        append-to-body = "true"
                        ng-change="onCambiarNaturaleza()">
-                <ui-select-match  placeholder="Tipo pago"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                <ui-select-match  placeholder="Tipo pago"><span ng-bind="$item.descripcion"></span></ui-select-match>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoPago in  root.tiposPago | filter:$select.search">
+                    <span ng-bind="tipoPago.descripcion"></span>
                 </ui-select-choices>
             </ui-select>  
         </p>

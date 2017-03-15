@@ -1,0 +1,32 @@
+{
+    "module": "Tutoriales",
+    "dependency": {
+        "controllers": [{
+                "tutoriales_controller": {
+                    "module": "Tutoriales",
+                    "controller": "TutorialesController",
+                    "alias": "c_tutoriales"
+                }
+            }],
+        "models": [{
+                "tutoriales_model": {
+                    "module": "Tutoriales",
+                    "model": "TutorialesModel",
+                    "alias": "m_tutoriales"
+                },
+                "m_usuarios": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+         "events": [{
+                "tutoriales_events": {
+                    "module": "Tutoriales",
+                    "event": "TutorialesEvents",
+                    "alias": "e_tutoriales"
+                }
+            }],
+        "cronJobs": []
+    }
+}

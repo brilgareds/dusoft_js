@@ -365,3 +365,29 @@ ALTER TABLE "public"."nomenclatura_direccion"
 
 ALTER TABLE "public"."nomenclatura_direccion"
   ALTER COLUMN "codigo" SET NOT NULL;
+
+
+CREATE TABLE "public"."nacionalidad" (
+  "id" SERIAL, 
+  "descripcion" VARCHAR(255) NOT NULL
+) WITH OIDS;
+
+ALTER TABLE "public"."nacionalidad"
+  ALTER COLUMN "id" SET STATISTICS 0;
+
+ALTER TABLE "public"."nacionalidad"
+  ALTER COLUMN "descripcion" SET STATISTICS 0;
+
+ALTER TABLE "public"."terceros"
+  ADD COLUMN "tipo_nacionalidad" INTEGER;
+
+
+CREATE UNIQUE INDEX "nacionalidad_id_key" ON "public"."nacionalidad"
+("id");
+
+ALTER TABLE "public"."terceros"
+  ADD CONSTRAINT "terceros_fk8" FOREIGN KEY ("tipo_nacionalidad")
+    REFERENCES "public"."nacionalidad"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;

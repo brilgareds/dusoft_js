@@ -34,6 +34,89 @@ TercerosModel.prototype.obtenerGeneros = function(parametros, callback) {
     
 };
 
+TercerosModel.prototype.obtenerTiposDocumentos = function(parametros, callback) {
+    var columns = [
+        "a.tipo_id_tercero",
+        "a.descripcion"
+    ];
+    
+    G.knex.column(columns).
+    from("tipo_id_terceros as a").
+    orderBy("a.indice_de_orden", "desc")
+    .then(function(tiposDocumentos){
+        callback(false, tiposDocumentos);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+
+};
+
+TercerosModel.prototype.obtenerTiposEstoCivil = function(parametros, callback) {
+    var columns = [
+        "a.tipo_estado_civil_id",
+        "a.descripcion"
+    ];
+    
+    G.knex.column(columns).
+    from("tipo_estado_civil as a").
+    orderBy("a.indice_de_orden", "desc")
+    .then(function(tiposDocumentos){
+        callback(false, tiposDocumentos);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+
+};
+
+TercerosModel.prototype.obtenerTiposNacionalidad = function(parametros, callback) {
+    var columns = [
+        "a.id",
+        "a.descripcion"
+    ];
+    
+    G.knex.column(columns).
+    from("nacionalidad as a")
+    .then(function(tiposNacionalidad){
+        callback(false, tiposNacionalidads);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+
+};
+
+TercerosModel.prototype.obtenerTiposDireccion = function(parametros, callback) {
+    var columns = [
+        "a.id",
+        "a.descripcion"
+    ];
+    
+    G.knex.column(columns).
+    from("tipo_direccion as a")
+    .then(function(tipoDireccion){
+        callback(false, tipoDireccion);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+
+};
+
+TercerosModel.prototype.obtenerTiposTelefono = function(parametros, callback) {
+    var columns = [
+        "a.id",
+        "a.descripcion"
+    ];
+    
+    G.knex.column(columns).
+    from("tipos_telefono as a")
+    .then(function(tiposTelefono){
+        callback(false, tiposTelefono);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+
+};
+
+
 
 TercerosModel.prototype.obtenterClientePorId = function(parametros, callback) {
 

@@ -6,18 +6,7 @@ var DispensacionHc = function(m_dispensacion_hc, eventos_dispensacion, m_usuario
     this.m_usuarios = m_usuarios;
     this.e_dispensacion_hc = e_dispensacion_hc;
     
-    /*var formato = 'YYYY-MM-DD';
-    var fechaEntrega = G.moment("2017-01-01").add(30, 'day').format(formato);
-    console.log("fechaEntrega ", fechaEntrega);
-     __sumarDiasHabiles(this,fechaEntrega,3,function(resultado){
-          
-     })*/
-   /* __calcularMaximaFechaEntregaFormula({fecha_base:fechaEntrega,dias_vigencia:3}, function(resultado){
-        
-        console.log("resultado [__calcularMaximaFechaEntregaFormula]: ", resultado)
-        
-    });*/
-  //  this.m_pedidos_clientes_log = m_pedidos_clientes_log;
+   
 };
 
 /*
@@ -540,10 +529,11 @@ G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimoRegistroDispensacion', parame
  * @author Cristian Ardila
  * @fecha 24/05/2016
  * +Descripcion Controlador encargado de consultar si el usuario cuenta con 
- *              privilegios para generar la accion
+ *              privilegios para autorizar los medicamentos confrontados
  *              
  */
 DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
+   
     
     var that = this;
     var args = req.body.data;
@@ -564,21 +554,29 @@ DispensacionHc.prototype.usuarioPrivilegios = function(req, res){
         return;
     }
     
-    var parametros={empresa: args.existenciasBodegas.empresa,
-                    centroUtilidad:args.existenciasBodegas.centroUtilidad, 
-                    bodega:args.existenciasBodegas.bodega,
-                    usuario:usuario              
+    var parametros={empresa_id: args.existenciasBodegas.empresa,
+                    usuario_id:usuario,
+                    modulos:['dispensar_formulas'], 
+                    convertirJSON:true,
+                    limpiarCache:true,
+                    guardarResultadoEnCache:false
                     };
-                    
- G.Q.ninvoke(that.m_dispensacion_hc,'usuarioPrivilegios', parametros).then(function(resultado){
         
-       if(resultado && resultado.length > 0){ 
-           res.send(G.utils.r(req.url, 'Usuario con privilegios de autorizar dispensacion', 200, {privilegios:resultado}));
-       }else{
-           throw "Consulta sin resultado";
-       }
+    G.Q.ninvoke(that.m_usuarios, "obtenerParametrizacionUsuario", parametros).then(function(parametrizacion){
+        
+        
+       var opciones = (parametrizacion.modulosJson && parametrizacion.modulosJson.dispensar_formulas) ? parametrizacion.modulosJson.dispensar_formulas.opciones : undefined;
+        
+        if(opciones){
 
-}).fail(function(err){      
+            res.send(G.utils.r(req.url, 'Usuario con privilegios de autorizar dispensacion', 200, {privilegios:opciones}));
+
+        } else {
+
+            throw "Consulta sin resultado";
+        }
+   
+    }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -915,12 +913,13 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
     var parametrosGenerarDispensacion={evolucionId:evolucionId, tipoFormula:tipoFormula.tipo,usuario: usuario}
     var def = G.Q.defer();           
     var numeroFormula;
-      
+    var tipoFormulaEvolucion;
     that.e_dispensacion_hc.onNotificarTodoPendienteFormula({dispensacion: ''},'Guardando pendientes...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'})); 
     
       G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
            numeroFormula = resultado[0].formula_id;
+           tipoFormulaEvolucion = resultado[0].tipo_formula;
            /**
             * +Descripcion Se valida antes de dejar la formula con todo los productos pendientes, que no existan productos
             *              en la tabla de temporales
@@ -960,7 +959,7 @@ DispensacionHc.prototype.guardarTodoPendiente = function(req, res){
              
     }).then(function(resultado){ 
                             
-        if(resultado[0].numeroentrega === 0 && resultado[0].sw_pendiente === 2){
+        if(resultado[0].numeroentrega === 0 && resultado[0].sw_pendiente === 2 || tipoFormulaEvolucion === '0'){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
                      
@@ -1090,7 +1089,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     var fechaMinima;
     var actualizarFechaUltimaEntrega;
     var def = G.Q.defer();
-              
+    var tipoFormulaEvolucion;         
     var parametrosReformular = {variable: variable,terminoBusqueda: evolucionId,
                                 filtro: {tipo:'EV'},empresa: empresa,bodega: bodega,
                                 observacion: observacion,tipoVariable : 0,usuarioId : usuario};
@@ -1103,7 +1102,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
     G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
          
         numeroFormula = resultado[0].formula_id;
-        
+        tipoFormulaEvolucion = resultado[0].tipo_formula;
         return G.Q.ninvoke(that.m_dispensacion_hc,'listarFormulas',parametrosReformular);
         
     }).then(function(resultado){
@@ -1251,7 +1250,7 @@ DispensacionHc.prototype.realizarEntregaFormula = function(req, res){
         
     }).then(function(resultado){ 
        
-        if(resultado[0].numeroentrega === 1){
+        if(resultado[0].numeroentrega === 1 || tipoFormulaEvolucion === '0'){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
             def.resolve();             
@@ -1563,11 +1562,13 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
     var bodegasDocTodoPendiente;                           
     that.e_dispensacion_hc.onNotificarEntregaFormula({dispensacion: ''},'Dispensacion en proceso...', 201,usuario);          
     res.send(G.utils.r(req.url, 'Generando reportes...', 201, {dispensacion: 'pendiente'}));  
-    
+    var tipoFormulaEvolucion;
+   
    G.Q.ninvoke(that.m_dispensacion_hc,'consultarNumeroFormula',{evolucionId:evolucionId}).then(function(resultado){
         
         numeroFormula = resultado[0].formula_id;
-      
+        tipoFormulaEvolucion = resultado[0].tipo_formula;
+        
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarProductosTodoPendiente',{evolucionId:evolucionId, estado: 1})
               
                
@@ -1726,7 +1727,7 @@ DispensacionHc.prototype.realizarEntregaFormulaPendientes = function(req, res){
         return G.Q.ninvoke(that.m_dispensacion_hc,'consultarUltimaEntregaFormula',{evolucion:evolucionId,numeroEntregaActual:1});   
     }).then(function(resultado){ 
          
-         if(resultado[0].numeroentrega === 1 && resultado[0].sw_pendiente === 2){
+         if(resultado[0].numeroentrega === 1 && resultado[0].sw_pendiente === 2 || tipoFormulaEvolucion === '0'){
             return G.Q.ninvoke(that.m_dispensacion_hc,'actualizarTipoFormula',{evolucionId:evolucionId, tipoFormula:tipoFormula.tipo});  
         }else{
             def.resolve();

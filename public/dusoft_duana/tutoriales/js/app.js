@@ -29,7 +29,9 @@ define([
     "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",    
     "webNotification",
-    "controllers/tutorialesController"
+    "models/TutorialH",
+    "controllers/tutorialesController",
+    "services/tutorialesService",
 ], function(angular) { 
 
         /* App Module and its dependencies */

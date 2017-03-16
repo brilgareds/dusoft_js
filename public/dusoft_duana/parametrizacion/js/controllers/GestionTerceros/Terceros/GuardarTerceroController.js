@@ -5,10 +5,10 @@ define(["angular",
     controllers.controller('GuardarTerceroController', [
         '$scope', '$rootScope', 'Request',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", "$modal",
+        '$state', "Usuario", "localStorageService", "$modal","GestionTercerosService",
         function($scope, $rootScope, Request,
                  API, socket, AlertService, 
-                 $state, Usuario, localStorageService, $modal) {
+                 $state, Usuario, localStorageService, $modal, GestionTercerosService) {
                      
             var self = this;
             
@@ -42,9 +42,14 @@ define(["angular",
             
             
             $scope.root.tipoNaturaleza =  $scope.root.tiposNaturaleza[0];
+           
             
-            var self = this;
-            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Handler de los tabs del formulario de clientes, es tambien llamado por el boton siguiente
+            * @params obj: {tab}
+            * @fecha 2017-03-15
+            */
             $scope.onTabChange = function(tab){
                 $scope.root.tabActual = tab;
                 
@@ -57,6 +62,11 @@ define(["angular",
                 }                
             };
             
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de siguiente
+            * @fecha 2017-03-15
+            */
             $scope.onBtnSiguiente = function(){
                 $scope.root.tabActual++;
                 $scope.onTabChange($scope.root.tabActual);
@@ -66,9 +76,18 @@ define(["angular",
                 console.log("tipo naturaleza ", $scope.root.tipoNaturaleza);
             };
             
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton de cancelar
+            * @fecha 2017-03-15
+            */
             $scope.onBtnCancelar = function(){
                 $state.go("Terceros");
             };
+            
+            GestionTercerosService.obtenerParametrizacionTerceros({},function(){
+                
+            });
             
 
         }]);

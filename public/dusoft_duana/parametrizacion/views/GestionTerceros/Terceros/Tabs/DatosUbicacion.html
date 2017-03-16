@@ -181,7 +181,7 @@
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tipoTelefono"  
                        theme="select2" 
-                       class="form-control selectgeneral pull-left" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-13" 
                        ng-change="onCambiarNaturaleza()">
                 <ui-select-match  placeholder="Tipo teléfono"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                 <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
@@ -231,7 +231,7 @@
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tipoCorreo"  
                        theme="select2" 
-                       class="form-control selectgeneral pull-left" 
+                       class="form-control selectgeneral pull-left ui-select-z-index-12" 
                        ng-change="onCambiarNaturaleza()">
                 <ui-select-match  placeholder="Tipo correo"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                 <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">

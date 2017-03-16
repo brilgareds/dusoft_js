@@ -4,7 +4,8 @@ define(["angular",
     "controllers/GestionTerceros/Terceros/ListaTercerosController",
     "controllers/GestionTerceros/Proveedores/ListaProveedoresController",
     "controllers/GestionTerceros/Clientes/ListaClientesController",
-    "controllers/GestionTerceros/Terceros/GuardarTerceroController"], function(angular, controllers) {
+    "controllers/GestionTerceros/Terceros/GuardarTerceroController",
+    "services/GestionTerceros/GestionTercerosService"], function(angular, controllers) {
 
     controllers.controller('TercerosController', [
         '$scope', '$rootScope', 'Request',

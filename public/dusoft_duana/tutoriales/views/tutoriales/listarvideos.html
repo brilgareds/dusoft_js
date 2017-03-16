@@ -1,23 +1,60 @@
 
- 
+<div class="input-group col-sm-12 col-md-12 col-lg-12">                       
+                     
+</div>
+
+
+<br>
 
 <div class ="row">
+     
+      
+     
+    
         
-             
-         <div class="table-responsive" style="clear:both; width: 768; height: 1024px;">
+         
+        </div>
+     <br>
+   
+    <!-- <div ng-if="root.estadoFormula == 0"> //-->
+         
+         <div class="table-responsive" style="clear:both; height: 1024px;">
             <div class="defaultGrid grid-responsive" ng-grid="listaTutoriales" ></div>
         </div>
-
+       
+   <!--  </div> 
+   
+     <div ng-if="root.estadoFormula == 1">
+         
+         <div class="table-responsive" style="clear:both; width: 768; height: 1024px;">
+            <div class="defaultGrid grid-responsive" ng-grid="listaFormulasPendientes" ></div>
+        </div>
+         
+     </div> //-->
+     
+     
      
     </br>
-  <!--  <div class="row text-center">
+    <div class="row text-center">
         <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
             <span class="glyphicon glyphicon-chevron-left" ></span>
         </button>
         <button type="button" class="btn btn-default btn-medium" ng-disabled="root.items <25" ng-click="paginaSiguiente()">
             <span class="glyphicon glyphicon-chevron-right" ></span>
         </button>
-    </div> //-->
-      
-        </div>
+    </div>
+ 
+ 
   
+                     <!-- <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                          {{tipoDocumento.nombre}} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="tipoDocumento in filtrosTipoDocumento">
+                                <a href="javascript:void(0)" ng-click="onSeleccionTipoDocumento(tipoDocumento)">
+                                    {{tipoDocumento.nombre}}
+                                </a>
+                            </li>
+                        </ul>   //-->
+ 
+ 

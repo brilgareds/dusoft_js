@@ -12,26 +12,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         var fecha_actual = new Date();
 
         $scope.root = {
-            termino_busqueda_proveedores: "",
-            fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-            fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),                 
+                
             empresaSeleccionada: '',
             termino_busqueda:'',
-            estadoSesion: true,
-            items:0,
-            afiliados:[],
-            estadoBotones : [
-                "btn btn-danger btn-xs",
-                "btn btn-primary btn-xs",
-                "btn btn-danger btn-xs",
-                "btn btn-info btn-xs",
-                "btn btn-warning btn-xs",
-                "btn btn-success btn-xs",
-                "btn btn-warning btn-xs"
-            ],
+           
             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
         }; 
-
+        
+        $scope.root.filtros = [                
+                    {tipo: '-1',descripcion: "Seleccionar"},
+                    {tipo: '0',descripcion: "#Categoria"},
+                    {tipo: '1',descripcion: "Descripcion"} 
+                  ];
+                 
+        $scope.root.filtro = $scope.root.filtros[0]; 
+        
+         $scope.onSeleccionFiltro = function(filtro){
+                      
+                    $scope.root.filtro = filtro;
+                    $scope.root.termino_busqueda = '';
+                };
 
         that.cargar_permisos = function() {
         // Permisos ajustes formula              
@@ -43,6 +43,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         };
 
         
+        $scope.buscarVideo = function(event){
+            
+             if (event.which === 13 || event.which === 1){     
+                                    
+                    that.listarVideoTutoriales();                         
+                 
+            }
+            
+        };
         /**
          * +Descripcion Metodo encargado de invocar el servicio
          *              que consultara los tutoriales
@@ -54,7 +63,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 session: $scope.session,
                 data: {
                    lista_video_tutoriales: {
-                        tag:''                       
+                        filtro:$scope.root.filtro,
+                        termino_busqueda: $scope.root.termino_busqueda                       
                    }
                }    
             };  
@@ -82,20 +92,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             enableHighlighting: true,
             columnDefs: [
                 {field: 'getTag()', displayName: '# Tag', width:"7%"}, 
-                {field: 'getTipo()', displayName: 'Tipo', width:"7%"}, 
+                {field: 'getTipo()', displayName: 'Tipos', width:"7%"}, 
                 {field: 'getTitulo()', displayName: 'Titulo', width:"20%"}, 
                 {field: 'getDescripcion()', displayName: 'Descripcion'}, 
                 {field: 'getFecha()', displayName: 'Fecha', width:"20%"}, 
                 {displayName: "Opc", width:"7%", cellClass: "txt-center dropdown-button",
-                    cellTemplate: '<div class="btn-group">\
-                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
-                                        <ul class="dropdown-menu dropdown-options">\
-                                            <li >\n\
-                                                <a href="javascript:void(0);" ng-click="ventanaVisualizarVideo(row.entity)" class= "glyphicon glyphicon-facetime-video"> Video </a>\
-                                            </li>\
-                                        </ul>\
-                                    </div>'
-                },
+                    cellTemplate: '<button class="btn btn-default btn-xs dropdown-toggle" ng-click="ventanaVisualizarVideo(row.entity)"  ><div class = "glyphicon glyphicon-facetime-video"></div></button>'},
             ]               
         };
         
@@ -127,8 +129,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                     backdrop: 'static',
-                    //windowClass: 'app-modal-window-xlg',
+                    backdrop: 'static',
                     controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {

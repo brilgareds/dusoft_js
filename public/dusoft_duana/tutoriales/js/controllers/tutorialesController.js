@@ -17,6 +17,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             termino_busqueda:'',
            
             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
+            items:0
         }; 
         
         $scope.root.filtros = [                
@@ -64,7 +65,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 data: {
                    lista_video_tutoriales: {
                         filtro:$scope.root.filtro,
-                        termino_busqueda: $scope.root.termino_busqueda                       
+                        termino_busqueda: $scope.root.termino_busqueda,
+                        paginaActual:$scope.paginaactual
                    }
                }    
             };  
@@ -72,7 +74,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             tutorialesService.listarVideoTutoriales(obj,function(data){
                 
                 if(data.status === 200){
-                    
+                   $scope.root.items = data.obj.lista_video_tutoriales.length;    
                    $scope.tutoriales = tutorialesService.renderlListarVideoTutoriales(data.obj.lista_video_tutoriales);
                     
                 }else{
@@ -145,6 +147,26 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         };
         
        
+       /*
+        * funcion para paginar anterior
+        * @returns {lista datos}
+        */
+        $scope.paginaAnterior = function() {
+           if ($scope.paginaactual === 1)
+               return;
+           $scope.paginaactual--;
+           that.listarVideoTutoriales();
+        };
+
+
+        /*
+         * funcion para paginar siguiente
+         * @returns {lista datos}
+         */
+        $scope.paginaSiguiente = function() {
+            $scope.paginaactual++;
+            that.listarVideoTutoriales();
+        };
         /*
          * Inicializacion de variables
          * @param {type} empresa

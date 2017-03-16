@@ -27,6 +27,11 @@ Tutoriales.prototype.listarVideos = function(req, res){
         return;
     }
     
+    if (args.lista_video_tutoriales.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
+        return;
+    }
+    
     if(!args.lista_video_tutoriales.filtro || args.lista_video_tutoriales.filtro  === ''){
         
         res.send(G.utils.r(req.url, 'Debe diligenciar  la busqueda', 404, {lista_video_tutoriales: []}));
@@ -34,8 +39,9 @@ Tutoriales.prototype.listarVideos = function(req, res){
     }
      
     var parametros = {filtro: args.lista_video_tutoriales.filtro,
-                    termino_busqueda: args.lista_video_tutoriales.termino_busqueda};
-                 
+                    termino_busqueda: args.lista_video_tutoriales.termino_busqueda,
+                    pagina_actual: args.lista_video_tutoriales.paginaActual};
+         console.log("parametros ", parametros)        
     G.Q.ninvoke(that.m_tutoriales, "listarVideos",parametros).then(function(resultado){
 
         if(resultado.length > 0){

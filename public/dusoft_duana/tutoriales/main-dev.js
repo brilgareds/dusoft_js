@@ -23,14 +23,16 @@ requirejs.config({
         socketservice:"../includes/socket/socket",        
         uiselect2: "../../javascripts/select",
         bootstrapLib:"../../javascripts/bootstrap/bootstrap.min",
-        //uiselect2:"../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
         dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone",
         fileupload:"../../javascripts/fileupload/fileupload",
         desktopNotify:"../../javascripts/notifications/desktop-notify-min",
         webNotification:"../../javascripts/notifications/angular-web-notification",
-        
+        sanitize:"../../javascripts/angular/angular-sanitize",
+        videogular: "../../javascripts/angular/videogular",
+        vgcontrols: "../../javascripts/angular/vg-controls"
+       
 
     },
     shim: {
@@ -89,7 +91,19 @@ requirejs.config({
         },
         "webNotification":{
             deps:["desktopNotify"]
+        },
+        
+        "sanitize":{
+            deps:["angular"],
+            exports: "sanitize"
+        },
+        "videogular":{
+            deps:["sanitize"]
+        },
+        "vgcontrols":{
+            deps:["videogular"]
         }
+        
     }
 });
  

@@ -16,6 +16,10 @@ define([
     'storage',
     "httpinterceptor",
     "dragndropfile",
+    //Nuevas dependencias
+    "sanitize",
+    "videogular",
+    "vgcontrols",
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
     "includes/validation/ValidacionNumeroDecimal",
@@ -48,6 +52,7 @@ define([
         'LocalStorageModule',
         'flow',
         'angular-web-notification'
+         
     ]);
 
     tutoriales.urlRouterProvider;

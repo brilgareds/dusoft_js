@@ -9,13 +9,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         var that = this;
         $scope.paginaactual = 1;
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());              
-        var fecha_actual = new Date();
-
         $scope.root = {
-                
-            empresaSeleccionada: '',
-            termino_busqueda:'',
-           
+            termino_busqueda:'',          
             opciones: Usuario.getUsuarioActual().getModuloActual().opciones,
             items:0
         }; 
@@ -113,7 +108,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea eliminar el producto?</h4>\
+                                    <h4 class="modal-title">{{tutorialEntity.getTag()}}</h4>\
                                 </div>\
                                 <div align="center" class="embed-responsive embed-responsive-16by9">\
                                     <video autoplay loop class="embed-responsive-item" controls>\
@@ -125,10 +120,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     <h5> {{ tutorialEntity.getTitulo() }}</h5>\
                                     <h4>Descripcion.</h4>\
                                     <h5> {{ tutorialEntity.getDescripcion() }} </h5>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
-                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
                     backdrop: 'static',

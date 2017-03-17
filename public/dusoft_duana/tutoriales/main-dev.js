@@ -29,17 +29,17 @@ requirejs.config({
         fileupload:"../../javascripts/fileupload/fileupload",
         desktopNotify:"../../javascripts/notifications/desktop-notify-min",
         webNotification:"../../javascripts/notifications/angular-web-notification",
-        sanitize:"../../javascripts/angular/angular-sanitize",
+        sanitize:"../../javascripts/angular/angular-sanitize.min",
         videogular: "../../javascripts/angular/videogular",
-        vgcontrols: "../../javascripts/angular/vg-controls"
-       
+        vgcontrols: "../../javascripts/angular/vg-controls"       
 
     },
     shim: {
         "angular": {
             deps:["jquery", "tree"],
             exports: "angular"
-        },
+        },       
+       
         "route": {
             deps: ["angular"]
         },
@@ -92,10 +92,8 @@ requirejs.config({
         "webNotification":{
             deps:["desktopNotify"]
         },
-        
         "sanitize":{
-            deps:["angular"],
-            exports: "sanitize"
+            deps:["angular"]
         },
         "videogular":{
             deps:["sanitize"]

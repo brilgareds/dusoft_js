@@ -98,43 +98,30 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             ]               
         };
         
-        $scope.ventanaVisualizarVideo = function(entity){
+        $scope.ventanaVisualizarVideo = function(entityTutorial){
              
-             $scope.tutorialEntity = entity;
-           
-             $scope.opts = {
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">{{tutorialEntity.getTag()}}</h4>\
-                                </div>\
-                                <div align="center" class="embed-responsive embed-responsive-16by9">\
-                                    <video autoplay loop class="embed-responsive-item" controls>\
-                                        <source src='+API.PATH_URL_VIDEO+""+entity.getPath()+' type="video/mp4">\
-                                    </video>\
-                                </div>\
-                                    <div class="modal-body">\
-                                    <h4>Titulo</h4>\
-                                    <h5> {{ tutorialEntity.getTitulo() }}</h5>\
-                                    <h4>Descripcion.</h4>\
-                                    <h5> {{ tutorialEntity.getDescripcion() }} </h5>\
-                                </div>',
-                    scope: $scope,
-                    backdrop: 'static',
-                    controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
+             $scope.tutorialEntity = entityTutorial;
+             
+            $scope.opts = {
+                backdrop: 'static',
+                backdropClick: true,
+                dialogFade: true,
+                keyboard: true,
+                templateUrl: 'views/tutoriales/tutorialesvideo.html',
+                scope: $scope,                  
+                controller: "tutorialesVideoController",
+                
+                resolve: {
+                   urlTutorial: function() {
+                        return API.PATH_URL_VIDEO+""+entityTutorial.getPath();
+                    },
 
-                        $scope.confirmar = function() {
-                            $scope.eliminar_producto();
-                            $modalInstance.close();
-                        };
-                        $scope.close = function() {
-                            $modalInstance.close();
-                        };
-                    }]
-                };
-                var modalInstance = $modal.open($scope.opts);
+                }
+                                   
+            };
+            var modalInstance = $modal.open($scope.opts);             
+                modalInstance.result.then(function(){
+                },function(){});                                    
         };
         
        

@@ -3,7 +3,7 @@ var TutorialesModel = function() {};
 
 TutorialesModel.prototype.listarVideos = function(obj, callback){
  
-    G.knex.column('id','tag', 'titulo', 'descripcion', 'path', 'fecha_registro', G.knex.raw("CASE WHEN tipo = 0 THEN 'Video' ELSE 'Tutorial' END as tipo"))
+    G.knex.column('id','tag', 'titulo', 'descripcion', 'path', G.knex.raw("TO_CHAR(fecha_registro,'YYYY-MM-DD') as fecha_registro") , G.knex.raw("CASE WHEN tipo = 0 THEN 'Video' ELSE 'Tutorial' END as tipo"))
     .select()
     .from('tutoriales')
     .where(function() {       

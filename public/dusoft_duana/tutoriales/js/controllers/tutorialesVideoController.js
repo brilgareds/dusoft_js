@@ -24,19 +24,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 ],
                 theme: {
 
-                    url: "http://localhost:3000/Tutoriales/styles/themes/default/videogular.css?c=dusoft"
+                    url: "../../../../stylesheets/videoTutoriales/videogular.css"
                 }
-            };
-            
+            };            
             $scope.close = function(){
                 $modalInstance.close();
             
             }
-
-        }
-        
-        
-        
+        }                        
     ])
 
 });

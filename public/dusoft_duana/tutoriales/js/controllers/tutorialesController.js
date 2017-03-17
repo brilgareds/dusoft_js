@@ -30,10 +30,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
 
         that.cargar_permisos = function() {
-        // Permisos ajustes formula              
+        // Permisos               
             $scope.root.permisos_ajustes = {
-                btn_ajustar_entrega_formula: {
-                    'click': $scope.root.opciones.sw_ajustar_entrega_formula
+                btn_permisos_reproduccion_videos: {
+                    'click': ''//$scope.root.opciones.sw_ajustar_entrega_formula
                 }
             };                
         };
@@ -166,16 +166,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         that.init(empresa, function() {
 
             if(!Usuario.getUsuarioActual().getEmpresa()) {
-                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para dispensar formulas", tipo:"warning"});
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para  ver tutoriales", tipo:"warning"});
                 AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa");
             }else{                               
                 if(!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() ||
                     Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado() === undefined) {
-                    $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para dispensar formulas.", tipo:"warning"});
+                    $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para  ver tutoriales.", tipo:"warning"});
                     AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad");
                 }else{
                     if (!Usuario.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
-                        $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para dispensar formulas.", tipo:"warning"});
+                        $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para  ver tutoriales.", tipo:"warning"});
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     }else{                                
                         that.listarVideoTutoriales();
@@ -184,9 +184,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
             }                                           
         });
-
-
-
+ 
         $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
             $scope.$$watchers = null;
             $scope.root=null;

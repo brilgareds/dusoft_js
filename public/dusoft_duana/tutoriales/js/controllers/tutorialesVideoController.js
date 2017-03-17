@@ -1,10 +1,10 @@
 define(["angular", "js/controllers"], function (angular, controllers) {
 
-    controllers.controller('tutorialesVideoController',['$scope', '$rootScope', 'AlertService', 'Usuario', "$timeout",
-            "$filter", "localStorageService",
-            "$state", "$modalInstance",
-            "socket",
-            "API", "urlTutorial", "$sce",
+    controllers.controller('tutorialesVideoController', ['$scope', '$rootScope', 'AlertService', 'Usuario', "$timeout",
+        "$filter", "localStorageService",
+        "$state", "$modalInstance",
+        "socket",
+        "API", "urlTutorial", "$sce",
         function ($scope, $rootScope, AlertService, Usuario, $timeout,
                 $filter, localStorageService, $state, $modalInstance, socket, API, urlTutorial, $sce) {
 
@@ -26,12 +26,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     url: "../../../../stylesheets/videoTutoriales/videogular.css"
                 }
-            };            
-            $scope.close = function(){
+            };
+            $scope.close = function () {
                 $modalInstance.close();
-            
+
             }
-        }                        
-    ])
+
+
+            $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+                $scope.$$watchers = null;
+                $scope.root = null;
+            });
+
+        }
+ 
+    ]);
 
 });

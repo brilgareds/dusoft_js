@@ -24,7 +24,11 @@ define(["angular",
                         descripcion:"Juridica"
                     }
                 ],
-                tabs: [false, false, false]
+                tabs: [false, false, false],
+                session : {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                }
             };
             
             $scope.listaContactos = {
@@ -43,6 +47,27 @@ define(["angular",
             
             $scope.root.tipoNaturaleza =  $scope.root.tiposNaturaleza[0];
            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Permite obtener los parametros de los dropdown
+            * @fecha 2017-03-17
+            */
+            self.gestionarParametrosTerceros = function(){
+                
+                var parametros = {
+                    session:$scope.root.session,
+                    data:{}
+                };
+                
+                GestionTercerosService.obtenerParametrizacionTerceros(parametros,function(){
+                
+                });
+                
+                GestionTercerosService.obtenerPaises(parametros,function(){
+                
+                });
+  
+            };
             
             /**
             * @author Eduar Garcia
@@ -85,9 +110,7 @@ define(["angular",
                 $state.go("Terceros");
             };
             
-            GestionTercerosService.obtenerParametrizacionTerceros({},function(){
-                
-            });
+            self.gestionarParametrosTerceros();
             
 
         }]);

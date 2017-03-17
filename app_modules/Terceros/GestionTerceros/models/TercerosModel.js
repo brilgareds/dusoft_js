@@ -45,6 +45,14 @@ TercerosModel.prototype.obtenerParametrizacionFormularioTerceros = function(para
         
     }).then(function(tiposContacto){
         datos.tiposContacto = tiposContacto;
+        return G.Q.ninvoke(that,'obtenerTiposOrganizacion', parametros);
+        
+    }).then(function(tiposOrganizacion){
+        datos.tiposOrganizacion = tiposOrganizacion;
+        return G.Q.ninvoke(that,'obtenerNomenclaturasDireccion', parametros);
+        
+    }).then(function(nomenclaturasDireccion){
+        datos.nomenclaturasDireccion = nomenclaturasDireccion;
         callback(false, datos);
         
     }).fail(function(err) {
@@ -258,6 +266,27 @@ TercerosModel.prototype.obtenerTiposRedSocial = function(parametros, callback) {
 
 /**
 * @author Eduar Garcia
+* +Descripcion: Obtiene los tipos de organizacion disponibles
+* @params obj: {params, callback}
+* @fecha 2017-03-17
+*/
+TercerosModel.prototype.obtenerTiposOrganizacion = function(parametros, callback) {
+    var columns = [
+        "a.id",
+        "a.descripcion"
+    ];
+    
+    G.knex.column(columns).
+    from("tipo_organizacion as a").then(function(tiposCorreo){
+        callback(false, tiposCorreo);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+
+};
+
+/**
+* @author Eduar Garcia
 * +Descripcion: Obtiene los tipos de contacto disponibles
 * @params obj: {params, callback}
 * @fecha 2017-03-16
@@ -270,6 +299,28 @@ TercerosModel.prototype.obtenerTiposContacto = function(parametros, callback) {
     
     G.knex.column(columns).
     from("tipo_contacto as a").then(function(tiposContacto){
+        callback(false, tiposContacto);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+
+};
+
+/**
+* @author Eduar Garcia
+* +Descripcion: Obtiene las nomenclaturas de direcciones disponibles
+* @params obj: {params, callback}
+* @fecha 2017-03-17
+*/
+TercerosModel.prototype.obtenerNomenclaturasDireccion = function(parametros, callback) {
+    var columns = [
+        "a.id",
+        "a.descripcion",
+        "a.codigo"
+    ];
+    
+    G.knex.column(columns).
+    from("nomenclatura_direccion as a").then(function(tiposContacto){
         callback(false, tiposContacto);
     }).catch(function(error){
         callback(error);

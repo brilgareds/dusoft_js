@@ -3,7 +3,7 @@ var Terceros = function(terceros) {
 
     console.log("Modulo Terceros  Cargado ");
 
-    this.m_terceros = terceros;
+    this.mTerceros = terceros;
 };
 
 
@@ -19,10 +19,27 @@ Terceros.prototype.obtenerParametrizacionFormularioTerceros = function(req, res)
 
     var args = req.body.data;
 
-    if (args.terceros === undefined || args.terceros.empresa_id === undefined) {
+    /*if (args.terceros === undefined || args.terceros.empresa_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id  no están definidas.', 404, {}));
         return;
-    }
+    }*/
+    G.Q.ninvoke(that.mTerceros,'obtenerParametrizacionFormularioTerceros', args).then(function(resultado) {
+        res.send(G.utils.r(req.url, 'Parametrizacion del formulario de terceros', 200, {parametrizacion: resultado}));
+      
+    }).fail(function(err) {
+        
+        var msj = err;
+        var status = 500;
+        
+        if(err.status){
+            status = err.status;
+            msj = err.msj;
+        }
+        
+        
+        res.send(G.utils.r(req.url, msj , status, {}));
+    }).done();
+    
 
     
 };

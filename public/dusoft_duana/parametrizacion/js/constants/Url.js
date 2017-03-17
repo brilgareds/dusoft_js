@@ -8,6 +8,9 @@
 
     var data = {
 	  'API': {
+            'UBICACION' :{
+                'LISTAR_PAISES' : BASE_URL+"/Paises/listarPaises"
+            }, 
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",
 	    	'CREAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/crear",

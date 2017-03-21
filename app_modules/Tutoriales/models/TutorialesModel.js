@@ -8,7 +8,7 @@ TutorialesModel.prototype.listarVideos = function(obj, callback){
     .from('tutoriales')
     .where(function() {       
         if (obj.filtro.tipo === '0') {
-            this.where(G.knex.raw("tag"), G.constants.db().LIKE, "%#" + obj.termino_busqueda + "%");
+            this.where(G.knex.raw("tag"), G.constants.db().LIKE, "%" + obj.termino_busqueda + "%");
         }
 
         if (obj.filtro.tipo === '1') {

@@ -93,7 +93,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 {field: 'getTitulo()', displayName: 'Titulo', width:"20%"}, 
                 {field: 'getDescripcion()', displayName: 'Descripcion'}, 
                 {field: 'getFecha()', displayName: 'Fecha', width:"20%"}, 
-                {displayName: "Opc", width:"7%", cellClass: "txt-center dropdown-button",
+                {displayName: "Opcion", width:"7%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<button class="btn btn-default btn-xs dropdown-toggle" ng-click="ventanaVisualizarVideo(row.entity)"  ><div class = "glyphicon glyphicon-facetime-video"></div></button>'},
             ]               
         };

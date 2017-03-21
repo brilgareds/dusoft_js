@@ -22,6 +22,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.tipoDocumento = null;
             this.estadoCivil = null;
             this.nacionalidad = null;
+            this.tipoOrganizacion = null;
         };
         
         //Operaciones Get de parámetros iniciales de creación de Tercero

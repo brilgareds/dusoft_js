@@ -39,7 +39,8 @@ define(["angular",
                     tiposDocumentos:[],
                     tiposEstadoCivil:[],
                     tiposNacionalidad:[],
-                    tiposOrganizacion:[]
+                    tiposOrganizacion:[],
+                    tiposDireccion:[]
                 },
                 session : {
                     usuario_id: Usuario.getUsuarioActual().getId(),

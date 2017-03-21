@@ -18,14 +18,14 @@
     <div class="col-md-4" >
         <label class="control-label">Pais</label>
         <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.pais"  
+            <ui-select ng-model="root.tercero.pais"  
                        theme="select2" 
                        class="form-control selectgeneral pull-left ui-select-z-index-12" 
                        append-to-body = "true"
-                       ng-change="onCambiarNaturaleza()">
+                       ng-change="onSeleccionarPais()">
                 <ui-select-match  placeholder="Pais"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="pais in  root.parametros.paises | filter:$select.search">
+                    <span ng-bind="pais.getDescripcion()"></span>
                 </ui-select-choices>
             </ui-select>  
         </p>
@@ -34,14 +34,14 @@
     <div class="col-md-4">
         <label class="control-label">Departamento</label>
         <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.departamento"  
+            <ui-select ng-model="root.tercero.pais.departamentoSeleccionado"  
                        theme="select2" 
                        class="form-control selectgeneral pull-left ui-select-z-index-11" 
                        append-to-body = "true"
-                       ng-change="onCambiarNaturaleza()">
+                       ng-change="onSeleccionarDepartamento()">
                 <ui-select-match  placeholder="Departamento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                <ui-select-choices refresh-delay="0" repeat="departamento in  root.tercero.getPais().getDepartamentos() | filter:$select.search">
+                    <span ng-bind="departamento.getDescripcion()"></span>
                 </ui-select-choices>
             </ui-select>  
         </p>
@@ -55,14 +55,13 @@
     <div class="col-md-4">
         <label class="control-label">Ciudad</label>
         <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.ciudad"  
+            <ui-select ng-model="root.tercero.pais.departamentoSeleccionado.ciudadSeleccionada"  
                        theme="select2" 
                        class="form-control selectgeneral pull-left ui-select-z-index-15" 
-                       append-to-body = "true"
-                       ng-change="onCambiarNaturaleza()">
+                       append-to-body = "true">
                 <ui-select-match  placeholder="Ciudad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in  root.tercero.pais.departamentoSeleccionado.ciudades | filter:$select.search">
+                    <span ng-bind="ciudad.getDescripcion()"></span>
                 </ui-select-choices>
             </ui-select>  
         </p>

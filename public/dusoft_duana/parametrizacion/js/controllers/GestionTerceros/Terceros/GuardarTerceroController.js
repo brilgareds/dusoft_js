@@ -14,6 +14,9 @@ define(["angular",
     'includes/classes/GestionTerceros/Terceros/TipoRedSocial',
     'includes/classes/GestionTerceros/Terceros/Contacto',
     'includes/classes/GestionTerceros/Terceros/TipoContacto',
+    'includes/classes/GestionTerceros/Terceros/Pais',
+    'includes/classes/GestionTerceros/Terceros/Departamento',
+    'includes/classes/GestionTerceros/Terceros/Ciudad',
     'includes/classes/Tercero'], function(angular, controllers) {
 
     controllers.controller('GuardarTerceroController', [
@@ -22,13 +25,13 @@ define(["angular",
         '$state', "Usuario", "localStorageService", "$modal","GestionTercerosService",
         'Genero', 'Tercero', 'TipoDocumento', 'EstadoCivil','TipoNacionalidad','TipoOrganizacion',
         'TipoDireccion','NomenclaturaDireccion','TipoTelefono','TipoLineaTelefonica','TipoCorreo',
-        'TipoRedSocial','TipoContacto','Contacto',
+        'TipoRedSocial','TipoContacto','Contacto','Pais','Departamento','Ciudad',
         function($scope, $rootScope, Request,
                  API, socket, AlertService, 
                  $state, Usuario, localStorageService, $modal, GestionTercerosService,
                  Genero, Tercero, TipoDocumento, EstadoCivil, TipoNacionalidad, TipoOrganizacion,
                  TipoDireccion, NomenclaturaDireccion, TipoTelefono, TipoLineaTelefonica, TipoCorreo,
-                 TipoRedSocial, TipoContacto, Contacto) {
+                 TipoRedSocial, TipoContacto, Contacto, Pais, Departamento, Ciudad) {
                      
             var self = this;
             
@@ -58,7 +61,8 @@ define(["angular",
                     tiposLineaTefelonica:[],
                     tiposCorreo:[],
                     tiposRedSocial:[],
-                    tiposContacto:[]
+                    tiposContacto:[],
+                    paises:[]
                 },
                 session : {
                     usuario_id: Usuario.getUsuarioActual().getId(),
@@ -112,6 +116,8 @@ define(["angular",
                 GestionTercerosService.obtenerPaises(parametros,function(respuesta){
                     if(respuesta.status === 200){
                         console.log("obtenerParametrizacion paises ", respuesta);
+                        var data = respuesta.obj.ciudades;
+                        self.gestionarPaises(data);
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error");
                     }
@@ -119,6 +125,41 @@ define(["angular",
   
             };
             
+            self.gestionarPaises = function(paises){
+                $scope.root.parametros.paises = [];
+                for(var i in paises){
+                    var _pais = paises[i];
+                    var pais = Pais.get(_pais["pais_id"], _pais["nombre_pais"]);
+                    $scope.root.parametros.paises.push(pais);
+                }
+            };
+            
+            self.gestionarDepartamentos = function(departamentos){
+                $scope.root.tercero.getPais().setDepartamentos([]);
+                for(var i in departamentos){
+                    var _departamento = departamentos[i];
+                    var departamento = Departamento.get(_departamento["departamento_id"], _departamento["nombre_departamento"]);
+                    $scope.root.tercero.getPais().agregarDepartamento(departamento);
+                }
+                
+            };
+            
+            self.gestionarCiudades = function(ciudades){
+                var departamento = $scope.root.tercero.getPais().getDepartamentoSeleccionado();
+                for(var i in ciudades){
+                    var _ciudad = ciudades[i];
+                    var ciudad = Ciudad.get(_ciudad["id"], _ciudad["nombre_ciudad"]);
+                    departamento.agregarCiudad(ciudad);
+                }
+                
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Permite mapear la informacion del tercero en los dropdown
+            * @params Obj {}
+            * @fecha 2017-03-21
+            */
             self.gestionarParametrosTercero = function(data){
                 
                 if(data["generos"]){
@@ -250,6 +291,58 @@ define(["angular",
                         $scope.root.tabs[_tab] = false;
                     }
                 }                
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del dropdown de paises
+            * @fecha 2017-03-21
+            */
+            $scope.onSeleccionarPais = function(){
+                var pais = $scope.root.tercero.getPais();
+                var parametros = {
+                    session:$scope.root.session,
+                    data:{
+                        departamentos:{
+                            pais_id:pais.getId()
+                        }
+                    }
+                };
+                
+                GestionTercerosService.obtenerDepartamentosPorPais(parametros,function(respuesta){
+                    if(respuesta.status === 200){
+                        var data = respuesta.obj.departamentos;
+                        self.gestionarDepartamentos(data);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error");
+                    }
+                });
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del dropdown de departamentos
+            * @fecha 2017-03-21
+            */
+            $scope.onSeleccionarDepartamento = function(){
+                var departamento = $scope.root.tercero.getPais().getDepartamentoSeleccionado();
+                var parametros = {
+                    session:$scope.root.session,
+                    data:{
+                        ciudades:{
+                            departamento_id:departamento.getId()
+                        }
+                    }
+                };
+                
+                GestionTercerosService.obtenerCiudadesPorDepartamento(parametros,function(respuesta){
+                    if(respuesta.status === 200){
+                        var data = respuesta.obj.ciudades;
+                        self.gestionarCiudades(data);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error");
+                    }
+                });
             };
             
             /**

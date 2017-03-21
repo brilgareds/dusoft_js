@@ -18,7 +18,8 @@
             <ui-select ng-model="root.tercero.contacto.tipoSeleccionado"  
                        theme="select2" 
                        class="form-control selectgeneral pull-left ui-select-z-index-12" 
-                       append-to-body = "true">
+                       append-to-body = "true"
+                       ng-change="onSeleccionarPais()">
                 <ui-select-match  placeholder="Tipo contacto"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                 <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoContacto in  root.tercero.getContacto().getTiposContacto() | filter:$select.search">
                     <span ng-bind="tipoContacto.getDescripcion()"></span>

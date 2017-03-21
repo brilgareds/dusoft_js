@@ -24,7 +24,25 @@ define(["angular", "js/services"], function(angular, services) {
 
              });
         };
+        
+        self.obtenerDepartamentosPorPais = function(parametros, callback ){
 
+             Request.realizarRequest(API.UBICACION.LISTAR_DEPARTAMENTOS_POR_PAIS, "POST", parametros, function(data) {
+                   
+                callback(data);
+
+             });
+        };
+        
+        self.obtenerCiudadesPorDepartamento = function(parametros, callback ){
+
+             Request.realizarRequest(API.UBICACION.LISTAR_CIUDADES_POR_DEPARTAMENTO, "POST", parametros, function(data) {
+                   
+                callback(data);
+
+             });
+        };
+        
 
         return this;
 

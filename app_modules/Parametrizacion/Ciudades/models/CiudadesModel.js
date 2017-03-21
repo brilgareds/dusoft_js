@@ -27,7 +27,7 @@ CiudadesModel.prototype.listar_ciudades = function(termino_busqueda, callback) {
 };
 
 
-CiudadesModel.prototype.listar_ciudades_departamento = function(termino_busqueda, departamento_id, callback) {
+CiudadesModel.prototype.listar_ciudades_departamento = function(departamento_id, callback) {
 
     var columns = [
         "c.tipo_pais_id as pais_id",

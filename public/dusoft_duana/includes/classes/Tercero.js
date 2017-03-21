@@ -31,6 +31,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.tipoCorreo = null;
             this.tipoRedSocial = null;
             this.contacto = null;
+            this.pais = null;
         };
         
         //Operaciones Get de parámetros iniciales de creación de Tercero
@@ -111,7 +112,16 @@ define(["angular", "js/models"], function(angular, models) {
 
         Tercero.prototype.getContacto = function() {
             return this.contacto;
-        };   
+        };  
+        
+        Tercero.prototype.setPais = function(pais) {
+            this.pais = pais;
+            return this;
+        };
+
+        Tercero.prototype.getPais = function() {
+            return this.pais;
+        };  
 
         this.get = function(nombre, tipo_id_tercero, id, direccion, telefono, pais, departamento, municipio) {
             return new Tercero(nombre, tipo_id_tercero, id, direccion, telefono, pais, departamento, municipio);

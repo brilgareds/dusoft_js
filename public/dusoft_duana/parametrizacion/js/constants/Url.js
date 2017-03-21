@@ -9,7 +9,9 @@
     var data = {
 	  'API': {
             'UBICACION' :{
-                'LISTAR_PAISES' : BASE_URL+"/Paises/listarPaises"
+                'LISTAR_PAISES' : BASE_URL+"/Paises/listarPaises",
+                'LISTAR_DEPARTAMENTOS_POR_PAIS': BASE_URL+"/Departamentos/listarDepartamentosPais",
+                'LISTAR_CIUDADES_POR_DEPARTAMENTO': BASE_URL+"/Ciudades/obtenerCiudadesPorDepartamento"
             }, 
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

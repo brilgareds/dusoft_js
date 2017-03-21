@@ -359,7 +359,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        //{displayName: '#Evo',           width:"6%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId()'}, 
                     {field: '#Evo', width: "5%", displayName: '#Evo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].evolucionId}}</p></div>'},
                     
-                    {field: '#Formula', width: "7%", displayName: '#Formula', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroFormula}}</p></div>'},
+                    {field: '#Formula', width: "5%", displayName: '#Formula', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroFormula}}</p></div>'},
                      
                     {field: '#Identificacion', width: "8%", displayName: '#Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente()}} {{ row.entity.mostrarPacientes()[0].getPacienteId()}}</p></div>'},
 
@@ -393,7 +393,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     {displayName: 'Tipo', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()}}</p></div>'},
                    
-                     {displayName: "Opc", width:"7%", cellClass: "txt-center dropdown-button",
+                     {displayName: "Opc", width:"5%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                        <ul class="dropdown-menu dropdown-options">\
@@ -435,10 +435,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                   </div>'
                        },
                        
-                       {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', width: "8%", displayName: "Estado", cellClass: "txt-center",
-                        cellTemplate: "<button type='button' \n\
-                                    ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega)'> \n\
-                                   <span ng-class=''></span>  {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}} </button>"}, 
+                       {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', width: "12%", displayName: "Estado", cellClass: "txt-center",
+                        cellTemplate: " <span ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega) '> \n\
+                                     {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}}  </span>"}, 
 
                         /*{displayName: '#Formula',       width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 
                        {displayName: 'Identificacion', width:"9%",

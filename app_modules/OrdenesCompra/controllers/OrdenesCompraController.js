@@ -411,7 +411,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
 
             orden_compra = orden_compra[0];
 
-            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4')) {
 
                 that.m_ordenes_compra.modificar_unidad_negocio(numero_orden, unidad_negocio, function(err, rows, result) {
 
@@ -470,7 +470,7 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
 
             orden_compra = orden_compra[0];
 
-            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4')) {
 
                 that.m_ordenes_compra.modificar_observacion(numero_orden, observacion, function(err, rows, result) {
 
@@ -539,7 +539,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
             orden_compra = orden_compra[0];
 
-            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4')) {
 
                 if (!modificar) {
 
@@ -657,7 +657,7 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
 
             orden_compra = orden_compra[0];
 
-            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4')) {
 
                 that.m_ordenes_compra.consultarDetalleOrdenCompraConNovedades(numero_orden, codigo_producto, 1, function(err, productos) {
 

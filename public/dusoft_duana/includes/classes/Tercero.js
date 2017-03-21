@@ -16,6 +16,12 @@ define(["angular", "js/models"], function(angular, models) {
             this.pais = "";
             this.departamento = "";
             this.municipio = "";
+            
+            /*** Gestion terceros ***/
+            this.genero = null;
+            this.tipoDocumento = null;
+            this.estadoCivil = null;
+            this.nacionalidad = null;
         };
         
         //Operaciones Get de parámetros iniciales de creación de Tercero

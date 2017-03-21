@@ -363,7 +363,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      
                     {field: '#Identificacion', width: "8%", displayName: '#Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente()}} {{ row.entity.mostrarPacientes()[0].getPacienteId()}}</p></div>'},
 
-                    {displayName: 'Paciente',   cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }}</p> </div>'},   
+                    {displayName: 'Paciente',   cellTemplate: '<div class="col-xs-16 "><p class="text-lowercase">{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }}</p> </div>'},   
   
                     {displayName: 'F.Formulacion',  width: "8%",  cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()}}</p></div>'},
                         
@@ -371,7 +371,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     
                     //{displayName: 'F.Entrega', width: "7%",  cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaEntrega()}}</p></div>'},
                     
-                    {displayName: '#Entregas', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}} - {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()}}</p></div>'},
+                    {displayName: '#Entregas', width: "6%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}} - {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()}}</p></div>'},
                     
                     //{displayName: '#Actual', width: "5%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}}</p></div>'},
                      
@@ -389,11 +389,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         
                     //{displayName: 'Medico', width: "7%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].getMedico()}}</p></div>'},
                     
-                    {displayName: 'Plan', width: "10%",   cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()}}</p></div>'},
+                    {displayName: 'Plan', width: "10%",   cellTemplate: '<div class="col-xs-12 "><p class="text-lowercase">{{row.entity.mostrarPlanAtencion()[0].mostrarPlanes()[0].getDescripcion()}}</p></div>'},
                     
-                    {displayName: 'Tipo', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()}}</p></div>'},
+                    {displayName: 'Tipo', width: "9%", cellTemplate: '<div class="col-xs-12 "><p class="text-lowercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getDescripcionTipoFormula()}}</p></div>'},
                    
-                     {displayName: "Opc", width:"5%", cellClass: "txt-center dropdown-button",
+                     {displayName: "Opc", width:"6%", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                                        <ul class="dropdown-menu dropdown-options">\
@@ -435,8 +435,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                   </div>'
                        },
                        
-                       {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', width: "12%", displayName: "Estado", cellClass: "txt-center",
-                        cellTemplate: " <span ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega) '> \n\
+                       {field: 'mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()', width: "13%", displayName: "Estado", cellClass: "txt-center",
+                        cellTemplate: " <span class='text-lowercase' ng-class='agregar_clase_formula(row.entity.mostrarPacientes()[0].mostrarFormulas()[0].estadoEntrega) '> \n\
                                      {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].descripcionEstadoEntrega}}  </span>"}, 
 
                         /*{displayName: '#Formula',       width:"7%",field: 'mostrarPacientes()[0].mostrarFormulas()[0].getNumeroFormula()'}, 

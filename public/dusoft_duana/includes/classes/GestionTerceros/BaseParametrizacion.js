@@ -5,6 +5,7 @@ define(["angular", "js/models"], function(angular, models) {
         function BaseParametrizacion(id, descripcion) {
             this.id = id || "";
             this.descripcion = descripcion || "";
+            this.codigo = "";
         };
         
         BaseParametrizacion.prototype.setId = function(id){
@@ -23,6 +24,15 @@ define(["angular", "js/models"], function(angular, models) {
         
         BaseParametrizacion.prototype.getDescripcion = function(){
             return this.descripcion;
+        };
+        
+        BaseParametrizacion.prototype.setCodigo = function(codigo){
+            this.codigo = codigo;
+            return this;
+        };
+        
+        BaseParametrizacion.prototype.getCodigo = function(){
+            return this.codigo;
         };
 
         this.get = function(id, descripcion) {

@@ -1,8 +1,8 @@
 define(["angular", "js/models","includes/classes/GestionTerceros/BaseParametrizacion"], function(angular, models) {
 
-    models.factory('TipoDocumento', ["BaseParametrizacion", function(BaseParametrizacion) {
+    models.factory('TipoLineaTelefonica', ["BaseParametrizacion", function(BaseParametrizacion) {
 
-        function TipoDocumento(id, descripcion) {
+        function TipoLineaTelefonica(id, descripcion) {
             
             BaseParametrizacion.getClass().call(this,id, descripcion);
            
@@ -10,14 +10,14 @@ define(["angular", "js/models","includes/classes/GestionTerceros/BaseParametriza
 
         this.get = function(id, descripcion) {
 
-            return new TipoDocumento(id, descripcion);
+            return new TipoLineaTelefonica(id, descripcion);
         };
 
 
-        TipoDocumento.prototype = Object.create(BaseParametrizacion.getClass().prototype);
+        TipoLineaTelefonica.prototype = Object.create(BaseParametrizacion.getClass().prototype);
 
         this.getClass = function(){
-            return TipoDocumento;
+            return TipoLineaTelefonica;
         };
 
         return this;

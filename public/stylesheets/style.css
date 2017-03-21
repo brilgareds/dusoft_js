@@ -507,6 +507,18 @@ div.selectgeneral{
     z-index: 15!important;
 }
 
+.ui-select-z-index-16{
+    z-index: 16!important;
+}
+
+.ui-select-z-index-17{
+    z-index: 17!important;
+}
+
+.ui-select-z-index-18{
+    z-index: 18!important;
+}
+
 .slide{
     width: 100%;
     top: 0px;

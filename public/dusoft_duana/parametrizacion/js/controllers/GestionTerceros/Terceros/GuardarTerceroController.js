@@ -6,6 +6,14 @@ define(["angular",
     'includes/classes/GestionTerceros/Terceros/EstadoCivil',
     'includes/classes/GestionTerceros/Terceros/TipoNacionalidad',
     'includes/classes/GestionTerceros/Terceros/TipoOrganizacion',
+    'includes/classes/GestionTerceros/Terceros/TipoDireccion',
+    'includes/classes/GestionTerceros/Terceros/NomenclaturaDireccion',
+    'includes/classes/GestionTerceros/Terceros/TipoTelefono',
+    'includes/classes/GestionTerceros/Terceros/TipoLineaTelefonica',
+    'includes/classes/GestionTerceros/Terceros/TipoCorreo',
+    'includes/classes/GestionTerceros/Terceros/TipoRedSocial',
+    'includes/classes/GestionTerceros/Terceros/Contacto',
+    'includes/classes/GestionTerceros/Terceros/TipoContacto',
     'includes/classes/Tercero'], function(angular, controllers) {
 
     controllers.controller('GuardarTerceroController', [
@@ -13,10 +21,14 @@ define(["angular",
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal","GestionTercerosService",
         'Genero', 'Tercero', 'TipoDocumento', 'EstadoCivil','TipoNacionalidad','TipoOrganizacion',
+        'TipoDireccion','NomenclaturaDireccion','TipoTelefono','TipoLineaTelefonica','TipoCorreo',
+        'TipoRedSocial','TipoContacto','Contacto',
         function($scope, $rootScope, Request,
                  API, socket, AlertService, 
                  $state, Usuario, localStorageService, $modal, GestionTercerosService,
-                 Genero, Tercero, TipoDocumento, EstadoCivil, TipoNacionalidad, TipoOrganizacion) {
+                 Genero, Tercero, TipoDocumento, EstadoCivil, TipoNacionalidad, TipoOrganizacion,
+                 TipoDireccion, NomenclaturaDireccion, TipoTelefono, TipoLineaTelefonica, TipoCorreo,
+                 TipoRedSocial, TipoContacto, Contacto) {
                      
             var self = this;
             
@@ -40,13 +52,22 @@ define(["angular",
                     tiposEstadoCivil:[],
                     tiposNacionalidad:[],
                     tiposOrganizacion:[],
-                    tiposDireccion:[]
+                    tiposDireccion:[],
+                    nomenclaturasDireccion:[],
+                    tiposTelefono:[],
+                    tiposLineaTefelonica:[],
+                    tiposCorreo:[],
+                    tiposRedSocial:[],
+                    tiposContacto:[]
                 },
                 session : {
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
                 }
             };
+            
+            var contacto = Contacto.get();
+            $scope.root.tercero.setContacto(contacto);
             
             $scope.listaContactos = {
                 data: 'usuarios',
@@ -142,6 +163,70 @@ define(["angular",
                         var _tiposOrganizacion = data["tiposOrganizacion"][i];
                         var tiposOrganizacion = TipoOrganizacion.get(_tiposOrganizacion["id"], _tiposOrganizacion["descripcion"]);
                         $scope.root.parametros.tiposOrganizacion.push(tiposOrganizacion);
+                    }
+                }
+                
+                if(data["tiposDireccion"]){
+                    $scope.root.parametros.tiposDireccion = [];
+                    for(var i in data["tiposDireccion"]){
+                        var _tiposDireccion = data["tiposDireccion"][i];
+                        var tiposDireccion = TipoDireccion.get(_tiposDireccion["id"], _tiposDireccion["descripcion"]);
+                        $scope.root.parametros.tiposDireccion.push(tiposDireccion);
+                    }
+                }
+                
+                if(data["nomenclaturasDireccion"]){
+                    $scope.root.parametros.nomenclaturasDireccion = [];
+                    for(var i in data["nomenclaturasDireccion"]){
+                        var _nomenclaturaDireccion = data["nomenclaturasDireccion"][i];
+                        var nomenclaturaDireccion = NomenclaturaDireccion.get(_nomenclaturaDireccion["id"], _nomenclaturaDireccion["descripcion"]);
+                        nomenclaturaDireccion.setCodigo(_nomenclaturaDireccion["codigo"]);
+                        $scope.root.parametros.nomenclaturasDireccion.push(nomenclaturaDireccion);
+                    }
+                }
+                
+                if(data["tiposTelefeno"]){
+                    $scope.root.parametros.tiposTelefono = [];
+                    for(var i in data["tiposTelefeno"]){
+                        var _tipoTelefono = data["tiposTelefeno"][i];
+                        var tipoTelefono = TipoTelefono.get(_tipoTelefono["id"], _tipoTelefono["descripcion"]);
+                        $scope.root.parametros.tiposTelefono.push(tipoTelefono);
+                    }
+                }
+                
+                if(data["tiposLineaTefelonica"]){
+                    $scope.root.parametros.tiposLineaTefelonica = [];
+                    for(var i in data["tiposLineaTefelonica"]){
+                        var _tipoLineaTelefono = data["tiposLineaTefelonica"][i];
+                        var tipoLineaTelefono = TipoLineaTelefonica.get(_tipoLineaTelefono["id"], _tipoLineaTelefono["descripcion"]);
+                        $scope.root.parametros.tiposLineaTefelonica.push(tipoLineaTelefono);
+                    }
+                }
+                
+                if(data["tiposCorreo"]){
+                    $scope.root.parametros.tiposCorreo = [];
+                    for(var i in data["tiposCorreo"]){
+                        var _tipoCorreo = data["tiposCorreo"][i];
+                        var tipoCorreo = TipoCorreo.get(_tipoCorreo["id"], _tipoCorreo["descripcion"]);
+                        $scope.root.parametros.tiposCorreo.push(tipoCorreo);
+                    }
+                }
+                
+                if(data["tiposRedSocial"]){
+                    $scope.root.parametros.tiposRedSocial = [];
+                    for(var i in data["tiposRedSocial"]){
+                        var _tipoRedSocial = data["tiposRedSocial"][i];
+                        var tipoRedSocial = TipoRedSocial.get(_tipoRedSocial["id"], _tipoRedSocial["descripcion"]);
+                        $scope.root.parametros.tiposRedSocial.push(tipoRedSocial);
+                    }
+                }
+                
+                if(data["tiposContacto"]){
+                    $scope.root.tercero.getContacto().setTiposContacto([]);
+                    for(var i in data["tiposContacto"]){
+                        var _tipoContacto = data["tiposContacto"][i];
+                        var tipoContacto = TipoContacto.get(_tipoContacto["id"], _tipoContacto["descripcion"]);
+                        $scope.root.tercero.getContacto().agregarTipoContacto(tipoContacto);
                     }
                 }
                 

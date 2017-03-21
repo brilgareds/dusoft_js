@@ -23,6 +23,14 @@ define(["angular", "js/models"], function(angular, models) {
             this.estadoCivil = null;
             this.nacionalidad = null;
             this.tipoOrganizacion = null;
+            this.tipoDireccion = null;
+            this.nomenclaturaDireccion1 = null;
+            this.nomenclaturaDireccion2 = null;
+            this.tipoTelefeono = null;
+            this.tipoLineaTelefonica = null;
+            this.tipoCorreo = null;
+            this.tipoRedSocial = null;
+            this.contacto = null;
         };
         
         //Operaciones Get de parámetros iniciales de creación de Tercero
@@ -93,7 +101,17 @@ define(["angular", "js/models"], function(angular, models) {
 
         Tercero.prototype.getMunicipio = function() {
             return this.municipio;
-        };        
+        };    
+        
+        //GestionTerceros
+        Tercero.prototype.setContacto = function(contacto) {
+            this.contacto = contacto;
+            return this;
+        };
+
+        Tercero.prototype.getContacto = function() {
+            return this.contacto;
+        };   
 
         this.get = function(nombre, tipo_id_tercero, id, direccion, telefono, pais, departamento, municipio) {
             return new Tercero(nombre, tipo_id_tercero, id, direccion, telefono, pais, departamento, municipio);

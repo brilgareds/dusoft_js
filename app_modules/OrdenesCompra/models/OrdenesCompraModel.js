@@ -488,7 +488,7 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
 OrdenesCompraModel.prototype.modificar_unidad_negocio = function(numero_orden, unidad_negocio, callback) {
 
 
-    var sql = "  update compras_ordenes_pedidos set codigo_unidad_negocio = :2 where orden_pedido_id = :1 and estado='1' ";
+    var sql = "  update compras_ordenes_pedidos set codigo_unidad_negocio = :2 where orden_pedido_id = :1 and (estado= '1' or estado = '3' or estado = '4') ";
     
     G.knex.raw(sql, {1:numero_orden, 2:unidad_negocio}).then(function(resultado){
        callback(false, resultado.rows, resultado);
@@ -502,7 +502,7 @@ OrdenesCompraModel.prototype.modificar_unidad_negocio = function(numero_orden, u
 OrdenesCompraModel.prototype.modificar_observacion = function(numero_orden, observacion, callback) {
 
 
-    var sql = "  update compras_ordenes_pedidos set observacion = :2 where orden_pedido_id = :1 and estado='1' ";
+    var sql = "  update compras_ordenes_pedidos set observacion = :2 where orden_pedido_id = :1 and (estado= '1' or estado = '3' or estado = '4') ";
     
     G.knex.raw(sql, {1:numero_orden, 2:observacion}).then(function(resultado){
        callback(false, resultado.rows, resultado);

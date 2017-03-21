@@ -475,6 +475,7 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
                 that.m_ordenes_compra.modificar_observacion(numero_orden, observacion, function(err, rows, result) {
 
                     if (err || result.rowCount === 0) {
+                        console.log("error generado ", result, err);
                         res.send(G.utils.r(req.url, 'No se pudo actualizar la observacion', 500, {orden_compra: []}));
                         return;
                     } else {

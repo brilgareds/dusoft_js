@@ -8,7 +8,7 @@ define([
     "models/I002/ProveedorIngreso",
     "models/I002/OrdenCompraIngreso",
     "models/I002/ProductoIngreso",
-    "controllers/I002/GestionarProductosOrdenCompraController",
+//    "controllers/I002/GestionarProductosOrdenCompraController",
     "controllers/I002/GestionarProductosController",
 ], function(angular, controllers) {
 
@@ -22,13 +22,26 @@ define([
         "OrdenCompraIngreso",
         "Usuario",
         "ProductoIngreso",
+        "GeneralService",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Documento, Proveedor, OrdenCompra, Sesion,Producto) {
+                Empresa, Documento, Proveedor, OrdenCompra, Sesion,Producto,GeneralService) {
 
             var that = this;
 
             $scope.Empresa = Empresa;
             $scope.doc_tmp_id = "00000";
+            $scope.valorRetFte =0;
+            $scope.valorRetIca =0;
+            $scope.valorRetIva =0;
+            $scope.imptoCree =0;
+            $scope.valorIva =0;
+            $scope.cantidadTotal =0;
+            $scope.valorSubtotal =0;            
+            $scope.valorTotal =0;
+            $scope.total = 0;
+            $scope.valorIvaTotal=0;
+            $scope.gravamen=0;
+            $scope.cantidadRecibida=0;
 
             var datos_documento = localStorageService.get("documento_bodega_I002");
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
@@ -46,6 +59,29 @@ define([
                 termino_busqueda_proveedores: "",
                 btn_buscar_productos: ""
             };
+            
+            /**
+             * @author Andres M. Gonzalez
+             * @fecha 22/07/2016
+             * +Descripcion Metodo encargado de invocar el servicio que
+             *              borra los productos del movimiento temporal
+             */
+            that.eliminarProductoMovimientoBodegaTemporal = function(parametro,callback) {
+                var obj = {
+                    session: $scope.session,
+                    item_id: parametro.item_id
+                };
+                GeneralService.eliminarProductoMovimientoBodegaTemporal(obj, function(data) {
+                   
+                    if (data.status === 200) {
+                        callback(true);           
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema Eliminacion fallida: ", data.msj);   
+                        callback(false);
+                        
+                    }
+                });
+            };
 
 
             // Proveedores
@@ -62,7 +98,7 @@ define([
                     that.render_proveedores(proveedores);
                 });
             };
-
+         
             that.buscar_proveedores = function(callback) {
 
                 var obj = {
@@ -133,10 +169,37 @@ define([
             };
 
             $scope.seleccionar_orden_compra = function() {
-                $scope.buscar_productos_orden_compra();  
-                that.listarParametros();
-                that.listarGetDocTemporal();
-                that.listarGetItemsDocTemporal();
+               
+                that.borarrVariables();
+                $scope.buscar_productos_orden_compra();                  
+                that.listarGetDocTemporal(function(respuesta){
+                    if(respuesta){
+                        that.listarGetItemsDocTemporal(function(respuesta){
+                            if(respuesta){    
+                            that.listarParametros();
+                                                        
+                            }
+                        });  
+                    }
+                });                
+            };
+            
+            that.refrescarVista=function(){
+              that.borarrVariables();
+                $scope.buscar_productos_orden_compra();                  
+                that.listarGetDocTemporal(function(respuesta){
+                    if(respuesta){
+                        that.listarGetItemsDocTemporal(function(respuesta){
+                            if(respuesta){    
+                            that.listarParametros();
+                            }
+                        });  
+                    }
+                });   
+            };
+            
+            $scope.tabProductosPorAutorizar=function(){
+               that.listarProductosPorAutorizar(function(respuesta){});
             };
 
 
@@ -171,7 +234,7 @@ define([
 
                 if ($scope.datos_view.btn_buscar_productos === 1) {
                     $scope.slideurl = "views/I002/gestionarproductos.html?time=" + new Date().getTime();
-                    $scope.$emit('gestionar_productos');
+                    $scope.$emit('gestionar_productos', {ordenCompra: $scope.DocumentoIngreso.get_orden_compra(),empresa:Sesion.getUsuarioActual()});
                 }
             };
 
@@ -185,8 +248,7 @@ define([
                     $scope.$emit('cerrar_gestion_productos', {animado: true});
             };
 
-            $scope.btn_eliminar_producto = function() {
-
+            $scope.btn_eliminar_producto = function(fila) {
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -194,10 +256,11 @@ define([
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="cerrar()">&times;</button>\
-                                    <h4 class="modal-title">Desea eliminar el producto?</h4>\
+                                    <h4 class="modal-title">MENSAJE DEL SISTEMA</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h4>Desea eliminar producto?</h4>\
+                                    <h4>Desea eliminar el siguiente producto?</h4>\
+                                    <h5>'+fila.descripcion+'</h5>\
                                 </div>\
                                 <div class="modal-footer">\
                                     <button class="btn btn-warning" ng-click="cerrar()">No</button>\
@@ -207,7 +270,7 @@ define([
                     controller: function($scope, $modalInstance) {
 
                         $scope.confirmar_eliminar_producto = function() {
-                            $scope.eliminar_producto();
+                            $scope.eliminar_producto(fila.item_id);
                             $modalInstance.close();
                         };
 
@@ -220,8 +283,16 @@ define([
                 var modalInstance = $modal.open($scope.opts);
             };
 
-            $scope.eliminar_producto = function() {
-                AlertService.mostrarMensaje("warning", "Producto Eliminado Correctamente");
+            $scope.eliminar_producto = function(item_id) {  
+                 
+                 parametro ={item_id:item_id};
+                that.eliminarProductoMovimientoBodegaTemporal(parametro,function(condicional){
+                    if(condicional){
+                      that.refrescarVista();
+                      AlertService.mostrarMensaje("warning", "El Producto fue Eliminado Correctamente!!"); 
+                    }
+                });
+                
             };
 
             $scope.btn_eliminar_documento = function() {
@@ -254,6 +325,78 @@ define([
                             $modalInstance.close();
                         };
 
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            $scope.cantidadIngresada;
+            $scope.entrar="";
+            $scope.btnAdicionarNuevoLote = function(entity) {
+               $scope.producto=entity;
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Agregar Cantidad para Nuevo Lote</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <table class="table table-condensed" width="100%">\
+                                        <thead>\
+                                            <tr>\
+                                                <td width="25%">Codigo</td>\
+                                                <td width="55%">Descripción</td>\
+                                                <td width="20%">Cantidad</td>\
+                                            </tr>\
+                                        <thead>\
+                                        <tbody>\
+                                            <tr>\
+                                                <td>{{producto.codigo_producto}}</td>\
+                                                <td>{{producto.descripcion}}</td>\
+                                                <td><div class="col-xs-12"> <input type="text" size="30" class="form-control grid-inline-input" ng-keyup="validarNumeroIngresado(producto.cantidad_solicitada)" ng-model="cantidadIngresada" name="" id=""  placeholder="< {{producto.cantidad_solicitada}}" validacion-numero-entero required /></div></td>\
+                                            </tr>\
+                                        </tbody>\
+                                    </table>\
+                                    <div ng-if="validarNumeroIngresado(producto.cantidad_solicitada)" >\
+                                        <div class="alert alert-danger">{{entrar}}: {{producto.cantidad_solicitada}}</div> \
+                                     </div>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">Cancelar</button>\
+                                    <button class="btn btn-primary" ng-click="crearNuevoLote(producto,0,cantidadIngresada)" ng-disabled="validarNumeroIngresado(producto.cantidad_solicitada)" >Agregar</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.eliminar_documento();
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                        
+                        $scope.validarNumeroIngresado = function(cantidad) {
+                           if($scope.cantidadIngresada> 0 && $scope.cantidadIngresada<cantidad ){
+                               return false;
+                           }else if($scope.cantidadIngresada===0){
+                               $scope.entrar="La Cantidad debe ser menor a ";
+                               $scope.cantidadIngresada="";
+                               return true;
+                           }else{
+                               $scope.entrar="La Cantidad debe ser mayor a 0 y menor que ";
+                               $scope.cantidadIngresada="";
+                               return true;
+                           }
+                        };
+                        
+                        $scope.crearNuevoLote = function(producto,createUpdate,cantidadIngresada){
+                            that.guardarModificarDetalleOrdenCompra(producto,createUpdate,cantidadIngresada);
+                            $modalInstance.close();
+                        };
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
@@ -306,12 +449,12 @@ define([
                                                     <tr>\
                                                         <td class="right">{{cantidadTotal}}</td> \
                                                         <td class="right">{{valorSubtotal | currency: "$ "}}</td> \
-                                                        <td class="right">{{valorIva | currency: "$ "}}</td> \
+                                                        <td class="right">{{gravamen | currency: "$ "}}</td> \
                                                         <td class="right">{{valorRetFte | currency: "$ "}}</td> \
                                                         <td class="right">{{valorRetIca | currency: "$ "}}</td> \
                                                         <td class="right">{{valorRetIva | currency: "$ "}}</td> \
                                                         <td class="right">{{imptoCree | currency: "$ "}}</td> \
-                                                        <td class="right">{{valorTotal | currency: "$ "}}</td> \
+                                                        <td class="right">{{total | currency: "$ "}}</td> \
                                                     </tr>\
                                                 </tbody>\
                                             </table>\
@@ -334,27 +477,32 @@ define([
             };
 
             $scope.lista_productos_no_autorizados = {
-                data: 'datos_view.listado',
+                data: 'DocumentoIngreso.get_orden_compra().get_productos_seleccionados()',
                 enableColumnResize: true,
                 enableRowSelection: true,
                 enableCellSelection: true,
                 enableHighlighting: true,
+//                showFooter: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
-                    {field: 'descripcion', displayName: 'Descripcion'},
-                    {field: 'politicas', displayName: 'Políticas', width: "20%"},
-                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad"},
-                    {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '"},
+                    {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
+                    {field: 'getDescripcion()', displayName: 'Descripcion'},
+                    {field: 'get_lote()', displayName: 'Lote', width: "5%"},
+                    {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
+                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad"},
+                    {field: 'get_iva()', displayName: "I.V.A (%)", width: "5%"},
+                    {field: 'get_porcentaje_gravamen()', displayName: '% Gravament', width: "5%"},
+                    {field: 'get_valor_total()', displayName: 'Valor Total', width: "10%", cellFilter:'currency'},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="btn_eliminar_producto(row)" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_eliminar_producto(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'}
                 ]
             };
             
+            
+            
            /////////////////////////////////////////////// 
-              that.listarGetDocTemporal = function() {
+              that.listarGetDocTemporal = function(callback) {
 
                     var obj = {
                         session: $scope.session,
@@ -367,7 +515,12 @@ define([
                     Request.realizarRequest(API.I002.LISTAR_GET_DOC_TEMPORAL, "POST", obj, function(data) {
 
                         if (data.status === 200) {
-                            that.renderGetDocTemporal(data.obj.listarGetDocTemporal);
+                            
+                            if(data.obj.listarGetDocTemporal.length>0){                           
+                                that.renderGetDocTemporal(data.obj.listarGetDocTemporal,function(respuesta){
+                                  callback(respuesta); 
+                                });
+                             }
                         }
                         if (data.status === 500) {
                             AlertService.mostrarMensaje("warning", data.msj);
@@ -375,29 +528,40 @@ define([
                     });
                 };
                 
+                
+            that.borarrVariables=function(){
+                $scope.valorRetFte =0;
+                $scope.valorRetIca =0;
+                $scope.valorRetIva =0;
+                $scope.imptoCree =0;
+                $scope.valorIva =0;
+                $scope.cantidadTotal =0;
+                $scope.valorSubtotal =0;            
+                $scope.valorTotal =0;
+                $scope.total = 0;
+                $scope.valorIvaTotal=0;
+                $scope.gravamen=0;
+            };
             
-            $scope.valorRetFte =0;
-            $scope.valorRetIca =0;
-            $scope.valorRetIva =0;
-            $scope.imptoCree =0;
-           that.renderGetDocTemporal = function(docTemporal) {                 
+           
+           that.renderGetDocTemporal = function(docTemporal,callback) { 
+               console.log("docTemporal[0] :::",docTemporal[0]);
                    $scope.DocumentoIngreso.get_orden_compra().set_retefuente(docTemporal[0].porcentaje_rtf);
                    $scope.DocumentoIngreso.get_orden_compra().set_reteica(docTemporal[0].porcentaje_ica);
                    $scope.DocumentoIngreso.get_orden_compra().set_reteiva(docTemporal[0].porcentaje_reteiva);
                    $scope.DocumentoIngreso.get_orden_compra().set_cree(docTemporal[0].porcentaje_cree);   
-                  console.log("$scope.listarParametrosRetencion ",$scope.listarParametrosRetencion) 
+                   $scope.DocumentoIngreso.set_observacion(docTemporal[0].observacion);
                    $scope.imptoCree = docTemporal[0].porcentaje_cree;
                    $scope.valorRetFte = docTemporal[0].porcentaje_rtf;
                    $scope.valorRetIca = docTemporal[0].porcentaje_ica;
                    $scope.valorRetIva = docTemporal[0].porcentaje_reteiva;
-                   $scope.doc_tmp_id = docTemporal[0].doc_tmp_id;
-                   console.log("docTemporal::  ",docTemporal);
-                            
+                   $scope.doc_tmp_id = docTemporal[0].doc_tmp_id;   
+                   callback(true);
             };
            ////////////////////////////
                 
             
-              that.listarGetItemsDocTemporal = function() {
+              that.listarGetItemsDocTemporal = function(callback) {
                   
                 var obj = {
                     session: $scope.session,
@@ -407,9 +571,10 @@ define([
                 };
 
                 Request.realizarRequest(API.I002.LISTAR_GET_ITEMS_DOC_TEMPORAL, "POST", obj, function(data) {
-                    console.log("LISTAR_GET_ITEMS_DOC_TEMPORAL ",data);
                     if (data.status === 200) {         
-                        that.renderGetDocItemTemporal(data.obj.listarGetItemsDocTemporal);
+                        that.renderGetDocItemTemporal(data.obj.listarGetItemsDocTemporal,function(respuesta){
+                            callback(respuesta);
+                        });
                     }
                     if (data.status === 500) {     
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -417,14 +582,10 @@ define([
                 });
             };
             
-             // Totales   
-            $scope.valorIva =0;
-            $scope.cantidadTotal =0;
-            $scope.valorSubtotal =0;            
-            $scope.valorTotal =0;
             
-            that.renderGetDocItemTemporal = function(docItemTemporal) {
-                
+            
+            that.renderGetDocItemTemporal = function(docItemTemporal,callback) {
+              $scope.DocumentoIngreso.get_orden_compra().limpiar_productos_ingresados();
               docItemTemporal.forEach(function(data) {
 
                   var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.iva).toFixed(2), data.valor_unit, data.lote,data.fecha_vencimiento);
@@ -438,13 +599,59 @@ define([
                   producto.set_porcentaje_gravamen(data.porcentaje_gravamen);
                   $scope.DocumentoIngreso.get_orden_compra().set_productos_ingresados(producto);
                   
-                  $scope.valorIvaTotal += data.iva_total;
-                  $scope.cantidadTotal += data.cantidad;
-                  $scope.valorSubtotal += data.valor_total;                  
-                  $scope.valorTotal += data.total_costo;
+                  $scope.gravamen += parseFloat(data.iva_total);
+                  $scope.cantidadTotal += parseFloat(data.cantidad);
+                  $scope.valorSubtotal += parseFloat(data.valor_total);      
+                  $scope.valorTotal += parseFloat(data.total_costo);
                 });
-                   //$scope.DocumentoIngreso.get_orden_compra();
-                  // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",$scope.DocumentoIngreso.get_orden_compra());              
+                
+                callback(true);
+                           
+            };
+            
+            /////////////////////////////////////////////////////////
+              that.listarProductosPorAutorizar = function(callback) {
+                  
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                          orden_pedido_id : $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
+                          empresa_id:'03'        
+                    }
+                };
+
+                Request.realizarRequest(API.I002.LISTAR_PRODUCTOS_POR_AUTORIZAR, "POST", obj, function(data) {
+                    if (data.status === 200) {                            
+                        that.renderListarProductosPorAutorizar(data.obj.listarProductosPorAutorizar,function(respuesta){
+                            callback(respuesta);
+                        });
+                    }
+                    if (data.status === 500) {     
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+            
+            
+            
+            that.renderListarProductosPorAutorizar = function(docItemTemporal,callback) {
+              $scope.DocumentoIngreso.get_orden_compra().limpiar_productos_seleccionados();
+              docItemTemporal.forEach(function(data) {
+
+                  var producto = Producto.get(data.codigo_producto, data.descripcion, parseFloat(data.iva).toFixed(2), data.valor_unit, data.lote,data.fecha_vencimiento);
+                  producto.set_cantidad_solicitada(data.cantidad);
+                  producto.set_item_id(data.item_id);
+                  producto.set_valor_total(data.total_costo);
+                  producto.set_unidad_id(data.unidad_id);
+                  producto.set_item_id_compras(data.item_id_compras);
+                  producto.set_iva_total(data.iva_total);
+                  producto.set_total_costo(data.total_costo);
+                  producto.set_porcentaje_gravamen(data.porcentaje_gravamen);
+                  $scope.DocumentoIngreso.get_orden_compra().set_productos_seleccionados(producto);
+                  
+                });
+                
+                callback(true);                           
             };
             
               $scope.listarParametrosRetencion;
@@ -458,7 +665,6 @@ define([
                 };
 
                 Request.realizarRequest(API.I002.LISTAR_PARAMETROS_RETENCION, "POST", obj, function(data) {
-                    console.log("LISTAR_PARAMETROS_RETENCION ",data);
                     if (data.status === 200) {         
                         that.renderListarParametros(data.obj.listarParametrosRetencion);
                     }
@@ -479,19 +685,58 @@ define([
 
                 if (parametros[0].sw_reteiva === '2' || parametros[0].sw_reteiva === '3')
                     if ($scope.valorSubtotal >= parametros[0].base_reteiva)
-                        $scope.valorRetIva = $scope.valorIvaTotal * ($scope.valorRetIva / 100);
+                        $scope.valorRetIva = $scope.gravamen * ($scope.valorRetIva / 100);
                 
-              
-                if (!is_null($scope.imptoCree))
+               $scope.imptoCree = 0;
+                if ($scope.imptoCree != null && $scope.imptoCree !== undefined)
                 {
                     $scope.imptoCree = (($scope.imptoCree/ 100) * $scope.valorSubtotal);
                 }
-
-                $scope.valorTotal  = ((((($scope.valorSubtotal + $scope.imptoCree) - $scope.valorRetFte) - $scope.valorRetIca) - $scope.valorRetIva) - $scope.imptoCree);
-                         
-                 console.log("parametros ",parametros);   //['sw_rtf']        
+                
+                $scope.total  = ((((($scope.valorSubtotal + $scope.gravamen) - $scope.valorRetFte) - $scope.valorRetIca) - $scope.valorRetIva) - $scope.imptoCree);     
+                    
             };
             
+            
+            
+            
+            
+            /*
+             * parametros: variables 
+             * createUpdate 0-crear, 1-Modificar
+             */
+              that.guardarModificarDetalleOrdenCompra = function(parametros,createUpdate,cantidadIngresada) {
+                var ordenes_compras={
+                                        numero_orden:$scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
+                                        codigo_producto:parametros.codigo_producto,  
+                                        cantidad_solicitada: cantidadIngresada,
+                                        valor:parametros.valor_unitario,
+                                        iva:parametros.iva,
+                                        modificar:createUpdate,
+                                        estado_documento:true,
+                                        item_id: parametros.item_id
+                                    };    
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                            ordenes_compras:ordenes_compras
+                    }
+                };
+
+                Request.realizarRequest(API.I002.CREAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
+                    if (data.status === 200) {         
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        that.refrescarVista();
+                    }
+                    if (data.status === 500) {     
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                    
+                    if (data.status === 404) {     
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
             
               that.guardarNewDocTmp = function() {
                   
@@ -505,7 +750,6 @@ define([
                 };
 
                 Request.realizarRequest(API.I002.CREAR_NEW_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
-                    console.log("guardarNewDocTmp ",data);
                     if (data.status === 200) {         
                         AlertService.mostrarMensaje("warning", data.msj);
                         $scope.doc_tmp_id =data.obj.movimiento_temporal_id;
@@ -527,18 +771,109 @@ define([
                 };
 
                 Request.realizarRequest(API.I002.LISTAR_INV_BODEGAS_MOVIMIENTO_TEMPORAL_ORDEN, "POST", obj, function(data) {
-                    console.log("LISTAR_INV_BODEGAS_MOVIMIENTO_TEMPORAL_ORDEN ",data);
-                    if (data.status === 200) {         
-                      console.log("",data.status);
+                    if (data.status === 200) {     
+                        
                     }
                     if (data.status === 500) {     
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
             };
-
-
+                /*
+                 * retorna la diferencia entre dos fechas
+                 */
+               that.restaFechas = function(f1, f2)
+                {
+                    var aFecha1 = f1.split('/');
+                    var aFecha2 = f2.split('/');
+                    var fFecha1 = Date.UTC(aFecha1[2], aFecha1[1] - 1, aFecha1[0]);
+                    var fFecha2 = Date.UTC(aFecha2[2], aFecha2[1] - 1, aFecha2[0]);
+                    var dif = fFecha2 - fFecha1;
+                    var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
+                    return dias;
+                };
                 
+              $scope.ingresar_producto=function(productos){
+                  console.log('productos___',productos);
+                  var fecha_actual = new Date();
+                  fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
+                  var fecha_vencimiento=$filter('date')(new Date(productos.fecha_vencimiento), "dd/MM/yyyy");
+              
+                  
+                  var diferencia=that.restaFechas(fecha_actual,fecha_vencimiento);
+                  
+               if(parseInt(productos.cantidadActual)<=0 || productos.cantidadActual.trim()==="" ){
+                   AlertService.mostrarMensaje("warning","La cantidad debe ser mayor 0");
+                   return;
+               }   
+               
+               if(productos.lote.trim()===""){
+                   AlertService.mostrarMensaje("warning","Debe ingresar el lote");
+                   return;
+               } 
+               
+               if(productos.localizacion.trim()===""){
+                   AlertService.mostrarMensaje("warning","Debe ingresar el lote");
+                   return;
+               }   
+               
+               if(productos.localizacion.trim()===""){
+                   AlertService.mostrarMensaje("warning","Debe ingresar la Localizacion");
+                   return;
+               }   
+               if(diferencia >= 0 && diferencia <=45){
+                   AlertService.mostrarMensaje("warning","Producto proximo a vencer");
+                   return;
+               }   
+               if(diferencia < 0 ){
+                   AlertService.mostrarMensaje("warning","Producto vencido");
+                   return;
+               }   
+               
+               var total_costo_ped=productos.cantidadActual * (productos.valor_unitario + (productos.valor_unitario * productos.iva) / 100);    
+               var   movimientos_bodegas = {
+                                            doc_tmp_id: $scope.doc_tmp_id,
+                                            bodegas_doc_id: datos_documento.bodegas_doc_id,
+                                            codigo_producto:productos.codigo_producto,
+                                            cantidad:productos.cantidadActual,
+                                            porcentaje_gravamen:productos.iva,
+                                            total_costo: total_costo_ped,
+                                            fecha_vencimiento: productos.fecha_vencimiento,
+                                            lote: productos.lote,
+                                            localizacion:productos.localizacion,
+                                            total_costo_ped: '0',
+                                            valor_unitario:'0',
+                                            usuario_id: $scope.session.usuario_id,
+                                            item_id_compras:productos.item_id,
+                                         };
+                   console.log("movimientos_bodegas  ",movimientos_bodegas);
+                   that.additemDocTemporal(movimientos_bodegas);
+              };
+                
+                
+              // ADD_ITEM_DOC_TEMPORAL 
+                that.additemDocTemporal = function(movimientos_bodegas) {
+
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            movimientos_bodegas:movimientos_bodegas
+                        }
+                    };
+
+                   GeneralService.addItemDocTemporal(obj, function(data) {
+                        if (data.status === 200) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            that.refrescarVista();
+                        }
+                        if (data.status === 500) {     
+                            AlertService.mostrarMensaje("warning", data.msj);
+                        }
+                        if (data.status === 404) {     
+                            AlertService.mostrarMensaje("warning", data.msj);
+                        }
+                    });
+                };
                 
               // Productos 
                 $scope.buscar_productos_orden_compra = function() {
@@ -557,8 +892,6 @@ define([
                     Request.realizarRequest(API.I002.CONSULTAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
 
                         if (data.status === 200) {
-                            console.log('======== Productos ====');
-                            console.log(data.obj.lista_productos);
                             that.render_productos(data.obj.lista_productos);
 
                         }
@@ -570,11 +903,14 @@ define([
                     $scope.Empresa.limpiar_productos();
 
                     productos.forEach(function(data) {
-
+                  console.log("data :: ",data);
                         var producto = Producto.get(data.codigo_producto, data.descripcion_producto, parseFloat(data.porc_iva).toFixed(2), data.valor);
                         producto.set_cantidad_solicitada(data.cantidad_solicitada);
-
+                        producto.set_is_tmp(data.tmp);
+                        producto.set_item_id(data.item_id);
+                        producto.set_item_id_compras(data.item_id_compras);
                         $scope.Empresa.set_productos(producto);
+                       
                     });
                 };
 
@@ -585,27 +921,44 @@ define([
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%", enableCellEdit: false},
+                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "8%", enableCellEdit: false},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "40%", enableCellEdit: false},
-                    {field: 'get_cantidad_solicitada() | number : "0" ', displayName: 'Cantidad', width: "7%", enableCellEdit: false},
-                    {displayName: 'Lote', width: "10%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.lote" class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {displayName: 'Fecha. Vencimiento', width: "13%", enableCellEdit: false, cellClass: "dropdown-button",
+                    {field: 'get_cantidad_solicitada() | number : "0" ', displayName: 'Cantidad', width: "5%", enableCellEdit: false},
+                    {displayName: 'Cant. Recibida', width: "7%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="validarTmp(row.entity)" value="{{row.entity.cantidad_solicitada}}" ng-model="row.entity.cantidadActual" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /></div>'},
+                    {displayName: 'Lote', width: "7%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="validarTmp(row.entity)" ng-model="row.entity.lote" class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {displayName: 'Localización', width: "5%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="validarTmp(row.entity)" ng-model="row.entity.localizacion" class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",
                         cellTemplate: ' <div class="col-xs-12">\
                                             <p class="input-group">\
                                                 <input type="text" class="form-control grid-inline-input readonlyinput" name="" id="" \
-                                                    datepicker-popup="{{format}}" ng-model="row.entity.fecha_vencmiento" is-open="row.entity.datepicker_fecha_inicial" \
+                                                    datepicker-popup="{{format}}" ng-model="row.entity.fecha_vencimiento" is-open="row.entity.datepicker_fecha_inicial" \
                                                     min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="" show-weeks="false" toggle-weeks-text="#"/> \
                                                 <span class="input-group-btn">\
-                                                    <button class="btn btn-xs" style="margin-top: 3px;" ng-click="abrir_fecha_vencimiento(row.entity,$event);"><i class="glyphicon glyphicon-calendar"></i></button>\
+                                                    <button class="btn btn-xs" style="margin-top: 3px;" ng-disabled="validarTmp(row.entity)" ng-click="abrir_fecha_vencimiento(row.entity,$event);"><i class="glyphicon glyphicon-calendar"></i></button>\
                                                 </span>\
                                             </p>\
                                         </div>'},                    
-                    {field: 'nombre', displayName: 'Valor Unitario', width: "13%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"><input type="text" ng-model="row.entity.valor_unitario" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'nombre', displayName: 'Valor Unitario', width: "10%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-12"><input type="text" ng-model="row.entity.valor_unitario" ng-disabled="validarTmp(row.entity)" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "8%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-disabled="habilitar_ingreso_producto(row.entity)" ng-click="ingresar_producto(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <div ng-if="!validarTmp(row.entity)">\
+                                              <div ng-if="!validarCantidadAdicion(row.entity)">\
+                                                 <button class="btn btn-default btn-xs" ng-disabled="habilitar_ingreso_producto(row.entity)" ng-click="ingresar_producto(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
+                                                 <button class="btn btn-success btn-xs" ng-disabled="habilitar_ingreso_lote(row.entity)" ng-click="btnAdicionarNuevoLote(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button>\
+                                              </div>\
+                                              <div ng-if="validarCantidadAdicion(row.entity)">\
+                                                 <button class="btn btn-default btn-xs" ng-disabled="habilitar_ingreso_producto(row.entity)" ng-click="ingresar_producto(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
+                                                 <button class="btn btn-danger btn-xs" ng-disabled="validarTmp(row.entity)"><span class="glyphicon glyphicon-minus-sign"></span></button>\
+                                              </div>\
+                                            </div>\
+                                            <div ng-if="validarTmp(row.entity)">\
+                                               <button class="btn btn-success btn-xs" ng-disabled="validarTmp(row.entity)"><span class="glyphicon glyphicon-ok red"></span></button>\
+                                               <button class="btn btn-danger btn-xs" ng-disabled="validarTmp(row.entity)"><span class="glyphicon glyphicon-minus-sign"></span></button>\
+                                            </div>\
                                         </div>'}
                 ]
             };
@@ -617,10 +970,52 @@ define([
                 producto.datepicker_fecha_inicial = true;
             };
             
-            $scope.habilitar_ingreso_producto = function(producto) {
-
+            $scope.validarTmp=function(producto){
+                
+                var disabled = false; 
+                
+                if(producto.get_is_tmp()=== true && producto.get_item_id()===producto.get_item_id_compras()){
+                    disabled = true;
+                }
+                
+                return disabled;
+            };
+            
+            $scope.validarCantidadAdicion=function(producto){
+                
+                var disabled = false; 
+                
+                if(producto.get_cantidad_solicitada()< 2){
+                    disabled = true;
+                }
+                
+                return disabled;
+            };
+            
+            $scope.habilitar_ingreso_lote = function(producto) {
                 var disabled = false;
-
+                if(producto.get_is_tmp()=== true){
+                    disabled = true;
+                }
+                return disabled;
+            }
+            
+            $scope.habilitar_ingreso_producto = function(producto) {
+            
+                var disabled = false;
+         
+                if(producto.get_is_tmp()=== true){
+                    disabled = true;
+                }
+                
+                if(producto.cantidadActual === undefined || producto.cantidadActual==="" || parseInt(producto.cantidadActual) <= 0){
+                    disabled = true;
+                }
+                
+                if(producto.localizacion === undefined || producto.localizacion===""){
+                    disabled = true;
+                }
+                
                 if(producto.get_lote() === undefined || producto.get_lote()===""){
                     disabled = true;
                 }
@@ -632,19 +1027,23 @@ define([
                 if(producto.get_valor_unitario() === undefined || producto.get_valor_unitario()==="" || producto.get_valor_unitario() <= 0 ){
                     disabled = true;
                 }
-                
+               
                 return disabled;
             };
                         
             $scope.validar_ingreso_producto = function(producto) {
 
                 var disabled = false;
+                
+                if(producto.get_is_tmp()=== true){
+                    disabled = true;
+                }
 
                 if(producto.get_lote() === undefined || producto.get_lote()===""){
                     disabled = true;
                 }
                 
-                if(producto.get_fecha_vencimiento() === undefined || producto.get_fecha_vencmiento()===""){
+                if(producto.get_fecha_vencimiento() === undefined || producto.get_fecha_vencimiento()===""){
                     disabled = true;
                 }
                 

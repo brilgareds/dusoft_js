@@ -27,7 +27,8 @@ define([
     "includes/validation/NgValidateEvents",
     "controllers/indexController",
     "controllers/I002/I002Controller",
-    "webNotification"
+    "webNotification",
+    "services/general/GeneralService"
 ], function(angular) {
 
     /* App Module and its dependencies */

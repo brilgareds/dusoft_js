@@ -220,6 +220,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoIngreso.prototype.get_unidad_id  = function() {
                 return this.unidad_id ;
             };
+            
+            ProductoIngreso.prototype.set_is_tmp = function(is_tmp) {
+                this.is_tmp  = is_tmp ;
+                return this;
+            };
+
+            ProductoIngreso.prototype.get_is_tmp  = function() {
+                return this.is_tmp ;
+            };
 
             return this;
         }]);

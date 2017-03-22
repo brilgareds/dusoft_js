@@ -15,6 +15,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 this.productos = [];
                 this.productos_ingresados = [];
                 this.productos_seleccionados = [];
+                this.productos_por_autorizar = [];
             }
 
             // Numero de Orden
@@ -114,7 +115,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             OrdenCompraIngreso.prototype.get_productos_seleccionados = function() {
                 return this.productos_seleccionados;
             };
-
+            
             OrdenCompraIngreso.prototype.limpiar_productos_seleccionados = function() {
                 this.productos_seleccionados = [];
             };

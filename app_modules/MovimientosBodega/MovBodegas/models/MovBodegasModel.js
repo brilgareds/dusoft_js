@@ -120,16 +120,17 @@ MovimientosBodegasModel.prototype.eliminar_detalle_movimiento_bodega_temporal = 
 };
 
 // Eliminar Producto del Documento Temporal
-MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal = function(item_id, callback) {
+MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal = function(parametros, callback) {
 
-   var sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE item_id = ? ; ";
-
-   G.knex.raw(sql, [item_id]).
-   then(function(resultado){
-       callback(false, resultado.rows);
-   }).catch(function(err){
-       callback(err);
-   });
+    G.knex("inv_bodegas_movimiento_tmp_d").
+    where('item_id', parametros.item_id).
+    del().
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    }); 
 
 };
 
@@ -539,6 +540,109 @@ MovimientosBodegasModel.prototype.darFormatoTituloAdicionesDocumento = function(
     }
     
     return obj;
+};
+
+MovimientosBodegasModel.prototype.isExistenciaBodega = function(parametros, callback){
+    
+    var columna = [
+                   "c.empresa_id",
+                   "c.centro_utilidad",
+                   "c.bodega",
+                   "c.codigo_producto"
+                  ];
+         
+            var query  = G.knex.select(columna)
+                        .from("inv_bodegas_movimiento_tmp as a")
+                        .innerJoin("inv_bodegas_documentos as b",
+                        function() {
+                            this.on("a.bodegas_doc_id", "b.bodegas_doc_id")
+                        })
+                        .innerJoin("existencias_bodegas as c",
+                        function() {
+                            this.on("c.empresa_id", "b.empresa_id")
+                                .on("c.centro_utilidad", "b.centro_utilidad")
+                                .on("c.bodega", "b.bodega")
+                        })
+                        .where('a.usuario_id', parametros.usuarioId)
+                        .andWhere('a.doc_tmp_id', parametros.docTmpId)
+                        .andWhere('c.codigo_producto', parametros.codProucto);
+
+                query.then(function(resultado) {
+                    callback(false, resultado);
+                }). catch (function(error) {
+                    console.log("error [isExistenciaBodega]:::::: ", error,parametros);
+                    callback(error);
+                });
+};
+    
+MovimientosBodegasModel.prototype.isBodegaDestino = function(parametros, callback){
+    
+    var columna = [
+        "a.bodega_destino"
+    ];
+
+    var query = G.knex.select(columna)
+                .from("inv_bodegas_movimiento_tmp_traslados as a")
+                .where('a.usuario_id', parametros.usuarioId)
+                .andWhere('a.doc_tmp_id', parametros.docTmpId);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [isBodegaDestino]: ", error);
+        console.log("error [isBodegaDestino]: ", parametros);
+        callback(error);
+    });
+};
+
+MovimientosBodegasModel.prototype.isTrasladosTmp = function(parametros, callback){
+console.log("isTrasladosTmp parametro ",parametros);
+    var sql=" SELECT a.descripcion as dBodega, \
+                     b.descripcion as dProducto \
+              FROM   bodegas as a, \
+                     inventarios_productos b \
+              WHERE  a.bodega = :1 \
+                     AND b.codigo_producto = :2 ";
+     G.knex.raw(sql, {1:parametros.bodega, 2:parametros.codProucto}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(error){
+       console.log("error [isTrasladosTmp]: ", error);
+       callback(error);
+    });
+};
+
+MovimientosBodegasModel.prototype.isExistenciaEnBodega = function(parametros, callback){
+    
+    var columna = [
+                   "a.codigo_producto"
+                  ];
+
+       var subQuery = G.knex.select(columna)
+               .from("existencias_bodegas as a")
+               .as("a");
+
+       var query = G.knex(G.knex.raw("a.*")).from(subQuery)
+                   .where('a.codigo_producto', parametros.codProucto)
+                   .andWhere('a.bodega', parametros.bodegaDestino);
+
+       query.then(function(resultado) {
+           callback(false, resultado);
+       }). catch (function(error) {
+           console.log("error [isExistenciaEnBodega]: ", error);
+           callback(error);
+       });
+};
+
+MovimientosBodegasModel.prototype.getItemId = function(callback){
+    var sql=" SELECT nextval('inv_bodegas_movimiento_tmp_d_item_id_seq'::regclass); ";
+     G.knex.raw(sql).
+    then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(error){
+       console.log("error [getItemId]: ", error);
+       callback(error);
+    });
 };
 
 

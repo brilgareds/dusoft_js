@@ -155,6 +155,11 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.ingresarBodegaMovimientoTmpOrden(req, res);
     });
     
+    // Insertar tmp movimiento bodega productos
+    app.post('/api/OrdenesCompra/ingresarBodegaMovimientoTmpProducto', function(req, res) {
+        c_ordenes_compra.ingresarBodegaMovimientoTmpProducto(req, res);
+    });
+    
     app.post('/api/OrdenesCompra/guardarBodega', function(req, res) {
         c_ordenes_compra.guardarBodega(req, res);
     });

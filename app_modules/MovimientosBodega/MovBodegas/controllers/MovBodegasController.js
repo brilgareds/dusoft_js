@@ -1,7 +1,8 @@
 
-var MovBodegasController = function(movimientos_bodegas) {
+var MovBodegasController = function(movimientos_bodegas,m_ordenes_compra) {
 
     this.m_movimientos_bodegas = movimientos_bodegas;
+    this.m_ordenes_compra = m_ordenes_compra;
 };
 
 // Consultar Documentos Usuario
@@ -70,6 +71,157 @@ MovBodegasController.prototype.actualizarTipoDocumentoTemporal = function(req, r
     });
 
 };
+
+MovBodegasController.prototype.eliminar_producto_movimiento_bodega_temporal= function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    if (args.item_id === undefined) {
+        res.send(G.utils.r(req.url, 'El item_id NO estan definido', 404, {}));
+        return;
+    }
+    
+    parametros={item_id:args.item_id};
+    
+    G.Q.ninvoke(that.m_movimientos_bodegas, "eliminar_producto_movimiento_bodega_temporal", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminar_producto_movimiento_bodega_temporal: result}));
+    }).fail(function(err) {
+        console.log("eliminar_producto_movimiento_bodega_temporal ",err);
+        res.send(G.utils.r(req.url, 'Error al borrar Producto', 500, {}));
+    }).done();
+
+};
+
+/**
+    * Metodo para adicionar un registro temporal.
+    * @author Andres Mauricio Gonzalez Tascon
+    * @param integer doc_tmp_id identificador del documento temporal
+    * @param string codigo_producto identificador del producto
+    * @param numeric cantidad cantidad
+    * @param numeric porcentaje_gravamen porcentaje de gravamen
+    * @param numeric total_costo total costo (cantidad * precio unitario gravado)
+    * @param integer usuario_id (opcional) identificador del documento temporal
+    * @return integer numero de item_id del documento creado.
+    * @access public
+    */
+MovBodegasController.prototype.addItemDocTemporal=function(req,res){
+   var that = this;
+   var args = req.body.data;
+
+    if (args.movimientos_bodegas.doc_tmp_id === '' || args.movimientos_bodegas.usuario_id === '' || args.movimientos_bodegas.bodegas_doc_id === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'El codigo_producto esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.porcentaje_gravamen === '') {
+        res.send(G.utils.r(req.url, 'El porcentaje_gravamen esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.total_costo < 0) {
+        res.send(G.utils.r(req.url, 'El movimientos_bodegas es menor a cero', 404, {}));
+        return;
+    }else if(args.movimientos_bodegas.total_costo === ''){
+       args.movimientos_bodegas.total_costo =0; 
+    }
+    if (args.movimientos_bodegas.fecha_vencimiento === '') {
+        res.send(G.utils.r(req.url, 'El fecha_vencimiento esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.lote === '') {
+        res.send(G.utils.r(req.url, 'El lote esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.localizacion === '') {
+        res.send(G.utils.r(req.url, 'La localizacion esta vacía', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.total_costo_ped === '') {
+        res.send(G.utils.r(req.url, 'El total_costo_ped esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.valor_unitario === '') {
+        res.send(G.utils.r(req.url, 'El valor_unitario esta vacío', 404, {}));
+        return;
+    }
+    
+    if (args.movimientos_bodegas.cantidad === '') {
+        res.send(G.utils.r(req.url, 'La cantidad esta vacía', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.item_id_compras === '') {
+        res.send(G.utils.r(req.url, 'El item_id_compras esta vacío', 404, {}));
+        return;
+    }
+  
+    parametros ={
+                 usuarioId: args.movimientos_bodegas.usuario_id,
+                 docTmpId: args.movimientos_bodegas.doc_tmp_id,
+                 codProucto: args.movimientos_bodegas.codigo_producto,
+                 cantidad :args.movimientos_bodegas.cantidad,
+                 porcentajeGravamen:args.movimientos_bodegas.porcentaje_gravamen,
+                 totalCosto:args.movimientos_bodegas.total_costo,
+                 fechaVencimiento:args.movimientos_bodegas.fecha_vencimiento,
+                 lote:args.movimientos_bodegas.lote,
+                 localProd:args.movimientos_bodegas.localizacion,
+                 totalCostoPed:args.movimientos_bodegas.total_costo_ped,
+                 valorUnitario:args.movimientos_bodegas.valor_unitario,
+                 itemIdCompras:args.movimientos_bodegas.item_id_compras,
+                };
+    G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaBodega", parametros).then(function(result) {
+
+        parametros.empresa=result[0].empresa_id;
+        parametros.centroUtilidad=result[0].centro_utilidad;
+        parametros.bodega=result[0].bodega;
+        
+        if(result.length===0){
+            throw {msj:"EL producto "+args.movimientos_bodegas.codigo_producto+" no esta relacionado en existencias_bodega.", status:403};        
+        }else{
+          
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "isBodegaDestino", parametros);            
+        }
+    }).then(function(result) {
+        if(result.length!==0){
+            parametros.bodegaDestino=result.bodega_destino;
+             return G.Q.nfcall(__traslado,that,parametros);
+        }
+        return false;
+    }).then(function(result) {      
+        return G.Q.ninvoke(that.m_ordenes_compra, "ingresarBodegaMovimientoTmpProducto", parametros);  
+    }).then(function(result) { 
+        console.log("addddddd ",result[1]);
+        console.log("addddddd ",result[0]);
+         res.send(G.utils.r(req.url, 'Guardado correctamente', 200, {addItemDocTemporal: result}));   
+    }).fail(function(err) {
+        console.log("addItemDocTemporal ",err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {addItemDocTemporal: []}));
+    }).done();
+   
+};
+
+function __traslado(that,parametros,callback){
+  var dBodega;
+  var dProducto;
+   G.Q.ninvoke(that.m_movimientos_bodegas, "isTrasladosTmp", parametros).then(function(result) {
+       if(result.length===0){
+            throw {msj:"EL producto "+parametros.codigo_producto+" no esta relacionado en existencias_bodega.", status:403};        
+        }else{
+            dBodega=result.dBodega;
+            dProducto=result.dProducto;
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaEnBodega", parametros);            
+        }
+    }).then(function(result) {
+        if(result.codigo_producto===''){
+            throw {msj:"EL PRODUCTO:"+parametros.codigo_producto+" - "+dProducto+" NO EXISTE EN BODEGA: "+dBodega, status:403};   
+        }else{
+            callback(false);
+        }
+    }).fail(function(err) {
+        callback(true,err);        
+    }).done();
+}
 
 /*MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
     var that = this;
@@ -154,6 +306,6 @@ MovBodegasController.prototype.actualizarTipoDocumentoTemporal = function(req, r
 }*/
 
 
-MovBodegasController.$inject = ["m_movimientos_bodegas"];
+MovBodegasController.$inject = ["m_movimientos_bodegas","m_ordenes_compra"];
 
 module.exports = MovBodegasController;

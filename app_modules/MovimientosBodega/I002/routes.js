@@ -26,5 +26,13 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/I002/listarGetDocTemporal', function(req, res) {
         c_i002.listarGetDocTemporal(req, res);
     });
+    
+    app.post('/api/movBodegas/I002/listarProductosPorAutorizar', function(req, res) {
+        c_i002.listarProductosPorAutorizar(req, res);
+    });
+    
+    app.post('/api/movBodegas/I002/listarProductosParaAsignar', function(req, res) {
+        c_i002.listarProductosParaAsignar(req, res);
+    });
       
 };

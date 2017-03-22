@@ -101,6 +101,66 @@ I002Controller.prototype.listarInvBodegasMovimientoTmpOrden = function(req, res)
     }).done();
 };
 
+I002Controller.prototype.listarProductosParaAsignar = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+//{1:parametro.numero_orden,2:parametro.empresa_id,3:parametro.centro_utilidad,4:parametro.bodega,5:parametro.doc_tmp_id,6:"%" + parametro.descripcion + "%",7:parametro.codigo_prducto}
+    if (args.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'La orden_pedido_id NO esta definida', 404, {}));
+        return;
+    }
+    if (args.fabricante_id === undefined  ||  args.fabricante_id === '') {
+        args.fabricante_id = "-1";
+    }
+
+    var parametros = {
+        numero_orden: args.numero_orden,
+        empresa_id:args.empresa_id,//Sesion.getUsuarioActual().getEmpresa().getCodigo()
+        centro_utilidad:args.centro_utilidad,
+        bodega:args.bodega,
+        doc_tmp_id:args.doc_tmp_id,
+        descripcion:args.descripcion,
+        tipoFiltro:args.tipoFiltro,                
+        fabricante_id:args.fabricante_id                
+    };
+
+    G.Q.ninvoke(that.m_I002, "listarProductosParaAsignar", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Listar Productos Para Asignar', 200, {listarProductosParaAsignar: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al Listar Productos Para Asignar', 500, {}));
+    }).done();
+};
+/* 
+ * @param {type} req: empresa_id,orden_pedido_id
+ * @param {type} res
+ * @returns lista de Productos por autorizar 
+ */
+I002Controller.prototype.listarProductosPorAutorizar = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
+        return;
+    }
+    
+    if (args.orden_pedido_id === undefined) {
+        res.send(G.utils.r(req.url, 'La orden_pedido_id no esta definida', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        empresa_id: args.empresa_id,
+        orden_pedido_id: args.orden_pedido_id
+    };
+    G.Q.ninvoke(that.m_I002, "listarProductosPorAutorizar", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Lista Productos Por Autorizar', 200, {listarProductosPorAutorizar: result}));
+    }).fail(function(err) {
+        console.log("listarProductosPorAutorizar ",err);
+        res.send(G.utils.r(req.url, 'Error al listar Productos Por Autorizar', 500, {}));
+    }).done();
+};
+
 I002Controller.prototype.listarParametrosRetencion = function(req, res) {
     var that = this;
     var args = req.body.data;

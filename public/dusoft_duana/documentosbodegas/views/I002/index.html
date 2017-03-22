@@ -49,8 +49,8 @@
                             <fieldset>
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
-                                    <div class="col-md-12">  
-                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='DocumentoIngreso.observacion' name="" placeholder="Ingresar Observación"></textarea>
+                                    <div class="col-md-12">
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='DocumentoIngreso.orden_compra.observacion' name="" placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
                             </fieldset>
@@ -66,14 +66,14 @@
                                     <br>
                                     <div class="row">  
                                         <div class="">
-                                            <div class="col-md-3">
+<!--                                            <div class="col-md-3">
                                                 <p class="input-group">
                                                     <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="seleccionar_productos(0)">
                                                         <span class="glyphicon glyphicon-plus"></span> Seleccionar Productos
                                                     </button>
                                                 </p>
 
-                                            </div>
+                                            </div>-->
 
                                             <div class="col-md-3 pull-right">
                                                 <p class="input-group">
@@ -99,7 +99,7 @@
                                     </div>  
                                 </tab>                        
                                 <tab>
-                                    <tab-heading>
+                                    <tab-heading ng-click="tabProductosPorAutorizar()">
                                         <i class="glyphicon glyphicon-time"></i> Pendientes X Autorizar
                                     </tab-heading>
 
@@ -163,9 +163,9 @@
         </div>
     </div>
 
-    <div  class="slide" slide-content open-callback="gestionar_productos_orden_compra" close-callback="cerrar_gestion_productos_orden_compra"   >
+<!--    <div  class="slide" slide-content open-callback="gestionar_productos_orden_compra" close-callback="cerrar_gestion_productos_orden_compra"   >
         <div ng-include src="slideurl" ng-controller="GestionarProductosOrdenCompraController"></div>
-    </div>
+    </div>-->
     
     <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
         <div ng-include src="slideurl" ng-controller="GestionarProductosController"></div>

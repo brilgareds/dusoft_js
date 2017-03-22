@@ -26,6 +26,75 @@ DocumentoBodegaI002.prototype.insertarBodegasMovimientoOrdenesCompraTmp = functi
 };
 
 
+DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, callback) {
+
+  var filtro=" true ";
+  if(parametro.tipoFiltro==='0'){
+    filtro+=" AND c.descripcion ILIKE '%"+parametro.descripcion+"%' ";
+  }else if(parametro.tipoFiltro==='1'){
+    filtro+=" AND c.codigo_producto = "+parametro.codigo_prducto+" ";
+  }
+  if(parametro.fabricante_id!=="-1"){
+    filtro+=" AND  fabricante_id = "+parametro.fabricante_id+"  ";
+  }
+  
+
+  var sql="SELECT \
+            distinct c.codigo_producto,\
+            fc_descripcion_producto(c.codigo_producto) as descripcion,\
+            c.porc_iva,\
+            u.unidad_id,\
+            CASE WHEN cd.item_id is not null THEN 'orden'\
+            ELSE ''  \
+            END as orden,\
+            CASE WHEN prodfoc.item_id is not null THEN 'solicitado'\
+            ELSE '' \
+            END as foc\
+            FROM	\
+            inventarios_productos as c \
+            inner join  unidades as u on (c.unidad_id = u.unidad_id )\
+            left join compras_ordenes_pedidos_detalle cd on (cd.orden_pedido_id= :1 and cd.codigo_producto=c.codigo_producto)\
+            left join compras_ordenes_pedidos_productosfoc prodfoc on (cd.orden_pedido_id=prodfoc.orden_pedido_id and cd.codigo_producto=prodfoc.codigo_producto AND\
+            prodfoc.empresa_id = :2 \
+            and \
+            prodfoc.centro_utilidad = :3 \
+            and \
+            prodfoc.bodega = :4 \
+            and \
+            prodfoc.sw_autorizado = '0' \
+            and \
+            prodfoc.doc_tmp_id = :5) \
+            WHERE \
+            c.estado=1\
+            AND \
+            substring(c.codigo_producto from 1 for 2) <>'FO'\
+            AND "+filtro;
+  
+ G.knex.raw(sql, {1:parametro.numero_orden,2:parametro.empresa_id,3:parametro.centro_utilidad,4:parametro.bodega,5:parametro.doc_tmp_id}).then(function(resultado){
+       callback(false,resultado.rows);
+    }).catch(function(err){
+       callback(err);
+    });
+}; 
+
+
+DocumentoBodegaI002.prototype.insertarProductoOrden = function(parametros, transaccion, callback) {
+
+    var query = G.knex("inv_bodegas_movimiento_tmp_ordenes_compra").
+            insert({usuario_id: parametros.usuario_id, doc_tmp_id: parametros.doc_tmp_id, orden_pedido_id: parametros.orden_pedido_id});
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        callback(err);
+    }).done();
+
+};
+
+
 DocumentoBodegaI002.prototype.listarInvBodegasMovimientoTmpOrden = function(parametros, callback) {
 console.log("*****parametros********",parametros);
     var columna = ["a.usuario_id",
@@ -163,6 +232,7 @@ console.log("*****listarGetItemsDocTemporal********",parametros);
         callback(error);
     });
 }; 
+
 DocumentoBodegaI002.prototype.listarGetDocTemporal = function(parametros, callback) {
     
 console.log("*****parametrosRetencion********",parametros);
@@ -227,6 +297,63 @@ console.log("*****parametrosRetencion********",parametros);
         callback(error);
     });
 }; 
+
+
+DocumentoBodegaI002.prototype.listarProductosPorAutorizar = function(parametros, callback) {
+    
+console.log("*****parametrosRetencion********",parametros);
+
+    var columna = [ 
+                    "c.codigo_producto",
+                    "c.doc_tmp_id",
+                    "c.empresa_id",
+                    "c.centro_utilidad",
+                    "c.bodega",
+                    "c.orden_pedido_id",
+                    "c.usuario_id",
+                    "c.justificacion_ingreso",
+                    "c.fecha_ingreso",
+                    "c.cantidad",
+                    "c.lote",
+                    "c.fecha_vencimiento",
+                    "c.porcentaje_gravamen",
+                    "c.total_costo",
+                    "c.local_prod",
+                    "c.sw_autorizado",
+                    "c.item_id",
+                    "c.valor_unitario_compra",
+                    "c.valor_unitario_factura",
+                    G.knex.raw("fc_descripcion_producto(c.codigo_producto) as descripcion"), 
+                    "b.nombre",
+                    G.knex.raw("0 as iva"),
+                  ];
+                                                
+    var subQuery = G.knex.select(columna)
+                    .from("inventarios_productos as a")                    
+                    .innerJoin("compras_ordenes_pedidos_productosfoc as c",
+                    function() {
+                        this.on("a.codigo_producto", "c.codigo_producto")                            
+                    })
+                    .innerJoin("system_usuarios as b",
+                    function() {
+                        this.on("c.usuario_id", "b.usuario_id")
+                    })
+                    .as("d");
+                
+    var query = G.knex(G.knex.raw("d.*"))
+                .from(subQuery)
+                .where('d.empresa_id', parametros.empresa_id)
+                .andWhere('d.orden_pedido_id ', parametros.orden_pedido_id)
+                .andWhere('d.sw_autorizado ', '0');
+        
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [listarProductosPorAutorizar]: ", error);
+        callback(error);
+    });
+}; 
+
 
 DocumentoBodegaI002.$inject = ["m_movimientos_bodegas"];
 

@@ -315,6 +315,7 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
     var sql = " select * from (\
                     select\
                     a.item_id, \
+                    h.item_id_compras,\
                     a.orden_pedido_id as numero_orden,\
                     a.codigo_producto,\
                     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
@@ -328,9 +329,12 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
                     a.estado,\
                     f.politicas_producto,\
-                    CASE WHEN COALESCE (f.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado\
+                    CASE WHEN COALESCE (f.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado,\
+                    CASE WHEN h.item_id is null then FALSE else TRUE end as tmp\
                     from compras_ordenes_pedidos_detalle a\
                     inner join compras_ordenes_pedidos e on a.orden_pedido_id  = e.orden_pedido_id \
+                    left join inv_bodegas_movimiento_tmp_ordenes_compra as g on (a.orden_pedido_id=g.orden_pedido_id)\
+		    left join inv_bodegas_movimiento_tmp_d as h on (h.usuario_id=g.usuario_id and h.doc_tmp_id=g.doc_tmp_id and a.codigo_producto=h.codigo_producto and a.item_id=h.item_id_compras)\
                     left join (\
                         select a.codigo_proveedor_id ,  b.codigo_producto , c.politica as politicas_producto, b.valor_pactado\
                         from contratacion_produc_proveedor a \
@@ -552,6 +556,22 @@ OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_or
     G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+       callback(err);
+    });
+    
+};
+
+// Modificar Detalle Orden de Compra
+OrdenesCompraModel.prototype.modificar_detalle_orden_compra_item = function(numero_orden, codigo_producto, cantidad_solicitada, item_id, callback) {
+
+
+    var sql = " UPDATE  compras_ordenes_pedidos_detalle SET numero_unidades = (numero_unidades - :3 ) \
+               where orden_pedido_id = :1 and codigo_producto = :2 and (numero_unidades - :3) > 0 and item_id = :4 ";
+    console.log("sql ",sql);
+    G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:item_id}).then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(err){
+        console.log("errerrerr",err);
        callback(err);
     });
     
@@ -1257,6 +1277,60 @@ OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmp = function(datos, callb
         12: datos.localProd,
         13: datos.orden
     };
+
+    G.knex.raw(sql, parametros).then(function(resultado) {
+      
+        callback(false, resultado.rows, resultado);
+    }).catch (function(err) {
+        console.log("err (/catch) [ingresarBodegaMovimientoTmp]: ", err);
+        callback(err);
+    });
+};
+/*
+* funcion que realiza el Insert a inv_bodegas_movimiento_tmp_d
+* @param {type} callback
+* @returns {datos de consulta}
+*/
+OrdenesCompraModel.prototype.ingresarBodegaMovimientoTmpProducto = function(datos, callback) {
+   
+    var sql = " insert into \n\
+                inv_bodegas_movimiento_tmp_d ( \
+                        usuario_id,\
+                        doc_tmp_id,\
+                        empresa_id,\
+                        centro_utilidad,\
+                        bodega,\
+                        codigo_producto,\
+                        cantidad,\
+                        porcentaje_gravamen,\
+                        total_costo,\
+                        fecha_vencimiento,\
+                        lote,\
+                        local_prod,\
+                        total_costo_pedido,\
+                        valor_unitario,\
+                        item_id_compras\
+                        )\
+                values( :1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12, :13, :14, :15) ";
+
+    var parametros = {
+        1: datos.usuarioId,
+        2: datos.docTmpId,
+        3: datos.empresa,
+        4: datos.centroUtilidad,
+        5: datos.bodega,
+        6: datos.codProucto,
+        7: datos.cantidad,
+        8: datos.porcentajeGravamen,
+        9: datos.totalCosto,
+        10: datos.fechaVencimiento,
+        11: datos.lote,
+        12: datos.localProd,
+        13: datos.totalCostoPed,
+        14: datos.valorUnitario,
+        15: datos.itemIdCompras
+    };
+    console.log("parametros  ",parametros);
 
     G.knex.raw(sql, parametros).then(function(resultado) {
       

@@ -23,13 +23,13 @@ define(["angular",
     controllers.controller('GuardarTerceroController', [
         '$scope', '$rootScope', 'Request',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", "$modal","GestionTercerosService",
+        '$state', "Usuario", "localStorageService", "$modal", "$filter", "GestionTercerosService",
         'Genero', 'Tercero', 'TipoDocumento', 'EstadoCivil','TipoNacionalidad','TipoOrganizacion',
         'TipoDireccion','NomenclaturaDireccion','TipoTelefono','TipoLineaTelefonica','TipoCorreo',
         'TipoRedSocial','TipoContacto','Contacto','Pais','Departamento','Ciudad','TipoNaturaleza',
         function($scope, $rootScope, Request,
                  API, socket, AlertService, 
-                 $state, Usuario, localStorageService, $modal, GestionTercerosService,
+                 $state, Usuario, localStorageService, $modal, $filter, GestionTercerosService,
                  Genero, Tercero, TipoDocumento, EstadoCivil, TipoNacionalidad, TipoOrganizacion,
                  TipoDireccion, NomenclaturaDireccion, TipoTelefono, TipoLineaTelefonica, TipoCorreo,
                  TipoRedSocial, TipoContacto, Contacto, Pais, Departamento, Ciudad, TipoNaturaleza) {
@@ -82,7 +82,7 @@ define(["angular",
             };
             
             
-            $scope.root.tipoNaturaleza =  $scope.root.tiposNaturaleza[0];
+            $scope.root.tercero.tipoNaturaleza =  $scope.root.tiposNaturaleza[0];
             $scope.pickerFechaExpedicion = {};
             $scope.pickerFechaExpiracion = {};
             $scope.pickerFechaNacimiento = {};
@@ -423,7 +423,7 @@ define(["angular",
             };
             
             $scope.onFechaNacimientoChange = function(){
-                $scope.tercero.fechaNacimiento = $filter('date')($scope.tercero.fechaNacimiento, "yyyy-MM-dd");
+                $scope.root.tercero.fechaNacimiento = $filter('date')($scope.root.tercero.fechaNacimiento, "yyyy-MM-dd");
             };
             
             self.gestionarParametrosTerceros();

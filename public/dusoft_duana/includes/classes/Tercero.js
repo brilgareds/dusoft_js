@@ -35,7 +35,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.fechaExpedicion = "";
             this.fechaExpiracion = "";
             this.fechaNacimiento = "";
-            this.esPersonaJuridica = false;
+            this.tipoNaturaleza = null;
         };
         
         //Operaciones Get de parámetros iniciales de creación de Tercero

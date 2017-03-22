@@ -9,14 +9,14 @@
                        append-to-body = "true"
                        ng-change="onCambiarNaturaleza()">
                 <ui-select-match  placeholder="Seleccionar Naturaleza"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
-                    <span ng-bind="tipoNaturaleza.descripcion"></span>
+                <ui-select-choices refresh-delay="0" repeat="tipoNaturaleza in  root.tiposNaturaleza | filter:$select.search">
+                    <span ng-bind="tipoNaturaleza.getDescripcion()"></span>
                 </ui-select-choices>
             </ui-select>  
         </p>
     </div>
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 1">
         <label class="control-label">Razón social</label>
         <p class="input-group">
 
@@ -28,7 +28,7 @@
         </p>
     </div>
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 1">
         <label class="control-label">Nombre comercial</label>
         <p class="input-group">
 
@@ -40,7 +40,7 @@
         </p>
     </div>
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 0">
         <label class="control-label">Primer nombre</label>
         <p class="input-group">
 
@@ -52,7 +52,7 @@
         </p>
     </div>
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 0">
         <label class="control-label">Segundo nombre</label>
         <p class="input-group">
 
@@ -67,7 +67,7 @@
 </div>
 
 
-<div class="row contenedorCamposTercero" ng-if="root.tipoNaturaleza.codigo == 0">
+<div class="row contenedorCamposTercero" ng-if="root.tercero.tipoNaturaleza.codigo == 0">
     
     <div class="col-md-4">
         <label class="control-label">Primer apellido</label>
@@ -168,7 +168,7 @@
         </p>
     </div>
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 1">
         <label class="control-label">Tipo organización</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tercero.tipoOrganizacion"  
@@ -182,7 +182,7 @@
         </p>
     </div>
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 0">
         <label class="control-label">Estado civil</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tercero.estadoCivil"  
@@ -196,7 +196,7 @@
         </p>
     </div>
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 1">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 1">
         <label class="control-label">Nacionalidad</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tercero.nacionaliad"  
@@ -209,7 +209,7 @@
             </ui-select>  
         </p>
     </div>
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 0">
         <label class="control-label">Fecha nacimiento {{root.tercero.fechaNacimiento}}</label>
         <p class="input-group">
             
@@ -228,7 +228,7 @@
 
 <div class="row contenedorCamposTercero" >
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 0">
         <label class="control-label">Nacionalidad</label>
         <p class="input-group contenedorDropdown">            
             <ui-select ng-model="root.tercero.nacionaliad"  
@@ -242,7 +242,7 @@
         </p>
     </div>
     
-    <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0"   >
+    <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 0"   >
         <label class="control-label">Razón social</label>
         <p class="input-group">
 

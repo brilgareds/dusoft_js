@@ -3,8 +3,8 @@ define(["angular", "js/models","includes/classes/GestionTerceros/BaseParametriza
     models.factory('TipoNaturaleza', ["BaseParametrizacion", function(BaseParametrizacion) {
 
         function TipoNaturaleza(id, descripcion) {
-            this.codigo = id;
             BaseParametrizacion.getClass().call(this,id, descripcion);
+            this.codigo = id;
            
         };
 

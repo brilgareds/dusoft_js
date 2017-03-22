@@ -17,7 +17,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.departamento = "";
             this.municipio = "";
             
-            /*** Gestion terceros ***/
+            /*** Gestion terceros se optimiza propiedades atravez de clases eje pais, departamento ***/
             this.genero = null;
             this.tipoDocumento = null;
             this.estadoCivil = null;
@@ -32,6 +32,10 @@ define(["angular", "js/models"], function(angular, models) {
             this.tipoRedSocial = null;
             this.contacto = null;
             this.pais = null;
+            this.fechaExpedicion = "";
+            this.fechaExpiracion = "";
+            this.fechaNacimiento = "";
+            this.esPersonaJuridica = false;
         };
         
         //Operaciones Get de parámetros iniciales de creación de Tercero

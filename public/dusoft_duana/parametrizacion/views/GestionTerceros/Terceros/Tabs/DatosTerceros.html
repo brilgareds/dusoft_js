@@ -3,7 +3,7 @@
     <div class="col-md-4">
         <label class="control-label">Naturaleza</label>
         <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tipoNaturaleza"  
+            <ui-select ng-model="root.tercero.tipoNaturaleza"  
                        theme="select2" 
                        class="form-control selectgeneral pull-left ui-select-z-index-13" 
                        append-to-body = "true"
@@ -144,10 +144,10 @@
         <label class="control-label">Fecha expedición</label>
         <p class="input-group">
 
-            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha Expedición" name="srch-term" id="srch-term" />
+            <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="root.tercer.fechaExpedicion" is-open="pickerFechaExpedicion.open" min="minDate"   readonly  close-text="Cerrar"  clear-text="Borrar" current-text="Hoy" placeholder="Fecha Expedición" show-weeks="false" toggle-weeks-text="#"  />
             <span class="input-group-btn">
 
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-calendar"></i></button>
+               <button class="btn btn-default" ng-click="onAbrirFechaExpedicion($event);"><i class="glyphicon glyphicon-calendar"></i></button>
             </span>
         </p>
     </div>
@@ -160,10 +160,10 @@
         <label class="control-label">Fecha expiración</label>
         <p class="input-group">
 
-            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha Expiración" name="srch-term" id="srch-term" />
+            <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="root.tercer.fechaExpiracion" is-open="pickerFechaExpiracion.open" min="minDate"   readonly  close-text="Cerrar"  clear-text="Borrar" current-text="Hoy" placeholder="Fecha Expiración" show-weeks="false" toggle-weeks-text="#"  />
             <span class="input-group-btn">
 
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-calendar"></i></button>
+               <button class="btn btn-default" ng-click="onAbrirFechaExpiracion($event);"><i class="glyphicon glyphicon-calendar"></i></button>
             </span>
         </p>
     </div>
@@ -209,15 +209,16 @@
             </ui-select>  
         </p>
     </div>
-    
     <div class="col-md-4" ng-if="root.tipoNaturaleza.codigo == 0">
-        <label class="control-label">Fecha nacimiento</label>
+        <label class="control-label">Fecha nacimiento {{root.tercero.fechaNacimiento}}</label>
         <p class="input-group">
-
-            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Fecha nacimiento" name="srch-term" id="srch-term" />
+            
+            <input type="text" class="form-control readonlyinput" datepicker-popup="yyyy-MM-dd" date-type="string" ng-model="root.tercero.fechaNacimiento"
+                   is-open="pickerFechaNacimiento.open" min="minDate"   readonly  close-text="Cerrar"  clear-text="Borrar" current-text="Hoy" 
+                   placeholder="Fecha Nacimiento" show-weeks="false" toggle-weeks-text="#" ng-change="onFechaNacimientoChange()"  />
             <span class="input-group-btn">
 
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-calendar"></i></button>
+               <button class="btn btn-default" ng-click="onAbrirFechaNacimiento($event);"><i class="glyphicon glyphicon-calendar"></i></button>
             </span>
         </p>
     </div>

@@ -17,6 +17,7 @@ define(["angular",
     'includes/classes/GestionTerceros/Terceros/Pais',
     'includes/classes/GestionTerceros/Terceros/Departamento',
     'includes/classes/GestionTerceros/Terceros/Ciudad',
+    'includes/classes/GestionTerceros/Terceros/TipoNaturaleza',
     'includes/classes/Tercero'], function(angular, controllers) {
 
     controllers.controller('GuardarTerceroController', [
@@ -25,27 +26,21 @@ define(["angular",
         '$state', "Usuario", "localStorageService", "$modal","GestionTercerosService",
         'Genero', 'Tercero', 'TipoDocumento', 'EstadoCivil','TipoNacionalidad','TipoOrganizacion',
         'TipoDireccion','NomenclaturaDireccion','TipoTelefono','TipoLineaTelefonica','TipoCorreo',
-        'TipoRedSocial','TipoContacto','Contacto','Pais','Departamento','Ciudad',
+        'TipoRedSocial','TipoContacto','Contacto','Pais','Departamento','Ciudad','TipoNaturaleza',
         function($scope, $rootScope, Request,
                  API, socket, AlertService, 
                  $state, Usuario, localStorageService, $modal, GestionTercerosService,
                  Genero, Tercero, TipoDocumento, EstadoCivil, TipoNacionalidad, TipoOrganizacion,
                  TipoDireccion, NomenclaturaDireccion, TipoTelefono, TipoLineaTelefonica, TipoCorreo,
-                 TipoRedSocial, TipoContacto, Contacto, Pais, Departamento, Ciudad) {
+                 TipoRedSocial, TipoContacto, Contacto, Pais, Departamento, Ciudad, TipoNaturaleza) {
                      
             var self = this;
             
             $scope.root = {
                 tabActual : 0,
                 tiposNaturaleza:[
-                    {
-                        codigo:"0",
-                        descripcion:"Natural"
-                    },
-                    {
-                        codigo:"1",
-                        descripcion:"Juridica"
-                    }
+                    TipoNaturaleza.get("0", "Natural"),
+                    TipoNaturaleza.get("1", "Juridica")
                 ],
                 tabs: [false, false, false],
                 tercero : Tercero.get(),
@@ -88,7 +83,11 @@ define(["angular",
             
             
             $scope.root.tipoNaturaleza =  $scope.root.tiposNaturaleza[0];
-           
+            $scope.pickerFechaExpedicion = {};
+            $scope.pickerFechaExpiracion = {};
+            $scope.pickerFechaNacimiento = {};
+            
+            //$filter('date')($scope.fechafinal, "yyyy-MM-dd") + " 23:59:00"
             /**
             * @author Eduar Garcia
             * +Descripcion Permite obtener los parametros de los dropdown
@@ -125,6 +124,12 @@ define(["angular",
   
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Permite hacer serializacion de los paises obtenidos del API
+            * @param {Array<Object>} paises
+            * @fecha 2017-03-21
+            */
             self.gestionarPaises = function(paises){
                 $scope.root.parametros.paises = [];
                 for(var i in paises){
@@ -134,6 +139,12 @@ define(["angular",
                 }
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Permite hacer serializacion de los departamentos obtenidos del API
+            * @param {Array<Object>} departamentos
+            * @fecha 2017-03-21
+            */
             self.gestionarDepartamentos = function(departamentos){
                 $scope.root.tercero.getPais().setDepartamentos([]);
                 for(var i in departamentos){
@@ -144,6 +155,12 @@ define(["angular",
                 
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Permite hacer serializacion de las ciudades obtenidas del API
+            * @param {Array<Object>} ciudades
+            * @fecha 2017-03-21
+            */
             self.gestionarCiudades = function(ciudades){
                 var departamento = $scope.root.tercero.getPais().getDepartamentoSeleccionado();
                 for(var i in ciudades){
@@ -271,8 +288,6 @@ define(["angular",
                     }
                 }
                 
-                
-                
             };
             
             /**
@@ -366,6 +381,49 @@ define(["angular",
             */
             $scope.onBtnCancelar = function(){
                 $state.go("Terceros");
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler textfield de fecha de expedicion
+            * @param {Object} event
+            * @fecha 2017-03-22
+            */
+            $scope.onAbrirFechaExpedicion = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.pickerFechaExpedicion.open = !$scope.pickerFechaExpedicion.open;
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler textfield de fecha de expiracion
+            * @param {Object} event
+            * @fecha 2017-03-22
+            */
+            $scope.onAbrirFechaExpiracion = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.pickerFechaExpiracion.open = !$scope.pickerFechaExpiracion.open;
+            };
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler textfield de fecha de nacimiento
+            * @param {Object} event
+            * @fecha 2017-03-22
+            */
+            $scope.onAbrirFechaNacimiento = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.pickerFechaNacimiento.open = !$scope.pickerFechaNacimiento.open;
+            };
+            
+            $scope.onFechaNacimientoChange = function(){
+                $scope.tercero.fechaNacimiento = $filter('date')($scope.tercero.fechaNacimiento, "yyyy-MM-dd");
             };
             
             self.gestionarParametrosTerceros();

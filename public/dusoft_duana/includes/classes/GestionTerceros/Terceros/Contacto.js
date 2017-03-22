@@ -6,6 +6,10 @@ define(["angular", "js/models"], function(angular, models) {
             
             this.tiposContacto = [];
             this.tipoSeleccionado = null;
+            this.nombre = "";
+            this.telefono = "";
+            this.email = "";
+            this.descripcion = "";
            
         };
         

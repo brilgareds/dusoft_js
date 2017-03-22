@@ -4,7 +4,8 @@
         <label class="control-label">Nombre</label>
         <p class="input-group">
 
-            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Nombre" name="srch-term" id="srch-term" />
+            <input type="text" class="form-control"  
+                   ng-model="root.tercero.contacto.nombre" placeholder="Nombre" name="srch-term" id="srch-term" />
             <span class="input-group-btn">
 
                 <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-user"></i></button>
@@ -32,7 +33,8 @@
         <label class="control-label">Teléfono</label>
        <p class="input-group">
 
-            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Teléfono" name="srch-term" id="srch-term" />
+            <input type="text" class="form-control"  
+                   ng-model="root.tercero.contacto.telefono" placeholder="Teléfono" name="srch-term" id="srch-term" />
             <span class="input-group-btn">
 
                 <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-phone-alt"></i></button>
@@ -48,7 +50,8 @@
         <label class="control-label">Correo</label>
        <p class="input-group">
 
-            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Correo" name="srch-term" id="srch-term" />
+            <input type="text" class="form-control" 
+                   ng-model="root.tercero.contacto.email" placeholder="Correo" name="srch-term" id="srch-term" />
             <span class="input-group-btn">
 
                 <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-envelope"></i></button>
@@ -60,7 +63,8 @@
         <label class="control-label">Descripción</label>
        <p class="input-group">
 
-            <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Descripción" name="srch-term" id="srch-term" />
+            <input type="text" class="form-control" 
+                   ng-model="root.tercero.contacto.descripcoin" placeholder="Descripción" name="srch-term" id="srch-term" />
             <span class="input-group-btn">
 
                 <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>

@@ -36,6 +36,20 @@ define(["angular", "js/models"], function(angular, models) {
             this.fechaExpiracion = "";
             this.fechaNacimiento = "";
             this.tipoNaturaleza = null;
+            this.primerNombre = "";
+            this.segundoNombre = "";
+            this.primerApellido = "";
+            this.segundoApellido = "";
+            this.razonSocial = "";
+            this.descripcion = "";
+            this.nombreComercial = "";
+            this.nomenclaturaDescripcion1 = "";
+            this.nomenclaturaDescripcion2 = "";
+            this.numeroPredio = "";
+            this.barrio = "";
+            this.email = "";
+            this.descripcionRedSocial = "";
+            
         };
         
         //Operaciones Get de parámetros iniciales de creación de Tercero

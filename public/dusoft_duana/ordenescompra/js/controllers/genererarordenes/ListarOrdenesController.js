@@ -307,8 +307,8 @@ define(["angular", "js/controllers",
                 // Opcion => 1 = Novedades
 
 
-                if (orden_compra.get_estado() === '0' || orden_compra.get_estado() === '2' || orden_compra.get_estado() === '3' ||
-                        orden_compra.get_estado() === '4' || orden_compra.get_ingreso_temporal()) {
+                if (orden_compra.get_estado() === '0' || orden_compra.get_estado() === '2' || /*orden_compra.get_estado() === '3' ||
+                        orden_compra.get_estado() === '4' ||*/ orden_compra.get_ingreso_temporal()) {
 
                     if (orden_compra.get_estado() === '0')
                         $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] ya fue Ingresada en bodega";

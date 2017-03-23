@@ -44,11 +44,11 @@ DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, c
             fc_descripcion_producto(c.codigo_producto) as descripcion,\
             c.porc_iva,\
             u.unidad_id,\
-            CASE WHEN cd.item_id is not null THEN 'orden'\
-            ELSE ''  \
+            CASE WHEN cd.item_id is not null or prodfoc.item_id is not null  THEN '1'\
+            ELSE '0'  \
             END as orden,\
-            CASE WHEN prodfoc.item_id is not null THEN 'solicitado'\
-            ELSE '' \
+            CASE WHEN prodfoc.item_id is not null THEN '1'\
+            ELSE '0'\
             END as foc\
             FROM	\
             inventarios_productos as c \
@@ -69,7 +69,6 @@ DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, c
             AND \
             substring(c.codigo_producto from 1 for 2) <>'FO'\
             AND "+filtro;
-  
  G.knex.raw(sql, {1:parametro.numero_orden,2:parametro.empresa_id,3:parametro.centro_utilidad,4:parametro.bodega,5:parametro.doc_tmp_id}).then(function(resultado){
        callback(false,resultado.rows);
     }).catch(function(err){
@@ -82,6 +81,29 @@ DocumentoBodegaI002.prototype.insertarProductoOrden = function(parametros, trans
 
     var query = G.knex("inv_bodegas_movimiento_tmp_ordenes_compra").
             insert({usuario_id: parametros.usuario_id, doc_tmp_id: parametros.doc_tmp_id, orden_pedido_id: parametros.orden_pedido_id});
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        callback(err);
+    }).done();
+
+};
+
+
+DocumentoBodegaI002.prototype.agregarItemFOC = function(parametros, transaccion, callback) {
+
+    var query = G.knex("compras_ordenes_pedidos_productosfoc").
+                insert({bodega: parametros.bodega, cantidad: parametros.cantidad, centro_utilidad: parametros.centro_utilidad,
+                        codigo_producto:parametros.codigo_producto,doc_tmp_id:parametros.doc_tmp_id,empresa_id:parametros.empresa_id,
+                        fecha_ingreso:parametros.fecha_ingreso,fecha_vencimiento:parametros.fecha_vencimiento,justificacion_ingreso:parametros.justificacion_ingreso,
+                        lote:parametros.lote,orden_pedido_id:parametros.orden_pedido_id,porcentaje_gravamen:parametros.porcentaje_gravamen,
+                        total_costo:parametros.total_costo,local_prod:parametros.local_prod,usuario_id:parametros.usuario_id,
+                        item_id:parametros.item_id,valor_unitario_compra:parametros.valor_unitario_compra,valor_unitario_factura:parametros.valor_unitario_factura
+                     });
 
     if (transaccion)
         query.transacting(transaccion);

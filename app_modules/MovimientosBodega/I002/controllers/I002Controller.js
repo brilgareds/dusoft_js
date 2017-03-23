@@ -78,68 +78,68 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
      }).done();
 };
 
-I002Controller.prototype.agregarItemFOC = function(req, res) {
-    
-    var that = this;
-    var args = req.body.data;
-    var usuarioId = req.session.user.usuario_id;
-    
-    var parametros = {
-       empresaId :
-       centroUtilidad :       
-       bodega :
-       codigoProducto :
-       cantidad :
-       lote:
-       fechaVencimiento:
-       docTmpId: 
-       porcentajeGravamen:
-       fechaIngreso:
-       justificacionIngreso:
-       ordenPedidoId:
-       totalCosto:
-       localProd:
-       usuarioId:
-       itemId:
-       valorUnitarioCompra:
-       valorUnitarioFactura:
-    };
-    
-    if (args.orden_pedido_id === undefined) {
-        res.send(G.utils.r(req.url, 'El Numero de Orden NO esta definida', 404, {}));
-        return;
-    }
-
-    if (args.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
-        return;
-    }
-    if (args.bodegas_doc_id === undefined) {
-        res.send(G.utils.r(req.url, 'La bodega NO esta definida', 404, {}));
-        return;
-    }
-
-
-    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function(doc_tmp_id) {
-
-        movimiento_temporal_id = doc_tmp_id;  
-    G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal, 
-                movimiento_temporal_id, usuarioId, bodegas_doc_id,observacion, transaccion).then(function() {
-
-        var parametros = {
-            usuario_id: usuarioId,
-            doc_tmp_id: movimiento_temporal_id,
-            orden_pedido_id: orden_pedido_id
-        };
-        return G.Q.nfcall(that.m_I002.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
-
-    }).then(function() {
-        transaccion.commit(movimiento_temporal_id);
-    }).fail(function(err) {                   
-        transaccion.rollback(err);
-    }).done();
-});
-};
+//I002Controller.prototype.agregarItemFOC = function(req, res) {
+//    
+//    var that = this;
+//    var args = req.body.data;
+//    var usuarioId = req.session.user.usuario_id;
+//    
+//    var parametros = {
+//       empresaId :
+//       centroUtilidad :       
+//       bodega :
+//       codigoProducto :
+//       cantidad :
+//       lote:
+//       fechaVencimiento:
+//       docTmpId: 
+//       porcentajeGravamen:
+//       fechaIngreso:
+//       justificacionIngreso:
+//       ordenPedidoId:
+//       totalCosto:
+//       localProd:
+//       usuarioId:
+//       itemId:
+//       valorUnitarioCompra:
+//       valorUnitarioFactura:
+//    };
+//    
+//    if (args.orden_pedido_id === undefined) {
+//        res.send(G.utils.r(req.url, 'El Numero de Orden NO esta definida', 404, {}));
+//        return;
+//    }
+//
+//    if (args.observacion === undefined) {
+//        res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
+//        return;
+//    }
+//    if (args.bodegas_doc_id === undefined) {
+//        res.send(G.utils.r(req.url, 'La bodega NO esta definida', 404, {}));
+//        return;
+//    }
+//
+//
+//    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function(doc_tmp_id) {
+//
+//        movimiento_temporal_id = doc_tmp_id;  
+//    G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal, 
+//                movimiento_temporal_id, usuarioId, bodegas_doc_id,observacion, transaccion).then(function() {
+//
+//        var parametros = {
+//            usuario_id: usuarioId,
+//            doc_tmp_id: movimiento_temporal_id,
+//            orden_pedido_id: orden_pedido_id
+//        };
+//        return G.Q.nfcall(that.m_I002.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
+//
+//    }).then(function() {
+//        transaccion.commit(movimiento_temporal_id);
+//    }).fail(function(err) {                   
+//        transaccion.rollback(err);
+//    }).done();
+//});
+//};
 
 
 I002Controller.prototype.listarInvBodegasMovimientoTmpOrden = function(req, res) {

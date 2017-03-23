@@ -157,13 +157,15 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
             $scope.guardarProducto = function(producto) {
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                var total_costo = producto.cantidad_ingresada * (producto.valor_unit + ((producto.valor_unit * producto.iva) / 100));
-        console.log("producto.cantidad_ingresada ",producto.cantidad_ingresada);
-        console.log("producto.valor_unit ",producto.valor_unit);
-        console.log("producto.iva ",producto.iva);
-        console.log("(producto.valor_unit * producto.iva) / 100 ",(producto.valor_unit * producto.iva) / 100);
-        console.log("(producto.valor_unit + (producto.valor_unit * producto.iva) / 100)",(producto.valor_unit + (producto.valor_unit * producto.iva) / 100));
-        console.log("producto.cantidad_ingresada * (producto.valor_unit + (producto.valor_unit * producto.iva) / 100)",producto.cantidad_ingresada * (producto.valor_unit + (producto.valor_unit * producto.iva) / 100));
+                var porcentaje=((producto.valor_unit * producto.iva) / 100);
+                console.log("porcentaje:: ",porcentaje);
+                var valorMasPorcentaje=producto.valor_unit+porcentaje;                
+                console.log("valorMasPorcentaje:: ",valorMasPorcentaje);
+                console.log("producto.cantidad_ingresada:: ",producto.cantidad_ingresada);
+                var total_costo = valorMasPorcentaje * producto.cantidad_ingresada;
+                
+        console.log("total_costo ",total_costo);
+
 //                var fecha_vencimiento=$filter('date')(new Date(producto.fecha_vencimiento), "dd/MM/yyyy");
                 
                 var parametro={

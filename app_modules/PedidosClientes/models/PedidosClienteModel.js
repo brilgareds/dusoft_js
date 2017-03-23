@@ -6,8 +6,6 @@ var PedidosClienteModel = function(productos, m_pedidos_logs) {
     this.m_pedidos_logs = m_pedidos_logs;
 };
 
-<<<<<<< HEAD
-=======
 
 /*
  * @Autor : Cristian Ardila
@@ -38,7 +36,6 @@ PedidosClienteModel.prototype.actualizarProductoCotizacionBodegaCosmitet = funct
     });
 };
 
->>>>>>> pedidos_farmacias_clientes_feb
 /*
  * @author : Cristian Ardila
  * Descripcion : Funcion encargada de consultar el estado de autorizacion de un cliente
@@ -59,8 +56,6 @@ PedidosClienteModel.prototype.consultarEstadoAutorizacionCliente = function(obj,
     });
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Author : Camilo Orozco
  * Descripcion :  SQL Consultar Detalle Cotizacion
@@ -148,7 +143,6 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
     });
 };
 
->>>>>>> pedidos_farmacias_clientes_feb
 
 /**
  * @api {sql} listar_pedidos_clientes Pedidos Clientes
@@ -881,13 +875,6 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 estado_pedido = '7';
                 this.whereRaw(" e.usuario_id = (select usuario_id from operarios_bodega where operario_id = d.responsable_id ) and  g.usuario_id = ?", [responsable]);
             }
-                        
-            if (filtro.empresa){
-                this.where("a.empresa_id", filtro.empresa.empresaId).
-                andWhere("a.centro_destino", filtro.empresa.centroUtilidad).
-                andWhere("a.bodega_destino", filtro.empresa.bodega);
-            }
-            
         }
 
         this.where("a.estado_pedido", estado_pedido);
@@ -1302,7 +1289,7 @@ PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, num
  * */
 PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
 
-    var sql = " SELECT distinct\
+    var sql = " SELECT\
                 a.pedido_cliente_id as numero_pedido,\
                 b.numero_unidades as cantidad_solicitada,\
                 ((b.numero_unidades - b.cantidad_despachada)) as cantidad_pendiente,\
@@ -1410,11 +1397,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
     var parametros = {1: empresa, 2: centro_utilidad_id, 3: bodega_id, 4: contrato_cliente_id};
-<<<<<<< HEAD
-     
-=======
      //console.log("parametros [listar_productos]: ", parametros)
->>>>>>> pedidos_farmacias_clientes_feb
     if (filtroAvanzado.tipoBusqueda === 0) {
 
         if (tipo_producto !== undefined && tipo_producto !== '') {
@@ -1556,11 +1539,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     ) aa group by 1,2,3\
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto and (a.bodega = i.bodega_origen_producto) \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
-<<<<<<< HEAD
-                 " + filtroProducto;
-=======
                  " + filtroProducto;                                                     
->>>>>>> pedidos_farmacias_clientes_feb
     /*console.log("------parametros ------------- ", parametros);
     console.log("------filtro ------------- ", filtro);
     console.log("------filtros ------------- ", filtros);*/
@@ -1895,49 +1874,6 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
 
 
 
-<<<<<<< HEAD
-/*
- * Author : Camilo Orozco
- * Descripcion :  SQL Consultar Detalle Cotizacion
- * @Funciones que hacen uso del modelo:
- *  --PedidosCliente.prototype.consultarDetalleCotizacion
- *  --PedidosCliente.prototype.cotizacionArchivoPlano
- *  --PedidosCliente.prototype.reporteCotizacion
- */
-PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion, termino_busqueda, callback) {
-
-    var sql = " SELECT\
-                a.pedido_cliente_id_tmp as numero_cotizacion,\
-                a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                a.numero_unidades as cantidad_solicitada,\
-                a.porc_iva as iva,\
-                a.valor_unitario, \
-                (a.numero_unidades * a.valor_unitario) as subtotal,\
-                (a.numero_unidades * (a.valor_unitario * (a.porc_iva/100))) as valor_iva,\
-                ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total,\n\
-                a.empresa_origen_producto,\n\
-                a.centro_utilidad_origen_producto,\n\
-                a.bodega_origen_producto,\
-                (SELECT descripcion FROM bodegas WHERE empresa_id = a.empresa_origen_producto AND centro_utilidad = a.centro_utilidad_origen_producto  AND bodega = a.bodega_origen_producto) as nombre_bodega\
-                FROM ventas_ordenes_pedidos_d_tmp AS a\
-                WHERE pedido_cliente_id_tmp = :1 and \
-                (\
-                    a.codigo_producto ilike :2 or\
-                    fc_descripcion_producto(a.codigo_producto) ilike :2 \
-                );";
-
-
-    G.knex.raw(sql, {1: cotizacion.numero_cotizacion, 2: '%' + termino_busqueda + '%'}).then(function(resultado) {
-        callback(false, resultado.rows, resultado);
-    }). catch (function(err) {
-        console.log("err [consultar_detalle_cotizacion]: ", err);
-        callback(err);
-    });
-};
-
-=======
->>>>>>> pedidos_farmacias_clientes_feb
 
 /*
  * Author : Camilo Orozco

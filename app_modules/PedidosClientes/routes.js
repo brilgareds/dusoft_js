@@ -198,32 +198,15 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/validarDisponibilidad', function(req, res) {
         c_pedidos_clientes.validarDisponibilidad(req, res);
     });
-<<<<<<< HEAD
-    
-    
-    
-    
-    /**
-    * @author Cristian Ardila
-    * +Descripcion: Servicio para consultar la factura fiscal de un pedido
-    */
-=======
      
      /**
      * @author Cristian Ardila
      * +Descripcion: Servicio para consultar la factura fiscal de un pedido
      */
->>>>>>> pedidos_farmacias_clientes_feb
     app.post('/api/PedidosClientes/listarFacturasPedido', function(req, res) {
         c_pedidos_clientes.listarFacturasPedido(req, res);
     });
     
-<<<<<<< HEAD
-    
-    
-    
-=======
->>>>>>> pedidos_farmacias_clientes_feb
     /**
     * @author Cristian Ardila
     * +Descripcion: Servicio para generar un pedido sin que la cotizacion pase
@@ -233,8 +216,6 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/generarPedidoBodegaFarmacia', function(req, res) {
         c_pedidos_clientes.generarPedidoBodegaFarmacia(req, res);
     });
-<<<<<<< HEAD
-=======
     
     
     
@@ -246,5 +227,4 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet', function(req, res) {
         c_pedidos_clientes.actualizarProductoCotizacionBodegaCosmitet(req, res);
     });
->>>>>>> pedidos_farmacias_clientes_feb
 };

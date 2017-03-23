@@ -279,8 +279,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(data.status === 200) {                                          
                     entity.agregarProductosHc(dispensacionHcService.renderListarProductosLotes(data.obj));                   
                     $scope.lotes = entity.mostrarProductosHc();
-                    that.ventanaDispensacionFormula();   
                     
+                    
+                    if($scope.lotes[0].length >0){
+                        that.ventanaDispensacionFormula();   
+                    }else{
+                         AlertService.mostrarMensaje("warning", "No hay lotes disponibles");
+                    }
                     /**
                      * +Descripcion Se recorre los lotes y se les setean la cantidad solicitada
                      *              a cada uno de ellos
@@ -294,10 +299,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if(data.status === 204) {  
                     
                     dispensacionHcService.usuarioPrivilegios(obj, function(privilegio){
-                            
+                   
                         if(privilegio.status === 200){
                            
-                            if(privilegio.obj.privilegios[0].sw_privilegios === '1'){
+                            if(privilegio.obj.privilegios.sw_privilegio_autorizar_confrontado){
                                 
                                that.ventanaAutorizaDispensacion(data, entity);   
                                

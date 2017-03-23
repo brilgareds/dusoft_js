@@ -490,8 +490,9 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
+                enableColumnResize:true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "10%",
+                    {field: 'codigo_producto', displayName: 'Código', width: "8%",
                         
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.get_tipo_producto() == 1" >N</span>\
@@ -512,7 +513,7 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="col-xs-16 ">\n\
                             <p class="text-uppercase">{{row.entity.codigo_invima}} / {{row.entity.fecha_vencimiento_invima}}</p></div>'},
                   
-                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "6%", cellFilter: "currency:'$ '",
+                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "8%", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                            <span ng-if="row.entity.es_regulado()" class="label label-red" >R</span>\
                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency}}</span>\

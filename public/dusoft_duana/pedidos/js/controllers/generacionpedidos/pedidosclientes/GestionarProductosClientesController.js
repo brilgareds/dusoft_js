@@ -22,7 +22,7 @@ define(["angular", "js/controllers",
                 Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
-            
+            //that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
                 /**
@@ -59,9 +59,9 @@ define(["angular", "js/controllers",
                     tipoBusqueda: 0
                 };
 
-                $scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
+                //$scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
                 that.buscar_laboratorios();
-
+                $scope.Empresa.limpiar_productos();
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
@@ -102,12 +102,14 @@ define(["angular", "js/controllers",
 
             // Insertar Encabezado Cotizacion
             $scope.insertar_cabercera_cotizacion = function(callback) {
-
+                var multiplePedido = localStorageService.get("multiple_pedido");
+              
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
-                            cotizacion: $scope.Pedido
+                            cotizacion: $scope.Pedido,
+                            estadoMultiplePedido:  multiplePedido === null ? 0 : multiplePedido.multiple_pedido
                         }
                     }
                 };
@@ -131,7 +133,7 @@ define(["angular", "js/controllers",
 
             // Insertar Productos a la Cotizacion
             that.insertar_detalle_cotizacion = function(callback) {
-
+                 
                 var productoSeleccionado = $scope.datos_form.producto_seleccionado;
                 var precioVenta = Number(productoSeleccionado.get_precio_venta());
                 var precioRegulado = Number(productoSeleccionado.get_precio_regulado());
@@ -142,19 +144,19 @@ define(["angular", "js/controllers",
                 var precioVentaIva = precioVenta + valorTotalIva;
 
                 productoSeleccionado.setPrecioVentaIva(precioVentaIva);
-
+                                                
 
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
-                            producto: $scope.datos_form.producto_seleccionado
+                            producto: $scope.datos_form.producto_seleccionado,
+                            estadoMultiplePedido:  that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
                         }
-                    }
+                    }                
                 };
-
-
+                 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
@@ -288,14 +290,16 @@ define(["angular", "js/controllers",
                     that.buscar_productos_clientes();
                 }
 
-            };
+            };   
 
             $scope.onSeleccionFiltro = function(filtro) {
                 $scope.rootSeleccionProducto.filtro = filtro;
             };
 
             that.buscar_productos_clientes = function() {
-                //numero_cotizacion: [$scope.Pedido.get_numero_cotizacion()], tipo:1
+                
+                that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
+                
                 var obj = {};
                 $scope.rootSeleccionProducto.filtro.numero = [$scope.Pedido.get_numero_pedido()];
                 $scope.rootSeleccionProducto.filtro.tipo = 2;
@@ -321,7 +325,8 @@ define(["angular", "js/controllers",
                                 codigoProducto: $scope.datos_form.codigoProductoAvanzado,
                                 descripcionProducto: $scope.datos_form.nombreProductoAvanzado,
                                 concentracion: $scope.datos_form.concentracionProductoAvanzado,
-                                tipoBusqueda: $scope.datos_form.tipoBusqueda
+                                tipoBusqueda: $scope.datos_form.tipoBusqueda,
+                                estadoMultiplePedido: that.estadoMultipleCotizacion.multiple_pedido
                             }
                         }
                     };
@@ -332,7 +337,7 @@ define(["angular", "js/controllers",
                 if ($scope.datos_form.ultima_busqueda !== $scope.datos_form.termino_busqueda) {
                     $scope.datos_form.pagina_actual = 1;
                 }
-
+                //var estadoMultiplePedido = localStorageService.get("pedido");
                 if ($scope.datos_form.tipoBusqueda === 0) {
                     obj = {
                         session: $scope.session,
@@ -354,19 +359,19 @@ define(["angular", "js/controllers",
                                 codigoProducto: '',
                                 descripcionProducto: '',
                                 concentracion: '',
-                                tipoBusqueda: $scope.datos_form.tipoBusqueda
+                                tipoBusqueda: $scope.datos_form.tipoBusqueda,
+                                estadoMultiplePedido:  that.estadoMultipleCotizacion === null ? 0 : that.estadoMultipleCotizacion.multiple_pedido
                                 
                                 
                             }
                         }
                     };
                 }
-              
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
-
+                 
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data){
 
                     $scope.datos_form.ultima_busqueda = $scope.datos_form.termino_busqueda;
-
+                  
                     if (data.status === 200) {
 
                         $scope.datos_form.cantidad_items = data.obj.pedidos_clientes.lista_productos.length;
@@ -375,11 +380,16 @@ define(["angular", "js/controllers",
                             if ($scope.datos_form.pagina_actual > 0) {
                                 $scope.datos_form.pagina_actual--;
                             }
-                            AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
-                            return;
+                            /*AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                            return;*/
                         }
-
+                        
                         that.render_productos(data.obj.pedidos_clientes.lista_productos);
+                    }else{
+                        
+                        AlertService.mostrarMensaje("warning", data.msj.err);
+                        return;
+                        
                     }
                 });
             };
@@ -403,7 +413,10 @@ define(["angular", "js/controllers",
                     producto.setContrato(data.contrato);
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     producto.setUnidadMedida(data.unidad_medida);
-                    
+                    producto.setNombreBodega(data.nombre_bodega);
+                    producto.setEmpresaIdProducto(data.empresa_id);
+                    producto.setCentroUtilidadProducto(data.centro_utilidad);
+                    producto.setBodegaProducto(data.bodega);
                     
                     $scope.Empresa.set_productos(producto);
                     
@@ -441,7 +454,7 @@ define(["angular", "js/controllers",
              */
             $scope.solicitar_producto = function(producto) {
              
-            
+                $scope.Pedido.limpiar_productos();
                 if(producto.precio_venta > 0){
                     /*  var val = producto.precio_venta;
                      /*   var clean = val.replace(/[^0-9\.]/g, '');
@@ -508,8 +521,15 @@ define(["angular", "js/controllers",
                     {field: 'descripcion', displayName: 'Nombre', width:"24%",
                         // cellTemplate: '<div class="ngCellText"   ng-class="col.colIndex()">{{row.entity.descripcion}} - {{row.entity.descripcionMolecula}}</div>'},
                         cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.getDescripcion())\"></div>"},
+<<<<<<< HEAD
                     {field: 'codigo_cum', displayName: 'Cum', width: "10%", cellClass: "gridNumber"},
                     {field: '#Cod.invima/F.Ven', width: "10%", displayName: '#Cod.invima/F.Ven', 
+=======
+                    
+                    {field: 'nombreBodega', displayName: 'Bodega', width: "90"},
+                    {field: 'codigo_cum', displayName: 'Cum', width: "90", cellClass: "gridNumber"},
+                    {field: '#Cod.invima/F.Ven', width: "200", displayName: '#Cod.invima/F.Ven', 
+>>>>>>> pedidos_farmacias_clientes_feb
                         cellTemplate: '<div class="col-xs-16 ">\n\
                             <p class="text-uppercase">{{row.entity.codigo_invima}} / {{row.entity.fecha_vencimiento_invima}}</p></div>'},
                   
@@ -655,6 +675,7 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                console.log("DIOS ES BUENO");
                
             });
         }]);

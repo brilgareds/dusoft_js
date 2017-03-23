@@ -78,7 +78,9 @@ define(["angular"], function(angular) {
                     'VALIDAR_DISPONIBILIDAD': BASE_URL + '/PedidosClientes/validarDisponibilidad',
                     'LISTAR_FORMULA_PEDIDO': BASE_URL +'/PedidosClientes/listarFacturasPedido',
                     'GENERAR_PEDIDO_BODEGA_FARMACIA': BASE_URL +'/PedidosClientes/generarPedidoBodegaFarmacia',
-                    
+ 
+                    'ACTUALIZAR_PRODUCTO_COTIZACION_COSMITET': BASE_URL +'/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet',
+ 
                     
                 },
                 FARMACIAS :{

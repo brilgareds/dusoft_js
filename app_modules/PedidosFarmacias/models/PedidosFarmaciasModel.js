@@ -1216,8 +1216,8 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
     });
 };
 
-// Autor:      : Alexander López
-// Descripcion : Calcula la cantidad TOTAL de un producto que está reservada en pedidos temporales de Farmacia
+// Autor:      : Alexander LÃ³pez
+// Descripcion : Calcula la cantidad TOTAL de un producto que estÃ¡ reservada en pedidos temporales de Farmacia
 // Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 //               
 
@@ -1235,7 +1235,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
 
 
 // Autor:      : Eduar Garcia
-// Descripcion : Calcula la cantidad TOTAL de un producto que está reservada en pedidos temporales de Farmacia por fecha de registro
+// Descripcion : Calcula la cantidad TOTAL de un producto que estÃ¡ reservada en pedidos temporales de Farmacia por fecha de registro
 // Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
 //               
 
@@ -1259,7 +1259,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
  * @apiGroup PedidosFarmacias (sql)
  * @apiDescription se actualiza la cantidad pendiente del pedido al genear el despacho
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {Function} callback Funcion de retorno de informacion.

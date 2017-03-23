@@ -25,6 +25,10 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.cantidadPendiente = 0;
                 this.cantidadPendienteDespachar = 0;
                 this.unidadMedida = 0;
+                this.nombreBodega = "";
+                this.empresaIdProducto = "";
+                this.centroUtilidadProducto = "";
+                this.bodegaProducto = "";
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
@@ -281,6 +285,72 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             // cantidad pendiente
             ProductoPedidoCliente.prototype.getUnidadMedida = function() {               
                 return this.unidadMedida;
+            };
+            
+            
+            
+            
+            
+            
+            /**
+             * +Descripcion metodo encargado de setear el nombre de la bodega de donde
+             *              se obtendra el producto
+             */
+            ProductoPedidoCliente.prototype.setNombreBodega = function(nombreBodega) {
+                this.nombreBodega = nombreBodega;
+                return this;
+            };
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.getNombreBodega = function() {               
+                return this.nombreBodega;
+            };
+            
+            
+            
+            
+             
+            /**
+            * +Descripcion metodo encargado de setear el nombre de la bodega de donde
+            *              se obtendra el producto
+            */
+            ProductoPedidoCliente.prototype.setEmpresaIdProducto = function(empresaIdProducto) {
+                this.empresaIdProducto = empresaIdProducto;
+                return this;
+            };
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.getEmpresaIdProducto = function() {               
+                return this.empresaIdProducto;
+            };  
+            
+            
+            /**
+            * +Descripcion metodo encargado de setear el nombre de la bodega de donde
+            *              se obtendra el producto
+            */
+            ProductoPedidoCliente.prototype.setCentroUtilidadProducto = function(centroUtilidadProducto) {
+                this.centroUtilidadProducto = centroUtilidadProducto;
+                return this;
+            };
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.getCentroUtilidadProducto = function() {               
+                return this.centroUtilidadProducto;
+            };
+            
+            /**
+            * +Descripcion metodo encargado de setear el nombre de la bodega de donde
+            *              se obtendra el producto
+            */
+            ProductoPedidoCliente.prototype.setBodegaProducto = function(bodegaProducto) {
+                this.bodegaProducto = bodegaProducto;
+                return this;
+            };
+            
+            // cantidad pendiente
+            ProductoPedidoCliente.prototype.getBodegaProducto = function() {               
+                return this.bodegaProducto;
             };
 
             return this;

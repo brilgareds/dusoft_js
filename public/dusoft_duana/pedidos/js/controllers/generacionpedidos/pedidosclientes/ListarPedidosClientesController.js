@@ -95,6 +95,13 @@ define(["angular", "js/controllers",
                     {nombre: "Cliente", tipo_busqueda: 1},
                     {nombre: "Vendedor", tipo_busqueda: 2}
                 ],
+                opcion_pedido: [
+                    {descripcion: "Crear",tipo_pedido: 0},
+                    {descripcion: "Crear multiple",tipo_pedido: 1}              
+                ],
+                opcion_inicial: {descripcion: "Seleccione",tipo_pedido: -1},
+                    
+                
                 filtro: {nombre: "Numero", tipo_busqueda: 0},
                 filtro_pedido: {nombre: "Numero", tipo_busqueda: 0},
                 filtro_actual_cotizacion: {},
@@ -104,6 +111,34 @@ define(["angular", "js/controllers",
                 inactivarTab: false
             };
             $scope.listarFacuras = false;
+            
+            
+            /**
+             * +Descripcion Menu desplegable para seleccionar el tipo de cotizacion
+             *              que desee realizar el usario,
+             *              0 = Cotizacion
+             *              1 = Cotizacion multiple
+             */
+            $scope.onSeleccionOpcionPedido = function(opcion) {
+                $scope.datos_view.opcion_inicial = opcion;
+                
+               
+                if(opcion.tipo_pedido === 0){   
+                    localStorageService.add("multiple_pedido",{multiple_pedido:0});
+                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0' });
+                    $state.go('Cotizaciones');
+                }
+                                                         
+                if(opcion.tipo_pedido === 1){    
+                    localStorageService.add("multiple_pedido",{multiple_pedido:1});
+                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0' });
+                    $state.go('Cotizaciones');
+                 
+                }
+                 
+            };
+            
+            
             /**
              * +Descripcion Menu desplegable para filtar en la busqueda de
              *              una cotizacion
@@ -202,8 +237,12 @@ define(["angular", "js/controllers",
                 localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(),
                     cartera: '0',
                     busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
-                    filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion});
-                $state.go('Cotizaciones');
+                    filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion });
+                
+                
+                
+                localStorageService.add("multiple_pedido",{multiple_pedido:1});
+                $state.go('Cotizaciones');      
             };
 
             $scope.modificar_pedido_cliente = function(pedido) {
@@ -211,7 +250,8 @@ define(["angular", "js/controllers",
 
                 localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),
                     busqueda: $scope.datos_view.termino_busqueda_pedidos,
-                    filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido});
+                    filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido });
+                localStorageService.add("multiple_pedido",{multiple_pedido:0});
                 $state.go('PedidoCliente');
             };
 
@@ -241,16 +281,36 @@ define(["angular", "js/controllers",
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
                     return;
                 }
-              
+                
+                console.log("obj.get_numero_cotizacion() ", obj.get_numero_cotizacion())
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
+                    
+                    var url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
+                    var parametro = {
+                        session: $scope.session,
+                        data: {pedidos_clientes: {cotizacion: obj.get_numero_cotizacion()}}
+                    };
+
+                    Request.realizarRequest(url, "POST", parametro, function(data) {
+
+                        if (data.status === 200) {                            
+                             
+                            localStorageService.add("multiple_pedido",{multiple_pedido:data.obj.pedidos_clientes.estado_multiple_pedido});
+                        }
+                    });
+                    
+                    
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1', tipoPedido: obj.getTipoPedido()});
+                    localStorageService.add("aprobarEstadoPedidoGenerarPedido",{estado:0});
                     $state.go('Cotizaciones');
                 }
 
                 // Observacion cartera para el pedido
                 if (obj.get_numero_pedido() > 0) {
+                    localStorageService.add("multiple_pedido",{multiple_pedido:0});
                     localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1', tipoPedido: obj.getTipoPedido()});
+                    localStorageService.add("aprobarEstadoPedidoGenerarPedido",{estado:1});
                     $state.go('PedidoCliente');
                 }
             };
@@ -309,7 +369,7 @@ define(["angular", "js/controllers",
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
 
                 if (terminoBusqueda) {
-                    
+                                   
                     localStorageService.add("terminoBusquedaPedido", null);
                     $scope.datos_view.filtro = terminoBusqueda.filtro_actual_cotizacion;
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
@@ -516,7 +576,12 @@ define(["angular", "js/controllers",
                     data: {
                         pedidos_clientes: {
                             cotizacion: cotizacion,
-                            termino_busqueda: ''
+                            termino_busqueda: {
+                                termino_busqueda:'2',
+                                empresa_origen_id: cotizacion.empresa_id,
+                                centro_utilidad_origen_id: cotizacion.centro_utilidad_id,
+                                bodega_origen_id: cotizacion.bodega_id
+                            }
                         }
                     }
                 };

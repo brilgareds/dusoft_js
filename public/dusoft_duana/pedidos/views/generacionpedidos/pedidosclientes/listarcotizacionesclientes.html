@@ -1,7 +1,7 @@
 <div>
     <div class="row">
 
-        <div class="col-md-2 col-lg-1">
+   <!--     <div class="col-md-2 col-lg-1">
             <p class="input-group">
 
                 <button type="button" class="btn btn-default btn-medium ng-scope" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_crear_cotizaciones }}" ng-click="gestionar_cotizacion_cliente()">
@@ -9,7 +9,28 @@
                 </button>
             </p>
         </div>
+//-->
+   
+    <div class="col-md-3 pull-left">
 
+
+            <div class="input-group">
+                <div class="input-group-btn">                
+                    <button type="button" class="btn btn-default dropdown-toggle" 
+                            data-toggle="dropdown" 
+                            aria-haspopup="true" 
+                            aria-expanded="false">{{datos_view.opcion_inicial.descripcion}} <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="opcion in datos_view.opcion_pedido">
+                            <a href="javascript:void(0)" ng-click="onSeleccionOpcionPedido(opcion)">{{opcion.descripcion}}</a>
+                        </li>
+                        <li>
+                    </ul>     
+                </div><!-- /btn-group -->
+
+            </div>
+            </p>
+        </div>
 
         <div class="col-md-2">
             <p class="input-group">

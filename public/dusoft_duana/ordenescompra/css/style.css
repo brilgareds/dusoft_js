@@ -496,3 +496,11 @@ button.btnTipo{
 .btnOpcionesOrdenCompra{
     width:132px;
 }
+
+.contenedorRecepcion{
+    padding:0px 15px 0px 15px;
+}
+
+.contenedorRecepcion .margin-top{
+    margin-top: 25px;
+}

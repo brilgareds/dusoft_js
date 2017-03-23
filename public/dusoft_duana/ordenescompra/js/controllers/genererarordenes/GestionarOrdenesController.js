@@ -433,6 +433,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             $scope.finalizar_orden_compra = function(finalizar_orden_compra) {
+                
+                console.log("estado de la orden de compra ", $scope.orden_compra.get_estado());
+                if($scope.orden_compra.get_estado() === '3' || $scope.orden_compra.get_estado() === '4'){
+                    return;
+                }
+                
 
                 var obj = {
                     session: $scope.session,

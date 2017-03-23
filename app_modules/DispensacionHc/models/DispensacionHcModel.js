@@ -3686,12 +3686,37 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
                    "a.sw_pendiente",  
                    "a.tipo_formula",  
                    G.knex.raw("CASE WHEN a.numero_total_entregas = a.numero_entrega_actual THEN 1 ELSE 0 END as sw_finalizado"),  
-                   G.knex.raw("a.fecha_registro_formula as fecha_entrega"), 
-                  /* G.knex.raw("CASE WHEN a.refrendar = 1 THEN (\
-                   		SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion  \
-                   		FROM medicamentos_refrendados   \
-                    	WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula)   \
-                    	ELSE a.fecha_registro_formula END as fecha_entrega"), */ 
+                   G.knex.raw("CASE WHEN a.refrendar = 1 THEN (\
+                    SELECT CASE WHEN ref.fecha_refrendacion  >= \
+                                CASE WHEN a.fecha_registro_formula IS NULL \
+                                     THEN a.fecha_registro ELSE a.fecha_registro_formula END\
+                    		THEN ref.fecha_refrendacion\
+                    		    ELSE \
+                                    CASE WHEN a.fecha_registro_formula IS NULL \
+                                         THEN a.fecha_registro \
+                                         ELSE a.fecha_registro_formula END \
+                                    END\
+                                FROM (\
+                                    SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion\
+                                    FROM medicamentos_refrendados   \
+                                    WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula\
+                                    )as ref)\
+                    ELSE  a.fecha_registro_formula\
+                    END as fecha_entrega"), 
+                    G.knex.raw("CASE WHEN a.refrendar = 1 \
+                            THEN ( \
+                                 SELECT CASE WHEN ref.fecha_refrendacion  >=\
+                                             CASE WHEN a.fecha_registro_formula IS NULL \
+                                                  THEN a.fecha_registro ELSE a.fecha_registro_formula END\
+                                             THEN '1'\
+                                        ELSE '0' END\
+                                        FROM (\
+                                             SELECT distinct(max(fecha_refrendacion)) as fecha_refrendacion\
+                                             FROM medicamentos_refrendados   \
+                                             WHERE numero_formula = a.formula_id AND transcripcion_medica = a.tipo_formula\
+                                         )as ref)\
+                            ELSE '0'\
+                        END as estado_fecha_refrendacion"),
                    G.knex.raw("null as fecha_minima_entrega"),   
                    G.knex.raw("null as fecha_maxima_entrega"),   
                    "a.medico_id",  
@@ -3716,7 +3741,8 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
          "b.medico_id",  
          G.knex.raw("TO_CHAR(b.fecha_registro,'YYYY-MM-DD') as fecha_registro"),  
          G.knex.raw("TO_CHAR(b.fecha_finalizacion,'YYYY-MM-DD') as fecha_finalizacion"),  
-          G.knex.raw("b.fecha_ultima_entrega as fecha_ultima_entrega")
+          G.knex.raw("b.fecha_ultima_entrega as fecha_ultima_entrega"),
+          "estado_fecha_refrendacion"
      ];
      
     var subQueryMovFormulaB = G.knex.select(campoSubQueryMovFormulaB)
@@ -3731,7 +3757,7 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
      
     if(transaccion) query.transacting(transaccion);    
         query.then(function(resultado){  
-            //console.log("resultado [consultarDispensacionEstadosFormula]:", resultado)  
+        console.log("resultado model [consultarDispensacionEstadosFormula]:", resultado)  
         return  G.Q.ninvoke(that,'insertarDispensacionEstadosFormula',resultado[0], transaccion)
             
     }).then(function(resultado){       
@@ -3746,13 +3772,13 @@ DispensacionHcModel.prototype.consultarDispensacionEstadosFormula = function(obj
 /**
  * @author Cristian Manuel Ardila Troches
  * +Descripcion Metodo encargado de insertar el movimiento de la formula en la tabla
- *              dispensacion_estados
+ *              dispensacion_estados                                                    
  * @fecha 2016-12-14 (YYYY-MM-DD)
  */
 DispensacionHcModel.prototype.insertarDispensacionEstadosFormula = function(obj, transaccion, callback) {
      
     var query = G.knex('dispensacion_estados')
-        .returning(["fecha_entrega","numero_entrega_actual","sw_finalizado"])
+        .returning(["fecha_entrega","numero_entrega_actual","sw_finalizado", "estado_fecha_refrendacion","fecha_registro"])
         .insert({formula_id:obj.formula_id,   
          evolucion_id:obj.evolucion_id,   
          paciente_id:obj.paciente_id,   
@@ -3769,11 +3795,13 @@ DispensacionHcModel.prototype.insertarDispensacionEstadosFormula = function(obj,
          medico_id:obj.medico_id,  
          fecha_registro:obj.fecha_registro,  
          fecha_finalizacion:obj.fecha_finalizacion,  
-         fecha_ultima_entrega:obj.fecha_ultima_entrega           
+         fecha_ultima_entrega:obj.fecha_ultima_entrega,          
+         estado_fecha_refrendacion:obj.estado_fecha_refrendacion          
         });
                    
     if(transaccion) 
         query.transacting(transaccion).then(function(resultado) {   
+            console.log("resultado model [insertarDispensacionEstadosFormula]:", resultado)  
             callback(false, resultado);
         }).catch (function(err) {
              console.log("err (/catch) [insertarDispensacionEstadosFormula]: ", err);  

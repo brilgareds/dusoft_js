@@ -2548,23 +2548,70 @@ DispensacionHc.prototype.insertarFormulasDispensacionEstados = function(req, res
          
     }).then(function(resultado){ 
          
-           console.log("resultado [consultarDispensacionesFormula] ", parametros);
+           console.log("resultado [consultarDispensacionesFormula] ", resultado);
            
         if(resultado.length > 0){
-              fechaUltimaEntrega = resultado[0].fecha_entrega;
+              fechaUltimaEntrega = resultado[0].fecha_entrega; 
               estadoFinalizacionFormula = resultado[0].sw_finalizado;
-            if(resultado[0].fecha_entrega === null ){  
+            
+            /**
+             * +Descripcion Si la fecha entrega llega null es por que la formula
+             *              no tiene ninguna entrega por lo cual no se le adicionaran
+             *              dias para la proxima entrega
+             */
+            if(resultado[0].fecha_entrega === null ){   
                 
                 fechaEntrega = fechaFormulacion;  
                 fechaMinima  = fechaFormulacion; 
             }else{         
                 
+                /**
+                * +Descripcion Si formula tiene estado finalizado no se le adicionaran
+                *              dias para la proxima entrega
+                */
                 if(resultado[0].sw_finalizado === 1){
                     fechaEntrega = fechaFormulacion;   
                     fechaMinima  = fechaFormulacion; 
                 }else{
-                    fechaEntrega = G.moment(resultado[0].fecha_entrega ).add(30, 'day').format(formato); //resultado[0].fecha_entrega 
-                    fechaMinima   = G.moment(resultado[0].fecha_entrega).add(25,'days').format(formato);
+                    
+                    /**
+                     * +Descripcion Estado: (resultado[0].estado_fecha_refrendacion)
+                     *              1. Si la fecha de la refrendacion de la formula
+                     *              es >= a la ultima entrega de la formula o a la
+                     *              fecha de registro de la formula
+                     *              2. Si la fecha de la refrendacion de la formula
+                     *              es < a la ultima entrega de la formula o a la
+                     *              fecha de registro de la formula
+                     *              Si el estado es 1 = no se le adicionaran dias
+                     *              para la proxima entrega
+                     *              si el estado es 0 Se valida 
+                     *              
+                     */
+                    if(resultado[0].estado_fecha_refrendacion === 1){
+                        
+                        fechaEntrega = fechaUltimaEntrega;   
+                        fechaMinima  = fechaUltimaEntrega;
+                        
+                    }else{
+                        
+                       /**
+                         * +Descripcion si la formula no registra entregas no se le adicionaran dias
+                         *              para la proxima entrega 
+                         *              de lo contrario si se le adicionaran dias
+                         *              para la proxima entrega               
+                         **/
+                        if(resultado[0].numero_entrega_actual === 0){
+                            fechaEntrega = resultado[0].fecha_registro;   
+                            fechaMinima  = resultado[0].fecha_registro;  
+                        }else{
+                        
+                        fechaEntrega = G.moment(resultado[0].fecha_entrega).add(30, 'day').format(formato);  
+                        fechaMinima   = G.moment(resultado[0].fecha_entrega).add(25,'days').format(formato);
+                        
+                        }
+                    }
+                   /* fechaEntrega = G.moment(resultado[0].fecha_entrega ).add(30, 'day').format(formato); //resultado[0].fecha_entrega 
+                    fechaMinima   = G.moment(resultado[0].fecha_entrega).add(25,'days').format(formato);*/
                 }
                 
             }

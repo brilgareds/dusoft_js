@@ -241,26 +241,27 @@ define(["angular", "js/controllers",
             var productos = [];
             var f = new Date();
             var fecha = f.getDate() + "/" + (f.getMonth() + 1) + "/" + f.getFullYear();
+            var farmacia = $scope.root.pedido.getFarmaciaDestino();    
+            var clienteFarmacia  = empresa+''+ farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
             var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
-console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
             for (var i in pedido) {
                 if (empresa !== pedido[i].empresaOrigenProducto || centro_utilidad !== pedido[i].centroUtilidadOrigenProducto || bodega !== pedido[i].bodegaOrigenProducto) {
                     var producto = {codigo_producto: pedido[i].codigo_producto, cantidad_solicitada: pedido[i].cantidadSolicitada, empresaIdProducto: pedido[i].empresaOrigenProducto, centroUtilidadProducto: pedido[i].centroUtilidadOrigenProducto,bodegaProducto:pedido[i].bodegaOrigenProducto};
                     productos.push(producto);
                 }
             }
-            
+           console.log("clienteFarmacia ",clienteFarmacia);
             if(pedido.length===productos.length){
              self.generarPedidoFarmacia=false;
             }
-            
+             
             if (productos.length > 0) {
                 var cotizacions = {
                     empresa_id: '03',
                     centro_utilidad_id: '1 ',
                     bodega_id: '03',
                     numero_cotizacion: 0,
-                    observacion: 'Pedido Generado desde Duana',
+                    observacion: 'Pedido Generado desde Farmacia',
                     productos: productos,
                     tipo_producto: pedido[0].getTipoProductoId(),
                     observacion_cartera: '',
@@ -269,10 +270,8 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
                     estado: '0',
                     vendedor: {tipo_id_tercero: 'CC ', id: '67039648'}, //pedir a Mauricio
                     cliente: {
-                        tipo_id_tercero: 'AS', ///pedir a Mauricio
-                        id: '800024390',
-                        contrato_id: 301,
-                        tipoBloqueoId: '1'
+                        tipo_id_tercero: 'AS', ///se determina que todos los clientes farmacia quedan creados con AS 
+                        id: clienteFarmacia,
                     },
                     fecha_registro: fecha,
                     usuario_id: $scope.root.session.usuario_id
@@ -451,45 +450,45 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
              * +Descripcion: Handler del boton generar pedido
              */
           $scope.onGenerarPedido = function() {
-            if ($scope.root.bodegaMultiple.bools) {
+       /*     if ($scope.root.bodegaMultiple.bools) {
                 self.generarPedidoAutomaticoCliente(function(datos) {
                     var mensaje = '';
                     if (datos.status === 200) {
-                        console.log("");
                         mensaje = datos.msj;
                         if(self.generarPedidoFarmacia){
                         self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
-                           mensaje+="\n Pedido Farmacia No. "+ numero_pedido_farmacia;
-                           AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+                           mensaje+="<br> Pedido Farmacia No. "+ numero_pedido_farmacia;
+                           AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         });
                         }else{
-                          mensaje+="\n No se genera Pedido en Farmacia. ";
-                          AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje); 
+                          mensaje+="<br> No se genera Pedido en Farmacia. ";
+                          AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                           self.eliminarPedidoTemporal();
                         }
                     }
                     if (datos.status === 500) {
                         mensaje = datos.msj;
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                    }
+                    if (datos.status === 404) {
+                        mensaje = datos.msj;
+                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                     }
                     if (datos.status === 403) {
                         datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
-                            mensaje += producto.mensajeError + " para el codigo (" + producto.codigo_producto + ") Precio venta (" + producto.precio_venta + ") \n";
-                        });
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);
-                    }
-                    
-                    
-                                     
+                            mensaje += producto.mensajeError + " para el Codigo (" + producto.codigo_producto + ") Precio venta (" + producto.precio_venta + ") \n";
+                            AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                        });                       
+                    }           
                 });
             } else {
                 self.generarPedido(0);
-            }
-          // self.prubapedidodecliente();           
+            }*/
+           self.prubapedidodeclientes();           
 //              console.log(nuevosDatos);
         }; 
         
-        self.prubapedidodecliente = function() {
+        self.prubapedidodecliente2 = function() {
         var pedido =  {                 
                     empresa_id: '03', 
                     centro_utilidad_id: '1 ',
@@ -576,7 +575,7 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
                         //observacion(quemado)
                         observacion: 'PEDIDO DESDE EL MODULO DE CLIENTE',
                         //lista de productos que se van a pedir a Cosmitet
-                        productos: [{codigo: '199L0162820', cantidad: 100}, {codigo: '168A0010028', cantidad: 100}],
+                        productos: [{codigo: '168D0501607', cantidad: 4759}, {codigo: '199A0010047', cantidad: 10}],
                         //(quemado) va en 0        
                         pedidoCliente: 0
                     }
@@ -584,10 +583,22 @@ console.log(">>>>>>>>>>>>>>>>>>>>>>>",pedido);
             };
 
             Request.realizarRequest(url, "POST", obj, function(data) {
+                 console.log("data.status", data.msj);
+                 console.log("data.status", data);
                 if (data.status === 200) {
                     console.log("data.status", data.msj);
                     AlertService.mostrarMensaje("warning", data.msj + " Numero " + data.obj.pedido_farmacia.pedido);
-                } else {
+                } if (data.status === 500) {
+                    //AlertService.mostrarMensaje("warning", data.msj + " Numero " + data.obj.pedido_farmacia.msj);
+                    self.consultarDetallePedidoTemporal(function(){
+                        console.log("data.obj.pedido_farmacia.productosInvalidos.length ",data.obj.pedido_farmacia.productosInvalidos);
+                         if(data.obj.pedido_farmacia.productosInvalidos.length > 0){
+                            
+                            self.mostrarProductosNoValidos(data.obj.pedido_farmacia.productosInvalidos);
+                        }
+                        $scope.rootPedidoFarmaciaTemporal.tabListaPedidos = true;
+                    });
+                }else {
                     AlertService.mostrarMensaje("warning", "NO se creó el pedido en farmacia");
                 }
             });

@@ -1882,9 +1882,10 @@ function __generarPedidoAutomatico(that, req, callback) {
         var productosValidados = validarProductos[0];
         var productosInvalidos = validarProductos[1];
         
-        if (productosInvalidos.length >= 0) {
+        if (productosInvalidos.length > 0) {
             productosInvalidos = productosInvalidos.concat(productosInvalidosArchivo);
             console.log("productosInvalidos  ",productosInvalidos);
+            console.log("productosValidados  ",productosValidados);
             throw {msj:"productosInvalidos",productosInvalidos:productosInvalidos, status: 500};
             return;
         } else {

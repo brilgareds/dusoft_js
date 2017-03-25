@@ -29,6 +29,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.empresaIdProducto = "";
                 this.centroUtilidadProducto = "";
                 this.bodegaProducto = "";
+                this.mensajeError = "";
             }
 
             ProductoPedidoCliente.prototype = Object.create(Producto.getClass().prototype);
@@ -352,6 +353,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoPedidoCliente.prototype.getBodegaProducto = function() {               
                 return this.bodegaProducto;
             };
+            
+             ProductoPedidoCliente.prototype.setMensajeError = function(mensajeError) {
+            this.mensajeError = mensajeError;
+            return this;
+        };
+        
+        ProductoPedidoCliente.prototype.getMensajeError = function() {
+            return this.mensajeError;
+        };
 
             return this;
         }]);

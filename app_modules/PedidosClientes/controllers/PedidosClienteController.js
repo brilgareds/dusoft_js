@@ -528,7 +528,7 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
                       filtroAvanzado:filtroAvanzado
                   };
                
-    var objBodegaPedido={sw_modulo:'0'}; 
+    var objBodegaPedido={sw_modulo:'1'}; 
       // console.log("args.pedidos_clientes ")   
     G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
          

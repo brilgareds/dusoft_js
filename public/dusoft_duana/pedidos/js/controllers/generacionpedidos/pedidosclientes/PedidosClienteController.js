@@ -1739,10 +1739,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                          
                                         that.actualizarEstadoProductoCotizacionBodegaCosmitet(resultado,aprobado,denegar);
                                            //Se actualiza el estado de la cotizacion a 1
-
+                                             
+                                             
                                         //AlertService.mostrarVentanaAlerta("Mensaje EXITOSO", data.msj);
 
                                     }else{
+                                        console.log("data ", data);
                                          AlertService.mostrarVentanaAlerta("Mensaje ERROR", data.msj);
                                     }
                                 });                      

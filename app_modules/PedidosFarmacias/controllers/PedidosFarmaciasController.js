@@ -1886,7 +1886,7 @@ function __generarPedidoAutomatico(that, req, callback) {
             productosInvalidos = productosInvalidos.concat(productosInvalidosArchivo);
             console.log("productosInvalidos  ",productosInvalidos);
             console.log("productosValidados  ",productosValidados);
-            throw {msj:"productosInvalidos",productosInvalidos:productosInvalidos, status: 500};
+            throw {msj:"productosInvalidos",productosInvalidos:productosInvalidos, status: 404};
             return;
         } else {
             callback(false, true);

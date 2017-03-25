@@ -34,5 +34,13 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/I002/listarProductosParaAsignar', function(req, res) {
         c_i002.listarProductosParaAsignar(req, res);
     });
+    
+    app.post('/api/movBodegas/I002/agregarItemFOC', function(req, res) {
+        c_i002.agregarItemFOC(req, res);
+    });
+    
+    app.post('/api/movBodegas/I002/execCrearDocumento', function(req, res) {
+        c_i002.execCrearDocumento(req, res);
+    });
       
 };

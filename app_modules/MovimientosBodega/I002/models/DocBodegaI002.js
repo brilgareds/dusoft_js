@@ -94,28 +94,97 @@ DocumentoBodegaI002.prototype.insertarProductoOrden = function(parametros, trans
 };
 
 
-DocumentoBodegaI002.prototype.agregarItemFOC = function(parametros, transaccion, callback) {
+DocumentoBodegaI002.prototype.agregarItemFOC = function(parametros, callback) {
 
     var query = G.knex("compras_ordenes_pedidos_productosfoc").
-                insert({bodega: parametros.bodega, cantidad: parametros.cantidad, centro_utilidad: parametros.centro_utilidad,
-                        codigo_producto:parametros.codigo_producto,doc_tmp_id:parametros.doc_tmp_id,empresa_id:parametros.empresa_id,
-                        fecha_ingreso:parametros.fecha_ingreso,fecha_vencimiento:parametros.fecha_vencimiento,justificacion_ingreso:parametros.justificacion_ingreso,
-                        lote:parametros.lote,orden_pedido_id:parametros.orden_pedido_id,porcentaje_gravamen:parametros.porcentaje_gravamen,
-                        total_costo:parametros.total_costo,local_prod:parametros.local_prod,usuario_id:parametros.usuario_id,
-                        item_id:parametros.item_id,valor_unitario_compra:parametros.valor_unitario_compra,valor_unitario_factura:parametros.valor_unitario_factura
-                     });
-
-    if (transaccion)
-        query.transacting(transaccion);
+            insert({bodega: parametros.bodega, cantidad: parametros.cantidad, centro_utilidad: parametros.centroUtilidad,
+        codigo_producto: parametros.codigoProducto, doc_tmp_id: parametros.docTmpId, empresa_id: parametros.empresaId,
+        fecha_ingreso: parametros.fechaIngreso, fecha_vencimiento: parametros.fechaVencimiento, justificacion_ingreso: parametros.justificacionIngreso,
+        lote: parametros.lote, orden_pedido_id: parametros.ordenPedidoId, porcentaje_gravamen: parametros.porcentajeGravamen,
+        total_costo: parametros.totalCosto, local_prod: parametros.localProd, usuario_id: parametros.usuarioId,
+        item_id: parametros.itemId, valor_unitario_compra: parametros.valorUnitarioCompra, valor_unitario_factura: parametros.valorUnitarioFactura
+    });
 
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
+        console.log("agregarItemFOC", err);
         callback(err);
     }).done();
-
 };
 
+
+DocumentoBodegaI002.prototype.agregarBodegasMovimientoOrdenesCompras = function(parametros, transaccion, callback) {
+
+    var query = G.knex("inv_bodegas_movimiento_ordenes_compra").
+            insert({empresa_id: parametros.empresaId, prefijo:parametros.prefijoDocumento,
+                    numero:parametros.numeracionDocumento,orden_pedido_id:parametros.ordenPedidoId
+    });
+    if(transaccion) query.transacting(transaccion);   
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("agregarBodegasMovimientoOrdenesCompras", err);
+        callback(err);
+    }).done();
+};
+
+DocumentoBodegaI002.prototype.updateInvBodegasMovimiento=function(parametros, transaccion, callback) {
+    var query = G.knex('inv_bodegas_movimiento')
+                .where('prefijo', parametros.prefijoDocumento)
+                .andWhere('empresa_id', parametros.empresaId)
+                .andWhere('numero', parametros.numeracionDocumento)
+                .update({porcentaje_rtf:parametros.compras_ordenes_pedidos_productosfoc,porcentaje_ica:parametros.porcentaje_ica,
+                     porcentaje_cree:parametros.porcentaje_cree,porcentaje_reteiva:parametros.porcentaje_reteiva});
+    if(transaccion) query.transacting(transaccion);   
+    query.then(function(resultado){ 
+       callback(false, resultado);
+    }).catch(function(err){    
+       console.log("err (/catch) [updateInvBodegasMovimiento]: ", err);
+       callback("Error al actualizar updateInvBodegasMovimiento");  
+    });
+    
+};
+
+
+DocumentoBodegaI002.prototype.eliminarOrdenPedidoProductosFoc = function(parametros,transaccion,callback) {
+    
+   var query = G.knex('compras_ordenes_pedidos_productosfoc')
+        .where('orden_pedido_id', parametros.ordenPedidoId)
+        .andWhere('sw_autorizado', '0')
+        .del();
+    
+   if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){    
+             
+            callback(false, resultado);
+   }).catch(function(err){
+            console.log("err (/catch) [eliminarOrdenPedidoProductosFoc]: ", err);        
+            callback({err:err, msj: "Error al eliminar los temporales"});   
+    });  
+};
+
+
+                  //  numero_unidades_recibidas= COALESCE(numero_unidades_recibidas,0)+".$valor['cantidad'].",
+                    
+  DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalle=function(parametros, transaccion, callback) {
+    
+     var sql = " UPDATE compras_ordenes_pedidos_detalle \
+                 SET numero_unidades_recibidas = COALESCE(numero_unidades_recibidas,0)+ :1 , sw_ingresonc = :2 \
+                 WHERE orden_pedido_id = :3 and codigo_producto = :4 and item_id = :5 ; ";
+      
+     params={1: parametros.cantidad, 2:parametros.sw_ingresonc,3: parametros.orden_pedido_id, 4:parametros.codigo_producto,5:parametros.item_id};
+   var query= G.knex.raw(sql);
+   if(transaccion) query.transacting(transaccion);   
+   G.knex.raw(sql, params).
+   then(function(resultado){
+       callback(false, resultado);
+   }).catch(function(err){
+       console.log("err (/catch) [updateComprasOrdenesPedidosDetalle]: ", err);
+       callback(true,err);
+   });
+    
+};                  
 
 DocumentoBodegaI002.prototype.listarInvBodegasMovimientoTmpOrden = function(parametros, callback) {
 console.log("*****parametros********",parametros);

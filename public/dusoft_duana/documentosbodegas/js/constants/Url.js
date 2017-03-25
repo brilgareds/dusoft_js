@@ -24,6 +24,9 @@ define(["angular"], function(angular) {
                 'LISTAR_GET_DOC_TEMPORAL': BASE_URL + '/movBodegas/I002/listarGetDocTemporal',
                 'LISTAR_PRODUCTOS_POR_AUTORIZAR': BASE_URL + '/movBodegas/I002/listarProductosPorAutorizar',
                 'LISTAR_PRODUCTOS_PARA_ASIGNAR': BASE_URL + '/movBodegas/I002/listarProductosParaAsignar',
+                'CREAR_ITEM_FOC': BASE_URL + '/movBodegas/I002/agregarItemFOC',
+                'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/crearDocumento',
+                'EXEC_CREAR_DOCUMENTOS': BASE_URL + '/movBodegas/I002/execCrearDocumento',
                 
             },
             'I003': {

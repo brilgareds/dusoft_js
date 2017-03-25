@@ -1,8 +1,9 @@
 
-var MovBodegasController = function(movimientos_bodegas,m_ordenes_compra) {
+var MovBodegasController = function(movimientos_bodegas,m_ordenes_compra,m_I002) {
 
     this.m_movimientos_bodegas = movimientos_bodegas;
     this.m_ordenes_compra = m_ordenes_compra;
+    this.m_I002 = m_I002;
 };
 
 // Consultar Documentos Usuario
@@ -223,6 +224,148 @@ function __traslado(that,parametros,callback){
     }).done();
 }
 
+MovBodegasController.prototype.crearDocumento=function(req,res){
+   var that = this;
+   var args = req.body.data;
+   var usuarioId;
+   
+
+    if (args.movimientos_bodegas.doc_tmp_id === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.orden_pedido_id === '') {
+        res.send(G.utils.r(req.url, 'El orden_pedido_id esta vacío', 404, {}));
+        return;
+    }
+    
+    if (args.movimientos_bodegas.usuario_id === '') {
+       usuarioId = req.session.user.usuario_id;
+    }else{
+       usuarioId = args.movimientos_bodegas.usuario_id;
+    }
+    
+    var ordenPedidoID=args.movimientos_bodegas.orden_pedido_id;
+    
+    var docTmpId= args.movimientos_bodegas.doc_tmp_id;
+    var parametros = {usuario_id: usuarioId, orden_pedido_id: ordenPedidoID}; 
+    G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros).then(function(result) {
+        
+        if (result.length > 0) {
+          console.log("result::: ",result);  
+          return G.Q.ninvoke(that.m_movimientos_bodegas,"consultarDocumentoBodegaTemporal",docTmpId, usuarioId);                
+        }else{
+          throw {msj:"No hay datos en listarGetItemsDocTemporal.", status:403};   
+        }
+        
+    }).then(function(result) {
+        if (result.length === 0) {
+           throw {msj:"DATOS ADICIONALES DEL DOCUMENTO NO ESTAN LLENOS.", status:403};        
+        }else{
+          console.log("result::: ",result);
+          res.send(G.utils.r(req.url, 'crearDocumento', 200, {crearDocumento: result})); 
+        }
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al Listar Items Documento Temporal', 500, {}));
+    }).done();
+};
+
+MovBodegasController.prototype.execCrearDocumento=function(req,res){
+ var that = this;
+   var args = req.body.data;
+   var usuarioId;
+   
+
+    if (args.movimientos_bodegas.doc_tmp_id === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.orden_pedido_id === '') {
+        res.send(G.utils.r(req.url, 'El orden_pedido_id esta vacío', 404, {}));
+        return;
+    }
+    
+    if (args.movimientos_bodegas.usuario_id === '') {
+       usuarioId = req.session.user.usuario_id;
+    }else{
+       usuarioId = args.movimientos_bodegas.usuario_id;
+    }
+    
+    var ordenPedidoID=args.movimientos_bodegas.orden_pedido_id;
+    
+    var docTmpId= args.movimientos_bodegas.doc_tmp_id;
+    
+    G.knex.transaction(function(transaccion) {  
+        
+            G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function(result){
+
+                    doc = result;
+               
+                    
+           }).then(function(err){
+                 return G.Q.nfcall(__eliminar_documento_temporal_farmacias,documento_temporal_id, usuario_id, transaccion);
+           }).fail(function(err){
+               console.log("error generado >>>>>>>>>>>>", err);
+               transaccion.rollback(err);
+           }).
+           done();
+    
+    }).then(function(){
+        
+       callback(false, doc.empresa_id, doc.prefijo_documento, doc.numeracion_documento);
+        
+    }).catch(function(err){
+        //console.log("error generado >>>>>>>>>>>>", err);
+        callback(err);
+    }).
+    done();
+    
+//    var parametros = {usuario_id: usuarioId, orden_pedido_id: ordenPedidoID}; 
+//    G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros).then(function(result) {
+//        
+//        if (result.length > 0) {
+//          console.log("result::: ",result);  
+//          return G.Q.ninvoke(that.m_movimientos_bodegas,"consultarDocumentoBodegaTemporal",docTmpId, usuarioId);                
+//        }else{
+//          throw {msj:"NO HAY REGISTROS EN EL DOCUMENTO TEMPORAL "+docTmpId+" DEL USUARIO "+usuarioId+" PARA CREAR UN DOCUMENTO.", status:403};   
+//        }
+//        
+//    }).then(function(result) {
+//        if (result.length === 0) {
+//           throw {msj:"NO HAY REGISTROS EN LA CABECERA TEMPORAL.", status:403};        
+//        }else{
+//            
+//               G.knex.transaction(function(transaccion) {
+//     ///////////////////////       
+//                var parametros={documentoId:'',empresaId:''};
+//                G.Q.nfcall(that.m_movimientos_bodegas.lokTableDocumetos,parametros, transaccion).then(function(result) {
+//                  if (result.length === 0) {
+//                    throw {msj:"NO HAY REGISTROS EN LA CABECERA TEMPORAL.", status:403};        
+//                  }else{
+//                    return G.Q.nfcall(that.m_movimientos_bodegas.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
+//                  }
+//                }).then(function() {
+//                    transaccion.commit(parametros.documentoId);
+//                }).fail(function(err) {                   
+//                    transaccion.rollback(err);
+//                }).done();
+//            
+//        }).then(function(movimiento_temporal_id) {
+//            res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
+//        }).catch (function(err) {
+//            res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
+//        }).done();
+//            
+//    //////////////////        
+//          console.log("result::: ",result);
+//          res.send(G.utils.r(req.url, 'crearDocumento', 200, {crearDocumento: result})); 
+//        }
+//    }).fail(function(err) {
+//        res.send(G.utils.r(req.url, 'Error al Listar Items Documento Temporal', 500, {}));
+//    }).done();
+
+};
+
 /*MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
     var that = this;
     var args = req.body.data;
@@ -306,6 +449,6 @@ function __traslado(that,parametros,callback){
 }*/
 
 
-MovBodegasController.$inject = ["m_movimientos_bodegas","m_ordenes_compra"];
+MovBodegasController.$inject = ["m_movimientos_bodegas","m_ordenes_compra","m_i002"];
 
 module.exports = MovBodegasController;

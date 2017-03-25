@@ -78,68 +78,105 @@ I002Controller.prototype.newDocTemporal = function(req, res) {
      }).done();
 };
 
-//I002Controller.prototype.agregarItemFOC = function(req, res) {
-//    
-//    var that = this;
-//    var args = req.body.data;
-//    var usuarioId = req.session.user.usuario_id;
-//    
-//    var parametros = {
-//       empresaId :
-//       centroUtilidad :       
-//       bodega :
-//       codigoProducto :
-//       cantidad :
-//       lote:
-//       fechaVencimiento:
-//       docTmpId: 
-//       porcentajeGravamen:
-//       fechaIngreso:
-//       justificacionIngreso:
-//       ordenPedidoId:
-//       totalCosto:
-//       localProd:
-//       usuarioId:
-//       itemId:
-//       valorUnitarioCompra:
-//       valorUnitarioFactura:
-//    };
-//    
-//    if (args.orden_pedido_id === undefined) {
-//        res.send(G.utils.r(req.url, 'El Numero de Orden NO esta definida', 404, {}));
-//        return;
-//    }
-//
-//    if (args.observacion === undefined) {
-//        res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
-//        return;
-//    }
-//    if (args.bodegas_doc_id === undefined) {
-//        res.send(G.utils.r(req.url, 'La bodega NO esta definida', 404, {}));
-//        return;
-//    }
-//
-//
-//    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function(doc_tmp_id) {
-//
-//        movimiento_temporal_id = doc_tmp_id;  
-//    G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal, 
-//                movimiento_temporal_id, usuarioId, bodegas_doc_id,observacion, transaccion).then(function() {
-//
-//        var parametros = {
-//            usuario_id: usuarioId,
-//            doc_tmp_id: movimiento_temporal_id,
-//            orden_pedido_id: orden_pedido_id
-//        };
-//        return G.Q.nfcall(that.m_I002.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
-//
-//    }).then(function() {
-//        transaccion.commit(movimiento_temporal_id);
-//    }).fail(function(err) {                   
-//        transaccion.rollback(err);
-//    }).done();
-//});
-//};
+I002Controller.prototype.agregarItemFOC = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (args.empresaId === undefined || args.centroUtilidad === undefined || args.bodega === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos valores de la empresa no estan definidos', 404, {}));
+        return;
+    }
+    if (args.codigoProducto === undefined) {
+        res.send(G.utils.r(req.url, 'El codigo Producto no esta definida', 404, {}));
+        return;
+    }
+    if (args.cantidad === undefined) {
+        res.send(G.utils.r(req.url, 'La cantidad no esta definida', 404, {}));
+        return;
+    }
+    if (args.lote === undefined) {
+        res.send(G.utils.r(req.url, 'El lote no esta definida', 404, {}));
+        return;
+    }
+    if (args.fechaVencimiento === undefined) {
+        res.send(G.utils.r(req.url, 'La fecha vencimiento no esta definida', 404, {}));
+        return;
+    }
+    if (args.docTmpId === undefined) {
+        res.send(G.utils.r(req.url, 'El docTmpId no esta definida', 404, {}));
+        return;
+    }
+    if (args.porcentajeGravamen === undefined) {
+        res.send(G.utils.r(req.url, 'El porcentajeGravamen no esta definida', 404, {}));
+        return;
+    }
+    if (args.fechaIngreso === undefined) {
+        res.send(G.utils.r(req.url, 'La fechaIngreso no esta definida', 404, {}));
+        return;
+    }
+    if (args.justificacionIngreso === undefined) {
+        res.send(G.utils.r(req.url, 'La justificacionIngreso no esta definida', 404, {}));
+        return;
+    }
+    if (args.ordenPedidoId === undefined) {
+        res.send(G.utils.r(req.url, 'El ordenPedidoId no esta definida', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'El totalCosto no esta definida', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'El localProd no esta definida', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'El valorUnitarioCompra no esta definida', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'El valorUnitarioFactura no esta definida', 404, {}));
+        return;
+    }
+
+
+    var parametros = {
+        empresaId: args.empresaId,
+        centroUtilidad: args.centroUtilidad,
+        bodega: args.bodega,
+        codigoProducto: args.codigoProducto,
+        cantidad: args.cantidad,
+        lote: args.lote,
+        fechaVencimiento: args.fechaVencimiento,
+        docTmpId: args.docTmpId,
+        porcentajeGravamen: args.porcentajeGravamen,
+        fechaIngreso: args.fechaIngreso,
+        justificacionIngreso: args.justificacionIngreso,
+        ordenPedidoId: args.ordenPedidoId,
+        totalCosto: args.totalCosto,
+        localProd: args.localProd,
+        usuarioId: args.usuarioId,
+        itemId: args.itemId,
+        valorUnitarioCompra: args.valorUnitarioCompra,
+        valorUnitarioFactura: args.valorUnitarioFactura,
+        usuarioId: usuarioId
+    };
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaEnBodegaDestino", parametros).then(function(resultado) {
+        if (resultado.length > 0) {
+            return G.Q.nfcall(that.m_I002.agregarItemFOC, parametros);
+        } else {
+            throw {msj: "El producto " + parametros.codigoProducto + " no se encuentra en bodegas_existencias.", status: 403};
+        }
+    }).then(function(resultado) {
+        res.send(G.utils.r(req.url, 'Temporal FOC guardado correctamente', 200, {agregarItemFOC: resultado}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, err.msj, err.status, {agregarItemFOC: []}));
+    }).done();
+
+};
 
 
 I002Controller.prototype.listarInvBodegasMovimientoTmpOrden = function(req, res) {
@@ -282,6 +319,112 @@ I002Controller.prototype.listarGetDocTemporal = function(req, res) {
 };
 
 
+I002Controller.prototype.execCrearDocumento=function(req,res){
+ var that = this;
+   var args = req.body.data;
+   var usuarioId;
+   var parametros={};
+   console.log("execCrearDocumento ");
+
+    if (args.movimientos_bodegas.doc_tmp_id === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.orden_pedido_id === '') {
+        res.send(G.utils.r(req.url, 'El orden_pedido_id esta vacío', 404, {}));
+        return;
+    }
+    
+    if (args.movimientos_bodegas.usuario_id === '') {
+       usuarioId = req.session.user.usuario_id;
+    }else{
+       usuarioId = args.movimientos_bodegas.usuario_id;
+    }
+    
+    var ordenPedidoId=args.movimientos_bodegas.orden_pedido_id;
+    
+    var docTmpId= args.movimientos_bodegas.doc_tmp_id;
+    
+    parametros.ordenPedidoId=ordenPedidoId;
+    parametros.usuarioId=usuarioId;
+    
+    G.knex.transaction(function(transaccion) {  
+    console.log("00000");
+            G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function(result){
+     console.log("11111");    
+                parametros.empresaId=result.empresa_id;
+                parametros.prefijoDocumento=result.prefijo_documento;
+                parametros.numeracionDocumento=result.numeracion_documento;
+                parametros.orden_pedido_id=parametros.ordenPedidoId;
+                console.log("111crear_documento",result);
+               return G.Q.ninvoke(that.m_I002, "agregarBodegasMovimientoOrdenesCompras",parametros,transaccion);   
+                        
+           }).then(function(result){
+               console.log("222agregarBodegasMovimientoOrdenesCompras",result);
+                return G.Q.ninvoke(that.m_I002, "listarInvBodegasMovimientoTmpOrden", parametros);
+                
+           }).then(function(result){
+               parametros.porcentaje_rtf=result[0].porcentaje_rtf;
+               parametros.porcentaje_ica=result[0].porcentaje_ica;
+               parametros.porcentaje_cree=result[0].porcentaje_cree;
+               parametros.porcentaje_reteiva=result[0].porcentaje_reteiva;
+               console.log("333parametros",parametros);
+               console.log("333listarInvBodegasMovimientoTmpOrden",result);
+               return G.Q.ninvoke(that.m_I002, "updateInvBodegasMovimiento",parametros,transaccion);
+               
+           }).then(function(result){
+               console.log("4444updateInvBodegasMovimiento",result);
+               return G.Q.ninvoke(that.m_I002, "eliminarOrdenPedidoProductosFoc",parametros,transaccion);
+           }).then(function(result){
+                parametros.usuario_id=usuarioId;
+                console.log("parametrosupdateInvBodegasMovimiento",parametros);
+                console.log("5555updateInvBodegasMovimiento",result);
+                return G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros); 
+           }).then(function(result){     
+             // console.log("6666listarGetItemsDocTemporal ",result);
+               return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle,that, 0, result,transaccion);
+               
+           }).then(function(result){ 
+               console.log("77777 ",result);
+               transaccion.commit(parametros.numeracionDocumento);
+               return;
+           }).fail(function(err){
+               console.log("error generado >>>>>>>>>>>>", err);
+               transaccion.rollback(err);
+           }).done();
+    
+    }).then(function(){
+        console.log("execCrearDocumento");
+       res.send(G.utils.r(req.url, 'Lista Documento Temporal', 200, {execCrearDocumento: result}));
+//       return;
+    }).catch(function(err){
+         res.send(G.utils.r(req.url, 'Error al Listar Documento Temporal', 500, {err:err}));
+//        callback(err);
+    }).done();
+};
+
+function __modificarComprasOrdenesPedidosDetalle(that, index, parametros,transaccion, callback) {
+
+    var productos = parametros[index];
+        
+    if (!productos) {
+        callback(false);
+        return;
+    }
+
+   G.Q.ninvoke(that.m_I002,"updateComprasOrdenesPedidosDetalle",productos, transaccion).then(function(result){
+     
+     index++;
+     
+        setTimeout(function() {
+            __modificarComprasOrdenesPedidosDetalle(that, index, parametros, transaccion, callback);
+        }, 300);   
+               
+    }).fail(function(err){
+        callback(true, err);
+        return;
+    }).done();
+}
 //I002Controller.prototype.ingresarMovimientoOrdenCompraTmporal=function(){
 //  var that = this;
 //   G.Q.ninvoke(that.m_movimientos_bodegas,"obtener_identificicador_movimiento_temporal",usuarioId).then(function(){

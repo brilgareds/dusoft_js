@@ -417,9 +417,10 @@ define([
             $scope.grabar_documento = function() {
               // that.guardarNewDocTmp(); //ok
               //that.listarBodegasMovimientoTemporal(); //ok
-              that.listarParametros(); //ok
-              that.listarGetItemsDocTemporal(); //OK
+//              that.listarParametros(); //ok
+//              that.listarGetItemsDocTemporal(); //OK
 //              that.listarGetDocTemporal();
+                that.crearDocumento();
             };
             
 
@@ -761,6 +762,30 @@ define([
                 });
             };
             
+              that.crearDocumento = function() {
+                  
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                         movimientos_bodegas:{
+                                                orden_pedido_id:$scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
+                                                doc_tmp_id: $scope.doc_tmp_id,
+                                                usuario_id: Sesion.getUsuarioActual().getId()
+                            }
+                    }
+                };
+
+                Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
+                    if (data.status === 200) {         
+                        AlertService.mostrarMensaje("warning", data.msj);                        
+
+                    }
+                    if (data.status === 500) {     
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+            
               that.listarBodegasMovimientoTemporal = function() {
                   
                 var obj = {
@@ -782,7 +807,7 @@ define([
                 /*
                  * retorna la diferencia entre dos fechas
                  */
-               that.restaFechas = function(f1, f2)
+               $scope.restaFechas = function(f1, f2)
                 {
                     var aFecha1 = f1.split('/');
                     var aFecha2 = f2.split('/');
@@ -794,13 +819,11 @@ define([
                 };
                 
               $scope.ingresar_producto=function(productos){
-                  console.log('productos___',productos);
                   var fecha_actual = new Date();
                   fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                  var fecha_vencimiento=$filter('date')(new Date(productos.fecha_vencimiento), "dd/MM/yyyy");
-              
+                  var fecha_vencimiento=$filter('date')(new Date(productos.fecha_vencimiento), "dd/MM/yyyy");              
                   
-                  var diferencia=that.restaFechas(fecha_actual,fecha_vencimiento);
+                  var diferencia=$scope.restaFechas(fecha_actual,fecha_vencimiento);
                   
                if(parseInt(productos.cantidadActual)<=0 || productos.cantidadActual.trim()==="" ){
                    AlertService.mostrarMensaje("warning","La cantidad debe ser mayor 0");

@@ -596,7 +596,7 @@ MovimientosBodegasModel.prototype.isBodegaDestino = function(parametros, callbac
 };
 
 MovimientosBodegasModel.prototype.isTrasladosTmp = function(parametros, callback){
-console.log("isTrasladosTmp parametro ",parametros);
+
     var sql=" SELECT a.descripcion as dBodega, \
                      b.descripcion as dProducto \
               FROM   bodegas as a, \
@@ -634,6 +634,22 @@ MovimientosBodegasModel.prototype.isExistenciaEnBodega = function(parametros, ca
        });
 };
 
+MovimientosBodegasModel.prototype.isExistenciaEnBodegaDestino = function(parametros, callback){
+  
+       G.knex.select('*').from("existencias_bodegas as a")
+        .where('a.codigo_producto', parametros.codigoProducto)
+        .andWhere('a.empresa_id', parametros.empresaId)
+        .andWhere('a.centro_utilidad', parametros.centroUtilidad)
+        .andWhere('a.bodega', parametros.bodega)
+        .then(function(resultado){
+    console.log("resultado:: ",resultado);
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("error sql",err);
+            callback(err);       
+        });
+};
+
 MovimientosBodegasModel.prototype.getItemId = function(callback){
     var sql=" SELECT nextval('inv_bodegas_movimiento_tmp_d_item_id_seq'::regclass); ";
      G.knex.raw(sql).
@@ -643,6 +659,34 @@ MovimientosBodegasModel.prototype.getItemId = function(callback){
        console.log("error [getItemId]: ", error);
        callback(error);
     });
+};
+
+MovimientosBodegasModel.prototype.lokTableDocumetos = function(parametros,transaccion,callback){
+    var sql ="LOCK TABLE documentos IN ROW EXCLUSIVE MODE;";
+        sql+="SELECT prefijo,numeracion FROM documentos";
+        sql+="WHERE documento_id = :1 AND empresa_id = :2 ;";
+         
+    var query = G.knex.raw(sql, {1:parametros.documentoId, 2:parametros.empresaId});
+    
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
+MovimientosBodegasModel.prototype.consultarDocumentoBodegaTemporal = function(documentoTemporalId, usuarioId,callback){
+  __consultar_documento_bodega_temporal(documentoTemporalId, usuarioId,function(err, resultado){
+      if (err || resultado === null) {
+            console.log('Se ha generado un error o el docuemnto está vacío.');
+            callback(err);
+            return;
+        } else {
+            callback(false,resultado);  
+        }
+  });
 };
 
 

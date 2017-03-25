@@ -21,6 +21,10 @@ module.exports = function(app, di_container) {
         c_movimientos_bodega.addItemDocTemporal(req, res);
     });
     
+    app.post('/api/movBodegas/crearDocumento', function(req, res) {       
+        c_movimientos_bodega.crearDocumento(req, res);
+    });
+    
     /*app.post('/api/movBodegas/imprimirDocumentoDespacho', function(req, res) {
         c_movimientos_bodega.imprimirDocumentoDespacho(req, res);
     });*/

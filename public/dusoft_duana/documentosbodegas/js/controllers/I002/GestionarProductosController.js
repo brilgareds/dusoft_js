@@ -20,12 +20,7 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
                 };
                 
 //                console.log('======== gestionar_productosCompleto ======');
-//                console.log($scope.datos_form);
-//                console.log("parametros__",parametros);
-//                console.log("numero_orden_compra__",parametros[1].ordenCompra.numero_orden_compra);
-//                console.log("$scope.Empresa__",parametros[1].empresa.getEmpresa().getCodigo());
-//                console.log("$scope.centro__",parametros[1].empresa.getEmpresa().centroUtilidad.codigo);
-//                console.log("$scope.bodega__",parametros[1].empresa.getEmpresa().centroUtilidad.bodega.codigo);
+
                  $scope.parametros = parametros;
     
                 $timeout(function() {
@@ -79,15 +74,7 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
                  });
                  console.log("listado_productos ",$scope.datos_form.listado_productos);
             };
-            
-//             $scope.buscar_productos = function() {
-//
-//                for (i = 0; i < 5; i++) {
-//                    $scope.datos_form.listado_productos.push({nombre: 'producto - ' + i});
-//                }
-//
-//            };
-            
+                       
             
             $scope.seleccionar_laboratorio = function(laboratorio) {
                 $scope.laboratorio_id = "";
@@ -155,18 +142,22 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
            
 
             $scope.guardarProducto = function(producto) {
+                
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                var porcentaje=((producto.valor_unit * producto.iva) / 100);
-                console.log("porcentaje:: ",porcentaje);
-                var valorMasPorcentaje=producto.valor_unit+porcentaje;                
-                console.log("valorMasPorcentaje:: ",valorMasPorcentaje);
-                console.log("producto.cantidad_ingresada:: ",producto.cantidad_ingresada);
-                var total_costo = valorMasPorcentaje * producto.cantidad_ingresada;
                 
-        console.log("total_costo ",total_costo);
-
-//                var fecha_vencimiento=$filter('date')(new Date(producto.fecha_vencimiento), "dd/MM/yyyy");
+                
+                var fecha_vencimiento=$filter('date')(new Date(producto.fecha_vencimiento), "dd/MM/yyyy");
+                var diferencia=$scope.restaFechas(fecha_actual,fecha_vencimiento);
+                if(diferencia >= 0 && diferencia <=45){
+                    AlertService.mostrarMensaje("warning","Producto proximo a vencer");
+                    return;
+                } 
+                
+                var valor=parseInt(producto.valor_unit);
+                var porcentaje=((valor * producto.iva) / 100);
+                var valorMasPorcentaje=valor+porcentaje;                
+                var total_costo = valorMasPorcentaje * producto.cantidad_ingresada;
                 
                 var parametro={
                     empresaId:$scope.parametros[1].empresa.getEmpresa().getCodigo(),
@@ -186,9 +177,26 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
                     itemId:'-1',
                     valorUnitarioCompra:producto.valor_unit,
                     valorUnitarioFactura:producto.valor_unit
-                };
-                console.log("parametro  ",parametro);
+                };     
+                that.insertarProductosFoc(parametro);
              };
+             
+             that.insertarProductosFoc = function(parametro){
+                var termino = termino || "";
+                var obj = {
+                    session: $scope.session,
+                    data:  parametro
+                };
+                
+                Request.realizarRequest(API.I002.CREAR_ITEM_FOC, "POST", obj, function(data) {
+                       console.log("insertarProductosFoc::: ",obj);
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }else{
+                      AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
             
             $scope.abrir_fecha_vencimiento = function(producto, $event) {
 
@@ -213,7 +221,7 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
             $scope.habilitarCheck = function(producto) {
             
                 var disabled = false;
-               
+                
                 if(producto.cantidad_ingresada === undefined || producto.cantidad_ingresada==="" || parseInt(producto.cantidad_ingresada) <= 0){
                     disabled = true;
                 }

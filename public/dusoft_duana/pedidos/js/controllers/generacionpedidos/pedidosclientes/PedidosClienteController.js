@@ -1706,8 +1706,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              de lo contrario se generara el pedido normal
              */
             that.generarPedidoBodegaMultiple = function (aprobado, denegar) {
-
-                if (aprobado === 1) {
+                 
+               if (aprobado === 1) {
                     that.consultarDetalleProductosCotizacion(function (estado, resultado) {
 
 
@@ -1737,14 +1737,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
 
                                 Request.realizarRequest(url, "POST", obj, function (data) {
-
+                                    console.log("data PEDIDO FARMACIA ", data)
                                     if (data.status === 200) {
 
                                         that.actualizarEstadoProductoCotizacionBodegaCosmitet(resultado, aprobado, denegar);
                                         //Se actualiza el estado de la cotizacion a 1
 
 
-                                        //AlertService.mostrarVentanaAlerta("Mensaje EXITOSO", data.msj);
+                                        AlertService.mostrarVentanaAlerta(data.msj, data.obj.pedido_farmacia.pedido);
 
                                     }
                                     if (data.status === 404) {
@@ -1755,7 +1755,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                                  
                                         }
                                          
-                                    } else {
+                                    } 
+                                    
+                                    if (data.status === 501) {
 
                                         AlertService.mostrarVentanaAlerta("Mensaje ERROR", data.msj);
                                     }
@@ -1847,8 +1849,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     localStorageService.add("terminoBusqueda", parametros);
                     that.generarPedidoBodegaMultiple(aprobado, denegar);
 
-                }
-                ;
+                };
 
 
                 var pedido = localStorageService.get("pedido");

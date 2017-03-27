@@ -86,7 +86,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
         parametros = {1: cotizacion.numero_cotizacion, 
                       2: '%' + objParametrosBusqueda + '%',
                       3: termino_busqueda.bodega_origen_id,
-                      4: '0'};
+                      4: '1'};
                   /*,
                       3: termino_busqueda.empresa_origen_id,
                       4: termino_busqueda.centro_utilidad_origen_id,*/
@@ -1520,7 +1520,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                       select a.empresa_destino as empresa_id, b.codigo_producto,a.bodega as bodega, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
                       from solicitud_productos_a_bodega_principal a \
                       inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
-                      where b.cantidad_pendiente > 0 \
+                      where b.cantidad_pendiente > 0 AND a.bodega not in('03') \
                       group by 1,2,3\
                     ) aa group by 1,2,3\
                 ) h on (a.empresa_id = h.empresa_id) and c.codigo_producto = h.codigo_producto and (a.bodega = h.bodega)\
@@ -1540,14 +1540,11 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto and (a.bodega = i.bodega_origen_producto) \
                 where a.empresa_id = :1 and a.centro_utilidad = :2 and a.bodega = :3 " + sql_aux + " \
                  " + filtroProducto;                                                     
-    /*console.log("------parametros ------------- ", parametros);
-    console.log("------filtro ------------- ", filtro);
-    console.log("------filtros ------------- ", filtros);*/
-    //console.log("------filtroAvanzado ------------- ", filtroAvanzado);
+     
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).then(function(resultado) {
-            //console.log("resultado [listar_productos]: >> ", resultado);
+          
         callback(false, resultado);
     }). catch (function(err) {
             console.log("err [listar_productos]: ", err);

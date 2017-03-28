@@ -894,3 +894,39 @@ p.controlCompuesto, div.controlCompuesto{
 {
   background: rgba(0, 0, 0, 0.5);
 }*/
+
+
+/*input.ng-pristine {
+    border:1px solid #ccc!important;
+}
+
+input.ng-invalid {
+    border:1px solid red;
+}*/
+
+
+input.submitedWithError, div.submitedWithError .select2-choice { 
+    background: #fff url(../images/warning-icon.png) no-repeat 98% center;
+    box-shadow: 0 0 5px #d45252;
+    border-color: #b03535
+}
+
+div.submitedWithError .select2-choice {
+    background: #fff url(../images/warning-icon.png) no-repeat 95% center;
+}
+
+/*input.ng-pristine{
+     border:1px solid #ccc!important;
+     background: none;
+     box-shadow: inherit;
+}
+*/
+/*ng-pristine .select2-choice{
+
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
+    background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
+    background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#eeeeee', GradientType = 0);
+    background-image: linear-gradient(top, #fff 0%, #eee 50%);
+    border:1px solid #aaa!important;
+}*/

@@ -1,4 +1,4 @@
-<form name="formularioTercero">
+<form  ng-model="formularios.formularioTerceros" name="formularios.formularioTerceros" id="formularioTerceros" form-validation>
     <div class="row contenedorCamposTercero">
 
         <div class="col-md-4">
@@ -35,7 +35,8 @@
             <p class="input-group">
 
                 <input type="text" class="form-control" 
-                       ng-model="root.tercero.nombreComercial" placeholder="Nombre comercial" name="srch-term" id="srch-term" />
+                       ng-model="root.tercero.nombreComercial" placeholder="Nombre comercial" name="nombreComercial"
+                       id="nombreComercial" required="required" title="Se requiere el nombre comercial" data-content="Some content inside the popover" data-placement="top" pattern=".{5,10}" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
@@ -47,8 +48,9 @@
             <label class="control-label">Primer nombre</label>
             <p class="input-group">
 
-                <input type="text" class="form-control" 
-                       ng-model="root.tercero.primerNombre" placeholder="Primer nombre" name="srch-term" id="srch-term" />
+                <input type="text" class="form-control {{formularios.formularioTerceros.sumitedWithErrors}}" 
+                       ng-model="root.tercero.primerNombre" placeholder="Primer nombre" name="primerNombre" id="primerNombre" 
+                       required="required" pattern=".*\S+.*" title="Se requiere el primer nombre"  data-placement="top" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
@@ -59,9 +61,9 @@
         <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 0">
             <label class="control-label">Segundo nombre</label>
             <p class="input-group">
-
                 <input type="text" class="form-control"  
-                       ng-model="root.tercero.segundoNombre" placeholder="Segundo nombre" name="srch-term" id="srch-term" />
+                       ng-model="root.tercero.segundoNombre" placeholder="Segundo nombre" name="segundoNombre" 
+                       id="segundoNombre" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
@@ -78,8 +80,9 @@
             <label class="control-label">Primer apellido</label>
             <p class="input-group">
 
-                <input type="text" class="form-control" 
-                       ng-model="root.tercero.primerApellido" placeholder="Primer apellido" name="srch-term" id="srch-term" />
+                <input type="text" class="form-control {{formularios.formularioTerceros.sumitedWithErrors}}" 
+                       ng-model="root.tercero.primerApellido" placeholder="Primer apellido" required="required" 
+                       name="primerApellido" id="primerApellido" pattern=".*\S+.*" title="Se requiere el primer apellido"  data-placement="top"/>
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
@@ -92,7 +95,8 @@
             <p class="input-group">
 
                 <input type="text" class="form-control" 
-                       ng-model="root.tercero.segundoApellido" placeholder="Segundo apellido" name="srch-term" id="srch-term" />
+                       ng-model="root.tercero.segundoApellido" placeholder="Segundo apellido" name="segundoApellido"
+                       id="segundoApellido" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
@@ -101,13 +105,17 @@
         </div>
 
         <div class="col-md-4">
-            <label class="control-label">Genero</label>
+            <label class="control-label">Género</label>
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.tercero.genero"  
                            theme="select2" 
-                           class="form-control selectgeneral pull-left ui-select-z-index-11" 
-                           append-to-body = "true">
-                    <ui-select-match  placeholder="Genero"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                           name="genero"
+                           class="form-control selectgeneral pull-left ui-select-z-index-11 {{formularios.formularioTerceros.sumitedWithErrors}}" 
+                           append-to-body = "true"
+                           title="Se requiere el género" 
+                           data-placement="top"
+                           required="required">
+                    <ui-select-match  placeholder="Género"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                     <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="genero in  root.parametros.generos | filter:$select.search">
                         <span ng-bind="genero.getDescripcion()"></span>
                     </ui-select-choices>
@@ -125,11 +133,14 @@
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.tercero.tipoDocumento"  
                            theme="select2" 
+                           name="tipoDocumento"
+                           required="required"
                            class="form-control selectgeneral pull-left ui-select-z-index-12" 
+                           title="Se requiere el tipo de documento" data-placement="top"
                            append-to-body = "true">
                     <ui-select-match  placeholder="Tipo documento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                    <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoDocumento in  root.parametros.tiposDocumentos | filter:$select.search">
-                        <span ng-bind="tipoDocumento.descripcion"></span>
+                    <ui-select-choices  refresh-delay="0" repeat="tipoDocumento in  root.parametros.tiposDocumentos | filter:$select.search">
+                        <span class="descripcionSeleccion" ng-bind="tipoDocumento.descripcion"></span>
                     </ui-select-choices>
                 </ui-select>  
             </p>
@@ -140,7 +151,8 @@
             <p class="input-group">
 
                 <input type="text" class="form-control"
-                       ng-model="root.tercero.id" placeholder="Número identificación" name="srch-term" id="srch-term" />
+                       ng-model="root.tercero.id" placeholder="Número identificación" name="numeroIdentificacion" id="numeroIdentificacion"
+                       pattern=".*\S+.*" title="Se requiere el número de identificación"  data-placement="top" required="required"/>
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-credit-card"></i></button>
@@ -153,7 +165,9 @@
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" 
-                       ng-model="root.tercero.fechaExpedicion" is-open="pickerFechaExpedicion.open" min="minDate"   readonly  close-text="Cerrar"  clear-text="Borrar" current-text="Hoy" placeholder="Fecha Expedición" show-weeks="false" toggle-weeks-text="#"  />
+                       ng-model="root.tercero.fechaExpedicion" is-open="pickerFechaExpedicion.open" min="minDate" 
+                       readonly  close-text="Cerrar"  clear-text="Borrar" current-text="Hoy" placeholder="Fecha Expedición"
+                       show-weeks="false" toggle-weeks-text="#"/>
                 <span class="input-group-btn">
 
                    <button class="btn btn-default" ng-click="onAbrirFechaExpedicion($event);"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -170,7 +184,9 @@
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}"
-                       ng-model="root.tercero.fechaExpiracion" is-open="pickerFechaExpiracion.open" min="minDate"   readonly  close-text="Cerrar"  clear-text="Borrar" current-text="Hoy" placeholder="Fecha Expiración" show-weeks="false" toggle-weeks-text="#"  />
+                       ng-model="root.tercero.fechaExpiracion" is-open="pickerFechaExpiracion.open" min="minDate" 
+                       readonly  close-text="Cerrar"  clear-text="Borrar" current-text="Hoy" placeholder="Fecha Expiración"
+                       show-weeks="false" toggle-weeks-text="#" />
                 <span class="input-group-btn">
 
                    <button class="btn btn-default" ng-click="onAbrirFechaExpiracion($event);"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -197,7 +213,8 @@
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.tercero.estadoCivil"  
                            theme="select2" 
-                           class="form-control selectgeneral pull-left" >
+                           class="form-control selectgeneral pull-left"
+                           name="estadoCivil" pattern=".*\S+.*" title="Se requiere el estado civil"  data-placement="top" required="required">
                     <ui-select-match  placeholder="Estado civil"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                     <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoEstadoCivil in  root.parametros.tiposEstadoCivil | filter:$select.search">
                         <span ng-bind="tipoEstadoCivil.descripcion"></span>
@@ -211,7 +228,8 @@
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.tercero.nacionaliad"  
                            theme="select2" 
-                           class="form-control selectgeneral pull-left">
+                           class="form-control selectgeneral pull-left"
+                           name="nacionalidad" pattern=".*\S+.*" title="Se requiere la nacionalidad"  data-placement="top" required="required">
                     <ui-select-match  placeholder="Nacionalidad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                     <ui-select-choices refresh-delay="0" repeat="tipoNacionalidad in  root.parametros.tiposNacionalidad | filter:$select.search">
                         <span ng-bind="tipoNacionalidad.descripcion"></span>
@@ -225,7 +243,7 @@
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="yyyy-MM-dd" date-type="string" ng-model="root.tercero.fechaNacimiento"
                        is-open="pickerFechaNacimiento.open" min="minDate"   readonly  close-text="Cerrar"  clear-text="Borrar" current-text="Hoy" 
-                       placeholder="Fecha Nacimiento" show-weeks="false" toggle-weeks-text="#" ng-change="onFechaNacimientoChange()"  />
+                       placeholder="Fecha Nacimiento" show-weeks="false" toggle-weeks-text="#" ng-change="onFechaNacimientoChange()"/>
                 <span class="input-group-btn">
 
                    <button class="btn btn-default" ng-click="onAbrirFechaNacimiento($event);"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -243,7 +261,8 @@
             <p class="input-group contenedorDropdown">            
                 <ui-select ng-model="root.tercero.nacionaliad"  
                            theme="select2" 
-                           class="form-control selectgeneral pull-left">
+                           class="form-control selectgeneral pull-left"
+                           name="nacionalidad" pattern=".*\S+.*" title="Se requiere la nacionalidad"  data-placement="top" required="required">
                     <ui-select-match  placeholder="Nacionalidad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                     <ui-select-choices refresh-delay="0" repeat="tipoNacionalidad in  root.parametros.tiposNacionalidad | filter:$select.search">
                         <span ng-bind="tipoNacionalidad.descripcion"></span>

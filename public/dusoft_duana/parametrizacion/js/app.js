@@ -13,6 +13,7 @@ define([
     "uiselect2",
     "loader",
     "includes/menu/menucontroller",
+    "includes/validation/FormValidation",
     "url",
     "controllers/OperariosBodega/OperariosBodegaController",
     "controllers/AdministracionModulos/Modulos/AdministracionModulosController",

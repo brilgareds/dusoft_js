@@ -3,7 +3,7 @@
         
         <tabset>
 
-            <tab active="root.tabs[0]"  select="onTabChange(0)">
+            <tab active="root.tabs[0]"  select="onCambiarValorTab(0)">
                 <tab-heading>
                    <i class="glyphicon glyphicon-th"></i> <b> Datos tercero </b>
                 </tab-heading>
@@ -12,7 +12,7 @@
 
             </tab>
 
-            <tab active="root.tabs[1]"  select="onTabChange(1)"> 
+            <tab active="root.tabs[1]"  select="onCambiarValorTab(1)" disabled="formularios.formularioTerceros.$invalid" > 
                 <tab-heading >
                    <i class="glyphicon glyphicon-time"></i> <b>Datos ubicación</b>
                 </tab-heading>
@@ -21,7 +21,7 @@
                
             </tab>   
             
-            <tab  active="root.tabs[2]"  select="onTabChange(2)"> 
+            <tab  active="root.tabs[2]"  select="onCambiarValorTab(2)" disabled="formularios.formularioUbicacion.$invalid"> 
                 <tab-heading >
                    <i class="glyphicon glyphicon-time"></i> <b>Contacto</b>
                 </tab-heading>

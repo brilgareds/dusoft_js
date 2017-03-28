@@ -1,292 +1,304 @@
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4">
-        <label class="control-label">Tipo dirección</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.tipoDireccion"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-16" 
-                       append-to-body = "true">
-                <ui-select-match  placeholder="Tipo dirección"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoDireccion in  root.parametros.tiposDireccion | filter:$select.search">
-                    <span ng-bind="tipoDireccion.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    <div class="col-md-4" >
-        <label class="control-label">Pais</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.pais"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-12" 
-                       append-to-body = "true"
-                       ng-change="onSeleccionarPais()">
-                <ui-select-match  placeholder="Pais"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="pais in  root.parametros.paises | filter:$select.search">
-                    <span ng-bind="pais.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Departamento</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.pais.departamentoSeleccionado"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
-                       append-to-body = "true"
-                       ng-change="onSeleccionarDepartamento()">
-                <ui-select-match  placeholder="Departamento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh-delay="0" repeat="departamento in  root.tercero.getPais().getDepartamentos() | filter:$select.search">
-                    <span ng-bind="departamento.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-</div>
+<form  ng-model="formularios.formularioUbicacion" name="formularios.formularioUbicacion" id="formularioUbicacion" form-validation>
+    <div class="row contenedorCamposTercero">
 
+        <div class="col-md-4">
+            <label class="control-label">Tipo dirección</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.tipoDireccion"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-16" 
+                           name="tipoDireccion" pattern=".*\S+.*" title="Se requiere el tipo de direccioón"  data-placement="top" required="required"
+                           append-to-body = "true">
+                    <ui-select-match  placeholder="Tipo dirección"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoDireccion in  root.parametros.tiposDireccion | filter:$select.search">
+                        <span ng-bind="tipoDireccion.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
 
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4">
-        <label class="control-label">Ciudad</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.pais.departamentoSeleccionado.ciudadSeleccionada"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-15" 
-                       append-to-body = "true">
-                <ui-select-match  placeholder="Ciudad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in  root.tercero.pais.departamentoSeleccionado.ciudades | filter:$select.search">
-                    <span ng-bind="ciudad.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Via principal</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.nomenclaturaDireccion1"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-11" 
-                       append-to-body = "true">
-                <ui-select-match  placeholder="Via principal"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh-delay="0" repeat="nomenclaturaDireccion in  root.parametros.nomenclaturasDireccion | filter:$select.search">
-                    <span ng-bind="nomenclaturaDireccion.getCodigo()"></span> - <span ng-bind="nomenclaturaDireccion.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Descripción via principal</label>
-        <p class="input-group">
+        <div class="col-md-4" >
+            <label class="control-label">Pais</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.pais"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-12" 
+                           append-to-body = "true"
+                           name="pais" pattern=".*\S+.*" title="Se requiere el pais"  data-placement="top" required="required"
+                           ng-change="onSeleccionarPais()">
+                    <ui-select-match  placeholder="Pais"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="pais in  root.parametros.paises | filter:$select.search">
+                        <span ng-bind="pais.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
 
-            <input type="text" class="form-control" 
-                   ng-model="root.tercero.nomenclaturaDescripcion1" placeholder="" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
+        <div class="col-md-4">
+            <label class="control-label">Departamento</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.pais.departamentoSeleccionado"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                           append-to-body = "true"
+                           name="departamento" pattern=".*\S+.*" title="Se requiere el departamento"  data-placement="top" required="required"
+                           ng-change="onSeleccionarDepartamento()">
+                    <ui-select-match  placeholder="Departamento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh-delay="0" repeat="departamento in  root.tercero.getPais().getDepartamentos() | filter:$select.search">
+                        <span ng-bind="departamento.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
 
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-map-marker"></i></button>
-            </span>
-        </p>
-    </div>
-    
-</div>
-
-
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4">
-        <label class="control-label">Via secundaria</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.nomenclaturaDireccion2"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-14" 
-                       append-to-body = "true">
-                <ui-select-match  placeholder="Via principal"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh-delay="0" repeat="nomenclaturaDireccion in  root.parametros.nomenclaturasDireccion | filter:$select.search">
-                    <span ng-bind="nomenclaturaDireccion.getCodigo()"></span> - <span ng-bind="nomenclaturaDireccion.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Descripción via secundaria</label>
-        <p class="input-group">
-
-            <input type="text" class="form-control" 
-                   ng-model="root.tercero.nomenclaturaDescripcion2" placeholder="" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
-
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-map-marker"></i></button>
-            </span>
-        </p>
-    </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Número predio</label>
-        <p class="input-group">
-
-            <input type="text" class="form-control"  
-                   ng-model="root.tercero.numeroPredio" placeholder="Número predio" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
-
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-home"></i></button>
-            </span>
-        </p>
-    </div>
-    
-</div>
-
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4">
-        <label class="control-label">Barrio</label>
-        <p class="input-group">
-
-            <input type="text" class="form-control" 
-                   ng-model="root.tercero.barrio" placeholder="Barrio" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
-
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-home"></i></button>
-            </span>
-        </p>
-    </div>
-    
-    <div class="col-md-4" >
-        <label class="control-label">Dirección</label>
-        <p class="input-group">
-
-            <input type="text" class="form-control" 
-                   ng-model="root.tercero.direccion" placeholder="Dirección" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
-
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-map-marker"></i></button>
-            </span>
-        </p>
-    </div>
-   
-</div>
-
-<hr />
-
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4" >
-        <label class="control-label">Tipo teléfono</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.tipoTelefono"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-13" >
-                <ui-select-match  placeholder="Tipo teléfono"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices  refresh-delay="0" repeat="tipoTelefono in  root.parametros.tiposTelefono | filter:$select.search">
-                    <span ng-bind="tipoTelefono.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Tipo linea teléfonica</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.tipoLineaTelefonica"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left" >
-                <ui-select-match  placeholder="Tipo linea teléfonica"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoLineaTelefonica in  root.parametros.tiposLineaTefelonica | filter:$select.search">
-                    <span ng-bind="tipoLineaTelefonica.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
-    </div>
-    
-    <div class="col-md-4" >
-        <label class="control-label">Número teléfono</label>
-        <p class="input-group">
-
-            <input type="text" class="form-control"  
-                   ng-model="root.tercero.telefono" placeholder="Número teléfonico" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
-
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-phone-alt"></i></button>
-            </span>
-        </p>
     </div>
 
-    
-</div>
 
-<hr />
+    <div class="row contenedorCamposTercero">
 
+        <div class="col-md-4">
+            <label class="control-label">Ciudad</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.pais.departamentoSeleccionado.ciudadSeleccionada"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-15" 
+                           name="ciudad" pattern=".*\S+.*" title="Se requiere la ciudad"  data-placement="top" required="required"
+                           append-to-body = "true">
+                    <ui-select-match  placeholder="Ciudad"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in  root.tercero.pais.departamentoSeleccionado.ciudades | filter:$select.search">
+                        <span ng-bind="ciudad.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
 
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4" >
-        <label class="control-label">Tipo correo</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.tipoCorreo"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-12" >
-                <ui-select-match  placeholder="Tipo correo"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices  refresh-delay="0" repeat="tipoCorreo in  root.parametros.tiposCorreo | filter:$select.search">
-                    <span ng-bind="tipoCorreo.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
+        <div class="col-md-4">
+            <label class="control-label">Via principal</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.nomenclaturaDireccion1"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-11" 
+                           name="viaPrincipal" pattern=".*\S+.*" title="Se requiere este campo"  data-placement="top" required="required"
+                           append-to-body = "true">
+                    <ui-select-match  placeholder="Via principal"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh-delay="0" repeat="nomenclaturaDireccion in  root.parametros.nomenclaturasDireccion | filter:$select.search">
+                        <span ng-bind="nomenclaturaDireccion.getCodigo()"></span> - <span ng-bind="nomenclaturaDireccion.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <label class="control-label">Descripción via principal</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control" 
+                       ng-model="root.tercero.nomenclaturaDescripcion1" placeholder="" name="descripcionViaPrincipal" id="descripcionViaPrincipal"
+                       pattern=".*\S+.*" title="Se requiere este campo"  data-placement="top" required="required"/>
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-map-marker"></i></button>
+                </span>
+            </p>
+        </div>
+
     </div>
 
-    
-    <div class="col-md-4" >
-        <label class="control-label">Correo</label>
-        <p class="input-group">
 
-            <input type="text" class="form-control"  
-                   ng-model="root.tercero.email" placeholder="Correo" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
+    <div class="row contenedorCamposTercero">
 
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-envelope"></i></button>
-            </span>
-        </p>
+        <div class="col-md-4">
+            <label class="control-label">Via secundaria</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.nomenclaturaDireccion2"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-14" 
+                           append-to-body = "true">
+                    <ui-select-match  placeholder="Via principal"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh-delay="0" repeat="nomenclaturaDireccion in  root.parametros.nomenclaturasDireccion | filter:$select.search">
+                        <span ng-bind="nomenclaturaDireccion.getCodigo()"></span> - <span ng-bind="nomenclaturaDireccion.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <label class="control-label">Descripción via secundaria</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control" 
+                       ng-model="root.tercero.nomenclaturaDescripcion2" placeholder="" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-map-marker"></i></button>
+                </span>
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <label class="control-label">Número predio</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control"  
+                       ng-model="root.tercero.numeroPredio" placeholder="Número predio"
+                       name="numeroPredio" pattern=".*\S+.*" title="Se requiere el número de predio"  data-placement="top" required="required"/>
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-home"></i></button>
+                </span>
+            </p>
+        </div>
+
     </div>
 
-    
-</div>
+    <div class="row contenedorCamposTercero">
 
-<hr />
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4" >
-        <label class="control-label">Tipo red social</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.tipoRedSocial"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left" >
-                <ui-select-match  placeholder="Tipo red social"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh-delay="0" repeat="tipoRedSocial in  root.parametros.tiposRedSocial | filter:$select.search">
-                    <span ng-bind="tipoRedSocial.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
+        <div class="col-md-4">
+            <label class="control-label">Barrio</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control" 
+                       ng-model="root.tercero.barrio" placeholder="Barrio" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-home"></i></button>
+                </span>
+            </p>
+        </div>
+
+        <div class="col-md-4" >
+            <label class="control-label">Dirección</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control" 
+                       ng-model="root.tercero.direccion" placeholder="Dirección" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-map-marker"></i></button>
+                </span>
+            </p>
+        </div>
+
     </div>
 
-    
-    <div class="col-md-4" >
-        <label class="control-label">Descripción</label>
-        <p class="input-group">
+    <hr />
 
-            <input type="text" class="form-control" 
-                   ng-model="root.tercero.descripcionRedSocial" placeholder="Descripción" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
+    <div class="row contenedorCamposTercero">
 
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
-            </span>
-        </p>
+        <div class="col-md-4" >
+            <label class="control-label">Tipo teléfono</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.tipoTelefono"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-13" 
+                           name="tipoTelefono" pattern=".*\S+.*" title="Se requiere el tipo de teléfono"  data-placement="top" required="required">
+                    <ui-select-match  placeholder="Tipo teléfono"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices  refresh-delay="0" repeat="tipoTelefono in  root.parametros.tiposTelefono | filter:$select.search">
+                        <span ng-bind="tipoTelefono.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <label class="control-label">Tipo linea teléfonica</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.tipoLineaTelefonica"  
+                           theme="select2" 
+                           name="tipoLineaTelefonica" pattern=".*\S+.*" title="Se requiere el tipo de línea teléfonica"  data-placement="top" required="required"
+                           class="form-control selectgeneral pull-left" >
+                    <ui-select-match  placeholder="Tipo linea teléfonica"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoLineaTelefonica in  root.parametros.tiposLineaTefelonica | filter:$select.search">
+                        <span ng-bind="tipoLineaTelefonica.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+
+        <div class="col-md-4" >
+            <label class="control-label">Número teléfono</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control"  
+                       ng-model="root.tercero.telefono" placeholder="Número teléfonico" 
+                       name="numeroTelefono" pattern=".*\S+.*" title="Se requiere el número de teléfono"  data-placement="top" required="required"/>
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-phone-alt"></i></button>
+                </span>
+            </p>
+        </div>
+
+
     </div>
 
-    
-</div>
+    <hr />
+
+
+    <div class="row contenedorCamposTercero">
+
+        <div class="col-md-4" >
+            <label class="control-label">Tipo correo</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.tipoCorreo"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-12" >
+                    <ui-select-match  placeholder="Tipo correo"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices  refresh-delay="0" repeat="tipoCorreo in  root.parametros.tiposCorreo | filter:$select.search">
+                        <span ng-bind="tipoCorreo.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+
+
+        <div class="col-md-4" >
+            <label class="control-label">Correo</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control"  
+                       ng-model="root.tercero.email" placeholder="Correo" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-envelope"></i></button>
+                </span>
+            </p>
+        </div>
+
+
+    </div>
+
+    <hr />
+    <div class="row contenedorCamposTercero">
+
+        <div class="col-md-4" >
+            <label class="control-label">Tipo red social</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.tipoRedSocial"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left" >
+                    <ui-select-match  placeholder="Tipo red social"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices refresh-delay="0" repeat="tipoRedSocial in  root.parametros.tiposRedSocial | filter:$select.search">
+                        <span ng-bind="tipoRedSocial.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+
+
+        <div class="col-md-4" >
+            <label class="control-label">Descripción</label>
+            <p class="input-group">
+
+                <input type="text" class="form-control" 
+                       ng-model="root.tercero.descripcionRedSocial" placeholder="Descripción" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </p>
+        </div>
+
+
+    </div>
+</form>

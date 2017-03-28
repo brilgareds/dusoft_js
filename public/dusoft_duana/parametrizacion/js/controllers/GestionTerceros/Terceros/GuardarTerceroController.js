@@ -68,6 +68,7 @@ define(["angular",
             var contacto = Contacto.get();
             $scope.root.tercero.setContacto(contacto);
             
+            
             $scope.listaContactos = {
                 data: 'usuarios',
                 multiSelect: false,
@@ -81,6 +82,11 @@ define(["angular",
 
             };
             
+            $scope.formularios = {
+                formularioTerceros:null,
+                formularioUbicacion:null,
+                formularioContacto:null
+            };
             
             $scope.root.tercero.tipoNaturaleza =  $scope.root.tiposNaturaleza[0];
             $scope.pickerFechaExpedicion = {};
@@ -102,7 +108,7 @@ define(["angular",
                 
                 GestionTercerosService.obtenerParametrizacionTerceros(parametros,function(respuesta){
                     if(respuesta.status === 200){
-                        console.log("obtenerParametrizacion terceros ", respuesta);
+                       // console.log("obtenerParametrizacion terceros ", respuesta);
                         var data = respuesta.obj.parametrizacion;
                         self.gestionarParametrosTercero(data);
                         
@@ -114,7 +120,7 @@ define(["angular",
                 
                 GestionTercerosService.obtenerPaises(parametros,function(respuesta){
                     if(respuesta.status === 200){
-                        console.log("obtenerParametrizacion paises ", respuesta);
+                        //console.log("obtenerParametrizacion paises ", respuesta);
                         var data = respuesta.obj.ciudades;
                         self.gestionarPaises(data);
                     } else {
@@ -297,6 +303,21 @@ define(["angular",
             * @fecha 2017-03-15
             */
             $scope.onTabChange = function(tab){
+
+                var formulario = self.obtenerNombreFormularioActual($scope.root.tabActual);
+                
+                if(!formulario || !$scope.formularios[formulario]){
+                    return false;
+                }
+                
+                var formActual =  $scope.formularios[formulario];
+               
+                if(!formActual.$valid){
+                    console.log("formulario to show validation ", formActual);
+                    formActual.mostrarErrorEnCampos();
+                    return false;
+                }
+                
                 $scope.root.tabActual = tab;
                 
                 for(var _tab in $scope.root.tabs){   
@@ -305,7 +326,28 @@ define(["angular",
                     } else {
                         $scope.root.tabs[_tab] = false;
                     }
-                }                
+                }    
+                
+                console.log("tab activo ", $scope.root.tabs);
+                
+                return true;
+            };
+            
+            $scope.onCambiarValorTab = function(tab){
+                $scope.root.tabActual = tab;
+            };
+            
+            self.obtenerNombreFormularioActual = function(tab){
+                var obj = $scope.formularios;
+                var forms =  Object.keys(obj);
+                
+                for(var i in forms){
+                    if(parseInt(i) === parseInt(tab)){
+                        return forms[i];
+                    }
+                    
+                }
+                
             };
             
            /**
@@ -366,8 +408,10 @@ define(["angular",
             * @fecha 2017-03-15
             */
             $scope.onBtnSiguiente = function(){
-                $scope.root.tabActual++;
-                $scope.onTabChange($scope.root.tabActual);
+                var tab = $scope.root.tabActual;
+                tab++;
+                $scope.onTabChange(tab);
+                
             };  
             
             $scope.onCambiarNaturaleza = function(){

@@ -259,7 +259,7 @@ define(["angular", "js/controllers",
                 var cotizacions = {
                     empresa_id: '03',
                     centro_utilidad_id: '1 ',
-                    bodega_id: '03',
+                    bodega_id: '06',
                     numero_cotizacion: 0,
                     observacion: 'Pedido Generado desde Farmacia',
                     productos: productos,

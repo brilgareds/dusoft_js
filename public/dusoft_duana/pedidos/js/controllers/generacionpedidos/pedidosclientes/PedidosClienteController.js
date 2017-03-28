@@ -1706,11 +1706,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              de lo contrario se generara el pedido normal
              */
             that.generarPedidoBodegaMultiple = function (aprobado, denegar) {
-                 
+                 console.log("67022 [generarPedidoBodegaMultiple}", aprobado)
                if (aprobado === 1) {
                     that.consultarDetalleProductosCotizacion(function (estado, resultado) {
-
-
+                                     
+                    console.log("estado ", estado);
+                    console.log("resultado ", resultado);
                         if ($scope.Pedido.observacion_cartera.length > 0) {
                             if (estado) {
 

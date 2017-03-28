@@ -528,7 +528,7 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
                       filtroAvanzado:filtroAvanzado
                   };
                
-    var objBodegaPedido={sw_modulo:'1'}; 
+    var objBodegaPedido={sw_modulo:'0'}; 
       // console.log("args.pedidos_clientes ")   
     G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
          
@@ -4259,7 +4259,7 @@ function __validar_datos_productos_archivo_plano(that, obj, productos, productos
     obj.pedidos_clientes.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id; 
     obj.pedidos_clientes.codigoProducto = producto.codigo_producto;
     obj.pedidos_clientes.termino_busqueda = producto.codigo_producto;
-    obj.pedidos_clientes.filtro = {nombre:'Codigo', tipo_busqueda:2, numero: [null], tipo:2}
+    obj.pedidos_clientes.filtro = {nombre:'Codigo', tipo_busqueda:2, numero: [null], tipo:1}
     obj.pedidos_clientes.tipoBusqueda = 0;
     
     index++;

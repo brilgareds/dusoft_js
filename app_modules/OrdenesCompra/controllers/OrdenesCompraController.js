@@ -531,7 +531,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var iva = args.ordenes_compras.iva;
     var modificar = args.ordenes_compras.modificar || false;
     var entar;  
-    var item_id; 
+    var item_id=''; 
 
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
@@ -561,7 +561,9 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
                             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
                             return;
                         } else {
-                             if (entar) {
+                            //se reutiliza esta funcion para el ingreso de productos al I002, se envia el item_id
+                            if (item_id!==undefined && item_id!=='' ) {
+                                console.log(item_id);
                                 that.m_ordenes_compra.modificar_detalle_orden_compra_item(numero_orden, codigo_producto, cantidad_solicitada, item_id, function(err, rows, result) {
                                     res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
                                     return;

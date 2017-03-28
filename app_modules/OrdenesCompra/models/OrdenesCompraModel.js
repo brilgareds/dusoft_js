@@ -571,7 +571,7 @@ OrdenesCompraModel.prototype.modificar_detalle_orden_compra_item = function(nume
     G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:item_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
-        console.log("errerrerr",err);
+        console.log("error",err);
        callback(err);
     });
     

@@ -170,21 +170,49 @@ DocumentoBodegaI002.prototype.eliminarOrdenPedidoProductosFoc = function(paramet
   DocumentoBodegaI002.prototype.updateComprasOrdenesPedidosDetalle=function(parametros, transaccion, callback) {
     
      var sql = " UPDATE compras_ordenes_pedidos_detalle \
-                 SET numero_unidades_recibidas = COALESCE(numero_unidades_recibidas,0)+ :1 , sw_ingresonc = :2 \
-                 WHERE orden_pedido_id = :3 and codigo_producto = :4 and item_id = :5 ; ";
+                 SET numero_unidades_recibidas = COALESCE(numero_unidades_recibidas,0)+ "+parametros.cantidad+" , sw_ingresonc = "+parametros.sw_ingresonc+" \
+                 WHERE orden_pedido_id = "+parametros.orden_pedido_id+" and codigo_producto = '"+parametros.codigo_producto+"' and item_id = '"+parametros.item_id_compras+"' ; ";
       
-     params={1: parametros.cantidad, 2:parametros.sw_ingresonc,3: parametros.orden_pedido_id, 4:parametros.codigo_producto,5:parametros.item_id};
+     params={1: parametros.sw_ingresonc,2: parametros.orden_pedido_id, 3: parametros.codigo_producto, 4: parametros.item_id_compras};
+     
+//     var sql = " UPDATE compras_ordenes_pedidos_detalle \
+//                 SET numero_unidades_recibidas = COALESCE(numero_unidades_recibidas,0)+ "+parametros.cantidad+" , sw_ingresonc = :1 \
+//                 WHERE orden_pedido_id = :2 and codigo_producto = :3 and item_id = :4 ; ";
+//      
+//     params={1: parametros.sw_ingresonc,2: parametros.orden_pedido_id, 3: parametros.codigo_producto, 4: parametros.item_id_compras};
+//     
+console.log("sql",sql);
    var query= G.knex.raw(sql);
-   if(transaccion) query.transacting(transaccion);   
-   G.knex.raw(sql, params).
+  // if(transaccion) query.transacting(transaccion);   
+   G.knex.raw(sql).
    then(function(resultado){
+       console.log("resultado [resultado]: ", resultado);
        callback(false, resultado);
    }).catch(function(err){
        console.log("err (/catch) [updateComprasOrdenesPedidosDetalle]: ", err);
        callback(true,err);
    });
     
-};                  
+};  
+
+//Eliminar Documento Temporal Despacho Farmacias
+DocumentoBodegaI002.prototype.eliminar_documento_temporal=function(parametros, transaccion, callback) {
+    
+    var sql = "DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
+  
+    var query = G.knex.raw(sql, {1:parametros.docTmpId, 2:parametros.usuarioId});
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        
+        sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
+        return G.knex.raw(sql, {1:parametros.docTmpId, 2:parametros.usuarioId}).transacting(transaccion);
+    }).then(function(){
+        callback(false);
+    }).catch(function(err){
+        callback(err);
+    });
+};
 
 DocumentoBodegaI002.prototype.listarInvBodegasMovimientoTmpOrden = function(parametros, callback) {
 console.log("*****parametros********",parametros);

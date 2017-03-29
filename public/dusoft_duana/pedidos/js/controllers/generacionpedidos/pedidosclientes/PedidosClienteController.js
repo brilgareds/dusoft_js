@@ -1646,7 +1646,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 30/09/2016
              */
             that.consultarDetalleProductosCotizacion = function (callback) {
-
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -1656,7 +1656,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 termino_busqueda: '1',
                                 empresa_origen_id: $scope.Pedido.get_empresa_id(),
                                 centro_utilidad_origen_id: $scope.Pedido.get_centro_utilidad_id(),
-                                bodega_origen_id: $scope.Pedido.get_bodega_id()
+                                bodega_origen_id: '03'
                             }
 
                         }
@@ -1712,6 +1712,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                      
                     console.log("estado ", estado);
                     console.log("resultado ", resultado);
+                    
                         if ($scope.Pedido.observacion_cartera.length > 0) {
                             if (estado) {
 

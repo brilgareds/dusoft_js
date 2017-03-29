@@ -124,7 +124,7 @@ DocumentoBodegaI002.prototype.agregarBodegasMovimientoOrdenesCompras = function(
     query.then(function(resultado) {
         callback(false, resultado);
     }). catch (function(err) {
-        console.log("agregarBodegasMovimientoOrdenesCompras", err);
+        console.log("err [agregarBodegasMovimientoOrdenesCompras]: ", err);
         callback(err);
     }).done();
 };
@@ -199,17 +199,19 @@ console.log("sql",sql);
 DocumentoBodegaI002.prototype.eliminar_documento_temporal=function(parametros, transaccion, callback) {
     
     var sql = "DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
-  
+  console.log("eliminar_documento_temporal 00");
     var query = G.knex.raw(sql, {1:parametros.docTmpId, 2:parametros.usuarioId});
     if(transaccion) query.transacting(transaccion);
-            
+  console.log("eliminar_documento_temporal111");          
     query.then(function(resultado){
-        
+        console.log("eliminar_documento_temporal 22");
         sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
         return G.knex.raw(sql, {1:parametros.docTmpId, 2:parametros.usuarioId}).transacting(transaccion);
     }).then(function(){
+        console.log("eliminar_documento_temporal");
         callback(false);
     }).catch(function(err){
+        console.log("eliminar_documento_temporal::: ",err);
         callback(err);
     });
 };

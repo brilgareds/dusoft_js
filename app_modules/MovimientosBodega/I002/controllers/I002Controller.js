@@ -320,11 +320,11 @@ I002Controller.prototype.listarGetDocTemporal = function(req, res) {
 
 
 I002Controller.prototype.execCrearDocumento=function(req,res){
- var that = this;
+   var that = this;
    var args = req.body.data;
    var usuarioId;
    var parametros={};
-   console.log("execCrearDocumento ");
+  
 
     if (args.movimientos_bodegas.doc_tmp_id === '') {
         res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
@@ -344,83 +344,91 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
     var ordenPedidoId=args.movimientos_bodegas.orden_pedido_id;
     
     var docTmpId= args.movimientos_bodegas.doc_tmp_id;
- var resultadoProducto;   
+    var resultadoProducto;   
     parametros.ordenPedidoId=ordenPedidoId;
     parametros.usuarioId=usuarioId;
     parametros.docTmpId=docTmpId;
     
     G.knex.transaction(function(transaccion) {  
-    console.log("00000");
-            G.Q.nfcall(that.m_movimientos_bodegas.crear_documento, docTmpId, usuarioId, transaccion).then(function(result){
-     console.log("11111");    
-                parametros.empresaId=result.empresa_id;
-                parametros.prefijoDocumento=result.prefijo_documento;
-                parametros.numeracionDocumento=result.numeracion_documento;
-                parametros.orden_pedido_id=parametros.ordenPedidoId;
-                console.log("111crear_documento",result);
-               return G.Q.ninvoke(that.m_I002, "agregarBodegasMovimientoOrdenesCompras",parametros,transaccion);   
-                        
-//           }).then(function(result){
-//               console.log("111.00000agregarBodegasMovimientoOrdenesCompras",result);
-//               return G.Q.nfcall(that.m_I002,"eliminar_documento_temporal",parametros, transaccion);
-           }).then(function(result){
-               console.log("222__eliminar_documento_temporal",result);
-                return G.Q.ninvoke(that.m_I002, "listarInvBodegasMovimientoTmpOrden", parametros);
-                
-           }).then(function(result){
-               console.log("result[0] ",result[0]);
-               parametros.porcentaje_rtf=result[0].porcentaje_rtf;
-               parametros.porcentaje_ica=result[0].porcentaje_ica;
-               parametros.porcentaje_cree=0;
-               parametros.porcentaje_reteiva=result[0].porcentaje_reteiva;
+
+        G.Q.ninvoke(that.m_movimientos_bodegas, "crear_documento", docTmpId, usuarioId, transaccion).then(function(result) {
+               console.log("crear_documento", result);
+            parametros.empresaId = result.empresa_id;
+            parametros.prefijoDocumento = result.prefijo_documento;
+            parametros.numeracionDocumento = result.numeracion_documento;
+            parametros.orden_pedido_id = parametros.ordenPedidoId;
            
-               return G.Q.ninvoke(that.m_I002, "updateInvBodegasMovimiento",parametros,transaccion);
-               
-           }).then(function(result){
-           console.log("commit 333");
-               return G.Q.ninvoke(that.m_I002, "eliminarOrdenPedidoProductosFoc",parametros,transaccion);
-           }).then(function(result){
-                parametros.usuario_id=usuarioId;
-               console.log("commit 444");
-               return G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros); 
-           }).then(function(result){     
-              resultadoProducto=result; 
-              console.log("commit 555");
-               return G.Q.nfcall(that.m_I002,"eliminar_documento_temporal",parametros, transaccion);  
-           }).then(function(result){
-                console.log("commit",result);
-               transaccion.commit();
-                 
-           }).then(function(result){ 
-               var transaccions;
-               return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle,that, 0, resultadoProducto,transaccions);
-             
-           }).fail(function(err){
-               console.log("Error ",err);
-               transaccion.rollback(err);
-           }).done();
+            return G.Q.ninvoke(that.m_I002, "agregarBodegasMovimientoOrdenesCompras", parametros, transaccion);
+
+        }).then(function(result) {
+            return G.Q.ninvoke(that.m_I002, "listarInvBodegasMovimientoTmpOrden", parametros);
+
+        }).then(function(result) {
+         
+            parametros.porcentaje_rtf = result[0].porcentaje_rtf;
+            parametros.porcentaje_ica = result[0].porcentaje_ica;
+            parametros.porcentaje_cree = 0;
+            parametros.porcentaje_reteiva = result[0].porcentaje_reteiva;
+
+            return G.Q.ninvoke(that.m_I002, "updateInvBodegasMovimiento", parametros, transaccion);
+
+        }).then(function(result) {
+            
+            return G.Q.ninvoke(that.m_I002, "eliminarOrdenPedidoProductosFoc", parametros, transaccion);
+            
+        }).then(function(result) {
+            
+            parametros.usuario_id = usuarioId;
+            return G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros);
+            
+        }).then(function(result) {
+            
+            resultadoProducto = result;
+            return G.Q.ninvoke(that.m_I002, "eliminar_documento_temporal", parametros, transaccion);
+            
+        }).then(function(result) {
+            
+            transaccion.commit();
+            
+        }).then(function() {
+            
+            var transaccions;
+            return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle, that, 0, resultadoProducto, transaccions);
+
+        }).then(function() {
+            console.log("ok2");
+            return;
+        }).fail(function(err) {
+            
+            console.log("Error rollback ", err);
+            transaccion.rollback(err);
+            
+        }).done();
     
     }).then(function(){
-        console.log("execCrearDocumento");
-       res.send(G.utils.r(req.url, 'Ejecutar Crear Documento', 200, {execCrearDocumento: result}));
+        
+       res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {execCrearDocumento: parametros}));
+       
     }).catch(function(err){
+        
         console.log("err>>>>",err);
          res.send(G.utils.r(req.url, 'Error al Listar Documento Temporal', 500, {err:err}));
+         
     }).done();
 };
 
 
 function __modificarComprasOrdenesPedidosDetalle(that, index, parametros,transaccion, callback) {
-  console.log("__modificarComprasOrdenesPedidosDetalle 111");
+
     var productos = parametros[index];
-      console.log("__modificarComprasOrdenesPedidosDetalle 222",productos);  
+    
     if (!productos) {
         callback(false);
         return;
     }
 
    G.Q.ninvoke(that.m_I002,"updateComprasOrdenesPedidosDetalle",productos, transaccion).then(function(result){
-     console.log("__modificarComprasOrdenesPedidosDetalle index ",index);
+   
      index++;
      
         setTimeout(function() {

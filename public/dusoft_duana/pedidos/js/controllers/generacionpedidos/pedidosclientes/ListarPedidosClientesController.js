@@ -281,8 +281,7 @@ define(["angular", "js/controllers",
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
                     return;
                 }
-                
-                console.log("obj.get_numero_cotizacion() ", obj.get_numero_cotizacion())
+               
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
                     
@@ -897,8 +896,6 @@ define(["angular", "js/controllers",
             
             that.ventanaFacturasPedido = function(pedido) {
                 
-                console.log("pedido ", pedido);
-               
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -925,9 +922,7 @@ define(["angular", "js/controllers",
              * @fecha 2017-01-03 YYYY-MM-DD
              */
             $scope.ventanaFacturasPedido = function(entity){
-                
-                //console.log("entity ", entity.numero_pedido);
-                
+                 
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -1138,8 +1133,7 @@ define(["angular", "js/controllers",
              *               actualizando el nuevo estado de la cotizacion
              */
             socket.on("onListarEstadoCotizacion", function(datos) {
-                
-                console.log("Resultado de onListarEstadoCotizacion ", datos);
+                 
                 if (datos.status === 200) {
                     var estado = ['Inactivo', 'Activo', 'Anulado', 'Aprobado cartera', 'No autorizado por cartera', 'Tiene un pedido', 'Se solicita autorizacion']
                     $scope.Empresa.get_cotizaciones().forEach(function(data) {

@@ -1082,7 +1082,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.opciones_archivo.cancel();
                     $scope.datos_view.productosInvalidos = [];
                     $scope.datos_view.productosInvalidosSinRepetir;
-                    //console.log("$scope.datos_view.productos_invalidos ", $scope.datos_view.productos_invalidos);
+                   
 
                     $scope.datos_view.productos_invalidos.forEach(function (row) {
 
@@ -1361,27 +1361,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }]
                 };
                 var modalInstance = $modal.open($scope.opts);
-                /*$scope.opts = {
-                 backdrop: true,
-                 backdropClick: true,
-                 dialogFade: true,
-                 keyboard: true,
-                 templateUrl: 'views/generacionpedidos/pedidosclientes/validardisponibilidadproductoscontroller.html',
-                 scope: $scope,                  
-                 controller: "ValidarDisponibilidadProductosController",
-                 resolve: {
-                 pedido: function() {
-                 return productos;
-                 },
-                 swBotonDenegarCartera:function() {
-                 return estadoBoton;
-                 }
-                 }           
-                 };
-                 var modalInstance = $modal.open($scope.opts);   
-                 
-                 modalInstance.result.then(function(){ 
-                 },function(){});*/
+                
             };
 
 
@@ -1399,7 +1379,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if (producto.bodegaProducto === bodega) {
                     productosBodegaDuana.push(producto);
                 }
-                //console.log("producto ", producto)
+               
 
                 __productosBodegaDuana(index, productos, productosBodegaDuana, bodega, callback);
 
@@ -1415,9 +1395,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             that.validarDisponibleProductosCotizacion = function (estadoBoton, producto, callback) {
 
                 __productosBodegaDuana(0, $scope.Pedido.productos, [], $scope.Pedido.get_bodega_id(), function (resultado, productosBodega) {
-
-                    console.log("resultado ", resultado);
-                    console.log("productosBodega ", productosBodega)
 
 
                     var numeroPedidoCot;
@@ -1458,7 +1435,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
 
                     Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function (data) {
-                        console.log("DISPONIBILIDAD ", data);
+                       
                         if (data.status === 200) {
                             if (data.obj.pedidos_clientes.producto.length > 0) {
 
@@ -1706,12 +1683,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              de lo contrario se generara el pedido normal
              */
             that.generarPedidoBodegaMultiple = function (aprobado, denegar) {
-                 console.log("67022 [generarPedidoBodegaMultiple}", aprobado)
+                 
                if (aprobado === 1) {
                     that.consultarDetalleProductosCotizacion(function (estado, resultado) {
-                                     
-                    console.log("estado ", estado);
-                    console.log("resultado ", resultado);
+                   
                     
                         if ($scope.Pedido.observacion_cartera.length > 0) {
                             if (estado) {
@@ -1739,7 +1714,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
 
                                 Request.realizarRequest(url, "POST", obj, function (data) {
-                                    console.log("data PEDIDO FARMACIA ", data)
+                                     
                                     if (data.status === 200) {
 
                                         that.actualizarEstadoProductoCotizacionBodegaCosmitet(resultado, aprobado, denegar);
@@ -1797,9 +1772,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             
                     $scope.productosInvalidos.push(producto);
                 }
-                
-                console.log("$scope.productosInvalidos ", $scope.productosInvalidos)
-
+                 
                 
                 $scope.opts = {
                     backdrop: true,

@@ -25,8 +25,7 @@ define(["angular", "js/controllers",
 
                 $scope.datos_view.productos_no_disponible = productos;
                 $scope.datos_view.swBotonDenegarCartera = swBotonDenegarCartera;
-                console.log("numeroPedidoTipo ", $scope.datos_view.productos_no_disponible);
-                console.log("swHabilidadBotonDenegarCartera ", swBotonDenegarCartera);
+                
                 
                 
                 $scope.cerrarVentanaDisponibilidad = function(){
@@ -34,7 +33,7 @@ define(["angular", "js/controllers",
                     $modalInstance.close();
                 };
                 socket.on("onCerrarVentanaCartera", function(datos) {
-                    console.log("LLLEGOOO ", datos);
+                   
                 });
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

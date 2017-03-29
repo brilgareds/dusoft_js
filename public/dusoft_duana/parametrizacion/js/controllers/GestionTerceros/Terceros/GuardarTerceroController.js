@@ -57,7 +57,8 @@ define(["angular",
                     tiposCorreo:[],
                     tiposRedSocial:[],
                     tiposContacto:[],
-                    paises:[]
+                    paises:[],
+                    contactos:[]
                 },
                 session : {
                     usuario_id: Usuario.getUsuarioActual().getId(),
@@ -70,14 +71,29 @@ define(["angular",
             
             
             $scope.listaContactos = {
-                data: 'usuarios',
+                data: 'root.parametros.contactos',
                 multiSelect: false,
                 showFilter: true,
                 enableRowSelection: true,
                 columnDefs: [
-                    {field: 'nombre_usuario', displayName: 'Nombre'},
-                    {field: 'usuario', displayName: 'Correo'},
-                    {field: 'usuario', displayName: 'Tipo'}
+                    {field: 'nombre', displayName: 'Nombre'},
+                    {field: 'telefono', displayName: 'Teléfono'},
+                    {field: 'email', displayName: 'Correo'},
+                    {field: 'getTipoContacto().getDescripcion()', displayName: 'Tipo'},
+                    {field: 'movimiento', displayName: "", cellClass: "txt-center dropdown-button", width: "70", 
+                        cellTemplate: '\
+                                        <div class="btn-group">\
+                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
+                                        <ul class="dropdown-menu dropdown-options">\
+                                            <li>\
+                                                <a href="javascript:void(0);" ng-click="onEditarContacto(row.entity)">Editar</a>\
+                                            </li>\
+                                            <li>\
+                                                <a href="javascript:void(0);" ng-click="onRemoverContacto(row.entity)">Remover</a>\
+                                            </li>\
+                                        </ul>\
+                                    </div>'
+                    }
                 ]
 
             };
@@ -296,13 +312,25 @@ define(["angular",
                 
             };
             
+            self.obtenerNombreFormularioActual = function(tab){
+                var obj = $scope.formularios;
+                var forms =  Object.keys(obj);
+                
+                for(var i in forms){
+                    if(parseInt(i) === parseInt(tab)){
+                        return forms[i];
+                    }
+                }
+                
+            };
+            
             /**
             * @author Eduar Garcia
             * +Descripcion Handler de los tabs del formulario de clientes, es tambien llamado por el boton siguiente
             * @params obj: {tab}
             * @fecha 2017-03-15
             */
-            $scope.onTabChange = function(tab){
+            $scope.onTabChange = function(tab, finalizar){
 
                 var formulario = self.obtenerNombreFormularioActual($scope.root.tabActual);
                 
@@ -318,37 +346,56 @@ define(["angular",
                     return false;
                 }
                 
-                $scope.root.tabActual = tab;
+                if(!finalizar){       
+                    $scope.root.tabActual = tab;
+                    for(var _tab in $scope.root.tabs){   
+                        if(parseInt(_tab) === parseInt(tab)){
+                            $scope.root.tabs[_tab] = true;
+                        } else {
+                            $scope.root.tabs[_tab] = false;
+                        }
+                    }    
+                } else {
+                    
+                    console.log("guardar el tercero ", $scope.root.tercero);
+                }
                 
-                for(var _tab in $scope.root.tabs){   
-                    if(parseInt(_tab) === parseInt(tab)){
-                        $scope.root.tabs[_tab] = true;
-                    } else {
-                        $scope.root.tabs[_tab] = false;
-                    }
-                }    
-                
-                console.log("tab activo ", $scope.root.tabs);
                 
                 return true;
             };
             
+            $scope.onBtnAgregarContacto = function(){
+                var formulario = self.obtenerNombreFormularioActual($scope.root.tabActual);
+                var formActual =  $scope.formularios[formulario];
+               
+                if(!formActual.$valid){
+                    formActual.mostrarErrorEnCampos();
+                    return false;
+                }
+                
+                var contactos = $scope.root.parametros.contactos;
+                var contacto = angular.copy($scope.root.tercero.getContacto());
+                
+                for(var i in contactos){
+                    if(contactos[i].getEmail().length > 0 && (contacto.getEmail() === contactos[i].getEmail())){
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El email ya esta en uso");
+                        return;
+                    }
+                }
+                
+                contactos.push(contacto);
+                $scope.root.tercero.getContacto().inicializar();
+                
+            };
+            
+            $scope.onEditarContacto = function(contacto){
+                $scope.root.tercero.getContacto().inicializar(contacto);
+            };
+
             $scope.onCambiarValorTab = function(tab){
                 $scope.root.tabActual = tab;
             };
             
-            self.obtenerNombreFormularioActual = function(tab){
-                var obj = $scope.formularios;
-                var forms =  Object.keys(obj);
-                
-                for(var i in forms){
-                    if(parseInt(i) === parseInt(tab)){
-                        return forms[i];
-                    }
-                    
-                }
-                
-            };
             
            /**
             * @author Eduar Garcia
@@ -407,10 +454,10 @@ define(["angular",
             * +Descripcion Handler del boton de siguiente
             * @fecha 2017-03-15
             */
-            $scope.onBtnSiguiente = function(){
+            $scope.onBtnSiguiente = function(finalizar){
                 var tab = $scope.root.tabActual;
                 tab++;
-                $scope.onTabChange(tab);
+                $scope.onTabChange(tab, finalizar);
                 
             };  
             

@@ -256,8 +256,8 @@
             <label class="control-label">Correo</label>
             <p class="input-group">
 
-                <input type="text" class="form-control"  
-                       ng-model="root.tercero.email" placeholder="Correo" name="srch-term" id="srch-term" />
+                <input type="email" class="form-control"  
+                       ng-model="root.tercero.email" placeholder="Correo" name="email"  title="El email debe ser válido"  data-placement="top" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-envelope"></i></button>

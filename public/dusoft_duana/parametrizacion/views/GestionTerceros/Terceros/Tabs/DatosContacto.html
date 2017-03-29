@@ -1,86 +1,97 @@
-<div class="row contenedorCamposTercero">
-    
-    <div class="col-md-4">
-        <label class="control-label">Nombre</label>
-        <p class="input-group">
+<form  ng-model="formularios.formularioContacto" name="formularios.formularioContacto" id="formularioContacto" form-validation>
+    <div class="row contenedorCamposTercero">
 
-            <input type="text" class="form-control"  
-                   ng-model="root.tercero.contacto.nombre" placeholder="Nombre" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
+        <div class="col-md-4">
+            <label class="control-label">Nombre</label>
+            <p class="input-group">
 
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-user"></i></button>
-            </span>
-        </p>
+                <input type="text" class="form-control"  
+                       ng-model="root.tercero.contacto.nombre" placeholder="Nombre" name="nombreContacto" pattern=".*\S+.*" title="Campo requerido"  data-placement="top" required="required" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-user"></i></button>
+                </span>
+            </p>
+        </div>
+
+        <div class="col-md-4" >
+            <label class="control-label">Tipo contacto</label>
+            <p class="input-group contenedorDropdown">            
+                <ui-select ng-model="root.tercero.contacto.tipoSeleccionado"  
+                           theme="select2" 
+                           class="form-control selectgeneral pull-left ui-select-z-index-12" 
+                           append-to-body = "true"
+                           name="tipoContacto" pattern=".*\S+.*" title="Campo requerido"  data-placement="top" required="required">
+                    <ui-select-match  placeholder="Tipo contacto"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
+                    <ui-select-choices  repeat="tipoContacto in  root.tercero.getContacto().getTiposContacto() | filter:$select.search">
+                        <span ng-bind="tipoContacto.getDescripcion()"></span>
+                    </ui-select-choices>
+                </ui-select>  
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <label class="control-label">Teléfono</label>
+           <p class="input-group">
+
+                <input type="text" class="form-control"  
+                       ng-model="root.tercero.contacto.telefono" placeholder="Teléfono" name="telefonoContacto" pattern=".*\S+.*" title="Campo requerido"  data-placement="top" required="required" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-phone-alt"></i></button>
+                </span>
+            </p>
+        </div>
+
     </div>
-    
-    <div class="col-md-4" >
-        <label class="control-label">Tipo contacto</label>
-        <p class="input-group contenedorDropdown">            
-            <ui-select ng-model="root.tercero.contacto.tipoSeleccionado"  
-                       theme="select2" 
-                       class="form-control selectgeneral pull-left ui-select-z-index-12" 
-                       append-to-body = "true"
-                       ng-change="onSeleccionarPais()">
-                <ui-select-match  placeholder="Tipo contacto"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
-                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoContacto in  root.tercero.getContacto().getTiposContacto() | filter:$select.search">
-                    <span ng-bind="tipoContacto.getDescripcion()"></span>
-                </ui-select-choices>
-            </ui-select>  
-        </p>
+
+    <div class="row contenedorCamposTercero">
+
+        <div class="col-md-4">
+            <label class="control-label">Correo</label>
+           <p class="input-group">
+
+                <input type="email" class="form-control" 
+                       ng-model="root.tercero.contacto.email" placeholder="Correo"
+                       name="emailContacto"  title="El email es inválido"  data-placement="top"/>
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-envelope"></i></button>
+                </span>
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <label class="control-label">Descripción</label>
+           <p class="input-group">
+
+                <input type="text" class="form-control" 
+                       ng-model="root.tercero.contacto.descripcion" placeholder="Descripción" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
+                </span>
+            </p>
+        </div>
+        
+        <div class="col-md-4">
+
+            <p class="input-group" style="margin-top:21px">
+                <button type="button" class="btn btn-success btn-medium" ng-click="onBtnAgregarContacto()">
+                    Agregar <span class="glyphicon glyphicon-plus" ></span>
+                </button>
+            </p>
+        </div>
+
     </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Teléfono</label>
+
+    <hr />
+    <h4>Lista de contactos</h4>
+    <div class="table-responsive" >
        <p class="input-group">
-
-            <input type="text" class="form-control"  
-                   ng-model="root.tercero.contacto.telefono" placeholder="Teléfono" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
-
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-phone-alt"></i></button>
-            </span>
-        </p>
+        <div class="gridContactos grid-responsive" ng-grid="listaContactos">
+            
+        </div>
+       <p>
     </div>
-    
-</div>
-
-<div class="row contenedorCamposTercero">
-
-    <div class="col-md-4">
-        <label class="control-label">Correo</label>
-       <p class="input-group">
-
-            <input type="text" class="form-control" 
-                   ng-model="root.tercero.contacto.email" placeholder="Correo" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
-
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-envelope"></i></button>
-            </span>
-        </p>
-    </div>
-    
-    <div class="col-md-4">
-        <label class="control-label">Descripción</label>
-       <p class="input-group">
-
-            <input type="text" class="form-control" 
-                   ng-model="root.tercero.contacto.descripcoin" placeholder="Descripción" name="srch-term" id="srch-term" />
-            <span class="input-group-btn">
-
-                <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
-            </span>
-        </p>
-    </div>
-    
-</div>
-
-<hr />
-<h4>Lista de contactos</h4>
-<div class="table-responsive" >
-   <p class="input-group">
-    <div class="gridContactos grid-responsive" ng-grid="listaContactos">
-
-    </div>
-   <p>
-</div>
-
+</form>

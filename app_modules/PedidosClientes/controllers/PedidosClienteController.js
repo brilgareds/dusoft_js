@@ -4722,7 +4722,7 @@ function __precioVentaProductos(that, index, cotizacion, callback){
        }, 300); 
         
     }).fail(function(err){
-        producto.mensajeError = 'El producto no se encuentra en la bodega';
+        producto.mensajeError = 'No se encuentra en la bodega el producto ';
         productosInvalidos.push(producto)
          callback({ msj:'El producto no se encuentra en la bodega',  status:403,  pedidos_clientes:{productos_invalidos:productosInvalidos}}); 
          //callback({ msj:'Error al consultar el producto',  status:500,  pedidos_clientes:''});

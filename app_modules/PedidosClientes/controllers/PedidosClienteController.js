@@ -4345,6 +4345,11 @@ function __validarPrecioVenta(producto, resultado, tipo) {
             msj = "El precio de venta esta por debajo del costo";
         }
     }
+    
+    if (precioVenta === 0 ) {
+        valido = false;
+        msj = "El precio de venta debe ser mayor a cero (0)";
+    }
 
     return {valido: valido, msj: msj}
 }

@@ -4653,7 +4653,7 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
 
 
 function __precioVentaProductos(that, index, cotizacion, callback){
-    
+    var productosInvalidos = [];
     var producto = cotizacion.productos[index];
        
     if (!producto) {   
@@ -4697,7 +4697,7 @@ function __precioVentaProductos(that, index, cotizacion, callback){
      */
     var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_cliente_id};
     
-    console.log("PARAMETROS ", parametros);
+     
     
     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
         cotizacion.empresa_id,
@@ -4721,7 +4721,10 @@ function __precioVentaProductos(that, index, cotizacion, callback){
        }, 300); 
         
     }).fail(function(err){
-         callback({ msj:'Error al consultar el precio de venta de cada producto',  status:500,  pedidos_clientes:''});
+         
+        producto.mensajeError = 'Error al crear el pedido. El precio de venta del producto  ';
+         productosInvalidos.push(producto);
+         callback({ msj:'Error al consultar el precio de venta de cada producto',  status:403, pedidos_clientes:{productos_invalidos:productosInvalidos}}); 
          console.log("err (/fail) [__precioVentaProductos]: ", err);
     }).done();
     
@@ -4841,7 +4844,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         }
         
      }).then(function(resultado){
-     
+         
         return G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
         
     }).then(function(productos){
@@ -4850,7 +4853,9 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
             throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos[1]}}; 
             
             return;
-        }       
+        }                    
+        
+        
         return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
         
     }).then(function(resultado){

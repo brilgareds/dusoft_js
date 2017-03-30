@@ -2582,7 +2582,7 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                     AND centro_utilidad_origen_producto = :4 \
                     AND bodega_origen_producto = :5 \
                     AND pedido_farmacia = '0'\
-                ) ;";
+                ) ;";                            
 
     console.log("parametros [__generar_detalle_pedido_cliente]: ", cotizacion)
     var query = G.knex.raw(sql, parametros);

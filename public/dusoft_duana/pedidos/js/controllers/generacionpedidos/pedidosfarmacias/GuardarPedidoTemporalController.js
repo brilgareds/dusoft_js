@@ -452,7 +452,6 @@ define(["angular", "js/controllers",
           $scope.onGenerarPedido = function() {
             if ($scope.root.bodegaMultiple.bools) {
                 self.generarPedidoAutomaticoCliente(function(datos) {
-                    console.log("datos.obj.pedidos_clientes.productos_invalidos ")
                     var mensaje = '';
                     if (datos.status === 200) {
                         mensaje = datos.msj;
@@ -474,15 +473,16 @@ define(["angular", "js/controllers",
                     if (datos.status === 404) {
                         mensaje = datos.msj;
                         AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-                    }  
+                    }
+                     
                     if (datos.status === 403) {
                         datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
-                            var msjPrecioVenta = producto.precio_venta === undefined ? " Esta en cero " :  ") Precio venta (" + producto.precio_venta + ") \n";
+                            var msjPrecioVenta = producto.precio_venta === undefined ? "" :  ") Precio venta (" + producto.precio_venta + ") \n";
                             var msjProducto = producto.precio_venta === undefined ? "" : " para el Codigo ("; 
                             mensaje += producto.mensajeError + msjProducto + producto.codigo_producto + msjPrecioVenta;
                             AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         });                       
-                    }           
+                    }      
                 });
             } else {
                 self.generarPedido(0);

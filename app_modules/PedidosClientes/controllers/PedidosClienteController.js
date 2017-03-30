@@ -4653,6 +4653,7 @@ function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, producto
 
 
 function __precioVentaProductos(that, index, cotizacion, callback){
+    
     var productosInvalidos = [];
     var producto = cotizacion.productos[index];
        
@@ -4697,7 +4698,7 @@ function __precioVentaProductos(that, index, cotizacion, callback){
      */
     var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_cliente_id};
     
-     
+    console.log("PARAMETROS [cotizacion]: ", cotizacion);
     
     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
         cotizacion.empresa_id,
@@ -4721,10 +4722,10 @@ function __precioVentaProductos(that, index, cotizacion, callback){
        }, 300); 
         
     }).fail(function(err){
-         
-        producto.mensajeError = 'Error al crear el pedido. El precio de venta del producto  ';
-         productosInvalidos.push(producto);
-         callback({ msj:'Error al consultar el precio de venta de cada producto',  status:403, pedidos_clientes:{productos_invalidos:productosInvalidos}}); 
+        producto.mensajeError = 'El producto no se encuentra en la bodega';
+        productosInvalidos.push(producto)
+         callback({ msj:'El producto no se encuentra en la bodega',  status:403,  pedidos_clientes:{productos_invalidos:productosInvalidos}}); 
+         //callback({ msj:'Error al consultar el producto',  status:500,  pedidos_clientes:''});
          console.log("err (/fail) [__precioVentaProductos]: ", err);
     }).done();
     

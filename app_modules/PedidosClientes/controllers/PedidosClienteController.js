@@ -528,7 +528,7 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
                       filtroAvanzado:filtroAvanzado
                   };
                
-    var objBodegaPedido={sw_modulo:'0'}; 
+    var objBodegaPedido={sw_modulo:'1'}; 
       // console.log("args.pedidos_clientes ")   
     G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
          
@@ -4859,7 +4859,7 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         return G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,cotizacion, cotizacion.productos);
          
     
-    }).then(function(resultado){
+    }).then(function(resultado){                        
 
         cotizacion.total = __totalNuevoPrecioVenta(cotizacion);  
         
@@ -4872,7 +4872,9 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);
  
     }).then(function(resultado){
-         
+         cotizacion.empresa_id =  '03';
+         cotizacion.centro_utilidad_id = '1';
+         cotizacion.bodega_id = '03';
        return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);       
           
     }).then(function(resultado){

@@ -250,7 +250,9 @@ define(["angular", "js/controllers",
 
                 localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),
                     busqueda: $scope.datos_view.termino_busqueda_pedidos,
-                    filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido });
+                    filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido,
+                bodega_pedido_id: pedido.get_bodega_id(),
+                    modifica_pedido:1});
                 localStorageService.add("multiple_pedido",{multiple_pedido:0});
                 $state.go('PedidoCliente');
             };

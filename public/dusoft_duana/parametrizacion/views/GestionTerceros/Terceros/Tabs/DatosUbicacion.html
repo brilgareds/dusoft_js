@@ -188,10 +188,10 @@
         <div class="col-md-4" >
             <label class="control-label">Tipo teléfono</label>
             <p class="input-group contenedorDropdown">            
-                <ui-select ng-model="root.tercero.tipoTelefono"  
+                <ui-select ng-model="root.tercero.telefonoSeleccionado.tipoTelefono"  
                            theme="select2" 
                            class="form-control selectgeneral pull-left ui-select-z-index-13" 
-                           name="tipoTelefono" pattern=".*\S+.*" title="Se requiere el tipo de teléfono"  data-placement="top" required="required">
+                           name="tipoTelefono" pattern=".*\S+.*" title="Se requiere al menos un teléfono válido"  data-placement="top" >
                     <ui-select-match  placeholder="Tipo teléfono"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                     <ui-select-choices  refresh-delay="0" repeat="tipoTelefono in  root.parametros.tiposTelefono | filter:$select.search">
                         <span ng-bind="tipoTelefono.getDescripcion()"></span>
@@ -203,9 +203,9 @@
         <div class="col-md-4">
             <label class="control-label">Tipo linea teléfonica</label>
             <p class="input-group contenedorDropdown">            
-                <ui-select ng-model="root.tercero.tipoLineaTelefonica"  
+                <ui-select ng-model="root.tercero.telefonoSeleccionado.tipoLineaTelefonica"  
                            theme="select2" 
-                           name="tipoLineaTelefonica" pattern=".*\S+.*" title="Se requiere el tipo de línea teléfonica"  data-placement="top" required="required"
+                           name="tipoLineaTelefonica" pattern=".*\S+.*" title="Se requiere al menos un teléfono válido"  data-placement="top" 
                            class="form-control selectgeneral pull-left" >
                     <ui-select-match  placeholder="Tipo linea teléfonica"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                     <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="tipoLineaTelefonica in  root.parametros.tiposLineaTefelonica | filter:$select.search">
@@ -220,11 +220,13 @@
             <p class="input-group">
 
                 <input type="text" class="form-control"  
-                       ng-model="root.tercero.telefono" placeholder="Número teléfonico" 
-                       name="numeroTelefono" pattern=".*\S+.*" title="Se requiere el número de teléfono"  data-placement="top" required="required"/>
+                       ng-model="root.tercero.telefonoSeleccionado.numero" placeholder="Número teléfonico" 
+                       name="numeroTelefono" pattern=".*\S+.*" title="Se requiere al menos un teléfono válido"  data-placement="top" />
                 <span class="input-group-btn">
-
-                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-phone-alt"></i></button>
+                    
+                    <button class="btn btn-default" type="button" ng-click="onMostrarListaTelefonos(termino_busqueda)"><i class="glyphicon glyphicon-phone-alt"></i> {{root.tercero.getTelefonos().length}} </button>
+                     <button class="btn btn-warning" type="button" ng-click="onBorrarTelefono()"><i class="glyphicon glyphicon-remove"></i></button>
+                    <button class="btn btn-success" type="button" ng-click="onAgregarTelefono()"><i class="glyphicon glyphicon-ok"></i></button>
                 </span>
             </p>
         </div>

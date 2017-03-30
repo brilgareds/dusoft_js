@@ -17,7 +17,8 @@
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",
 	    	'CREAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/crear",
 	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar",
-                'OBTENER_PARAMETRIZACION_FORMULARIO': BASE_URL+"/Terceros/GestionTerceros/obtenerParametrizacionFormularioTerceros"
+                'OBTENER_PARAMETRIZACION_FORMULARIO': BASE_URL+"/Terceros/GestionTerceros/obtenerParametrizacionFormularioTerceros",
+                'GUARDAR_FORMULARIO_TERCERO' : BASE_URL + "/Terceros/GestionTerceros/guardarFormularioTerceros"
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar",

@@ -6,5 +6,9 @@ module.exports = function(app, di_container) {
          c_terceros.obtenerParametrizacionFormularioTerceros(req, res);
     });    
     
+    app.post('/api/Terceros/GestionTerceros/guardarFormularioTerceros', function(req, res) {
+         c_terceros.guardarFormularioTerceros(req, res);
+    });    
+    
     
 };

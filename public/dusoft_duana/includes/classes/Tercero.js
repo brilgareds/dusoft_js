@@ -26,8 +26,6 @@ define(["angular", "js/models"], function(angular, models) {
             this.tipoDireccion = null;
             this.nomenclaturaDireccion1 = null;
             this.nomenclaturaDireccion2 = null;
-            this.tipoTelefeono = null;
-            this.tipoLineaTelefonica = null;
             this.tipoCorreo = null;
             this.tipoRedSocial = null;
             this.contacto = null;
@@ -49,6 +47,8 @@ define(["angular", "js/models"], function(angular, models) {
             this.barrio = "";
             this.email = "";
             this.descripcionRedSocial = "";
+            this.telefonos = [];
+            this.telefonoSeleccionado = null;
             
         };
         
@@ -140,6 +140,43 @@ define(["angular", "js/models"], function(angular, models) {
         Tercero.prototype.getPais = function() {
             return this.pais;
         };  
+        
+        Tercero.prototype.setTelefonoSeleccionado = function(telefonoSeleccionado) {
+            this.telefonoSeleccionado = telefonoSeleccionado;
+            return this;
+        };
+
+        Tercero.prototype.getTelefonoSeleccionado = function() {
+            return this.telefonoSeleccionado;
+        }; 
+        
+        Tercero.prototype.agregarTelefono = function(telefono){
+            console.log("agregar telefono ", telefono)
+            if(telefono.getNumero().length === 0 || telefono.getTipoLineaTelefonica().getId().length === 0 ||
+               telefono.getTipoTelefono().getId().length === 0){
+                
+                return false;
+            }
+            
+          
+            for(var i in this.telefonos){
+                var _telefono = this.telefonos[i];
+                
+                if(_telefono.getNumero() === telefono.getNumero() && _telefono.getTipoLineaTelefonica().getId() === telefono.getTipoLineaTelefonica().getId()){
+                    this.telefonos[i] = telefono;
+                    return true;
+                }
+                
+            }
+            
+            this.telefonos.push(telefono);
+            return true;
+            
+        };
+        
+        Tercero.prototype.getTelefonos = function() {
+            return this.telefonos;
+        }; 
 
         this.get = function(nombre, tipo_id_tercero, id, direccion, telefono, pais, departamento, municipio) {
             return new Tercero(nombre, tipo_id_tercero, id, direccion, telefono, pais, departamento, municipio);

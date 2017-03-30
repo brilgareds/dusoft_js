@@ -3,6 +3,94 @@ var TercerosModel = function() {
 };
 
 
+
+TercerosModel.prototype.guardarFormularioTerceros = function(parametros, callback){
+   var that  = this;
+   
+   
+    G.Q.ninvoke(that,'obtenerTercero', parametros).then(function(resultado) {
+        
+        if(resultado.length > 0 && parametros.crear){
+            throw { msj:"Ya existe un tercero registrado con el documento ingresado", status:403 };
+            return;
+        }
+       
+       return G.Q.ninvoke(that,'obtenerTerceroPorEmail', parametros);
+      
+    }).then(function(resultado){
+        if(resultado.length > 0){
+           throw { msj:"Ya existe un tercero con el email ingresado", status:403 };
+           return;
+        }
+        
+        
+        
+    }).fail(function(err){
+        var msj = err;
+        var status = 500;
+        
+        if(err.status){
+            status = err.status;
+            msj = err.msj;
+        }
+        
+        callback(err);
+    }).done();
+   
+   
+};
+
+TercerosModel.prototype.obtenerTercero = function(parametros, callback){
+   
+    var columns = [
+        "*"
+    ];
+    
+    G.knex.column(columns).
+    from("terceros as a").
+    where("a.tipo_id_tercero", parametros.tercero.tipoDocumento.id).
+    andWhere("a.tercero_id", parametros.tercero.id).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+  
+};
+
+TercerosModel.prototype.obtenerTerceroPorEmail = function(parametros, callback){
+    
+    //Al no ser un campo requerido se valida si hay necesidad de buscar usuarios por email
+    if(parametros.tercero.email.length === 0){
+        callback(false, []);
+        return;
+    }
+   
+    var columns = [
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "a.email"
+    ];
+    
+    var query =  G.knex.column(columns);
+    
+    query.from("terceros as a").
+    where("a.email", parametros.tercero.email);
+    
+    //Util para validar que otro tercero tenga en uso el email
+    if(parametros.validacion){
+        query.andWhere("a.tipo_id_tercero", parametros.tercero.tipoDocumento.id).
+        andWhere("a.tercero_id", parametros.tercero.id);
+    }
+    
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+  
+};
+
 TercerosModel.prototype.obtenerParametrizacionFormularioTerceros = function(parametros, callback) {
     var that = this;
     var datos = {};
@@ -101,7 +189,7 @@ TercerosModel.prototype.obtenerGeneros = function(parametros, callback) {
 */
 TercerosModel.prototype.obtenerTiposDocumentos = function(parametros, callback) {
     var columns = [
-        "a.tipo_id_tercero",
+        "a.tipo_id_tercero as id",
         "a.descripcion"
     ];
     
@@ -123,7 +211,7 @@ TercerosModel.prototype.obtenerTiposDocumentos = function(parametros, callback) 
 */
 TercerosModel.prototype.obtenerTiposEstoCivil = function(parametros, callback) {
     var columns = [
-        "a.tipo_estado_civil_id",
+        "a.tipo_estado_civil_id as id",
         "a.descripcion"
     ];
     

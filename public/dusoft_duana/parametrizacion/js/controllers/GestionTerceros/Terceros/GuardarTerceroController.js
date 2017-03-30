@@ -18,7 +18,9 @@ define(["angular",
     'includes/classes/GestionTerceros/Terceros/Departamento',
     'includes/classes/GestionTerceros/Terceros/Ciudad',
     'includes/classes/GestionTerceros/Terceros/TipoNaturaleza',
-    'includes/classes/Tercero'], function(angular, controllers) {
+    'includes/classes/GestionTerceros/Terceros/Telefono',
+    'includes/classes/Tercero',
+    'controllers/GestionTerceros/Terceros/ListaTelefonosController'], function(angular, controllers) {
 
     controllers.controller('GuardarTerceroController', [
         '$scope', '$rootScope', 'Request',
@@ -27,12 +29,14 @@ define(["angular",
         'Genero', 'Tercero', 'TipoDocumento', 'EstadoCivil','TipoNacionalidad','TipoOrganizacion',
         'TipoDireccion','NomenclaturaDireccion','TipoTelefono','TipoLineaTelefonica','TipoCorreo',
         'TipoRedSocial','TipoContacto','Contacto','Pais','Departamento','Ciudad','TipoNaturaleza',
+        'Telefono',
         function($scope, $rootScope, Request,
                  API, socket, AlertService, 
                  $state, Usuario, localStorageService, $modal, $filter, GestionTercerosService,
                  Genero, Tercero, TipoDocumento, EstadoCivil, TipoNacionalidad, TipoOrganizacion,
                  TipoDireccion, NomenclaturaDireccion, TipoTelefono, TipoLineaTelefonica, TipoCorreo,
-                 TipoRedSocial, TipoContacto, Contacto, Pais, Departamento, Ciudad, TipoNaturaleza) {
+                 TipoRedSocial, TipoContacto, Contacto, Pais, Departamento, Ciudad, TipoNaturaleza,
+                 Telefono) {
                      
             var self = this;
             
@@ -67,7 +71,9 @@ define(["angular",
             };
             
             var contacto = Contacto.get();
+            var telefono = Telefono.get();
             $scope.root.tercero.setContacto(contacto);
+            $scope.root.tercero.setTelefonoSeleccionado(telefono);
             
             
             $scope.listaContactos = {
@@ -80,7 +86,7 @@ define(["angular",
                     {field: 'telefono', displayName: 'Teléfono'},
                     {field: 'email', displayName: 'Correo'},
                     {field: 'getTipoContacto().getDescripcion()', displayName: 'Tipo'},
-                    {field: 'movimiento', displayName: "", cellClass: "txt-center dropdown-button", width: "70", 
+                    {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "70", 
                         cellTemplate: '\
                                         <div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
@@ -339,8 +345,12 @@ define(["angular",
                 }
                 
                 var formActual =  $scope.formularios[formulario];
+                if(formulario === "formularioUbicacion"){                    
+                    self.setValidacionTelefono($scope.root.tercero.getTelefonos().length > 0);
+                }
+                
                
-                if(!formActual.$valid){
+                if(!formActual.$valid && formulario !== "formularioContacto"){
                     console.log("formulario to show validation ", formActual);
                     formActual.mostrarErrorEnCampos();
                     return false;
@@ -364,6 +374,40 @@ define(["angular",
                 return true;
             };
             
+            
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Permite realiar peticion al API para guardar el tercero
+            * @params callback: {function}
+            * @fecha 2017-03-30
+            */            
+            self.submitformularioTerceros = function(callback){
+               console.log("tercero a enviar datos ", $scope.root.tercero)
+               
+                var parametros = {
+                    session:$scope.root.session,
+                    data:{
+                        tercero:$scope.root.tercero
+                    }
+                };
+                
+                GestionTercerosService.submitformularioTerceros(parametros,function(respuesta){
+                    if(respuesta.status === 200){
+                        var data = respuesta.obj.departamentos;
+                        self.gestionarDepartamentos(data);
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema",respuesta.msj);
+                    }
+                });
+            };
+            
+            self.setValidacionTelefono = function(expresion){
+                var formulario = $scope.formularios.formularioUbicacion;
+                formulario.tipoTelefono.$setValidity("required", expresion);
+                formulario.tipoLineaTelefonica.$setValidity("required", expresion);
+                formulario.numeroTelefono.$setValidity("required",expresion);
+            };
+            
             $scope.onBtnAgregarContacto = function(){
                 var formulario = self.obtenerNombreFormularioActual($scope.root.tabActual);
                 var formActual =  $scope.formularios[formulario];
@@ -381,6 +425,11 @@ define(["angular",
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El email ya esta en uso");
                         return;
                     }
+                    
+                    if(contactos[i].getTelefono().length > 0 && (contactos[i].getTelefono() === contacto.getTelefono())){
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El teléfono ya se asigno a otro contacto");
+                        return;
+                    }
                 }
                 
                 contactos.push(contacto);
@@ -394,6 +443,45 @@ define(["angular",
 
             $scope.onCambiarValorTab = function(tab){
                 $scope.root.tabActual = tab;
+            };
+            
+            $scope.onAgregarTelefono = function(){
+                var telefono = angular.copy($scope.root.tercero.getTelefonoSeleccionado());
+                var formulario = $scope.formularios.formularioUbicacion;
+                
+                if($scope.root.tercero.agregarTelefono(telefono)){
+                    
+                    $scope.root.tercero.setTelefonoSeleccionado(Telefono.get());
+                    self.setValidacionTelefono(true);
+                    formulario.mostrarErrorEnCampos();
+                } else {
+                    self.setValidacionTelefono(false);
+                    formulario.mostrarErrorEnCampos();
+                }
+            };
+            
+            $scope.onMostrarListaTelefonos = function(){
+                
+                if($scope.root.tercero.getTelefonos().length === 0){
+                    return;
+                }
+                
+                $scope.root.tercero.setTelefonoSeleccionado(Telefono.get());
+                
+                $scope.opts = {
+                    size: 'lg',
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
+                    templateUrl: 'views/GestionTerceros/Terceros/ListaTelefonos.html',
+                    controller: "ListaTelefonosController",
+                    resolve: {
+                        tercero: function() {
+                            return $scope.root.tercero;
+                        }
+                    }
+                };
+
+                var modalInstance = $modal.open($scope.opts);
             };
             
             

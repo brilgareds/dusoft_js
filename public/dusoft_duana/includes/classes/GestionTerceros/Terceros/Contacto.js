@@ -80,7 +80,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.telefono = (contacto) ?  contacto.getTelefono() : "";
             this.email = (contacto) ? contacto.getEmail() : "";
             this.descripcion = (contacto) ?  contacto.getDescripcion() : "";
-            this.tipoSeleccionado = null;
+            this.tipoSeleccionado = (contacto) ? contacto.getTipoContacto() : null;
         };
 
         this.get = function(id, descripcion) {

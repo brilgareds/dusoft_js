@@ -43,6 +43,15 @@ define(["angular", "js/services"], function(angular, services) {
              });
         };
         
+        self.submitformularioTerceros = function(parametros, callback ){
+
+             Request.realizarRequest(API.TERCEROS.GUARDAR_FORMULARIO_TERCERO, "POST", parametros, function(data) {
+                   
+                callback(data);
+
+             });
+        };
+        
 
         return this;
 

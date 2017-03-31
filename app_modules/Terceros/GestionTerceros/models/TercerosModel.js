@@ -6,14 +6,15 @@ var TercerosModel = function() {
 
 TercerosModel.prototype.guardarFormularioTerceros = function(parametros, callback){
    var that  = this;
-   
+   parametros.crear = true;
    
     G.Q.ninvoke(that,'obtenerTercero', parametros).then(function(resultado) {
         
-        if(resultado.length > 0 && parametros.crear){
-            throw { msj:"Ya existe un tercero registrado con el documento ingresado", status:403 };
-            return;
+        if(resultado.length  > 0){
+            parametros.crear = false;
+            parametros.validacion = true;
         }
+       
        
        return G.Q.ninvoke(that,'obtenerTerceroPorEmail', parametros);
       
@@ -23,7 +24,11 @@ TercerosModel.prototype.guardarFormularioTerceros = function(parametros, callbac
            return;
         }
         
+        return  G.Q.ninvoke(that,'gestionarTercero', parametros);
         
+        
+    }).then(function(resultado){
+        callback(false, resultado);
         
     }).fail(function(err){
         var msj = err;
@@ -39,6 +44,167 @@ TercerosModel.prototype.guardarFormularioTerceros = function(parametros, callbac
    
    
 };
+
+TercerosModel.prototype.gestionarTercero = function(parametros, callback){
+    var that = this;
+    
+    G.knex.transaction(function(transaccion) {  
+        parametros.transaccion = transaccion;
+        G.Q.ninvoke(that,'guardarTercero', parametros).then(function(resultado) {
+            transaccion.commit();
+        }).fail(function(err){
+            transaccion.rollback(err);
+        }).done();
+        
+    }).then(function(){
+        callback(false);
+    }).catch(function(err){
+        console.log("error generado >>>>>>>>>>>>", err);
+        callback(err);
+    }).
+    done();
+    
+};
+
+TercerosModel.prototype.guardarTercero = function(parametros, callback){
+    var that = this;
+    var tercero = parametros.tercero;
+    var nombre = tercero.primerNombre + " " + tercero.segundoNombre + " " + tercero.primerApellido + " " + tercero.segundoApellido;
+    
+    var data = {
+        tipo_id_tercero : tercero.tipoDocumento.id,
+        tercero_id : tercero.id,
+        tipo_pais_id : tercero.pais.id,
+        tipo_dpto_id : tercero.pais.departamentoSeleccionado.id,
+        tipo_mpio_id : tercero.pais.departamentoSeleccionado.ciudadSeleccionada.id,
+        direccion    : tercero.direccion,
+        email : tercero.email,
+        sw_persona_juridica : tercero.tipoNaturaleza.codigo,
+        usuario_id : parametros.usuario_id,
+        nombre_tercero : nombre.replace(/\s+/g,' ').trim(),
+        nombre1 : tercero.primerNombre,
+        nombre2 : tercero.segundoNombre,
+        apellido1 : tercero.primerApellido,
+        apellido2 : tercero.segundoApellido,
+        empresa_id : tercero.empresa,
+        fecha_expedicion_documento : tercero.fechaExpedicion || null,
+        fecha_expiracion : tercero.fechaExpiracion || null,
+        genero_id : tercero.genero.id,
+        estado_civil_id : tercero.estadoCivil.id,
+        fecha_nacimiento : tercero.fechaNacimiento || null,
+        razon_social : tercero.razonSocial,
+        nombre_comercial : tercero.nombreComercial,
+        descripcion : tercero.descripcion,
+        tipo_organizacion_id : (tercero.tipoOrganizacion) ? tercero.tipoOrganizacion.id : null,
+        nomenclatura_direccion1 : tercero.nomenclaturaDireccion1.id,
+        nomenclatura_descripcion1 : tercero.nomenclaturaDescripcion1,
+        nomenclatura_direccion2 : (tercero.nomenclaturaDireccion2) ? tercero.nomenclaturaDescripcion2.id : null,
+        nomenclatura_descripcion2 : tercero.nomenclaturaDescripcion2,
+        numero_predio : tercero.numeroPredio,
+        barrio : tercero.barrio, 
+        tipo_correo_id : (tercero.tipoCorreo) ? tercero.tipoCorreo.id : null,
+        tipo_red_social_id : (tercero.tipoRedSocial) ? tercero.tipoRedSocial.id : null,
+        tipo_direccion_id : tercero.tipoDireccion.id,
+        tipo_nacionalidad : tercero.nacionalidad.id,
+        descripcion_red_social : tercero.descripcionRedSocial
+    };
+    
+    console.log("datos tercero ", data);
+    
+    var query = G.knex("terceros");
+    
+    if(parametros.transaccion) query.transacting(parametros.transaccion);
+    
+    if(parametros.crear){        
+        query.insert(data);
+    } else {
+        query.update(data).
+        where("tipo_id_tercero", tercero.tipoDocumento.id).
+        andWhere("tercero_id", tercero.id);
+    }
+            
+    query.then(function(resultado){
+        return G.Q.ninvoke(that,'gestionarTelefonosTercero', parametros);
+        
+    }).then(function(resultado){
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        callback(err);       
+    });
+    
+};
+
+
+
+TercerosModel.prototype.gestionarTelefonosTercero = function(parametros, callback){
+    
+    var that = this;
+    //El tercero no tiene telefonos
+    if(parametros.tercero.telefonos.length === 0){
+        callback(false);
+        return;
+    }
+    
+    var query = G.knex("tercero_telefonos");
+    
+    if(parametros.transaccion) query.transacting(parametros.transaccion);
+    
+    query.where('tipo_id_tercero', parametros.tercero.tipoDocumento.id).
+    andWhere('tercero_id', parametros.tercero.id).
+    del().
+    then(function(resultado){
+        return  G.Q.ninvoke(that,'guardarTelefonosTercero', parametros);
+        
+    }).then(function(resultado){
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    }); 
+    
+};
+
+
+TercerosModel.prototype.guardarTelefonosTercero = function(parametros, callback){
+    var that = this;
+    var tercero = parametros.tercero;
+    var telefono = tercero.telefonos[0];
+    
+    console.log("guardando telefono >>>>>>>>>> ", telefono);
+    
+    if(!telefono){
+        callback(false);
+        return;
+    }
+    
+    var data = {
+        tipo_id_tercero : tercero.tipoDocumento.id,
+        tercero_id : tercero.id,
+        tipo_telefono_id : telefono.tipoTelefono.id,
+        tipo_linea_telefonica_id : telefono.tipoLineaTelefonica.id,
+        numero : telefono.numero
+    };
+    
+    var query = G.knex("tercero_telefonos");
+    
+    if(parametros.transaccion) query.transacting(parametros.transaccion);
+    
+    query.insert(data).then(function(resultado){
+        
+        tercero.telefonos.splice(0,1);
+        
+        setTimeout(function(){
+            that.guardarTelefonosTercero(parametros, callback);
+        }, 0);
+        
+    }).catch(function(err){
+        callback(err);       
+    });
+    
+};
+
 
 TercerosModel.prototype.obtenerTercero = function(parametros, callback){
    
@@ -79,8 +245,8 @@ TercerosModel.prototype.obtenerTerceroPorEmail = function(parametros, callback){
     
     //Util para validar que otro tercero tenga en uso el email
     if(parametros.validacion){
-        query.andWhere("a.tipo_id_tercero", parametros.tercero.tipoDocumento.id).
-        andWhere("a.tercero_id", parametros.tercero.id);
+        query.andWhere("a.tipo_id_tercero", "<>", parametros.tercero.tipoDocumento.id).
+        andWhere("a.tercero_id", "<>", parametros.tercero.id);
     }
     
     query.then(function(resultado){
@@ -211,7 +377,7 @@ TercerosModel.prototype.obtenerTiposDocumentos = function(parametros, callback) 
 */
 TercerosModel.prototype.obtenerTiposEstoCivil = function(parametros, callback) {
     var columns = [
-        "a.tipo_estado_civil_id as id",
+        "a.id",
         "a.descripcion"
     ];
     

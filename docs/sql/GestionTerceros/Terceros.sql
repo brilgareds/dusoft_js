@@ -391,3 +391,20 @@ ALTER TABLE "public"."terceros"
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
+
+
+ALTER TABLE "public"."terceros"
+  DROP CONSTRAINT "terceros_fk1" RESTRICT;
+
+ALTER TABLE "public"."tipo_estado_civil"
+  ADD COLUMN "id" SERIAL;
+
+CREATE UNIQUE INDEX "tipo_estado_civil_id_key" ON "public"."tipo_estado_civil"
+("id");
+
+ALTER TABLE "public"."terceros"
+  ADD CONSTRAINT "terceros_fk1" FOREIGN KEY ("estado_civil_id")
+    REFERENCES "public"."tipo_estado_civil"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;

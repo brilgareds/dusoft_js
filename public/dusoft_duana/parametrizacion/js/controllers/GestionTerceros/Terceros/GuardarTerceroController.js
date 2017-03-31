@@ -345,6 +345,7 @@ define(["angular",
                 }
                 
                 var formActual =  $scope.formularios[formulario];
+                
                 if(formulario === "formularioUbicacion"){                    
                     self.setValidacionTelefono($scope.root.tercero.getTelefonos().length > 0);
                 }
@@ -367,7 +368,10 @@ define(["angular",
                     }    
                 } else {
                     
-                    console.log("guardar el tercero ", $scope.root.tercero);
+                   self.submitformularioTerceros(function(){
+                       
+                   });
+                    
                 }
                 
                 
@@ -387,7 +391,8 @@ define(["angular",
                 var parametros = {
                     session:$scope.root.session,
                     data:{
-                        tercero:$scope.root.tercero
+                        tercero:$scope.root.tercero,
+                        empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo()
                     }
                 };
                 
@@ -401,6 +406,12 @@ define(["angular",
                 });
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Permite validar los input del telefono
+            * @params callback: {function}
+            * @fecha 2017-03-30
+            */
             self.setValidacionTelefono = function(expresion){
                 var formulario = $scope.formularios.formularioUbicacion;
                 formulario.tipoTelefono.$setValidity("required", expresion);
@@ -408,6 +419,24 @@ define(["angular",
                 formulario.numeroTelefono.$setValidity("required",expresion);
             };
             
+            $scope.obtenerDireccion = function(){
+                var tercero = $scope.root.tercero;
+                
+                var nomenclatura1 = tercero.getNomenclaturaDireccion1() || NomenclaturaDireccion.get();
+                var nomenclatura2 = tercero.getNomenclaturaDireccion2() || NomenclaturaDireccion.get();
+                
+                tercero.setDireccion(nomenclatura1.getDescripcion() + " " + tercero.getNomenclaturaDescripcion1() + " " +
+                       nomenclatura2.getDescripcion() + " " + tercero.getNomenclaturaDescripcion2()  + " " +
+                       tercero.getNumeroPredio() + " " + tercero.getBarrio());
+
+            };
+            
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler del boton para agregar contacto
+            * @fecha 2017-03-30
+            */
             $scope.onBtnAgregarContacto = function(){
                 var formulario = self.obtenerNombreFormularioActual($scope.root.tabActual);
                 var formActual =  $scope.formularios[formulario];
@@ -437,14 +466,31 @@ define(["angular",
                 
             };
             
+          /**
+            * @author Eduar Garcia
+            * +Descripcion  Handler del boton editar del grid de contacto
+            * @params contacto: {Contacto}
+            * @fecha 2017-03-30
+            */
             $scope.onEditarContacto = function(contacto){
                 $scope.root.tercero.getContacto().inicializar(contacto);
             };
-
+            
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler de los tabs
+            * @params tab: {int}
+            * @fecha 2017-03-30
+            */
             $scope.onCambiarValorTab = function(tab){
                 $scope.root.tabActual = tab;
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Permite agregar un telefono al tercero
+            * @fecha 2017-03-30
+            */
             $scope.onAgregarTelefono = function(){
                 var telefono = angular.copy($scope.root.tercero.getTelefonoSeleccionado());
                 var formulario = $scope.formularios.formularioUbicacion;
@@ -460,6 +506,12 @@ define(["angular",
                 }
             };
             
+            /**
+            * @author Eduar Garcia
+            * +Descripcion Permite mostrar el listado de telefonos en una ventana
+            * @params callback: {function}
+            * @fecha 2017-03-30
+            */
             $scope.onMostrarListaTelefonos = function(){
                 
                 if($scope.root.tercero.getTelefonos().length === 0){

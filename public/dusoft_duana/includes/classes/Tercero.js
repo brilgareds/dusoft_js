@@ -69,6 +69,11 @@ define(["angular", "js/models"], function(angular, models) {
             return this.direccion;
         };
         
+        Tercero.prototype.setDireccion = function(direccion){
+            this.direccion = direccion;
+            return this;
+        };
+        
         Tercero.prototype.getTelefono = function(){
             return this.telefono;
         };
@@ -148,6 +153,61 @@ define(["angular", "js/models"], function(angular, models) {
 
         Tercero.prototype.getTelefonoSeleccionado = function() {
             return this.telefonoSeleccionado;
+        }; 
+        
+        Tercero.prototype.setNomenclaturaDescripcion1 = function(nomenclaturaDescripcion1) {
+            this.nomenclaturaDescripcion1 = nomenclaturaDescripcion1;
+            return this;
+        };
+
+        Tercero.prototype.getNomenclaturaDescripcion1 = function() {
+            return this.nomenclaturaDescripcion1;
+        }; 
+        
+        Tercero.prototype.setNomenclaturaDescripcion2 = function(nomenclaturaDescripcion2) {
+            this.nomenclaturaDescripcion2 = nomenclaturaDescripcion2;
+            return this;
+        };
+
+        Tercero.prototype.getNomenclaturaDescripcion2 = function() {
+            return this.nomenclaturaDescripcion2;
+        }; 
+               
+        Tercero.prototype.setNomenclaturaDireccion1 = function(nomenclaturaDireccion1) {
+            this.nomenclaturaDireccion1 = nomenclaturaDireccion1;
+            return this;
+        };
+
+        Tercero.prototype.getNomenclaturaDireccion1 = function() {
+            return this.nomenclaturaDireccion1;
+        }; 
+        
+        
+        Tercero.prototype.setNomenclaturaDireccion2 = function(nomenclaturaDireccion2) {
+            this.nomenclaturaDireccion2 = nomenclaturaDireccion2;
+            return this;
+        };
+
+        Tercero.prototype.getNomenclaturaDireccion2 = function() {
+            return this.nomenclaturaDireccion2;
+        }; 
+        
+        Tercero.prototype.setNumeroPredio = function(numeroPredio) {
+            this.numeroPredio = numeroPredio;
+            return this;
+        };
+
+        Tercero.prototype.getNumeroPredio = function() {
+            return this.numeroPredio;
+        }; 
+        
+        Tercero.prototype.setBarrio = function(barrio) {
+            this.barrio = barrio;
+            return this;
+        };
+
+        Tercero.prototype.getBarrio = function() {
+            return this.barrio;
         }; 
         
         Tercero.prototype.agregarTelefono = function(telefono){

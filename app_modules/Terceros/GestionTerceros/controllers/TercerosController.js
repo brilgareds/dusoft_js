@@ -126,7 +126,7 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
     }
     
     /*** Primer formulario de datos basicos **/
-    if (args.tercero  || !args.tercero.primerNombre  || args.tercero.primerNombre.length === 0){
+    if (!args.tercero.primerNombre  || args.tercero.primerNombre.length === 0){
         res.send(G.utils.r(req.url, 'Se requiere el primer nombre', 404, {}));
         return;
     }
@@ -177,15 +177,17 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
         res.send(G.utils.r(req.url, 'Se requiere el departamento', 404, {}));
         return;
         
-    } else if(!args.tercero.pais.departamentoSeleccionado.ciudadSeleccionda || args.tercero.pais.departamentoSeleccionado.ciudadSeleccionda.id.length === 0){
+    } else if(!args.tercero.pais.departamentoSeleccionado.ciudadSeleccionada || args.tercero.pais.departamentoSeleccionado.ciudadSeleccionada.id.length === 0){
         res.send(G.utils.r(req.url, 'Se requiere la ciudad', 404, {}));
         return;
     }
     
-    if(!args.tercero.nomenclaturaDireccion1 || args.tercero.nomenclaturaDireccion1.id){
+    
+    if(!args.tercero.nomenclaturaDireccion1 || args.tercero.nomenclaturaDireccion1.id.length === 0){
         res.send(G.utils.r(req.url, 'Se requiere la via principal', 404, {}));
         return;
     }
+    
     
     if(!args.tercero.nomenclaturaDescripcion1 ||  args.tercero.nomenclaturaDescripcion1.length === 0){
         res.send(G.utils.r(req.url, 'Se requiere la descripcion de la via principal', 404, {}));
@@ -202,11 +204,19 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
         return;
     }
     
+    if(!args.tercero.telefonos ||  args.tercero.telefonos.length === 0){
+        res.send(G.utils.r(req.url, 'Se requiere al menos un teléfono', 404, {}));
+        return;
+    }
     
-    G.Q.ninvoke(that.m_terceros,'guardarFormularioTerceros', args.tercero).then(function(resultado) {
+    var obj = {tercero:args.tercero, usuario_id : req.session.user.usuario_id, empresa : args.empresa_id}; 
+    
+    G.Q.ninvoke(that.mTerceros,'guardarFormularioTerceros', obj).then(function(resultado) {
+        
+        res.send(G.utils.r(req.url, 'Tercero guardado correctamente', 200, {tercero: {}}));
         
     }).fail(function(err){
-        
+        console.log("error generado ", err);
     }).done();
     
     

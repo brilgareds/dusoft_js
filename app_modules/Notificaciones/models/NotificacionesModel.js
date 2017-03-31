@@ -1298,17 +1298,22 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
         producto_mercancia.novedad_recepcion = {id: null};
     }
 
-
-    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = :3, cantidad_recibida = :4 where  recepcion_mercancia_id = :1 \
+    
+    var sql = " update recepcion_mercancia_detalle \
+                set novedades_recepcion_id = :3, \
+                cantidad_recibida = :4, \
+                cantidad_pendiente = :5 \
+                where  recepcion_mercancia_id = :1 \
                 and codigo_producto =  :2 ; ";
 
     var parametros = {
         1:recepcion_mercancia.numero_recepcion,
         2:producto_mercancia.codigo_producto,
         3:producto_mercancia.novedad_recepcion.id,
-        4:producto_mercancia.cantidad_recibida
+        4:producto_mercancia.cantidad_recibida,
+        5:producto_mercancia.cantidadPendiente
     };
-    
+    console.log("parametros ", parametros)
     G.knex.raw(sql, parametros).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){

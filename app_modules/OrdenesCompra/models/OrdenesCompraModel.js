@@ -5,7 +5,7 @@ var OrdenesCompraModel = function(m_unidad_negocio, m_proveedores) {
 
 // Listar las Ordenes de Compra 
 OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, filtro, callback) {
-
+ 
     var subQueryTmp = G.knex.column("aa.orden_pedido_id").
                        from("inv_bodegas_movimiento_tmp_ordenes_compra as aa").as("g");
                
@@ -30,7 +30,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
              WHEN a.estado = '2' THEN 'Anulado'\
              WHEN a.estado = '3' THEN 'Recibida en bodega'\
              WHEN a.estado = '4' THEN 'Verificada en bodega'\
-             WHEN a.estado = '5' THEN 'Bloqueada' END as descripcion_estado,\
+             WHEN a.estado = '5' THEN 'Bloqueada' \n\
+             WHEN a.estado = '6' THEN 'Recibida en bodega con pendientes' END as descripcion_estado,\
         a.sw_orden_compra_finalizada"),
         G.knex.raw("CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
              WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion"), 
@@ -99,6 +100,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 // Listar las Ordenes de Compra de un Proveedor
 OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_proveedor_id, callback) {
 
+
     // Falta realizar un tipo de filtro, para dejar esta funcion mas global
     // se debe filtrar por el estado. ESTA ACTIVIDAD ESTA PENDIENTE
 
@@ -142,7 +144,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 left join (\
                     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
-                WHERE a.codigo_proveedor_id = :1 and a.estado = '1' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
+                WHERE a.codigo_proveedor_id = :1 and a.estado = '6' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
     
     G.knex.raw(sql, {1:codigo_proveedor_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
@@ -234,6 +236,7 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
 // Consultar Ordenes de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, callback) {
 
+    
     var sql = " SELECT \
                 a.orden_pedido_id as numero_orden,\
                 a.empresa_id,\
@@ -460,6 +463,9 @@ OrdenesCompraModel.prototype.borrarBodegaOrden = function(orden, callback) {
 // Modificar Orden de Compra
 OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_orden, estado, callback) {
 
+console.log("********actualizar_estado_orden_compra**************");
+console.log("numero_orden ", numero_orden);
+console.log("estado ", estado);
     // Estados Orden de Compra
     // 0 => Ingresada en Bodega
     // 1 => Activa
@@ -474,12 +480,16 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
         sql_aux = " ,fecha_recibido = now() ";
     if (estado === '4')
         sql_aux = " ,fecha_verificado = now() ";
-
+    
+    if (estado === '6')
+        sql_aux = " ,fecha_verificado = now() ";
+    
     var sql = " UPDATE compras_ordenes_pedidos SET estado = :2 " + sql_aux + " WHERE orden_pedido_id = :1  ";
     
     G.knex.raw(sql, {1:numero_orden, 2:estado}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+        console.log("actualizar_estado_orden_compra ", err)
        callback(err);
     });
 };
@@ -1304,21 +1314,26 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
     if (producto_mercancia.novedad_recepcion === undefined || producto_mercancia.novedad_recepcion === '') {
         producto_mercancia.novedad_recepcion = {id: null};
     }
-
-
-    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = :3, cantidad_recibida = :4 where  recepcion_mercancia_id = :1 \
-                and codigo_producto =  :2 ; ";
+ 
+    var sql = " update recepcion_mercancia_detalle \
+                set novedades_recepcion_id = :3, \
+                cantidad_recibida = :4, \
+                cantidad_pendiente = :5 \
+                where  recepcion_mercancia_id = :1 \
+                and codigo_producto =  :2 RETURNING cantidad_pendiente ; ";
 
     var parametros = {
         1:recepcion_mercancia.numero_recepcion,
         2:producto_mercancia.codigo_producto,
         3:producto_mercancia.novedad_recepcion.id,
-        4:producto_mercancia.cantidad_recibida
+        4:producto_mercancia.cantidad_recibida,
+        5:producto_mercancia.cantidadPendiente
     };
     
     G.knex.raw(sql, parametros).then(function(resultado){
-       callback(false, resultado.rows, resultado);
+       callback(false, resultado);
     }).catch(function(err){
+       console.log("err [modificar_productos_recepcion_mercancia]: ", err)
        callback(err);
     });
 };

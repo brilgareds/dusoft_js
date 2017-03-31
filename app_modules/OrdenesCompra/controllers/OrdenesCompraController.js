@@ -70,7 +70,9 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 
 // Listar las Ordenes de Compra de un Proveedor
 OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
-
+ 
+    
+    
     var that = this;
 
     var args = req.body.data;
@@ -1379,23 +1381,35 @@ OrdenesCompra.prototype.modificarProductosRecepcionMercancia = function(req, res
         res.send(G.utils.r(req.url, 'producto_mercancia esta vacias', 404, {}));
         return;
     }
-
+  
     var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
     var producto_mercancia = args.ordenes_compras.producto_mercancia;
-
-    that.m_ordenes_compra.modificar_productos_recepcion_mercancia(recepcion_mercancia, producto_mercancia, function(err, result) {
-
-        if (err || result.rowCount === 0) {
-
-            var msj = (err.msj !== undefined) ? err.msj : '';
-
-            res.send(G.utils.r(req.url, 'Error modificando productos a la recepcion ' + msj, 500, {ordenes_compras: []}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
-            return;
+    var estadoOrdenDeCompra;
+       
+    G.Q.ninvoke(that.m_ordenes_compra,"modificar_productos_recepcion_mercancia", recepcion_mercancia, producto_mercancia).then(function(resultado){
+         
+        if(resultado.rowCount === 1){
+             
+            if(resultado.rows[0].cantidad_pendiente > 0 ){
+                estadoOrdenDeCompra = '6';
+            }else{
+                estadoOrdenDeCompra = '3';
+            }
+        
+        return G.Q.ninvoke(that.m_ordenes_compra,"actualizar_estado_orden_compra", recepcion_mercancia.orden_compra.numero_orden_compra, estadoOrdenDeCompra)   
+            
+        }else{
+            throw 'Error modificando productos a la recepcion ';
         }
-    });
+    }).then(function(resultado){
+       
+        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: []}));
+        
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error modificando productos a la recepcion', 500, {ordenes_compras: []}));
+        
+    }).done();
+     
 };
 
 // Finalizar recepcion de mercancia

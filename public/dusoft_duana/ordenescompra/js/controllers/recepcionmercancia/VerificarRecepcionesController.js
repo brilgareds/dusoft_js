@@ -269,7 +269,10 @@ define(["angular", "js/controllers"
             };
 
             $scope.verificar_producto = function(producto) {
-
+                
+                 var cantidadPendiente = parseInt(producto.cantidad_seleccionada) - parseInt(producto.cantidad_recibida);
+                producto.cantidadPendiente = cantidadPendiente < 0 ? 0 : cantidadPendiente;
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -279,7 +282,7 @@ define(["angular", "js/controllers"
                         }
                     }
                 };
-
+                //console.log("producto ", producto)
                 Request.realizarRequest(API.ORDENES_COMPRA.INGRESAR_PRODUCTOS_MERCANCIA, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -326,7 +329,8 @@ define(["angular", "js/controllers"
             };
 
             $scope.finalizar_recepcion = function() {
-
+                
+                console.log("$scope.recepcion ", $scope.recepcion)
                 var obj = {
                     session: $scope.session,
                     data: {

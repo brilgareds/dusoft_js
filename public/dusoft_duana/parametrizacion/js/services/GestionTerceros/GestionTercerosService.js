@@ -52,6 +52,15 @@ define(["angular", "js/services"], function(angular, services) {
              });
         };
         
+        self.verificarTercero = function(parametros, callback ){
+
+             Request.realizarRequest(API.TERCEROS.OBTENER_TERCERO, "POST", parametros, function(data) {
+                   
+                callback(data);
+
+             });
+        };
+        
 
         return this;
 

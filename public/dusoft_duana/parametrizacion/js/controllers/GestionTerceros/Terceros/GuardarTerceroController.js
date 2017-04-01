@@ -77,7 +77,7 @@ define(["angular",
             
             
             $scope.listaContactos = {
-                data: 'root.parametros.contactos',
+                data: 'root.tercero.contactos',
                 multiSelect: false,
                 showFilter: true,
                 enableRowSelection: true,
@@ -446,22 +446,11 @@ define(["angular",
                     return false;
                 }
                 
-                var contactos = $scope.root.parametros.contactos;
                 var contacto = angular.copy($scope.root.tercero.getContacto());
+                var tercero = $scope.root.tercero;
                 
-                for(var i in contactos){
-                    if(contactos[i].getEmail().length > 0 && (contacto.getEmail() === contactos[i].getEmail())){
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El email ya esta en uso");
-                        return;
-                    }
-                    
-                    if(contactos[i].getTelefono().length > 0 && (contactos[i].getTelefono() === contacto.getTelefono())){
-                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El teléfono ya se asigno a otro contacto");
-                        return;
-                    }
-                }
                 
-                contactos.push(contacto);
+                tercero.agregarContacto(contacto);
                 $scope.root.tercero.getContacto().inicializar();
                 
             };
@@ -638,6 +627,39 @@ define(["angular",
                 $event.preventDefault();
                 $event.stopPropagation();
                 $scope.pickerFechaExpiracion.open = !$scope.pickerFechaExpiracion.open;
+            };
+            
+            $scope.onIdentificacionBlur = function(){
+                
+                var tercero = $scope.root.tercero;
+                
+                if(tercero.getTipoDocumento() && tercero.getTipoDocumento().getId().length > 0 && tercero.getId().length > 0){
+                    var parametros = {
+                        session:$scope.root.session,
+                        data:{
+                            tercero:{
+                                id: tercero.getId(),
+                                tipoDocumento: {
+                                    id:tercero.getTipoDocumento().getId()
+                                }
+                            }
+                        }
+                    };
+
+                    GestionTercerosService.verificarTercero(parametros,function(respuesta){
+                        if(respuesta.status === 200){
+                            
+                            if(respuesta.obj.tercero.length > 0){
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El tercero ya esta registrado");
+                                tercero.setId("");
+                            }
+                            
+                        } else {
+                            AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error verificando el tercero");
+                        }
+                    });
+                }
+                
             };
             
            /**

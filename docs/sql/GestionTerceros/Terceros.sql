@@ -393,6 +393,9 @@ ALTER TABLE "public"."terceros"
     NOT DEFERRABLE;
 
 
+
+/*****/
+
 ALTER TABLE "public"."terceros"
   DROP CONSTRAINT "terceros_fk1" RESTRICT;
 

@@ -136,6 +136,7 @@
                            name="tipoDocumento"
                            required="required"
                            class="form-control selectgeneral pull-left ui-select-z-index-12" 
+                           ng-change="onIdentificacionBlur()"
                            title="Se requiere el tipo de documento" data-placement="top"
                            append-to-body = "true">
                     <ui-select-match  placeholder="Tipo documento"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
@@ -152,7 +153,7 @@
 
                 <input type="text" class="form-control"
                        ng-model="root.tercero.id" placeholder="Número identificación" name="numeroIdentificacion" id="numeroIdentificacion"
-                       pattern=".*\S+.*" title="Se requiere el número de identificación"  data-placement="top" required="required"/>
+                       pattern=".*\S+.*" title="Se requiere el número de identificación"  data-placement="top" required="required" ng-blur="onIdentificacionBlur()"/>
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-credit-card"></i></button>

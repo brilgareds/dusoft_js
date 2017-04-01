@@ -10,7 +10,9 @@ TercerosModel.prototype.guardarFormularioTerceros = function(parametros, callbac
    
     G.Q.ninvoke(that,'obtenerTercero', parametros).then(function(resultado) {
         
-        if(resultado.length  > 0){
+        if(resultado.length  > 0 && parametros.accion === "0"){
+            throw { msj:"Ya existe un tercero con la identificación ingresada", status:403 };
+        } else {
             parametros.crear = false;
             parametros.validacion = true;
         }
@@ -127,6 +129,9 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
         return G.Q.ninvoke(that,'gestionarTelefonosTercero', parametros);
         
     }).then(function(resultado){
+        return G.Q.ninvoke(that,'gestionarContactosTercero', parametros);
+        
+    }).then(function(resultado){
         callback(false, resultado);
         
     }).catch(function(err){
@@ -155,6 +160,34 @@ TercerosModel.prototype.gestionarTelefonosTercero = function(parametros, callbac
     del().
     then(function(resultado){
         return  G.Q.ninvoke(that,'guardarTelefonosTercero', parametros);
+        
+    }).then(function(resultado){
+        callback(false, resultado);
+        
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    }); 
+    
+};
+
+TercerosModel.prototype.gestionarContactosTercero = function(parametros, callback){
+    
+    var that = this;
+    if(parametros.tercero.contactos.length === 0){
+        callback(false);
+        return;
+    }
+    
+    var query = G.knex("terceros_contactos");
+    
+    if(parametros.transaccion) query.transacting(parametros.transaccion);
+    
+    query.where('tipo_id_tercero', parametros.tercero.tipoDocumento.id).
+    andWhere('tercero_id', parametros.tercero.id).
+    del().
+    then(function(resultado){
+        return  G.Q.ninvoke(that,'guardarContactoTercero', parametros);
         
     }).then(function(resultado){
         callback(false, resultado);
@@ -205,9 +238,46 @@ TercerosModel.prototype.guardarTelefonosTercero = function(parametros, callback)
     
 };
 
+TercerosModel.prototype.guardarContactoTercero = function(parametros, callback){
+    var that = this;
+    var tercero = parametros.tercero;
+    var contacto = tercero.contactos[0];
+        
+    if(!contacto){
+        callback(false);
+        return;
+    }
+    
+    var data = {
+        tipo_id_tercero : tercero.tipoDocumento.id,
+        tercero_id : tercero.id,
+        tipo_contacto_id : contacto.tipoSeleccionado.id,
+        nombre : contacto.nombre,
+        telefono : contacto.telefono,
+        correo : contacto.email,
+        descripcion : contacto.descripcion
+    };
+    
+    var query = G.knex("terceros_contactos");
+    
+    if(parametros.transaccion) query.transacting(parametros.transaccion);
+    
+    query.insert(data).then(function(resultado){
+        //prueba
+        tercero.contactos.splice(0,1);
+        
+        setTimeout(function(){
+            that.guardarContactoTercero(parametros, callback);
+        }, 0);
+        
+    }).catch(function(err){
+        callback(err);       
+    });
+    
+};
+
 
 TercerosModel.prototype.obtenerTercero = function(parametros, callback){
-   
     var columns = [
         "*"
     ];
@@ -552,7 +622,7 @@ TercerosModel.prototype.obtenerTiposContacto = function(parametros, callback) {
     ];
     
     G.knex.column(columns).
-    from("tipo_contacto as a").then(function(tiposContacto){
+    from("tipos_contacto as a").then(function(tiposContacto){
         callback(false, tiposContacto);
     }).catch(function(error){
         callback(error);

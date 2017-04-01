@@ -26,7 +26,10 @@ define(["angular","js/directive", "includes/components/chat/ChatController"], fu
                 var input = $(e.target);   
                 scope.gestionarClase(input);
             });
-
+            
+            $('input').attr('autocomplete', 'off');
+            
+            
            /**
             * @author Eduar Garcia
             * +Descripcion Evento de blur para los select

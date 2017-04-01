@@ -10,5 +10,10 @@ module.exports = function(app, di_container) {
          c_terceros.guardarFormularioTerceros(req, res);
     });    
     
+    app.post('/api/Terceros/GestionTerceros/obtenerTercero', function(req, res) {
+         c_terceros.obtenerTercero(req, res);
+    });    
+    
+    
     
 };

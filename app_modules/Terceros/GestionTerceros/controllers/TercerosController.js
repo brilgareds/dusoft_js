@@ -92,8 +92,7 @@ Terceros.prototype.consultarContratoCliente = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.contrato_cliente === undefined || args.contrato_cliente.tipo_id_cliente === undefined || args.contrato_cliente.cliente_id === undefined)
-    {
+    if (args.contrato_cliente === undefined || args.contrato_cliente.tipo_id_cliente === undefined || args.contrato_cliente.cliente_id === undefined){
         res.send(G.utils.r(req.url, 'tipo_id_tercero o tercero_id no están definidas.', 404, {}));
         return;
     }
@@ -113,6 +112,34 @@ Terceros.prototype.consultarContratoCliente = function(req, res) {
             res.send(G.utils.r(req.url, 'Consulta de Contrato Terceros Exitosa', 200, {resultado_consulta: contrato_cliente}));
     });
 
+};
+
+Terceros.prototype.obtenerTercero = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    if(!args.tercero){
+        res.send(G.utils.r(req.url, 'No se pudo validar el formulario', 401, {}));
+        return;
+    }
+    
+    if (!args.tercero.tipoDocumento  || args.tercero.tipoDocumento.length === 0){
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de documento', 404, {}));
+        return;
+    }
+    
+    if (!args.tercero.id  || args.tercero.id.length === 0){
+        res.send(G.utils.r(req.url, 'Se requiere el número de documento', 404, {}));
+        return;
+    }
+    
+    G.Q.ninvoke(that.mTerceros,'obtenerTercero', args).then(function(resultado) {
+        
+        res.send(G.utils.r(req.url, 'Consulta de tercero', 200, {tercero: resultado}));
+        
+    }).fail(function(err){
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error consultando el tercero', 404, {}));
+    }).done();
 };
 
 Terceros.prototype.guardarFormularioTerceros = function(req, res){
@@ -209,6 +236,11 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
         return;
     }
     
+    if(!args.accion){
+        res.send(G.utils.r(req.url, 'Se requiere la acción', 404, {}));
+        return;
+    }
+    
     var obj = {tercero:args.tercero, usuario_id : req.session.user.usuario_id, empresa : args.empresa_id}; 
     
     G.Q.ninvoke(that.mTerceros,'guardarFormularioTerceros', obj).then(function(resultado) {
@@ -216,7 +248,7 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
         res.send(G.utils.r(req.url, 'Tercero guardado correctamente', 200, {tercero: {}}));
         
     }).fail(function(err){
-        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error guardando el tercero', 404, {}));
     }).done();
     
     

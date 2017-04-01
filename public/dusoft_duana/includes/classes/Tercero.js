@@ -29,6 +29,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.tipoCorreo = null;
             this.tipoRedSocial = null;
             this.contacto = null;
+            this.contactos = [];
             this.pais = null;
             this.fechaExpedicion = "";
             this.fechaExpiracion = "";
@@ -63,6 +64,10 @@ define(["angular", "js/models"], function(angular, models) {
         
         Tercero.prototype.getId = function(){
             return this.id;
+        };
+        
+        Tercero.prototype.setId = function(id){
+           this.id = id;
         };
         
         Tercero.prototype.getDireccion = function(){
@@ -128,6 +133,15 @@ define(["angular", "js/models"], function(angular, models) {
         };    
         
         //GestionTerceros
+        Tercero.prototype.setTipoDocumento = function(tipoDocumento) {
+            this.tipoDocumento = tipoDocumento;
+            return this;
+        };
+
+        Tercero.prototype.getTipoDocumento = function() {
+            return this.tipoDocumento;
+        };  
+        
         Tercero.prototype.setContacto = function(contacto) {
             this.contacto = contacto;
             return this;
@@ -211,7 +225,6 @@ define(["angular", "js/models"], function(angular, models) {
         }; 
         
         Tercero.prototype.agregarTelefono = function(telefono){
-            console.log("agregar telefono ", telefono)
             if(telefono.getNumero().length === 0 || telefono.getTipoLineaTelefonica().getId().length === 0 ||
                telefono.getTipoTelefono().getId().length === 0){
                 
@@ -233,6 +246,31 @@ define(["angular", "js/models"], function(angular, models) {
             return true;
             
         };
+        
+        Tercero.prototype.agregarContacto = function(contacto){
+            for(var i in this.contactos){
+                var _contacto = this.contactos[i];
+                if(_contacto.getEmail().length > 0 && (contacto.getEmail() === _contacto.getEmail())){
+                    
+                    return;
+                }
+
+                if(_contacto.getTelefono().length > 0 && (_contacto.getTelefono() === contacto.getTelefono())){
+                    
+                    return;
+                }
+            }
+            
+                 /*           if(contacto.getNombre() === _contacto.getNombre() && contacto.getTelefono() === _contacto.getTelefono() && contacto.getEmail() === _contacto.getEmail() &&
+                   contacto.getDescripcion() === _contacto.getDescripcion() && contacto.getTipoContacto().getId() === _contacto.getTipoContacto().getId()){
+                   this.contactos[i] = contacto;
+                }*/
+            
+            this.contactos.push(contacto);
+            
+        };
+        
+        
         
         Tercero.prototype.getTelefonos = function() {
             return this.telefonos;

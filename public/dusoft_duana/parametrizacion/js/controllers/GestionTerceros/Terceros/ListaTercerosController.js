@@ -29,11 +29,14 @@ define(["angular",
 
             };
             
+            $scope.onCrearTercero = function(){
+                localStorageService.set("accion", "0");
+                $scope.onIrVistaGuardarTercero();
+            };
             
             $scope.onIrVistaGuardarTercero = function(){
                 console.log(">>>>>>>>>>>>>>>>>>>")
                 $state.go("GuardarTercero");
-                
             };
 
             

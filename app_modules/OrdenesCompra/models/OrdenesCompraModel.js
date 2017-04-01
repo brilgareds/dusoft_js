@@ -144,7 +144,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 left join (\
                     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
-                WHERE a.codigo_proveedor_id = :1 and a.estado = '6' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
+                WHERE a.codigo_proveedor_id = :1 and (a.estado = '1' OR a.estado = '6')  and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
     
     G.knex.raw(sql, {1:codigo_proveedor_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
@@ -1093,7 +1093,7 @@ OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_
 
 
 // listar productos Recepcion mercancia
-OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(recepcion_mercancia_id, callback) {
+OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(obj, callback) {
 
     var sql = " select \
                 a.id,\
@@ -1109,7 +1109,15 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 e.estado as estado_novedad,\
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
-                a.fecha_registro\
+                a.fecha_registro,\
+                 (SELECT (copd.numero_unidades::integer - sum(recd.cantidad_recibida)) as cantidad_pendiente\
+                 FROM recepcion_mercancia rec \
+                 INNER JOIN recepcion_mercancia_detalle recd ON rec.id =  recd.recepcion_mercancia_id\
+                 INNER JOIN compras_ordenes_pedidos cop on rec.orden_pedido_id = cop.orden_pedido_id\
+                 INNER JOIN compras_ordenes_pedidos_detalle copd on cop.orden_pedido_id = copd.orden_pedido_id \
+                 AND recd.codigo_producto = copd.codigo_producto\
+                  WHERE rec.orden_pedido_id = :2 AND recd.codigo_producto = a.codigo_producto\
+                  GROUP BY copd.numero_unidades, rec.orden_pedido_id, recd.codigo_producto)as cantidad_pendiente\
                 from recepcion_mercancia_detalle a\
                 inner join recepcion_mercancia b on a.recepcion_mercancia_id = b.id\
                 inner join compras_ordenes_pedidos c on b.orden_pedido_id = c.orden_pedido_id\
@@ -1117,10 +1125,11 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 left join novedades_recepcion_mercancia e on a.novedades_recepcion_id = e.id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
                 where a.recepcion_mercancia_id = :1 ;";
-
-    G.knex.raw(sql, {1:recepcion_mercancia_id}).then(function(resultado){
+    
+    G.knex.raw(sql, {1:obj.recepcion_id, 2: obj.numero_orden_compra}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
+       console.log("err [listar_productos_recepcion_mercancia]: ", err);
        callback(err);
     });
 };
@@ -1341,13 +1350,22 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
 // Modificar productos Recepcion mercancia
 OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion, callback) {
 
+    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia MODEL**********");
+    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia MODEL**********");
+    
+    console.log("recepcion.orden_compra ", recepcion.orden_compra);
     var that = this;
     var sql = " update recepcion_mercancia set estado = '2' where  id = :1 ; ";
     
     G.knex.raw(sql, {1:recepcion.numero_recepcion}).then(function(resultado){
        
+        
         var estado = '4'; // Verificada
-
+        
+        if(recepcion.orden_compra.cantidadTotalPendiente > 0){
+            estado = '6';
+        }
+        
         that.actualizar_estado_orden_compra(recepcion.orden_compra.numero_orden_compra, estado, function(_err, _rows, _result) {
 
             callback(false, resultado.rows, resultado);

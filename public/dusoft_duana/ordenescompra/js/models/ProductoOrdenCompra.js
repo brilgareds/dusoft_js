@@ -17,6 +17,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.lote = [];
                 this.nombreUsuarioIngreso = '';
                 this.docTmpId = '';
+                this.cantidadTotalPendiente = 0;
             }
 
             ProductoOrdenCompra.prototype = Object.create(Producto.getClass().prototype);
@@ -233,7 +234,18 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoOrdenCompra.prototype.getlote = function() {
                 return this.lote;
             };
+            
+            
+            
+            ProductoOrdenCompra.prototype.setCantidadTotalPendiente = function(cantidadTotalPendiente) {
+                this.cantidadTotalPendiente = cantidadTotalPendiente;
+            };
 
+            ProductoOrdenCompra.prototype.getCantidadTotalPendiente = function() {
+                return this.cantidadTotalPendiente;
+            };
+            
+            
             return this;
         }]);
 });

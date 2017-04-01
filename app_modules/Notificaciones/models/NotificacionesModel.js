@@ -253,7 +253,8 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                      WHEN a.estado = '2' THEN 'Anulado' \
                      WHEN a.estado = '3' THEN 'Recibida en bodega' \
                      WHEN a.estado = '4' THEN 'Verificada en bodega' \
-                     WHEN a.estado = '5' THEN 'Bloqueada' END as descripcion_estado,\
+                     WHEN a.estado = '5' THEN 'Bloqueada' \
+                     WHEN a.estado = '6' THEN 'Recibida en bodega con pendientes' END as descripcion_estado,\
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
@@ -1323,13 +1324,20 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
 
 // Modificar productos Recepcion mercancia
 OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion, callback) {
-
+    
+    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia NOTIFICACION**********");
+    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia NOTIFICACION**********");
+    
     var that = this;
     var sql = " update recepcion_mercancia set estado = '2' where  id = :1 ; ";
     
     G.knex.raw(sql, {1:recepcion.numero_recepcion}).then(function(resultado){
        
         var estado = '4'; // Verificada
+         
+        if(recepcion.orden_compra.cantidadTotalPendiente > 0){
+            estado = '6';
+        }
 
         that.actualizar_estado_orden_compra(recepcion.orden_compra.numero_orden_compra, estado, function(_err, _rows, _result) {
 

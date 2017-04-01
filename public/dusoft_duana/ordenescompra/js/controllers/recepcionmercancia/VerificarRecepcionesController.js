@@ -239,11 +239,13 @@ define(["angular", "js/controllers"
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            recepcion_id: $scope.recepcion.get_numero_recepcion()
+                            recepcion_id: $scope.recepcion.get_numero_recepcion(),
+                            orden_compra:  $scope.recepcion.orden_compra,
                         }
                     }
                 };
-
+                             
+                             
                 Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_PRODUCTOS_RECEPCION_MERCANCIA, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -263,6 +265,7 @@ define(["angular", "js/controllers"
                     producto.set_cantidad_seleccionada(data.cantidad_solicitada);
                     producto.set_cantidad_recibida(data.cantidad_recibida);
                     producto.set_novedad_recepcion(novedad);
+                    producto.setCantidadPendiente(data.cantidad_pendiente);
 
                     $scope.recepcion.get_orden_compra().set_productos(producto);
                 });
@@ -291,7 +294,15 @@ define(["angular", "js/controllers"
 
 
             $scope.finalizar_recepcion_mercancia = function() {
-
+                   
+                $scope.recepcion.orden_compra.cantidadTotalPendiente = 0;
+                $scope.recepcion.orden_compra.productos.forEach(function(row){
+                     
+                    //row.cantidadPendiente = row.cantidadPendiente + parseInt(row.cantidad_seleccionada) - parseInt(row.cantidad_recibida) < 0 ? 0 : parseInt(row.cantidad_seleccionada) - parseInt(row.cantidad_recibida);
+                    $scope.recepcion.orden_compra.cantidadTotalPendiente += parseInt(row.cantidadPendiente);
+                });
+                
+                 console.log("$scope.recepcion.orden_compra ", $scope.recepcion.orden_compra)
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -330,7 +341,8 @@ define(["angular", "js/controllers"
 
             $scope.finalizar_recepcion = function() {
                 
-                console.log("$scope.recepcion ", $scope.recepcion)
+               
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -374,6 +386,7 @@ define(["angular", "js/controllers"
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
                     {field: 'get_cantidad_seleccionada()', displayName: 'Cnt.', width: "5%"},
+                    {field: 'getCantidadPendiente()', displayName: 'Pendiente', width: "5%"},
                     {field: 'get_cantidad_recibida()', displayName: 'Rec.', width: "15%",
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="deshabilitar_acciones()" ng-model="row.entity.cantidad_recibida" class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Novedad", cellClass: "dropdown-button",

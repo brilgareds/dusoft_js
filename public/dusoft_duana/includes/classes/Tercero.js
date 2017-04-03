@@ -250,6 +250,18 @@ define(["angular", "js/models"], function(angular, models) {
         Tercero.prototype.agregarContacto = function(contacto){
             for(var i in this.contactos){
                 var _contacto = this.contactos[i];
+                
+                
+                if(_contacto.getId() === contacto.getId()){
+                    _contacto.setNombre(contacto.getNombre()).
+                    setTipoContacto(contacto.getTipoContacto()).
+                    setTelefono(contacto.getTelefono()).
+                    setEmail(contacto.getEmail()).
+                    setDescripcion(contacto.getDescripcion());
+
+                    return;
+                }
+                
                 if(_contacto.getEmail().length > 0 && (contacto.getEmail() === _contacto.getEmail())){
                     
                     return;
@@ -261,16 +273,13 @@ define(["angular", "js/models"], function(angular, models) {
                 }
             }
             
-                 /*           if(contacto.getNombre() === _contacto.getNombre() && contacto.getTelefono() === _contacto.getTelefono() && contacto.getEmail() === _contacto.getEmail() &&
-                   contacto.getDescripcion() === _contacto.getDescripcion() && contacto.getTipoContacto().getId() === _contacto.getTipoContacto().getId()){
-                   this.contactos[i] = contacto;
-                }*/
-            
             this.contactos.push(contacto);
             
         };
         
-        
+        Tercero.prototype.getContactos = function(){
+            return this.contactos;
+        };
         
         Tercero.prototype.getTelefonos = function() {
             return this.telefonos;

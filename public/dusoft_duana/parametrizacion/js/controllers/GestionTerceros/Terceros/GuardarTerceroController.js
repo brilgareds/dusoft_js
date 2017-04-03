@@ -392,7 +392,8 @@ define(["angular",
                     session:$scope.root.session,
                     data:{
                         tercero:$scope.root.tercero,
-                        empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo()
+                        empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                        accion : localStorageService.get("accion") || "0"
                     }
                 };
                 
@@ -449,13 +450,22 @@ define(["angular",
                 var contacto = angular.copy($scope.root.tercero.getContacto());
                 var tercero = $scope.root.tercero;
                 
+                if(contacto.getId() === 0){
+                    contacto.setId((tercero.getContactos().length + 1));
+                }
                 
                 tercero.agregarContacto(contacto);
                 $scope.root.tercero.getContacto().inicializar();
                 
             };
             
-          /**
+            $scope.onRemoverContacto = function(contacto){
+                var tercero = $scope.root.tercero;
+                var contactos = tercero.getContactos();
+                contactos.splice(contactos.indexOf(contacto));
+            };
+            
+           /**
             * @author Eduar Garcia
             * +Descripcion  Handler del boton editar del grid de contacto
             * @params contacto: {Contacto}
@@ -629,6 +639,11 @@ define(["angular",
                 $scope.pickerFechaExpiracion.open = !$scope.pickerFechaExpiracion.open;
             };
             
+           /**
+            * @author Eduar Garcia
+            * +Descripcion Handler textfield de numero de identificacion y el dropdown de tipo de documento
+            * @fecha 2017-03-22
+            */
             $scope.onIdentificacionBlur = function(){
                 
                 var tercero = $scope.root.tercero;
@@ -652,6 +667,16 @@ define(["angular",
                             if(respuesta.obj.tercero.length > 0){
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El tercero ya esta registrado");
                                 tercero.setId("");
+                            } else {
+                                //En caso de perder el blur el input al dar click en el boton de siguiente
+                                var formulario = self.obtenerNombreFormularioActual($scope.root.tabActual);
+                                var formActual =  $scope.formularios[formulario];
+
+                                if(formActual.$valid){
+                                   var tab = $scope.root.tabActual + 1;
+                                   $scope.onTabChange(tab); 
+                                }
+                                
                             }
                             
                         } else {

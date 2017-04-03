@@ -285,7 +285,7 @@ define(["angular", "js/controllers"
                         }
                     }
                 };
-                //console.log("producto ", producto)
+              
                 Request.realizarRequest(API.ORDENES_COMPRA.INGRESAR_PRODUCTOS_MERCANCIA, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -302,7 +302,7 @@ define(["angular", "js/controllers"
                     $scope.recepcion.orden_compra.cantidadTotalPendiente += parseInt(row.cantidadPendiente);
                 });
                 
-                 console.log("$scope.recepcion.orden_compra ", $scope.recepcion.orden_compra)
+                
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,

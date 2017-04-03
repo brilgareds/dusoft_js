@@ -631,7 +631,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                             </tr>\
                                                             <tr>\
                                                                     <td class="left"><strong>Total</strong></td>\
-                                                                    <td class="right">{{valor_total | currency: "$ "}}</td>                                        \
+                                                                    <td class="right">{{valor_total | currency: "$ "}}</td>  \
                                                             </tr>\
                                                     </tbody>\
                                             </table>\

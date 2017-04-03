@@ -30,7 +30,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
              WHEN a.estado = '2' THEN 'Anulado'\
              WHEN a.estado = '3' THEN 'Recibida en bodega'\
              WHEN a.estado = '4' THEN 'Verificada en bodega'\
-             WHEN a.estado = '5' THEN 'Bloqueada' END as descripcion_estado,\
+             WHEN a.estado = '5' THEN 'Bloqueada' \
+             WHEN a.estado = '6' THEN 'Verificada en bodega con pendientes' END as descripcion_estado,\
         a.sw_orden_compra_finalizada"),
         G.knex.raw("CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
              WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion"), 
@@ -254,7 +255,7 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                      WHEN a.estado = '3' THEN 'Recibida en bodega' \
                      WHEN a.estado = '4' THEN 'Verificada en bodega' \
                      WHEN a.estado = '5' THEN 'Bloqueada' \
-                     WHEN a.estado = '6' THEN 'Recibida en bodega con pendientes' END as descripcion_estado,\
+                     WHEN a.estado = '6' THEN 'Verificada en bodega con pendientes' END as descripcion_estado,\
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\

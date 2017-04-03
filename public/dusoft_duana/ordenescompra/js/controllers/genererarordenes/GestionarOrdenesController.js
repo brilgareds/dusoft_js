@@ -188,7 +188,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_ORDEN_COMPRA, "POST", obj, function(data) {
                     
-                    console.log("data ", data);
+                     
                     
                     if (data.status === 200 && data.obj.orden_compra.length > 0) {
 
@@ -236,7 +236,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             $scope.onSeleccionBodega = function(bodegaSeleccionada){
-                console.log("on seleccion bodeega ", bodegaSeleccionada);
+                
                 $scope.orden_compra.setBodegaSeleccionada(bodegaSeleccionada);
                 
                 if ($scope.numero_orden > 0) {
@@ -434,7 +434,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.finalizar_orden_compra = function(finalizar_orden_compra) {
                 
-                console.log("estado de la orden de compra ", $scope.orden_compra.get_estado());
+               
                 if($scope.orden_compra.get_estado() === '3' || $scope.orden_compra.get_estado() === '4'){
                     return;
                 }
@@ -658,7 +658,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             $scope.modificarDetalle = function(producto){
-               console.log("producto ", producto);
+               
                
                
                 var obj = {
@@ -766,7 +766,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.subir_archivo_plano = function() {
                 $scope.progresoArchivo = 1; 
-                console.log("proveedor ", $scope.codigo_proveedor_id);
+               
                 if ($scope.numero_orden > 0) {
                     // Solo Subir Plano
                     $scope.opciones_archivo.opts.query.data = JSON.stringify({

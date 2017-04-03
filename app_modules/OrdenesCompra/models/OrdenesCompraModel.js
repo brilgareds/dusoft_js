@@ -256,7 +256,8 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                      WHEN a.estado = '2' THEN 'Anulado' \
                      WHEN a.estado = '3' THEN 'Recibida en bodega' \
                      WHEN a.estado = '4' THEN 'Verificada en bodega' \
-                     WHEN a.estado = '5' THEN 'Bloqueada' END as descripcion_estado,\
+                     WHEN a.estado = '5' THEN 'Bloqueada'\
+                     WHEN a.estado = '6' THEN 'Recibida en bodega con pendientes' END as descripcion_estado,\
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
@@ -440,10 +441,10 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
        }
        
     }).then(function(resultado){
-        console.log("se ha guardado correctamente la ubicacion ", resultado);
+        
         callback(false, resultado);
     }).catch(function(err){
-       console.log("error guardando destino ", err);
+       console.log("error [guardarDestinoOrden]: ", err);
        callback(err);
     });
      
@@ -463,9 +464,7 @@ OrdenesCompraModel.prototype.borrarBodegaOrden = function(orden, callback) {
 // Modificar Orden de Compra
 OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_orden, estado, callback) {
 
-console.log("********actualizar_estado_orden_compra**************");
-console.log("numero_orden ", numero_orden);
-console.log("estado ", estado);
+ 
     // Estados Orden de Compra
     // 0 => Ingresada en Bodega
     // 1 => Activa
@@ -715,7 +714,7 @@ OrdenesCompraModel.prototype.eliminarArchivosNovedad = function(archivos, callba
     }
     
     var sql = "DELETE FROM archivos_novedades_ordenes_compras WHERE id = :1";
-    console.log("eliminando archivo con id ", archivo.id, " con nombre ",archivo.nombre_archivo);
+    
     G.knex.raw(sql, {1:archivo.id}).then(function(resultado){
        G.fs.unlinkSync(G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + archivo.nombre_archivo);
        archivos.splice(0,1);

@@ -1743,7 +1743,9 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      when a.estado = '6' then 'Se solicita autorizacion'\
      when a.estado = '4' then 'No autorizado por cartera' end as descripcion_estado,\
      to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro,\
-     h.pedido_cliente_id as numero_pedido, '0' as tipo_pedido\
+     h.pedido_cliente_id as numero_pedido, '0' as tipo_pedido, \
+     j.sw_autorizacion, \
+     j.sw_facturacion_agrupada\
      from ventas_ordenes_pedidos_tmp a\
      inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
      inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
@@ -1752,13 +1754,21 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
      inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
      left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
      left join ventas_ordenes_pedidos h on a.pedido_cliente_id_tmp = h.pedido_cliente_id_tmp \
+     LEFT JOIN vnts_contratos_clientes j ON a.tipo_id_tercero = j.tipo_id_tercero and a.tercero_id = j.tercero_id\
      where a.empresa_id= :1 and a.fecha_registro between :2 and :3 \
      " + filtroCotizacion + " " + filtroEstadoCotizacion;
 
 
+      /* G.knex('vnts_contratos_clientes').where({
+        tipo_id_tercero: obj.tipo_id_tercero,
+        tercero_id: obj.tercero_id
+    }).select(['contrato_cliente_id','sw_autorizacion','sw_facturacion_agrupada']).then(function(rows) {*/         
+               
+
     var query = G.knex.select(G.knex.raw(sql, parametros)).
             limit(G.settings.limit).
             offset((pagina - 1) * G.settings.limit).orderBy("a.pedido_cliente_id_tmp", "desc").then(function(resultado) {
+        
         callback(false, resultado);
     }). catch (function(err) {
         console.log("err [listar_cotizaciones]: ", err);
@@ -2549,7 +2559,7 @@ function __generar_detalle_pedido_cliente(cotizacion, pedido, transaccion, callb
                     AND pedido_farmacia = '0'\
                 ) ;";                            
 
-    console.log("parametros [__generar_detalle_pedido_cliente]: ", cotizacion)
+    
     var query = G.knex.raw(sql, parametros);
 
     if (transaccion)

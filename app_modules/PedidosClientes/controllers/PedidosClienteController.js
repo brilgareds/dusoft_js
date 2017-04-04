@@ -4786,6 +4786,8 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
         "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
         "tercero_id":cotizacion.cliente.id
     };
+    var def = G.Q.defer();   
+    
     
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function(tercero){
         
@@ -4798,7 +4800,9 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
             }
         }else{
             throw {msj:"El tercero no se encuentra registrado", status:404,pedidos_clientes:{}};
-        }
+        }                         
+        
+        
         
     }).then(function(resultado){
         
@@ -4825,16 +4829,29 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
             
             return;
         }                    
+        console.log("*************VLAIDANDO EL CLIENTE AUTORIZADO ******************************");
+        console.log("cotizacion.cliente_autorizado ", cotizacion.cliente_autorizado);
+        if(cotizacion.cliente_autorizado){
+            
+            def.resolve();
+        }else{
+            return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
         
-        
-        return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
+        }
         
     }).then(function(resultado){
-      
-        cotizacion.numero_cotizacion =  resultado.pedidos_clientes.numero_cotizacion;
-        return G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,cotizacion, cotizacion.productos);
+        
+        console.log("*************DEFER VLAIDANDO EL CLIENTE AUTORIZADO ******************************");
+        console.log("resultado ", resultado);
+        if(!resultado){
+            cotizacion.numero_cotizacion = cotizacion.cliente_autorizado;
+            def.resolve();
+        }else{
+            cotizacion.numero_cotizacion =  resultado.pedidos_clientes.numero_cotizacion;
+            return G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,cotizacion, cotizacion.productos);
          
-    
+        }        
+                   
     }).then(function(resultado){                        
 
         cotizacion.total = __totalNuevoPrecioVenta(cotizacion);  
@@ -4867,6 +4884,84 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
     });
   
 };
+
+
+
+
+PedidosCliente.prototype.consultarEstadoAutorizacion = function(req, res){
+    
+    var that = this;
+    var args = req.body.data;
+     
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Cliente
+    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cliente === '') {
+        res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
+        return;
+    }
+
+    
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+    
+    var obj = {
+        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
+        "tercero_id":cotizacion.cliente.id
+    };
+     
+    
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarExistenciaPedidoCotizacion', cotizacion.numero_cotizacion).then(function(resultado) {
+        
+        if (resultado.length > 0) {
+           
+            throw {msj:'La cotizacion ya se encuentra con un pedido asignado', status:404,pedidos_clientes:{}};
+            return;
+        } else {
+             
+            return G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj);
+
+        }
+
+    }).then(function(tercero){
+        
+        if(tercero.length > 0){
+            if(tercero[0].tipo_bloqueo_id !== '1'){
+                cotizacion.cliente.tipoBloqueoId = tercero[0].tipo_bloqueo_id;
+                throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:404,pedidos_clientes:{}};
+            } else {
+                return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
+            }
+        }else{
+            throw {msj:"El tercero no se encuentra registrado", status:404,pedidos_clientes:{}};
+        }                         
+         
+    }).then(function(resultado){
+        
+        if(resultado.length > 0){
+            if(resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0'){
+                return res.send(G.utils.r(req.url, 'La farmacia esta autorizada', 200, {pedidos_clientes: []}));
+            }else{
+                throw {msj:"La farmacia no esta permitida para generar pedidos", status:404,pedidos_clientes:{}};
+            }
+        }else{
+            throw {msj:"El cliente no se encuentra registrado en la tabla de contratos", status:404,pedidos_clientes:{}};
+        }
+    }).fail(function(err){
+        console.log("err [consultarEstadoAutorizacion]: ", err);
+       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+  
+    
+    
+}
+
+
+
 
 PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function(req, res) {
  

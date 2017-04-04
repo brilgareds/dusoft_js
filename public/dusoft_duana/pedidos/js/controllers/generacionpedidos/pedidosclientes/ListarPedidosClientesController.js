@@ -281,7 +281,14 @@ define(["angular", "js/controllers",
 
 
             $scope.generar_observacion_cartera = function(obj) {
+                console.log("obj ", obj.get_numero_pedido());
                 
+                
+                if(obj.get_numero_pedido() > 0){
+                    
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cotizacion ya finalizo su proceso");
+                    return;
+                }
                 if(obj.getEstado() === '0' && obj.get_estado_cotizacion() === '1'){
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
                     return;
@@ -322,7 +329,7 @@ define(["angular", "js/controllers",
                    
                     localStorageService.add("aprobarEstadoPedidoGenerarPedido",{estado:1});
                     $state.go('PedidoCliente');
-                }
+                } 
             };
 
             $scope.visualizar = function(obj) {
@@ -468,7 +475,9 @@ define(["angular", "js/controllers",
                     var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
                     cliente.setDepartamento(data.departamento);
                     cliente.setMunicipio(data.municipio);
-
+                    cliente.setSwFacturacionAgrupada(data.sw_autorizacion);
+                    cliente.setSwAutorizacion(data.sw_facturacion_agrupada);
+                         
                     var vendedor = Vendedor.get(data.nombre_vendendor, data.tipo_id_vendedor, data.vendedor_id, data.telefono_vendedor);
 
                     cotizacion.set_numero_cotizacion(data.numero_cotizacion).set_vendedor(vendedor).setCliente(cliente);
@@ -666,61 +675,11 @@ define(["angular", "js/controllers",
                             observacion+=$scope.Pedido.get_observacion_cartera();
                             $scope.Pedido.set_observacion_cartera(observacion);
                       }
-
-                //$scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
-                  if(data.obj.pedidos_clientes.producto.length > 0){      
+ 
+                if(data.obj.pedidos_clientes.producto.length > 0){      
                       
-                        that.ventanaProductosSinDisponibilidad(data.obj.pedidos_clientes.producto);
-                        
-               /*
-                      $scope.opts = {
-                          backdrop: true,
-                          backdropClick: true,
-                          dialogFade: false,
-                          keyboard: true,
-                          template: ' <div class="modal-header">\
-                                          <button type="button" class="close" ng-click="close()">&times;</button>\
-                                          <h4 class="modal-title">Listado Productos </h4>\
-                                      </div>\
-                                      <div class="modal-body row">\
-                                          <div class="col-md-12">\
-                                              <h4 >Lista productos sin disponibilidad.</h4>\
-                                              <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
-                                                  <div class="list-group">\
-                                                      <a ng-repeat="producto in datos_view.productos_no_disponible" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                      Cantidad solicitada ({{ producto.cantidad_solicitada}})  Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
-                                                      </a>\
-                                                  </div>\
-                                              </div>\
-                                          </div>\
-                                          <div class="col-md-12" ng-if = "ocultarOpciones == 0">\
-                                              <fieldset>\
-                                                  <legend>Observación Cartera</legend>\
-                                                  <div class="row">\
-                                                      <div class="col-md-12">\
-                                                          <textarea  ng-model="Pedido.observacion_cartera" \
-                                                          ng-disabled="!datos_view.cartera" class="col-lg-12 col-md-12 col-sm-12" \
-                                                          rows="4" name="" placeholder="Ingresar Observación Cartera"></textarea>\
-                                                      </div>\
-                                                  </div>\
-                                              </fieldset>\
-                                          </div>\
-                                      </div>\
-                                      <div class="modal-footer">\
-                                          <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
-                                          <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" >\
-                                              Denegado Cartera\
-                                          </button>\
-                                      </div>',
-                      scope: $scope,
-                      controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
-                          $scope.close = function() {
-                              $scope.datos_view.progresoArchivo = 0;
-                              $modalInstance.close();
-                          };                    
-                      }]
-                };
-                var modalInstance = $modal.open($scope.opts);*/
+                    that.ventanaProductosSinDisponibilidad(data.obj.pedidos_clientes.producto);
+                         
                 
                 }else{                           
                    callback(true);

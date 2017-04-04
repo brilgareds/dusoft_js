@@ -8,6 +8,8 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
 
                 this.contrato_id = 0;
                 this.tipoBloqueoId =0;
+                this.sw_autorizacion =0;
+                this.sw_facturacion_agrupada =0;
             }
 
 
@@ -65,6 +67,28 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
                 return this.tipoBloqueoId;
             };
             
+               
+            ClientePedido.prototype.setSwAutorizacion = function(sw_autorizacion) {
+                this.sw_autorizacion = sw_autorizacion;
+                return this;
+            };
+
+            ClientePedido.prototype.getSwAutorizacion = function() {
+
+                return this.sw_autorizacion;
+            };
+            
+           
+            
+            ClientePedido.prototype.setSwFacturacionAgrupada = function(sw_facturacion_agrupada) {
+                this.sw_facturacion_agrupada = sw_facturacion_agrupada;
+                return this;
+            };
+
+            ClientePedido.prototype.getSwFacturacionAgrupada = function() {
+
+                return this.sw_facturacion_agrupada;
+            };
 
             return this;
 

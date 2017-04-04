@@ -80,7 +80,7 @@ define(["angular"], function(angular) {
                     'GENERAR_PEDIDO_BODEGA_FARMACIA': BASE_URL +'/PedidosClientes/generarPedidoBodegaFarmacia',
  
                     'ACTUALIZAR_PRODUCTO_COTIZACION_COSMITET': BASE_URL +'/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet',
- 
+                    'CONSULTAR_ESTADO_AUTORIZACION': BASE_URL +'/PedidosClientes/consultarEstadoAutorizacion'
                     
                 },
                 FARMACIAS :{

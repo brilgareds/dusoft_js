@@ -1082,7 +1082,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.opciones_archivo.cancel();
                     $scope.datos_view.productosInvalidos = [];
                     $scope.datos_view.productosInvalidosSinRepetir;
-                   
+
 
                     $scope.datos_view.productos_invalidos.forEach(function (row) {
 
@@ -1361,7 +1361,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }]
                 };
                 var modalInstance = $modal.open($scope.opts);
-                
+
             };
 
 
@@ -1379,7 +1379,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if (producto.bodegaProducto === bodega) {
                     productosBodegaDuana.push(producto);
                 }
-               
+
 
                 __productosBodegaDuana(index, productos, productosBodegaDuana, bodega, callback);
 
@@ -1435,7 +1435,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     };
 
                     Request.realizarRequest(API.PEDIDOS.CLIENTES.VALIDAR_DISPONIBILIDAD, "POST", obj, function (data) {
-                       
+
                         if (data.status === 200) {
                             if (data.obj.pedidos_clientes.producto.length > 0) {
 
@@ -1623,7 +1623,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * @fecha 30/09/2016
              */
             that.consultarDetalleProductosCotizacion = function (callback) {
-               
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -1683,11 +1683,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              *              de lo contrario se generara el pedido normal
              */
             that.generarPedidoBodegaMultiple = function (aprobado, denegar) {
-                 
-               if (aprobado === 1) {
+
+                if (aprobado === 1) {
                     that.consultarDetalleProductosCotizacion(function (estado, resultado) {
-                   
-                    
+
+
                         if ($scope.Pedido.observacion_cartera.length > 0) {
                             if (estado) {
 
@@ -1714,7 +1714,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
 
                                 Request.realizarRequest(url, "POST", obj, function (data) {
-                                     
+
                                     if (data.status === 200) {
 
                                         that.actualizarEstadoProductoCotizacionBodegaCosmitet(resultado, aprobado, denegar);
@@ -1725,15 +1725,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                                     }
                                     if (data.status === 404) {
-                                        
+
                                         if (data.obj.pedido_farmacia.productosInvalidos.length > 0) {
-                                            
-                                             that.mostrarProductosNoValidos(data.obj.pedido_farmacia.productosInvalidos);
-                                                 
+
+                                            that.mostrarProductosNoValidos(data.obj.pedido_farmacia.productosInvalidos);
+
                                         }
-                                         
-                                    } 
-                                    
+
+                                    }
+
                                     if (data.status === 501) {
 
                                         AlertService.mostrarVentanaAlerta("Mensaje ERROR", data.msj);
@@ -1760,20 +1760,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              */
             that.mostrarProductosNoValidos = function (productos) {
                 $scope.productosInvalidos = [];
-               
+
                 for (var i in productos) {
-                     
+
                     var _producto = productos[i];
-                   
+
                     var producto = Producto.get(_producto.codigo_producto, _producto.descripcion || "?").
                             set_cantidad_solicitada(_producto.cantidad_solicitada).
                             setMensajeError(_producto.mensajeError);
 
-                            
+
                     $scope.productosInvalidos.push(producto);
                 }
-                 
-                
+
+
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -1824,8 +1824,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     localStorageService.add("terminoBusqueda", parametros);
                     that.generarPedidoBodegaMultiple(aprobado, denegar);
 
-                };
-
+                } ;
 
                 var pedido = localStorageService.get("pedido");
 
@@ -1950,7 +1949,196 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
+            
+            /**
+             * @author Cristian Ardila
+             * +Descripcion Metodo encargado de generar un pedido si el cliente
+             *              ya esta autorizado, esta funcion evitara el proceso
+             *              de cartera
+             *              1) Consulta si la cotizacion ya tiene pedidos
+             *              2) Se valida de que el cliente este autorizado
+             *              3) Que el cliente no este bloqueado
+             *              4) Si cumple con los pasos 1,2,3 se procede a crear
+             *                 un pedido en cosmitet si se ha seleccionado un
+             *                 producto de esa bodega, si es asi se procede a
+             *                 crear tambien un pedido de la bodega duana
+             *                 si no se ha tomado unidades de la bodega cosmitet
+             *                 se continua el proceso para crear el pedido en duana
+             */
+            $scope.generarPedidoAutomaticoCliente = function () {
+                 
+                var cotizacions = {
+                    numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                    vendedor: {tipo_id_tercero: $scope.Pedido.get_vendedor().getTipoId(), id: $scope.Pedido.get_vendedor().getId()}, 
+                    cliente: {
+                        tipo_id_tercero: $scope.Pedido.getCliente().getTipoId(),   
+                        id: $scope.Pedido.getCliente().getId(),
+                    },
+                    usuario_id: $scope.session.usuario_id
+                };
 
+                var objConsultarAurorizacion = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: cotizacions
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_AUTORIZACION, "POST", objConsultarAurorizacion, function (data) {
+                   
+                    if (data.status === 200) {
+
+                       that.consultarDetalleProductosCotizacion(function (estado, resultado) {
+                          
+                            if (estado) {
+
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        pedidos_farmacias: {
+
+                                            empresa_origen_id: resultado[0].empresa_origen_producto,
+                                            centro_utilidad_origen_id: resultado[0].centro_utilidad_origen_producto,
+                                            bodega_origen_id: resultado[0].bodega_origen_producto,
+                                            empresa_destino_id: $scope.Pedido.get_empresa_id(),
+                                            centro_utilidad_destino_id: $scope.Pedido.get_centro_utilidad_id(),
+                                            bodega_destino_id: $scope.Pedido.get_bodega_id(),
+                                            tipo_producto: '1',
+                                            tipo_pedido: '1',
+                                            observacion: 'PEDIDO DESDE EL MODULO DE CLIENTE (CLIENTE: ', //+ $scope.Pedido.cliente.nombre_tercero + "" +$scope.Pedido.cliente.tipo_id_tercero + ": " +$scope.Pedido.cliente.id +")",
+                                            productos: resultado,
+                                            pedidoCliente: 0
+                                        }
+                                    }
+                                };
+
+                                var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
+
+                                Request.realizarRequest(url, "POST", obj, function (data) {
+
+                                    if (data.status === 200) {
+
+                                        that.generarPedidoClientesAutorizados();
+                                        //Se actualiza el estado de la cotizacion a 1
+
+
+                                        AlertService.mostrarVentanaAlerta(data.msj, data.obj.pedido_farmacia.pedido);
+
+                                    }
+                                    if (data.status === 404) {
+
+                                        if (data.obj.pedido_farmacia.productosInvalidos.length > 0) {
+
+                                            that.mostrarProductosNoValidos(data.obj.pedido_farmacia.productosInvalidos);
+
+                                        }
+
+                                    }
+
+                                    if (data.status === 501) {
+
+                                        AlertService.mostrarVentanaAlerta("Mensaje ERROR", data.msj);
+                                    }
+                                });
+                            } else {
+                                that.generarPedidoClientesAutorizados();
+                            }
+
+                        });
+
+                    } else {
+
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                    }
+                });
+            };
+
+
+            /**
+             * +Descripcion Funcion encargada de crear un pedido en Duana
+             */
+            that.generarPedidoClientesAutorizados = function () {
+
+                var empresa = Sesion.getUsuarioActual().getEmpresa().getCodigo();
+                var centro_utilidad = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo();
+                var bodega = Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo();
+                var date = new Date();
+                var fecha = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+                var productos = $scope.Pedido.get_productos();
+
+                if (productos.length > 0) {
+
+                    var cotizacions = {
+
+                        empresa_id: empresa,
+                        centro_utilidad_id: centro_utilidad,
+                        bodega_id: bodega,
+                        numero_cotizacion: 0,
+                        observacion: $scope.Pedido.get_observacion(),
+                        productos: productos,
+                        tipo_producto: $scope.Pedido.get_tipo_producto(),
+                        observacion_cartera: '',
+                        aprobado_cartera: '0',
+                        estado_cotizacion: '',
+                        estado: '0',
+                        cliente_autorizado: $scope.Pedido.get_numero_cotizacion(),
+                        vendedor: {tipo_id_tercero: $scope.Pedido.get_vendedor().getTipoId(), id: $scope.Pedido.get_vendedor().getId()}, //pedir a Mauricio
+                        cliente: {
+                            tipo_id_tercero: $scope.Pedido.getCliente().getTipoId(), ///se determina que todos los clientes farmacia quedan creados con AS 
+                            id: $scope.Pedido.getCliente().getId(),
+                        },
+                        fecha_registro: fecha,
+                        usuario_id: $scope.session.usuario_id
+                    };
+
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: cotizacions
+                            }
+                        }
+                    };
+                    console.log("cotizacions ", cotizacions);
+
+                    Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA, "POST", obj, function (datos) {
+
+                        var mensaje = '';
+                        if (datos.status === 200) {
+                            mensaje = datos.msj;
+
+                            // mensaje+=" Pedido Farmacia No. "+ numero_pedido_farmacia+'\n';
+                            AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                            $state.go('ListarPedidosClientes');
+                        }
+                        if (datos.status === 500) {
+                            mensaje = datos.msj;
+                            AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                        }
+                        if (datos.status === 404) {
+                            mensaje = datos.msj;
+                            AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                        }
+
+                        if (datos.status === 403) {
+                            datos.obj.pedidos_clientes.productos_invalidos.forEach(function (producto) {
+                                var msjPrecioVenta = producto.precio_venta === undefined ? "" : ") Precio venta (" + producto.precio_venta + ") \n";
+                                var msjProducto = producto.precio_venta === undefined ? "" : " para el Codigo (";
+                                mensaje += producto.mensajeError + msjProducto + producto.codigo_producto + msjPrecioVenta;
+                                AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                            });
+                        }
+
+                    });
+
+                } else {
+
+                    AlertService.mostrarVentanaAlerta("Mensaje del Sistema", "No se han seleccionado productos");
+                }
+
+            }
             /**
              * 
              */

@@ -227,4 +227,16 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet', function(req, res) {
         c_pedidos_clientes.actualizarProductoCotizacionBodegaCosmitet(req, res);
     });
+    
+    
+    /**
+     *@author Cristian Ardila
+     * +Descripcion: Servicio encargado de consultar el estado de autorizacion
+     *               de un cliente
+    */
+    app.post('/api/PedidosClientes/consultarEstadoAutorizacion', function(req, res) {
+        c_pedidos_clientes.consultarEstadoAutorizacion(req, res);
+    });
+    
+     
 };

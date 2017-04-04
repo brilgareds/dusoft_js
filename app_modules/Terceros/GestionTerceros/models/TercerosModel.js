@@ -6,17 +6,19 @@ var TercerosModel = function() {
 
 TercerosModel.prototype.guardarFormularioTerceros = function(parametros, callback){
    var that  = this;
-   parametros.crear = true;
    
     G.Q.ninvoke(that,'obtenerTercero', parametros).then(function(resultado) {
-        
         if(resultado.length  > 0 && parametros.accion === "0"){
             throw { msj:"Ya existe un tercero con la identificación ingresada", status:403 };
-        } else {
-            parametros.crear = false;
+        } 
+        
+        //Modificacion
+        if(parametros.accion === "1"){
             parametros.validacion = true;
+            parametros.crear = false;
+        } else {
+            parametros.crear = true;
         }
-       
        
        return G.Q.ninvoke(that,'obtenerTerceroPorEmail', parametros);
       
@@ -68,6 +70,41 @@ TercerosModel.prototype.gestionarTercero = function(parametros, callback){
     
 };
 
+
+TercerosModel.prototype.listarTerceros = function(parametros, callback){
+    var that = this;
+    
+    var columnas = [
+        "tipo_id_tercero",
+        "tercero_id",
+        "direccion",
+        "nombre_tercero"
+    ];
+    
+    var query  = G.knex.select(columnas).
+    from('terceros').
+    where("empresa_id", parametros.tercero.empresa_id);
+    
+    if(parametros.tercero.terminoBusqueda.length > 0){
+        if(parametros.tercero.busquedaDocumento.length > 0){
+            query.where("tipo_id_tercero", parametros.tercero.busquedaDocumento).
+            andWhere("tercero_id",  G.constants.db().LIKE, "%" + parametros.tercero.terminoBusqueda + "%");
+            
+        } else {
+            query.where("nombre_tercero", G.constants.db().LIKE, "%" + parametros.tercero.terminoBusqueda + "%");
+        }
+    }
+    
+    query.limit(G.settings.limit).
+    offset((parametros.tercero.paginaActual - 1) * G.settings.limit).then(function(resultado){   
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    }).done();
+    
+};
+
+
 TercerosModel.prototype.guardarTercero = function(parametros, callback){
     var that = this;
     var tercero = parametros.tercero;
@@ -88,7 +125,7 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
         nombre2 : tercero.segundoNombre,
         apellido1 : tercero.primerApellido,
         apellido2 : tercero.segundoApellido,
-        empresa_id : tercero.empresa,
+        empresa_id : parametros.empresa,
         fecha_expedicion_documento : tercero.fechaExpedicion || null,
         fecha_expiracion : tercero.fechaExpiracion || null,
         genero_id : tercero.genero.id,
@@ -110,9 +147,7 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
         tipo_nacionalidad : tercero.nacionalidad.id,
         descripcion_red_social : tercero.descripcionRedSocial
     };
-    
-    console.log("datos tercero ", data);
-    
+        
     var query = G.knex("terceros");
     
     if(parametros.transaccion) query.transacting(parametros.transaccion);
@@ -204,9 +239,7 @@ TercerosModel.prototype.guardarTelefonosTercero = function(parametros, callback)
     var that = this;
     var tercero = parametros.tercero;
     var telefono = tercero.telefonos[0];
-    
-    console.log("guardando telefono >>>>>>>>>> ", telefono);
-    
+        
     if(!telefono){
         callback(false);
         return;

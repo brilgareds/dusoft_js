@@ -386,7 +386,6 @@ define(["angular",
             * @fecha 2017-03-30
             */            
             self.submitformularioTerceros = function(callback){
-               console.log("tercero a enviar datos ", $scope.root.tercero)
                
                 var parametros = {
                     session:$scope.root.session,
@@ -399,8 +398,7 @@ define(["angular",
                 
                 GestionTercerosService.submitformularioTerceros(parametros,function(respuesta){
                     if(respuesta.status === 200){
-                        var data = respuesta.obj.departamentos;
-                        self.gestionarDepartamentos(data);
+                        localStorageService.set("accion", "1");
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema",respuesta.msj);
                     }

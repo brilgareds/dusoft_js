@@ -14,6 +14,12 @@ module.exports = function(app, di_container) {
          c_terceros.obtenerTercero(req, res);
     });    
     
+    app.post('/api/Terceros/GestionTerceros/listarTerceros', function(req, res) {
+         c_terceros.listarTerceros(req, res);
+    });    
     
+    app.post('/api/Terceros/GestionTerceros/obtenerTiposDocumentos', function(req, res) {
+         c_terceros.obtenerTiposDocumentos(req, res);
+    });   
     
 };

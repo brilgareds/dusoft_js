@@ -61,6 +61,26 @@ define(["angular", "js/services"], function(angular, services) {
              });
         };
         
+        self.listarTerceros = function(parametros, callback ){
+
+             Request.realizarRequest(API.TERCEROS.LISTAR_TERCEROS, "POST", parametros, function(data) {
+                   
+                callback(data);
+
+             });
+        };
+        
+        self.listarTiposDocumentos = function(parametros, callback ){
+
+             Request.realizarRequest(API.TERCEROS.LISTAR_TIPOS_DOCUMENTOS, "POST", parametros, function(data) {
+                   
+                callback(data);
+
+             });
+        };
+        
+        
+        
 
         return this;
 

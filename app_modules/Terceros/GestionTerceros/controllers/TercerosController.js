@@ -142,6 +142,51 @@ Terceros.prototype.obtenerTercero = function(req, res){
     }).done();
 };
 
+
+
+Terceros.prototype.listarTerceros = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    if(!args.tercero){
+        res.send(G.utils.r(req.url, 'No se pudo listar los terceros', 404, {}));
+        return;
+    }
+    
+    if (!args.tercero.empresa_id  || args.tercero.empresa_id.length === 0){
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
+        return;
+    }
+    
+    G.Q.ninvoke(that.mTerceros,'listarTerceros', args).then(function(resultado) {
+        
+        res.send(G.utils.r(req.url, 'Consulta de tercero', 200, {terceros: resultado}));
+        
+    }).fail(function(err){
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error consultando los terceros', 404, {}));
+    }).done();
+};
+
+Terceros.prototype.obtenerTiposDocumentos = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    if(!args.tercero){
+        res.send(G.utils.r(req.url, 'No se pudo listar los tipos de documento', 404, {}));
+        return;
+    }
+    
+    G.Q.ninvoke(that.mTerceros,'obtenerTiposDocumentos', args).then(function(resultado) {
+        
+        res.send(G.utils.r(req.url, 'Consulta de tipos de documento', 200, {tiposDocumento: resultado}));
+        
+    }).fail(function(err){
+        res.send(G.utils.r(req.url, 'Ha ocurrido un error consultando los tipos de documentos', 404, {}));
+    }).done();
+};
+
+
+
 Terceros.prototype.guardarFormularioTerceros = function(req, res){
     var that = this;
     
@@ -236,19 +281,27 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
         return;
     }
     
-    if(!args.accion){
+    if(args.accion === null || args.accion === undefined){
         res.send(G.utils.r(req.url, 'Se requiere la acción', 404, {}));
         return;
     }
     
-    var obj = {tercero:args.tercero, usuario_id : req.session.user.usuario_id, empresa : args.empresa_id}; 
+    if(!args.empresa_id){
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
+        return;
+    }
+    
+    var obj = {tercero:args.tercero, usuario_id : req.session.user.usuario_id, empresa : args.empresa_id, accion:args.accion}; 
     
     G.Q.ninvoke(that.mTerceros,'guardarFormularioTerceros', obj).then(function(resultado) {
         
         res.send(G.utils.r(req.url, 'Tercero guardado correctamente', 200, {tercero: {}}));
         
     }).fail(function(err){
-        res.send(G.utils.r(req.url, 'Ha ocurrido un error guardando el tercero', 404, {}));
+        
+        var msj = (err.msj) ? err.msj : "Ha ocurrido un error guardando el tercero";
+        
+        res.send(G.utils.r(req.url, msj, 404, {}));
     }).done();
     
     

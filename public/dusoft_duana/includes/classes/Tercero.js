@@ -58,6 +58,11 @@ define(["angular", "js/models"], function(angular, models) {
             return this.nombre_tercero;
         };
         
+        Tercero.prototype.setNombre = function(nombre){
+            this.nombre_tercero = nombre;
+            return this;
+        };
+        
         Tercero.prototype.getTipoId = function(){
             return this.tipo_id_tercero;
         };
@@ -68,6 +73,11 @@ define(["angular", "js/models"], function(angular, models) {
         
         Tercero.prototype.setId = function(id){
            this.id = id;
+        };
+        
+        Tercero.prototype.getIdentificacion = function(){
+          
+            return this.tipo_id_tercero + " " +this.id;
         };
         
         Tercero.prototype.getDireccion = function(){

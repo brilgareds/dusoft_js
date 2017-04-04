@@ -29,6 +29,10 @@ define(["angular", "js/models","includes/classes/GestionTerceros/BaseParametriza
             return this.departamentoSeleccionado;
         };
         
+        Pais.prototype.setDepartamentoSeleccionado = function(departamento){
+            this.departamentoSeleccionado = departamento;
+        };
+        
 
         this.get = function(id, descripcion) {
 

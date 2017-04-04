@@ -63,6 +63,123 @@ define(["angular", "js/models"], function(angular, models) {
             return this;
         };
         
+        Tercero.prototype.getPrimerNombre = function(){
+            return this.primerNombre;
+        };
+        
+        Tercero.prototype.setPrimerNombre = function(primerNombre){
+            this.primerNombre = primerNombre;
+            return this;
+        };
+        
+        Tercero.prototype.getSegundoNombre = function(){
+            return this.segundoNombre;
+        };
+        
+        Tercero.prototype.setSegundoNombre = function(segundoNombre){
+            this.segundoNombre = segundoNombre;
+            return this;
+        };
+        
+        Tercero.prototype.getPrimerApellido = function(){
+            return this.primerApellido;
+        };
+        
+        Tercero.prototype.setPrimerApellido = function(primerApellido){
+            this.primerApellido = primerApellido;
+            return this;
+        };
+        
+        Tercero.prototype.getSegundoApellido = function(){
+            return this.segundoApellido;
+        };
+        
+        Tercero.prototype.setSegundoApellido = function(segundoApellido){
+            this.segundoApellido = segundoApellido;
+            return this;
+        };
+        
+        Tercero.prototype.getGenero = function(){
+            return this.genero;
+        };
+        
+        Tercero.prototype.setGenero = function(genero){
+            this.genero = genero;
+            return this;
+        };
+            
+        Tercero.prototype.getFechaExpedicion = function(){
+            return this.fechaExpedicion;
+        };
+        
+        Tercero.prototype.setFechaExpedicion = function(fechaExpedicion){
+            this.fechaExpedicion = fechaExpedicion;
+            return this;
+        };
+        
+        Tercero.prototype.getFechaExpiracion = function(){
+            return this.fechaExpiracion;
+        };
+        
+        Tercero.prototype.setFechaExpiracion = function(fechaExpiracion){
+            this.fechaExpiracion = fechaExpiracion;
+            return this;
+        };
+        
+        Tercero.prototype.getFechaNacimiento = function(){
+            return this.fechaNacimiento;
+        };
+        
+        Tercero.prototype.setFechaNacimiento = function(fechaNacimiento){
+            this.fechaNacimiento = fechaNacimiento;
+            return this;
+        };    
+        
+        Tercero.prototype.getEstadoCivil = function(){
+            return this.estadoCivil;
+        };
+        
+        Tercero.prototype.setEstadoCivil = function(estadoCivil){
+            this.estadoCivil = estadoCivil;
+            return this;
+        };    
+         
+        Tercero.prototype.getNacionalidad = function(){
+            return this.nacionalidad;
+        };
+        
+        Tercero.prototype.setNacionalidad = function(nacionalidad){
+            this.nacionalidad = nacionalidad;
+            return this;
+        };
+        
+        Tercero.prototype.getRazonSocial = function(){
+            return this.razonSocial;
+        };
+        
+        Tercero.prototype.setRazonSocial = function(razonSocial){
+            this.razonSocial = razonSocial;
+            return this;
+        };
+        
+        Tercero.prototype.getDescripcion = function(){
+            return this.descripcion;
+        };
+        
+        Tercero.prototype.setDescripcion = function(descripcion){
+            this.descripcion = descripcion;
+            return this;
+        };
+        
+        Tercero.prototype.getTipoDireccion = function(){
+            return this.tipoDireccion;
+        };
+        
+        Tercero.prototype.setTipoDireccion = function(tipoDireccion){
+            this.tipoDireccion = tipoDireccion;
+            return this;
+        };
+        
         Tercero.prototype.getTipoId = function(){
             return this.tipo_id_tercero;
         };
@@ -73,6 +190,7 @@ define(["angular", "js/models"], function(angular, models) {
         
         Tercero.prototype.setId = function(id){
            this.id = id;
+           return this;
         };
         
         Tercero.prototype.getIdentificacion = function(){

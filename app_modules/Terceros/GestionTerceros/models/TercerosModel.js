@@ -312,16 +312,48 @@ TercerosModel.prototype.guardarContactoTercero = function(parametros, callback){
 
 TercerosModel.prototype.obtenerTercero = function(parametros, callback){
     var columns = [
-        "*"
+        "a.*",
+        "b.id as genero_id",
+        "b.descripcion as descripcion_genero",
+        "c.tipo_id_tercero as tipo_documento_id",
+        "c.descripcion as descripcion_tipo_documento",
+        "d.id as tipo_estado_civil_id",
+        "d.descripcion as descripcion_estado_civil",
+        "e.id as nacionalidad_id",
+        "e.descripcion as descripcion_nacionalidad",
+        "f.id as tipo_direccion_id",
+        "f.descripcion as descripcion_tipo_direccion",
+        "g.pais",
+        "g.tipo_pais_id",
+        "h.departamento",
+        "h.tipo_dpto_id",
+        "i.municipio",
+        "i.tipo_dpto_id"
     ];
     
     G.knex.column(columns).
     from("terceros as a").
+    innerJoin("genero as b", "a.genero_id", "b.id").
+    innerJoin("tipo_id_terceros as c", "a.tipo_id_tercero", "c.tipo_id_tercero").
+    innerJoin("tipo_estado_civil as d", "a.estado_civil_id", "d.id").
+    innerJoin("nacionalidad as e", "a.tipo_nacionalidad", "e.id").
+    innerJoin("tipo_direccion as f", "a.tipo_direccion_id", "f.id").
+    innerJoin("tipo_pais as g", "a.tipo_pais_id", "g.tipo_pais_id").
+    innerJoin("tipo_dptos as h", function(){
+        this.on("a.tipo_dpto_id" , "h.tipo_dpto_id").
+        on("a.tipo_pais_id" , "h.tipo_pais_id");
+    }).
+    innerJoin("tipo_mpios as i", function(){
+        this.on("a.tipo_mpio_id" , "i.tipo_mpio_id").
+        on("a.tipo_pais_id" , "i.tipo_pais_id").
+        on("a.tipo_dpto_id" , "i.tipo_dpto_id");
+    }).
     where("a.tipo_id_tercero", parametros.tercero.tipoDocumento.id).
     andWhere("a.tercero_id", parametros.tercero.id).
     then(function(resultado){
         callback(false, resultado);
     }).catch(function(error){
+        console.log("error generaod ", error);
         callback(error);
     }).done();
   

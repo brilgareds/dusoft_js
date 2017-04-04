@@ -134,6 +134,10 @@ define(["angular",
                         var data = respuesta.obj.parametrizacion;
                         self.gestionarParametrosTercero(data);
                         
+                        if(localStorageService.get("accion") === "1"){
+                             self.obtenerDatosTercero();
+                        }
+                        
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error");
                     }
@@ -150,6 +154,40 @@ define(["angular",
                     }
                 });
   
+            };
+            
+            self.obtenerDatosTercero = function(){
+                var terceroTipoId = localStorageService.get("tercero_tipo_id");
+                var terceroId = localStorageService.get("tercero_id");
+                var tercero = $scope.root.tercero;
+                
+                var parametros = {
+                    session:$scope.root.session,
+                    data:{
+                        tercero:{
+                            id: terceroId,
+                            tipoDocumento: {
+                                id:terceroTipoId
+                            }
+                        }
+                    }
+                };
+                GestionTercerosService.obtenerTercero(parametros,function(respuesta){
+                    if(respuesta.status === 200){
+
+                        if(respuesta.obj.tercero.length > 0){
+                            var _tercero = respuesta.obj.tercero[0];
+
+                            GestionTercerosService.serializarTercero(_tercero, tercero);
+                            
+                        } else {
+
+                        }
+
+                    } else {
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Ha ocurrido un error verificando el tercero");
+                    }
+                });
             };
             
            /**
@@ -352,7 +390,6 @@ define(["angular",
                 
                
                 if(!formActual.$valid && formulario !== "formularioContacto"){
-                    console.log("formulario to show validation ", formActual);
                     formActual.mostrarErrorEnCampos();
                     return false;
                 }
@@ -659,7 +696,7 @@ define(["angular",
                         }
                     };
 
-                    GestionTercerosService.verificarTercero(parametros,function(respuesta){
+                    GestionTercerosService.obtenerTercero(parametros,function(respuesta){
                         if(respuesta.status === 200){
                             
                             if(respuesta.obj.tercero.length > 0){

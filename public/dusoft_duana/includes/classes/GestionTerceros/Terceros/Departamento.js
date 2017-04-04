@@ -25,14 +25,19 @@ define(["angular", "js/models","includes/classes/GestionTerceros/BaseParametriza
             this.ciudades.push(ciudad);
         };
         
-
+        Departamento.prototype.setCiudadSeleccionada = function(ciudadSeleccionada){
+            this.ciudadSeleccionada = ciudadSeleccionada;
+            return this;
+        };
+        
+        Departamento.prototype.getCiudadSeleccionada = function(){
+            return this.ciudadSeleccionada;
+        };
+       
         this.get = function(id, descripcion) {
 
             return new Departamento(id, descripcion);
         };
-
-
-        
 
         this.getClass = function(){
             return Departamento;

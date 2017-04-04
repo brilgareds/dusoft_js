@@ -306,9 +306,11 @@ define(["angular", "js/controllers",
                 
                 var pedidoFiltroBodega = localStorageService.get("pedido");
                     
-                    if(pedidoFiltroBodega.modifica_pedido || pedidoFiltroBodega.modifica_pedido === 1){
-                         
-                         $scope.Pedido.set_bodega_id(pedidoFiltroBodega.bodega_pedido_id);
+                    if(pedidoFiltroBodega){
+                        if(pedidoFiltroBodega.modifica_pedido === 1){
+
+                             $scope.Pedido.set_bodega_id(pedidoFiltroBodega.bodega_pedido_id);
+                        }
                     }
                     //console.log("pedidoFiltroBodega ", pedidoFiltroBodega)
                 if ($scope.datos_form.tipoBusqueda === 1) {

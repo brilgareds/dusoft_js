@@ -248,11 +248,14 @@ define(["angular", "js/controllers",
             $scope.modificar_pedido_cliente = function(pedido) {
                 $scope.datos_view.filtro_actual_pedido = $scope.datos_view.filtro_pedido;
 
-                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),
+                localStorageService.add("pedido", 
+                {
+                    numero_pedido: pedido.get_numero_pedido(),
                     busqueda: $scope.datos_view.termino_busqueda_pedidos,
                     filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido,
-                bodega_pedido_id: pedido.get_bodega_id(),
-                    modifica_pedido:1});
+                    bodega_pedido_id: pedido.get_bodega_id(),
+                    modifica_pedido:1}
+                        );
                 localStorageService.add("multiple_pedido",{multiple_pedido:0});
                 $state.go('PedidoCliente');
             };
@@ -310,7 +313,13 @@ define(["angular", "js/controllers",
                 // Observacion cartera para el pedido
                 if (obj.get_numero_pedido() > 0) {
                     localStorageService.add("multiple_pedido",{multiple_pedido:0});
-                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1', tipoPedido: obj.getTipoPedido()});
+                    localStorageService.add("pedido", 
+                    {
+                        numero_pedido: obj.get_numero_pedido(), 
+                        cartera: '1', tipoPedido: obj.getTipoPedido(),
+                        modifica_pedido:0
+                        } );
+                   
                     localStorageService.add("aprobarEstadoPedidoGenerarPedido",{estado:1});
                     $state.go('PedidoCliente');
                 }
@@ -326,7 +335,12 @@ define(["angular", "js/controllers",
 
                 // Visualizar pedido
                 if (obj.get_numero_pedido() > 0) {
-                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), visualizar: '1'});
+                    localStorageService.add("pedido", 
+                    {
+                        numero_pedido: obj.get_numero_pedido(), 
+                        visualizar: '1',
+                        modifica_pedido:0
+                    });
                     $state.go('PedidoCliente');
                 }
             };

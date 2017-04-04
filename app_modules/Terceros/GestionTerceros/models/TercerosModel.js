@@ -137,7 +137,7 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
         tipo_organizacion_id : (tercero.tipoOrganizacion) ? tercero.tipoOrganizacion.id : null,
         nomenclatura_direccion1 : tercero.nomenclaturaDireccion1.id,
         nomenclatura_descripcion1 : tercero.nomenclaturaDescripcion1,
-        nomenclatura_direccion2 : (tercero.nomenclaturaDireccion2) ? tercero.nomenclaturaDescripcion2.id : null,
+        nomenclatura_direccion2 : (tercero.nomenclaturaDireccion2) ? tercero.nomenclaturaDireccion2.id : null,
         nomenclatura_descripcion2 : tercero.nomenclaturaDescripcion2,
         numero_predio : tercero.numeroPredio,
         barrio : tercero.barrio, 
@@ -328,7 +328,15 @@ TercerosModel.prototype.obtenerTercero = function(parametros, callback){
         "h.departamento",
         "h.tipo_dpto_id",
         "i.municipio",
-        "i.tipo_dpto_id"
+        "i.tipo_dpto_id",
+        "j.id as id_nomenclatura1",
+        "j.descripcion as descripcion_nomenclatura1",
+        "k.id as id_nomenclatura2",
+        "k.descripcion as descripcion_nomenclatura2",
+        "l.id as tipo_correo_id",
+        "l.descripcion as descripcion_tipo_correo",
+        "m.id as tipo_red_social_id",
+        "m.descripcion as descripcion_red_social"
     ];
     
     G.knex.column(columns).
@@ -348,6 +356,10 @@ TercerosModel.prototype.obtenerTercero = function(parametros, callback){
         on("a.tipo_pais_id" , "i.tipo_pais_id").
         on("a.tipo_dpto_id" , "i.tipo_dpto_id");
     }).
+    innerJoin("nomenclatura_direccion as j", "a.nomenclatura_direccion1", "j.id").
+    leftJoin("nomenclatura_direccion as k", "a.nomenclatura_direccion2", "k.id").
+    leftJoin("tipos_correo as l", "a.tipo_correo_id", "l.id").
+    leftJoin("tipos_redes_sociales as m", "a.tipo_red_social_id", "m.id").
     where("a.tipo_id_tercero", parametros.tercero.tipoDocumento.id).
     andWhere("a.tercero_id", parametros.tercero.id).
     then(function(resultado){

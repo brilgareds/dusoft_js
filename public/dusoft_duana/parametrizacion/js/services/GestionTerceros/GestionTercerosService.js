@@ -4,10 +4,10 @@ define(["angular", "js/services"], function(angular, services) {
     services.factory('GestionTercerosService', 
     ['$rootScope','Modulo','Request','API','Genero',
      'TipoDocumento','EstadoCivil','TipoNacionalidad','TipoDireccion','Pais',
-     'Departamento','Ciudad',
+     'Departamento','Ciudad','NomenclaturaDireccion','TipoCorreo','TipoRedSocial',
     function($rootScope, Modulo, Request, API, Genero,
              TipoDocumento, EstadoCivil, TipoNacionalidad, TipoDireccion, Pais,
-             Departamento, Ciudad) {
+             Departamento, Ciudad, NomenclaturaDireccion, TipoCorreo, TipoRedSocial) {
         
         var self = this;
 
@@ -95,14 +95,20 @@ define(["angular", "js/services"], function(angular, services) {
             var ciudad = Ciudad.get(data.tipo_mpio_id, data.municipio);           
             departamento.setCiudadSeleccionada(ciudad);
             pais.setDepartamentoSeleccionado(departamento);
+            var nomenclatura1 = NomenclaturaDireccion.get(data.id_nomenclatura1, data.descripcion_nomenclatura1);
+            var nomenclatura2 = NomenclaturaDireccion.get(data.id_nomenclatura2, data.descripcion_nomenclatura2);
+            var tipoCorreo = TipoCorreo.get(data.tipo_correo_id, data.descripcion_tipo_correo);
+            var tipoRedSocial = TipoRedSocial.get(data.tipo_red_social_id, data.descripcion_red_social);
             
             tercero.setPrimerNombre(data.nombre1).setSegundoNombre(data.nombre2).setPrimerApellido(data.apellido1).setSegundoApellido(data.apellido2).
             setGenero(genero).setTipoDocumento(tipoDocumento).setId(data.tercero_id).setFechaExpedicion(data.fecha_expedicion_documento).
             setFechaExpiracion(data.fecha_expiracion).setFechaNacimiento(data.fecha_nacimiento).setEstadoCivil(estadoCivil).
             setNacionalidad(tipoNacionalidad).setRazonSocial(data.razon_social).setDescripcion(data.descripcion).setTipoDireccion(tipoDireccion).
-            setPais(pais)
-            
-            console.log("estado civil ", tipoDireccion);
+            setPais(pais).setNomenclaturaDireccion1(nomenclatura1).setNomenclaturaDireccion2(nomenclatura2).setNomenclaturaDescripcion1(data.nomenclatura_descripcion1).
+            setNomenclaturaDescripcion2(data.nomenclatura_descripcion2).setNumeroPredio(data.numero_predio).setBarrio(data.barrio).setTipoCorreo(tipoCorreo).setCorreo(data.email).
+            setTipoRedSocial(tipoRedSocial).setDescripcionRedSocial(data.descripcion_red_social);
+    
+            console.log("estado civil ", nomenclatura2);
         };
         
         

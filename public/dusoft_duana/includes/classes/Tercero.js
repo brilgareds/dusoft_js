@@ -326,6 +326,9 @@ define(["angular", "js/models"], function(angular, models) {
         
         
         Tercero.prototype.setNomenclaturaDireccion2 = function(nomenclaturaDireccion2) {
+            if(nomenclaturaDireccion2.getId().length === 0){
+                nomenclaturaDireccion2 = null;
+            }
             this.nomenclaturaDireccion2 = nomenclaturaDireccion2;
             return this;
         };
@@ -352,6 +355,48 @@ define(["angular", "js/models"], function(angular, models) {
             return this.barrio;
         }; 
         
+        Tercero.prototype.setTipoCorreo = function(tipoCorreo) {
+            this.tipoCorreo = tipoCorreo;
+            return this;
+        };
+
+        Tercero.prototype.getTipoCorreo = function() {
+            return this.tipoCorreo;
+        };
+        
+        Tercero.prototype.setCorreo = function(correo) {
+            this.email = correo;
+            return this;
+        };
+
+        Tercero.prototype.getCorreo = function() {
+            return this.email;
+        };
+        
+        Tercero.prototype.setTipoRedSocial = function(tipoRedSocial) {
+            
+            if(tipoRedSocial.getId().length === 0){
+                tipoRedSocial = null;
+            }
+            
+            this.tipoRedSocial = tipoRedSocial;
+            return this;
+        };
+
+        Tercero.prototype.getTipoRedSocial = function() {
+            return this.tipoRedSocial;
+        };
+        
+        Tercero.prototype.setDescripcionRedSocial = function(descripcionRedSocial) {
+            this.descripcionRedSocial = descripcionRedSocial;
+            return this;
+        };
+
+        Tercero.prototype.getDescripcionRedSocial = function() {
+            return this.descripcionRedSocial;
+        };
+        
+                
         Tercero.prototype.agregarTelefono = function(telefono){
             if(telefono.getNumero().length === 0 || telefono.getTipoLineaTelefonica().getId().length === 0 ||
                telefono.getTipoTelefono().getId().length === 0){

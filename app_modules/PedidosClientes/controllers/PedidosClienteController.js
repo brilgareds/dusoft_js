@@ -3099,7 +3099,8 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function (req, 
          *               estado del pedido
          */
         return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoPedido', pedido, estado_pedido);
-
+        
+        
     }).then(function (resultado) {
         /**
          * +Descripcion: Si se actualiza el estado del pedido satisfactoriamente

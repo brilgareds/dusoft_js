@@ -281,10 +281,9 @@ define(["angular", "js/controllers",
 
 
             $scope.generar_observacion_cartera = function(obj) {
-                console.log("obj ", obj.get_numero_pedido());
+                 
                 
-                
-                if(obj.get_numero_pedido() > 0){
+                if(obj.get_numero_pedido() > 0 && obj.get_numero_cotizacion()){
                     
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cotizacion ya finalizo su proceso");
                     return;

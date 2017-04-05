@@ -2921,7 +2921,7 @@ PedidosCliente.prototype.insertarDetallePedido = function (req, res) {
  * @fecha:  28/11/2015
  */
 PedidosCliente.prototype.validarEstadoTotalValorPedido = function (req, res) {
-
+ 
 
     var that = this;
 
@@ -2940,53 +2940,82 @@ PedidosCliente.prototype.validarEstadoTotalValorPedido = function (req, res) {
 
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
-
+    var totalValorPedidoActual = 0;
+    
+    
+     var obj = {
+            "tipo_id_tercero": pedido.cliente.tipo_id_tercero,
+            "tercero_id": pedido.cliente.id
+        };
     /**
      * +Descripcion: Metodo encargado de consultar el estado actual de un pedido
      */
-    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function (err, resultado) {
+    
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoPedidoEstado', numeroPedido).then(function(resultado){
+        
+        
+         if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0')) {
 
-        if (!err) {
-
-            /**
-             * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
-             *               siempre y cuando el pedido tenga el
-             *               estado (Estado del Pedido ) 1
-             *               estado_pedido (Estado de solicitud ) 0
-             */
-            if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
-
-
-                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function (err, resultado) {
-
-                    if (!err) {
-
-                        var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
-                        var estado_pedido = 0;
-                        if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                            estado_pedido = 4;
-                        } else {
-                            estado_pedido = 1;
-                        }
-                        res.send(G.utils.r(req.url, 'Estado del pedido es ' + estado_pedido, 200, {pedidos_clientes: [estado_pedido]}));
-                    } else {
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                        return;
-                    }
-                });
-
-            } else {
-                res.send(G.utils.r(req.url, 'El pedido debe estar activo o para autorizar nuevamente por cartera', 500, {pedidos_clientes: []}));
-                return;
-            }
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 
         } else {
-            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
-
-            return;
+            throw 'El pedido debe encontrarse activo ó para autorizar nuevamente por cartera';
         }
+    }).then(function (rows) {
+ 
+        if (rows.length > 0) {
+                totalValorPedidoActual = rows[0].valor_total_cotizacion;
 
-    });
+                return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
+
+
+
+            } else {
+                throw "Error al consultar el total del valor del pedido";
+            }
+        
+       
+
+    }).then(function (resultado) {
+        
+        
+        /**
+         * +Descripcio Si esta creado en la tabla de vntas_contratos_clientes
+         */
+        if (resultado.length > 0) {
+            
+            /*
+             * +Descripcion Si El cliente esta autorizado, el estado del pedido seguira en 1
+             *              por lo cual no necesitara aprobar cartera
+             */
+            if (resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0') {
+                estado_pedido = 1;
+            }else{
+                /**
+                 * +Descripcion Si no esta autorizado se valida si el valor actual del pedido
+                 *              es menor al inicial
+                 */
+                if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                    estado_pedido = 4;
+                } else {
+                    estado_pedido = 1;
+                }
+            }
+        } else {
+            if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                estado_pedido = 4;
+            } else {
+                estado_pedido = 1;
+            }
+        }
+         
+        return res.send(G.utils.r(req.url, 'Estado del pedido es ' + estado_pedido, 200, {pedidos_clientes: [estado_pedido]}));
+        
+}).fail(function(err){
+    
+     res.send(G.utils.r(req.url, err, 500, {}));
+     
+}).done();
 
 };
 
@@ -3294,10 +3323,7 @@ PedidosCliente.prototype.solicitarAutorizacion = function (req, res) {
  * @returns {undefined}
  */
 PedidosCliente.prototype.consultarEstadoCotizacion = function (req, res) {
-
-    console.log("**********PedidosCliente.prototype.consultarEstadoCotizacion********************");
-    console.log("**********PedidosCliente.prototype.consultarEstadoCotizacion********************");
-    console.log("**********PedidosCliente.prototype.consultarEstadoCotizacion********************");
+ 
     var that = this;
 
     var args = req.body.data;
@@ -3454,7 +3480,7 @@ PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
             "tipo_id_tercero": pedido.cliente.tipo_id_tercero,
             "tercero_id": pedido.cliente.id
         };
-
+        
         if (resultado.length > 0) {
             totalValorPedidoActual = resultado[0].valor_total_cotizacion;
 

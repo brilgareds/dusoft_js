@@ -1025,7 +1025,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
-                        AlertService.mostrarVentanaAlerta("Registrando cambios", "Desea modificar la cantidad de los productos",
+                        AlertService.mostrarVentanaAlerta("Registrando cambios", "Desea modificar la cantidad de los productos ",
                                 function (confirmar) {
                                     if (confirmar) {
                                         that.insertarCantidadDetalleProducto(data.obj.pedidos_clientes[0]);

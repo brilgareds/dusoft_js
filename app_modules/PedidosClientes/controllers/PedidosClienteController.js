@@ -3008,6 +3008,7 @@ PedidosCliente.prototype.validarEstadoTotalValorPedido = function (req, res) {
                 estado_pedido = 1;
             }
         }
+        
          
         return res.send(G.utils.r(req.url, 'Estado del pedido es ' + estado_pedido, 200, {pedidos_clientes: [estado_pedido]}));
         

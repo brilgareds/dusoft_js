@@ -130,7 +130,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 "+andSql+"(\
                     a.codigo_producto ilike :2 or\
                     fc_descripcion_producto(a.codigo_producto) ilike :2 \
-                ) ;";
+                ) AND pedido_farmacia != '1';";
     
     console.log("termino_busqueda ", parametros)
 

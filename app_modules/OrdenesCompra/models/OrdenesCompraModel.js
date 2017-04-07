@@ -1093,15 +1093,15 @@ OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_
 
 // listar productos Recepcion mercancia
 OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(obj, callback) {
-
+     
     var sql = " select \
                 a.id,\
                 a.recepcion_mercancia_id,\
                 b.orden_pedido_id as numero_orden,\
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                d.numero_unidades::integer as cantidad_solicitada,\
-                a.cantidad_recibida,\
+                sum(d.numero_unidades::integer) as cantidad_solicitada,   \
+                sum(a.cantidad_recibida) as cantidad_recibida,   \
                 a.novedades_recepcion_id,\
                 e.codigo as codigo_novedad,\
                 e.descripcion as descripcion_novedad,\
@@ -1109,6 +1109,7 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(obj
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
                 a.fecha_registro,\
+                ( SELECT sum(a.cantidad_pendiente)as cantidad_pendiente FROM \
                  (SELECT (copd.numero_unidades::integer - sum(recd.cantidad_recibida)) as cantidad_pendiente\
                  FROM recepcion_mercancia rec \
                  INNER JOIN recepcion_mercancia_detalle recd ON rec.id =  recd.recepcion_mercancia_id\
@@ -1116,15 +1117,29 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(obj
                  INNER JOIN compras_ordenes_pedidos_detalle copd on cop.orden_pedido_id = copd.orden_pedido_id \
                  AND recd.codigo_producto = copd.codigo_producto\
                   WHERE rec.orden_pedido_id = :2 AND recd.codigo_producto = a.codigo_producto\
-                  GROUP BY copd.numero_unidades, rec.orden_pedido_id, recd.codigo_producto)as cantidad_pendiente\
+                  GROUP BY copd.numero_unidades, rec.orden_pedido_id, recd.codigo_producto)as a \n\
+                )as cantidad_pendiente   \
                 from recepcion_mercancia_detalle a\
                 inner join recepcion_mercancia b on a.recepcion_mercancia_id = b.id\
                 inner join compras_ordenes_pedidos c on b.orden_pedido_id = c.orden_pedido_id\
                 inner join compras_ordenes_pedidos_detalle d on c.orden_pedido_id = d.orden_pedido_id and a.codigo_producto = d.codigo_producto\
                 left join novedades_recepcion_mercancia e on a.novedades_recepcion_id = e.id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
-                where a.recepcion_mercancia_id = :1 ;";
-    
+                where a.recepcion_mercancia_id = :1 \
+                 GROUP BY a.id,\
+                a.recepcion_mercancia_id,\
+                b.orden_pedido_id ,\
+                a.codigo_producto,\
+                fc_descripcion_producto(a.codigo_producto) ,\
+                a.cantidad_recibida,\
+                a.novedades_recepcion_id,\
+                e.codigo,\
+                e.descripcion , \
+                e.estado,\
+                a.usuario_id, \
+                f.nombre,\
+                a.fecha_registro;";
+   
     G.knex.raw(sql, {1:obj.recepcion_id, 2: obj.numero_orden_compra}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){

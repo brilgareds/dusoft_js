@@ -411,3 +411,29 @@ ALTER TABLE "public"."terceros"
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE;
+
+
+ALTER TABLE "public"."terceros"
+  ALTER COLUMN "nombre1" TYPE VARCHAR(50);
+
+
+ALTER TABLE "public"."terceros"
+  ALTER COLUMN "nombre2" TYPE VARCHAR(50);
+
+ALTER TABLE "public"."terceros"
+  ALTER COLUMN "apellido1" TYPE VARCHAR(50);
+
+ALTER TABLE "public"."terceros"
+  ALTER COLUMN "apellido2" TYPE VARCHAR(50);
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "tipo_id_tercero" TYPE VARCHAR(3);
+
+ALTER TABLE "public"."terceros_contactos"
+  ALTER COLUMN "tercero_id" TYPE VARCHAR(32);
+
+ALTER TABLE "public"."tercero_telefonos"
+  ALTER COLUMN "tipo_id_tercero" TYPE VARCHAR(3);
+
+ALTER TABLE "public"."tercero_telefonos"
+  ALTER COLUMN "tercero_id" TYPE VARCHAR(32);

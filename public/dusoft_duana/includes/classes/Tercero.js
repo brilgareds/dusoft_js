@@ -63,6 +63,16 @@ define(["angular", "js/models"], function(angular, models) {
             return this;
         };
         
+        Tercero.prototype.getTipoNaturaleza = function(){
+            return this.tipoNaturaleza;
+        };
+        
+        Tercero.prototype.setTipoNaturaleza = function(tipoNaturaleza){
+            this.tipoNaturaleza = tipoNaturaleza;
+            return this;
+        };
+        
+        
         Tercero.prototype.getPrimerNombre = function(){
             return this.primerNombre;
         };
@@ -104,6 +114,11 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         Tercero.prototype.setGenero = function(genero){
+            
+            if(genero.getId().length === 0){
+                genero = null;
+            }
+            
             this.genero = genero;
             return this;
         };
@@ -140,6 +155,11 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         Tercero.prototype.setEstadoCivil = function(estadoCivil){
+            
+            if(estadoCivil.getId().length === 0){
+                estadoCivil = null;
+            }
+            
             this.estadoCivil = estadoCivil;
             return this;
         };    
@@ -149,6 +169,11 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         Tercero.prototype.setNacionalidad = function(nacionalidad){
+            
+            if(nacionalidad.getId().length === 0){
+                nacionalidad = null;
+            }
+            
             this.nacionalidad = nacionalidad;
             return this;
         };
@@ -176,6 +201,11 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         Tercero.prototype.setTipoDireccion = function(tipoDireccion){
+            
+            if(tipoDireccion.getId().length === 0){
+                tipoDireccion = null;
+            }
+            
             this.tipoDireccion = tipoDireccion;
             return this;
         };
@@ -298,6 +328,11 @@ define(["angular", "js/models"], function(angular, models) {
         }; 
         
         Tercero.prototype.setNomenclaturaDescripcion1 = function(nomenclaturaDescripcion1) {
+            
+            if(!nomenclaturaDescripcion1){
+                nomenclaturaDescripcion1 = "";
+            }
+            
             this.nomenclaturaDescripcion1 = nomenclaturaDescripcion1;
             return this;
         };
@@ -307,6 +342,11 @@ define(["angular", "js/models"], function(angular, models) {
         }; 
         
         Tercero.prototype.setNomenclaturaDescripcion2 = function(nomenclaturaDescripcion2) {
+            
+            if(!nomenclaturaDescripcion2){
+                nomenclaturaDescripcion2 = "";
+            }
+            
             this.nomenclaturaDescripcion2 = nomenclaturaDescripcion2;
             return this;
         };
@@ -316,6 +356,11 @@ define(["angular", "js/models"], function(angular, models) {
         }; 
                
         Tercero.prototype.setNomenclaturaDireccion1 = function(nomenclaturaDireccion1) {
+            
+            if(nomenclaturaDireccion1.getId().length === 0){
+                nomenclaturaDireccion1 = null;
+            }
+            
             this.nomenclaturaDireccion1 = nomenclaturaDireccion1;
             return this;
         };
@@ -338,6 +383,11 @@ define(["angular", "js/models"], function(angular, models) {
         }; 
         
         Tercero.prototype.setNumeroPredio = function(numeroPredio) {
+            
+            if(!numeroPredio){
+                numeroPredio = "";
+            }
+            
             this.numeroPredio = numeroPredio;
             return this;
         };
@@ -347,6 +397,11 @@ define(["angular", "js/models"], function(angular, models) {
         }; 
         
         Tercero.prototype.setBarrio = function(barrio) {
+            
+            if(!barrio){
+                barrio = "";
+            }
+            
             this.barrio = barrio;
             return this;
         };
@@ -356,6 +411,9 @@ define(["angular", "js/models"], function(angular, models) {
         }; 
         
         Tercero.prototype.setTipoCorreo = function(tipoCorreo) {
+            if(tipoCorreo.getId().length === 0){
+                tipoCorreo = null;
+            }
             this.tipoCorreo = tipoCorreo;
             return this;
         };

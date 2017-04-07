@@ -33,6 +33,7 @@ define(["angular",
                 multiSelect: false,
                 showFilter: true,
                 enableRowSelection: false,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'getNombre()', displayName: 'Nombre'},
                     {field: 'getIdentificacion()', displayName: 'Identificación'},

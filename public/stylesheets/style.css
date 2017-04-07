@@ -915,18 +915,11 @@ div.submitedWithError .select2-choice {
     background: #fff url(../images/warning-icon.png) no-repeat 95% center;
 }
 
-/*input.ng-pristine{
-     border:1px solid #ccc!important;
-     background: none;
-     box-shadow: inherit;
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
-*/
-/*ng-pristine .select2-choice{
-
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
-    background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
-    background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#eeeeee', GradientType = 0);
-    background-image: linear-gradient(top, #fff 0%, #eee 50%);
-    border:1px solid #aaa!important;
-}*/
+input[type=number] {
+    -moz-appearance:textfield;
+}

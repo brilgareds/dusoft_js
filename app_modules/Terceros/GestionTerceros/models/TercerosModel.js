@@ -6,11 +6,16 @@ var TercerosModel = function() {
 
 TercerosModel.prototype.guardarFormularioTerceros = function(parametros, callback){
    var that  = this;
+   var tercero = parametros.tercero;
    
     G.Q.ninvoke(that,'obtenerTercero', parametros).then(function(resultado) {
         if(resultado.length  > 0 && parametros.accion === "0"){
             throw { msj:"Ya existe un tercero con la identificación ingresada", status:403 };
-        } 
+            
+        } else if(resultado.length === 0 && parametros.accion === '1'){
+              
+              throw { msj:"No se encontro el tercero", status:403 };
+        }
         
         //Modificacion
         if(parametros.accion === "1"){
@@ -108,7 +113,7 @@ TercerosModel.prototype.listarTerceros = function(parametros, callback){
 TercerosModel.prototype.guardarTercero = function(parametros, callback){
     var that = this;
     var tercero = parametros.tercero;
-    var nombre = tercero.primerNombre + " " + tercero.segundoNombre + " " + tercero.primerApellido + " " + tercero.segundoApellido;
+    var nombre = (tercero.primerNombre || tercero.nombreComercial) + " " + (tercero.segundoNombre || "") + " " + (tercero.primerApellido || "") + " " + (tercero.segundoApellido || "");
     
     var data = {
         tipo_id_tercero : tercero.tipoDocumento.id,
@@ -128,8 +133,8 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
         empresa_id : parametros.empresa,
         fecha_expedicion_documento : tercero.fechaExpedicion || null,
         fecha_expiracion : tercero.fechaExpiracion || null,
-        genero_id : tercero.genero.id,
-        estado_civil_id : tercero.estadoCivil.id,
+        genero_id : (tercero.genero) ? tercero.genero.id : null,
+        estado_civil_id : (tercero.estadoCivil) ? tercero.estadoCivil.id : null,
         fecha_nacimiento : tercero.fechaNacimiento || null,
         razon_social : tercero.razonSocial,
         nombre_comercial : tercero.nombreComercial,
@@ -180,11 +185,6 @@ TercerosModel.prototype.guardarTercero = function(parametros, callback){
 TercerosModel.prototype.gestionarTelefonosTercero = function(parametros, callback){
     
     var that = this;
-    //El tercero no tiene telefonos
-    if(parametros.tercero.telefonos.length === 0){
-        callback(false);
-        return;
-    }
     
     var query = G.knex("tercero_telefonos");
     
@@ -209,11 +209,7 @@ TercerosModel.prototype.gestionarTelefonosTercero = function(parametros, callbac
 TercerosModel.prototype.gestionarContactosTercero = function(parametros, callback){
     
     var that = this;
-    if(parametros.tercero.contactos.length === 0){
-        callback(false);
-        return;
-    }
-    
+
     var query = G.knex("terceros_contactos");
     
     if(parametros.transaccion) query.transacting(parametros.transaccion);
@@ -311,6 +307,8 @@ TercerosModel.prototype.guardarContactoTercero = function(parametros, callback){
 
 
 TercerosModel.prototype.obtenerTercero = function(parametros, callback){
+    var resultadoTercero;
+    var that = this;
     var columns = [
         "a.*",
         "b.id as genero_id",
@@ -341,34 +339,101 @@ TercerosModel.prototype.obtenerTercero = function(parametros, callback){
     
     G.knex.column(columns).
     from("terceros as a").
-    innerJoin("genero as b", "a.genero_id", "b.id").
-    innerJoin("tipo_id_terceros as c", "a.tipo_id_tercero", "c.tipo_id_tercero").
-    innerJoin("tipo_estado_civil as d", "a.estado_civil_id", "d.id").
-    innerJoin("nacionalidad as e", "a.tipo_nacionalidad", "e.id").
-    innerJoin("tipo_direccion as f", "a.tipo_direccion_id", "f.id").
-    innerJoin("tipo_pais as g", "a.tipo_pais_id", "g.tipo_pais_id").
-    innerJoin("tipo_dptos as h", function(){
+    leftJoin("genero as b", "a.genero_id", "b.id").
+    leftJoin("tipo_id_terceros as c", "a.tipo_id_tercero", "c.tipo_id_tercero").
+    leftJoin("tipo_estado_civil as d", "a.estado_civil_id", "d.id").
+    leftJoin("nacionalidad as e", "a.tipo_nacionalidad", "e.id").
+    leftJoin("tipo_direccion as f", "a.tipo_direccion_id", "f.id").
+    leftJoin("tipo_pais as g", "a.tipo_pais_id", "g.tipo_pais_id").
+    leftJoin("tipo_dptos as h", function(){
         this.on("a.tipo_dpto_id" , "h.tipo_dpto_id").
         on("a.tipo_pais_id" , "h.tipo_pais_id");
     }).
-    innerJoin("tipo_mpios as i", function(){
+    leftJoin("tipo_mpios as i", function(){
         this.on("a.tipo_mpio_id" , "i.tipo_mpio_id").
         on("a.tipo_pais_id" , "i.tipo_pais_id").
         on("a.tipo_dpto_id" , "i.tipo_dpto_id");
     }).
-    innerJoin("nomenclatura_direccion as j", "a.nomenclatura_direccion1", "j.id").
+    leftJoin("nomenclatura_direccion as j", "a.nomenclatura_direccion1", "j.id").
     leftJoin("nomenclatura_direccion as k", "a.nomenclatura_direccion2", "k.id").
     leftJoin("tipos_correo as l", "a.tipo_correo_id", "l.id").
     leftJoin("tipos_redes_sociales as m", "a.tipo_red_social_id", "m.id").
     where("a.tipo_id_tercero", parametros.tercero.tipoDocumento.id).
     andWhere("a.tercero_id", parametros.tercero.id).
     then(function(resultado){
-        callback(false, resultado);
+        resultadoTercero = resultado;
+        return G.Q.ninvoke(that,'obtenerTelefonosTercero', resultado[0]);
+    }).then(function(telefonos){
+        (resultadoTercero.length > 0) ? resultadoTercero[0].telefonos = telefonos : [] ;
+        
+        return G.Q.ninvoke(that,'obtenerContactosTercero', resultadoTercero[0]);
+        
+    }).then(function(contactos){
+        (resultadoTercero.length > 0) ? resultadoTercero[0].contactos = contactos : [] ;
+        
+        callback(false, resultadoTercero);
     }).catch(function(error){
         console.log("error generaod ", error);
         callback(error);
     }).done();
   
+};
+
+TercerosModel.prototype.obtenerTelefonosTercero = function(tercero, callback){
+    
+    if(!tercero){
+        callback(false);
+        return;
+    }
+    
+    var columns = [
+        "a.*",
+        "b.id as tipo_telefono_id",
+        "b.descripcion as descripcion_tipo_telefono",
+        "c.id as tipo_linea_id",
+        "c.descripcion as descripcion_tipo_linea"
+    ];
+    
+    var query =  G.knex.column(columns);
+    
+    query.from("tercero_telefonos as a").
+    innerJoin("tipos_telefono as b", "a.tipo_telefono_id", "b.id").
+    innerJoin("tipos_linea_telefonica as c", "a.tipo_linea_telefonica_id", "c.id").
+    where("a.tipo_id_tercero", tercero.tipo_id_tercero).
+    andWhere("a.tercero_id", tercero.tercero_id);
+    
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(error){
+        callback(error);
+    }).done();
+};
+
+TercerosModel.prototype.obtenerContactosTercero = function(tercero, callback){
+    
+    if(!tercero){
+        callback(false);
+        return;
+    }
+    
+    var columns = [
+        "a.*",
+        "b.id as tipo_contacto_id",
+        "b.descripcion as descripcion_contacto"
+    ];
+    
+    var query =  G.knex.column(columns);
+    
+    query.from("terceros_contactos as a").
+    innerJoin("tipos_contacto as b", "a.tipo_contacto_id", "b.id").
+    where("a.tipo_id_tercero", tercero.tipo_id_tercero).
+    andWhere("a.tercero_id", tercero.tercero_id);
+    
+    query.then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(error){
+        callback(error);
+    }).done();
 };
 
 TercerosModel.prototype.obtenerTerceroPorEmail = function(parametros, callback){

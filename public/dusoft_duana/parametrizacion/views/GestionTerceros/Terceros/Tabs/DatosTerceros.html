@@ -1,4 +1,4 @@
-<form  ng-model="formularios.formularioTerceros" name="formularios.formularioTerceros" id="formularioTerceros" form-validation>
+<form  ng-model="formularios.formularioTerceros" name="formularios.formularioTerceros" id="formularioTerceros" form-validation   ng-init="onFormularioTercerosListo()">
     <div class="row contenedorCamposTercero">
 
         <div class="col-md-4">
@@ -22,7 +22,7 @@
             <p class="input-group">
 
                 <input type="text" class="form-control"  
-                       ng-model="root.tercero.razonSocial" placeholder="Razón social" name="srch-term" id="srch-term" />
+                       ng-model="root.tercero.razonSocial" placeholder="Razón social" name="razonSocial" required="required" title="Se requiere la razón social" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>
@@ -135,6 +135,7 @@
                            theme="select2" 
                            name="tipoDocumento"
                            required="required"
+                           ng-disabled="root.accion === '1'"
                            class="form-control selectgeneral pull-left ui-select-z-index-12" 
                            ng-change="onIdentificacionBlur()"
                            title="Se requiere el tipo de documento" data-placement="top"
@@ -153,7 +154,8 @@
 
                 <input type="text" class="form-control"
                        ng-model="root.tercero.id" placeholder="Número identificación" name="numeroIdentificacion" id="numeroIdentificacion"
-                       pattern=".*\S+.*" title="Se requiere el número de identificación"  data-placement="top" required="required" ng-blur="onIdentificacionBlur()"/>
+                       pattern=".*\S+.*" title="Se requiere el número de identificación"  data-placement="top" required="required" 
+                       ng-disabled="root.accion === '1'" ng-blur="onIdentificacionBlur()"/>
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-credit-card"></i></button>
@@ -198,8 +200,11 @@
         <div class="col-md-4" ng-if="root.tercero.tipoNaturaleza.codigo == 1">
             <label class="control-label">Tipo organización</label>
             <p class="input-group contenedorDropdown">            
-                <ui-select ng-model="root.tercero.tipoOrganizacion"  
+                <ui-select ng-model="root.tercero.tipoOrganizacion"   
                            theme="select2" 
+                           title="Se requiere el tipo de organización"
+                           required = "required"
+                           name="tipoOrganizacion"
                            class="form-control selectgeneral pull-left" >
                     <ui-select-match  placeholder="Tipo organización"><span ng-bind="$select.selected.descripcion"></span></ui-select-match>
                     <ui-select-choices  refresh-delay="0" repeat="tipoOrganizacion in  root.parametros.tiposOrganizacion | filter:$select.search">
@@ -277,7 +282,7 @@
             <p class="input-group">
 
                 <input type="text" class="form-control"
-                       ng-model="root.tercero.razonSocial" placeholder="Razón social" name="srch-term" id="srch-term" />
+                       ng-model="root.tercero.razonSocial" placeholder="Razón social"  />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-pencil"></i></button>

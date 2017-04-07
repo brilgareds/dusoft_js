@@ -198,20 +198,31 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
     }
     
     /*** Primer formulario de datos basicos **/
-    if (!args.tercero.primerNombre  || args.tercero.primerNombre.length === 0){
-        res.send(G.utils.r(req.url, 'Se requiere el primer nombre', 404, {}));
-        return;
+    
+    if(args.tercero.tipoNaturaleza.codigo === '0'){
+        
+
+        if (!args.tercero.primerNombre  || args.tercero.primerNombre.length === 0){
+            res.send(G.utils.r(req.url, 'Se requiere el primer nombre', 404, {}));
+            return;
+        }
+
+        if (!args.tercero.primerApellido  || args.tercero.primerApellido.length === 0){
+            res.send(G.utils.r(req.url, 'Se requiere el primer apellido', 404, {}));
+            return;
+        }
+        
+        if (!args.tercero.genero  || args.tercero.genero.id.length === 0){
+            res.send(G.utils.r(req.url, 'Se requiere el genero', 404, {}));
+            return;
+        }
+        
+        if (!args.tercero.estadoCivil  || args.tercero.estadoCivil.id.length === 0){
+            res.send(G.utils.r(req.url, 'Se requiere el estado civil', 404, {}));
+            return;
+        }
     }
     
-    if (!args.tercero.primerApellido  || args.tercero.primerApellido.length === 0){
-        res.send(G.utils.r(req.url, 'Se requiere el primer apellido', 404, {}));
-        return;
-    }
-    
-    if (!args.tercero.genero  || args.tercero.genero.id.length === 0){
-        res.send(G.utils.r(req.url, 'Se requiere el genero', 404, {}));
-        return;
-    }
     
     if (!args.tercero.tipoDocumento  || args.tercero.tipoDocumento.id.length === 0){
         res.send(G.utils.r(req.url, 'Se requiere el tipo de documento', 404, {}));
@@ -223,10 +234,6 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
         return;
     }
     
-    if (!args.tercero.estadoCivil  || args.tercero.estadoCivil.id.length === 0){
-        res.send(G.utils.r(req.url, 'Se requiere el estado civil', 404, {}));
-        return;
-    }
     
     if (!args.tercero.nacionalidad  || args.tercero.nacionalidad.id.length === 0){
         res.send(G.utils.r(req.url, 'Se requiere la nacionalidad', 404, {}));

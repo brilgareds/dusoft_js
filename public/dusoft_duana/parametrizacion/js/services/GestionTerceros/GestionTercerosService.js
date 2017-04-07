@@ -5,9 +5,13 @@ define(["angular", "js/services"], function(angular, services) {
     ['$rootScope','Modulo','Request','API','Genero',
      'TipoDocumento','EstadoCivil','TipoNacionalidad','TipoDireccion','Pais',
      'Departamento','Ciudad','NomenclaturaDireccion','TipoCorreo','TipoRedSocial',
+     'Telefono', 'TipoTelefono','TipoLineaTelefonica','Contacto','TipoContacto',
+     'TipoNaturaleza',
     function($rootScope, Modulo, Request, API, Genero,
              TipoDocumento, EstadoCivil, TipoNacionalidad, TipoDireccion, Pais,
-             Departamento, Ciudad, NomenclaturaDireccion, TipoCorreo, TipoRedSocial) {
+             Departamento, Ciudad, NomenclaturaDireccion, TipoCorreo, TipoRedSocial,
+             Telefono, TipoTelefono, TipoLineaTelefonica, Contacto, TipoContacto,
+             TipoNaturaleza) {
         
         var self = this;
 
@@ -99,21 +103,42 @@ define(["angular", "js/services"], function(angular, services) {
             var nomenclatura2 = NomenclaturaDireccion.get(data.id_nomenclatura2, data.descripcion_nomenclatura2);
             var tipoCorreo = TipoCorreo.get(data.tipo_correo_id, data.descripcion_tipo_correo);
             var tipoRedSocial = TipoRedSocial.get(data.tipo_red_social_id, data.descripcion_red_social);
-            
+            var naturaleza = TipoNaturaleza.get(data.sw_persona_juridica);
+            naturaleza.setDescripcion((data.sw_persona_juridica === '0') ? "Natural":"Juridica");
+                        
             tercero.setPrimerNombre(data.nombre1).setSegundoNombre(data.nombre2).setPrimerApellido(data.apellido1).setSegundoApellido(data.apellido2).
             setGenero(genero).setTipoDocumento(tipoDocumento).setId(data.tercero_id).setFechaExpedicion(data.fecha_expedicion_documento).
             setFechaExpiracion(data.fecha_expiracion).setFechaNacimiento(data.fecha_nacimiento).setEstadoCivil(estadoCivil).
             setNacionalidad(tipoNacionalidad).setRazonSocial(data.razon_social).setDescripcion(data.descripcion).setTipoDireccion(tipoDireccion).
             setPais(pais).setNomenclaturaDireccion1(nomenclatura1).setNomenclaturaDireccion2(nomenclatura2).setNomenclaturaDescripcion1(data.nomenclatura_descripcion1).
             setNomenclaturaDescripcion2(data.nomenclatura_descripcion2).setNumeroPredio(data.numero_predio).setBarrio(data.barrio).setTipoCorreo(tipoCorreo).setCorreo(data.email).
-            setTipoRedSocial(tipoRedSocial).setDescripcionRedSocial(data.descripcion_red_social);
+            setTipoRedSocial(tipoRedSocial).setDescripcionRedSocial(data.descripcion_red_social).setTipoNaturaleza(naturaleza);
     
-            console.log("estado civil ", nomenclatura2);
+            for(var i in data.telefonos){
+                var _telefono = data.telefonos[i];
+                var telefono = Telefono.get(_telefono.id, _telefono.numero);
+                var tipoTelefono = TipoTelefono.get(_telefono.tipo_telefono_id, _telefono.descripcion_tipo_telefono);
+                var tipoLinea = TipoLineaTelefonica.get(_telefono.tipo_linea_telefonica_id, _telefono.descripcion_tipo_linea);
+                telefono.setTipoTelefono(tipoTelefono).setTipoLineaTelefonica(tipoLinea).setNumero(_telefono.numero);
+                tercero.agregarTelefono(telefono);
+            }
+            
+            for(var i in data.contactos){
+                var _contacto = data.contactos[i];
+                var contacto = Contacto.get();
+                var tipoContacto = TipoContacto.get(_contacto.tipo_contacto_id, _contacto.descripcion_contacto);
+                
+                contacto.setNombre(_contacto.nombre).setId(_contacto.id).setTelefono(_contacto.telefono).setEmail(_contacto.correo).
+                setDescripcion(_contacto.descripcion).setTipoContacto(tipoContacto);
+        
+                tercero.agregarContacto(contacto);
+            }
+            
+            console.log("tercero ", data);
+                
+            
         };
         
-        
-        
-
         return this;
 
      }]);

@@ -12,7 +12,7 @@
 
             </tab>
 
-            <tab active="root.tabs[1]"  select="onCambiarValorTab(1)" disabled="!formularios.formularioTerceros.$invalid" > 
+            <tab active="root.tabs[1]"  select="onCambiarValorTab(1)" disabled="formularios.formularioTerceros.$invalid" > 
                 <tab-heading >
                    <i class="glyphicon glyphicon-time"></i> <b>Datos ubicación</b>
                 </tab-heading>
@@ -21,7 +21,7 @@
                
             </tab>   
             
-            <tab  active="root.tabs[2]"  select="onCambiarValorTab(2)" disabled="!formularios.formularioUbicacion.$invalid || !formularios.formularioTerceros.$invalid"> 
+            <tab  active="root.tabs[2]"  select="onCambiarValorTab(2)" disabled="formularios.formularioUbicacion.$invalid || formularios.formularioTerceros.$invalid"> 
                 <tab-heading >
                    <i class="glyphicon glyphicon-time"></i> <b>Contacto</b>
                 </tab-heading>
@@ -34,7 +34,7 @@
 
     </div>
     
-    <div class="row text-center">
+    <div class="row text-center" ng-if="root.formularioListo">
         <button type="button" class="btn btn-warning btn-medium"  ng-click="onBtnCancelar()">
             Cancelar <span class="glyphicon glyphicon-remove"></span>
         </button>

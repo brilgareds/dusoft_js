@@ -46,6 +46,7 @@ define(["angular",
                     TipoNaturaleza.get("0", "Natural"),
                     TipoNaturaleza.get("1", "Juridica")
                 ],
+                accion: localStorageService.get("accion"),
                 tabs: [false, false, false],
                 tercero : Tercero.get(),
                 parametros : {
@@ -80,7 +81,8 @@ define(["angular",
                 data: 'root.tercero.contactos',
                 multiSelect: false,
                 showFilter: true,
-                enableRowSelection: true,
+                enableRowSelection: false,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'nombre', displayName: 'Nombre'},
                     {field: 'telefono', displayName: 'Teléfono'},
@@ -111,6 +113,7 @@ define(["angular",
             };
             
             $scope.root.tercero.tipoNaturaleza =  $scope.root.tiposNaturaleza[0];
+            
             $scope.pickerFechaExpedicion = {};
             $scope.pickerFechaExpiracion = {};
             $scope.pickerFechaNacimiento = {};
@@ -368,6 +371,11 @@ define(["angular",
                 
             };
             
+            
+            $scope.onFormularioTercerosListo = function(){
+                $scope.root.formularioListo = true;
+            };
+            
             /**
             * @author Eduar Garcia
             * +Descripcion Handler de los tabs del formulario de clientes, es tambien llamado por el boton siguiente
@@ -436,6 +444,7 @@ define(["angular",
                 GestionTercerosService.submitformularioTerceros(parametros,function(respuesta){
                     if(respuesta.status === 200){
                         localStorageService.set("accion", "1");
+                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Se ha guardado el tercero correctamente");
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema",respuesta.msj);
                     }
@@ -629,6 +638,7 @@ define(["angular",
             * @fecha 2017-03-15
             */
             $scope.onBtnSiguiente = function(finalizar){
+                
                 var tab = $scope.root.tabActual;
                 tab++;
                 $scope.onTabChange(tab, finalizar);
@@ -679,7 +689,11 @@ define(["angular",
             * +Descripcion Handler textfield de numero de identificacion y el dropdown de tipo de documento
             * @fecha 2017-03-22
             */
-            $scope.onIdentificacionBlur = function(){
+            $scope.onIdentificacionBlur = function(){ 
+                
+                if(localStorageService.get("accion") === '1'){
+                    return;
+                }
                 
                 var tercero = $scope.root.tercero;
                 
@@ -691,15 +705,15 @@ define(["angular",
                                 id: tercero.getId(),
                                 tipoDocumento: {
                                     id:tercero.getTipoDocumento().getId()
-                                }
+                                },
                             }
                         }
                     };
 
                     GestionTercerosService.obtenerTercero(parametros,function(respuesta){
                         if(respuesta.status === 200){
-                            
-                            if(respuesta.obj.tercero.length > 0){
+                            var _tercero = respuesta.obj.tercero[0] || null;
+                            if(_tercero){
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", "El tercero ya esta registrado");
                                 tercero.setId("");
                             } else {
@@ -738,6 +752,12 @@ define(["angular",
             $scope.onFechaNacimientoChange = function(){
                 $scope.root.tercero.fechaNacimiento = $filter('date')($scope.root.tercero.fechaNacimiento, "yyyy-MM-dd");
             };
+            
+            $scope.$on("$destroy", function() {
+                $scope.root = null;
+                $scope.$$watchers = null;
+                
+            });
             
             self.gestionarParametrosTerceros();
             

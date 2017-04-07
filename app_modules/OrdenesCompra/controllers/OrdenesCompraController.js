@@ -70,7 +70,9 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 
 // Listar las Ordenes de Compra de un Proveedor
 OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
-
+ 
+    
+    
     var that = this;
 
     var args = req.body.data;
@@ -1306,18 +1308,24 @@ OrdenesCompra.prototype.listarProductosRecepcionMercancia = function(req, res) {
     var args = req.body.data;
 
     if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_id === undefined) {
-        res.send(G.utils.r(req.url, 'recepcion_mercancia_id no esta definidas', 404, {}));
+        res.send(G.utils.r(req.url, 'El objeto de parametros no esta definidas', 404, {}));
         return;
     }
 
-    if (args.ordenes_compras.recepcion_id === '') {
-        res.send(G.utils.r(req.url, 'recepcion_mercancia_id esta vacias', 404, {}));
+    if (args.ordenes_compras.recepcion_id === '' || !args.ordenes_compras.recepcion_id ) {
+        res.send(G.utils.r(req.url, 'El id de la recepcion de mercancia es un parametro obligatorio', 404, {}));
         return;
     }
-
+    
+    if (args.ordenes_compras.orden_compra.numero_orden_compra === '' || !args.ordenes_compras.orden_compra.numero_orden_compra) {
+        res.send(G.utils.r(req.url, 'El numero de la orden de compra es un parametro obligatorio', 404, {}));
+        return;
+    }
+  
     var recepcion_id = args.ordenes_compras.recepcion_id;
-
-    that.m_ordenes_compra.listar_productos_recepcion_mercancia(recepcion_id, function(err, productos) {
+    var numeroOrdenCompra = args.ordenes_compras.orden_compra.numero_orden_compra;
+   
+    that.m_ordenes_compra.listar_productos_recepcion_mercancia({recepcion_id: recepcion_id , numero_orden_compra: numeroOrdenCompra}, function(err, productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando productos de la recepcion ', 500, {ordenes_compras: []}));
@@ -1379,23 +1387,35 @@ OrdenesCompra.prototype.modificarProductosRecepcionMercancia = function(req, res
         res.send(G.utils.r(req.url, 'producto_mercancia esta vacias', 404, {}));
         return;
     }
-
+  
     var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
     var producto_mercancia = args.ordenes_compras.producto_mercancia;
-
-    that.m_ordenes_compra.modificar_productos_recepcion_mercancia(recepcion_mercancia, producto_mercancia, function(err, result) {
-
-        if (err || result.rowCount === 0) {
-
-            var msj = (err.msj !== undefined) ? err.msj : '';
-
-            res.send(G.utils.r(req.url, 'Error modificando productos a la recepcion ' + msj, 500, {ordenes_compras: []}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
-            return;
+    var estadoOrdenDeCompra;
+       
+    G.Q.ninvoke(that.m_ordenes_compra,"modificar_productos_recepcion_mercancia", recepcion_mercancia, producto_mercancia).then(function(resultado){
+         
+        if(resultado.rowCount === 1){
+             
+            if(resultado.rows[0].cantidad_pendiente > 0 ){
+                estadoOrdenDeCompra = '6';
+            }else{
+                estadoOrdenDeCompra = '3';
+            }
+        
+        return G.Q.ninvoke(that.m_ordenes_compra,"actualizar_estado_orden_compra", recepcion_mercancia.orden_compra.numero_orden_compra, estadoOrdenDeCompra)   
+            
+        }else{
+            throw 'Error modificando productos a la recepcion ';
         }
-    });
+    }).then(function(resultado){
+       
+        res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: []}));
+        
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error modificando productos a la recepcion', 500, {ordenes_compras: []}));
+        
+    }).done();
+     
 };
 
 // Finalizar recepcion de mercancia
@@ -1421,8 +1441,14 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
     }
 
     var recepcion = args.ordenes_compras.recepcion_mercancia;
+    var cantidadTotalPendiente = args.ordenes_compras.recepcion_mercancia.orden_compra.cantidadTotalPendiente;
     var numero_orden = recepcion.orden_compra.numero_orden_compra;
-
+    
+    console.log("recepcion ", recepcion);
+    console.log("cantidadTotalPendiente ", cantidadTotalPendiente);
+    console.log("numero_orden ", numero_orden);
+    
+    
     that.m_ordenes_compra.finalizar_recepcion_mercancia(recepcion, function(err, result) {
 
         if (err || result.rowCount === 0) {

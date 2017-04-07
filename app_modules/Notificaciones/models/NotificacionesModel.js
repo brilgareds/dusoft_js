@@ -30,7 +30,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
              WHEN a.estado = '2' THEN 'Anulado'\
              WHEN a.estado = '3' THEN 'Recibida en bodega'\
              WHEN a.estado = '4' THEN 'Verificada en bodega'\
-             WHEN a.estado = '5' THEN 'Bloqueada' END as descripcion_estado,\
+             WHEN a.estado = '5' THEN 'Bloqueada' \
+             WHEN a.estado = '6' THEN 'Con Pdt' END as descripcion_estado,\
         a.sw_orden_compra_finalizada"),
         G.knex.raw("CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
              WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion"), 
@@ -253,7 +254,8 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                      WHEN a.estado = '2' THEN 'Anulado' \
                      WHEN a.estado = '3' THEN 'Recibida en bodega' \
                      WHEN a.estado = '4' THEN 'Verificada en bodega' \
-                     WHEN a.estado = '5' THEN 'Bloqueada' END as descripcion_estado,\
+                     WHEN a.estado = '5' THEN 'Bloqueada' \
+                     WHEN a.estado = '6' THEN 'Con Pdt' END as descripcion_estado,\
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
@@ -1298,17 +1300,22 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
         producto_mercancia.novedad_recepcion = {id: null};
     }
 
-
-    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = :3, cantidad_recibida = :4 where  recepcion_mercancia_id = :1 \
+    
+    var sql = " update recepcion_mercancia_detalle \
+                set novedades_recepcion_id = :3, \
+                cantidad_recibida = :4, \
+                cantidad_pendiente = :5 \
+                where  recepcion_mercancia_id = :1 \
                 and codigo_producto =  :2 ; ";
 
     var parametros = {
         1:recepcion_mercancia.numero_recepcion,
         2:producto_mercancia.codigo_producto,
         3:producto_mercancia.novedad_recepcion.id,
-        4:producto_mercancia.cantidad_recibida
+        4:producto_mercancia.cantidad_recibida,
+        5:producto_mercancia.cantidadPendiente
     };
-    
+    console.log("parametros ", parametros)
     G.knex.raw(sql, parametros).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
@@ -1318,13 +1325,20 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
 
 // Modificar productos Recepcion mercancia
 OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion, callback) {
-
+    
+    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia NOTIFICACION**********");
+    console.log("******OrdenesCompraModel.prototype.finalizar_recepcion_mercancia NOTIFICACION**********");
+    
     var that = this;
     var sql = " update recepcion_mercancia set estado = '2' where  id = :1 ; ";
     
     G.knex.raw(sql, {1:recepcion.numero_recepcion}).then(function(resultado){
        
         var estado = '4'; // Verificada
+         
+        if(recepcion.orden_compra.cantidadTotalPendiente > 0){
+            estado = '6';
+        }
 
         that.actualizar_estado_orden_compra(recepcion.orden_compra.numero_orden_compra, estado, function(_err, _rows, _result) {
 

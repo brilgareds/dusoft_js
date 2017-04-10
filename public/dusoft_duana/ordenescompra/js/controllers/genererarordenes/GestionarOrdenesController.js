@@ -765,6 +765,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.subir_archivo_plano = function() {
+                
+                   /*  var objAuditoria = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            unidad_negocio: "2",
+                            codigo_proveedor: "1156",
+                            empresa_id: "03",
+                            observacion: "XXXX",
+                            bodegaDestino : {bodega: "F6", centroUtilidad: "2", empresaId: "F6"},
+                            productos:[
+                                {numero_orden: 0, codigo_producto: "131M0680160", cantidad_solicitada: "100", valor: "5700.00"},
+                                {numero_orden: 0, codigo_producto: "150D0131450", cantidad_solicitada: "100", valor: "0.00"},
+                                {numero_orden: 0, codigo_producto: "1115A1710540", cantidad_solicitada: "100", valor: "333.33"}
+                            ]
+                        }
+                    }
+                }; */
+                
                 $scope.progresoArchivo = 1; 
                
                 if ($scope.numero_orden > 0) {

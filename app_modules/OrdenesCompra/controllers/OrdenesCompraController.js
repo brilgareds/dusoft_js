@@ -322,6 +322,8 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
 // Insertar una orden de compra 
 OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
 
+     
+    
     var that = this;
 
     var args = req.body.data;
@@ -345,17 +347,8 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
         res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
         return;
     }
-
-
-    var unidad_negocio = args.ordenes_compras.unidad_negocio;
-    var proveedor = args.ordenes_compras.codigo_proveedor;
-    var empresa_id = args.ordenes_compras.empresa_id;
-    var observacion = args.ordenes_compras.observacion;
-    var bodegaDestino = args.ordenes_compras.bodegaDestino;
-    var usuario_id = req.session.user.usuario_id;
-    var numero_orden;
-
-    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id, null).then(function(rows) {
+ 
+    /*G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id, null).then(function(rows) {
         var def = G.Q.defer();
         numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
         //Se guarda la ubicacion de la bodega destino de la orden
@@ -371,7 +364,26 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     }).fail(function(err) {
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, 'Se ha generado un error', 500, {lista_productos: {}}));
-    }).done();
+    }).done();*/
+    
+     var parametros = {
+        unidad_negocio: args.ordenes_compras.unidad_negocio,
+        proveedor:      args.ordenes_compras.codigo_proveedor,
+        empresa_id:     args.ordenes_compras.empresa_id,
+        observacion:     args.ordenes_compras.observacion,
+        bodegaDestino:   args.ordenes_compras.bodegaDestino,
+        usuario_id:      req.session.user.usuario_id
+    }
+    console.log("parametros ", parametros);
+    G.Q.ninvoke(that, "__insertarOrdenCompra",parametros ).then(function (resultado) {
+        console.log("__insertarOrdenCompra ", resultado);
+        res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
+
+    }).fail(function (err) {
+        
+        res.send(G.utils.r(req.url, err.msj, err.status, {lista_productos: err}));
+    });
+
 
 
 
@@ -1812,6 +1824,9 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
  */
 OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req, res) {
     
+    console.log("**********generarOrdenDeCompraAuditado****************");
+    console.log("**********generarOrdenDeCompraAuditado****************");
+    console.log("**********generarOrdenDeCompraAuditado****************");
     var that = this;
 
     var args = req.body.data;
@@ -1836,20 +1851,40 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req, res) {
         return;
     }
  
-    
+     
     var parametros = {
-        unidad_negocio: args.ordenes_compras.unidad_negocio,
-        proveedor:      args.ordenes_compras.codigo_proveedor,
-        empresa_id:     args.ordenes_compras.empresa_id,
-        observacion:     args.ordenes_compras.observacion,
-        bodegaDestino:   args.ordenes_compras.bodegaDestino,
-        usuario_id:      req.session.user.usuario_id
+        encabezado:{
+            unidad_negocio: args.ordenes_compras.unidad_negocio,
+            proveedor:      args.ordenes_compras.codigo_proveedor,
+            empresa_id:     args.ordenes_compras.empresa_id,
+            observacion:     args.ordenes_compras.observacion,
+            bodegaDestino:   args.ordenes_compras.bodegaDestino,
+            usuario_id:      req.session.user.usuario_id,
+            detalle: args.ordenes_compras.productos,
+            ordenId: 0,
+            codigo_proveedor: args.ordenes_compras.codigo_proveedor
+        },
+        transaccion: null,
+        contexto : that.m_ordenes_compra
     }
-    
-    G.Q.ninvoke(that, "__asignarResponsablesPedidos",parametros ).then(function (resultado) {
-
-        res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
-
+    //console.log("parametros ", parametros);
+    G.Q.ninvoke(that, "__insertarOrdenCompra",parametros.encabezado ).then(function (resultado) {
+         
+        parametros.encabezado.ordenId = resultado.data.numero_orden;
+        
+        return G.Q.ninvoke(that.m_ordenes_compra, "gestionaDetalleOrden",parametros );
+         
+    }).then(function(resultado){
+        
+        return G.Q.ninvoke(that.m_ordenes_compra, "finalizar_orden_compra",parametros.encabezado.ordenId, 1);
+         
+        
+    }).then(function(resultado){
+        
+        console.log("resultado [finalizar_orden_compra]: ", resultado)
+        
+          res.send(G.utils.r(req.url,"La orden de compra # " + parametros.encabezado.ordenId + " se ha generado satisfactoriamente", 200, {data: {numero_orden: parametros.encabezado.ordenId}}));
+         
     }).fail(function (err) {
         console.log("err [generarOrdenDeCompraAuditado]: ", err);
         res.send(G.utils.r(req.url, err.msj, err.status, {ordenes_compras: err}));
@@ -1877,6 +1912,8 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
         parametros.empresa_id, 
         parametros.observacion, 
         parametros.usuario_id, null).then(function(rows) {
+            
+       
         var def = G.Q.defer();
         numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
         //Se guarda la ubicacion de la bodega destino de la orden
@@ -1889,17 +1926,18 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
         
     }).then(function (resultado) {
          
-        callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {ordenes_compras: numero_orden}});
+            callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {numero_orden: numero_orden}});
+        
 
     }).fail(function (err) {
         var msj = "Erro Interno";
         var status = 500;
-
+       
         if (err.status) {
             msj = err.msj;
             status = err.status;
         }
-
+        
         callback(err, {status: status, msj: msj});
 
     }).done();

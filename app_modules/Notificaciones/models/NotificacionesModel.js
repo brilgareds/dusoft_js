@@ -36,7 +36,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         G.knex.raw("CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
              WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion"), 
         "a.observacion",
-        "f.codigo_unidad_negocio",
+        "f.codigo_unidad_negocio",  
         "f.imagen",
         "f.descripcion as descripcion_unidad_negocio",
         "a.usuario_id",
@@ -50,6 +50,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                     INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
                     WHERE aaa.orden_pedido_id = a.orden_pedido_id) as total_novedades")
     ];
+    
+    
     
     var query = G.knex.column(columns).
     from("compras_ordenes_pedidos  as a").

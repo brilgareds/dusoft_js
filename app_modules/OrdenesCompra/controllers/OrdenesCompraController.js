@@ -1806,6 +1806,19 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 }
 ;
 
+/***
+ * +Descripcion Funcion encargada de crear orden de compra invocada desde auditoria
+ * 
+ */
+OrdenesCompra.prototype.generarOrdenDeCompra = function(req, res) {
+    
+     var that = this;
+
+    var args = req.body.data;
+
+};
+
+
 OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios"];
 
 module.exports = OrdenesCompra;

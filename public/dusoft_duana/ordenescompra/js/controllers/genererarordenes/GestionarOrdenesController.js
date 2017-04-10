@@ -539,7 +539,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.buscar_productos = function() {
                 
-                var objAuditoria = {
+             /*   var objAuditoria = {
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
@@ -563,8 +563,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
 
                      
-                });
-                /*if ($scope.numero_orden === 0) {
+                });*/
+                if ($scope.numero_orden === 0) {
 
                     that.set_orden_compra();
                 }
@@ -572,7 +572,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.slideurl = "views/genererarordenes/gestionarproductos.html?time=" + new Date().getTime();
 
-                $scope.$emit('gestionar_productos');*/
+                $scope.$emit('gestionar_productos');
             };
 
 

@@ -100,7 +100,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 // Listar las Ordenes de Compra de un Proveedor
 OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_proveedor_id, callback) {
 
-
     // Falta realizar un tipo de filtro, para dejar esta funcion mas global
     // se debe filtrar por el estado. ESTA ACTIVIDAD ESTA PENDIENTE
 
@@ -235,7 +234,6 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
 };
 // Consultar Ordenes de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, callback) {
-
     
     var sql = " SELECT \
                 a.orden_pedido_id as numero_orden,\

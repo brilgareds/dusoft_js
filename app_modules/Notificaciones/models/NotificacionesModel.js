@@ -143,7 +143,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 left join (\
                     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
-                WHERE a.codigo_proveedor_id = :1 and a.estado = '1' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
+                WHERE a.codigo_proveedor_id = :1 and (a.estado = '1' OR a.estado = '6')  and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
     
     G.knex.raw(sql, {1:codigo_proveedor_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
@@ -413,6 +413,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
     query.then(function(resultado){
        callback(false, resultado.rows);
     }).catch(function(err){
+       console.log("erro (/catch) [insertar_orden_compra]: ", err);
        callback(err);
     });
      
@@ -434,10 +435,10 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
        }
        
     }).then(function(resultado){
-        console.log("se ha guardado correctamente la ubicacion ", resultado);
+        
         callback(false, resultado);
     }).catch(function(err){
-       console.log("error guardando destino ", err);
+       console.log("error [guardarDestinoOrden]: ", err);
        callback(err);
     });
      

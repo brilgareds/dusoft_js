@@ -412,8 +412,8 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
         } else {
 
             orden_compra = orden_compra[0];
-
-            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4')) {
+            
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
 
                 that.m_ordenes_compra.modificar_unidad_negocio(numero_orden, unidad_negocio, function(err, rows, result) {
 
@@ -471,8 +471,8 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
         } else {
 
             orden_compra = orden_compra[0];
-
-            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4')) {
+            
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
 
                 that.m_ordenes_compra.modificar_observacion(numero_orden, observacion, function(err, rows, result) {
 
@@ -541,8 +541,8 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
         } else {
 
             orden_compra = orden_compra[0];
-
-            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4')) {
+            
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
 
                 if (!modificar) {
 
@@ -659,8 +659,8 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
         } else {
 
             orden_compra = orden_compra[0];
-
-            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4')) {
+            
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
 
                 that.m_ordenes_compra.consultarDetalleOrdenCompraConNovedades(numero_orden, codigo_producto, 1, function(err, productos) {
 
@@ -728,8 +728,7 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
         } else {
 
             orden_compra = orden_compra[0];
-
-            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+            if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
 
                 that.m_ordenes_compra.finalizar_orden_compra(numero_orden, finalizar_orden_compra, function(err, rows, result) {
 

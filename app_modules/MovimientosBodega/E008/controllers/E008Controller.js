@@ -1975,11 +1975,13 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
                            {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
                            
-        
+        console.log("pedido a enviar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", pedido);
+        console.log("detalle pedido >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", detallePedido);
         if(pedido.empresa_id === '03' && pedido.bodega_id === '03'){       
             
             var parametros = {
                 ordenes_compras:{
+                    usuario_id :  req.session.user.usuario_id,
                     unidad_negocio : '4',
                     codigo_proveedor : 55,
                     empresa_id : pedido.empresa_id,

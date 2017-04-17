@@ -1827,7 +1827,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req) {
     
     var that = this;
 
-    var args = req.body.data;
+    var args = req;
 
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));

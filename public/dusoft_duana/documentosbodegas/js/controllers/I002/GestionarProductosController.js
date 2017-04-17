@@ -31,7 +31,6 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
             });
             
              that.buscar_laboratorios = function(termino) {
-//             console.log("buscar_laboratorios ");
                 var termino = termino || "";
                 var obj = {
                     session: $scope.session,
@@ -72,7 +71,6 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
                  producto.set_is_tmp(data.orden);
                  $scope.datos_form.listado_productos.push(producto);
                  });
-                 console.log("listado_productos ",$scope.datos_form.listado_productos);
             };
                        
             
@@ -86,8 +84,7 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
              * 
              */
             $scope.buscador_productos=function(event, termino_busqueda){
-                console.log("event::: ",event);
-                console.log("termino_busqueda::: ",termino_busqueda);
+                
                 if (termino_busqueda!==undefined) {
                  if (termino_busqueda.length < 3) {
                         return;
@@ -136,6 +133,7 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
             };
 
             $rootScope.$on('cerrar_gestion_productosCompleto', function(e, parametros) {
+                console.log("cerrar_gestion_productosCompleto",parametros);
                 $scope.$$watchers = null;
             });
 
@@ -145,7 +143,6 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
                 
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                
                 
                 var fecha_vencimiento=$filter('date')(new Date(producto.fecha_vencimiento), "dd/MM/yyyy");
                 var diferencia=$scope.restaFechas(fecha_actual,fecha_vencimiento);
@@ -188,8 +185,7 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
                     data:  parametro
                 };
                 
-                Request.realizarRequest(API.I002.CREAR_ITEM_FOC, "POST", obj, function(data) {
-                       console.log("insertarProductosFoc::: ",obj);
+                Request.realizarRequest(API.I002.CREAR_ITEM_FOC, "POST", obj, function(data) {                      
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }else{
@@ -204,9 +200,7 @@ define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/Empre
                 $event.stopPropagation();
 
                 producto.datepicker_fecha_inicial = true;
-            };//is_tmp
-            
-//            ng-disabled="isTmp(row.entity)"
+            };
             
             $scope.isTmp=function(entity){
                  var disabled = false; 

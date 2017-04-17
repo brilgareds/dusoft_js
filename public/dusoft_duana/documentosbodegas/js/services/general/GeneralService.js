@@ -23,6 +23,7 @@ define(["angular", "js/services"], function(angular, services) {
                     };
 
                     Request.realizarRequest(API.INDEX.ELIMINAR_PRODUCTO_MOVIMIENTO_BODEGA_TEMPORAL, "POST", obj, function(data) {
+                        console.log("datadatadata",data);
                             callback(data);                        
                     });
                 };
@@ -43,6 +44,26 @@ define(["angular", "js/services"], function(angular, services) {
 
                     };
                     
+                    
+                    
+              self.insertarProductosFoc = function(parametro,callback){                 
+                var termino = termino || "";
+                var obj = {
+                    session: parametro.session,
+                    data:  parametro
+                };
+                
+                Request.realizarRequest(API.I002.CREAR_ITEM_FOC, "POST", obj, function(data) {
+                       console.log("insertarProductosFoc::: ",obj);
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        callback(true);
+                    }else{
+                      AlertService.mostrarMensaje("warning", data.msj);
+                      callback(false);
+                    }
+                });
+            };
                     
 
                     return this;

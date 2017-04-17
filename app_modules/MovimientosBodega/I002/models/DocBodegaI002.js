@@ -130,6 +130,7 @@ DocumentoBodegaI002.prototype.agregarBodegasMovimientoOrdenesCompras = function(
 };
 
 DocumentoBodegaI002.prototype.updateInvBodegasMovimiento=function(parametros, transaccion, callback) {
+   
     var query = G.knex('inv_bodegas_movimiento')
                 .where('prefijo', parametros.prefijoDocumento)
                 .andWhere('empresa_id', parametros.empresaId)
@@ -144,6 +145,26 @@ DocumentoBodegaI002.prototype.updateInvBodegasMovimiento=function(parametros, tr
        callback("Error al actualizar updateInvBodegasMovimiento");  
     });
     
+};
+
+// Fecha ingreso a el documento
+DocumentoBodegaI002.prototype.fecha_ingreso_orden_compra = function(parametros,transaccion, callback) {
+   var today = new Date();    
+   var formato = 'DD-MM-YYYY';
+   var fechaToday = G.moment(today).format(formato);
+
+    var query = G.knex('compras_ordenes_pedidos')
+                .where('orden_pedido_id', parametros.ordenPedidoId)
+                .andWhere('estado', '1')
+                .update({fecha_ingreso:fechaToday});
+    if(transaccion) query.transacting(transaccion);   
+    query.then(function(resultado){ 
+         console.log("resultado) [fecha_ingreso_orden_compra]: ", resultado);
+       callback(false, resultado);
+    }).catch(function(err){    
+       console.log("err (/catch) [fecha_ingreso_orden_compra]: ", err);
+       callback("Error al actualizar fecha_ingreso_orden_compra");  
+    });
 };
 
 
@@ -174,19 +195,13 @@ DocumentoBodegaI002.prototype.eliminarOrdenPedidoProductosFoc = function(paramet
                  WHERE orden_pedido_id = "+parametros.orden_pedido_id+" and codigo_producto = '"+parametros.codigo_producto+"' and item_id = '"+parametros.item_id_compras+"' ; ";
       
      params={1: parametros.sw_ingresonc,2: parametros.orden_pedido_id, 3: parametros.codigo_producto, 4: parametros.item_id_compras};
-     
-//     var sql = " UPDATE compras_ordenes_pedidos_detalle \
-//                 SET numero_unidades_recibidas = COALESCE(numero_unidades_recibidas,0)+ "+parametros.cantidad+" , sw_ingresonc = :1 \
-//                 WHERE orden_pedido_id = :2 and codigo_producto = :3 and item_id = :4 ; ";
-//      
-//     params={1: parametros.sw_ingresonc,2: parametros.orden_pedido_id, 3: parametros.codigo_producto, 4: parametros.item_id_compras};
-//     
-console.log("sql",sql);
+
    var query= G.knex.raw(sql);
-  // if(transaccion) query.transacting(transaccion);   
-   G.knex.raw(sql).
-   then(function(resultado){
-       console.log("resultado [resultado]: ", resultado);
+   if(transaccion) query.transacting(transaccion);   
+   query.
+   then(function(resultado){  
+       console.log("updateComprasOrdenesPedidosDetalle ",resultado); 
+       console.log("updateComprasOrdenesPedidosDetalle sql:: ",sql); 
        callback(false, resultado);
    }).catch(function(err){
        console.log("err (/catch) [updateComprasOrdenesPedidosDetalle]: ", err);
@@ -199,17 +214,20 @@ console.log("sql",sql);
 DocumentoBodegaI002.prototype.eliminar_documento_temporal=function(parametros, transaccion, callback) {
     
     var sql = "DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
-  console.log("eliminar_documento_temporal 00");
+
     var query = G.knex.raw(sql, {1:parametros.docTmpId, 2:parametros.usuarioId});
+    
     if(transaccion) query.transacting(transaccion);
-  console.log("eliminar_documento_temporal111");          
+         
     query.then(function(resultado){
-        console.log("eliminar_documento_temporal 22");
+  
         sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = :1 AND usuario_id = :2 ;";
         return G.knex.raw(sql, {1:parametros.docTmpId, 2:parametros.usuarioId}).transacting(transaccion);
-    }).then(function(){
-        console.log("eliminar_documento_temporal");
-        callback(false);
+        
+    }).then(function(resultado){
+  
+        callback(false,resultado);
+        
     }).catch(function(err){
         console.log("eliminar_documento_temporal::: ",err);
         callback(err);

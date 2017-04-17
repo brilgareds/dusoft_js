@@ -132,7 +132,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro,\
                 coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido,\
                 coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
-                CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
+                CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal, \
+                a.fecha_ingreso\
                 FROM compras_ordenes_pedidos a\
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
                 inner join terceros c on  b.tipo_id_tercero = c.tipo_id_tercero and b.tercero_id=c.tercero_id \
@@ -310,7 +311,16 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
 };
 
 // Consultar Detalle Ordene de Compra  por numero de orden
-OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, termino_busqueda, pagina, callback) {
+OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(parametros, callback) {
+    var where="";
+    var join="";
+    var select="";
+    if(parametros.filtro!=='' && parametros.filtro !== 'undefined' && parametros.filtro !== undefined){
+        console.log("parametros.filtro",parametros.filtro);
+      where=" AND (a.numero_unidades - COALESCE(numero_unidades_recibidas,0)) != 0 ";
+      join ="JOIN inventarios_productos as c ON (a.codigo_producto=c.codigo_producto)";
+      select=",c.estado = '1' as estadoProducto";
+    }
 
     var sql = " select * from (\
                     select\
@@ -329,10 +339,13 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
                     a.estado,\
                     f.politicas_producto,\
+                    prodfoc.sw_autorizado,\
                     CASE WHEN COALESCE (f.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado,\
-                    CASE WHEN h.item_id is null then FALSE else TRUE end as tmp\
+                    CASE WHEN h.item_id is null then FALSE else TRUE end as tmp,a.numero_unidades ,numero_unidades_recibidas\
+                    "+select+"\
                     from compras_ordenes_pedidos_detalle a\
                     inner join compras_ordenes_pedidos e on a.orden_pedido_id  = e.orden_pedido_id \
+                    "+join+"\
                     left join inv_bodegas_movimiento_tmp_ordenes_compra as g on (a.orden_pedido_id=g.orden_pedido_id)\
 		    left join inv_bodegas_movimiento_tmp_d as h on (h.usuario_id=g.usuario_id and h.doc_tmp_id=g.doc_tmp_id and a.codigo_producto=h.codigo_producto and a.item_id=h.item_id_compras)\
                     left join (\
@@ -341,11 +354,14 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                         inner join contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
                         left join contratacion_produc_proveedor_politicas c on b.contrato_produc_prov_det_id = c.contrato_produc_prov_det_id \
                     ) as f on e.codigo_proveedor_id = f.codigo_proveedor_id and a.codigo_producto = f.codigo_producto\
+                    left join compras_ordenes_pedidos_productosfoc prodfoc on \
+                    (e.orden_pedido_id=prodfoc.orden_pedido_id and a.codigo_producto=prodfoc.codigo_producto AND prodfoc.empresa_id = e.empresa_id   \
+                    and prodfoc.sw_autorizado = '0' and a.item_id=prodfoc.item_id) \
                 ) AS a where a.numero_orden = :1 and a.estado = '1' and ( a.codigo_producto "+G.constants.db().LIKE+" :2 or\
-                  a.descripcion_producto "+G.constants.db().LIKE+" :2 ) ";
+                  a.descripcion_producto "+G.constants.db().LIKE+" :2 ) "+where;
 
 
-    G.knex.raw(sql, {1:numero_orden, 2:"%" + termino_busqueda + "%"}).then(function(resultado){
+    G.knex.raw(sql, {1:parametros.numero_orden, 2:"%" + parametros.termino_busqueda + "%"}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        console.log("err (/catch) [consultar_detalle_orden_compra]: ", err);

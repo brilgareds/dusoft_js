@@ -84,7 +84,9 @@ MovBodegasController.prototype.eliminar_producto_movimiento_bodega_temporal= fun
     
     parametros={item_id:args.item_id};
     
-    G.Q.ninvoke(that.m_movimientos_bodegas, "eliminar_producto_movimiento_bodega_temporal", parametros).then(function(result) {
+    G.Q.ninvoke(that.m_movimientos_bodegas, "eliminar_producto_movimiento_bodega_temporal", parametros).then(function(result) {      
+      return G.Q.ninvoke(that.m_movimientos_bodegas, "eliminar_compras_ordenes_pedidos_productosfoc", parametros);            
+    }).then(function(result) {    
         res.send(G.utils.r(req.url, 'Producto Borrado Correctamente', 200, {eliminar_producto_movimiento_bodega_temporal: result}));
     }).fail(function(err) {
         console.log("eliminar_producto_movimiento_bodega_temporal ",err);

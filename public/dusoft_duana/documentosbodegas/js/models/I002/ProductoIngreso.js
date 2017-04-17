@@ -11,6 +11,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.lote = lote || "";
                 this.fecha_vencimiento = fecha_vencmiento || "";
                 this.autorizado = true;
+                this.valor_unitario_ingresado= valor_unitario || 0;
             }
 
             ProductoIngreso.prototype = Object.create(Producto.getClass().prototype);
@@ -228,6 +229,37 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoIngreso.prototype.get_is_tmp  = function() {
                 return this.is_tmp ;
+            };
+            
+            ProductoIngreso.prototype.set_sw_estado = function(sw_estado) {
+                this.sw_estado  = sw_estado ;
+                return this;
+            };
+
+            ProductoIngreso.prototype.get_sw_estado  = function() {
+                return this.sw_estado ;
+            };
+            
+            ProductoIngreso.prototype.set_sw_autorizado = function(sw_autorizado) {
+                this.sw_autorizado  = sw_autorizado ;
+                return this;
+            };
+
+            ProductoIngreso.prototype.get_sw_autorizado  = function() {
+                return this.sw_autorizado ;
+            };
+            
+            ProductoIngreso.prototype.set_valor_unitario_ingresado = function(valor_unitario_ingresado) {
+                this.valor_unitario_ingresado  = valor_unitario_ingresado ;
+                return this;
+            };
+
+            ProductoIngreso.prototype.get_valor_unitario_ingresado  = function() {
+                if(this.valor_unitario_ingresado>this.valor_unitario){
+                  return this.valor_unitario_ingresado ;
+                }else{
+                  return this.valor_unitario ;
+                }
             };
 
             return this;

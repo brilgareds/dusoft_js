@@ -42,5 +42,9 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/I002/execCrearDocumento', function(req, res) {
         c_i002.execCrearDocumento(req, res);
     });
+    
+    app.post('/api/movBodegas/I002/eliminarGetDocTemporal', function(req, res) {
+        c_i002.eliminarGetDocTemporal(req, res);
+    });
       
 };

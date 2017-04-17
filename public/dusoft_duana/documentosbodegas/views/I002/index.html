@@ -66,14 +66,14 @@
                                     <br>
                                     <div class="row">  
                                         <div class="">
-<!--                                            <div class="col-md-3">
-                                                <p class="input-group">
-                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="seleccionar_productos(0)">
-                                                        <span class="glyphicon glyphicon-plus"></span> Seleccionar Productos
-                                                    </button>
-                                                </p>
-
-                                            </div>-->
+                                            <!--                                            <div class="col-md-3">
+                                                                                            <p class="input-group">
+                                                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="seleccionar_productos(0)">
+                                                                                                    <span class="glyphicon glyphicon-plus"></span> Seleccionar Productos
+                                                                                                </button>
+                                                                                            </p>
+                                            
+                                                                                        </div>-->
 
                                             <div class="col-md-3 pull-right">
                                                 <p class="input-group">
@@ -100,7 +100,7 @@
                                 </tab>                        
                                 <tab>
                                     <tab-heading ng-click="tabProductosPorAutorizar()">
-                                        <i class="glyphicon glyphicon-time"></i> Pendientes X Autorizar
+                                        <i class="glyphicon glyphicon-time"> {{totalPorAutorizar}}</i> Pendientes X Autorizar
                                     </tab-heading>
 
                                     <br>
@@ -130,32 +130,41 @@
                                 </tab>                                
                             </tabset>
                             <br>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div ng-if="true" class="modal-footer col-md-12" >
-                                        <button class="btn btn-default" ng-click="grabar_documento()">
-                                            <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
-                                        </button>
-                                    </div>
-                                </div>
-                            </div> 
+                            <br>
+                            <hr></hr>                            
                             <br>
                             <div class="row"> 
                                 <div class="col-md-12">
                                     <div style="height: 240px" ng-grid="lista_productos_ingresados" > </div>                              
                                 </div>
                             </div>
-                            <div class="modal-footer col-md-12">
-                                <button class="btn btn-default" ng-click="cancelar_documento()">
-                                    <span class="glyphicon glyphicon-remove" ></span> Cancelar
-                                </button>
-                                <button class="btn btn-default" ng-click="btn_eliminar_documento()">
-                                    <span class="glyphicon glyphicon-trash" ></span> Eliminar
-                                </button>
-                                <button class="btn btn-default" ng-click="generar_documento()" >
-                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar
-                                </button>
-                            </div>                            
+                            <div ng-if="isTmp()">    
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div ng-if="true" class="modal-footer col-md-12" >
+                                            <button ng-hide="isNoTmp()" class="btn btn-default" ng-click="grabar_documento()">
+                                                <span class="glyphicon glyphicon-floppy-disk" ></span> Grabar Documento
+                                            </button>
+                                            <button  class="btn btn-default" ng-click="cancelar_documento()">
+                                                <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-if="!isTmp()">    
+                                <div class="modal-footer col-md-12">
+                                    <button class="btn btn-default" ng-click="cancelar_documento()">
+                                        <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                    </button>
+                                    <button ng-hide="isEliminarTmp()" class="btn btn-default" ng-click="btn_eliminar_documento()">
+                                        <span class="glyphicon glyphicon-trash" ></span> Eliminar
+                                    </button>
+                                    <button ng-hide="!isGenerarDocumento()"  class="btn btn-default" ng-click="generar_documento()" >
+                                            <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                    </button>                                  
+                                </div>  
+                            </div>
                         </div>
                     </div>   
                 </div>
@@ -163,10 +172,10 @@
         </div>
     </div>
 
-<!--    <div  class="slide" slide-content open-callback="gestionar_productos_orden_compra" close-callback="cerrar_gestion_productos_orden_compra"   >
-        <div ng-include src="slideurl" ng-controller="GestionarProductosOrdenCompraController"></div>
-    </div>-->
-    
+    <!--    <div  class="slide" slide-content open-callback="gestionar_productos_orden_compra" close-callback="cerrar_gestion_productos_orden_compra"   >
+            <div ng-include src="slideurl" ng-controller="GestionarProductosOrdenCompraController"></div>
+        </div>-->
+
     <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
         <div ng-include src="slideurl" ng-controller="GestionarProductosController"></div>
     </div>

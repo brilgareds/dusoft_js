@@ -134,6 +134,21 @@ MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal =
 
 };
 
+// 
+MovimientosBodegasModel.prototype.eliminar_compras_ordenes_pedidos_productosfoc = function(parametros, callback) {
+
+    G.knex("compras_ordenes_pedidos_productosfoc").
+    where('item_id', parametros.item_id).
+    del().
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    }); 
+
+};
+
 // Auditar Producto del Documento Temporal 0 = false ; 1 = true
 MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = function(item_id, auditado, numero_caja, callback) {
 
@@ -447,6 +462,7 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
                 b.codigo_cum,\
                 fc_descripcion_producto(b.codigo_producto) as nombre,\
                 a.porcentaje_gravamen,\
+                a.total_costo,\
                 (a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
                 (a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
                 ((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
@@ -650,6 +666,39 @@ MovimientosBodegasModel.prototype.isExistenciaEnBodegaDestino = function(paramet
         });
 };
 
+MovimientosBodegasModel.prototype.ordenTercero = function(parametros, callback){
+
+       var columna = [
+                        G.knex.raw("a.orden_pedido_id as orden"),
+                        G.knex.raw("d.tipo_id_tercero || ' ' || d.tercero_id || ' : '|| d.nombre_tercero as proveedor")
+                     ];
+                     
+       G.knex.select(columna).from("inv_bodegas_movimiento_ordenes_compra as a")
+        .innerJoin("compras_ordenes_pedidos as b",
+                        function() {
+                            this.on("b.orden_pedido_id", "a.orden_pedido_id")
+         })
+        .innerJoin("terceros_proveedores as c",
+                        function() {
+                            this.on("c.codigo_proveedor_id", "b.codigo_proveedor_id")
+         })
+        .innerJoin("terceros as d",
+                        function() {
+                            this.on("d.tipo_id_tercero", "c.tipo_id_tercero")
+                                .on("d.tercero_id", "c.tercero_id")
+         })
+        .where('a.empresa_id', parametros.empresaId)
+        .andWhere('a.prefijo', parametros.prefijoDocumento)
+        .andWhere('a.numero', parametros.numeracionDocumento)
+        .then(function(resultado){
+    console.log("resultado:: ",resultado);
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("error sql",err);
+            callback(err);       
+        });
+};
+
 MovimientosBodegasModel.prototype.getItemId = function(callback){
     var sql=" SELECT nextval('inv_bodegas_movimiento_tmp_d_item_id_seq'::regclass); ";
      G.knex.raw(sql).
@@ -687,6 +736,75 @@ MovimientosBodegasModel.prototype.consultarDocumentoBodegaTemporal = function(do
             callback(false,resultado);  
         }
   });
+};
+
+
+
+MovimientosBodegasModel.prototype.getDoc = function(parametros, callback){
+
+    var sql="select\
+                y.documento_id,	y.empresa_id,	y.centro_utilidad,	y.bodega,	y.prefijo,	y.numero,\
+                y.observacion,	y.sw_estado,	y.usuario_id,	y.fecha_registro,	y.total_costo, y.abreviatura,\
+                y.empresa_destino,	y.sw_verificado,	y.porcentaje_rtf,	y.porcentaje_ica,	y.porcentaje_reteiva,	y.tipo_movimiento,	\
+                y.tipo_doc_bodega_id,	y.tipo_clase_documento,	y.descripcion,	list(y.obs_pedido) as obs_pedido,\
+                e.razon_social,c.descripcion as centro_utilidad ,f.descripcion as bodega, nombre\
+                from(\
+                (\
+                        SELECT\
+                        m.*,\
+                        c.inv_tipo_movimiento as tipo_movimiento,\
+                        b.tipo_doc_general_id as tipo_doc_bodega_id,\
+                        c.descripcion as tipo_clase_documento,\
+                        b.descripcion,\
+                        vop.observacion as obs_pedido\
+                        FROM\
+                        inv_bodegas_movimiento as m\
+                        JOIN inv_bodegas_documentos as a ON a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad AND a.bodega = m.bodega\
+                        JOIN documentos as b ON b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id\
+                        JOIN tipos_doc_generales as c ON c.tipo_doc_general_id = b.tipo_doc_general_id\
+                        left join inv_bodegas_movimiento_despachos_clientes as dc ON m.empresa_id = dc.empresa_id AND m.prefijo = dc.prefijo AND m.numero = dc.numero\
+                        Left JOIN ventas_ordenes_pedidos vop ON dc.pedido_cliente_id = vop.pedido_cliente_id\
+                        WHERE \
+                        m.empresa_id = :1 \
+                        AND m.prefijo = :2 \
+                        AND m.numero = :3 \
+                )\
+                UNION\
+                (\
+                        SELECT\
+                        m.*,\
+                        c.inv_tipo_movimiento as tipo_movimiento,\
+                        b.tipo_doc_general_id as tipo_doc_bodega_id,\
+                        c.descripcion as tipo_clase_documento,\
+                        b.descripcion,\
+                        sp.observacion as obs_pedido\
+                        FROM\
+                        inv_bodegas_movimiento as m\
+                        JOIN inv_bodegas_documentos as a ON a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad AND a.bodega = m.bodega\
+                        JOIN documentos as b ON b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id \
+                        JOIN tipos_doc_generales as c ON c.tipo_doc_general_id = b.tipo_doc_general_id\
+                        Left join inv_bodegas_movimiento_despachos_farmacias as df on m.empresa_id = df.empresa_id AND m.prefijo = df.prefijo AND m.numero = df.numero\
+                        left JOIN public.solicitud_productos_a_bodega_principal as sp\
+                        ON  df.solicitud_prod_a_bod_ppal_id = sp.solicitud_prod_a_bod_ppal_id\
+                        WHERE \
+                        m.empresa_id = :1 \
+                        AND m.prefijo = :2 \
+                        AND m.numero = :3 \
+                )\
+                                 ) as y\
+                inner join empresas as e on (y.empresa_id=e.empresa_id)\
+                inner join centros_utilidad as c on (c.empresa_id=y.empresa_id and c.centro_utilidad=y.centro_utilidad )\
+                inner join bodegas as f on (y.empresa_id=f.empresa_id and y.centro_utilidad=f.centro_utilidad and f.bodega=y.bodega)\
+                inner join system_usuarios k on (k.usuario_id=y.usuario_id)\
+                group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,24,25,26; ";
+    
+     G.knex.raw(sql, {1:parametros.empresaId, 2:parametros.prefijoDocumento , 3:parametros.numeracionDocumento}).
+    then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(error){
+       console.log("error [getDoc]: ", error);
+       callback(error);
+    });
 };
 
 

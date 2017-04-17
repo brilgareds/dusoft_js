@@ -1981,6 +1981,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
             
             var parametros = {
                 ordenes_compras:{
+                    usuario_id :  req.session.user.usuario_id,
                     unidad_negocio : '4',
                     codigo_proveedor : 55,
                     empresa_id : pedido.empresa_id,

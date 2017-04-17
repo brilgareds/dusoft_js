@@ -6,11 +6,11 @@ define(["angular", "js/controllers",
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "$state",
         "PedidoAuditoria", "Cliente","SeparacionService",
-        "EmpresaPedido",
+        "EmpresaPedido", "Usuario",
         function($scope, $rootScope, Request,
                 API, socket, AlertService, $modal, $state,
                 PedidoAuditoria,Cliente, SeparacionService,
-                EmpresaPedido) {
+                EmpresaPedido, Usuario) {
 
 
             var self = this;
@@ -33,7 +33,15 @@ define(["angular", "js/controllers",
             self.traerPedidosAsignados = function(esTemporal, callback) {
                 var filtro = {};
                 filtro.estado = (esTemporal)? {temporales : true} : {asignados : true};
-                   
+                var empresa = Usuario.getUsuarioActual().getEmpresa(); 
+               
+                filtro.estado.empresa = {
+                    empresaId:empresa.getCodigo(),
+                    centroUtilidad:empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                    bodega:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                };
+                
+                console.log("filtro pára buascar cliente ", filtro);
                 SeparacionService.traerPedidosAsignadosClientes($scope.root.session, filtro,
                 $scope.rootSeparacionClientes.paginaActual, $scope.rootSeparacionClientes.terminoBusqueda, function(pedidos){
                     if(pedidos && pedidos.length > 0){

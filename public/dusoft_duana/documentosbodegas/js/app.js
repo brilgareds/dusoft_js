@@ -27,6 +27,7 @@ define([
     "includes/validation/NgValidateEvents",
     "controllers/indexController",
     "controllers/I002/I002Controller",
+    "webNotification"
 ], function(angular) {
 
     /* App Module and its dependencies */
@@ -42,7 +43,8 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'flow'
+        'flow',
+        'angular-web-notification'
     ]);
 
     documentos_bodegas.urlRouterProvider;

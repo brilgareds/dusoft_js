@@ -631,7 +631,7 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
                     inner join unidades c on b.unidad_id = c.unidad_id \
                     WHERE a.doc_tmp_id = :1  AND a.usuario_id = :2; ";
 
-    
+
     var query = G.knex.raw(sql, {1:documento_temporal_id, 2:usuario_id, 3:empresa_id, 4:prefijo_documento, 5:numeracion_documento});
     if(transaccion) query.transacting(transaccion);
             

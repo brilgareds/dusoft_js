@@ -16,12 +16,12 @@ define(["angular", "js/controllers",
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", '$modal',
-        'ProductoPedidoFarmacia', "$timeout","PedidosFarmaciasService",
+        'ProductoPedidoFarmacia', "$timeout","PedidosFarmaciasService","CentroUtilidadPedidoFarmacia","BodegaPedidoFarmacia",
         function($scope, $rootScope, Request, 
                  EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
                  API, socket, AlertService,
                  $state, Usuario, localStorageService, $modal,
-                 ProductoPedidoFarmacia, $timeout, PedidosFarmaciasService) {
+                 ProductoPedidoFarmacia, $timeout, PedidosFarmaciasService,CentroUtilidadPedidoFarmacia,BodegaPedidoFarmacia) {
                      
             
             var self = this;
@@ -40,6 +40,36 @@ define(["angular", "js/controllers",
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             
+            /*             
+             * @Author: AMGT
+             * @param {type} data
+             * +Descripcion: Se crea la variable bodegaMultiple para identificar que se va a sacar productos de multiples bodegas.
+             */
+            if ($state.is("GuardarPedidoTemporal") === true) {
+                var resultadoStorage = localStorageService.get("bodegaMultiple"); 
+                $scope.root.bodegaMultiple=resultadoStorage;
+                $scope.root.bodegaMultiple.bools=resultadoStorage.multiple===1?true:false;
+                if($scope.root.bodegaMultiple.bools){                   
+                    
+                    var empresa = EmpresaPedidoFarmacia.get(
+                        Usuario.getUsuarioActual().getEmpresa().nombre,
+                        Usuario.getUsuarioActual().getEmpresa().codigo
+                    );
+                        
+                       
+                   var centroUtilidad = CentroUtilidadPedidoFarmacia.get(Usuario.getUsuarioActual().getEmpresa().centroUtilidad.getNombre(),
+                                                                         Usuario.getUsuarioActual().getEmpresa().centroUtilidad.getCodigo());
+                                                                       
+                   var bodega = BodegaPedidoFarmacia.get(Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.getNombre(),
+                       Usuario.getUsuarioActual().getEmpresa().centroUtilidad.bodega.getCodigo());
+                       centroUtilidad.bodega = bodega;                                        
+                       empresa.centroUtilidad = centroUtilidad ; 
+                       centroUtilidad.agregarBodega(bodega);    
+                       empresa.agregarCentroUtilidad(centroUtilidad);
+                       $scope.root.pedido.setFarmaciaOrigen(empresa);
+               
+                }
+            };
                         
             $scope.root.lista_productos = {
                 data: 'root.pedido.getProductosSeleccionados()',
@@ -62,6 +92,7 @@ define(["angular", "js/controllers",
                                                 </div>'
                     },
                     {field: 'descripcion', displayName: 'Descripción', width: "50%"},
+                    {field: 'getNombreBodega()', displayName: 'Bodega', width:"10%"},
                     {field: 'getCantidadSolicitada()', displayName: 'Solicitado'},
                     {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:false,
@@ -98,13 +129,16 @@ define(["angular", "js/controllers",
              * +Descripcion: Permite hacer render en los dropdown de las empreas destino y origen
              */
             $scope.renderDetalle = function(_productos){
-                
                 for (var i in _productos) {
                     var _producto = _productos[i];
                     var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion_producto).
                             setCantidadPendiente(_producto.cantidad_pendiente).
                             setTipoProductoId(_producto.tipo_producto_id).
-                            setCantidadSolicitada(_producto.cantidad_solicitada);
+                            setCantidadSolicitada(_producto.cantidad_solicitada).
+                            setNombreBodega(_producto.nombre_bodega).
+                            setEmpresaOrigenProducto(_producto.empresa_origen_producto).
+                            setCentroUtilidadOrigenProducto(_producto.centro_utilidad_origen_producto).
+                            setBodegaOrigenProducto(_producto.bodega_origen_producto);
                     
                     $scope.root.pedido.setTipoPedido(_producto.tipo_producto_id);
                     $scope.root.pedido.agregarProductoSeleccionado(producto);
@@ -126,6 +160,7 @@ define(["angular", "js/controllers",
                 );
                     
                 empresa.setCentrosUtilidad($scope.root.pedido.getFarmaciaOrigen().getCentrosUtilidad());
+                console.log("empresa ", empresa);
                 $scope.root.pedido.setFarmaciaOrigen(empresa);
                 
             };

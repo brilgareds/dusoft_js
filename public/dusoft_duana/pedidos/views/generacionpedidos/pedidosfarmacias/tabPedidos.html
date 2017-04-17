@@ -2,10 +2,16 @@
     <div class="row">
         <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
 
-            <button type="button" class="btn btn-default" ng-click="onIrVistaGuardarPedidoTemporal()" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" name="btnCrearPedido">
+            <button type="button" class="btn btn-default" ng-click="onIrVistaGuardarPedidoTemporal(0)" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" name="btnCrearPedido">
                 <span class="glyphicon glyphicon-plus"></span> Crear Pedido
             </button>
 
+        </div>
+        
+        <div class="pull-left" style="padding-left:15px; padding-right: 15px;">
+            <button type="button" class="btn btn-default" ng-click="onIrVistaGuardarPedidoTemporal(1)" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" name="btnCrearPedidoMultiple">
+                <span class="glyphicon glyphicon-plus"></span> Crear Pedido Multiple
+            </button>
         </div>
 
 

@@ -322,6 +322,8 @@ OrdenesCompra.prototype.guardarBodega = function(req, res) {
 // Insertar una orden de compra 
 OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
 
+     
+    
     var that = this;
 
     var args = req.body.data;
@@ -345,17 +347,8 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
         res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
         return;
     }
-
-
-    var unidad_negocio = args.ordenes_compras.unidad_negocio;
-    var proveedor = args.ordenes_compras.codigo_proveedor;
-    var empresa_id = args.ordenes_compras.empresa_id;
-    var observacion = args.ordenes_compras.observacion;
-    var bodegaDestino = args.ordenes_compras.bodegaDestino;
-    var usuario_id = req.session.user.usuario_id;
-    var numero_orden;
-
-    G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id, null).then(function(rows) {
+ 
+    /*G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, unidad_negocio, proveedor, empresa_id, observacion, usuario_id, null).then(function(rows) {
         var def = G.Q.defer();
         numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
         //Se guarda la ubicacion de la bodega destino de la orden
@@ -371,7 +364,26 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     }).fail(function(err) {
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, 'Se ha generado un error', 500, {lista_productos: {}}));
-    }).done();
+    }).done();*/
+    
+     var parametros = {
+        unidad_negocio: args.ordenes_compras.unidad_negocio,
+        proveedor:      args.ordenes_compras.codigo_proveedor,
+        empresa_id:     args.ordenes_compras.empresa_id,
+        observacion:     args.ordenes_compras.observacion,
+        bodegaDestino:   args.ordenes_compras.bodegaDestino,
+        usuario_id:      req.session.user.usuario_id
+    }
+    console.log("parametros ", parametros);
+    G.Q.ninvoke(that, "__insertarOrdenCompra",parametros ).then(function (resultado) {
+        console.log("__insertarOrdenCompra ", resultado);
+        res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
+
+    }).fail(function (err) {
+        
+        res.send(G.utils.r(req.url, err.msj, err.status, {lista_productos: err}));
+    });
+
 
 
 
@@ -1804,6 +1816,134 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     });
 }
 ;
+
+/***
+ * @author Cristian Ardila
+ * +Descripcion Funcion encargada de crear orden de compra invocada desde auditoria
+ * @fecha 2017-04-10
+ * 
+ */
+OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req, res) {
+    
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'observacion no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.unidad_negocio === '' || args.ordenes_compras.codigo_proveedor === '' || args.ordenes_compras.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor o empresa_id  estan vacias', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.observacion === '') {
+        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+        return;
+    }
+ 
+     
+    var parametros = {
+        encabezado:{
+            unidad_negocio: args.ordenes_compras.unidad_negocio,
+            proveedor:      args.ordenes_compras.codigo_proveedor,
+            empresa_id:     args.ordenes_compras.empresa_id,
+            observacion:     args.ordenes_compras.observacion,
+            bodegaDestino:   args.ordenes_compras.bodegaDestino,
+            usuario_id:      req.session.user.usuario_id,
+            detalle: args.ordenes_compras.productos,
+            ordenId: 0,
+            codigo_proveedor: args.ordenes_compras.codigo_proveedor
+        },
+        transaccion: null,
+        contexto : that.m_ordenes_compra
+    }
+    //console.log("parametros ", parametros);
+    G.Q.ninvoke(that, "__insertarOrdenCompra",parametros.encabezado ).then(function (resultado) {
+         
+        parametros.encabezado.ordenId = resultado.data.numero_orden;
+        
+        return G.Q.ninvoke(that.m_ordenes_compra, "gestionaDetalleOrden",parametros );
+         
+    }).then(function(resultado){
+        
+        return G.Q.ninvoke(that.m_ordenes_compra, "finalizar_orden_compra",parametros.encabezado.ordenId, 1);
+         
+        
+    }).then(function(resultado){
+        
+        console.log("resultado [finalizar_orden_compra]: ", resultado)
+        
+          res.send(G.utils.r(req.url,"La orden de compra # " + parametros.encabezado.ordenId + " se ha generado satisfactoriamente", 200, {data: {numero_orden: parametros.encabezado.ordenId}}));
+         
+    }).fail(function (err) {
+        console.log("err [generarOrdenDeCompraAuditado]: ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {ordenes_compras: err}));
+    });
+
+};
+
+
+/**
+ * @author Cristian Manuel Ardila Troches
+ * +Descripcion Metodo encargado de asignar el responsable del pedido, actualizar
+ *              el estado terminado del pedido, y si es el caso almacenar los productos
+ *              proximos a autorizar
+ * @fecha 03/02/2017 (DD/MM/YYYY)
+ */
+OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) {
+    
+    //cotizacion, pedidoGenerado
+    var that = this;     
+    var numero_orden;
+    
+     G.Q.nfcall(that.m_ordenes_compra.insertar_orden_compra, 
+        parametros.unidad_negocio, 
+        parametros.proveedor, 
+        parametros.empresa_id, 
+        parametros.observacion, 
+        parametros.usuario_id, null).then(function(rows) {
+            
+       
+        var def = G.Q.defer();
+        numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+        //Se guarda la ubicacion de la bodega destino de la orden
+        if (parametros.bodegaDestino) {
+            parametros.bodegaDestino.ordenCompraId = numero_orden;
+            return G.Q.nfcall(that.m_ordenes_compra.guardarDestinoOrden, parametros.bodegaDestino);
+        } else {
+            def.resolve();
+        }
+        
+    }).then(function (resultado) {
+         
+            callback(false, {status: 200, msj: 'Orden de compra registrada correctamente', data: {numero_orden: numero_orden}});
+        
+
+    }).fail(function (err) {
+        var msj = "Erro Interno";
+        var status = 500;
+       
+        if (err.status) {
+            msj = err.msj;
+            status = err.status;
+        }
+        
+        callback(err, {status: status, msj: msj});
+
+    }).done();
+
+};
+
+
+
 
 OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails", "m_usuarios"];
 

@@ -538,6 +538,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.buscar_productos = function() {
+                
+             /*   var objAuditoria = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            unidad_negocio: "2",
+                            codigo_proveedor: "1156",
+                            empresa_id: "03",
+                            observacion: "Nueva orden de compra",
+                            bodegaDestino : {bodega: "F6", centroUtilidad: "2", empresaId: "F6"},
+                            productos:[
+                                {codigo_producto: "131M0680160", cantidad: "100", costo: "5700.00"},
+                                {codigo_producto: "150D0131450", cantidad: "100", costo: "0.00"},
+                                {codigo_producto: "1115A1710540", cantidad: "100", costo: "333.33"}
+                            ]
+                        }
+                    }
+                }; 
+                
+                Request.realizarRequest(API.ORDENES_COMPRA.GENERAR_ORDEN_COMPRA_AUDITORIA, "POST", objAuditoria, function(data) {
+                    
+                    console.log("[subir_archivo_plano]: data ", data)
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+
+                     
+                });*/
                 if ($scope.numero_orden === 0) {
 
                     that.set_orden_compra();
@@ -765,6 +791,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.subir_archivo_plano = function() {
+                
                 $scope.progresoArchivo = 1; 
                
                 if ($scope.numero_orden > 0) {
@@ -801,7 +828,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             $scope.opciones_archivo.upload();
                         }
                     });
-                }
+                } 
             };
             
             /*

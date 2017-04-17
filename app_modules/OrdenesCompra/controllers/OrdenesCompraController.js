@@ -1833,27 +1833,27 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
     var that = this;
 
     
-    console.log("args ", args)
+    console.log("Parametros === ", args)
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
-        G.eventEmitter.emit("onGenerarOrdenDeCompra", {msj:'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', status: 404, data: {}});
+        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', status: 404, data: {}});
         return;
     }
 
     if (args.ordenes_compras.observacion === undefined) {
-        G.eventEmitter.emit("onGenerarOrdenDeCompra", {msj:'observacion no estan definidas', status: 404, data: {}});
+        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'observacion no estan definidas', status: 404, data: {}});
         //res.send(G.utils.r(req.url, 'observacion no estan definidas', 404, {}));
         return;
     }
 
     if (args.ordenes_compras.unidad_negocio === '' || args.ordenes_compras.codigo_proveedor === '' || args.ordenes_compras.empresa_id === '') {
-        G.eventEmitter.emit("onGenerarOrdenDeCompra", {msj:'unidad_negocio, codigo_proveedor o empresa_id  estan vacias', status: 404, data: {}});
+        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'unidad_negocio, codigo_proveedor o empresa_id  estan vacias', status: 404, data: {}});
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor o empresa_id  estan vacias', 404, {}));
         return;
     }
 
     if (args.ordenes_compras.observacion === '') {
-         G.eventEmitter.emit("onGenerarOrdenDeCompra", {msj:'observacion esta vacia', status: 404, data: {}});
+         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'observacion esta vacia', status: 404, data: {}});
         //res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
         return;
     }
@@ -1889,7 +1889,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
     }).then(function(resultado){
         
         console.log("resultado [finalizar_orden_compra]: ", resultado)
-        G.eventEmitter.emit("onGenerarOrdenDeCompra", 
+        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", 
             {
                 msj: "La orden de compra # " + parametros.encabezado.ordenId + " se ha generado satisfactoriamente",
                 status: 200,
@@ -1900,7 +1900,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
          
     }).fail(function (err) {
         console.log("err [generarOrdenDeCompraAuditado]: ", err);
-        G.eventEmitter.emit("onGenerarOrdenDeCompra", {msj:err.msj, status: err.status, data: err});
+        G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:err.msj, status: err.status, data: err});
         //res.send(G.utils.r(req.url, err.msj, err.status, {ordenes_compras: err}));
     });
 

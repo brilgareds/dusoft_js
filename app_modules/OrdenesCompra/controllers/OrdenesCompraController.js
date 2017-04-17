@@ -1819,14 +1819,13 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 ;
 
 /***
+ * @author Cristian Ardila
  * +Descripcion Funcion encargada de crear orden de compra invocada desde auditoria
+ * @fecha 2017-04-10
  * 
  */
 OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req, res) {
     
-    console.log("**********generarOrdenDeCompraAuditado****************");
-    console.log("**********generarOrdenDeCompraAuditado****************");
-    console.log("**********generarOrdenDeCompraAuditado****************");
     var that = this;
 
     var args = req.body.data;

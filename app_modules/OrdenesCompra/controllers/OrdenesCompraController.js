@@ -1823,7 +1823,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
  * @fecha 2017-04-10
  * 
  */
-OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req) {
+OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
     
     console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
     console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
@@ -1832,7 +1832,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req) {
     
     var that = this;
 
-    var args = req;
+    
     console.log("args ", args)
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
@@ -1866,7 +1866,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req) {
             empresa_id:     args.ordenes_compras.empresa_id,
             observacion:     args.ordenes_compras.observacion,
             bodegaDestino:   args.ordenes_compras.bodegaDestino,
-            usuario_id:      req.session.user.usuario_id,
+            usuario_id:      args.ordenes_compras.usuario_id,
             detalle: args.ordenes_compras.productos,
             ordenId: 0,
             codigo_proveedor: args.ordenes_compras.codigo_proveedor

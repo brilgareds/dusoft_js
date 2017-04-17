@@ -1825,10 +1825,15 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
  */
 OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req) {
     
+    console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
+    console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
+    console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
+    console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
+    
     var that = this;
 
-    var args = req.body.data;
-
+    var args = req;
+    console.log("args ", args)
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
         G.eventEmitter.emit("onGenerarOrdenDeCompra", {msj:'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', status: 404, data: {}});
@@ -1869,7 +1874,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(req) {
         transaccion: null,
         contexto : that.m_ordenes_compra
     }
-    //console.log("parametros ", parametros);
+    console.log("parametros ", parametros);
     G.Q.ninvoke(that, "__insertarOrdenCompra",parametros.encabezado ).then(function (resultado) {
          
         parametros.encabezado.ordenId = resultado.data.numero_orden;

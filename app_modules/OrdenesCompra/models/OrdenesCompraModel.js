@@ -1586,7 +1586,7 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
           producto.iva = _producto[0].iva;
           
           return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, producto.codigo_producto, producto.cantidad,
-                             producto.costo, producto.iva, params.transaccion);
+                             producto.costo || producto.valor_unitario, producto.iva, params.transaccion);
       }
                    
    }).then(function(resultado){

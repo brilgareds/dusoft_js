@@ -1986,7 +1986,6 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                     codigo_proveedor : 55,
                     empresa_id : pedido.empresa_id,
                     observacion : "Pedido a cosmitet",
-                    bodegaDestino : {},
                     productos : detallePedido
                 }
             };

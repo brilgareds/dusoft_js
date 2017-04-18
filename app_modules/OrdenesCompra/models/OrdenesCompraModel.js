@@ -1587,7 +1587,7 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
           
           return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, 
                              producto.codigo_producto, 
-                             producto.cantidad || producto.cantidad_ingresada,
+                             producto.cantidad || producto.cantidad_despachada,
                              producto.costo || producto.valor_unitario, 
                              producto.iva, 
                              params.transaccion);

@@ -1,8 +1,5 @@
 
-define(["angular", "js/controllers",
-    "models/Index/EmpresaDocumento",
-    "models/Index/DocumentoBodega"
-], function(angular, controllers) {
+define(["angular", "js/controllers"], function(angular, controllers) {
 
     controllers.controller('indexController', [
         '$scope',
@@ -19,11 +16,15 @@ define(["angular", "js/controllers",
         "EmpresaDocumento",
         "DocumentoBodega",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion) {
+        "GeneralService",
+        "TipoDocumentos",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion,GeneralService,TipoDocumentos) {
 
-            var that = this;          
+            var that = this;    
+            $scope.claseDoc;
 
             $scope.Empresa = Empresa;
+            $scope.terminoBusqueda="";
 
             //se valida que el usuario tenga centro de utilidad y bodega
             var empresa = Sesion.getUsuarioActual().getEmpresa();
@@ -111,6 +112,176 @@ define(["angular", "js/controllers",
                     AlertService.mostrarMensaje("warning", 'El modulo [ ' + documento.get_tipo() + '-' + documento.get_descripcion() + ' ] aun no esta disponible en esta version!!!');
 
             };
+            
+            $scope.seleccionarDocumentoEvento = function($event,terminoBusqueda){
+                console.log("termono",terminoBusqueda);
+                console.log("$event.which ",$event.which);
+                
+                if ($event.which === 13) {
+                 $scope.terminoBusqueda=terminoBusqueda;
+                }
+                if($scope.tipoDocumento.tipo.tipo !== undefined){
+                 that.listarDocumetosTemporales();
+                }
+            };
+            
+            $scope.seleccionarDocumento = function(){                
+                if($scope.tipoDocumento.tipo.tipo !== undefined){
+                 that.listarDocumetosTemporales();
+                }
+            };
+            
+            that.listarDocumetosTemporales=function(){
+
+    var obj = {
+                    session: $scope.session,
+                    data: {
+                              empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                              centroUtilidadId : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                              bodegaId : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                              tipoDocGeneralId : $scope.tipoDocumento.tipo.tipo,
+                              invTipoMovimiento : $scope.claseDoc,
+                              numeroDocumento : $scope.terminoBusqueda
+                       }
+                };
+
+                Request.realizarRequest(API.INDEX.LISTAR_DOCUMENTOS_TEMPORALES, "POST", obj, function(data) {  
+                    if (data.status === 200) {
+                        $scope.documentosTemorales=data.obj.obtenerDocumetosTemporales;
+                    }
+                });
+            };
+            
+             $scope.listaDocumentosTemporales = {
+                data: 'documentosTemorales',
+                enableColumnResize: true,
+                enableRowSelection: true,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                columnDefs: [
+                    {field: 'tipo_movimiento', displayName: 'Clase de Documento', width: "10%"},
+                    {field: 'tipo_doc_bodega_id', displayName: 'Tipo Doc', width: "10%"},
+                    {field: 'doc_tmp_id', displayName: 'No. Doc', width: "10%"},
+                    {field: 'orden', displayName: 'Orden', width: "10%"},
+                    {field: 'tipo_clase_documento', displayName: 'Descripción', width: "30%"},
+                    {field: 'nombre', displayName: "Usuario", width: "20%"},
+                    {field: 'fecha_registro', displayName: "Fecha", cellFilter: "date:\'dd-MM-yyyy\'", width: "5%"},
+                    {width: "5%", displayName: "Opcion", cellClass: "txt-center",
+                        cellTemplate: '<div class="btn-group">\
+                                           <div ng-if="validarDelete(row.entity.usuario_id)">\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_eliminar_documento(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>\
+                                           </div>\
+                                        </div>'}
+                ]
+            };
+            
+             $scope.btn_eliminar_documento = function(data) {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea eliminar el documento?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea eliminar el documento?</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            console.log("datadatadatadata",data);
+                            if(data.tipo_doc_bodega_id==="I002"){
+                            that.eliminarGetDocTemporal(data);
+                            }
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            that.eliminarGetDocTemporal = function(datos) {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        orden_pedido_id: datos.orden,
+                        doc_tmp_id: datos.doc_tmp_id
+                    }
+                };
+             
+                GeneralService.eliminarGetDocTemporal(obj, function(data) {
+                     if (data.status === 200) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                    if (data.status === 404) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+            
+            $scope.validarDelete = function(usuario){
+                var disabled = false;
+                if($scope.session.usuario_id === usuario){
+                   disabled = true;
+                }
+                return disabled;
+            };
+            
+            $scope.onBuscar = function(claseDoc){
+              that.getTiposDocumentosBodegaUsuario(claseDoc);
+              $scope.claseDoc=claseDoc;
+            };
+            
+           that.getTiposDocumentosBodegaUsuario=function(claseDoc){
+                  
+            var obj = {
+                    session: $scope.session,
+                    data: {
+                       
+                            centro_utilidad_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            invTipoMovimiento: claseDoc
+                        
+                    }
+                };
+
+                Request.realizarRequest(API.INDEX.GET_TIPOS_DOCUMENTOS_BODEGA_USUARIO, "POST", obj, function(data) { 
+                    if (data.status === 200) {
+                       that.renderTipoDocumento(data.obj.getTiposDocumentosBodegaUsuario);
+                    }
+                });
+            };
+            
+            that.renderTipoDocumento=function(tipoDocumento){
+                var tipoDocumentos = [];           
+                tipoDocumento.forEach(function(data) {
+                     var _tipoDocumento = TipoDocumentos.get(data.tipo_doc_bodega_id,data.tipo_clase_documento);
+                     tipoDocumentos.push(_tipoDocumento);
+                });   
+                console.log("tipoDocumentos::",tipoDocumentos);
+                $scope.tipoDocumento = tipoDocumentos;
+                
+            };
+            
+    
 
             $scope.consultar_listado_documentos_usuario();
         }]);

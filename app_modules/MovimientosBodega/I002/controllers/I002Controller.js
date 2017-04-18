@@ -517,7 +517,7 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
                                 orden: consulta[0],
                                 archivoHtml: 'documentoI002.html',
                                 reporte: "documentoI002"}, function(nombre_pdf) {
-                              res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf:nombre_pdf}));  
+                              res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf:nombre_pdf,prefijo:cabecera[0].prefijo,numero:cabecera[0].numero}));  
                     });
             }else{
                 console.log("Consulta sin resultados ");

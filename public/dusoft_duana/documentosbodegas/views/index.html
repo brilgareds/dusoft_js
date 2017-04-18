@@ -160,64 +160,65 @@
                         <i class="glyphicon glyphicon-time"></i> Buscador Temporales
                     </tab-heading>
                     <br>
-                    <div class="row">        
-                        <div class="col-md-3">
-                            <p class="input-group col-md-9">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <fieldset>
+                                    <legend>Clase Documento</legend> 
+                                    <div class="row">
+                                        <div class="col-md-7">   
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Seleccionar Clase Documento <span class="caret"></span></button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="javascript:void(0)" ng-click="onBuscar('I')">Ingreso</a>
+                                                    <a href="javascript:void(0)" ng-click="onBuscar('E')">Egreso</a>
+                                                </li>
+                                            </ul>
+                                        </div>                                 
+                                    </div>
+                                </fieldset>
+                            </div>                        
+                            <div class="col-md-4">
+                                <fieldset>
+                                    <legend>Tipo de Documento</legend> 
+                                    <div class="row">
+                                        <div class="col-md-7">   
+                                            <ui-select  ng-model="tipoDocumento.tipo" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionarDocumento()">
+                                                <ui-select-match  placeholder="Seleccionar Tipo">{{$select.selected.descripcion}}</ui-select-match>
+                                                <ui-select-choices repeat="tipoDoc in tipoDocumento| filter:$select.search">
+                                                    {{tipoDoc.descripcion}}
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>                             
+                                    </div>                             
+                                </fieldset>
+                            </div> 
 
-                            <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
-                                <ui-select-match  placeholder="Tipos Documentos">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
-                                <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
-                                    {{ ciudad.get_nombre_ciudad() }}
-                                </ui-select-choices>
-                            </ui-select>
-                            </p>
-                        </div>
-
-                        <div class="col-md-3">
-                            <p class="input-group">
-
-                                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_inicial" is-open="datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
-
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
-                                </span>
-                            </p>
-                        </div>
-
-                        <div class="col-md-3">
-                            <p class="input-group">
-
-                                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_final" is-open="datepicker_fecha_final" min="fecha_inicial"  readonly  close-text="Cerrar"
-                                       clear-text="Borrar"  placeholder="Fecha Final" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
-                                <span class="input-group-btn">
-
-                                    <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
-                                </span>
-                            </p>
-                        </div>
-
-                        <div class="col-md-2 pull-right">
-                            <p class="input-group">
-
-                                <input type="text" class="form-control" ng-keypress="buscador_ordenes_compras($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="submit" ng-click="buscar_ordenes_compras(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
-                                </span>
-                            </p>
+                            <div class="col-md-2 pull-right">
+                                <p class="input-group">
+                                    <input type="text" class="form-control" ng-keypress="seleccionarDocumentoEvento($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="submit" ng-click="seleccionarDocumentoEvento($event,termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
+                                    </span>
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <!--div class="defaultGrid" ng-grid="lista_ordenes_compras" > </div-->
+                            <br>
+                            </br>
+                            <div class="defaultGrid" ng-grid="listaDocumentosTemporales" > </div>
 
-                    </br>
+                            </br>
 
-                    <div class="row text-center">
-                        <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
-                            <span class="glyphicon glyphicon-chevron-left" ></span>
-                        </button>
-                        <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
-                            <span class="glyphicon glyphicon-chevron-right" ></span>
-                        </button>
-                    </div>
+                            <div class="row text-center">
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
+                                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                                </button>
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                                </button>
+                            </div>
+                        
                 </tab>                                
                 <tab>
                     <tab-heading>

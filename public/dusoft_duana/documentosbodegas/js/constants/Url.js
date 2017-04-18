@@ -11,6 +11,8 @@ define(["angular"], function(angular) {
                 'LISTA_DOCUMENTOS_USUARIOS': BASE_URL + '/movBodegas/consultarDocumentosUsuario',
                 'ELIMINAR_PRODUCTO_MOVIMIENTO_BODEGA_TEMPORAL': BASE_URL + '/movBodegas/eliminar_producto_movimiento_bodega_temporal',
                 'ADD_ITEM_DOC_TEMPORAL': BASE_URL + '/movBodegas/addItemDocTemporal',
+                'LISTAR_DOCUMENTOS_TEMPORALES': BASE_URL + '/movBodegas/obtenerDocumetosTemporales',
+                'GET_TIPOS_DOCUMENTOS_BODEGA_USUARIO': BASE_URL + '/movBodegas/getTiposDocumentosBodegaUsuario',
             },
             'I002': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar',
@@ -28,7 +30,7 @@ define(["angular"], function(angular) {
                 'CREAR_ITEM_FOC': BASE_URL + '/movBodegas/I002/agregarItemFOC',
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/crearDocumento',
                 'EXEC_CREAR_DOCUMENTOS': BASE_URL + '/movBodegas/I002/execCrearDocumento',
-                
+                                
             },
             'I003': {
             },

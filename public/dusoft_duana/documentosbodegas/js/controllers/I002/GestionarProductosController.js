@@ -1,5 +1,5 @@
 
-define(["angular", "js/controllers","models/I002/Laboratorio","models/I002/EmpresaIngreso","models/I002/ProductoIngreso",], function(angular, controllers) {
+define(["angular", "js/controllers"], function(angular, controllers) {
 
     controllers.controller('GestionarProductosController', [
         '$scope', '$rootScope', 'Request',

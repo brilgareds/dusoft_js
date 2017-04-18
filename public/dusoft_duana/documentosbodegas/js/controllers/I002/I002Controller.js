@@ -2,14 +2,7 @@
 define([
     "angular",
     "js/controllers",
-    'includes/slide/slideContent',
-    "models/I002/EmpresaIngreso",
-    "models/I002/DocumentoIngreso",
-    "models/I002/ProveedorIngreso",
-    "models/I002/OrdenCompraIngreso",
-    "models/I002/ProductoIngreso",
-//    "controllers/I002/GestionarProductosOrdenCompraController",
-    "controllers/I002/GestionarProductosController",
+    
 ], function(angular, controllers) {
 
     controllers.controller('I002Controller', [
@@ -27,7 +20,7 @@ define([
                 Empresa, Documento, Proveedor, OrdenCompra, Sesion, Producto, GeneralService) {
 
             var that = this;
-
+            console.log("EL CONTROLADOR CON EL $scope ", $scope);
             $scope.Empresa = Empresa;
             $scope.doc_tmp_id = "00000";
             $scope.valorRetFte = 0;
@@ -517,11 +510,16 @@ console.log("DocItemTemporal:: ",data);
                 };
 
                 Request.realizarRequest(API.I002.EXEC_CREAR_DOCUMENTOS, "POST", obj, function(data) {
+                    
                     if (data.status === 200) {
+                        
                         AlertService.mostrarMensaje("warning", data.msj);
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
-                        console.log("Z");
+                        var nombre = data.obj.nomb_pdf;                        
+                        setTimeout(function(){
+                            $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
+                        },4000);
                     }
                     if (data.status === 500) {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -647,8 +645,40 @@ console.log("DocItemTemporal:: ",data);
              * +Descripcion Metodo encargado de invocar el servicio que
              *              borra los DocTemporal
              */
+//            that.eliminarGetDocTemporal = function() {
+//               
+//                var obj = {
+//                    session: $scope.session,
+//                    data: {
+//                        orden_pedido_id: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
+//                        doc_tmp_id: $scope.doc_tmp_id
+//                    }
+//                };
+//
+//                Request.realizarRequest(API.I002.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function(data) {
+//
+//                    if (data.status === 200) {
+//                        AlertService.mostrarMensaje("warning", data.msj);
+//                        that.buscar_ordenes_compra();
+//                        that.refrescarVista();
+//                    }
+//
+//                    if (data.status === 404) {
+//                        AlertService.mostrarMensaje("warning", data.msj);
+//                    }
+//
+//                    if (data.status === 500) {
+//                        AlertService.mostrarMensaje("warning", data.msj);
+//                    }
+//                });
+//            };
+            /**
+             * @author Andres M. Gonzalez
+             * @fecha 25/04/2017
+             * +Descripcion Metodo encargado de invocar el servicio que
+             *              borra los DocTemporal
+             */
             that.eliminarGetDocTemporal = function() {
-               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -656,10 +686,8 @@ console.log("DocItemTemporal:: ",data);
                         doc_tmp_id: $scope.doc_tmp_id
                     }
                 };
-
-                Request.realizarRequest(API.I002.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
+                GeneralService.eliminarGetDocTemporal(obj, function(data) {
+                     if (data.status === 200) {
                         AlertService.mostrarMensaje("warning", data.msj);
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
@@ -745,7 +773,7 @@ console.log("DocItemTemporal:: ",data);
                         that.listarGetItemsDocTemporal(function(respuesta) {
                             if (respuesta) {
                                 that.listarParametros();
-that.listarProductosPorAutorizar();
+                                that.listarProductosPorAutorizar();
                             }
                         });
                     }
@@ -1417,7 +1445,7 @@ that.listarProductosPorAutorizar();
              };
              
             $scope.Empresa.limpiar_productos();
-           
+  console.log("$scope$scope$scope$scope$scope$scope$scope",$scope);         
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 

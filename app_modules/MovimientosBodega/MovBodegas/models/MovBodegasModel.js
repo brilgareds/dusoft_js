@@ -808,6 +808,72 @@ MovimientosBodegasModel.prototype.getDoc = function(parametros, callback){
 };
 
 
+MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametro, callback) {
+    var inner='';
+    var select="''";
+    var where="";
+    if(parametro.tipoDocGeneralId==='I002'){
+     select="orden_pedido_id";   
+     inner="join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id)";     
+    }
+    if(parametro.numeroDocumento !== ''){
+      where = " AND t.doc_tmp_id = "+parametro.numeroDocumento;
+    }
+    var sql = " SELECT \
+		t.*, \
+		c.inv_tipo_movimiento AS tipo_movimiento, \
+		b.tipo_doc_general_id AS tipo_doc_bodega_id, \
+		c.descripcion AS tipo_clase_documento, \
+		b.prefijo, \
+		b.descripcion, \
+		a.empresa_id, \
+		a.centro_utilidad, \
+		a.bodega, \
+		SU.nombre, \
+                "+select+" as orden\
+		FROM inv_bodegas_movimiento_tmp t \
+		JOIN inv_bodegas_documentos as a ON (t.bodegas_doc_id = a.bodegas_doc_id) \
+		JOIN documentos as b  ON (a.documento_id = b.documento_id)\
+		AND (a.empresa_id = b.empresa_id)\
+		JOIN tipos_doc_generales as c ON (b.tipo_doc_general_id = c.tipo_doc_general_id) \
+		JOIN system_usuarios as SU ON (t.usuario_id = SU.usuario_id) \
+                "+inner+"\
+		WHERE TRUE AND a.empresa_id = :1 AND a.centro_utilidad = :2 AND a.bodega = :3 AND b.tipo_doc_general_id = :4 AND c.inv_tipo_movimiento = :5 "+where;
+   
+   G.knex.raw(sql, {1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento}).
+   then(function(resultado){
+    
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       console.log("ERROR ",err);
+       callback(err);
+   });
+};
+
+MovimientosBodegasModel.prototype.getTiposDocumentosBodegaUsuario = function(parametro, callback) {
+    
+    var sql = "SELECT DISTINCT \
+                b.tipo_doc_general_id as tipo_doc_bodega_id,\
+                c.descripcion as tipo_clase_documento\
+                FROM\
+                inv_bodegas_movimiento as m\
+                inner join inv_bodegas_documentos as a on (a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad AND a.bodega = m.bodega)\
+                inner join documentos as b on (b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id)\
+                inner join tipos_doc_generales as c on (c.tipo_doc_general_id = b.tipo_doc_general_id AND c.inv_tipo_movimiento = :4 )\
+                WHERE\
+                m.empresa_id = :1 \
+                AND m.centro_utilidad = :2 \
+                AND m.bodega = :3 ;";
+   
+   G.knex.raw(sql, {1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.invTipoMovimiento}).
+   then(function(resultado){    
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       console.log("ERROR ",err);
+       callback(err);
+   });
+};
+
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS

@@ -25,6 +25,14 @@ module.exports = function(app, di_container) {
         c_movimientos_bodega.crearDocumento(req, res);
     });
     
+    app.post('/api/movBodegas/obtenerDocumetosTemporales', function(req, res) {       
+        c_movimientos_bodega.obtenerDocumetosTemporales(req, res);
+    });
+    
+    app.post('/api/movBodegas/getTiposDocumentosBodegaUsuario', function(req, res) {       
+        c_movimientos_bodega.getTiposDocumentosBodegaUsuario(req, res);
+    });
+    
     /*app.post('/api/movBodegas/imprimirDocumentoDespacho', function(req, res) {
         c_movimientos_bodega.imprimirDocumentoDespacho(req, res);
     });*/

@@ -1831,9 +1831,7 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
     console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
     
     var that = this;
-
-    
-    console.log("Parametros === ", args)
+ 
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
         //res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
         G.eventEmitter.emit("onGenerarOrdenDeCompraRespuesta", {msj:'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', status: 404, data: {}});
@@ -1874,7 +1872,11 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
         transaccion: null,
         contexto : that.m_ordenes_compra
     }
-    console.log("parametros ", parametros);
+    console.log("-------------------------------------------------------------");
+    console.log("1) parametros: ", parametros);
+    console.log("2) Detalle Productos: ", parametros.encabezado.detalle);
+    console.log("-------------------------------------------------------------");
+    
     G.Q.ninvoke(that, "__insertarOrdenCompra",parametros.encabezado ).then(function (resultado) {
          
         parametros.encabezado.ordenId = resultado.data.numero_orden;

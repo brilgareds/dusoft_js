@@ -12,10 +12,31 @@ define(["angular","js/models","includes/classes/Pedido"], function(angular, mode
 			this.usuario = datos.usuario || null;
                         this.justificacionSeparador = "";
                         this.justificacionAuditor = "";
+                        this.nombreSeparador = "";
+                        this.nombreAuditor = "";
 		}
-
-		//herencia
+                
 		PedidoKardex.prototype = Object.create(Pedido.getClass().prototype);
+                
+                PedidoKardex.prototype.setNombreSeparador = function(nombreSeparador){
+                    this.nombreSeparador = nombreSeparador;
+                    return this;
+                };
+                
+                PedidoKardex.prototype.getNombreSeparador = function(){
+                    return this.nombreSeparador;
+                };
+                
+                PedidoKardex.prototype.setNombreAuditor = function(nombreAuditor){
+                    this.nombreAuditor = nombreAuditor;
+                    return this;
+                };
+                
+                PedidoKardex.prototype.getNombreAuditor = function(){
+                    return this.nombreAuditor;
+                };
+
+
 
 		this.get = function(datos){
 			return new PedidoKardex(datos);

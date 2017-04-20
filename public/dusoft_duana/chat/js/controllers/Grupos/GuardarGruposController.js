@@ -342,7 +342,7 @@ define(["angular", "js/controllers",
             * @fecha 2016-09-02
             */
             $scope.onBtnCancelar = function(){
-                $state.go("Admin");
+                $state.go("ChatDusoft");
             };
             
             self.init();

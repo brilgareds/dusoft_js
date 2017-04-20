@@ -67,7 +67,13 @@ define(["angular", "js/controllers",
                 orden_compra_seleccionada: OrdenCompra.get()
             };
 
-            var estados = ["btn btn-primary btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-info btn-xs", "btn btn-warning btn-xs"];
+            var estados = ["btn btn-primary btn-xs",
+                "btn btn-success btn-xs",
+                "btn btn-danger btn-xs", 
+                "btn btn-warning btn-xs", 
+                "btn btn-info btn-xs",
+                "btn btn-warning btn-xs", 
+                "btn btn-warning btn-xs"];
             
             $scope.filtros = [
                 {nombre : "Orden", numeroOrden:true},                
@@ -196,7 +202,7 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'numero_orden_compra', displayName: '# Orden', width: "60"},
                     {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "300"},
-                    {field: 'descripcion_estado', displayName: "Estado", cellClass: "txt-center", width:150,
+                    {field: 'descripcion_estado', displayName: "Estado", cellClass: "txt-center", width:200,
                         cellTemplate: "<button type='button' ng-class='agregar_clase_btn(row.entity.estado)'>{{row.entity.descripcion_estado}} </button>"},
                     {field: 'observacion', displayName:"Observacion"},
                     {field: 'estado_digitacion', displayName: "Digitacion", width:100},

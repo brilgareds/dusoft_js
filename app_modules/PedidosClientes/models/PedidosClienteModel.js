@@ -146,47 +146,22 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     var estadoFacturaFiscal =  G.knex.raw("'00' as estado_factura_fiscal");
     
      if (fecha_inicial !== undefined) {
-        
-        //if(filtro.filtroEstadoFacturado){
-            /*facturaFiscal = G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
-                        SELECT distinct(invfa.factura_fiscal) as factura_fiscal\
-                                  FROM inv_facturas_agrupadas_despacho as invfa\
-                                  INNER JOIN inv_facturas_agrupadas_despacho_d as invfad \
-                                  ON invfa.prefijo = invfad.prefijo \
-                                  AND invfa.factura_fiscal = invfad.factura_fiscal\
-                                  AND invfad.pedido_cliente_id = a.pedido_cliente_id\
-                        UNION\
-                        SELECT distinct(factura_fiscal) as factura_fiscal\
-                        FROM inv_facturas_despacho as b \
-                        WHERE b.pedido_cliente_id = a.pedido_cliente_id\
-                        ) as fac ) is null THEN 'NO FACTURADO'\
-                        ELSE 'FACTURADO' END as factura_fiscal "
-                    );*/
+
             facturaFiscal = G.knex.raw("CASE WHEN estado_factura_fiscal = 0 THEN 'NO FACTURADO' ELSE 'FACTURADO' END as factura_fiscal ");
-            
-            estadoFacturaFiscal = "estado_factura_fiscal";
-            /*estadoFacturaFiscal = G.knex.raw("CASE WHEN (SELECT max(fac.factura_fiscal) as factura_fiscal FROM (\
-                        SELECT distinct(invfa.factura_fiscal) as factura_fiscal\
-                                  FROM inv_facturas_agrupadas_despacho as invfa\
-                                  INNER JOIN inv_facturas_agrupadas_despacho_d as invfad \
-                                  ON invfa.prefijo = invfad.prefijo \
-                                  AND invfa.factura_fiscal = invfad.factura_fiscal\
-                                  AND invfad.pedido_cliente_id = a.pedido_cliente_id\
-                        UNION\
-                        SELECT distinct(factura_fiscal) as factura_fiscal\
-                        FROM inv_facturas_despacho as b \
-                        WHERE b.pedido_cliente_id = a.pedido_cliente_id\
-                        ) as fac ) is null THEN '0'\
-                        ELSE '1' END as estado_factura_fiscal "
-                    );*/
          
-        /*}else{
-            
-            facturaFiscal =   G.knex.raw("'-----------' as factura_fiscal");    
-            estadoFacturaFiscal =  G.knex.raw("'00' as estado_factura_fiscal");
-            
-        }*/
+            estadoFacturaFiscal = "estado_factura_fiscal";
+
     }
+    
+    //Query para traer el ultimo separador del pedido
+    var subQuery = G.knex.column([
+        "bb.nombre as nombre_separador",
+    ]).from("ventas_ordenes_pedidos_estado as aa").
+    leftJoin("operarios_bodega as bb", "aa.responsable_id", "bb.operario_id").
+    where("aa.estado", "1").
+    andWhere("aa.pedido_cliente_id", "=", G.knex.raw("a.pedido_cliente_id::integer")).
+    orderBy("aa.fecha_registro", "desc").limit(1).as("nombre_separador");
+        
     var columns = [ 
         facturaFiscal,
         estadoFacturaFiscal,
@@ -223,12 +198,9 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
                     when a.estado_pedido = '10' then 'Por Autorizar' end as descripcion_estado_actual_pedido"),
         "d.estado as estado_separacion",
         G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH:mi am') as fecha_registro"),
-        "e.empresa_id as despacho_empresa_id",
-        "e.prefijo as despacho_prefijo",
-        "e.numero as despacho_numero",
-        G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho"),
         "f.descripcion as descripcion_tipo_producto",
-        G.knex.raw("'1' as tipo_pedido")
+        G.knex.raw("'1' as tipo_pedido"),
+        subQuery
         
     ];
       
@@ -248,10 +220,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
             this.where("a.estado_pedido", estado);
         }
     }).
-            leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.pedido_cliente_id", "e.pedido_cliente_id").
-            innerJoin("inv_tipo_producto as f", "a.tipo_producto", "f.tipo_producto_id").
-             
-            andWhere(function() {
+    innerJoin("inv_tipo_producto as f", "a.tipo_producto", "f.tipo_producto_id").         
+    andWhere(function() {
 
         if (filtro) {
             if (filtro.tipo_busqueda === 0) {
@@ -277,16 +247,21 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id,
     if (estadoSolicitud) {
         andWhere('a.estado_pedido', G.constants.db().LIKE, "%" + estadoSolicitud + "%");
     }
+        
+    query.orderByRaw("6 DESC").limit(G.settings.limit).offset((pagina - 1) * G.settings.limit).as("a");
+        
+    
+    var queryPrincipal = G.knex.column([
+        "a.*",
+        "e.empresa_id as despacho_empresa_id",
+        "e.prefijo as despacho_prefijo",
+        "e.numero as despacho_numero",
+        G.knex.raw("CASE WHEN e.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")
+    ]).from(query).
+    leftJoin("inv_bodegas_movimiento_despachos_clientes as e", "a.numero_pedido", "e.pedido_cliente_id");   
+    
+    queryPrincipal.then(function(rows) {
 
-    query.limit(G.settings.limit).
-            offset((pagina - 1) * G.settings.limit);
-    //La base del 170 no responde con un orderby,  por esa razon se condiciona para produccion
-    if (G.program.prod) {
-        query.orderByRaw("6 DESC");
-    }
-
-    query.then(function(rows) {
-         
         callback(false, rows);
     }). catch (function(err) {
         console.log("err [listar_pedidos_clientes]: ", err);
@@ -1159,9 +1134,25 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
                 a.tercero_id,\
                 c.nombre_tercero,\
                 d.usuario,\
-                a.fecha_registro,\
+                to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
                 e.justificacion_separador,\
-                e.justificacion_auditor\
+                e.justificacion_auditor,\
+                (\
+                    select\
+                    bb.nombre as nombre_responsable\
+                    from ventas_ordenes_pedidos_estado as aa\
+                    inner join operarios_bodega as bb on aa.responsable_id = bb.operario_id\
+                    WHERE aa.estado in('8') AND a.pedido_cliente_id = aa.pedido_cliente_id\
+                    order by aa.fecha_registro desc limit 1\
+                ) as nombre_auditor,\
+                (\
+                    select\
+                    bb.nombre as nombre_responsable\
+                    from ventas_ordenes_pedidos_estado as aa\
+                    inner join operarios_bodega as bb on aa.responsable_id = bb.operario_id\
+                    WHERE aa.estado in('1') AND a.pedido_cliente_id = aa.pedido_cliente_id\
+                    order by aa.fecha_registro desc limit 1\
+                ) as nombre_separador\
                 FROM ventas_ordenes_pedidos a\
                 inner JOIN ventas_ordenes_pedidos_d AS b ON a.pedido_cliente_id = b.pedido_cliente_id\
                 inner JOIN terceros as c ON (a.tipo_id_tercero = c.tipo_id_tercero) AND (a.tercero_id = c.tercero_id)\

@@ -1703,7 +1703,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             centro_utilidad_destino_id: $scope.Pedido.get_centro_utilidad_id(),
                                             bodega_destino_id: $scope.Pedido.get_bodega_id(),
                                             tipo_producto: $scope.Pedido.get_tipo_producto(),
-                                            tipo_pedido: '1',
+                                            tipo_pedido: $scope.Pedido.get_tipo_producto(),
                                             observacion: 'PEDIDO DESDE EL MODULO DE CLIENTE (CLIENTE: ', //+ $scope.Pedido.cliente.nombre_tercero + "" +$scope.Pedido.cliente.tipo_id_tercero + ": " +$scope.Pedido.cliente.id +")",
                                             productos: resultado,
                                             pedidoCliente: 0

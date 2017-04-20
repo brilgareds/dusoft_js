@@ -433,7 +433,10 @@ define(["angular",
                 $scope.paginaactual++;
                 that.buscarPedidosCliente($scope.termino_busqueda, true);
             };
-
+            
+            $scope.buscarPedidosCliente=function(termino_busqueda){
+               that.buscarPedidosCliente(termino_busqueda); 
+            };
 
             $scope.seleccionEstado = function() {
                 $scope.paginaactual = 1;

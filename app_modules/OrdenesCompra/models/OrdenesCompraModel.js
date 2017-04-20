@@ -443,7 +443,7 @@ OrdenesCompraModel.prototype.guardarDestinoOrden = function(parametros, callback
         callback(false, resultado);
     }).catch(function(err){
        console.log("error [guardarDestinoOrden]: ", err);
-       callback(err);
+       callback({msj: "Error al guardar el destino de la orden", status: 500});
     });
      
 };
@@ -1568,6 +1568,8 @@ function __gestionarOrdenesAgrupadas(params, callback){
  * +Descripcion: Funcion recursiva que permite crear el detalle de la orden de compra
  */
 function __gestionarDetalleOrdenesAgrupadas(params, callback){
+    
+    
    var producto = params.encabezado.detalle[0];
    var def = G.Q.defer();
    if(!producto){
@@ -1577,14 +1579,18 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
       
    G.Q.ninvoke(params.contexto, "listar_productos", params.encabezado.empresa_id, params.encabezado.codigo_proveedor, params.encabezado.ordenId,
                producto.codigo_producto, null, 1, null).then(function(_producto){
-           
+            
       if(_producto.length === 0){
          throw "El producto no pudo ser registrado " + producto.codigo_producto + "-"+(producto.__rownum__ + 1);
       } else {
           producto.iva = _producto[0].iva;
           
-          return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, producto.codigo_producto, producto.cantidad,
-                             producto.costo, producto.iva, params.transaccion);
+          return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, 
+                             producto.codigo_producto, 
+                             producto.cantidad || producto.cantidad_despachada,
+                             producto.costo || producto.valor_unitario, 
+                             producto.iva, 
+                             params.transaccion);
       }
                    
    }).then(function(resultado){
@@ -1702,6 +1708,22 @@ function __validarFilaOrden(params, callback){
         callback(err);
     });
 }
+
+
+
+OrdenesCompraModel.prototype.gestionaDetalleOrden = function(parametros, callback){
+    
+    G.Q.nfcall(__gestionarDetalleOrdenesAgrupadas, parametros).then(function(resultado){         
+            
+        callback(false,{msj:'Se genera satisfactoriamente la orden # ', status: 200});
+     }).catch(function(err){
+        console.log("error (/catch) [gestionaDetalleOrden]: ", err);
+        callback({msj: 'Error al registrar el detalle de la orden', status: 500});
+     }).done();   
+    
+     
+};
+ 
 
 
 OrdenesCompraModel.$inject = ["m_unidad_negocio", "m_proveedores"];

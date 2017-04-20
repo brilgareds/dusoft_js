@@ -95,6 +95,13 @@ define(["angular", "js/controllers",
                     {nombre: "Cliente", tipo_busqueda: 1},
                     {nombre: "Vendedor", tipo_busqueda: 2}
                 ],
+                opcion_pedido: [
+                    {descripcion: "Crear",tipo_pedido: 0},
+                    {descripcion: "Crear multiple",tipo_pedido: 1}              
+                ],
+                opcion_inicial: {descripcion: "Seleccione",tipo_pedido: -1},
+                    
+                
                 filtro: {nombre: "Numero", tipo_busqueda: 0},
                 filtro_pedido: {nombre: "Numero", tipo_busqueda: 0},
                 filtro_actual_cotizacion: {},
@@ -104,6 +111,34 @@ define(["angular", "js/controllers",
                 inactivarTab: false
             };
             $scope.listarFacuras = false;
+            
+            
+            /**
+             * +Descripcion Menu desplegable para seleccionar el tipo de cotizacion
+             *              que desee realizar el usario,
+             *              0 = Cotizacion
+             *              1 = Cotizacion multiple
+             */
+            $scope.onSeleccionOpcionPedido = function(opcion) {
+                $scope.datos_view.opcion_inicial = opcion;
+                
+               
+                if(opcion.tipo_pedido === 0){   
+                    localStorageService.add("multiple_pedido",{multiple_pedido:0});
+                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0' });
+                    $state.go('Cotizaciones');
+                }
+                                                         
+                if(opcion.tipo_pedido === 1){    
+                    localStorageService.add("multiple_pedido",{multiple_pedido:1});
+                    localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0' });
+                    $state.go('Cotizaciones');
+                 
+                }
+                 
+            };
+            
+            
             /**
              * +Descripcion Menu desplegable para filtar en la busqueda de
              *              una cotizacion
@@ -202,16 +237,26 @@ define(["angular", "js/controllers",
                 localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(),
                     cartera: '0',
                     busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
-                    filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion});
-                $state.go('Cotizaciones');
+                    filtro_actual_cotizacion: $scope.datos_view.filtro_actual_cotizacion });
+                
+                
+                
+                localStorageService.add("multiple_pedido",{multiple_pedido:1});
+                $state.go('Cotizaciones');      
             };
 
             $scope.modificar_pedido_cliente = function(pedido) {
                 $scope.datos_view.filtro_actual_pedido = $scope.datos_view.filtro_pedido;
 
-                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido(),
+                localStorageService.add("pedido", 
+                {
+                    numero_pedido: pedido.get_numero_pedido(),
                     busqueda: $scope.datos_view.termino_busqueda_pedidos,
-                    filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido});
+                    filtro_actual_pedido: $scope.datos_view.filtro_actual_pedido,
+                    bodega_pedido_id: pedido.get_bodega_id(),
+                    modifica_pedido:1}
+                        );
+                localStorageService.add("multiple_pedido",{multiple_pedido:0});
                 $state.go('PedidoCliente');
             };
 
@@ -236,23 +281,54 @@ define(["angular", "js/controllers",
 
 
             $scope.generar_observacion_cartera = function(obj) {
+                 
                 
+                if(obj.get_numero_pedido() > 0 && obj.get_numero_cotizacion()){
+                    
+                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", "La cotizacion ya finalizo su proceso");
+                    return;
+                }
                 if(obj.getEstado() === '0' && obj.get_estado_cotizacion() === '1'){
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Debe enviar la solicitud a cartera");
                     return;
                 }
-              
+               
                 // Observacion cartera para la cotizacion
                 if (obj.get_numero_cotizacion() > 0) {
+                    
+                    var url = API.PEDIDOS.CLIENTES.CONSULTAR_ESTADO_COTIZACION;
+                    var parametro = {
+                        session: $scope.session,
+                        data: {pedidos_clientes: {cotizacion: obj.get_numero_cotizacion()}}
+                    };
+
+                    Request.realizarRequest(url, "POST", parametro, function(data) {
+
+                        if (data.status === 200) {                            
+                             
+                            localStorageService.add("multiple_pedido",{multiple_pedido:data.obj.pedidos_clientes.estado_multiple_pedido});
+                        }
+                    });
+                    
+                    
                     localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1', tipoPedido: obj.getTipoPedido()});
+                    localStorageService.add("aprobarEstadoPedidoGenerarPedido",{estado:0});
                     $state.go('Cotizaciones');
                 }
 
                 // Observacion cartera para el pedido
                 if (obj.get_numero_pedido() > 0) {
-                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1', tipoPedido: obj.getTipoPedido()});
+                    localStorageService.add("multiple_pedido",{multiple_pedido:0});
+                    localStorageService.add("pedido", 
+                    {
+                        numero_pedido: obj.get_numero_pedido(), 
+                        cartera: '1', tipoPedido: obj.getTipoPedido(),
+                        modifica_pedido:0
+                        } );
+                   
+                    localStorageService.add("aprobarEstadoPedidoGenerarPedido",{estado:1});
                     $state.go('PedidoCliente');
-                }
+                } 
             };
 
             $scope.visualizar = function(obj) {
@@ -265,7 +341,12 @@ define(["angular", "js/controllers",
 
                 // Visualizar pedido
                 if (obj.get_numero_pedido() > 0) {
-                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), visualizar: '1'});
+                    localStorageService.add("pedido", 
+                    {
+                        numero_pedido: obj.get_numero_pedido(), 
+                        visualizar: '1',
+                        modifica_pedido:0
+                    });
                     $state.go('PedidoCliente');
                 }
             };
@@ -309,7 +390,7 @@ define(["angular", "js/controllers",
                 var terminoBusqueda = localStorageService.get("terminoBusqueda");
 
                 if (terminoBusqueda) {
-                    
+                                   
                     localStorageService.add("terminoBusquedaPedido", null);
                     $scope.datos_view.filtro = terminoBusqueda.filtro_actual_cotizacion;
                     $scope.datos_view.termino_busqueda_cotizaciones = terminoBusqueda.busqueda;
@@ -393,7 +474,9 @@ define(["angular", "js/controllers",
                     var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
                     cliente.setDepartamento(data.departamento);
                     cliente.setMunicipio(data.municipio);
-
+                    cliente.setSwFacturacionAgrupada(data.sw_autorizacion);
+                    cliente.setSwAutorizacion(data.sw_facturacion_agrupada);
+                         
                     var vendedor = Vendedor.get(data.nombre_vendendor, data.tipo_id_vendedor, data.vendedor_id, data.telefono_vendedor);
 
                     cotizacion.set_numero_cotizacion(data.numero_cotizacion).set_vendedor(vendedor).setCliente(cliente);
@@ -516,7 +599,12 @@ define(["angular", "js/controllers",
                     data: {
                         pedidos_clientes: {
                             cotizacion: cotizacion,
-                            termino_busqueda: ''
+                            termino_busqueda: {
+                                termino_busqueda:'2',
+                                empresa_origen_id: cotizacion.empresa_id,
+                                centro_utilidad_origen_id: cotizacion.centro_utilidad_id,
+                                bodega_origen_id: cotizacion.bodega_id
+                            }
                         }
                     }
                 };
@@ -586,61 +674,11 @@ define(["angular", "js/controllers",
                             observacion+=$scope.Pedido.get_observacion_cartera();
                             $scope.Pedido.set_observacion_cartera(observacion);
                       }
-
-                //$scope.datos_view.productos_no_disponible = data.obj.pedidos_clientes.producto;
-                  if(data.obj.pedidos_clientes.producto.length > 0){      
+ 
+                if(data.obj.pedidos_clientes.producto.length > 0){      
                       
-                        that.ventanaProductosSinDisponibilidad(data.obj.pedidos_clientes.producto);
-                        
-               /*
-                      $scope.opts = {
-                          backdrop: true,
-                          backdropClick: true,
-                          dialogFade: false,
-                          keyboard: true,
-                          template: ' <div class="modal-header">\
-                                          <button type="button" class="close" ng-click="close()">&times;</button>\
-                                          <h4 class="modal-title">Listado Productos </h4>\
-                                      </div>\
-                                      <div class="modal-body row">\
-                                          <div class="col-md-12">\
-                                              <h4 >Lista productos sin disponibilidad.</h4>\
-                                              <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
-                                                  <div class="list-group">\
-                                                      <a ng-repeat="producto in datos_view.productos_no_disponible" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                      Cantidad solicitada ({{ producto.cantidad_solicitada}})  Cantidad disponible ({{ producto.cantidad_disponible}}) para el codigo ({{ producto.codigo_producto}}) \
-                                                      </a>\
-                                                  </div>\
-                                              </div>\
-                                          </div>\
-                                          <div class="col-md-12" ng-if = "ocultarOpciones == 0">\
-                                              <fieldset>\
-                                                  <legend>Observación Cartera</legend>\
-                                                  <div class="row">\
-                                                      <div class="col-md-12">\
-                                                          <textarea  ng-model="Pedido.observacion_cartera" \
-                                                          ng-disabled="!datos_view.cartera" class="col-lg-12 col-md-12 col-sm-12" \
-                                                          rows="4" name="" placeholder="Ingresar Observación Cartera"></textarea>\
-                                                      </div>\
-                                                  </div>\
-                                              </fieldset>\
-                                          </div>\
-                                      </div>\
-                                      <div class="modal-footer">\
-                                          <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cerrar</button>\
-                                          <button class="btn btn-danger" ng-click="desaprobarCartera(4)" ng-if = "ocultarOpciones == 0" >\
-                                              Denegado Cartera\
-                                          </button>\
-                                      </div>',
-                      scope: $scope,
-                      controller: ["$scope", "$modalInstance", function($scope, $modalInstance) {
-                          $scope.close = function() {
-                              $scope.datos_view.progresoArchivo = 0;
-                              $modalInstance.close();
-                          };                    
-                      }]
-                };
-                var modalInstance = $modal.open($scope.opts);*/
+                    that.ventanaProductosSinDisponibilidad(data.obj.pedidos_clientes.producto);
+                         
                 
                 }else{                           
                    callback(true);
@@ -832,8 +870,6 @@ define(["angular", "js/controllers",
             
             that.ventanaFacturasPedido = function(pedido) {
                 
-                console.log("pedido ", pedido);
-               
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -860,9 +896,7 @@ define(["angular", "js/controllers",
              * @fecha 2017-01-03 YYYY-MM-DD
              */
             $scope.ventanaFacturasPedido = function(entity){
-                
-                //console.log("entity ", entity.numero_pedido);
-                
+                 
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -1073,8 +1107,7 @@ define(["angular", "js/controllers",
              *               actualizando el nuevo estado de la cotizacion
              */
             socket.on("onListarEstadoCotizacion", function(datos) {
-                
-                console.log("Resultado de onListarEstadoCotizacion ", datos);
+                 
                 if (datos.status === 200) {
                     var estado = ['Inactivo', 'Activo', 'Anulado', 'Aprobado cartera', 'No autorizado por cartera', 'Tiene un pedido', 'Se solicita autorizacion']
                     $scope.Empresa.get_cotizaciones().forEach(function(data) {

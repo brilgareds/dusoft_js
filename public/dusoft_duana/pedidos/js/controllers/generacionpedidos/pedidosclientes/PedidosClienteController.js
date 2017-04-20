@@ -1740,7 +1740,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         AlertService.mostrarVentanaAlerta("Mensaje ERROR", data.msj);
                                     }
                                 });*/
-                            } else {
+                            }else{
                                 that.autorizarCotizacionCartera(aprobado, denegar);
                             }
                         } else {

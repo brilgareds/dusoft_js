@@ -13,6 +13,7 @@ define(["angular"], function(angular) {
                 'ADD_ITEM_DOC_TEMPORAL': BASE_URL + '/movBodegas/addItemDocTemporal',
                 'LISTAR_DOCUMENTOS_TEMPORALES': BASE_URL + '/movBodegas/obtenerDocumetosTemporales',
                 'GET_TIPOS_DOCUMENTOS_BODEGA_USUARIO': BASE_URL + '/movBodegas/getTiposDocumentosBodegaUsuario',
+                'GET_DOCUMENTOS_BODEGA_USUARIO': BASE_URL + '/movBodegas/getDocumentosBodegaUsuario',
             },
             'I002': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar',
@@ -30,6 +31,7 @@ define(["angular"], function(angular) {
                 'CREAR_ITEM_FOC': BASE_URL + '/movBodegas/I002/agregarItemFOC',
                 'CREAR_DOCUMENTO': BASE_URL + '/movBodegas/crearDocumento',
                 'EXEC_CREAR_DOCUMENTOS': BASE_URL + '/movBodegas/I002/execCrearDocumento',
+                'CREAR_HTML_DOCUMENTO': BASE_URL + '/movBodegas/I002/crearHtmlDocumento',
                                 
             },
             'I003': {

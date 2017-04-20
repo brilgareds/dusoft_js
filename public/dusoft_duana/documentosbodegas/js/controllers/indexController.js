@@ -25,6 +25,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             $scope.Empresa = Empresa;
             $scope.terminoBusqueda="";
+            $scope.ultima_busqueda = "";
+            $scope.termino = "";
+            $scope.paginaactual = 1;
+            $scope.paginas = 0;
+            $scope.items = 0;
 
             //se valida que el usuario tenga centro de utilidad y bodega
             var empresa = Sesion.getUsuarioActual().getEmpresa();
@@ -114,7 +119,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
             
             $scope.seleccionarDocumentoEvento = function($event,terminoBusqueda){
-                console.log("termono",terminoBusqueda);
+                console.log("termino 111",terminoBusqueda);
                 console.log("$event.which ",$event.which);
                 
                 if ($event.which === 13) {
@@ -131,9 +136,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
             };
             
+            $scope.seleccionarDocumentoCreadoEvento = function($event,terminoBusqueda){
+                console.log("termono",terminoBusqueda);
+                console.log("$event.which ",$event.which);
+                
+                if ($event.which === 13 || $event.which === 1) {
+                 $scope.terminoBusqueda=terminoBusqueda;
+                 $scope.termino = terminoBusqueda;
+                    if($scope.tipoDocumento.tipo.tipo !== undefined){
+                    that.listarDocumentosBodegaUsuario(true);
+                   }
+                }
+                
+            };
+            
+            $scope.seleccionarDocumentoCreado = function(){                
+                if($scope.tipoDocumento.tipo.tipo !== undefined){
+                 that.listarDocumentosBodegaUsuario(true);
+                }
+            };
+            
             that.listarDocumetosTemporales=function(){
 
-    var obj = {
+            var obj = {
                     session: $scope.session,
                     data: {
                               empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
@@ -174,6 +199,63 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         </div>'}
                 ]
             };
+            
+             $scope.listaDocumentos = {
+                data: 'Documento',
+                enableColumnResize: true,
+                enableRowSelection: true,
+                enableCellSelection: true,
+                enableHighlighting: true,
+                columnDefs: [
+                    {field: 'tipo', displayName: 'Tipo Movimiento', width: "8%"},
+                    {field: 'tipo_movimiento', displayName: 'Doc Bod ID', width: "10%"},
+                    {field: 'bodegas_doc_id', displayName: 'Doc ID', width: "10%"},
+                    {field: 'prefijoNumero', displayName: 'Número', width: "10%"},
+                    {field: 'descripcion', displayName: 'Descripción', width: "25%"},
+                    {field: 'observaciones', displayName: "Observación", width: "25%"},
+                    {field: 'fecha_registro', displayName: "Fecha", cellFilter: "date:\'dd-MM-yyyy\'", width: "5%"},
+                    {width: "7%", displayName: "Acciónes", cellClass: "txt-center",
+                        cellTemplate: '<div class="btn-group">\
+                                           <div ">\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_imprimir(row.entity)">Imprimir <span class="glyphicon glyphicon-print"></span></button>\
+                                           </div>\
+                                        </div>'}
+                ]
+            };
+            
+            that.listarDocumetosTemporales=function(documentos,callback){
+
+                var obj = {
+                        session: $scope.session,
+                        data: {
+                                  empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                                  prefijo:documentos.prefijo,
+                                  numeracion:documentos.numero
+                           }
+                    };
+
+                    Request.realizarRequest(API.I002.CREAR_HTML_DOCUMENTO, "POST", obj, function(data) {  
+                        if (data.status === 200) {
+                            console.log("QWERTY ",data);
+                            callback(data);
+                        }
+                        if (data.status === 500) {
+                            AlertService.mostrarMensaje("warning", data.msj);
+                            callback(false);
+                        }
+                    });
+            };
+             
+            $scope.btn_imprimir = function(documentos){
+                 
+                  that.listarDocumetosTemporales(documentos,function(respuesta){
+                      if(respuesta !== false){
+                        console.log("respuesta ",respuesta);
+                        $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
+                      }                      
+                  });  
+                  
+             };
             
              $scope.btn_eliminar_documento = function(data) {
 
@@ -258,8 +340,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                        
                             centro_utilidad_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            invTipoMovimiento: claseDoc
-                        
+                            invTipoMovimiento: claseDoc                        
                     }
                 };
 
@@ -280,6 +361,89 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.tipoDocumento = tipoDocumentos;
                 
             };
+            
+           that.listarDocumentosBodegaUsuario=function(paginando){
+               
+             if ($scope.ultima_busqueda !== $scope.termino) {
+                    $scope.paginaactual = 1;
+                }   
+                  
+            var obj = {
+                    session: $scope.session,
+                    data: {
+                            empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                            centroUtilidadId : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                            bodegaId : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            tipoDocGeneralId : $scope.tipoDocumento.tipo.tipo,
+                            invTipoMovimiento : $scope.claseDoc,
+                            numeroDocumento : $scope.terminoBusqueda,
+                            paginaActual: $scope.paginaactual
+                    }
+                };
+
+                Request.realizarRequest(API.INDEX.GET_DOCUMENTOS_BODEGA_USUARIO, "POST", obj, function(data) { 
+                    if (data.status === 200) {
+                        $scope.ultima_busqueda = $scope.termino;
+                       that.renderDocumento(data.obj.getDocumentosBodegaUsuario,paginando);
+                    }
+                });
+            };
+            
+            that.renderDocumento=function(documentos,paginando){
+                var allDocumentos = [];      
+                
+                $scope.items = documentos.length;
+                
+//                se valida que hayan registros en una siguiente pagina
+                if (paginando && $scope.items === 0) {
+                    if ($scope.paginaactual > 1) {
+                        $scope.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                    return;
+                }
+
+                $scope.paginas = (documentos.length / 10);
+                $scope.items = documentos.length;
+                
+                
+                documentos.forEach(function(data) {
+                    var doc= Documento.get(data.documento_id,data.prefijo,data.numero,data.fecha_registro);
+                     doc.set_tipo(data.tipo_movimiento);
+                     doc.set_tipo_movimiento(data.tipo_doc_bodega_id);
+                     doc.set_descripcion(data.descripcion);
+                     doc.set_observaciones(data.observacion);
+                     doc.setPrefijoNumero(data.prefijo+'-'+data.numero);
+                     var nomb_pdf = "documentoI002" + data.prefijo + data.numero + ".html";  
+                     doc.setArchivo(nomb_pdf);
+                     allDocumentos.push(doc);
+                });   
+                $scope.Documento=allDocumentos;
+            };
+            
+              /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 20/04/2017
+             * @returns {pagina}
+             */
+             $scope.paginaAnterior = function() {
+                if($scope.paginaactual === 1) return;
+                $scope.paginaactual--;
+                that.listarDocumentosBodegaUsuario(true);
+            };
+            
+            /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 20/04/2017
+             * @returns {pagina}
+             */
+            $scope.paginaSiguiente = function() {
+                $scope.paginaactual++;
+                that.listarDocumentosBodegaUsuario(true);
+            };
+            
             
     
 

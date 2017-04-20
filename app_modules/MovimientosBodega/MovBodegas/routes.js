@@ -33,6 +33,10 @@ module.exports = function(app, di_container) {
         c_movimientos_bodega.getTiposDocumentosBodegaUsuario(req, res);
     });
     
+    app.post('/api/movBodegas/getDocumentosBodegaUsuario', function(req, res) {       
+        c_movimientos_bodega.getDocumentosBodegaUsuario(req, res);
+    });
+    
     /*app.post('/api/movBodegas/imprimirDocumentoDespacho', function(req, res) {
         c_movimientos_bodega.imprimirDocumentoDespacho(req, res);
     });*/

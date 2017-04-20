@@ -850,6 +850,45 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametr
    });
 };
 
+MovimientosBodegasModel.prototype.getDocumentosBodegaUsuario = function(parametro, callback) {
+    var where="";
+    if(parametro.numeroDocumento !== ''){
+       where=" WHERE numero_doc ilike '%"+parametro.numeroDocumento+"%' ";  
+    }
+    
+    var sql = "  * from (\
+                        select \
+                            m.*,\
+                            m.prefijo||'-'||m.numero as numero_doc,\
+                            c.inv_tipo_movimiento as tipo_movimiento, \
+                            b.tipo_doc_general_id as tipo_doc_bodega_id, \
+                            c.descripcion as tipo_clase_documento,\
+                            b.descripcion \
+                        FROM\
+                            inv_bodegas_movimiento as m \
+                            inner join inv_bodegas_documentos as a on (a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad  AND a.bodega = m.bodega)\
+                            inner join documentos as b on (b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id AND b.tipo_doc_general_id = :4)\
+                            inner join tipos_doc_generales as c on (c.tipo_doc_general_id = b.tipo_doc_general_id AND c.inv_tipo_movimiento = :5 )\
+                        WHERE \
+                            m.empresa_id = :1 \
+                            AND m.centro_utilidad = :2 \
+                            AND m.bodega = :3 \
+                            ORDER BY m.fecha_registro DESC ) as a "+where;
+
+    var datos={1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento}
+    
+    var query = G.knex.select(G.knex.raw(sql, datos)).
+    limit(G.settings.limit).
+    offset((parametro.paginaActual - 1) * G.settings.limit).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });   
+    
+};
+
 MovimientosBodegasModel.prototype.getTiposDocumentosBodegaUsuario = function(parametro, callback) {
     
     var sql = "SELECT DISTINCT \

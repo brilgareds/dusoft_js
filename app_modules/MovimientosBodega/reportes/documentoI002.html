@@ -19,7 +19,7 @@
     </head>
     <body>
         <br>
-        <p class="normal_10AN" align="center" >INGRESO COMPRAS POR {{:cabecerae.razon_social}}</p>
+        <p class="normal_10AN" align="center" >{{:cabecerae.descripcion}}</p>
 
         <table width="100%" border ='0' >
             <tr>
@@ -122,16 +122,47 @@
                 </table>
              </td>
         </tr>
-    </table>  
+       </table> 
+       <br />
+        <table width="100%" class="modulo_table_list" align="center" border ='1' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:8px; border-collapse :collapse;">
+            <tr align="center">  
+                <td><b>SUBTOTAL</b></td>  
+                <td><b>IVA</b></td>  
+                <td><b>RET-FTE</b></td>  
+                <td><b>RETE-ICA</b></td>  
+                <td><b>RETE-IVA</b></td>  
+                <td><b>VALOR TOTAL</b></td>  
+            </tr>  
+            <tr align="center">  
+                <td>{{:impuestos.subtotal}}</td>  
+                <td>{{:impuestos.IvaTotal}}</td>  
+                <td>{{:impuestos.valorRetFte}}</td>  
+                <td>{{:impuestos.valorRetIca}}</td>  
+                <td>{{:impuestos.valorRetIva}}</td>  
+                <td>{{:impuestos.total}}</td>
+            </tr>  
+        </table>  
     <br />
+  
     <div>
        <p class="label">Revisado Por: ________________________________________ </p> 
     </div>
         <br>
         <br>
+        
         <br>
         <div id = "btnImprimir"><input type="button" name="imprimir" value="Imprimir" onclick="imprimir()" ></div>
     </BODY>
+    <footer>
+        <table class="modulo_table_list" align="right" border ='1' style="font-family: sans_serif, Verdana, helvetica, Arial;  font-size:8px; border-collapse :collapse;">
+            <tr>
+                <td align="right">FECHA DE IMPRESION:</td>
+                <td align="left">{{:impresion.formatoFecha}}</td>
+                <td align="right">USUARIO IMPRESION:</td>
+                <td align="left">{{:impresion.usuarioId}}</td>
+            </tr>
+        </table>
+    </footer>
 </HTML>
 
 

@@ -404,8 +404,8 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
     parametros.docTmpId=docTmpId;
     var cabecera=[];
     var detalle=[];
-    var nomb_pdf="";
     var consulta=[];
+    var impuesto=[];
     G.knex.transaction(function(transaccion) {  
 
             G.Q.ninvoke(that.m_movimientos_bodegas, "crear_documento", docTmpId, usuarioId, transaccion).then(function(result) {
@@ -507,22 +507,55 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
         }
         
     }).then(function(resultado) {
-            consulta=resultado;
+        
+        consulta = resultado;
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_I002, "listarParametrosRetencion", parametros);
+        } else {
+            throw 'Consulta ordenTercero sin resultados';
+        } 
+        
+    }).then(function(resultado) {
+        
+        impuesto = resultado;
+        if (resultado.length > 0) {
+            var valores = {
+                valorTotal: 0,
+                porc_iva: 0,
+                ValorSubTotal: 0,
+                IvaProducto: 0,
+                IvaTotal: 0,
+                subtotal: 0
+            };
+            return G.Q.nfcall(__impuestos, that, 0, detalle[0], impuesto[0], valores, cabecera[0]);
+
+        } else {
+            throw 'Consulta listarParametrosRetencion sin resultados';
+        }    
+        
+    }).then(function(resultado) {
             
-           if(consulta.length > 0){ 
-           nomb_pdf = "documentoI002" + cabecera[0].prefijo + cabecera[0].numero + ".html";  
-           __generarPdf({  serverUrl:req.protocol + '://' + req.get('host')+ "/", 
-                                cabecerae: cabecera[0], 
-                                detalle: detalle[0],
-                                orden: consulta[0],
-                                archivoHtml: 'documentoI002.html',
-                                reporte: "documentoI002"}, function(nombre_pdf) {
-                              res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf:nombre_pdf,prefijo:cabecera[0].prefijo,numero:cabecera[0].numero}));  
-                    });
-            }else{
-                console.log("Consulta sin resultados ");
-                throw 'Consulta sin resultados';
-            }
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+                     
+        if(resultado.length > 0){
+            
+           
+            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: detalle[0],
+                orden: consulta[0],
+                impresion: impresion,
+                impuestos: resultado[0],
+                archivoHtml: 'documentoI002.html',
+                reporte: "documentoI002"}, function(nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            throw 'Consulta listarParametrosRetencion sin resultados';
+        }
 
     }).catch(function(err){
         
@@ -532,9 +565,161 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
     }).done();
 };
 
+I002Controller.prototype.crearHtmlDocumento = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var cabecera = [];
+    var detalle = [];
+    var consulta = [];
+    var impuesto = [];
 
 
+    if (args.empresaId === '' || args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.prefijo === '' || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo esta vacío', 404, {}));
+        return;
+    }
+    if (args.numeracion === '' || args.numeracion === undefined) {
+        res.send(G.utils.r(req.url, 'El numeracion esta vacío', 404, {}));
+        return;
+    }
 
+    var parametros = {
+        empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        prefijoDocumento: args.prefijo,
+        numeracionDocumento: args.numeracion
+    };
+
+    try {
+        var nomb_pdf = "documentoI002" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
+        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
+            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
+            return;
+        }
+    } catch (e) {
+        console.log("NO EXISTE ARCHIVO  ");
+    }
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function(result) {
+        cabecera = result;
+
+        if (result.length > 0) {
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "consultar_detalle_documento_despacho", parametros.numeracionDocumento, parametros.prefijoDocumento, parametros.empresaId);
+        } else {
+            throw 'Consulta getDoc sin resultados';
+        }
+    }).then(function(resultado) {
+        detalle = resultado;
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "ordenTercero", parametros);
+        } else {
+            throw 'Consulta consultar_detalle_documento_despacho sin resultados';
+        }
+    }).then(function(resultado) {
+        consulta = resultado;
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_I002, "listarParametrosRetencion", parametros);
+        } else {
+            throw 'Consulta ordenTercero sin resultados';
+        }
+    }).then(function(resultado) {
+        impuesto = resultado;
+
+        if (resultado.length > 0) {
+            var valores = {
+                valorTotal: 0,
+                porc_iva: 0,
+                ValorSubTotal: 0,
+                IvaProducto: 0,
+                IvaTotal: 0,
+                subtotal: 0
+            };
+            return G.Q.nfcall(__impuestos, that, 0, detalle[0], impuesto[0], valores, cabecera[0]);
+
+        } else {
+            console.log("Consulta listarParametrosRetencion sin resultados ");
+            throw 'Consulta listarParametrosRetencion sin resultados';
+        }
+
+    }).then(function(resultado) {
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+
+        if (resultado.length > 0) {
+
+
+            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: detalle[0],
+                orden: consulta[0],
+                impresion: impresion,
+                impuestos: resultado[0],
+                archivoHtml: 'documentoI002.html',
+                reporte: "documentoI002"}, function(nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            console.log("Consulta listarParametrosRetencion sin resultados ");
+            throw 'Consulta listarParametrosRetencion sin resultados';
+        }
+        
+    }). catch (function(err) {
+        console.log("err>>>>", err);
+        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+    }).done();
+};
+
+function __impuestos(that, index, productos, impuesto, resultado, cabecera, callback) {
+
+    var producto = productos[index];
+    if (!producto) {
+
+        if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
+            if (resultado.subtotal >= parseInt(impuesto.base_rtf)) {
+                resultado.valorRetFte = resultado.subtotal * (cabecera.valorRetFte / 100);
+            } else {
+                resultado.valorRetFte = 0;
+            }
+
+        if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3')
+            if (resultado.subtotal >= parseInt(impuesto.base_ica)) {
+                resultado.valorRetIca = resultado.subtotal * (cabecera.valorRetIca / 1000);
+            } else {
+                resultado.valorRetIca = 0;
+            }
+        if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3')
+            if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
+                resultado.valorRetIva = resultado.IvaTotal * (cabecera.valorRetIva / 100);
+            } else {
+                resultado.valorRetIva = 0;
+            }
+
+        resultado.total = ((((resultado.subtotal + resultado.IvaTotal) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva);
+
+        callback(false, [resultado]);
+        return;
+    }
+
+    index++;
+    resultado.valorTotal += parseInt(producto.valor_total_1);
+
+    resultado.porc_iva = (producto.porcentaje_gravamen / 100) + 1;
+    resultado.ValorSubTotal = (producto.total_costo / resultado.porc_iva);
+    resultado.IvaProducto = producto.total_costo - resultado.ValorSubTotal;
+    resultado.IvaTotal = resultado.IvaTotal + (resultado.IvaProducto);
+    resultado.subtotal += parseInt(resultado.ValorSubTotal);
+
+    setTimeout(function() {
+        __impuestos(that, index, productos, impuesto, resultado, cabecera, callback);
+    }, 3);
+
+};
 
 function __modificarComprasOrdenesPedidosDetalle(that, index, parametros,result,transaccion, callback) {
 

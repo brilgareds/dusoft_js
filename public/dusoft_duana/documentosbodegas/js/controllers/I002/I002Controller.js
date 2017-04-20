@@ -1444,8 +1444,7 @@ console.log("DocItemTemporal:: ",data);
                  });
              };
              
-            $scope.Empresa.limpiar_productos();
-  console.log("$scope$scope$scope$scope$scope$scope$scope",$scope);         
+            $scope.Empresa.limpiar_productos();       
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 

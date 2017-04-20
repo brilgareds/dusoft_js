@@ -318,6 +318,59 @@ MovBodegasController.prototype.obtenerDocumetosTemporales=function(req,res){
     }).done();
 };
 
+MovBodegasController.prototype.getDocumentosBodegaUsuario=function(req,res){
+    var that = this;
+
+    var args = req.body.data;
+    var paginaActual = args.paginaActual;
+console.log("args",args);
+    if (args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'El empresaId esta vacío', 404, {}));
+        return;
+    }
+    if (args.centroUtilidadId === undefined) {
+        res.send(G.utils.r(req.url, 'El centroUtilidadId esta vacío', 404, {}));
+        return;
+    }
+    if (args.bodegaId === undefined) {
+        res.send(G.utils.r(req.url, 'El bodegaId esta vacío', 404, {}));
+        return;
+    }
+    if (args.tipoDocGeneralId === undefined) {
+        res.send(G.utils.r(req.url, 'El tipoDocGeneralId esta vacío', 404, {}));
+        return;
+    }
+    if (args.invTipoMovimiento === undefined) {
+        res.send(G.utils.r(req.url, 'El invTipoMovimiento esta vacío', 404, {}));
+        return;
+    }
+    if (args.numeroDocumento === undefined) {
+        args.numeroDocumento = '';
+    }
+    if (paginaActual === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+   var parametros = {
+                        empresaId: args.empresaId, 
+                        centroUtilidadId: args.centroUtilidadId, 
+                        bodegaId:args.bodegaId, 
+                        tipoDocGeneralId:args.tipoDocGeneralId, 
+                        invTipoMovimiento:args.invTipoMovimiento,
+                        numeroDocumento: args.numeroDocumento,
+                        paginaActual: paginaActual
+                    }; 
+    console.log("AAAAAAAAAAAAAAAAAAA",parametros);
+    G.Q.ninvoke(that.m_movimientos_bodegas, "getDocumentosBodegaUsuario", parametros).then(function(result) {
+ 
+     res.send(G.utils.r(req.url, 'getDocumentosBodegaUsuario', 200, {getDocumentosBodegaUsuario: result})); 
+
+    }).fail(function(err) {
+        console.log("Error getDocumentosBodegaUsuario",err);
+        res.send(G.utils.r(req.url, 'Error al Listar getDocumentosBodegaUsuario', 500, {}));
+    }).done();
+};
+
 MovBodegasController.prototype.getTiposDocumentosBodegaUsuario=function(req,res){
    var that = this;
   

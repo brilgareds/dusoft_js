@@ -48,7 +48,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         G.knex.raw("(SELECT count(bbb.item_id)\
                     FROM compras_ordenes_pedidos_detalle aaa\
                     INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
-                    WHERE aaa.orden_pedido_id = a.orden_pedido_id) as total_novedades")
+                    WHERE aaa.orden_pedido_id = a.orden_pedido_id) as total_novedades"),
+        "h.descripcion as nombre_bodega"
     ];
     
     var query = G.knex.column(columns).
@@ -62,7 +63,12 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
     innerJoin("empresas as d", "a.empresa_id", "d.empresa_id").
     innerJoin("system_usuarios as e", "a.usuario_id", "e.usuario_id").
     leftJoin("unidades_negocio as f", "a.codigo_unidad_negocio", "f.codigo_unidad_negocio").
-    leftJoin(subQueryTmp,"a.orden_pedido_id", "g.orden_pedido_id").    
+    leftJoin(subQueryTmp,"a.orden_pedido_id", "g.orden_pedido_id").   
+    leftJoin("bodegas as h", function(){
+        this.on("h.empresa_id", "a.empresa_id_pedido").
+        on("h.centro_utilidad", "a.centro_utilidad_pedido").
+        on("h.bodega", "a.bodega_pedido");
+    }).
     whereBetween('a.fecha_orden', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
     where({
            "a.sw_unificada"  : '0'
@@ -206,9 +212,12 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
           this.where("a.clase_id", laboratorio_id);
 
         if (numero_orden > 0){
-          this.whereRaw(
-            "a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = ?)", [numero_orden]
-          );
+          
+          if(!filtro || !filtro.auditoria){
+            this.whereRaw(
+              "a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = ?)", [numero_orden]
+            );
+          }
         }
         
         if(filtro && filtro.descripcionProducto){
@@ -405,17 +414,32 @@ OrdenesCompraModel.prototype.consultarDetalleOrdenCompraConNovedades = function(
 }
 
 // Ingresar Cabecera Orden de Compra
-OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, transaccion, callback) {
+OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, empresa_pedido, centro_utilidad_pedido, bodega_pedido, terminar_orden, transaccion, callback) {
 
-    var sql = " INSERT INTO compras_ordenes_pedidos ( orden_pedido_id, codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
-                 VALUES((select max(orden_pedido_id) +1 from compras_ordenes_pedidos), :1, :2, :3, :4, :5, '1', NOW() ) RETURNING orden_pedido_id; ";
-     
-    var query = G.knex.raw(sql, {1:unidad_negocio, 2:codigo_proveedor, 3:empresa_id, 4:observacion, 5:usuario_id}); 
-     
+    var parametros = {
+        orden_pedido_id:G.knex.raw("(select max(orden_pedido_id) +1 from compras_ordenes_pedidos)"),
+        codigo_unidad_negocio:unidad_negocio, codigo_proveedor_id:codigo_proveedor, empresa_id:empresa_id,
+        observacion:observacion, usuario_id:usuario_id, estado:'1',
+        fecha_orden:'now()', empresa_id_pedido: empresa_pedido || null, 
+        centro_utilidad_pedido: centro_utilidad_pedido || null, bodega_pedido:bodega_pedido || null
+    };
+    
+    console.log("terminar orden?????????????????????? ", terminar_orden);
+    if(terminar_orden){
+        parametros["estado"] = '3';
+        parametros["fecha_verificado"] = 'now()';
+        parametros["fecha_ingreso"] = 'now()';
+        parametros["fecha_recibido"] = 'now()';
+    }
+    
+    
+    var query = G.knex("compras_ordenes_pedidos").returning("orden_pedido_id").insert(parametros);
+         
     if(transaccion) query.transacting(transaccion);
      
     query.then(function(resultado){
-       callback(false, resultado.rows);
+        console.log("resultado del insert de ordenes ******************************", resultado)
+       callback(false, resultado);
     }).catch(function(err){
        console.log("erro (/catch) [insertar_orden_compra]: ", err);
        callback(err);
@@ -532,13 +556,12 @@ OrdenesCompraModel.prototype.anular_orden_compra = function(numero_orden, callba
 };
 
 // Ingresar Detalle Orden de Compra
-OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, transaccion, callback) {
-
-
-    var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado)\
-                VALUES ( :1, :2, :3, :4, :5, 1 );";
+OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, lote, fecha_vencimiento, transaccion, callback) {
     
-    var query = G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva});
+    var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado, lote_temp, fecha_vencimiento_temp)\
+                VALUES ( :1, :2, :3, :4, :5, 1, :6, :7 );";
+    
+    var query = G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva, 6:lote || null, 7:fecha_vencimiento || null});
     
     if(transaccion) query.transacting(transaccion);
     
@@ -1535,12 +1558,28 @@ function __gestionarOrdenesAgrupadas(params, callback){
         callback(false, ordenes);
         return;
     }
+    
+    var empresaPedido = null;
+    var centroPedido = null;
+    var bodegaPedido = null;
+    
+    if(encabezado.empresa_id === '03'){
+        empresaPedido = encabezado.empresa_id;
+        centroPedido = '1';
+        
+        if(encabezado.codigo_unidad_negocio === '4'){  //Bodega Cosmitet
+            bodegaPedido  = '06'
+            
+        } else { //Bodega Duana
+            bodegaPedido = '03';
+        }
+    } 
         
     //Crea el encabezado de la orden
     G.Q.ninvoke(params.contexto, 'insertar_orden_compra', encabezado.codigo_unidad_negocio, encabezado.codigo_proveedor, 
-                encabezado.empresa_id, encabezado.observacion, encabezado.usuario_id, params.transaccion).then(function(id){
+                encabezado.empresa_id, encabezado.observacion, encabezado.usuario_id, empresaPedido, centroPedido, bodegaPedido, false, params.transaccion).then(function(id){
          
-        encabezado.ordenId = id[0].orden_pedido_id;
+        encabezado.ordenId = id[0];
         var detalle = {transaccion:params.transaccion, encabezado:encabezado, contexto:params.contexto};
         
         return G.Q.nfcall(__gestionarDetalleOrdenesAgrupadas, detalle)
@@ -1578,7 +1617,7 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
    }
       
    G.Q.ninvoke(params.contexto, "listar_productos", params.encabezado.empresa_id, params.encabezado.codigo_proveedor, params.encabezado.ordenId,
-               producto.codigo_producto, null, 1, null).then(function(_producto){
+               producto.codigo_producto, null, 1, params.filtro || null).then(function(_producto){
             
       if(_producto.length === 0){
          throw "El producto no pudo ser registrado " + producto.codigo_producto + "-"+(producto.__rownum__ + 1);
@@ -1587,9 +1626,11 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
           
           return G.Q.ninvoke(params.contexto, "insertar_detalle_orden_compra", params.encabezado.ordenId, 
                              producto.codigo_producto, 
-                             producto.cantidad || producto.cantidad_despachada,
+                             producto.cantidad,
                              producto.costo || producto.valor_unitario, 
                              producto.iva, 
+                             producto.lote,
+                             producto.fecha_vencimiento,
                              params.transaccion);
       }
                    

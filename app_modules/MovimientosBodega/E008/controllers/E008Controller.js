@@ -1975,9 +1975,16 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
                            {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
                            
-        console.log("pedido a enviar >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", pedido);
-        console.log("detalle pedido >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", detallePedido);
+        
         if(pedido.empresa_id === '03' && pedido.bodega_id === '03'){       
+               
+            return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespacho", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento , numeroDocumento:numero_documento});
+            
+        }
+
+    }).then(function(detalleDocumento){
+        
+        if(detalleDocumento && detalleDocumento.length > 0){       
             
             var parametros = {
                 ordenes_compras:{
@@ -1985,14 +1992,17 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                     unidad_negocio : '4',
                     codigo_proveedor : 55,
                     empresa_id : pedido.empresa_id,
-                    observacion : "Pedido a cosmitet",
-                    productos : detallePedido
+                    observacion : "Orden Generada por documento: " + prefijo_documento + " - " + numero_documento,
+                    empresa_pedido : pedido.empresa_id,
+                    centro_utilidad_pedido : pedido.centro_utilidad,
+                    bodega_pedido : pedido.bodega_id,
+                    productos : detalleDocumento
                 }
             };
             console.log("enviando parametros onGenerarOrdenDeCompra ", parametros);
-            G.eventEmitter.emit("onGenerarOrdenDeCompra",parametros);    
-            
-        }
+            G.eventEmitter.emit("onGenerarOrdenDeCompra",parametros);                
+        };
+        
         
     }).fail(function(err){
         console.log("se ha generado un error en el documento ", err);

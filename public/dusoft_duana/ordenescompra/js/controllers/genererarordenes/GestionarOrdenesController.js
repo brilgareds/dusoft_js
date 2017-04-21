@@ -476,6 +476,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     };
                 }
                 
+                var empresa = Sesion.getUsuarioActual().getEmpresa();
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -483,9 +485,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             unidad_negocio: $scope.orden_compra.get_unidad_negocio().get_codigo(),
                             codigo_proveedor: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
                             //empresa_id: '03',
-                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                            empresa_id: empresa.getCodigo(),
                             observacion: $scope.orden_compra.get_observacion(),
-                            bodegaDestino : bodegaDestino
+                            bodegaDestino : bodegaDestino,
+                            empresa_pedido : empresa.getCodigo(),
+                            centro_utilidad_pedido : empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_pedido : empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                         }
                     }
                 };

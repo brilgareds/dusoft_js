@@ -183,6 +183,8 @@ define(["angular", "js/controllers",
                 orden_compra.set_estado_digitacion(orden.sw_orden_compra_finalizada, orden.estado_digitacion);
 
                 orden_compra.set_fechas_recepcion(orden.fecha_recibido, orden.fecha_verificado);
+                
+                orden_compra.setNombreBodega(orden.nombre_bodega);
 
                 return orden_compra;
             };
@@ -205,6 +207,7 @@ define(["angular", "js/controllers",
                     {field: 'descripcion_estado', displayName: "Estado", cellClass: "txt-center", width:200,
                         cellTemplate: "<button type='button' ng-class='agregar_clase_btn(row.entity.estado)'>{{row.entity.descripcion_estado}} </button>"},
                     {field: 'observacion', displayName:"Observacion"},
+                    {field: 'getNombreBodega()', displayName:"Bodega"},
                     {field: 'estado_digitacion', displayName: "Digitacion", width:100},
                     {field: 'fecha_registro', displayName: "F. Registro", width: "80"},
                     {field: 'fecha_recibido', displayName: "F. Recibida", width: "7%",

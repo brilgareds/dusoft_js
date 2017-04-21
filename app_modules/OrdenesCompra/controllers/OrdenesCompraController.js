@@ -372,10 +372,15 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
         empresa_id:     args.ordenes_compras.empresa_id,
         observacion:     args.ordenes_compras.observacion,
         bodegaDestino:   args.ordenes_compras.bodegaDestino,
-        usuario_id:      req.session.user.usuario_id
-    }
+        usuario_id:      req.session.user.usuario_id,
+        empresa_pedido : args.ordenes_compras.empresa_pedido,
+        centro_utilidad_pedido : args.ordenes_compras.centro_utilidad_pedido,
+        bodega_pedido : args.ordenes_compras.bodega_pedido,
+        terminar_orden : false
+    };
+    
     console.log("parametros ", parametros);
-    G.Q.ninvoke(that, "__insertarOrdenCompra",parametros ).then(function (resultado) {
+    G.Q.ninvoke(that, "__insertarOrdenCompra",parametros ).then(function (resultado) {  
         console.log("__insertarOrdenCompra ", resultado);
         res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
 
@@ -558,7 +563,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
                 if (!modificar) {
 
-                    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, null, function(err, rows, result) {
+                    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, null, null, null, function(err, rows, result) {
 
                         if (err || result.rowCount === 0) {
                             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
@@ -1112,7 +1117,7 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 
                     _productos_validos.forEach(function(producto) {
 
-                        that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, producto.codigo_producto, producto.cantidad_solicitada, producto.costo, producto.iva, null, function(err, rows, result) {
+                        that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, producto.codigo_producto, producto.cantidad_solicitada, producto.costo, producto.iva, null, null, null, function(err, rows, result) {
                             if (err) {
                                 _productos_invalidos.push(producto);
                             }
@@ -1825,11 +1830,6 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
  */
 OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
     
-    console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
-    console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
-    console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
-    console.log("********OrdenesCompra.prototype.generarOrdenDeCompraAuditado******************");
-    
     var that = this;
  
     if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
@@ -1867,11 +1867,17 @@ OrdenesCompra.prototype.generarOrdenDeCompraAuditado = function(args) {
             usuario_id:      args.ordenes_compras.usuario_id,
             detalle: args.ordenes_compras.productos,
             ordenId: 0,
-            codigo_proveedor: args.ordenes_compras.codigo_proveedor
+            codigo_proveedor: args.ordenes_compras.codigo_proveedor,
+            empresa_pedido : args.ordenes_compras.empresa_pedido,
+            centro_utilidad_pedido : args.ordenes_compras.centro_utilidad_pedido,
+            bodega_pedido : args.ordenes_compras.bodega_pedido,
+            terminarOrden : true
         },
         transaccion: null,
-        contexto : that.m_ordenes_compra
-    }
+        contexto : that.m_ordenes_compra,
+        filtro: {auditoria: true}
+    };
+    
     console.log("-------------------------------------------------------------");
     console.log("1) parametros: ", parametros);
     console.log("2) Detalle Productos: ", parametros.encabezado.detalle);
@@ -1927,11 +1933,15 @@ OrdenesCompra.prototype.__insertarOrdenCompra = function (parametros, callback) 
         parametros.proveedor, 
         parametros.empresa_id, 
         parametros.observacion, 
-        parametros.usuario_id, null).then(function(rows) {
+        parametros.usuario_id,
+        parametros.empresa_pedido,
+        parametros.centro_utilidad_pedido,
+        parametros.bodega_pedido,
+        parametros.terminarOrden,
+        null).then(function(rows) {
             
-       
         var def = G.Q.defer();
-        numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+        numero_orden = (rows.length > 0) ? rows[0] : 0;
         //Se guarda la ubicacion de la bodega destino de la orden
         if (parametros.bodegaDestino) {
             parametros.bodegaDestino.ordenCompraId = numero_orden;

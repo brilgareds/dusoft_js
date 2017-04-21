@@ -4891,7 +4891,7 @@ console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia***
 
 
     }).then(function (resultado) {
-
+console.log("resultado ",resultado);
         if (resultado.length > 0) {
             if (resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0') {
                 cotizacion.cliente.contrado_id = resultado[0].contrato_cliente_id;
@@ -5032,7 +5032,7 @@ PedidosCliente.prototype.consultarEstadoAutorizacion = function (req, res) {
             if (resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0') {
                 return res.send(G.utils.r(req.url, 'La farmacia esta autorizada', 200, {pedidos_clientes: []}));
             } else {
-                throw {msj: "La farmacia no esta permitida para generar pedidos", status: 404, pedidos_clientes: {}};
+                throw {msj: "El Cliente no esta autorizado para realizar el Pedido", status: 404, pedidos_clientes: {}};
             }
         } else {
             throw {msj: "El cliente no se encuentra registrado en la tabla de contratos", status: 404, pedidos_clientes: {}};

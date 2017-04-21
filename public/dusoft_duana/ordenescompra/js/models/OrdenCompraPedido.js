@@ -16,6 +16,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 this.productoSeleccionado = '';
                 this.localizacion = '';
                 this.bodegaSeleccionada;
+                this.nombreBodega = "";
             }
             
 
@@ -179,6 +180,15 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             
             OrdenCompraPedido.prototype.getBodegaSeleccionada = function() {
                 return this.bodegaSeleccionada;
+            };
+            
+            OrdenCompraPedido.prototype.setNombreBodega = function(nombreBodega) {
+                this.nombreBodega = nombreBodega;
+                return this;
+            };
+
+            OrdenCompraPedido.prototype.getNombreBodega = function() {
+                return this.nombreBodega;
             };
 
             // Instancia

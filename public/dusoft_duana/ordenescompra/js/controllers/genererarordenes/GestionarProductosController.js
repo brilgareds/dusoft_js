@@ -156,6 +156,7 @@ define(["angular", "js/controllers",
                     };
                 }
                 
+                var empresa = Sesion.getUsuarioActual().getEmpresa();
                 
                 var obj = {
                     session: $scope.session,
@@ -166,7 +167,10 @@ define(["angular", "js/controllers",
                             //empresa_id: '03',
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             observacion: $scope.orden_compra.get_observacion(),
-                            bodegaDestino : bodegaDestino
+                            bodegaDestino : bodegaDestino,
+                            empresa_pedido : empresa.getCodigo(),
+                            centro_utilidad_pedido : empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_pedido : empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                         }
                     }
                 };

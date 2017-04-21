@@ -19,9 +19,9 @@
 
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-model="DocumentoIngreso.proveedor" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor()">
+                                        <ui-select ng-change="seleccionar_proveedor()" ng-model="DocumentoIngreso.proveedor" theme="select2" class="form-control selectgeneral pull-left" >
                                             <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre_completo() }}</ui-select-match>
-                                            <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in  Empresa.get_proveedores() | filter:$select.search">
+                                            <ui-select-choices refresh="listar_proveedores($select.search,true)" refresh-delay="0" repeat="proveedor in  Empresa.get_proveedores() | filter:$select.search">
                                                 {{ proveedor.get_nombre_completo() }}
                                             </ui-select-choices>
                                         </ui-select>
@@ -66,37 +66,20 @@
                                     <br>
                                     <div class="row">  
                                         <div class="">
-                                            <!--                                            <div class="col-md-3">
-                                                                                            <p class="input-group">
-                                                                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="seleccionar_productos(0)">
-                                                                                                    <span class="glyphicon glyphicon-plus"></span> Seleccionar Productos
-                                                                                                </button>
-                                                                                            </p>
-                                            
-                                                                                        </div>-->
-
-<!--                                            <div class="col-md-3 pull-right">
-                                                <p class="input-group">
-
-                                                    <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                                                    </span>
-                                                </p>
-                                            </div>-->
+                                          
                                         </div>
 
                                     </div>
                                     <div class="" style="height: 240px" ng-grid="lista_productos_orden" > </div>
 
-                                    <div class="row text-center col-md-12">
+<!--                                    <div class="row text-center col-md-12">
                                         <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
                                             <span class="glyphicon glyphicon-chevron-left" ></span>
                                         </button>
                                         <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
                                             <span class="glyphicon glyphicon-chevron-right" ></span>
                                         </button>
-                                    </div>  
+                                    </div>  -->
                                 </tab>                        
                                 <tab>
                                     <tab-heading ng-click="tabProductosPorAutorizar()">
@@ -113,15 +96,6 @@
                                                     </button>
                                                 </p>
                                             </div>
-
-<!--                                            <div class="col-md-3 pull-right">
-                                                <p class="input-group">
-                                                    <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                                                    </span>
-                                                </p>
-                                            </div>-->
                                         </div>
 
                                     </div>

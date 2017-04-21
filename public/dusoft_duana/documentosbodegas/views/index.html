@@ -183,7 +183,7 @@
                                     <legend>Tipo de Documento</legend> 
                                     <div class="row">
                                         <div class="col-md-7">   
-                                            <ui-select  ng-model="tipoDocumento.tipo" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionarDocumento()">
+                                            <ui-select  ng-model="tipoDocumento.tipo.tipo" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionarDocumento()">
                                                 <ui-select-match  placeholder="Seleccionar Tipo">{{$select.selected.descripcion}}</ui-select-match>
                                                 <ui-select-choices repeat="tipoDoc in tipoDocumento| filter:$select.search">
                                                     {{tipoDoc.descripcion}}
@@ -199,7 +199,7 @@
                                     <legend>&nbsp;</legend>
                                     <div class="col-md-8 pull-right">
                                         <p class="input-group">
-                                            <input type="text" class="form-control" ng-keypress="seleccionarDocumentoEvento($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                            <input type="text" class="form-control" ng-keypress="seleccionarDocumentoEvento($event, termino_busqueda);" ng-model="termino_busquedaTmp" placeholder="Buscar" name="" id="" />
                                             <span class="input-group-btn">
                                                 <button class="btn btn-default" type="submit" ng-click="seleccionarDocumentoEvento($event,termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
                                             </span>
@@ -215,14 +215,14 @@
 
                     <br />                    
                     
-                    <div class="row text-center">
-                        <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
+                     <div class="row text-center">
+                        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactualTmp == 1" ng-click="paginaAnteriorTmp()">
                             <span class="glyphicon glyphicon-chevron-left" ></span>
                         </button>
-                        <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                        <button type="button" class="btn btn-default btn-medium" ng-disabled="itemsTmp == 0" ng-click="paginaSiguienteTmp()">
                             <span class="glyphicon glyphicon-chevron-right" ></span>
                         </button>
-                    </div>                        
+                    </div>                      
                 </tab>                                
                 <tab>
                     <tab-heading>

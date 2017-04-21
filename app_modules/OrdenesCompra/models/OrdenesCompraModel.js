@@ -97,11 +97,19 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 };
 
 // Listar las Ordenes de Compra de un Proveedor
-OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_proveedor_id, callback) {
+OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetros, callback) {
 
     // Falta realizar un tipo de filtro, para dejar esta funcion mas global
     // se debe filtrar por el estado. ESTA ACTIVIDAD ESTA PENDIENTE
-
+   var where = " a.estado = '1' and a.sw_orden_compra_finalizada = '1' ";
+    if(paremetros.bloquearestado===true){
+      where=" a.orden_pedido_id NOT IN \
+                ( \
+                SELECT orden_pedido_id \
+                FROM compras_ordenes_pedidos \
+                WHERE estado = '0' \
+                ) ";  
+    }
     var sql = " SELECT \
                 a.orden_pedido_id as numero_orden,\
                 a.empresa_id,\
@@ -143,9 +151,9 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 left join (\
                     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
-                WHERE a.codigo_proveedor_id = :1 and a.estado = '1' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
-    
-    G.knex.raw(sql, {1:codigo_proveedor_id}).then(function(resultado){
+                WHERE "+where+" AND a.codigo_proveedor_id = :1  order by 1 DESC ";
+
+    G.knex.raw(sql, {1:paremetros.codigo_proveedor_id}).then(function(resultado){
        callback(false, resultado.rows, resultado);
     }).catch(function(err){
        callback(err);

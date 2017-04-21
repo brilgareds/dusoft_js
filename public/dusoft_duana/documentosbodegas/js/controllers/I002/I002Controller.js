@@ -44,6 +44,8 @@ define([
             
             console.log("********I002Controller************");
             var datos_documento = localStorageService.get("documento_bodega_I002");
+            console.log(">>>>>>>",datos_documento);
+            
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
 
@@ -62,25 +64,34 @@ define([
 
             /****************************proverdores**********************************/
             
-                         
+           // 
+                        
+                       
             /**
              * @author Andres M. Gonzalez
              * @fecha 25/03/2017
              * +Descripcion Metodo encargado listar todos los proveedores
              */
-            $scope.listar_proveedores = function(termino_busqueda) {
-
+            $scope.listar_proveedores = function(termino_busqueda,termino) {
                 if (termino_busqueda.length < 3) {
                     return;
                 }
 
                 $scope.datos_view.termino_busqueda_proveedores = termino_busqueda;
 
+                if(termino){
                 that.buscar_proveedores(function(proveedores) {
 
-                    that.render_proveedores(proveedores);
+                    that.render_proveedores(proveedores,false);
                 });
+                }else{
+                    that.buscarProveedoresPorCodigo(function(proveedores) {
+
+                    that.render_proveedores(proveedores,true);
+                 });
+                }
             };
+          
 
             /**
              * @author Andres M. Gonzalez
@@ -101,7 +112,29 @@ define([
                 Request.realizarRequest(API.I002.LISTAR_PROVEEDORES, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        //that.render_proveedores(data.obj.proveedores);
+                        callback(data.obj.proveedores);
+                    }
+                });
+            };
+            /**
+             * @author Andres M. Gonzalez
+             * @fecha 25/03/2017
+             * +Descripcion Metodo encargado de buscar los proveedores en bd
+             */
+            that.buscarProveedoresPorCodigo = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        proveedores: {
+                            termino_busqueda: $scope.datos_view.termino_busqueda_proveedores
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.I002.LISTAR_PROVEEDORES_POR_CODIGO, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
                         callback(data.obj.proveedores);
                     }
                 });
@@ -112,7 +145,7 @@ define([
              * @fecha 25/03/2017
              * +Descripcion Metodo encargado realizar el render de proveedores
              */
-            that.render_proveedores = function(proveedores) {
+            that.render_proveedores = function(proveedores,porDefecto) {
 
                 $scope.Empresa.limpiar_proveedores();
 
@@ -121,9 +154,13 @@ define([
                     var proveedor = Proveedor.get(data.tipo_id_tercero, data.tercero_id, data.codigo_proveedor_id, data.nombre_proveedor, data.direccion, data.telefono);
 
                     $scope.Empresa.set_proveedores(proveedor);
+                    if(porDefecto){
+                     $scope.DocumentoIngreso.set_proveedor(proveedor);
+                     that.buscar_ordenes_compra();
+                    }
                 });
             };
-
+            
             $scope.seleccionar_proveedor = function() {
                 // Buscar Ordenes Compra del Proveedor Seleccionado
                 that.buscar_ordenes_compra();
@@ -142,7 +179,8 @@ define([
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            codigo_proveedor_id: $scope.DocumentoIngreso.get_proveedor().get_codigo()
+                            codigo_proveedor_id: $scope.DocumentoIngreso.get_proveedor().get_codigo(),
+                            bloquearEstados:true
                         }
                     }
                 };
@@ -167,8 +205,11 @@ define([
                 ordenes_compras.forEach(function(orden) {
 
                     var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
-
                     $scope.DocumentoIngreso.get_proveedor().set_ordenes_compras(orden_compra);
+                    if(49237===orden.numero_orden){ 
+                      $scope.DocumentoIngreso.orden_compra=orden_compra;
+                      $scope.seleccionar_orden_compra();
+                    }
                 });
             };
 
@@ -1055,6 +1096,7 @@ console.log("DocItemTemporal:: ",data);
                 enableCellSelection: true,
                 enableHighlighting: true,
                 showFooter: true,
+                showFilter: true,
                 footerTemplate: '   <div class="row col-md-12">\
                                         <div class="">\
                                             <table class="table table-clear text-center">\
@@ -1107,7 +1149,7 @@ console.log("DocItemTemporal:: ",data);
                 enableRowSelection: true,
                 enableCellSelection: true,
                 enableHighlighting: true,
-//                showFooter: true,
+                showFooter: true,
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
@@ -1213,6 +1255,7 @@ console.log("DocItemTemporal:: ",data);
                 enableRowSelection: false,
                 enableCellSelection: true,
                 enableHighlighting: true,
+                showFilter: true,
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "8%", enableCellEdit: false},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "40%", enableCellEdit: false},
@@ -1443,11 +1486,24 @@ console.log("DocItemTemporal:: ",data);
                    that.refrescarVista();
                  });
              };
-             
+                          
             $scope.Empresa.limpiar_productos();       
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
                 
             });
-        }]);
+          
+            $scope.listar_proveedores('541',false); 
+//            
+//            that.traerEmpresas(function() {
+//                $timeout(function() {
+//                    $scope.filtro.empresa_seleccion = '03';
+//                     $scope.buscarProductos("");
+//                });
+//
+//            });
+//            
+            //$scope.DocumentoIngreso.proveedor
+            
+        }]); 
 });

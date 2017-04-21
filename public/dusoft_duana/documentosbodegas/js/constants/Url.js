@@ -17,6 +17,7 @@ define(["angular"], function(angular) {
             },
             'I002': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar',
+                'LISTAR_PROVEEDORES_POR_CODIGO': BASE_URL + '/Terceros/Proveedores/listarProveedoresPorCodigo',
                 'LISTAR_ORDENES_COMPRAS_PROVEEDOR': BASE_URL + '/OrdenesCompra/listarOrdenesCompraProveedor',
                 'CREAR_DETALLE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/insertarDetalleOrdenCompra',
                 'CONSULTAR_DETALLE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/consultarDetalleOrdenCompra',

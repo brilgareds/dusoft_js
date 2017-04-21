@@ -411,6 +411,7 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
             G.Q.ninvoke(that.m_movimientos_bodegas, "crear_documento", docTmpId, usuarioId, transaccion).then(function(result) {
 
                 parametros.empresaId = result.empresa_id;
+                parametros.empresa_id = result.empresa_id;
                 parametros.prefijoDocumento = result.prefijo_documento;
                 parametros.numeracionDocumento = result.numeracion_documento;
                 parametros.orden_pedido_id = parametros.ordenPedidoId;

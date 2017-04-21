@@ -84,10 +84,16 @@ OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_proveedor_id estan vacias', 404, {}));
         return;
     }
+    
+    if (args.ordenes_compras.bloquearEstados === undefined) {
+        args.ordenes_compras.bloquearEstados=false;
+    }
 
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
+    var bloquearestado = args.ordenes_compras.bloquearEstados;
+    var paremetros = {codigo_proveedor_id:codigo_proveedor_id,bloquearestado:bloquearestado };
 
-    that.m_ordenes_compra.listar_ordenes_compra_proveedor(codigo_proveedor_id, function(err, lista_ordenes_compras) {
+    that.m_ordenes_compra.listar_ordenes_compra_proveedor(paremetros, function(err, lista_ordenes_compras) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));

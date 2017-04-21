@@ -155,11 +155,10 @@ DocumentoBodegaI002.prototype.fecha_ingreso_orden_compra = function(parametros,t
 
     var query = G.knex('compras_ordenes_pedidos')
                 .where('orden_pedido_id', parametros.ordenPedidoId)
-                .andWhere('estado', '1')
+                //.andWhere('estado', '1')//comentado por el estado conque eduar crea el pedido de farmacia
                 .update({fecha_ingreso:fechaToday});
     if(transaccion) query.transacting(transaccion);   
     query.then(function(resultado){ 
-         console.log("resultado) [fecha_ingreso_orden_compra]: ", resultado);
        callback(false, resultado);
     }).catch(function(err){    
        console.log("err (/catch) [fecha_ingreso_orden_compra]: ", err);
@@ -299,6 +298,7 @@ console.log("*****parametrosRetencion********",G.moment(now).format('YYYY'));
         callback(false, resultado);
     }). catch (function(error) {
         console.log("error [parametrosRetencion]: ", error);
+        console.log("error [parametros.empresa_id]: ", parametros.empresa_id);
         callback(error);
     });
 }; 

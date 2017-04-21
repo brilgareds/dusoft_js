@@ -813,13 +813,13 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametr
     var select="''";
     var where="";
     if(parametro.tipoDocGeneralId==='I002'){
-     select="orden_pedido_id";   
-     inner="join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id)";     
+     select=" orden_pedido_id ";   
+     inner=" join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id) ";     
     }
     if(parametro.numeroDocumento !== ''){
-      where = " AND t.doc_tmp_id = "+parametro.numeroDocumento;
+      where = " AND t.doc_tmp_id ilike '%"+parametro.numeroDocumento+"%'";
     }
-    var sql = " SELECT \
+    var sql = "  \
 		t.*, \
 		c.inv_tipo_movimiento AS tipo_movimiento, \
 		b.tipo_doc_general_id AS tipo_doc_bodega_id, \
@@ -839,15 +839,16 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametr
 		JOIN system_usuarios as SU ON (t.usuario_id = SU.usuario_id) \
                 "+inner+"\
 		WHERE TRUE AND a.empresa_id = :1 AND a.centro_utilidad = :2 AND a.bodega = :3 AND b.tipo_doc_general_id = :4 AND c.inv_tipo_movimiento = :5 "+where;
-   
-   G.knex.raw(sql, {1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento}).
-   then(function(resultado){
-    
-       callback(false, resultado.rows);
-   }).catch(function(err){
-       console.log("ERROR ",err);
-       callback(err);
-   });
+    var datos ={1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento};
+    var query = G.knex.select(G.knex.raw(sql, datos)).
+    limit(G.settings.limit).
+    offset((parametro.paginaActual - 1) * G.settings.limit).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });
 };
 
 MovimientosBodegasModel.prototype.getDocumentosBodegaUsuario = function(parametro, callback) {

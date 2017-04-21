@@ -300,21 +300,23 @@ MovBodegasController.prototype.obtenerDocumetosTemporales=function(req,res){
     if(args.numeroDocumento === undefined){
         args.numeroDocumento='';
     }
+    console.log("paginaActual",args.paginaActual);
    var parametros = {
                         empresaId: args.empresaId, 
                         centroUtilidadId: args.centroUtilidadId, 
                         bodegaId:args.bodegaId, 
-                        tipoDocGeneralId:args.tipoDocGeneralId, 
+                        tipoDocGeneralId:args.tipoDocGeneralId.tipo, 
                         invTipoMovimiento:args.invTipoMovimiento,
-                        numeroDocumento: args.numeroDocumento
+                        numeroDocumento: args.numeroDocumento,
+                        paginaActual: args.paginaActual
                     }; 
-    
+
     G.Q.ninvoke(that.m_movimientos_bodegas, "obtenerDocumetosTemporales", parametros).then(function(result) {
- 
+
      res.send(G.utils.r(req.url, 'obtenerDocumetosTemporales', 200, {obtenerDocumetosTemporales: result})); 
 
     }).fail(function(err) {
-        res.send(G.utils.r(req.url, 'Error al Listar obtenerDocumetosTemporales', 500, {}));
+        res.send(G.utils.r(req.url, 'Error al Listar obtenerDocumetosTemporales', 500, {err:err}));
     }).done();
 };
 
@@ -323,7 +325,7 @@ MovBodegasController.prototype.getDocumentosBodegaUsuario=function(req,res){
 
     var args = req.body.data;
     var paginaActual = args.paginaActual;
-console.log("args",args);
+    
     if (args.empresaId === undefined) {
         res.send(G.utils.r(req.url, 'El empresaId esta vacío', 404, {}));
         return;
@@ -351,6 +353,7 @@ console.log("args",args);
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
+    console.log("paginaActual",paginaActual);
    var parametros = {
                         empresaId: args.empresaId, 
                         centroUtilidadId: args.centroUtilidadId, 

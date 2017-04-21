@@ -25,11 +25,17 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             $scope.Empresa = Empresa;
             $scope.terminoBusqueda="";
+            $scope.termino_busquedaTmp="";
             $scope.ultima_busqueda = "";
             $scope.termino = "";
             $scope.paginaactual = 1;
             $scope.paginas = 0;
             $scope.items = 0;
+            $scope.ultima_busquedaTmp = "";
+            $scope.terminoTmp = "";
+            $scope.paginaactualTmp = 1;
+            $scope.paginasTmp = 0;
+            $scope.itemsTmp = 0;
 
             //se valida que el usuario tenga centro de utilidad y bodega
             var empresa = Sesion.getUsuarioActual().getEmpresa();
@@ -100,9 +106,30 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.Empresa.set_documentos(documento);
                 });
             };
+            
+            $scope.btn_documento= function(valor){
+              that.gestionarDocumentoSeleccionado(valor);
+            };
 
+            that.gestionarDocumentoSeleccionado = function(documento) {
+           
+                var result = $state.get().filter(function(obj) {
+                    return obj.name === documento.tipo_doc_bodega_id;
+                });
+
+                if (result.length > 0) {
+                    var numero = documento.numero||'';
+                    var datosAdicionales = {doc_tmp : documento.doc_tmp_id,orden : documento.orden};
+                    var datos = { bodegas_doc_id : documento.bodegas_doc_id, prefijo : documento.prefijo, numero : numero, datosAdicionales : datosAdicionales};
+                    localStorageService.add("documento_bodega_" + documento.tipo_doc_bodega_id, datos);
+                    
+                    $state.go(documento.tipo_doc_bodega_id);
+                } else
+                    AlertService.mostrarMensaje("warning", 'El modulo [ ' + documento.tipo_doc_bodega_id + '-' + documento.descripcion + ' ] aun no esta disponible en esta version!!!');
+            };
+            
             $scope.gestionar_documento = function(documento) {
-              
+           
                 var result = $state.get().filter(function(obj) {
                     return obj.name === documento.get_tipo();
                 });
@@ -115,30 +142,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $state.go(documento.get_tipo());
                 } else
                     AlertService.mostrarMensaje("warning", 'El modulo [ ' + documento.get_tipo() + '-' + documento.get_descripcion() + ' ] aun no esta disponible en esta version!!!');
+            };
+            
+            $scope.seleccionarDocumentoEvento = function($event, terminoBusqueda) {
 
-            };
-            
-            $scope.seleccionarDocumentoEvento = function($event,terminoBusqueda){
-                console.log("termino 111",terminoBusqueda);
-                console.log("$event.which ",$event.which);
-                
-                if ($event.which === 13) {
-                 $scope.terminoBusqueda=terminoBusqueda;
+            if ($event.which === 13 || $event.which === 1) {
+                $scope.termino_busquedaTmp = terminoBusqueda;
+                $scope.terminoTmp = terminoBusqueda;
+                if ($scope.tipoDocumento.tipo.tipo !== undefined) {
+                    that.listarDocumetosTemporales(true);
                 }
+            }
+        };
+            /*
+             * evento del select temporal
+             */
+            $scope.seleccionarDocumento = function(){   
                 if($scope.tipoDocumento.tipo.tipo !== undefined){
-                 that.listarDocumetosTemporales();
-                }
-            };
-            
-            $scope.seleccionarDocumento = function(){                
-                if($scope.tipoDocumento.tipo.tipo !== undefined){
-                 that.listarDocumetosTemporales();
+                 that.listarDocumetosTemporales(true);
                 }
             };
             
             $scope.seleccionarDocumentoCreadoEvento = function($event,terminoBusqueda){
-                console.log("termono",terminoBusqueda);
-                console.log("$event.which ",$event.which);
                 
                 if ($event.which === 13 || $event.which === 1) {
                  $scope.terminoBusqueda=terminoBusqueda;
@@ -146,36 +171,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if($scope.tipoDocumento.tipo.tipo !== undefined){
                     that.listarDocumentosBodegaUsuario(true);
                    }
-                }
-                
+                }                
             };
             
             $scope.seleccionarDocumentoCreado = function(){                
                 if($scope.tipoDocumento.tipo.tipo !== undefined){
                  that.listarDocumentosBodegaUsuario(true);
                 }
-            };
-            
-            that.listarDocumetosTemporales=function(){
-
-            var obj = {
-                    session: $scope.session,
-                    data: {
-                              empresaId : Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                              centroUtilidadId : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
-                              bodegaId : Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                              tipoDocGeneralId : $scope.tipoDocumento.tipo.tipo,
-                              invTipoMovimiento : $scope.claseDoc,
-                              numeroDocumento : $scope.terminoBusqueda
-                       }
-                };
-
-                Request.realizarRequest(API.INDEX.LISTAR_DOCUMENTOS_TEMPORALES, "POST", obj, function(data) {  
-                    if (data.status === 200) {
-                        $scope.documentosTemorales=data.obj.obtenerDocumetosTemporales;
-                    }
-                });
-            };
+            };            
             
              $scope.listaDocumentosTemporales = {
                 data: 'documentosTemorales',
@@ -183,6 +186,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 enableRowSelection: true,
                 enableCellSelection: true,
                 enableHighlighting: true,
+                showFilter: true,
                 columnDefs: [
                     {field: 'tipo_movimiento', displayName: 'Clase de Documento', width: "10%"},
                     {field: 'tipo_doc_bodega_id', displayName: 'Tipo Doc', width: "10%"},
@@ -194,6 +198,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     {width: "5%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                            <div ng-if="validarDelete(row.entity.usuario_id)">\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_documento(row.entity)"><span class="glyphicon glyphicon-send"></span></button>\
                                             <button class="btn btn-default btn-xs" ng-click="btn_eliminar_documento(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>\
                                            </div>\
                                         </div>'}
@@ -206,6 +211,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 enableRowSelection: true,
                 enableCellSelection: true,
                 enableHighlighting: true,
+                showFilter: true,
                 columnDefs: [
                     {field: 'tipo', displayName: 'Tipo Movimiento', width: "8%"},
                     {field: 'tipo_movimiento', displayName: 'Doc Bod ID', width: "10%"},
@@ -223,7 +229,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 ]
             };
             
-            that.listarDocumetosTemporales=function(documentos,callback){
+            that.crearHtmlDocumento=function(documentos,callback){
 
                 var obj = {
                         session: $scope.session,
@@ -248,7 +254,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              
             $scope.btn_imprimir = function(documentos){
                  
-                  that.listarDocumetosTemporales(documentos,function(respuesta){
+                  that.crearHtmlDocumento(documentos,function(respuesta){
                       if(respuesta !== false){
                         console.log("respuesta ",respuesta);
                         $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
@@ -362,6 +368,47 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
             };
             
+            that.listarDocumetosTemporales = function(paginandoTmp) {
+
+            if ($scope.ultima_busquedaTmp !== $scope.terminoTmp) {
+                $scope.paginaactualTmp = 1;
+            }
+
+            var obj = {
+                session: $scope.session,
+                data: {
+                    empresaId: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                    centroUtilidadId: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                    bodegaId: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                    tipoDocGeneralId: $scope.tipoDocumento.tipo.tipo,
+                    invTipoMovimiento: $scope.claseDoc,
+                    numeroDocumento: $scope.termino_busquedaTmp,
+                    paginaActual: $scope.paginaactualTmp
+                }
+            };
+
+            Request.realizarRequest(API.INDEX.LISTAR_DOCUMENTOS_TEMPORALES, "POST", obj, function(data) {
+                if (data.status === 200) {
+
+                    $scope.itemsTmp = data.obj.obtenerDocumetosTemporales.length;
+
+                    //                se valida que hayan registros en una siguiente pagina
+                    if (paginandoTmp && $scope.itemsTmp === 0) {
+                        if ($scope.paginaactualTmp > 1) {
+                            $scope.paginaactualTmp--;
+                        }
+                        AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                        return;
+                    }
+
+                    $scope.paginasTmp = (data.obj.obtenerDocumetosTemporales.length / 10);
+                    $scope.itemsTmp = data.obj.obtenerDocumetosTemporales.length;
+
+                    $scope.documentosTemorales = data.obj.obtenerDocumetosTemporales;
+                }
+            });
+        };
+            
            that.listarDocumentosBodegaUsuario=function(paginando){
                
              if ($scope.ultima_busqueda !== $scope.termino) {
@@ -442,6 +489,29 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
                 that.listarDocumentosBodegaUsuario(true);
+            };
+            
+              /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 20/04/2017
+             * @returns {pagina}
+             */
+             $scope.paginaAnteriorTmp = function() {
+                if($scope.paginaactualTmp === 1) return;
+                $scope.paginaactualTmp--;
+                that.listarDocumetosTemporales(true);
+            };
+            
+            /**
+             * +Descripcion: metodo para el paginado
+             * @author Andres M Gonzalez
+             * @fecha: 20/04/2017
+             * @returns {pagina}
+             */
+            $scope.paginaSiguienteTmp = function() {
+                $scope.paginaactualTmp++;
+                that.listarDocumetosTemporales(true);
             };
             
             

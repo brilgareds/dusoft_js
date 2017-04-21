@@ -47,7 +47,8 @@ PedidosClienteModel.prototype.consultarEstadoAutorizacionCliente = function(obj,
 
     G.knex('vnts_contratos_clientes').where({
         tipo_id_tercero: obj.tipo_id_tercero,
-        tercero_id: obj.tercero_id
+        tercero_id: obj.tercero_id,
+        estado:'1'
     }).select(['contrato_cliente_id','sw_autorizacion','sw_facturacion_agrupada']).then(function(rows) {
         callback(false, rows);
     }). catch (function(error) {

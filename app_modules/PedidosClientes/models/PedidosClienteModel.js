@@ -90,7 +90,7 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                   /*,
                       3: termino_busqueda.empresa_origen_id,  //AND a.pedido_farmacia = :4
                       4: termino_busqueda.centro_utilidad_origen_id,*/
-        andSql = "  a.bodega_origen_producto != :3  AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+        andSql = "  a.bodega_origen_producto != :3 AND pedido_farmacia != '1'  AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
         campos = "a.codigo_producto as codigo,a.numero_unidades as cantidad,"
     }
     
@@ -104,10 +104,23 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                   /*,
                       3: termino_busqueda.empresa_origen_id,
                       4: termino_busqueda.centro_utilidad_origen_id,*/
-        andSql = "  a.bodega_origen_producto = :3  AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+        andSql = "  a.bodega_origen_producto = :3 AND pedido_farmacia != '1' AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
          campos = "a.codigo_producto,a.numero_unidades as cantidad_solicitada,"
     }
     
+    if(termino_busqueda.termino_busqueda === '3'){
+        
+        objParametrosBusqueda = '';
+        parametros = {1: cotizacion.numero_cotizacion, 
+                      2: '%' + objParametrosBusqueda + '%',
+                      3: termino_busqueda.bodega_origen_id
+                       };
+                  /*,
+                      3: termino_busqueda.empresa_origen_id,  //AND a.pedido_farmacia = :4
+                      4: termino_busqueda.centro_utilidad_origen_id,*/
+        andSql = "  a.bodega_origen_producto = :3 AND pedido_farmacia = '0' AND "; //a.empresa_origen_producto = :3 AND a.centro_utilidad_origen_producto = :4 AND
+        campos = "a.codigo_producto as codigo,a.numero_unidades as cantidad,"
+    }
     
     var sql = " SELECT\
                 a.pedido_cliente_id_tmp as numero_cotizacion,\
@@ -130,9 +143,10 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 "+andSql+"(\
                     a.codigo_producto ilike :2 or\
                     fc_descripcion_producto(a.codigo_producto) ilike :2 \
-                ) AND pedido_farmacia != '1';";
+                ) ;";
     
-    console.log("termino_busqueda ", parametros)
+    console.log("termino_busqueda ", parametros);
+    console.log("andSql ", andSql);
 
     G.knex.raw(sql, parametros ).then(function(resultado) {
         console.log("resultado.rows [consultar_detalle_cotizacion]: ", resultado.rows);

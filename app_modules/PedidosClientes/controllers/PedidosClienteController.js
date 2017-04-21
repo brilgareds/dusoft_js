@@ -4795,6 +4795,11 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function (req, res) {
     var that = this;
     var args = req.body.data;
 
+console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
+console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
+console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
+console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
+
     // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));

@@ -865,6 +865,12 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 estado_pedido = '7';
                 this.whereRaw(" e.usuario_id = (select usuario_id from operarios_bodega where operario_id = d.responsable_id ) and  g.usuario_id = ?", [responsable]);
             }
+            
+            if (filtro.empresa){
+                this.where("a.empresa_id", filtro.empresa.empresaId).
+                andWhere("a.centro_destino", filtro.empresa.centroUtilidad).
+                andWhere("a.bodega_destino", filtro.empresa.bodega);
+            }
         }
 
         this.where("a.estado_pedido", estado_pedido);

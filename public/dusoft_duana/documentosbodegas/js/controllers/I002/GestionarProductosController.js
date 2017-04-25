@@ -143,7 +143,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
-                
+             
                 var fecha_vencimiento=$filter('date')(new Date(producto.fecha_vencimiento), "dd/MM/yyyy");
                 var diferencia=$scope.restaFechas(fecha_actual,fecha_vencimiento);
                 if(diferencia >= 0 && diferencia <=45){

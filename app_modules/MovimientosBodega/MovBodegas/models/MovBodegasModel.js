@@ -813,8 +813,9 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametr
     var select="''";
     var where="";
     if(parametro.tipoDocGeneralId==='I002'){
-     select=" orden_pedido_id ";   
-     inner=" join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id) ";     
+     select=" cop.codigo_proveedor_id, oc.orden_pedido_id ";   
+     inner  =" join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id) ";     
+     inner +=" join compras_ordenes_pedidos as cop on (oc.orden_pedido_id=cop.orden_pedido_id)";     
     }
     if(parametro.numeroDocumento !== ''){
       where = " AND t.doc_tmp_id ilike '%"+parametro.numeroDocumento+"%'";
@@ -839,6 +840,7 @@ MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametr
 		JOIN system_usuarios as SU ON (t.usuario_id = SU.usuario_id) \
                 "+inner+"\
 		WHERE TRUE AND a.empresa_id = :1 AND a.centro_utilidad = :2 AND a.bodega = :3 AND b.tipo_doc_general_id = :4 AND c.inv_tipo_movimiento = :5 "+where;
+    console.log("as",sql);
     var datos ={1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento};
     var query = G.knex.select(G.knex.raw(sql, datos)).
     limit(G.settings.limit).
@@ -904,6 +906,30 @@ MovimientosBodegasModel.prototype.getTiposDocumentosBodegaUsuario = function(par
                 m.empresa_id = :1 \
                 AND m.centro_utilidad = :2 \
                 AND m.bodega = :3 ;";
+   
+   G.knex.raw(sql, {1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.invTipoMovimiento}).
+   then(function(resultado){    
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       console.log("ERROR ",err);
+       callback(err);
+   });
+};
+
+
+MovimientosBodegasModel.prototype.getTiposDocumentosBodegaEmpresa = function(parametro, callback) {
+    
+    var sql = "SELECT DISTINCT \
+                b.tipo_doc_general_id as tipo_doc_bodega_id,\
+                c.descripcion as tipo_clase_documento\
+                FROM\
+                inv_bodegas_documentos as a\
+                inner join documentos as b on (b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id)\
+                inner join tipos_doc_generales as c on (c.tipo_doc_general_id = b.tipo_doc_general_id AND c.inv_tipo_movimiento = :4 )\
+                WHERE\
+                a.empresa_id = :1 \
+                AND a.centro_utilidad = :2 \
+                AND a.bodega = :3 ;";
    
    G.knex.raw(sql, {1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.invTipoMovimiento}).
    then(function(resultado){    

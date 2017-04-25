@@ -353,7 +353,7 @@ MovBodegasController.prototype.getDocumentosBodegaUsuario=function(req,res){
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
-    console.log("paginaActual",paginaActual);
+    
    var parametros = {
                         empresaId: args.empresaId, 
                         centroUtilidadId: args.centroUtilidadId, 
@@ -363,7 +363,7 @@ MovBodegasController.prototype.getDocumentosBodegaUsuario=function(req,res){
                         numeroDocumento: args.numeroDocumento,
                         paginaActual: paginaActual
                     }; 
-    console.log("AAAAAAAAAAAAAAAAAAA",parametros);
+   
     G.Q.ninvoke(that.m_movimientos_bodegas, "getDocumentosBodegaUsuario", parametros).then(function(result) {
  
      res.send(G.utils.r(req.url, 'getDocumentosBodegaUsuario', 200, {getDocumentosBodegaUsuario: result})); 
@@ -381,11 +381,29 @@ MovBodegasController.prototype.getTiposDocumentosBodegaUsuario=function(req,res)
    
    console.log();
     
-    var parametros = {empresaId: '03', centroUtilidadId: '1',bodegaId:'03',invTipoMovimiento:'I'}; 
+    var parametros = {empresaId: args.empresa_id, centroUtilidadId: args.centro_utilidad_id, bodegaId:args.bodega_id,invTipoMovimiento:args.invTipoMovimiento}; 
     
     G.Q.ninvoke(that.m_movimientos_bodegas, "getTiposDocumentosBodegaUsuario", parametros).then(function(result) {
  
      res.send(G.utils.r(req.url, 'getTiposDocumentosBodegaUsuario', 200, {getTiposDocumentosBodegaUsuario: result})); 
+
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al Listar obtenerDocumetosTemporales', 500, {}));
+    }).done();
+};
+
+MovBodegasController.prototype.getTiposDocumentosBodegaEmpresa=function(req,res){
+   var that = this;
+  
+   var args = req.body.data;
+   
+   console.log();
+    
+    var parametros = {empresaId: args.empresa_id, centroUtilidadId: args.centro_utilidad_id, bodegaId:args.bodega_id,invTipoMovimiento:args.invTipoMovimiento}; 
+    
+    G.Q.ninvoke(that.m_movimientos_bodegas, "getTiposDocumentosBodegaEmpresa", parametros).then(function(result) {
+ 
+     res.send(G.utils.r(req.url, 'getTiposDocumentosBodegaEmpresa', 200, {getTiposDocumentosBodegaEmpresa: result})); 
 
     }).fail(function(err) {
         res.send(G.utils.r(req.url, 'Error al Listar obtenerDocumetosTemporales', 500, {}));

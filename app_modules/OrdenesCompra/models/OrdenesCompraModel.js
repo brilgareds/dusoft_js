@@ -108,7 +108,9 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(paremetr
                 SELECT orden_pedido_id \
                 FROM compras_ordenes_pedidos \
                 WHERE estado = '0' \
-                ) ";  
+                ) \
+                and a.empresa_id_pedido = '"+paremetros.empresaId+"' and a.centro_utilidad_pedido = '"+paremetros.centroUtilidad+"' and a.bodega_pedido = '"+paremetros.bodega+"' \
+              ";  
     }
     var sql = " SELECT \
                 a.orden_pedido_id as numero_orden,\
@@ -349,7 +351,9 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(parametro
                     f.politicas_producto,\
                     prodfoc.sw_autorizado,\
                     CASE WHEN COALESCE (f.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado,\
-                    CASE WHEN h.item_id is null then FALSE else TRUE end as tmp,a.numero_unidades ,numero_unidades_recibidas\
+                    CASE WHEN h.item_id is null then FALSE else TRUE end as tmp,a.numero_unidades ,numero_unidades_recibidas,\
+                    a.lote_temp	,\
+                    a.fecha_vencimiento_temp\
                     "+select+"\
                     from compras_ordenes_pedidos_detalle a\
                     inner join compras_ordenes_pedidos e on a.orden_pedido_id  = e.orden_pedido_id \

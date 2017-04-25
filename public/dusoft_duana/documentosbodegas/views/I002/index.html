@@ -19,7 +19,7 @@
 
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-change="seleccionar_proveedor()" ng-model="DocumentoIngreso.proveedor" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="seleccionar_proveedor()" ng-model="DocumentoIngreso.proveedor" theme="select2" class="form-control selectgeneral pull-left"  ng-disabled="validarDesdeLink" >
                                             <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre_completo() }}</ui-select-match>
                                             <ui-select-choices refresh="listar_proveedores($select.search,true)" refresh-delay="0" repeat="proveedor in  Empresa.get_proveedores() | filter:$select.search">
                                                 {{ proveedor.get_nombre_completo() }}
@@ -34,7 +34,7 @@
                                 <legend>Orden Compra</legend> 
                                 <div class="row">
                                     <div class="col-md-7">                                          
-                                        <ui-select ng-model="DocumentoIngreso.orden_compra" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_orden_compra()">
+                                        <ui-select ng-model="DocumentoIngreso.orden_compra" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_orden_compra()" ng-disabled="validarDesdeLink">
                                             <ui-select-match  placeholder="Seleccionar Orden Compra">{{ $select.selected.get_numero_orden() }}</ui-select-match>
                                             <ui-select-choices repeat="orden in DocumentoIngreso.get_proveedor().get_ordenes_compras() | filter:$select.search">
                                                 {{ orden.get_numero_orden() }}
@@ -66,20 +66,11 @@
                                     <br>
                                     <div class="row">  
                                         <div class="">
-                                          
+
                                         </div>
 
                                     </div>
-                                    <div class="" style="height: 240px" ng-grid="lista_productos_orden" > </div>
-
-<!--                                    <div class="row text-center col-md-12">
-                                        <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
-                                            <span class="glyphicon glyphicon-chevron-left" ></span>
-                                        </button>
-                                        <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
-                                            <span class="glyphicon glyphicon-chevron-right" ></span>
-                                        </button>
-                                    </div>  -->
+                                    <div  style="height: 240px" ng-grid="lista_productos_orden" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav class="grid" > </div>
                                 </tab>                        
                                 <tab>
                                     <tab-heading ng-click="tabProductosPorAutorizar()">
@@ -135,7 +126,7 @@
                                         <span class="glyphicon glyphicon-trash" ></span> Eliminar
                                     </button>
                                     <button ng-hide="!isGenerarDocumento()"  class="btn btn-default" ng-click="generar_documento()" >
-                                            <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                        <span class="glyphicon glyphicon-ok" ></span> Aceptar
                                     </button>                                  
                                 </div>  
                             </div>
@@ -154,5 +145,5 @@
         <div ng-include src="slideurl" ng-controller="GestionarProductosController"></div>
     </div>
 </div>
- <visualizar-reporte></visualizar-reporte>
+<visualizar-reporte></visualizar-reporte>
 

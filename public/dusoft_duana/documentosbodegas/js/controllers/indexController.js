@@ -119,7 +119,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 if (result.length > 0) {
                     var numero = documento.numero||'';
-                    var datosAdicionales = {doc_tmp : documento.doc_tmp_id,orden : documento.orden};
+                    var datosAdicionales;
+                    if(documento.tipo_doc_bodega_id==='I002'){
+                         datosAdicionales = {doc_tmp : documento.doc_tmp_id,orden : documento.orden,codigo_proveedor_id:documento.codigo_proveedor_id};
+                    }
                     var datos = { bodegas_doc_id : documento.bodegas_doc_id, prefijo : documento.prefijo, numero : numero, datosAdicionales : datosAdicionales};
                     localStorageService.add("documento_bodega_" + documento.tipo_doc_bodega_id, datos);
                     
@@ -334,25 +337,25 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
             
             $scope.onBuscar = function(claseDoc){
-              that.getTiposDocumentosBodegaUsuario(claseDoc);
+              that.getTiposDocumentosBodegaEmpresa(claseDoc);
               $scope.claseDoc=claseDoc;
             };
             
-           that.getTiposDocumentosBodegaUsuario=function(claseDoc){
+           that.getTiposDocumentosBodegaEmpresa=function(claseDoc){
                   
             var obj = {
                     session: $scope.session,
                     data: {
-                       
+                            empresa_id:Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             centro_utilidad_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                             invTipoMovimiento: claseDoc                        
                     }
                 };
 
-                Request.realizarRequest(API.INDEX.GET_TIPOS_DOCUMENTOS_BODEGA_USUARIO, "POST", obj, function(data) { 
+                Request.realizarRequest(API.INDEX.GET_TIPOS_DOCUMENTOS_BODEGA_EMPRESA, "POST", obj, function(data) { 
                     if (data.status === 200) {
-                       that.renderTipoDocumento(data.obj.getTiposDocumentosBodegaUsuario);
+                       that.renderTipoDocumento(data.obj.getTiposDocumentosBodegaEmpresa);
                     }
                 });
             };

@@ -88,10 +88,28 @@ OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
     if (args.ordenes_compras.bloquearEstados === undefined) {
         args.ordenes_compras.bloquearEstados=false;
     }
+    
+    if (args.ordenes_compras.empresaId === undefined) {
+        args.ordenes_compras.empresaId = "";
+    }
+    
+    if (args.ordenes_compras.centroUtilidad === undefined) {
+        args.ordenes_compras.centroUtilidad = "";
+    }
+    
+    if (args.ordenes_compras.bodega === undefined) {
+        args.ordenes_compras.bodega = "";
+    }
 
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
     var bloquearestado = args.ordenes_compras.bloquearEstados;
-    var paremetros = {codigo_proveedor_id:codigo_proveedor_id,bloquearestado:bloquearestado };
+    var paremetros = {
+                codigo_proveedor_id : codigo_proveedor_id,
+                bloquearestado : bloquearestado,
+                empresaId : args.ordenes_compras.empresaId,
+                centroUtilidad : args.ordenes_compras.centroUtilidad,
+                bodega : args.ordenes_compras.bodega
+            };
 
     that.m_ordenes_compra.listar_ordenes_compra_proveedor(paremetros, function(err, lista_ordenes_compras) {
 

@@ -464,14 +464,14 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
             }).then(function(result) {
                 
                 if(result >= 1){
-                    return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle, that, 0, resultadoProducto, '' ,transaccion);
+                    return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle, that, 0, resultadoProducto, 0 ,transaccion);
                 }else{
                     throw 'fecha_ingreso_orden_compra Fallo';
                 }
 
             }).then(function(result) {
-               
-              if(result.rowCount >= 1){
+                
+              if(result >= 1){
                 transaccion.commit(); 
                 return false;
               }else{
@@ -672,7 +672,7 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
         
     }). catch (function(err) {
         console.log("err>>>>", err);
-        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err: err}));
+        res.send(G.utils.r(req.url, 'Error al Crear el html del Documento', 500, {err: err}));
     }).done();
 };
 
@@ -683,25 +683,25 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
 
         if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
             if (resultado.subtotal >= parseInt(impuesto.base_rtf)) {
-                resultado.valorRetFte = resultado.subtotal * (cabecera.valorRetFte / 100);
+                resultado.valorRetFte = Math.round(resultado.subtotal * (cabecera.valorRetFte / 100));
             } else {
                 resultado.valorRetFte = 0;
             }
 
         if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3')
             if (resultado.subtotal >= parseInt(impuesto.base_ica)) {
-                resultado.valorRetIca = resultado.subtotal * (cabecera.valorRetIca / 1000);
+                resultado.valorRetIca = Math.round(resultado.subtotal * (cabecera.valorRetIca / 1000));
             } else {
                 resultado.valorRetIca = 0;
             }
         if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3')
             if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
-                resultado.valorRetIva = resultado.IvaTotal * (cabecera.valorRetIva / 100);
+                resultado.valorRetIva = Math.round(resultado.IvaTotal * (cabecera.valorRetIva / 100));
             } else {
                 resultado.valorRetIva = 0;
             }
 
-        resultado.total = ((((resultado.subtotal + resultado.IvaTotal) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva);
+        resultado.total = Math.round(((((resultado.subtotal + resultado.IvaTotal) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva));
 
         callback(false, [resultado]);
         return;
@@ -713,7 +713,7 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
     resultado.porc_iva = (producto.porcentaje_gravamen / 100) + 1;
     resultado.ValorSubTotal = (producto.total_costo / resultado.porc_iva);
     resultado.IvaProducto = producto.total_costo - resultado.ValorSubTotal;
-    resultado.IvaTotal = resultado.IvaTotal + (resultado.IvaProducto);
+    resultado.IvaTotal = Math.round(resultado.IvaTotal + (resultado.IvaProducto));
     resultado.subtotal += parseInt(resultado.ValorSubTotal);
 
     setTimeout(function() {
@@ -722,12 +722,12 @@ function __impuestos(that, index, productos, impuesto, resultado, cabecera, call
 
 };
 
-function __modificarComprasOrdenesPedidosDetalle(that, index, parametros,result,transaccion, callback) {
+function __modificarComprasOrdenesPedidosDetalle(that, index, parametros,resultado,transaccion, callback) {
 
     var productos = parametros[index];
     
     if (!productos) {
-        callback(false,result);
+        callback(false,resultado);
         return;
     }
 
@@ -736,10 +736,12 @@ function __modificarComprasOrdenesPedidosDetalle(that, index, parametros,result,
      index++;
      
         setTimeout(function() {
-            __modificarComprasOrdenesPedidosDetalle(that, index, parametros,result, transaccion, callback);
+            resultado+=result.rowCount;
+            __modificarComprasOrdenesPedidosDetalle(that, index, parametros,resultado, transaccion, callback);
         }, 3);   
                
     }).fail(function(err){
+        consol.log("__modificarComprasOrdenesPedidosDetalle:::::::",err);
         callback(true, err);
         return;
     }).done();

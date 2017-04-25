@@ -13,6 +13,7 @@ define(["angular"], function(angular) {
                 'ADD_ITEM_DOC_TEMPORAL': BASE_URL + '/movBodegas/addItemDocTemporal',
                 'LISTAR_DOCUMENTOS_TEMPORALES': BASE_URL + '/movBodegas/obtenerDocumetosTemporales',
                 'GET_TIPOS_DOCUMENTOS_BODEGA_USUARIO': BASE_URL + '/movBodegas/getTiposDocumentosBodegaUsuario',
+                'GET_TIPOS_DOCUMENTOS_BODEGA_EMPRESA': BASE_URL + '/movBodegas/getTiposDocumentosBodegaEmpresa',
                 'GET_DOCUMENTOS_BODEGA_USUARIO': BASE_URL + '/movBodegas/getDocumentosBodegaUsuario',
             },
             'I002': {

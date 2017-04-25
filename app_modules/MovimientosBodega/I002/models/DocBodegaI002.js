@@ -198,9 +198,7 @@ DocumentoBodegaI002.prototype.eliminarOrdenPedidoProductosFoc = function(paramet
    var query= G.knex.raw(sql);
    if(transaccion) query.transacting(transaccion);   
    query.
-   then(function(resultado){  
-       console.log("updateComprasOrdenesPedidosDetalle ",resultado); 
-       console.log("updateComprasOrdenesPedidosDetalle sql:: ",sql); 
+   then(function(resultado){        
        callback(false, resultado);
    }).catch(function(err){
        console.log("err (/catch) [updateComprasOrdenesPedidosDetalle]: ", err);

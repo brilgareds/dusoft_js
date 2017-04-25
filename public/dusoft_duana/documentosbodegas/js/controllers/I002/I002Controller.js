@@ -39,12 +39,13 @@ define([
             $scope.entrar = "";
             $scope.listarParametrosRetencion;
             $scope.totalPorAutorizar;
+            $scope.validarDesdeLink = false;
             
              
             
             console.log("********I002Controller************");
             var datos_documento = localStorageService.get("documento_bodega_I002");
-            console.log(">>>>>>>",datos_documento);
+            console.log("documento_bodega_I002>>>>>>>",datos_documento);
             
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
@@ -179,6 +180,9 @@ define([
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
+                            empresaId: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                            centroUtilidad: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.codigo,
+                            bodega: Sesion.getUsuarioActual().getEmpresa().centroUtilidad.bodega.codigo,
                             codigo_proveedor_id: $scope.DocumentoIngreso.get_proveedor().get_codigo(),
                             bloquearEstados:true
                         }
@@ -206,7 +210,8 @@ define([
 
                     var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
                     $scope.DocumentoIngreso.get_proveedor().set_ordenes_compras(orden_compra);
-                    if(49237===orden.numero_orden){ 
+                    if(datos_documento.datosAdicionales !== undefined)
+                    if(datos_documento.datosAdicionales.orden === orden.numero_orden){                       
                       $scope.DocumentoIngreso.orden_compra=orden_compra;
                       $scope.seleccionar_orden_compra();
                     }
@@ -335,10 +340,10 @@ console.log("DocItemTemporal:: ",data);
                     session: $scope.session,
                     data: {
                         orden_pedido_id: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
-                        empresa_id: '03'
+                        empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo()
                     }
                 };
-
+                 
                 Request.realizarRequest(API.I002.LISTAR_PRODUCTOS_POR_AUTORIZAR, "POST", obj, function(data) {
                     if (data.status === 200) {
                         that.renderListarProductosPorAutorizar(data.obj.listarProductosPorAutorizar, function(respuesta) {
@@ -388,7 +393,7 @@ console.log("DocItemTemporal:: ",data);
                 var obj = {
                     session: $scope.session,
                     data: {
-                        empresa_id: '03'
+                        empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo()
                     }
                 };
 
@@ -520,7 +525,7 @@ console.log("DocItemTemporal:: ",data);
                 
                 productos.forEach(function(data) {
                     console.log("render_productos:: ",data);
-                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, parseFloat(data.porc_iva).toFixed(2), data.valor);
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, parseFloat(data.porc_iva).toFixed(2), data.valor, data.lote_temp,data.fecha_vencimiento_temp);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     producto.set_is_tmp(data.tmp);
                     producto.set_item_id(data.item_id);
@@ -557,6 +562,7 @@ console.log("DocItemTemporal:: ",data);
                         AlertService.mostrarMensaje("warning", data.msj);
                         that.buscar_ordenes_compra();
                         that.refrescarVista();
+                        $scope.DocumentoIngreso.orden_compra="";
                         var nombre = data.obj.nomb_pdf;                        
                         setTimeout(function(){
                             $scope.visualizarReporte("/reports/" + nombre, nombre, "_blank");
@@ -1132,8 +1138,8 @@ console.log("DocItemTemporal:: ",data);
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%"},
                     {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
-                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad"},
-                    {field: 'get_iva()', displayName: "I.V.A (%)", width: "5%"},
+                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad",cellFilter: "number"},
+                    {field: 'get_iva()', displayName: "Valor IVA", width: "5%"},
                     {field: 'get_porcentaje_gravamen()', displayName: '% Gravament', width: "5%"},
                     {field: 'get_valor_total()', displayName: 'Valor Total', width: "10%", cellFilter: 'currency'},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
@@ -1149,13 +1155,12 @@ console.log("DocItemTemporal:: ",data);
                 enableRowSelection: true,
                 enableCellSelection: true,
                 enableHighlighting: true,
-                showFooter: true,
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%"},
                     {field: 'get_fecha_vencimiento()', displayName: 'Fecha Vencimiento', cellFilter: "date:\'dd-MM-yyyy\'", width: "10%"},
-                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad"},
+                    {field: 'get_cantidad_solicitada()', width: "7%", displayName: "Cantidad" },
                     {field: 'get_iva()', displayName: "I.V.A (%)", width: "5%"},
                     {field: 'get_porcentaje_gravamen()', displayName: '% Gravament', width: "5%"},
                     {field: 'get_valor_total()', displayName: 'Valor Total', width: "10%", cellFilter: 'currency'},
@@ -1380,7 +1385,7 @@ console.log("DocItemTemporal:: ",data);
 
                 return disabled;
             };
-
+            
             $scope.validarEstado = function(producto) {
                var disabled = false;
                if(producto.get_sw_estado() === false){
@@ -1456,7 +1461,8 @@ console.log("DocItemTemporal:: ",data);
             
             $scope.guardarProducto = function(producto) {
                 
-                
+                var fecha_actual = new Date();
+                fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
                 var valor=parseInt(producto.valor_unit);
                 var porcentaje=((valor * producto.iva) / 100);
                 var valorMasPorcentaje=valor+porcentaje;                
@@ -1492,18 +1498,15 @@ console.log("DocItemTemporal:: ",data);
                 $scope.$$watchers = null;
                 
             });
-          
-            $scope.listar_proveedores('541',false); 
-//            
-//            that.traerEmpresas(function() {
-//                $timeout(function() {
-//                    $scope.filtro.empresa_seleccion = '03';
-//                     $scope.buscarProductos("");
-//                });
-//
-//            });
-//            
-            //$scope.DocumentoIngreso.proveedor
+            
+            if(datos_documento.datosAdicionales !== undefined){
+                $scope.listar_proveedores(datos_documento.datosAdicionales.codigo_proveedor_id,false); 
+                $scope.validarDesdeLink=true;
+                console.log("Validacion 1");
+            }else{
+                console.log("Validacion 2");
+                $scope.validarDesdeLink=false;
+            }
             
         }]); 
 });

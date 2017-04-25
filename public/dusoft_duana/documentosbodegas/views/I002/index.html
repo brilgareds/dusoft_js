@@ -64,13 +64,9 @@
                                 <tab heading="Productos Ingresados">
 
                                     <br>
-                                    <div class="row">  
-                                        <div class="">
-
-                                        </div>
-
+                                    <div class="table-responsive" style="margin-top:3px;" >
+                                        <div  style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_orden" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav class="grid" > </div>
                                     </div>
-                                    <div  style="height: 240px" ng-grid="lista_productos_orden" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav class="grid" > </div>
                                 </tab>                        
                                 <tab>
                                     <tab-heading ng-click="tabProductosPorAutorizar()">
@@ -90,8 +86,9 @@
                                         </div>
 
                                     </div>
-
-                                    <div class="" style="height: 240px" ng-grid="lista_productos_no_autorizados" > </div>
+                                    <div class="table-responsive" style="margin-top:3px;" >
+                                        <div class="" style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_no_autorizados" > </div>                                        
+                                    </div>
                                 </tab>                                
                             </tabset>
                             <br>
@@ -100,7 +97,9 @@
                             <br>
                             <div class="row"> 
                                 <div class="col-md-12">
-                                    <div style="height: 240px" ng-grid="lista_productos_ingresados" > </div>                              
+                                  <div class="table-responsive" style="margin-top:3px;" > 
+                                        <div style="height: 300px" class="defaultGrid grid-responsive" ng-grid="lista_productos_ingresados" > </div> 
+                                   </div>  
                                 </div>
                             </div>
                             <div ng-if="isTmp()">    

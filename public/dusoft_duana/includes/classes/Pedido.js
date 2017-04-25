@@ -21,6 +21,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado_separacion;
             this.descripcionTipoPedido = "";
             this.tipoPedido = "";
+            this.nombreSeparador = "";
         }
 
         // Pedidos
@@ -34,6 +35,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado = datos.estado || null;
             this.estado_separacion = datos.estado_separacion || null;
             this.descripcionTipoPedido = datos.descripcion_tipo_producto || "";
+            this.nombreSeparador = datos.nombre_separador || "";
         };
         
         

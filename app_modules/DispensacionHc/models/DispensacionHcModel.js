@@ -44,11 +44,17 @@ DispensacionHcModel.prototype.consultarEvolucionFormula = function(obj,callback)
  */
 DispensacionHcModel.prototype.consultarNumeroFormula = function(obj,callback){
      
-    var columna = [G.knex.raw("formula_id")];
+    var columna = [G.knex.raw("formula_id"),  
+                   G.knex.raw(" CASE WHEN b.tipo_formula is null THEN '0' ELSE '1' END as tipo_formula")];
      
-    G.knex('dispensacion_estados').where({
-        evolucion_id: obj.evolucionId
-    }).select(columna).then(function(resultado) {
+    G.knex.select(columna)
+        .from("dispensacion_estados AS a")
+        .innerJoin("hc_evoluciones AS b", 
+            function() {
+                this.on("a.evolucion_id", "b.evolucion_id")
+        }).where("a.evolucion_id", obj.evolucionId)
+  
+    .then(function(resultado) {
         callback(false, resultado);
     }). catch (function(error) {
         console.log("err[consultarNumeroFormula]: ", error);
@@ -56,6 +62,7 @@ DispensacionHcModel.prototype.consultarNumeroFormula = function(obj,callback){
     });
     
 }; 
+  
  
 DispensacionHcModel.prototype.intervalo_fecha = function(parametros, callback)
 {
@@ -204,7 +211,10 @@ DispensacionHcModel.prototype.listarFormulas = function(obj, callback){
                                     WHEN a.sw_pendiente = '1' THEN 'Tratamiento finalizado' \
                                     WHEN a.sw_pendiente = '2' THEN 'Todo pendiente' END\
                                 ) \
-                        END ) ELSE 'Proceso' END )\n\
+                        END ) ELSE (SELECT nombre FROM system_usuarios WHERE usuario_id = (\
+                                                SELECT distinct(usuario_id) as usuario_id \
+                                                FROM hc_dispensacion_medicamentos_tmp \n\
+                                                WHERE evolucion_id = a.evolucion_id )) END )\n\
                          WHEN (\
                                 SELECT count(distinct(usuario_id)) as usuario_id \
                                 FROM hc_dispensacion_medicamentos_tmp \n\
@@ -1116,12 +1126,29 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
                         "b.codigo_producto",
                         "g.usuario_id",
                         "g.usuario"];         
-                   
+    
+     var queryDispensacionEstados = G.knex.column(
+                                        [
+                                            G.knex.raw("distinct(evolucion_id) as evolucion_id"),
+                                            "tipo_id_paciente",
+                                            "paciente_id"
+                                        ]
+                                        
+                                         )
+                                        .select()
+                                        .from("hc_formulacion_antecedentes")
+                                        .where("tipo_id_paciente",obj.tipoIdPaciente)
+                                        .andWhere("paciente_id", obj.pacienteId).as("hc");
+    
     var subQuery = G.knex.select(colSubQueryB)
                            .from("hc_formulacion_despachos_medicamentos_pendientes as dc")
-                           .join("hc_formulacion_antecedentes AS hc", function(){//dispensacion_estados
+                           /*.join("hc_formulacion_antecedentes AS hc", function(){//dispensacion_estados
                                this.on("dc.evolucion_id","=","hc.evolucion_id")
-                           })
+                           })*/
+                           .join(queryDispensacionEstados, 
+                                function() {
+                                    this.on("dc.evolucion_id","=","hc.evolucion_id")
+                            })
                            .innerJoin("bodegas_documentos AS d", function(){
                                this.on("dc.bodegas_doc_id", "d.bodegas_doc_id")
                                .on("dc.numeracion","d.numeracion")
@@ -1167,9 +1194,13 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
     var query = G.knex.column('*').from(subQuery) .union(function(){
                                  this.select(colSubQueryA)
                            .from("hc_formulacion_despachos_medicamentos as dc")
-                           .join("hc_formulacion_antecedentes AS hc", function(){ //dispensacion_estados
+                           /*.join("hc_formulacion_antecedentes AS hc", function(){ //dispensacion_estados
                                this.on("dc.evolucion_id","=","hc.evolucion_id")
-                           })
+                           })*/
+                            .join(queryDispensacionEstados, 
+                                function() {
+                                    this.on("dc.evolucion_id","=","hc.evolucion_id")
+                            })
                            .innerJoin("bodegas_documentos AS d", function(){
                                this.on("dc.bodegas_doc_id", "d.bodegas_doc_id")
                                .on("dc.numeracion","d.numeracion")
@@ -1333,8 +1364,7 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
             .andWhere(G.knex.raw("a.fecha_registro <= ('" + obj.today + "'::date +'1 day' ::interval)::date "))
             .orderBy("a.fecha_registro","desc").limit(limite);
           
-        queryS.then(function(resultado){    
-            //console.log("resultado consultarUltimoRegistroDispensacion: ", resultado);   
+        queryS.then(function(resultado){       
             callback(false, resultado);
         }).catch(function(err){      
             console.log("err consultarUltimoRegistroDispensacion: ", err);   
@@ -1342,34 +1372,6 @@ DispensacionHcModel.prototype.consultarUltimoRegistroDispensacion = function(obj
         });  
 };
 
-/**
- * @author Cristian Ardila
- * @fecha 26/07/2016
- * +Descripcion Modelo encargado de consultar si un usuario tiene privilegios
- *              para autorizar una dispensacion de un producto confrontado
- * @controller DispensacionHc.prototype.usuarioPrivilegios
- * -- Pertenece a la funcion Usuario_Privilegios_ del (VIEJO)
- */
-DispensacionHcModel.prototype.usuarioPrivilegios = function(obj,callback){
- 
-  var query = G.knex.column(['sw_privilegios'])
-                .select()
-                .from('userpermisos_dispensacion')
-                .where('empresa_id',obj.empresa)
-                .andWhere('centro_utilidad',obj.centroUtilidad)
-                .andWhere('bodega',obj.bodega)
-                .andWhere('usuario_id',obj.usuario)
-                .andWhere('sw_activo','1');
-            
-    query.then(function(resultado){ 
-          callback(false, resultado)
-    }).catch(function(err){   
-        console.log("err usuarioPrivilegios: ", err);    
-          callback(err);
-    });
-    
-          
-};
 
 /**
  * @author Cristian Ardila

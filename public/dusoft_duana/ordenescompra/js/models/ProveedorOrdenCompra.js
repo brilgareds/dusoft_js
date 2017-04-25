@@ -24,7 +24,8 @@ define(["angular", "js/models", "includes/classes/Proveedor"], function(angular,
             
             ProveedorOrdenCompra.prototype.get_nombre = function() {
                
-               var nombre_proveedor = this.tipo_id_tercero +' '+ this.id + ' - ' + this.nombre_tercero;
+               //var nombre_proveedor = this.tipo_id_tercero +' '+ this.id + ' - ' + this.nombre_tercero;
+               var nombre_proveedor = this.nombre_tercero;
                 
                return nombre_proveedor;
             };

@@ -32,6 +32,7 @@ define(["angular",
                     grupos:true
                 },
                 usuariosSeleccionados:[],
+                usuariosPreSeleccionados:[],
                 conversacionSeleccionada:conversacion
             };
             
@@ -93,7 +94,7 @@ define(["angular",
                         
                         self.validarUsuarioConversacion(usuario, function(valido){
                             if(valido){
-                                self.removerUsuarios([usuario]);
+                                self.removerUsuarios([usuario], true);
 
                             } else {
                                 self.agregarUsuarios([usuario]);
@@ -174,13 +175,20 @@ define(["angular",
             * @params Usuario usuario
             * @fecha 2016-09-06
             */
-            self.removerUsuarios = function(_usuarios){
+            self.removerUsuarios = function(_usuarios, forzar){
                 var conversacion = $scope.root.conversacionSeleccionada;
                 var usuarios = $scope.root.usuariosSeleccionados;
                 var _usuario = _usuarios[0];
                 var index = -1;
                 
                 if(!_usuario){
+                    return;
+                }
+                
+                //Evita eliminar usuarios anteriormente creados y que coincidan con el grupo
+                if(self.esUsuarioPreseleccionado(_usuario) && !forzar){
+                     _usuarios.splice(0,1);
+                    self.removerUsuarios(_usuarios);
                     return;
                 }
                 
@@ -203,14 +211,25 @@ define(["angular",
                     if(conversacion.getId() !== 0){
                         self.removerUsuario(_usuario, function(continuar){
                             if(continuar){
-                                self.removerUsuarios(_usuarios);
+                                self.removerUsuarios(_usuarios, forzar);
                             }
                         });
                     } else {
-                        self.removerUsuarios(_usuarios);
+                        self.removerUsuarios(_usuarios, forzar);
                     }
                     
                 //},0);
+            };
+            
+            self.esUsuarioPreseleccionado = function(usuario){
+              
+                for (var i in $scope.root.usuariosPreSeleccionados){
+                    if($scope.root.usuariosPreSeleccionados[i].getId() === usuario.getId()){
+                        return true;
+                    }
+                }
+                
+                return false;
             };
             
             /*
@@ -286,7 +305,7 @@ define(["angular",
             };
             
             
-            self.listarUsuariosConversacion = function(callback){
+            self.listarUsuariosConversacion = function(callback){ 
                 
                 var obj = {
                     session: $scope.root.session,
@@ -306,6 +325,7 @@ define(["angular",
                         for (var i in usuarios) {
                             var usuario = Usuario.get(usuarios[i].usuario_id, usuarios[i].usuario, usuarios[i].nombre);
                             _usuarios.push(usuario);
+                            $scope.root.usuariosPreSeleccionados.push(usuario);
                         }
                         
                         self.agregarUsuarios(_usuarios);
@@ -436,7 +456,7 @@ define(["angular",
                     if(valido){
                         self.agregarUsuarios([usuario]);
                     } else {
-                        self.removerUsuarios([usuario]);
+                        self.removerUsuarios([usuario], true);
                     }
                     
                     $scope.$broadcast("onActualizarUsuariosSeleccionados", $scope.root.usuariosSeleccionados);
@@ -456,7 +476,7 @@ define(["angular",
                 
                 self.validarUsuarioConversacion(usuario, function(valido){
                     if(valido){
-                        self.removerUsuarios([usuario]);
+                        self.removerUsuarios([usuario], true);
                         
                     } else {
                         self.agregarUsuarios([usuario]);

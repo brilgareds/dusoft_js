@@ -73,22 +73,23 @@
                                     </div>
                                 </fieldset>
                             </div>
-                        </div>      
-                        <div class="row margin-top">      
-                            <div class="col-md-4">
-                                <fieldset>
-                                    <legend class="medium-letter">Proveedor</legend> 
-                                    <div class="row">
-                                        <div class="col-md-12"> 
-                                            <ui-select ng-disabled="recepcion.disabled_btn" ng-model="recepcion.proveedor" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(recepcion)">
-                                                <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
-                                                <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
-                                                    {{ proveedor.get_nombre() }}
-                                                </ui-select-choices>
-                                            </ui-select>
+                        </div>     
+                        <div class="row contenedorRecepcion" >
+                            <div class="row margin-top" style="margin-top: 0px;">      
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <legend class="medium-letter">Proveedor</legend> 
+                                        <div class="row">
+                                            <div class="col-md-12"> 
+                                                <ui-select ng-disabled="recepcion.disabled_btn" ng-model="recepcion.proveedor" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(recepcion)">
+                                                    <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
+                                                    <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
+                                                        {{ proveedor.get_nombre() }}
+                                                    </ui-select-choices>
+                                                </ui-select>
+                                            </div>
                                         </div>
-                                    </div>
-                                </fieldset>
+                                    </fieldset>
                             </div>
                             <div class="col-md-4">
                                 <fieldset>
@@ -117,7 +118,7 @@
                             </div>
                         </div>      
                         <div class="row margin-top">   
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <fieldset>
                                     <legend class="medium-letter">Cant recibida</legend> 
                                     <div class="row">
@@ -133,7 +134,7 @@
                                 </fieldset>
                             </div>
 
-                            <div class="col-md-1">
+                            <div class="col-md-4">
                                 <fieldset>
                                     <legend class="medium-letter">Temperatura</legend> 
                                     <div class="row">
@@ -146,7 +147,7 @@
                                     </div>
                                 </fieldset>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-4">
                                 <fieldset>
                                     <legend class="medium-letter">Contiene</legend> 
                                     <div class="row">
@@ -165,38 +166,43 @@
                                     </div>
                                 </fieldset>
                             </div>
-
-                            <div class="col-md-3">
-                                <fieldset>
-                                    <legend class="medium-letter">Novedad</legend> 
-                                    <div class="row">
-                                        <div class="col-md-12">  
-                                            <ui-select ng-disabled="recepcion.disabled_btn" ng-model="recepcion.novedad" theme="select2" class="form-control selectgeneral pull-left" ng-change="">
-                                                <ui-select-match  placeholder="Seleccionar Novedad">{{ $select.selected.get_codigo_descripcion() }}</ui-select-match>
-                                                <ui-select-choices repeat="novedad in Empresa.get_novedades_mercancia() | filter:$select.search">
-                                                    {{ novedad.get_codigo_descripcion() }}
-                                                </ui-select-choices>
-                                            </ui-select>
+                            
+                        </div>
+                            
+                            
+                            <div class="row margin-top">
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <legend class="medium-letter">Novedad</legend> 
+                                        <div class="row">
+                                            <div class="col-md-12">  
+                                                <ui-select ng-disabled="recepcion.disabled_btn" ng-model="recepcion.novedad" theme="select2" class="form-control selectgeneral pull-left" ng-change="">
+                                                    <ui-select-match  placeholder="Seleccionar Novedad">{{ $select.selected.get_codigo_descripcion() }}</ui-select-match>
+                                                    <ui-select-choices repeat="novedad in Empresa.get_novedades_mercancia() | filter:$select.search">
+                                                        {{ novedad.get_codigo_descripcion() }}
+                                                    </ui-select-choices>
+                                                </ui-select>
+                                            </div>
                                         </div>
-                                    </div>
-                                </fieldset>
-                            </div>                            
-                            <div class="col-md-1">
-                                <fieldset>
-                                    <legend class="medium-letter">Opciones</legend> 
-                                    <div class="row">
-                                        <div class="col-md-12">  
-                                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="recepcion.fn_btn_add(recepcion)">
-                                                <span class="{{recepcion.class_btn_add}}"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="crear_recepcion(recepcion)">
-                                                <span class="glyphicon glyphicon-ok"></span>
-                                            </button>
+                                    </fieldset>
+                                </div>                            
+                                <div class="col-md-4">
+                                    <fieldset>
+                                        <legend class="medium-letter">Opciones</legend> 
+                                        <div class="row">
+                                            <div class="col-md-12">  
+                                                <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="recepcion.fn_btn_add(recepcion)">
+                                                    <span class="{{recepcion.class_btn_add}}"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="crear_recepcion(recepcion)">
+                                                    <span class="glyphicon glyphicon-ok"></span>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </div> 
+                                    </fieldset>
+                                </div>
+                            </div> 
+                        </div>
                         <div ng-show="datos_view.recepciones.length > 1" class="panel-heading margin-top" style="border-color: #ddd ; background-color: #f5f5f5;margin-top: 15px;height: 20px;"> </div>                        
                     </div> 
                     <div class="modal-footer col-md-12">

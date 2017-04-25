@@ -543,7 +543,7 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
                      
         if(resultado.length > 0){
             
-           
+            cabecera[0].fecha_registro=cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
                 detalle: detalle[0],
@@ -653,8 +653,7 @@ I002Controller.prototype.crearHtmlDocumento = function(req, res) {
         var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
 
         if (resultado.length > 0) {
-
-
+           cabecera[0].fecha_registro=cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS'); 
             __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
                 cabecerae: cabecera[0],
                 detalle: detalle[0],

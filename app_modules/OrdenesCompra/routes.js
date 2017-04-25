@@ -167,4 +167,16 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/subirArchivoOrdenes', function(req, res) {
         c_ordenes_compra.subirArchivoOrdenes(req, res);
     });
+    
+    
+    /**
+     * +Descripcion Generar orden de compra desde auditoria
+     */
+    /*app.post('/api/OrdenesCompra/generarOrdenDeCompraAuditado', function(req, res) {
+        c_ordenes_compra.generarOrdenDeCompraAuditado(req, res);
+    });*/
+    G.eventEmitter.on("onGenerarOrdenDeCompra",function(parametros){
+        c_ordenes_compra.generarOrdenDeCompraAuditado(parametros)
+    });
+    
 };

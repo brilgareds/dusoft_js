@@ -1,6 +1,6 @@
 
-var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos,
-                              m_terceros, emails, pedidos_farmacias, m_pedidos_clientes_log, terceros_clientes_model) {
+var PedidosCliente = function (pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos,
+        m_terceros, emails, pedidos_farmacias, m_pedidos_clientes_log, terceros_clientes_model) {
 
 
     this.m_pedidos_clientes = pedidos_clientes;
@@ -20,39 +20,39 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  *  @author Cristian Ardila
  *  @fecha 2017-01-02
  */
-PedidosCliente.prototype.listarFacturasPedido = function(req, res){
-     
+PedidosCliente.prototype.listarFacturasPedido = function (req, res) {
+
     var that = this;
     var args = req.body.data;
-       
-    if (args.pedidos_clientes === undefined ) {
+
+    if (args.pedidos_clientes === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {pedidos_clientes: []}));
         return;
     }
-    
+
     if (args.pedidos_clientes.numeroPedido === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de pedido', 404, {pedidos_clientes: []}));
         return;
     }
-    
+
     var pedido = args.pedidos_clientes.numeroPedido;
-  
+
     var parametros = {pedido: pedido};
-    G.Q.ninvoke(that.m_pedidos_clientes,'listarFacturasPedido', parametros).then(function(resultado){
-     
-        if(resultado.length > 0){
-       
-           res.send(G.utils.r(req.url, 'Consulta facturas', 200, {listar_tipo_documento:resultado}));
-        }else{
-           throw 'Consulta sin resultados';
+    G.Q.ninvoke(that.m_pedidos_clientes, 'listarFacturasPedido', parametros).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            res.send(G.utils.r(req.url, 'Consulta facturas', 200, {listar_tipo_documento: resultado}));
+        } else {
+            throw 'Consulta sin resultados';
         }
-      
-        
-    }).fail(function(err){      
-       res.send(G.utils.r(req.url, err, 500, {}));
+
+
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
-    
-    
+
+
 };
 /**
  * @api {post} /api/PedidosClientes/listarPedidos Listar Pedidos
@@ -69,7 +69,7 @@ PedidosCliente.prototype.listarFacturasPedido = function(req, res){
  * @apiParam {String} termino_busqueda Termino por el cual desea filtrar los pedidos.
  * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion.
  */
-PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
+PedidosCliente.prototype.listarPedidosClientes = function (req, res) {
 
     var that = this;
 
@@ -88,18 +88,18 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     if (args.pedidos_clientes.pagina_actual === '') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
         return;
-    }       
-     
+    }
+
     var fecha_inicial;
     var fecha_final;
-    
+
     if (args.pedidos_clientes.fecha_inicial !== undefined || args.pedidos_clientes.fecha_final !== undefined) {
-          fecha_inicial = args.pedidos_clientes.fecha_inicial;
-          fecha_final = args.pedidos_clientes.fecha_final;  
-          //args.pedidos_clientes.filtros.filtroEstadoFacturado = args.pedidos_clientes.filtroEstadoFacturado;  
+        fecha_inicial = args.pedidos_clientes.fecha_inicial;
+        fecha_final = args.pedidos_clientes.fecha_final;
+        //args.pedidos_clientes.filtros.filtroEstadoFacturado = args.pedidos_clientes.filtroEstadoFacturado;  
     }
-    
-    
+
+
     var empresa_id = args.pedidos_clientes.empresa_id;
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
@@ -118,19 +118,19 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     }
     var filtro = args.pedidos_clientes.filtro;
 
-    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, 
-                                                    termino_busqueda, 
-                                                    filtro, 
-                                                    pagina_actual, 
-                                                    estadoPedido, 
-                                                    estadoSolicitud,
-                                                    fecha_inicial,
-                                                    fecha_final, function(err, lista_pedidos_clientes) {
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id,
+            termino_busqueda,
+            filtro,
+            pagina_actual,
+            estadoPedido,
+            estadoSolicitud,
+            fecha_inicial,
+            fecha_final, function (err, lista_pedidos_clientes) {
 
-        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
+                res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
 
 
-    });
+            });
 };
 
 
@@ -150,7 +150,7 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
-PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
+PedidosCliente.prototype.asignarResponsablesPedido = function (req, res) {
 
     var that = this;
 
@@ -175,22 +175,22 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
     var i = pedidos.length;
 
-    pedidos.forEach(function(numero_pedido) {
-        
-        
-        G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function(cabecera_pedido) {
-            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null || 
-                cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '1') {
-                return  G.Q.ninvoke(that.m_pedidos_clientes,"asignar_responsables_pedidos",numero_pedido, estado_pedido, responsable, usuario);
-                
+    pedidos.forEach(function (numero_pedido) {
+
+
+        G.Q.ninvoke(that.m_pedidos_clientes, "consultar_pedido", numero_pedido).then(function (cabecera_pedido) {
+            if (cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null ||
+                    cabecera_pedido[0].estado_actual_pedido === '8' || cabecera_pedido[0].estado_actual_pedido === '1') {
+                return  G.Q.ninvoke(that.m_pedidos_clientes, "asignar_responsables_pedidos", numero_pedido, estado_pedido, responsable, usuario);
+
             } else {
-                throw {msj: "El estado actual del pedido "+numero_pedido+" no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
+                throw {msj: "El estado actual del pedido " + numero_pedido + " no permite modificarlo", status: 403, obj: {encabezado_pedido: {}}};
             }
-        }).spread(function(rows, responsable_estado_pedido){
+        }).spread(function (rows, responsable_estado_pedido) {
             // Notificando Pedidos Actualizados en Real Time
             that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             if (--i === 0) {
-                
+
                 // Notificar que al operario los pedidos  fueron reasignados
                 if (responsable_estado_pedido.length > 0) {
 
@@ -206,17 +206,17 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
                 that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
             }
-            
-        }).fail(function(err){
-            if(!err.status){
+
+        }).fail(function (err) {
+            if (!err.status) {
                 err = {};
                 err.status = 500;
                 err.msj = "Se ha generado un error..";
             }
-            
+
             res.send(G.utils.r(req.url, err.msj, err.status, {}));
         }).done();
-        
+
     });
 };
 
@@ -237,7 +237,7 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
-PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
+PedidosCliente.prototype.eliminarResponsablesPedido = function (req, res) {
 
     var that = this;
 
@@ -256,7 +256,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
     var numero_pedido = args.pedidos_clientes.numero_pedido;
     var estado_pedido = ''; // 0 = No asignado
 
-    that.m_pedidos_clientes.consultar_pedido(numero_pedido, function(err, pedido_cliente) {
+    that.m_pedidos_clientes.consultar_pedido(numero_pedido, function (err, pedido_cliente) {
 
         if (err || pedido_cliente.length === 0) {
 
@@ -265,7 +265,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
 
             if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
 
-                that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function(err, responsables_pedido) {
+                that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function (err, responsables_pedido) {
 
                     if (err) {
                         res.send(G.utils.r(req.url, 'Se ha generado un error interno code 0', 500, {}));
@@ -277,7 +277,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
                             return;
                         }
 
-                        that.m_pedidos_clientes.eliminar_responsables_pedidos(numero_pedido, function(err, rows, resultado) {
+                        that.m_pedidos_clientes.eliminar_responsables_pedidos(numero_pedido, function (err, rows, resultado) {
 
                             if (err) {
                                 res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
@@ -286,7 +286,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
                                 // El estado del pedido es el inmediatamnte el anterior
                                 estado_pedido = responsables_pedido[1].estado;
 
-                                that.m_pedidos_clientes.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows, resultado) {
+                                that.m_pedidos_clientes.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function (err, rows, resultado) {
 
                                     if (err) {
                                         res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
@@ -334,7 +334,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
  * @apiSuccessExample Ejemplo VÃ¡lido del Request.
  */
 
-PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
+PedidosCliente.prototype.listaPedidosOperariosBodega = function (req, res) {
 
     var that = this;
 
@@ -362,7 +362,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
     var fecha_actual = new Date();
     var detalle = (args.pedidos_clientes.detalle === undefined) ? true : args.pedidos_clientes.detalle;
 
-    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, termino_busqueda, filtro, pagina_actual, limite, function(err, lista_pedidos_clientes, total_registros) {
+    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, termino_busqueda, filtro, pagina_actual, limite, function (err, lista_pedidos_clientes, total_registros) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
@@ -372,7 +372,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
         var i = lista_pedidos_clientes.length;
 
-        lista_pedidos_clientes.forEach(function(pedido) {
+        lista_pedidos_clientes.forEach(function (pedido) {
 
             // Calcular el tiempo de separacion del pedido
             var fecha_separacion = 0;
@@ -385,7 +385,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
             pedido.tiempo_separacion = tiempo_separacion;
 
-            that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
+            that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function (err, detalle_pedido) {
                 detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
                 pedido.lista_productos = detalle_pedido;
 
@@ -407,8 +407,9 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Buscar productos para la solictid de una cotizacion o pedido
  */
-PedidosCliente.prototype.listarProductosClientes = function(req, res) {
- 
+PedidosCliente.prototype.listarProductosClientes = function (req, res) {
+
+
     var that = this;
 
     var args = req.body.data;
@@ -447,46 +448,52 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         args.pedidos_clientes.molecula = '';
     }
 
-       
-  
-    G.Q.ninvoke(that, "__listarProductosClientes",args).then(function(resultado){
-       
+
+
+    G.Q.ninvoke(that, "__listarProductosClientes", args).then(function (resultado) {
+
         res.send(G.utils.r(req.url, resultado.msj, resultado.status,
-         {
-             pedidos_clientes: 
-                     { 
-                         lista_productos: resultado.data.productos.sort(dynamicSort("codigo_producto"))
-                    }
+                {
+                    pedidos_clientes:
+                            {
+                                lista_productos: resultado.data.productos.sort(dynamicSort("codigo_producto"))
+                            }
                 }
-            )
-        );
-        
+        )
+                );
+
         return;
-                            
-      
-    }).fail(function(err) {
-       
-        res.send(G.utils.r(req.url, {err:err.msj, status:err.status}, {}));
-      
-    }).done();  
-   
-};                                                        
+
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, {err: err.msj, status: err.status}, {}));
+
+    }).done();
+
+};
 
 /**
  * @author Cristian Manuel Ardila
  * +Descripcion Metodo encargado de listar los productos
  */
-PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
-     
+PedidosCliente.prototype.__listarProductosClientes = function (args, callback) {
+    console.log("************************** __listarProductosClientes] ******************************");
+    //console.log("parametros ", args)
     var that = this;
-    
-    
-    var empresa_id = args.pedidos_clientes.empresa_id;
-    var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
-    var bodega = args.pedidos_clientes.bodega_id;
+
+    var empresa_id = (args.pedidos_clientes.empresa_id === undefined)
+            ? args.pedidos_clientes.cotizacion.empresa_id
+            : args.pedidos_clientes.empresa_id;
+    var centro_utilidad = (args.pedidos_clientes.centro_utilidad_id === undefined)
+            ? args.pedidos_clientes.cotizacion.centro_utilidad_id
+            : args.pedidos_clientes.centro_utilidad_id;
+    var bodega = (args.pedidos_clientes.bodega_id === undefined)
+            ? args.pedidos_clientes.cotizacion.bodega_id
+            : args.pedidos_clientes.bodega_id;
     var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
     var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
-    
+
     var filtro = {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
@@ -495,7 +502,7 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
         numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido,
         filtro_producto: 0
     };
- 
+
     var filtroAvanzado = {
         molecula: args.pedidos_clientes.molecula,
         laboratorio_id: args.pedidos_clientes.laboratorio_id,
@@ -505,73 +512,78 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
         tipoBusqueda: args.pedidos_clientes.tipoBusqueda,
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto
     };
- 
+
     var filtros = args.pedidos_clientes.filtro;
     var pagina = args.pedidos_clientes.pagina_actual;
-    
-    
-    var parametros = {estadoMultiplePedido: estadoMultiplePedido, 
-                      empresa_id: empresa_id, 
-                      centro_utilidad: centro_utilidad,
-                      bodega: bodega,
-                      contrato_cliente:contrato_cliente,
-                      filtro:filtro,
-                      pagina:pagina,
-                      filtros:filtros, 
-                      filtroAvanzado:filtroAvanzado
-                  };
-                  //console.log("parametros ", parametros)
-    var objBodegaPedido={sw_modulo:'0'}; 
-     
-    G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos",objBodegaPedido).then(function(bodegasPedidos){
-         
-        if(estadoMultiplePedido === 0){
+
+
+    var parametros = {estadoMultiplePedido: estadoMultiplePedido,
+        empresa_id: empresa_id,
+        centro_utilidad: centro_utilidad,
+        bodega: bodega,
+        contrato_cliente: contrato_cliente,
+        filtro: filtro,
+        pagina: pagina,
+        filtros: filtros,
+        filtroAvanzado: filtroAvanzado
+    };
+
+    var objBodegaPedido = {sw_modulo: '1'};
+    // console.log("args.pedidos_clientes ")   
+    G.Q.ninvoke(that.m_pedidos_farmacias, "listarBodegasPedidos", objBodegaPedido).then(function (bodegasPedidos) {
+
+
+        if (estadoMultiplePedido === 0) {
 
             bodegasPedidos = [];
-            bodegasPedidos [0] = {empresa_id:empresa_id, centro_utilidad_id: centro_utilidad, bodega_id : bodega, orden: 1 } 
+            bodegasPedidos [0] = {empresa_id: empresa_id,
+                centro_utilidad_id: centro_utilidad,
+                bodega_id: bodega,
+                orden: 1}
 
         }
-        if(bodegasPedidos.length === 0){
+        if (bodegasPedidos.length === 0) {
 
-             throw {msj:'No hay bodegas parametrizadas', status:401, pedidos_clientes:{}};   
+            throw {msj: 'No hay bodegas parametrizadas', status: 401, pedidos_clientes: {}};
         }
-        return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos,[],empresa_id,
-            centro_utilidad,
-            bodega,
-            contrato_cliente,
-            filtro,
-            pagina,
-            filtros, filtroAvanzado); 
-        
 
-    }).then(function(productos) {
-         
-        return G.Q.nfcall(__productosBodegas,that, 0, productos,[]);
-        
-                                
-    }).then(function(productos) {    
-           
-        if(productos.length > 0){
-          
-          callback(false, {status:200, msj:'Lista de productos', data:{productos:productos}});
-      
-        }else{
-            throw {msj:'El producto no existe', status:401, pedidos_clientes:{}};   
+        return G.Q.nfcall(__bodegasPedidos, that, 0, bodegasPedidos, [], empresa_id,
+                centro_utilidad,
+                bodega,
+                contrato_cliente,
+                filtro,
+                pagina,
+                filtros, filtroAvanzado);
+
+
+    }).then(function (productos) {
+
+        return G.Q.nfcall(__productosBodegas, that, 0, productos, []);
+
+
+    }).then(function (productos) {
+
+        if (productos.length > 0) {
+
+            callback(false, {status: 200, msj: 'Lista de productos', data: {productos: productos.sort(dynamicSort("bodega"))}});
+
+        } else {
+            throw {msj: 'El producto no existe', status: 401, pedidos_clientes: {}};
         }
-         
-        }).fail(function(err){
-            var msj = "Erro Interno";
-            var status = 500;
 
-            if(err.status){
-                msj = err.msj;
-                status = err.status;    
-            }
-            
-            callback(err, {status:status, msj:msj, data:{productos:{}}});
-       
-    }).done(); 
-    
+    }).fail(function (err) {
+        var msj = "Erro Interno";
+        var status = 500;
+
+        if (err.status) {
+            msj = err.msj;
+            status = err.status;
+        }
+
+        callback(err, {status: status, msj: msj, data: {productos: {}}});
+
+    }).done();
+
 };
 
 /**
@@ -580,13 +592,13 @@ PedidosCliente.prototype.__listarProductosClientes = function(args, callback){
  *  @author http://stackoverflow.com/questions/1129216/sort-array-of-objects-by-string-property-value-in-javascript
  */
 function dynamicSort(property) {
-    
+
     var sortOrder = 1;
-    if(property[0] === "-") {
+    if (property[0] === "-") {
         sortOrder = -1;
         property = property.substr(1);
     }
-    return function (a,b) {
+    return function (a, b) {
         var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
         return result * sortOrder;
     }
@@ -598,24 +610,25 @@ function dynamicSort(property) {
  *  @author Andres Mauricio Tascon
  *  @fecha 15/02/2017
  */
-function __productosBodegas(that, index, productos,listaProductos, callback) {
-     
+function __productosBodegas(that, index, productos, listaProductos, callback) {
+
     var producto = productos[index];
-        
-    if (!producto) {  
-       
-        callback(false,listaProductos);
-        return; 
-    }  
-     producto.forEach(function(row){        
+
+    if (!producto) {
+
+        callback(false, listaProductos);
+        return;
+    }
+    producto.forEach(function (row) {
         listaProductos.push(row);
-     });
+    });
     index++;
-    setTimeout(function() {
-       __productosBodegas(that, index, productos,listaProductos, callback);
-   }, 300);
-       
-};
+    setTimeout(function () {
+        __productosBodegas(that, index, productos, listaProductos, callback);
+    }, 300);
+
+}
+;
 
 /**
  * +Descripcion Metodo encargado de consultar los productos segun las bodegas
@@ -625,52 +638,53 @@ function __productosBodegas(that, index, productos,listaProductos, callback) {
  *  @author Cristian Ardila
  *  @fecha 15/02/2017            
  */
-function __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
+function __bodegasPedidos(that, index, bodegasPedidos, listaProductos, empresa_id,
         centro_utilidad,
         bodega,
         contrato_cliente,
         filtro,
         pagina,
         filtros, filtroAvanzado, callback) {
-     
+
     var bodegas = bodegasPedidos[index];
-        
-    if (!bodegas) {  
-       
-        callback(false,listaProductos);
-        return; 
-    }  
-      
+
+    if (!bodegas) {
+
+        callback(false, listaProductos);
+        return;
+    }
+
     index++;
-                        
+
     G.Q.ninvoke(that.m_pedidos_clientes, "listar_productos",
-     bodegas.empresa_id,bodegas.centro_utilidad_id,bodegas.bodega_id,contrato_cliente,filtro,pagina,filtros, filtroAvanzado).then(function(resultado){
-      
-            if (resultado.length > 0) {
-                 
-                  listaProductos.push(resultado);
-                 
-            }
-            
-            setTimeout(function() {
-                       __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
-            centro_utilidad,
-            bodega,
-            contrato_cliente,
-            filtro,
-            pagina,
-            filtros, filtroAvanzado, callback);
-                       }, 300);
-                       
-        }).fail(function(err){
-         console.log("err (/fail) [__bodegasPedidos]: ", err);
-    }).done();        
-    
-};
+            bodegas.empresa_id, bodegas.centro_utilidad_id, bodegas.bodega_id, contrato_cliente, filtro, pagina, filtros, filtroAvanzado).then(function (resultado) {
 
- 
+        if (resultado.length > 0) {
 
- 
+            listaProductos.push(resultado);
+
+        }
+
+        setTimeout(function () {
+            __bodegasPedidos(that, index, bodegasPedidos, listaProductos, empresa_id,
+                    centro_utilidad,
+                    bodega,
+                    contrato_cliente,
+                    filtro,
+                    pagina,
+                    filtros, filtroAvanzado, callback);
+        }, 300);
+
+    }).fail(function (err) {
+        console.log("err (/fail) [__bodegasPedidos]: ", err);
+    }).done();
+
+}
+;
+
+
+
+
 /*******************************************************************************/
 /*******************************************************************************/
 /*******************************************************************************/
@@ -691,7 +705,7 @@ function __bodegasPedidos(that, index, bodegasPedidos,listaProductos,empresa_id,
  * Autor : Camilo Orozco
  * Descripcion : Insertar cotizacion
  */
-PedidosCliente.prototype.insertarCotizacion = function(req, res) {
+PedidosCliente.prototype.insertarCotizacion = function (req, res) {
 
     var that = this;
 
@@ -764,62 +778,67 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         return;
     }
 
+    /*if(args.pedidos_clientes.estadoMultiplePedido === undefined){
+     res.send(G.utils.r(req.url, 'estadoMultiplePedido esta vacia', 404, {}));
+     return;
+     
+     }*/
     cotizacion.usuario_id = req.session.user.usuario_id;
-    
+    //cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
     var obj = {
-        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
-        "tercero_id":cotizacion.cliente.id
+        "tipo_id_tercero": cotizacion.cliente.tipo_id_tercero,
+        "tercero_id": cotizacion.cliente.id
     };
-    
-    G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion).then(function(resultado){
+
+    G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, resultado));
-    }).fail(function(err){
-       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: {}}));
     });
-    
+
 };
 
-PedidosCliente.prototype.__insertarCotizacion = function(obj, cotizacion, callback){
-    
+PedidosCliente.prototype.__insertarCotizacion = function (obj, cotizacion, callback) {
+
     console.log("****PedidosCliente.prototype.__insertarCotizacion**************");
     var that = this;
-    
-    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).            
-    then(function(tercero){
-                
-        if(tercero[0].tipo_bloqueo_id !== '1'){
-            throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:403};
-        } else {
-            return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);
-        }
-        
-    }).spread(function(rows, result){
-        
+
+    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).
+            then(function (tercero) {
+
+                if (tercero[0].tipo_bloqueo_id !== '1') {
+                    throw {msj: "El cliente seleccionado se encuentra bloqueado o inactivo", status: 403};
+                } else {
+                    return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);
+                }
+
+            }).spread(function (rows, result) {
+
         var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
-        callback(false,{pedidos_clientes: {numero_cotizacion: numero_cotizacion}}) ;
-        
-        
-    }).fail(function(err){
+        callback(false, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}});
+
+
+    }).fail(function (err) {
         var msj = "Erro Interno";
         var status = 500;
-        
-        if(err.status){
+
+        if (err.status) {
             msj = err.msj;
             status = err.status;
         }
-        
-        callback(err, {status:status, msj:msj});
-       
+
+        callback(err, {status: status, msj: msj});
+
     }).done();
-    
+
 };
 /*
  * @autor : Cristian Manuel Ardila Troches
  * @fecha 02/12/2015
  * +Descripcion : Metodo encargado de insertar los productos en una cotizacion
  */
-PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
- 
+PedidosCliente.prototype.insertarDetalleCotizacion = function (req, res) {
+
     var that = this;
 
     var args = req.body.data;
@@ -862,41 +881,41 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
-    
+
     if (producto.precioVentaIva <= 0) {
         res.send(G.utils.r(req.url, 'El valor del precio de venta no puede ser cero (0)', 404, {}));
         return;
     }
-    
-    cotizacion.usuario_id = req.session.user.usuario_id;
-   
-    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
-    
-    var obj = {
-        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
-        "tercero_id":cotizacion.cliente.id
-    };
-    
-    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
-            .then(function(resultado) {
-        
-        if (resultado.length > 0 && resultado[0].valido === '1') {
-            return G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj);
-        }else {
-            throw {msj:"La cantidad no corresponde a la unidad de medida", status:403};          
-        }
 
-    }).then(function(tercero) {
-       
-        if(tercero[0].tipo_bloqueo_id !== '1'){
-            throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:403};
+    cotizacion.usuario_id = req.session.user.usuario_id;
+
+    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
+
+    var obj = {
+        "tipo_id_tercero": cotizacion.cliente.tipo_id_tercero,
+        "tercero_id": cotizacion.cliente.id
+    };
+
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
+            .then(function (resultado) {
+
+                if (resultado.length > 0 && resultado[0].valido === '1') {
+                    return G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj);
+                } else {
+                    throw {msj: "La cantidad no corresponde a la unidad de medida", status: 403};
+                }
+
+            }).then(function (tercero) {
+
+        if (tercero[0].tipo_bloqueo_id !== '1') {
+            throw {msj: "El cliente seleccionado se encuentra bloqueado o inactivo", status: 403};
         } else {
             return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros);
         }
 
-    }).then(function(resultado){
-       
-       /**
+    }).then(function (resultado) {
+
+        /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
          */
         var precioVenta = __validarPrecioVenta(producto, resultado, 0);
@@ -904,10 +923,10 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         if (precioVenta.valido) {
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion);
         } else {
-            throw {msj:precioVenta.msj, status:403};
+            throw {msj: precioVenta.msj, status: 403};
         }
-    }).then(function(rows) {
-       
+    }).then(function (rows) {
+
         /**
          * +Descripcion: Se valida si el estado de la cotizacion es
          *               1 activo
@@ -916,11 +935,11 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         if (rows[0].estado === '1' || rows[0].estado === '4') {
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'consultarProductoDetalleCotizacion', cotizacion.numero_cotizacion, producto);
         } else {
-             throw {msj:'La cotizacion debe encontrarse activa o desaprobada por cartera', status:403};
+            throw {msj: 'La cotizacion debe encontrarse activa o desaprobada por cartera', status: 403};
         }
 
-    }).then(function(rows) {
-       
+    }).then(function (rows) {
+
         /**
          * +Descripcion: Se valida si el producto es diferente al del detalle
          *               y si es asi se procede a modficar el detalle
@@ -928,27 +947,27 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         if (rows.length === 0) {
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion', cotizacion, producto);
         } else {
-            throw {msj:'El producto ya aparece registrado en la cotizacion', status:403};
+            throw {msj: 'El producto ya aparece registrado en la cotizacion', status: 403};
         }
 
-    }).then(function(resultado) {
-       
+    }).then(function (resultado) {
+
         if (resultado.rowCount === 0) {
-            throw {msj:'Error al registrar el producto', status:403};
+            throw {msj: 'Error al registrar el producto', status: 403};
         } else {
             res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {pedidos_clientes: {}}));
         }
 
-    }).fail(function(err) {
-        
+    }).fail(function (err) {
+
         var msj = "Error interno";
         var status = 500;
-        
-        if(err.status){
+
+        if (err.status) {
             msj = err.msj;
             status = err.status;
         }
-        
+
         res.send(G.utils.r(req.url, msj, status, {pedidos_clientes: {}}));
         //res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
@@ -961,7 +980,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Modificar detalle cotizacion
  */
-PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
+PedidosCliente.prototype.modificarDetalleCotizacion = function (req, res) {
 
 
     var that = this;
@@ -1020,7 +1039,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
     /*Se invoca la funcion encargada de traer los parametros para actualizar el estado
      del pedido a aprobado o denegado por cartera*/
     var paramLogCotizacionActualizar = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, cotizacion.observacion_cartera, cotizacion.total, 0, 0);
-    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
 
         /**
          * +Descripcion: Se valida si el estado de la cotizacion es
@@ -1029,21 +1048,21 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
          */
         if (resultado[0].estado === '1' || resultado[0].estado === '4') {
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
-            
+
         } else {
             throw 'La cotizacion debe encontrarse activa o desaprobada por cartera';
         }
 
-    }).then(function(resultado) {
-        
+    }).then(function (resultado) {
+
         if (resultado.length > 0 && resultado[0].valido === '1') {
             return  G.Q.ninvoke(that.m_pedidos_clientes, 'modificar_detalle_cotizacion', cotizacion, producto);
-            
-        }else {
-            throw  "La cantidad no corresponde a la unidad de medida";          
+
+        } else {
+            throw  "La cantidad no corresponde a la unidad de medida";
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         if (resultado > 0) {
 
@@ -1053,7 +1072,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
         } else {
             throw 'Error al modificar el producto';
         }
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         /**
          * +Descripcion Si el numero de cotizacion ya se encuentra en la tabla
@@ -1064,7 +1083,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
 
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogCotizacionActualizar);
         }
-    }).fail(function(err) {
+    }).fail(function (err) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
@@ -1079,7 +1098,7 @@ PedidosCliente.prototype.modificarDetalleCotizacion = function(req, res) {
  * @param {type} res
  * @returns {unresolved}
  */
-PedidosCliente.prototype.actualizarCabeceraCotizacion = function(req, res) {
+PedidosCliente.prototype.actualizarCabeceraCotizacion = function (req, res) {
 
 
     var that = this;
@@ -1099,11 +1118,11 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function(req, res) {
         return;
     }
 
-    G.Q.nfcall(that.m_pedidos_clientes.actualizarCabeceraCotizacion, cotizacion).then(function(rows) {
+    G.Q.nfcall(that.m_pedidos_clientes.actualizarCabeceraCotizacion, cotizacion).then(function (rows) {
 
         res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {pedidos_clientes: rows}));
 
-    }).fail(function(err) {
+    }).fail(function (err) {
 
         res.send(G.utils.r(req.url, "Error Interno", 500, {pedidos_clientes: []}));
 
@@ -1115,7 +1134,7 @@ PedidosCliente.prototype.actualizarCabeceraCotizacion = function(req, res) {
  * Author : Eduar Garcia
  * Descripcion :  Cambia el estado de una cotizacion
  */
-PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
+PedidosCliente.prototype.modificarEstadoCotizacion = function (req, res) {
     var that = this;
 
     var args = req.body.data;
@@ -1126,12 +1145,12 @@ PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
         return;
     }
 
-    G.Q.nfcall(that.m_pedidos_clientes.modificarEstadoCotizacion, cotizacion).then(function(rows) {
+    G.Q.nfcall(that.m_pedidos_clientes.modificarEstadoCotizacion, cotizacion).then(function (rows) {
 
         that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
         res.send(G.utils.r(req.url, 'Cotizacion cambiada correctamente', 200, {pedidos_clientes: []}));
 
-    }).fail(function(err) {
+    }).fail(function (err) {
 
         res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
     }).done();
@@ -1143,7 +1162,7 @@ PedidosCliente.prototype.modificarEstadoCotizacion = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Listar Cotizaciones
  */
-PedidosCliente.prototype.listarCotizaciones = function(req, res) {
+PedidosCliente.prototype.listarCotizaciones = function (req, res) {
 
     var that = this;
 
@@ -1200,16 +1219,16 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
             termino_busqueda,
             pagina_actual,
             estadoCotizacion,
-            filtros, function(err, lista_cotizaciones) {
+            filtros, function (err, lista_cotizaciones) {
 
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Lista Cotizaciones', 200, {pedidos_clientes: {lista_cotizaciones: lista_cotizaciones}}));
-            return;
-        }
-    });
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));
+                    return;
+                } else {
+                    res.send(G.utils.r(req.url, 'Lista Cotizaciones', 200, {pedidos_clientes: {lista_cotizaciones: lista_cotizaciones}}));
+                    return;
+                }
+            });
 };
 
 
@@ -1223,7 +1242,7 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
  * @param {type} res
  * @returns {unresolved}
  */
-PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
+PedidosCliente.prototype.eliminarCotizacion = function (req, res) {
 
 
     var that = this;
@@ -1247,7 +1266,7 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
 
 
 
-    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function(err, rows) {
+    that.m_pedidos_clientes.consultarEstadoCotizacion(cotizacion.numero_cotizacion, function (err, rows) {
 
         /**
          * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
@@ -1262,7 +1281,7 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
                 /**
                  * +Descripcion: Se valida si ya se genero un pedido por medio de la cotizacion
                  */
-                that.m_pedidos_clientes.consultaCotizacionEnPedido(cotizacion.numero_cotizacion, function(estado, rows) {
+                that.m_pedidos_clientes.consultaCotizacionEnPedido(cotizacion.numero_cotizacion, function (estado, rows) {
                     /**
                      * +Descripcion: se valida que la consulta se ejecute satisfactoriamente
                      */
@@ -1277,7 +1296,7 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
                              *               junto con todo su detalle siempre y cuando no haya
                              *               generado ningun pedido
                              */
-                            that.m_pedidos_clientes.eliminarDetalleCotizacion(cotizacion.numero_cotizacion, function(estado, rows) {
+                            that.m_pedidos_clientes.eliminarDetalleCotizacion(cotizacion.numero_cotizacion, function (estado, rows) {
 
                                 if (estado) {
                                     res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
@@ -1311,7 +1330,7 @@ PedidosCliente.prototype.eliminarCotizacion = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Consultar Cotizacion
  */
-PedidosCliente.prototype.consultarCotizacion = function(req, res) {
+PedidosCliente.prototype.consultarCotizacion = function (req, res) {
 
     var that = this;
 
@@ -1330,7 +1349,7 @@ PedidosCliente.prototype.consultarCotizacion = function(req, res) {
         return;
     }
 
-    that.m_pedidos_clientes.consultar_cotizacion(cotizacion, function(err, cotizacion) {
+    that.m_pedidos_clientes.consultar_cotizacion(cotizacion, function (err, cotizacion) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
@@ -1348,9 +1367,9 @@ PedidosCliente.prototype.consultarCotizacion = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Consultar Detalle Cotizacion
  */
-PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
+PedidosCliente.prototype.consultarDetalleCotizacion = function (req, res) {
 
-
+    console.log("********PedidosCliente.prototype.consultarDetalleCotizacion****************");
     var that = this;
 
     var args = req.body.data;
@@ -1368,19 +1387,24 @@ PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
         return;
     }
 
-    var termino_busqueda = (args.pedidos_clientes.termino_busqueda === undefined) ? '' : args.pedidos_clientes.termino_busqueda;
+    var termino_busqueda = args.pedidos_clientes.termino_busqueda;
 
-    that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, termino_busqueda, function(err, lista_productos) {
 
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+    G.Q.ninvoke(that.m_pedidos_clientes, "consultar_detalle_cotizacion", cotizacion, termino_busqueda).then(function (resultado) {
+        console.log("resultado ", resultado[0].length);
+        if (resultado[0].length > 0) {
+            res.send(G.utils.r(req.url, 'Cotizacion', 200, {pedidos_clientes: {lista_productos: resultado[0]}}));
             return;
         } else {
-
-            res.send(G.utils.r(req.url, 'Cotizacion', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
+            throw 'Consulta sin resultados';
             return;
         }
-    });
+
+    }).fail(function (err) {
+        console.log("err ", err)
+        res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+
 };
 
 
@@ -1388,7 +1412,7 @@ PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Eliminar Producto Cotizacion
  */
-PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
+PedidosCliente.prototype.eliminarProductoCotizacion = function (req, res) {
 
     var that = this;
 
@@ -1420,7 +1444,7 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
     }
 
     cotizacion.usuario_id = req.session.user.usuario_id;
- 
+
     /**
      * +Descripcion: Se permitira ejecutar la accion de eliminar_producto_cotizacion
      *               siempre y cuando la cotizacion tenga el estado (Estado del Pedido ) 1
@@ -1428,7 +1452,7 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
      *               se validara de que la cotizacion al menos quede con un solo pro-
      *               ducto
      */
-    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosCotizacion', cotizacion.numero_cotizacion).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
 
         if (resultado.length > 0) {
 
@@ -1440,7 +1464,7 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
             }
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         /**
          * +Descripcion: Se valida si el estado de la cotizacion es
@@ -1449,12 +1473,12 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
          */
         if (resultado[0].estado === '1' || resultado[0].estado === '4') {
             return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_producto_cotizacion', cotizacion, producto);
-        } else {                                      
+        } else {
             throw 'Para modificar la cotizacion debe estar activa o desaprobada por cartera';
             return;
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         if (resultado > 0) {
             res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {pedidos_clientes: []}));
@@ -1464,24 +1488,24 @@ PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
             return;
         }
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
 
-};                                
+};
 
 
 /*
  * Autor : Camilo Orozco
  * Descripcion : Cargar Archivo Plano
  */
-PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
-  
-  console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
-  console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
-  console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
-  
+PedidosCliente.prototype.cotizacionArchivoPlano = function (req, res) {
+
+    console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
+    console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
+    console.log("******************PedidosCliente.prototype.cotizacionArchivoPlano**********************************");
+
     var that = this;
     var args = req.body.data;
     // Cotizacion
@@ -1541,163 +1565,622 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
         res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
         return;
     }
-
+    var estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
     cotizacion.usuario_id = req.session.user.usuario_id;
-     //cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
-     
+    //cotizacion.estadoMultiplePedido = args.pedidos_clientes.estadoMultiplePedido;
+
     var limite_productos = 60;
     var usuario = req.session.user;
     var _productosInvalidosNoExistentes = "";
+    var _productosValidosExistentes = "";
     var _productosPlanoValidadosValido = "";
     var _productosPlanoValidadosInvalido = "";
     var def = G.Q.defer();
-    
-    
+    var __productoSinDisponibilidadTotal = "";
+    var _detalleCotizacion = "";
     /**
      * +Descripcion Consulta si la formula esta en estado activa o inactiva, ni no existe
      *              proseguira a crearse en los siguientes metodos
      */
-    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
 
         /**
          * +Descripcion: Se valida si el estado de la cotizacion es
          *               1 activo
          *               4 activo (desaprobado por cartera)
-         */    
+         */
         if (resultado.length === 0 || resultado[0].estado === '1' || resultado[0].estado === '4') {
             /*
              *+Descripcion Se obtienen los productos del archivo plano 
              */
             return G.Q.nfcall(__subir_archivo_plano, req.files);
-          
-        } else {
-            throw {msj:'La cotizacion debe encontrarse activa o desaprobada por cartera', status:500, data: {pedidos_clientes: {}}};
-        }
-    
-    }).then(function(contenido){
 
-        if(contenido.length > 0){
+        } else {
+            throw {msj: 'La cotizacion debe encontrarse activa o desaprobada por cartera', status: 500, data: {pedidos_clientes: {}}};
+        }
+
+    }).then(function (contenido) {
+
+        if (contenido.length > 0) {
             /*
              * +Descripcion Se valida si cada uno de los productos existe en el inventario
              */
             return G.Q.nfcall(__validar_productos_archivo_plano, that, 0, contenido, [], []);
-             
-        }else{
-            throw {msj:"El archivo esta vacio", status:500, data: {pedidos_clientes: {}}};
+
+        } else {
+            throw {msj: "El archivo esta vacio", status: 500, data: {pedidos_clientes: {}}};
         }
-              
-    }).then(function(productosPlano){
-       
+
+    }).then(function (productosPlano) {
+
         /*
          * +Descripcion Productos que no se encuentran en el inventario
          */
         _productosInvalidosNoExistentes = productosPlano[1];
-        
+        _productosValidosExistentes = productosPlano[0];
+
         if (productosPlano[0].length > limite_productos) {
-            throw {msj:"Lista de Productos excede el limite permitido 25 productos por pedido", status:400, data: {pedidos_clientes: {}}};
-            
-        }else{
-           /**
-            * +Descripcion Se verifica el precio de venta del producto, si es regulado
-            */
-           return G.Q.nfcall(__validar_datos_productos_archivo_plano, that, args, productosPlano[0], [], [],0);                               
-        }                                 
-    
-    }).then(function(productosPlanoValidados){
-         //console.log(" ----  ---- productosPlanoValidados ", productosPlanoValidados)
-        _productosPlanoValidadosValido = productosPlanoValidados[0];
+            throw {msj: "Lista de Productos excede el limite permitido 25 productos por pedido", status: 400, data: {pedidos_clientes: {}}};
+
+        } else {
+            /**
+             * +Descripcion Se verifica el precio de venta del producto, si es regulado
+             */
+            return G.Q.nfcall(__validar_datos_productos_archivo_plano, that, args, _productosValidosExistentes, [], [], 0);
+        }
+
+
+    }).then(function (productosPlanoValidados) {
+
+        return G.Q.nfcall(__productosBodegas, that, 0, productosPlanoValidados[0], []);
+
+    }).then(function (resultado) {
+
+        return G.Q.nfcall(__agregarCantidadSolicitadaProducto, that, 0, resultado, _productosValidosExistentes, [], []);
+
+    }).then(function (resultado) {
+
+        return G.Q.nfcall(__cantidadSolicitadaProducto, that, 0, args, resultado[0], [], []);
+
+    }).then(function (resultado) {
+
+
+        _productosPlanoValidadosValido = resultado[0];
+        _productosPlanoValidadosInvalido = resultado[1];
+
         /*
-        * +Descripcion Productos invalidos que no cumplen
-        *  1) Precio regulado
-        *  2) unidad de medida
-        */
-        _productosPlanoValidadosInvalido = productosPlanoValidados[1];
-        
+         * +Descripcion Productos invalidos que no cumplen
+         *  1) Precio regulado
+         *  2) unidad de medida
+         */
+
         if (_productosPlanoValidadosValido.length === 0) {
-            throw {msj:'Lista de Productos', status:200, data: {pedidos_clientes: {
-                        productos_validos: productosPlanoValidados[0][0], 
-                        productos_invalidos: productosPlanoValidados[1] === undefined ? productosPlanoValidados[1] : productosPlanoValidados[1][0].concat(_productosInvalidosNoExistentes)
-                    }}};          
+
+            throw {msj: 'Lista de Productos',
+                status: 200,
+                data: {pedidos_clientes: {
+                        productos_validos: _productosPlanoValidadosValido,
+                        productos_invalidos: _productosPlanoValidadosInvalido === undefined ? _productosPlanoValidadosInvalido : _productosPlanoValidadosInvalido.concat(_productosInvalidosNoExistentes)
+                    }}};
             return;
         }
 
         return G.Q.ninvoke(that.m_pedidos_clientes, "consultar_detalle_cotizacion", cotizacion, '');
-        
-    }).then(function(resultadoConsultaDetalle){
-        
+
+    }).then(function (resultadoConsultaDetalle) {
+
+        _detalleCotizacion = resultadoConsultaDetalle[0];
         if (resultadoConsultaDetalle.length > limite_productos) {
-            throw {msj:'Lista de Productos excede el limite permitido 25 productos por pedido ', status:400, data:{pedidos_clientes: {}}};
+            throw {msj: 'Lista de Productos excede el limite permitido 25 productos por pedido ', status: 400, data: {pedidos_clientes: {}}};
             return;
-        }                                                               
-      
-        return G.Q.nfcall(__agrupar_productos_por_tipo,_productosPlanoValidadosValido[0],{},0);
-                          
-    }).then(function(resultadoProductosAgrupados){
-        //console.log("resultadoProductosAgrupados ", resultadoProductosAgrupados);
-        cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(resultadoProductosAgrupados): cotizacion.tipo_producto;
-         
-        _productosPlanoValidadosValido[0] = resultadoProductosAgrupados[cotizacion.tipo_producto];
-        
-        if (_productosPlanoValidadosValido[0] === undefined || _productosPlanoValidadosValido[0].length === 0) {
-            throw {msj:'Lista de Productos', status:200, data: {pedidos_clientes: {
-                        productos_validos: _productosPlanoValidadosValido[0], 
-                        productos_invalidos: _productosPlanoValidadosInvalido[0] === undefined ? _productosInvalidosNoExistentes : _productosPlanoValidadosInvalido[0].concat(_productosInvalidosNoExistentes)
+        }
+
+        return G.Q.nfcall(__agrupar_productos_por_tipo, _productosPlanoValidadosValido, {}, 0);
+
+    }).then(function (resultadoProductosAgrupados) {
+
+        cotizacion.tipo_producto = (cotizacion.tipo_producto === '' || cotizacion.tipo_producto === undefined) ? Object.keys(resultadoProductosAgrupados) : cotizacion.tipo_producto;
+
+        _productosPlanoValidadosValido = resultadoProductosAgrupados[cotizacion.tipo_producto];
+
+        if (_productosPlanoValidadosValido === undefined || _productosPlanoValidadosValido.length === 0) {
+            throw {msj: 'Lista de Productos', status: 200, data: {pedidos_clientes: {
+                        productos_validos: _productosPlanoValidadosValido,
+                        productos_invalidos: _productosPlanoValidadosInvalido === undefined ?
+                                _productosInvalidosNoExistentes : _productosPlanoValidadosInvalido.concat(_productosInvalidosNoExistentes)
                     }}};
             return;
-        }    
+        }
         /**
          * +Descripcion Se verifica si la cotizacion ya ha sido creada
          */
-        if (cotizacion.numero_cotizacion === 0) {            
-            return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);         
-        } else {           
+        if (cotizacion.numero_cotizacion === 0) {
+            return G.Q.ninvoke(that.m_pedidos_clientes, "insertar_cotizacion", cotizacion);
+        } else {
             def.resolve();
         }
-      
-    }).then(function(rows, result){
-        
-        cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;        
-        return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, _productosPlanoValidadosValido[0], []);
-                         
-    }).then(function(resultado){
-        
-        //console.log("resultado [__insertarDetalleCotizacion]: ", resultado);
-        var productosDuplicadosInvalidos = resultado;
-        var productosInvalidosTodos;
-        
-        if(productosDuplicadosInvalidos.length > 0){
-            productosInvalidosTodos = _productosPlanoValidadosInvalido[0] === undefined 
-                                ? productosDuplicadosInvalidos.concat(_productosInvalidosNoExistentes) :
-                                _productosPlanoValidadosInvalido[0].concat(productosDuplicadosInvalidos).concat(_productosInvalidosNoExistentes);
-        }else{
-            productosInvalidosTodos =  _productosPlanoValidadosInvalido[0] === undefined 
-                                ? _productosInvalidosNoExistentes :
-                                _productosPlanoValidadosInvalido[0].concat(_productosInvalidosNoExistentes);
+
+    }).then(function (rows, result) {
+
+        cotizacion.numero_cotizacion = (!rows) ? cotizacion.numero_cotizacion : rows[0][0].numero_cotizacion;
+        productosPreparadosCotizacion = [];
+        productosPreparadosCotizacionInvalidos = [];
+
+        return G.Q.nfcall(__productosValidosExtraidosPlano, that, 0, _productosPlanoValidadosValido, _productosValidosExistentes)
+
+    })/*then(function(resultado){
+     
+     
+     console.log("productosPreparadosCotizacion ", productosPreparadosCotizacion);
+     })*/.then(function (resultado) {
+
+        //console.log("productosPreparadosCotizacion ", productosPreparadosCotizacion);
+        productosPreparadosCotizacion.forEach(function (row) {
+
+            _productosValidosExistentes.forEach(function (row2) {
+
+                if (row.codigo_producto === row2.codigo_producto) {
+
+                    row2.totalSolicitado += row.sumaCantidadTotalSolicitadaBodega;
+                    row2.totalDisponible += row.sumaCantidadTotalDisponibleBodega;
+                }
+            });
+        });
+
+        return G.Q.nfcall(__validarTotalSolicitadoBodegas, that, 0, productosPreparadosCotizacion, _productosValidosExistentes, [], [], estadoMultiplePedido);
+
+    }).then(function (resultado) {
+
+
+        __productoSinDisponibilidadTotal = resultado[1];
+
+        if (resultado[0].length > 0) {
+            return G.Q.nfcall(__insertarDetalleCotizacion, that, 0, usuario, cotizacion, resultado[0], []);
+        } else {
+
+
+            productosInvalidosTodos =
+                    _productosPlanoValidadosInvalido === undefined ? _productosInvalidosNoExistentes :
+                    _productosPlanoValidadosInvalido.concat(_productosInvalidosNoExistentes).concat(productosPreparadosCotizacionInvalidos, __productoSinDisponibilidadTotal);
         }
-      
-        throw {msj:'Cotizacion creada correctamente', status:200, data: {pedidos_clientes: {
-                        numero_cotizacion: cotizacion.numero_cotizacion,
-                        productos_validos: _productosPlanoValidadosValido[0], 
-                        productos_invalidos: productosInvalidosTodos
-                               
-                    }}};
+        throw {msj: 'Lista de Productos', status: 200, data: {pedidos_clientes: {
+                    productos_validos: _productosPlanoValidadosValido,
+                    productos_invalidos: productosInvalidosTodos
+                }}};
+
         return;
-        
-    }).fail(function(err) {
-        
+        //
+    }).then(function (resultado) {
+
+        productosDuplicadosInvalidos = resultado;
+
+        if (productosDuplicadosInvalidos.length > 0 || __productoSinDisponibilidadTotal.length > 0) {
+            productosInvalidosTodos = _productosPlanoValidadosInvalido === undefined
+                    ? productosDuplicadosInvalidos.concat(_productosInvalidosNoExistentes) :
+                    _productosPlanoValidadosInvalido.concat(productosDuplicadosInvalidos).
+                    concat(_productosInvalidosNoExistentes).concat(productosPreparadosCotizacionInvalidos, __productoSinDisponibilidadTotal);
+        } else {
+            productosInvalidosTodos = _productosPlanoValidadosInvalido === undefined
+                    ? _productosInvalidosNoExistentes :
+                    _productosPlanoValidadosInvalido.concat(_productosInvalidosNoExistentes).concat(productosPreparadosCotizacionInvalidos, __productoSinDisponibilidadTotal);
+        }
+
+        throw {msj: 'Cotizacion creada correctamente', status: 200, data: {pedidos_clientes: {
+                    numero_cotizacion: cotizacion.numero_cotizacion,
+                    productos_validos: _productosPlanoValidadosValido[0],
+                    productos_invalidos: productosInvalidosTodos
+
+                }}};
+        return;
+
+    }).fail(function (err) {
+
         console.log("err [cotizacionArchivoPlano]:", err);
         var msj = "Erro Interno";
         var status = 500;
-        
-        if(err.status){
+
+        if (err.status) {
             msj = err.msj;
             status = err.status;
         }
         res.send(G.utils.r(req.url, msj, status, err.data));
     }).done();
-    
+
 };
- 
+
+
+
+/**
+ * 
+ * pongo esta __productosValidosExtraidosPlano en vez de esta __seleccionarProductoMultipleDisponibilidadMayor
+ */
+function __productosValidosExtraidosPlano(that, index, productos, productosSolicitados, callback) {
+
+    var productoPlano = productosSolicitados[index];
+
+    var obj = {codigo_producto: '', cantidad_solicitada: 0, total_solicitado: 0, total_disponible: 0}
+
+    if (!productoPlano) {
+
+        callback(false);
+        return;
+    }
+
+
+    index++;
+
+    G.Q.nfcall(__seleccionarProductoMultipleDisponibilidadMayor, that, 0, productos, productoPlano,
+            obj).then(function (resultado) {
+
+        __productosValidosExtraidosPlano(that, index, productos, productosSolicitados, callback);
+    }).fail(function (resultado) {
+        callback(true);
+    }).done();
+}
+;
+
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion que permite validar que la cantidad solicitada
+ *              sea igual a la cantidad separada del producto en diferentes bodegas
+ * @fecha 2017-03-06 YYYY-MM-DD
+ */
+function __validarTotalSolicitadoBodegas(that, index, productos, productosValidosExistentes, productosValidos, productosInvalidos, estadoMultiplePedido, callback) {
+
+    console.log("**********************__validarTotalSolicitadoBodegas**************************** ");
+    console.log("**********************__validarTotalSolicitadoBodegas**************************** ");
+    console.log("**********************__validarTotalSolicitadoBodegas**************************** ");
+    var producto = productosValidosExistentes[index];
+
+    if (!producto) {
+
+        callback(false, productosValidos, productosInvalidos);
+        return;
+    }
+    index++;
+    console.log("producto [__validarTotalSolicitadoBodegas]: ", producto);
+    console.log("estadoMultiplePedido ", estadoMultiplePedido)
+    productos.forEach(function (row) {
+
+
+        if (producto.codigo_producto === row.codigo_producto) {
+
+            if (estadoMultiplePedido === 1) {
+                if (producto.totalSolicitado <= producto.totalDisponible) {//&& estadoMultiplePedido
+
+                    productosValidos.push(row);
+                } else {
+                    productosInvalidos.push(row);
+                }
+
+            } else {
+
+                if (producto.totalSolicitado <= producto.totalDisponible && producto.totalSolicitado === producto.cantidad_solicitada) {//&& estadoMultiplePedido
+
+                    productosValidos.push(row);
+                } else {
+                    productosInvalidos.push(row);
+                }
+
+            }
+
+        }
+
+    });
+
+    __validarTotalSolicitadoBodegas(that, index, productos, productosValidosExistentes, productosValidos, productosInvalidos, estadoMultiplePedido, callback)
+
+}
+
+
+/**
+ * Lo mas prudente es invocar esta funcion recursiva desde otra funcion recursiva que envie
+ *     solo una vez cada producto solicitado y de esta manera garantizo que no haya duplicidad
+ *     de productos en mi arreglo
+ */
+var productosPreparadosCotizacion = [];
+var productosPreparadosCotizacionInvalidos = [];
+
+function __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados, obj, callback) {
+
+    var producto = productos[index];
+    var unidadMedida = 0;
+
+    if (!producto) {
+        callback(false, productosPreparadosCotizacion);
+        return;
+    }
+    index++;
+
+
+    //console.log("obj [__seleccionarProductoMultipleDisponibilidadMayor]: ", obj);
+    /**
+     * +Descripcion Se compara que el codigo del producto consultado de la lista
+     *              de productos segun la bodega, corresponda con el codigo del producto del plano
+     *              
+     */
+    if (producto.codigo_producto === productosSolicitados.codigo_producto) {
+
+        //Se valida de que haya cantidad disponible en la bodega
+        if (producto.cantidad_disponible > 0) {
+
+            /*
+             * +Descripcion Se valida si la cantidad disponible en bodega es menor a la cantidad
+             *              solicitada
+             */
+            if (producto.cantidad_disponible < productosSolicitados.cantidad_solicitada) {
+                /*
+                 * +Descripcion Se valida si el producto se encuentra en otra bodega 
+                 *              y que la cantidad solicitada del producto del plano
+                 *              sea mayor a la cantidad solicitada separada hasta 
+                 *              el momento en bodegas diferentes para el mismo producto
+                 *              
+                 */
+                if (obj.codigo_producto === producto.codigo_producto && productosSolicitados.cantidad_solicitada > obj.total_solicitado) {
+
+
+
+                    if (productosSolicitados.cantidad_solicitada > obj.total_solicitado) {
+                        console.log("LA CANTIDAD SOLICITADA ", productosSolicitados.cantidad_solicitada)
+                        /*
+                         * +Descripcion Si la cantidad disponible que hay en bodega es 
+                         *              menor a la cantidad solicitada, se setea la cantidad solicitada del producto
+                         *              con el valor de la cantidad disponible, esto con el objetivo de que
+                         *              se separe una parte del producto de la bodega actual
+                         *              Ejemplo:
+                         *              cantidad solicitada = 15; cantidad disponible 5
+                         *              cantidad solicitada = 5; quedara pendiente 10 cantidades la cual se buscara en
+                         *              la otra bodega
+                         *              
+                         *              Si la cantidad disponible es mayor a la solicitada
+                         *              restele a la cantidad solicitada la cantidad acumulada separada hasta ahora
+                         *              del producto del plano en las bodegas donde se encuentre disponibilidad
+                         *              Ejmeplo
+                         *              cantidad solicitada = 100; cantidad separada hasta el momento = 60
+                         *              cantidad solicitada = 40; ya que se habia separado en la bodega anterior 60 cantidades
+                         */
+                        /* if(producto.cantidad_disponible < productosSolicitados.cantidad_solicitada){
+                         console.log("Entra si es menor la disponibilidad")
+                         producto.cantidad_solicitada = producto.cantidad_disponible;
+                         }else{*/
+
+                        producto.cantidad_solicitada -= obj.cantidad_solicitada;
+                        // }  
+
+                        /**
+                         * +Descripcion Se valida la unidad de medida que requiere el producto
+                         *              para ser separado, si cumple con la unidad de medida el
+                         *              producto se almacenara en el arreglo De productos validos
+                         *              de lo contrario se almacenara en el arreglo de productos invalidos
+                         */
+                        unidadMedida = producto.cantidad_solicitada % (producto.unidad_medida === null ? 1 : producto.unidad_medida) === 0 ? 1 : 0;
+
+                        if (unidadMedida === 1) {
+                            obj.total_solicitado += producto.cantidad_solicitada;
+                            obj.total_disponible += producto.cantidad_disponible;
+                            productosPreparadosCotizacion.push(producto);
+
+                        } else {
+                            obj.cantidad_solicitada = 0;
+                            productosPreparadosCotizacionInvalidos.push(productosSolicitados);
+                        }
+                    }
+
+                } else {
+
+                    obj.total_solicitado = 0;
+                    producto.cantidad_solicitada = producto.cantidad_disponible;
+                    obj.cantidad_solicitada = producto.cantidad_solicitada;
+                    obj.codigo_producto = producto.codigo_producto;
+
+                    unidadMedida = producto.cantidad_solicitada % (producto.unidad_medida === null ? 1 : producto.unidad_medida) === 0 ? 1 : 0;
+
+                    if (unidadMedida === 1) {
+                        obj.total_solicitado += producto.cantidad_solicitada;
+                        obj.total_disponible += producto.cantidad_disponible;
+                        productosPreparadosCotizacion.push(producto);
+                    } else {
+                        obj.cantidad_solicitada = 0;
+                        productosPreparadosCotizacionInvalidos.push(productosSolicitados);
+                    }
+                }
+            }
+
+
+            if (producto.cantidad_disponible >= productosSolicitados.cantidad_solicitada) {
+                console.log("LA CANTIDAD SOLICITADA ", productosSolicitados.cantidad_solicitada)
+                console.log("producto.codigo_producto ", producto.codigo_producto);
+                console.log("obj.codigo_producto ", obj.codigo_producto);
+                if (obj.codigo_producto === producto.codigo_producto) {
+
+                    if (productosSolicitados.cantidad_solicitada > obj.total_solicitado) {
+
+                        console.log("producto.cantidad_solicitada ", producto.cantidad_solicitada);
+                        console.log("obj.cantidad_solicitada ", obj.cantidad_solicitada);
+
+                        producto.cantidad_solicitada -= obj.cantidad_solicitada;
+                        unidadMedida = producto.cantidad_solicitada % (producto.unidad_medida === null ? 1 : producto.unidad_medida) === 0 ? 1 : 0;
+
+                        if (unidadMedida === 1) {
+
+                            obj.total_solicitado += producto.cantidad_solicitada;
+                            obj.total_disponible += producto.cantidad_disponible;
+                            productosPreparadosCotizacion.push(producto);
+                        } else {
+                            obj.cantidad_solicitada = 0;
+                            productosPreparadosCotizacionInvalidos.push(productosSolicitados);
+                        }
+                    }
+
+                } else {
+
+                    obj.total_solicitado = 0;
+                    obj.cantidad_solicitada = producto.cantidad_solicitada;
+                    obj.codigo_producto = producto.codigo_producto;
+                    unidadMedida = producto.cantidad_solicitada % (producto.unidad_medida === null ? 1 : producto.unidad_medida) === 0 ? 1 : 0;
+
+                    if (unidadMedida === 1) {
+                        obj.total_solicitado += producto.cantidad_solicitada;
+                        obj.total_disponible += producto.cantidad_disponible;
+                        productosPreparadosCotizacion.push(producto);
+                    } else {
+                        obj.cantidad_solicitada = 0;
+                        productosPreparadosCotizacionInvalidos.push(productosSolicitados);
+                    }
+                }
+            }
+        } else {
+            productosPreparadosCotizacionInvalidos.push(productosSolicitados);
+        }
+    }
+
+    if (obj.codigo_producto === producto.codigo_producto) {
+
+        producto.sumaCantidadTotalSolicitadaBodega = obj.total_solicitado;
+        producto.sumaCantidadTotalDisponibleBodega = obj.total_disponible;
+
+    }
+
+    __seleccionarProductoMultipleDisponibilidadMayor(that, index, productos, productosSolicitados, obj, callback);
+
+}
+;
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de adicionar al arreglo general de los productos
+ *             la cantidad solicitada a cada producto
+ * @fecha 22/02/2017
+ */
+function __agregarCantidadSolicitadaProducto(that, index, productos, _productosValidosExistentes, productos_validos, productos_invalidos, callback) {
+
+    var producto = _productosValidosExistentes[index];
+
+    if (!producto) {
+        callback(false, productos_validos, productos_invalidos);
+        return;
+    }
+
+
+    productos.forEach(function (row) {
+
+        if (row.codigo_producto === producto.codigo_producto) {
+
+            row.cantidad_solicitada = producto.cantidad_solicitada;
+
+            productos_validos.push(row);
+        }
+
+    });
+
+    index++;
+    __agregarCantidadSolicitadaProducto(that, index, productos, _productosValidosExistentes, productos_validos, productos_invalidos, callback);
+
+}
+;
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de validar el producto si este cumple con
+ *              - Unidad de medida
+ *              - Precio regulado
+ *              - Precio de venta
+ * @fecha 22/02/2017
+ */
+function __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback) {
+
+    var producto = productos[index];
+    var def = G.Q.defer();
+    //producto.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id;
+    if (!producto) {
+        //console.log("productos_validos ", productos_validos);
+        //console.log("productos_invalidos ", productos_invalidos);
+        callback(false, productosValidos, productosInvalidos);
+        return;
+    }
+
+    //console.log("producto ", producto);
+
+    var parametros = {empresaId: producto.empresa_id,
+        codigoProducto: producto.codigo_producto,
+        contratoId: obj.pedidos_clientes.cotizacion.cliente.contrato_id};
+
+
+
+    producto.precio_venta = producto.precio_producto;
+    producto.tipo_producto = producto.tipo_producto_id;
+    producto.empresaIdProducto = producto.empresa_id;
+    producto.centroUtilidadProducto = producto.centro_utilidad;
+    producto.bodegaProducto = producto.bodega;
+    producto.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id;
+
+    G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function (resultado) {
+
+        if (!resultado || resultado === undefined) {
+
+            setTimeout(function () {
+                __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
+            }, 300);
+            return;
+        }
+
+
+        /**
+         * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
+         **/
+        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
+
+        if (precioVenta.valido) {
+            productoUnidadMedida = producto;
+            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
+
+        } else {
+            productoUnidadMedida = producto;
+            productosInvalidos.push(productoUnidadMedida);
+            def.resolve();
+        }
+
+        __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
+        return;
+
+    }).then(function (resultado) {
+
+        if (!resultado) {
+
+            setTimeout(function () {
+                __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
+            }, 0);
+
+        } else if (resultado.length > 0 && resultado[0].valido === '1') {
+
+            productosValidos.push(productoUnidadMedida);
+
+            setTimeout(function () {
+                __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
+            }, 0);
+
+        } else {
+
+            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
+            producto.cantidadValida = false;
+            productosInvalidos.push(productoUnidadMedida);
+
+            setTimeout(function () {
+                __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
+            }, 0);
+        }
+    }).fail(function (err) {
+        console.log("err [__cantidadSolicitadaProducto]: ", err);
+    }).done();
+
+    index++;
+    setTimeout(function () {
+
+        __cantidadSolicitadaProducto(that, index, obj, productos, productosValidos, productosInvalidos, callback);
+    }, 300);
+}
+
 /**
  * @author Cristian Ardila
  * +Descripcion Metodo encargado de insertar un arreglo de productos en la tabla
@@ -1712,41 +2195,19 @@ function __insertarDetalleCotizacion(that, index, usuario, cotizacion, _producto
         callback(false, _productos_invalidos);
         return;
     }
-    
-    /*index++;
-    G.Q.ninvoke(that.m_pedidos_clientes,"insertar_detalle_cotizacion",cotizacion, producto).then(function(resultado){
-        
-        
-        var porcentaje = (index * 100) / _productos_validos.length;
-        that.e_pedidos_clientes.onNotificarProgresoArchivoPlanoClientes(usuario, porcentaje, function() {
-            console.log("resultado [insertar_detalle_cotizacion]: ", resultado);
-        });
-        
-    }).fail(function(err) {
-        console.log("err [__insertarDetalleCotizacion]: ", err);
-        _productos_invalidos.push(producto);
-    }).done();
-    
-    
-    
 
-    setTimeout(function() {
 
-        __insertarDetalleCotizacion(that, index, usuario, cotizacion, _productos_validos, _productos_invalidos, callback);
-    }, 300);*/
-    
-    
-    that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows) {
+    that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function (err, rows) {
         if (err) {
-            
+
             _productos_invalidos.push(producto);
         }
 
         index++;
         var porcentaje = (index * 100) / _productos_validos.length;
-        that.e_pedidos_clientes.onNotificarProgresoArchivoPlanoClientes(usuario, porcentaje, function() {
+        that.e_pedidos_clientes.onNotificarProgresoArchivoPlanoClientes(usuario, porcentaje, function () {
 
-            setTimeout(function() {
+            setTimeout(function () {
 
                 __insertarDetalleCotizacion(that, index, usuario, cotizacion, _productos_validos, _productos_invalidos, callback);
             }, 300);
@@ -1759,7 +2220,7 @@ function __insertarDetalleCotizacion(that, index, usuario, cotizacion, _producto
  * Autor : Camilo Orozco
  * Descripcion : Generar las observaciones ingresadas por el area de cartera
  */
-PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
+PedidosCliente.prototype.observacionCarteraCotizacion = function (req, res) {
 
     var that = this;
 
@@ -1816,30 +2277,30 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
      * @author Cristian Ardila
      * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
      */
-    
+
     var obj = {
-        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
-        "tercero_id":cotizacion.cliente.id
+        "tipo_id_tercero": cotizacion.cliente.tipo_id_tercero,
+        "tercero_id": cotizacion.cliente.id
     };
-    
+
     G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).
-    then(function(tercero){
-        
-        if(tercero[0].tipo_bloqueo_id !== '1'){
-            throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:403};
-        } else {
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'observacion_cartera_cotizacion', cotizacion);
-        }
-        
-        
-    }).then(function(resultado) {
+            then(function (tercero) {
+
+                if (tercero[0].tipo_bloqueo_id !== '1') {
+                    throw {msj: "El cliente seleccionado se encuentra bloqueado o inactivo", status: 403};
+                } else {
+                    return G.Q.ninvoke(that.m_pedidos_clientes, 'observacion_cartera_cotizacion', cotizacion);
+                }
+
+
+            }).then(function (resultado) {
         if (resultado.rowCount === 0) {
             throw 'Error actualizando la observacion de cartera';
         } else {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Observacion registrada correctamente', 200, {pedidos_clientes: {}}));
         that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion);
 
@@ -1848,16 +2309,16 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
         }
         return;
 
-    }).fail(function(err) {
-        
+    }).fail(function (err) {
+
         var msj = "Erro Interno";
         var status = 500;
-        
-        if(err.status){
+
+        if (err.status) {
             msj = err.msj;
             status = err.status;
         }
-        
+
         res.send(G.utils.r(req.url, msj, status, {}));
     }).done();
 
@@ -1868,7 +2329,7 @@ PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Generar Reporte PDF de contizaciones y enviar por email
  */
-PedidosCliente.prototype.reporteCotizacion = function(req, res) {
+PedidosCliente.prototype.reporteCotizacion = function (req, res) {
 
 
     var that = this;
@@ -1907,13 +2368,13 @@ PedidosCliente.prototype.reporteCotizacion = function(req, res) {
 
     var enviar_email = args.pedidos_clientes.enviar_email;
 
-    that.m_pedidos_clientes.consultar_cotizacion(cotizacion, function(err, datos_cotizacion) {
+    that.m_pedidos_clientes.consultar_cotizacion(cotizacion, function (err, datos_cotizacion) {
 
         if (err || datos_cotizacion.length === 0) {
             res.send(G.utils.r(req.url, 'Error Interno consultado la cotizacion', 500, {pedidos_clientes: []}));
             return;
         } else {
-            that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, '', function(err, lista_productos) {
+            that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, '', function (err, lista_productos) {
 
                 if (err || lista_productos.length === 0) {
                     res.send(G.utils.r(req.url, 'Error Interno consultado el detalle de la cotizacion', 500, {pedidos_clientes: []}));
@@ -1947,14 +2408,14 @@ PedidosCliente.prototype.reporteCotizacion = function(req, res) {
                 };
 
 
-                _generar_reporte_cotizacion(datos_reporte, function(nombre_reporte) {
+                _generar_reporte_cotizacion(datos_reporte, function (nombre_reporte) {
 
                     if (enviar_email) {
 
                         var path = G.dirname + "/public/reports/" + nombre_reporte;
                         var filename = "CotizacionNo-" + cotizacion.numero_cotizacion + '.pdf';
 
-                        __enviar_correo_electronico(that, emails, path, filename, subject, message, function(enviado) {
+                        __enviar_correo_electronico(that, emails, path, filename, subject, message, function (enviado) {
 
                             if (!enviado) {
                                 res.send(G.utils.r(req.url, 'Se genero un error al enviar el reporte', 500, {pedidos_clientes: {nombre_reporte: nombre_reporte}}));
@@ -1980,7 +2441,7 @@ PedidosCliente.prototype.reporteCotizacion = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Consultar Pedido
  */
-PedidosCliente.prototype.consultarPedido = function(req, res) {
+PedidosCliente.prototype.consultarPedido = function (req, res) {
 
     var that = this;
 
@@ -1999,7 +2460,7 @@ PedidosCliente.prototype.consultarPedido = function(req, res) {
         return;
     }
 
-    that.m_pedidos_clientes.consultar_pedido(pedido.numero_pedido, function(err, datos_pedido) {
+    that.m_pedidos_clientes.consultar_pedido(pedido.numero_pedido, function (err, datos_pedido) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
@@ -2016,7 +2477,7 @@ PedidosCliente.prototype.consultarPedido = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Consultar Detalle Pedido
  */
-PedidosCliente.prototype.consultarDetallePedido = function(req, res) {
+PedidosCliente.prototype.consultarDetallePedido = function (req, res) {
 
     var that = this;
 
@@ -2037,7 +2498,7 @@ PedidosCliente.prototype.consultarDetallePedido = function(req, res) {
 
     var termino_busqueda = (args.pedidos_clientes.termino_busqueda === undefined) ? '' : args.pedidos_clientes.termino_busqueda;
 
-    that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, lista_productos) {
+    that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function (err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
@@ -2053,7 +2514,7 @@ PedidosCliente.prototype.consultarDetallePedido = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Generar Pedido
  */
-PedidosCliente.prototype.generarPedido = function(req, res) {
+PedidosCliente.prototype.generarPedido = function (req, res) {
 
     var that = this;
 
@@ -2079,7 +2540,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
      * +Descripcion: Funcion encargada de verificar si el numero de cotizacion
      *               ya tiene un pedido asignado
      */
-    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarExistenciaPedidoCotizacion', cotizacion.numero_cotizacion).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarExistenciaPedidoCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
 
         if (resultado.length > 0) {
             throw 'La cotizacion ya se encuentra con un pedido asignado';
@@ -2092,12 +2553,12 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         if (resultado.length > 0) {
 
             cotizacion.usuario_id = resultado[0].usuario_id;
-        
+
             /**
              * +Descripcion: Se valida si el estado de la cotizacion es 3 (aprobado por cartera)
              **/
@@ -2114,13 +2575,13 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
             throw 'Ha ocurrido un error';
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         that.pedidoGenerado = resultado;
         return G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', resultado.numero_pedido, resultado.estado, null, cotizacion.usuario_id);
 
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         if (resultado.length > 0) {
 
@@ -2132,7 +2593,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         }
 
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         if (resultado.rowCount > 0) {
             var cliente = 0;
@@ -2150,13 +2611,13 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
                 mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
             };
 
-            G.Q.nfcall(__guardarAutorizacion, that, autorizacion).then(function(resultado) {     
-                if(resultado){
-                that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
-                G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                
+            G.Q.nfcall(__guardarAutorizacion, that, autorizacion).then(function (resultado) {
+                if (resultado) {
+                    that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
+                    G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);
                 }
                 res.send(G.utils.r(req.url, 'Se Almaceno Correctamente!', 200, {numero_pedido: autorizacion.numero_pedido}));
-            }).fail(function(err) {
+            }).fail(function (err) {
                 res.send(G.utils.r(req.url, 'Error Finalizando el Registro de la Autorizacion', 500, {documento_temporal: {}}));
             });
 
@@ -2171,7 +2632,7 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
         }
 
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         console.log("err [generarPedido]: ", err)
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
@@ -2187,34 +2648,34 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 function __guardarAutorizacion(thats, autorizacion, callback) {
     var producto;
     var def = G.Q.defer();
-    var bloqueo=false;
-    
-    G.Q.ninvoke(thats.m_pedidos_clientes, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function(resultado) {
-        producto=resultado;
-         for(var i=0; i < producto.length;i++){
-            if(producto[i].bloqueado === '0'){
-                bloqueo=true;
-            }    
-        }
-     }).then(function() {    
-              
-       if(bloqueo){
-        var estado_pedido='10';
-        thats.m_pedidos_clientes.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function(_err) { 
-            if (_err){
-            throw 'Se ha generado un error interno code 2';
-            return;
+    var bloqueo = false;
+
+    G.Q.ninvoke(thats.m_pedidos_clientes, "consultar_detalle_pedido", autorizacion.numero_pedido).then(function (resultado) {
+        producto = resultado;
+        for (var i = 0; i < producto.length; i++) {
+            if (producto[i].bloqueado === '0') {
+                bloqueo = true;
             }
-         });
-        autorizacion.productos = producto;
-        return G.Q.ninvoke(thats.m_pedidos, "guardarAutorizacion", autorizacion);
-        }else{
-          def.resolve();
         }
-      
-    }).then(function(){
-        callback(false,bloqueo);
-    }).fail(function(err) {
+    }).then(function () {
+
+        if (bloqueo) {
+            var estado_pedido = '10';
+            thats.m_pedidos_clientes.actualizar_estado_actual_pedido(autorizacion.numero_pedido, estado_pedido, function (_err) {
+                if (_err) {
+                    throw 'Se ha generado un error interno code 2';
+                    return;
+                }
+            });
+            autorizacion.productos = producto;
+            return G.Q.ninvoke(thats.m_pedidos, "guardarAutorizacion", autorizacion);
+        } else {
+            def.resolve();
+        }
+
+    }).then(function () {
+        callback(false, bloqueo);
+    }).fail(function (err) {
         callback(err);
     }).done();
 }
@@ -2230,8 +2691,8 @@ function __guardarAutorizacion(thats, autorizacion, callback) {
  *                la cotizacion, prosiguiendo a almacenar la trazabilidad de este
  *                proceso en los logs de trazabilidad ventas
  */
-PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
-    
+PedidosCliente.prototype.insertarDetallePedido = function (req, res) {
+
     var that = this;
     var args = req.body.data;
     var def = G.Q.defer();
@@ -2273,12 +2734,12 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'precioVentaIva no esta definido o esta vacio', 404, {}));
         return;
     }
-    
+
     if (producto.precioVentaIva <= 0) {
         res.send(G.utils.r(req.url, 'El valor del precio de venta no puede ser cero (0)', 404, {}));
         return;
     }
-    
+
     pedido.usuario_id = req.session.user.usuario_id;
     /* +Descripcion Objeto de parametros para la validar la existencia de un pedido
      * @param numero: numero del pedido
@@ -2325,17 +2786,17 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         tipo: '1',
         pendiente: 0
     };
-    
-    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
-            .then(function(resultado) {
-        
-        if (resultado.length > 0 && resultado[0].valido === '1') {
-            return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros);
-        }else {
-            throw "La cantidad no corresponde a la unidad de medida";          
-        }
 
-    }).then(function(resultado) {
+    G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
+            .then(function (resultado) {
+
+                if (resultado.length > 0 && resultado[0].valido === '1') {
+                    return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros);
+                } else {
+                    throw "La cantidad no corresponde a la unidad de medida";
+                }
+
+            }).then(function (resultado) {
 
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
@@ -2347,7 +2808,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         } else {
             throw precioVenta.msj;
         }
-    }).then(function(resultado) {   
+    }).then(function (resultado) {
         /**
          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
          *               siempre y cuando el pedido tenga el
@@ -2361,39 +2822,39 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
         } else {
             throw 'El pedido debe encontrarse activo ó para autorizar nuevamente por cartera';
         }
-    }).then(function(rows) {
+    }).then(function (rows) {
 
         /*var totalValorPedidoActual = rows[0].valor_total_cotizacion;
-
-        if (totalValorPedidoNuevo > totalValorPedidoActual) {
-            estado_pedido = 1;
-        } else {
-            estado_pedido = 1;
-        }*/
+         
+         if (totalValorPedidoNuevo > totalValorPedidoActual) {
+         estado_pedido = 1;
+         } else {
+         estado_pedido = 1;
+         }*/
         estado_pedido = 1;
         /**
          * +Descripcion: Se valida si el pedido ya cuenta con ese producto en el detalle
          */
         return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarProductoPedido', pedido, producto);
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
         console.log("consultarProductoDetallePedido ", resultado.rows);
-      
+
         /**
          * +Descripcion: Se valida si el producto es diferente al del detalle
          *               y si es asi se procede a modficar el detalle
          */
-       /* if (resultado.length === 0) {
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarDetallePedido', pedido, producto);
-        } else {*/
+        /* if (resultado.length === 0) {
+         return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarDetallePedido', pedido, producto);
+         } else {*/
         if (resultado.rows.length > 0) {
             throw 'El producto ya aparece registrado en el pedido';
         } else {
-            
+
             return G.Q.ninvoke(that.m_pedidos_clientes, 'insertarDetallePedido', pedido, producto);
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         if (resultado.rowCount === 0) {
             throw 'Error Interno';
@@ -2403,8 +2864,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
         return  G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoPedido', pedido, estado_pedido);
 
-    }).then(function(resultado) {
-        
+    }).then(function (resultado) {
+
         if (resultado > 0) {
             /*
              * +Descripcion Se valida el estado del pedido, si es estado 4
@@ -2418,35 +2879,35 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
                 res.send(G.utils.r(req.url, 'Producto aniadido correctamente ', 200, {pedidos_clientes: {}}));
                 return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
             } else {
-                 
-                 def.resolve();
+
+                def.resolve();
             }
 
         } else {
             throw 'Error actualizando la observacion de cartera';
         }
 
-    }).then(function(resultado) {
-        
+    }).then(function (resultado) {
+
         var paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido, pedido.productos, pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo, 1, 0);
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
          *              se procede a registrarlo, de lo contrario solo lo actualizara
          */
-        
+
         if (!resultado || resultado.length === 0) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logTrazabilidadVentas', paramLogAutorizarPedido);
         } else {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogAutorizarPedido);
         }
-        
-    }).then(function(resultado){
-        
+
+    }).then(function (resultado) {
+
         res.send(G.utils.r(req.url, 'Producto aÃ±adido correctamente ', 200, {pedidos_clientes: {}}));
     })
-            .fail(function(err) {
-        res.send(G.utils.r(req.url, err, 500, {}));
-    }).done();
+            .fail(function (err) {
+                res.send(G.utils.r(req.url, err, 500, {}));
+            }).done();
 };
 
 
@@ -2459,8 +2920,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
  *                sus productos
  * @fecha:  28/11/2015
  */
-PedidosCliente.prototype.validarEstadoTotalValorPedido = function(req, res) {
-
+PedidosCliente.prototype.validarEstadoTotalValorPedido = function (req, res) {
+ 
 
     var that = this;
 
@@ -2479,53 +2940,83 @@ PedidosCliente.prototype.validarEstadoTotalValorPedido = function(req, res) {
 
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
-
+    var totalValorPedidoActual = 0;
+    
+    
+     var obj = {
+            "tipo_id_tercero": pedido.cliente.tipo_id_tercero,
+            "tercero_id": pedido.cliente.id
+        };
     /**
      * +Descripcion: Metodo encargado de consultar el estado actual de un pedido
      */
-    that.m_pedidos_clientes.consultarEstadoPedidoEstado(numeroPedido, function(err, resultado) {
+    
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoPedidoEstado', numeroPedido).then(function(resultado){
+        
+        
+         if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0')) {
 
-        if (!err) {
-
-            /**
-             * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
-             *               siempre y cuando el pedido tenga el
-             *               estado (Estado del Pedido ) 1
-             *               estado_pedido (Estado de solicitud ) 0
-             */
-            if (resultado[0].estado === '1' && resultado[0].estado_pedido === '0') {
-
-
-                that.m_pedidos_clientes.consultarTotalValorPedidoCliente(numeroPedido, function(err, resultado) {
-
-                    if (!err) {
-
-                        var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
-                        var estado_pedido = 0;
-                        if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                            estado_pedido = 4;
-                        } else {
-                            estado_pedido = 1;
-                        }
-                        res.send(G.utils.r(req.url, 'Estado del pedido es ' + estado_pedido, 200, {pedidos_clientes: [estado_pedido]}));
-                    } else {
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
-                        return;
-                    }
-                });
-
-            } else {
-                res.send(G.utils.r(req.url, 'El pedido debe estar activo o para autorizar nuevamente por cartera', 500, {pedidos_clientes: []}));
-                return;
-            }
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 
         } else {
-            res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
-
-            return;
+            throw 'El pedido debe encontrarse activo ó para autorizar nuevamente por cartera';
         }
+    }).then(function (rows) {
+ 
+        if (rows.length > 0) {
+                totalValorPedidoActual = rows[0].valor_total_cotizacion;
 
-    });
+                return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
+
+
+
+            } else {
+                throw "Error al consultar el total del valor del pedido";
+            }
+        
+       
+
+    }).then(function (resultado) {
+        
+        
+        /**
+         * +Descripcio Si esta creado en la tabla de vntas_contratos_clientes
+         */
+        if (resultado.length > 0) {
+            
+            /*
+             * +Descripcion Si El cliente esta autorizado, el estado del pedido seguira en 1
+             *              por lo cual no necesitara aprobar cartera
+             */
+            if (resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0') {
+                estado_pedido = 1;
+            }else{
+                /**
+                 * +Descripcion Si no esta autorizado se valida si el valor actual del pedido
+                 *              es menor al inicial
+                 */
+                if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                    estado_pedido = 4;
+                } else {
+                    estado_pedido = 1;
+                }
+            }
+        } else {
+            if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                estado_pedido = 4;
+            } else {
+                estado_pedido = 1;
+            }
+        }
+        
+         
+        return res.send(G.utils.r(req.url, 'Estado del pedido es ' + estado_pedido, 200, {pedidos_clientes: [estado_pedido]}));
+        
+}).fail(function(err){
+    
+     res.send(G.utils.r(req.url, err, 500, {}));
+     
+}).done();
 
 };
 
@@ -2536,7 +3027,7 @@ PedidosCliente.prototype.validarEstadoTotalValorPedido = function(req, res) {
  * +Descripcion : Metodo encargado de modificar en multiples productos de un pedido
  *               las cantidades
  */
-PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, res) {
+PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -2598,7 +3089,8 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
      *               parametro un objeto con los productos a los cuales les modificara
      *               el detalle
      */
-    G.Q.nfcall(__productosPedidos, obj).then(function(resultado) {
+    G.Q.nfcall(__productosPedidos, obj).then(function (resultado) {
+
 
         pedido.aprobado_cartera = '0';
         pedido.observacion_cartera = '';
@@ -2607,8 +3099,9 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
          *               estado del pedido
          */
         return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoPedido', pedido, estado_pedido);
-
-    }).then(function(resultado) {
+        
+        
+    }).then(function (resultado) {
         /**
          * +Descripcion: Si se actualiza el estado del pedido satisfactoriamente
          *               se procede a consultar si este pedido con el estdo actual
@@ -2623,7 +3116,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
             throw 'Error actualizando la observacion de cartera';
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
          *              se procede a registrarlo, de lo contrario solo lo actualizara
@@ -2634,7 +3127,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogActualizarAutorizarPedido);
         }
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -2645,7 +3138,7 @@ PedidosCliente.prototype.insertarCantidadProductoDetallePedido = function(req, r
  * @param {type} req
  * @param {type} res
  * @returns {unresolved} */
-PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) {
+PedidosCliente.prototype.enviarNotificacionPedidosClientes = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -2680,7 +3173,7 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
     var estado_pedido = args.pedidos_clientes.estado;
 
 
-    that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function(err, result) {
+    that.m_pedidos_clientes.actualizarEstadoPedido(pedido, estado_pedido, function (err, result) {
 
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
@@ -2700,20 +3193,19 @@ PedidosCliente.prototype.enviarNotificacionPedidosClientes = function(req, res) 
  * @param {type} res
  * @returns {undefined}
  */
-PedidosCliente.prototype.consultarEstadoPedido = function(req, res) {
+PedidosCliente.prototype.consultarEstadoPedido = function (req, res) {
 
     var that = this;
 
     var args = req.body.data;
 
     var numeroPedido = args.pedidos_clientes.pedido;
-    that.m_pedidos_clientes.consultarEstadoPedido(numeroPedido, function(estado, rows) {
+    that.m_pedidos_clientes.consultarEstadoPedido(numeroPedido, function (estado, rows) {
 
         if (!estado) {
-            res.send(G.utils.r(req.url, 'Consultando estado del pedido', 200, {pedidos_clientes: rows[0].estado}));
+            res.send(G.utils.r(req.url, 'Consultando estado del pedido', 200, {pedidos_clientes: rows[0]}));
             return;
-        }
-        else {
+        } else {
             res.send(G.utils.r(req.url, 'Error interno', 500, {pedidos_clientes: []}));
             return;
         }
@@ -2773,7 +3265,7 @@ function __parametrosLogs(numero, productos, usuario, observacion, total, tipo, 
  * +Descripcion: Controlador encargado de actualizar el estado de la cotizacion
  *               para solicitar aprobacion por cartera
  */
-PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
+PedidosCliente.prototype.solicitarAutorizacion = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -2786,7 +3278,7 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
      * de cada producto para almacenarlo en el log de trazabilidad de ventas
      */
     var totalValorProductos = 0;
-    productos[0].forEach(function(row) {
+    productos[0].forEach(function (row) {
 
         var valorTotalIva = parseFloat(row.valor_total_con_iva);
         totalValorProductos += valorTotalIva;
@@ -2805,19 +3297,19 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
      * @author Cristian Ardila
      * @param {obj} paramLogCliente Objeto con los parametros de cabecera y detalle
      */
-    G.Q.ninvoke(that.m_pedidos_clientes, 'solicitarAutorizacion', cotizacion).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_clientes, 'solicitarAutorizacion', cotizacion).then(function (resultado) {
         if (resultado.rowCount === 0) {
             throw 'Error actualizando la observacion de cartera';
         } else {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logTrazabilidadVentas', paramLogCliente);
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
         res.send(G.utils.r(req.url, 'Se cambia el estado de la cotizacion para solicitar autorizacion a cartera', 200, {pedidos_clientes: []}));
         that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numeroCotizacion);
         return;
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
@@ -2832,37 +3324,37 @@ PedidosCliente.prototype.solicitarAutorizacion = function(req, res) {
  * @param {type} res
  * @returns {undefined}
  */
-PedidosCliente.prototype.consultarEstadoCotizacion = function(req, res) {
-
+PedidosCliente.prototype.consultarEstadoCotizacion = function (req, res) {
+ 
     var that = this;
 
     var args = req.body.data;
 
     var numeroCotizacion = args.pedidos_clientes.cotizacion;
 
-    that.m_pedidos_clientes.consultarEstadoCotizacion(numeroCotizacion, function(err, rows) {
+    G.Q.ninvoke(that.m_pedidos_clientes, "consultarEstadoCotizacion", numeroCotizacion).then(function (rows) {
 
-        if (!err) {
-            res.send(G.utils.r(req.url, 'Consultando estado de la cotizacion', 200, {pedidos_clientes: rows[0].estado}));
-            return;
-        }
-        else {
-            res.send(G.utils.r(req.url, '', 500, {pedidos_clientes: []}));
-            return;
+        if (rows.length > 0) {
+            res.send(G.utils.r(req.url, 'Consultando estado de la cotizacion', 200, {pedidos_clientes: rows[0]}));
+        } else {
+
+            throw 'No hay registros';
         }
 
-    });
+    }).fail(function (err) {
+        res.send(G.utils.r(req.url, err, 500, {pedidos_clientes: []}));
+    }).done();
+
 };
 /*
  * Autor : Camilo Orozco
  * Descripcion : Modificar detalle pedido
  */
-PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
+PedidosCliente.prototype.modificarDetallePedido = function (req, res) {
 
-    /*console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");
-    console.log("***********PedidosCliente.prototype.modificarDetallePedido*************");*/
+    console.log("*******************PedidosCliente.prototype.modificarDetallePedido*****************************");
+    console.log("*******************PedidosCliente.prototype.modificarDetallePedido*****************************");
+    console.log("*******************PedidosCliente.prototype.modificarDetallePedido*****************************");
     
     var that = this;
 
@@ -2902,17 +3394,17 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'La cantidad solicitada no puede ser menor o igual a cero', 404, {}));
         return;
     }
-    
+
     if (producto.precio_venta === undefined || producto.precio_venta === '') {
         res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
-	
-    if (!producto.cantidadPendienteDespachar  || producto.cantidadPendienteDespachar.length === 0) {
+
+    if (!producto.cantidadPendienteDespachar || producto.cantidadPendienteDespachar.length === 0) {
         res.send(G.utils.r(req.url, 'la cantidad pendiente no esta definida o esta vacÃ­a', 404, {}));
         return;
-    }  
-	
+    }
+
     pedido.usuario_id = req.session.user.usuario_id;
 
 
@@ -2929,15 +3421,16 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
      */
     var numeroPedido = pedido.numero_pedido;
     var totalValorPedidoNuevo = __totalNuevoPrecioVenta(pedido);
+    var totalValorPedidoActual = 0;
     var estado_pedido = 0;
-    
+
     //console.log("totalValorPedidoNuevo ", totalValorPedidoNuevo);
 
     /*Se recorre el arreglo de los productos y se suma el valor total de con iva
      * de cada producto
      */
     var totalValorProductos = 0;
-    pedido.productos.forEach(function(row) {
+    pedido.productos.forEach(function (row) {
 
         var valorTotalIva = parseFloat(row.valor_total_con_iva);
         totalValorProductos += valorTotalIva;
@@ -2960,7 +3453,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
      * +Descripcion Metodo encargado de consultar el estado de un pedido, recibiendo
      *              como parametro el numero del pedido
      */
-    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoPedidoEstado', numeroPedido).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoPedidoEstado', numeroPedido).then(function (resultado) {
         /**
          * +Descripcion: Se permitira ejecutar la accion de consultarTotalValorPedidoCliente
          *               siempre y cuando el pedido tenga el
@@ -2969,54 +3462,96 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
          */
         if (resultado[0].estado === '1' && (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8')) {
             return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto})
- 
+
         } else {
             throw ("El pedido debe estar activo o para autorizar nuevamente por cartera");
         }
-    }).then(function(resultado){
-         
+    }).then(function (resultado) {
+
         if (resultado.length > 0 && resultado[0].valido === '1') {
-             return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
-     
-        }else {
-            throw "La cantidad no corresponde a la unidad de medida";          
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
+
+        } else {
+            throw "La cantidad no corresponde a la unidad de medida";
         }
+
+    }).then(function (resultado) {
+
+
+        var obj = {
+            "tipo_id_tercero": pedido.cliente.tipo_id_tercero,
+            "tercero_id": pedido.cliente.id
+        };
         
-    }).then(function(resultado) {
-
         if (resultado.length > 0) {
-            var totalValorPedidoActual = resultado[0].valor_total_cotizacion;
+            totalValorPedidoActual = resultado[0].valor_total_cotizacion;
 
+            return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
+ 
+           
+
+        } else {
+            throw ("Error al consultar el total del valor del pedido");
+        }
+
+    }).then(function (resultado) {
+        
+        console.log("resultado [consultarEstadoAutorizacionCliente]: ", resultado);
+        /**
+         * +Descripcio Si esta creado en la tabla de vntas_contratos_clientes
+         */
+        if (resultado.length > 0) {
+            
+            /*
+             * +Descripcion Si El cliente esta autorizado, el estado del pedido seguira en 1
+             *              por lo cual no necesitara aprobar cartera
+             */
+            if (resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0') {
+                estado_pedido = 1;
+            }else{
+                /**
+                 * +Descripcion Si no esta autorizado se valida si el valor actual del pedido
+                 *              es menor al inicial
+                 */
+                if (totalValorPedidoNuevo > totalValorPedidoActual) {
+                    estado_pedido = 4;
+                } else {
+                    estado_pedido = 1;
+                }
+            }
+        } else {
             if (totalValorPedidoNuevo > totalValorPedidoActual) {
                 estado_pedido = 4;
             } else {
-                estado_pedido = 1;                      
+                estado_pedido = 1;
             }
-            /**
-             * +Descripcion: la funcion se encargara de modificar el detalle del pedido
-             *               en este caso, lo mas relevante sera la cantidad de un
-             *               producto
-             */
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'modificar_detalle_pedido', pedido, producto);
-        } else {
-            throw ("Error Interno");
         }
+        
+        
+        console.log("COMO QUEDO EL ESTADO DEL PEDIDO ", estado_pedido)
+        
+        /**
+        * +Descripcion: la funcion se encargara de modificar el detalle del pedido
+        *               en este caso, lo mas relevante sera la cantidad de un
+        *               producto
+        */
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'modificar_detalle_pedido', pedido, producto);
+ 
+    }) .then(function (resultado) {
 
-    }).then(function(resultado) {
+                if (resultado.rowCount > 0) {
+                    pedido.aprobado_cartera = '0';
+                    pedido.observacion_cartera = '';
+                    /**
+                     * +Descripcion: Esta funcion sera la encargada de actualizar el
+                     *               estado del pedido
+                     */
+                    return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoPedido', pedido, estado_pedido);
+                } else {
+                    throw 'Error actualizando la observacion de cartera';
+                }
 
-        if (resultado.rowCount > 0) {
-            pedido.aprobado_cartera = '0';
-            pedido.observacion_cartera = '';
-            /**
-             * +Descripcion: Esta funcion sera la encargada de actualizar el
-             *               estado del pedido
-             */
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarEstadoPedido', pedido, estado_pedido);
-        } else {
-            throw 'Error actualizando la observacion de cartera';
-        }
-
-    }).then(function(resultado) {
+            }).then(function (resultado) {
         /**
          * +Descripcion: Si se actualiza el estado del pedido satisfactoriamente
          *               se procede a consultar si este pedido con el estdo actual
@@ -3030,7 +3565,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         } else {
             throw 'Error actualizando la observacion de cartera';
         }
-    }).then(function(resultado) {
+    }).then(function (resultado) {
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
          *              se procede a registrarlo, de lo contrario solo lo actualizara
@@ -3040,7 +3575,7 @@ PedidosCliente.prototype.modificarDetallePedido = function(req, res) {
         } else {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logActualizarSolicitudProducto', paramLogAutorizarPedido);
         }
-    }).fail(function(err) {
+    }).fail(function (err) {
         console.log("error generado ", err);
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
@@ -3076,7 +3611,7 @@ function __totalNuevoPrecioVenta(pedido) {
  *                de cambiar el estado de un pedido cuando se elimine un producto
  *
  */
-PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
+PedidosCliente.prototype.eliminarProductoPedido = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -3132,10 +3667,10 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
     var totalValorPedidoActual;
     var estado_pedido;
-    var estado_pedido;              
+    var estado_pedido;
     var estado_pedido;
     //console.log("(producto) ", producto);
-    
+
     /**
      * +Descripcion Parametros exclusivos para consultar la disponibilidad 
      *              que tiene el producto
@@ -3144,7 +3679,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
     var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
     var bodega = args.pedidos_clientes.bodega_id;
     var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
-    
+
     var filtro = {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
@@ -3154,7 +3689,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         filtro_producto: 0
     };
 
-     var filtroAvanzado = {
+    var filtroAvanzado = {
         molecula: args.pedidos_clientes.molecula,
         laboratorio_id: args.pedidos_clientes.laboratorio_id,
         codigoProducto: args.pedidos_clientes.codigoProducto,
@@ -3166,16 +3701,16 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
     var filtros = args.pedidos_clientes.filtro;
     var pagina = args.pedidos_clientes.pagina_actual;
-    
-    var parametros = {empresa_id:empresa_id,
-        centro_utilidad:centro_utilidad,
-        bodega:bodega,
-        contrato_cliente:contrato_cliente,
-        filtro:filtro,
-        pagina:pagina,
-        filtros:filtros, 
-        filtroAvanzado:filtroAvanzado
-    };      
+
+    var parametros = {empresa_id: empresa_id,
+        centro_utilidad: centro_utilidad,
+        bodega: bodega,
+        contrato_cliente: contrato_cliente,
+        filtro: filtro,
+        pagina: pagina,
+        filtros: filtros,
+        filtroAvanzado: filtroAvanzado
+    };
     //console.log("parametros ", parametros);
     var disponibilidadProducto;
     var paramLogAutorizarPedido = __parametrosLogs(pedido.numero_pedido, pedido.productos, pedido.usuario_id, "Se solicita aprobacion Pedido", totalValorPedidoNuevo, 1, 0);
@@ -3187,27 +3722,26 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
      *               se validara de que el pedido al menos quede con un solo pro-
      *               ducto
      */
-    
-     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
-        parametros.empresa_id,
-        parametros.centro_utilidad,
-        parametros.bodega,
-        parametros.contrato_cliente,                          
-        parametros.filtro,
-        parametros.pagina,
-        parametros.filtros, 
-        parametros.filtroAvanzado).then(function(resultado){
-            
-            disponibilidadProducto = resultado[0].cantidad_disponible;   
-            console.log("disponibilidadProducto ", disponibilidadProducto); 
-            console.log("cantidad_solicitada ", producto.cantidad_solicitada); 
-           return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosPedido', numeroPedido);
-            
-        }).then(function(resultado) {
+
+    G.Q.ninvoke(that.m_pedidos_clientes, 'listar_productos',
+            parametros.empresa_id,
+            parametros.centro_utilidad,
+            parametros.bodega,
+            parametros.contrato_cliente,
+            parametros.filtro,
+            parametros.pagina,
+            parametros.filtros,
+            parametros.filtroAvanzado).then(function (resultado) {
+
+        disponibilidadProducto = resultado[0].cantidad_disponible;
+
+        return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalProductosPedido', numeroPedido);
+
+    }).then(function (resultado) {
 
         if (resultado.length > 0) {
 
-            if (resultado[0].total === "1") {      
+            if (resultado[0].total === "1") {
                 throw 'El pedido no puede quedar sin productos';
                 return;
             } else {
@@ -3215,40 +3749,33 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             }
         }
 
-    }).then(function(resultado) {
-       
+    }).then(function (resultado) {
+
         if (resultado.length > 0) {
-            
-            if (resultado[0].estado === '1' && 
-                (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8' && producto.cantidadPendiente > 0) 
-                 || resultado[0].estado === '4' && disponibilidadProducto === 0
-                 || resultado[0].estado === '4' && disponibilidadProducto < producto.cantidad_solicitada
-                 ) {
+
+            if (resultado[0].estado === '1' &&
+                    (resultado[0].estado_pedido === '0' || resultado[0].estado_pedido === '8' && producto.cantidadPendiente > 0)
+                    || resultado[0].estado === '4' && disponibilidadProducto === 0
+                    || resultado[0].estado === '4' && disponibilidadProducto < producto.cantidad_solicitada
+                    ) {
 
                 return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarTotalValorPedidoCliente', numeroPedido);
 
             } else {
-                throw 'El pedido debe <br>\n'+ '1. estar activo <br>\n'+ ' 2. para autorizar nuevamente por cartera <br>\n'+ ' 3. contener pendientes';
+                throw 'El pedido debe <br>\n' + '1. estar activo <br>\n' + ' 2. para autorizar nuevamente por cartera <br>\n' + ' 3. contener pendientes';
                 return;
             }
 
         } else {
             throw 'Error interno';
         }
-        
-    }).then(function(resultado) {
+
+    }).then(function (resultado) {
 
         if (resultado.length > 0) {
 
-            /*totalValorPedidoActual = resultado[0].valor_total_cotizacion;
-            estado_pedido = 0;
 
-            if (totalValorPedidoNuevo > totalValorPedidoActual) {
-                estado_pedido = 4;
-            } else {
-                estado_pedido = 1;
-            }*/
-                estado_pedido = 1;
+            estado_pedido = 1;
             return G.Q.ninvoke(that.m_pedidos_clientes, 'eliminar_producto_pedido', pedido, producto);
 
         } else {
@@ -3256,7 +3783,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             return;
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
 
         if (resultado.rowCount > 0) {
@@ -3270,7 +3797,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             return;
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         if (resultado > 0) {
 
@@ -3280,12 +3807,12 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logConsultarExistenciaNumero', paramLogExistencia);
         } else {
 
-            throw  'Error actualizando la observacion de cartera';  
+            throw  'Error actualizando la observacion de cartera';
             return;
 
         }
 
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         /**
          * +Descripcion Si el pedido no se encuentra registrado en la tabla de trazabilidad
@@ -3302,7 +3829,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
 
         }
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
@@ -3316,7 +3843,7 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
  *               actualizar el estado del pedido a 1
  * @fecha: 05/11/15
  */
-PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
+PedidosCliente.prototype.observacionCarteraPedido = function (req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -3361,7 +3888,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
     pedido.estado_desaprobado = aprobado;
     var paramLogActualizarAutorizarPedido = __parametrosLogs(pedido.numero_pedido, pedido.productos, pedido.usuario_id, pedido.observacion_cartera, pedido.total, 1, estadoAprobacion);
 
-    G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarPedidoCarteraEstadoNoAsigando', pedido).then(function(resultado) {
+    G.Q.ninvoke(that.m_pedidos_clientes, 'actualizarPedidoCarteraEstadoNoAsigando', pedido).then(function (resultado) {
 
         if (resultado > 0) {
 
@@ -3372,7 +3899,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
 
             throw ('Error Actualizando el estado del pedidopara la aprobacion')
         }
-    }).then(function(resultado) {
+    }).then(function (resultado) {
 
         /**
          * +Descripcion Se actualizara el estado del pedido a aprobado
@@ -3381,7 +3908,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
             return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogActualizarAutorizarPedido);
         }
 
-    }).fail(function(err) {
+    }).fail(function (err) {
         res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 
@@ -3392,7 +3919,7 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Generar Reporte PDF de Pedido y enviar por email
  */
-PedidosCliente.prototype.reportePedido = function(req, res) {
+PedidosCliente.prototype.reportePedido = function (req, res) {
 
 
     var that = this;
@@ -3431,13 +3958,13 @@ PedidosCliente.prototype.reportePedido = function(req, res) {
 
     var enviar_email = args.pedidos_clientes.enviar_email;
 
-    that.m_pedidos_clientes.consultar_pedido(pedido.numero_pedido, function(err, datos_pedido) {
+    that.m_pedidos_clientes.consultar_pedido(pedido.numero_pedido, function (err, datos_pedido) {
 
         if (err || datos_pedido.length === 0) {
             res.send(G.utils.r(req.url, 'Error Interno consultado la cotizacion', 500, {pedidos_clientes: []}));
             return;
         } else {
-            that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, lista_productos) {
+            that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function (err, lista_productos) {
 
                 if (err || lista_productos.length === 0) {
                     res.send(G.utils.r(req.url, 'Error Interno consultado el detalle del pedido', 500, {pedidos_clientes: []}));
@@ -3471,14 +3998,14 @@ PedidosCliente.prototype.reportePedido = function(req, res) {
                     total_con_iva: total
                 };
 
-                _generar_reporte_pedido(datos_reporte, function(nombre_reporte) {
+                _generar_reporte_pedido(datos_reporte, function (nombre_reporte) {
 
                     if (enviar_email) {
 
                         var path = G.dirname + "/public/reports/" + nombre_reporte;
                         var filename = "PedidoNo-" + pedido.numero_cotizacion + '.pdf';
 
-                        __enviar_correo_electronico(that, emails, path, filename, subject, message, function(enviado) {
+                        __enviar_correo_electronico(that, emails, path, filename, subject, message, function (enviado) {
 
                             if (!enviado) {
                                 res.send(G.utils.r(req.url, 'Se genero un error al enviar el reporte', 500, {pedidos_clientes: {nombre_reporte: nombre_reporte}}));
@@ -3520,9 +4047,9 @@ function __subir_archivo_plano(files, callback) {
     if (G.fs.existsSync(ruta_tmp)) {
         // Copiar Archivo
         G.Q.nfcall(G.fs.copy, ruta_tmp, ruta_nueva).
-                then(function() {
-            return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
-        }).then(function() {
+                then(function () {
+                    return  G.Q.nfcall(G.fs.unlink, ruta_tmp);
+                }).then(function () {
             var parser = G.XlsParser;
             var workbook = parser.readFile(ruta_nueva);
             var filas = G.XlsParser.serializar(workbook, ['codigo', 'cantidad']);
@@ -3535,10 +4062,10 @@ function __subir_archivo_plano(files, callback) {
                 callback(false, filas);
             }
         }).
-                fail(function(err) {
-            G.fs.unlinkSync(ruta_nueva);
-            callback(true);
-        }).
+                fail(function (err) {
+                    G.fs.unlinkSync(ruta_nueva);
+                    callback(true);
+                }).
                 done();
 
     } else {
@@ -3556,12 +4083,12 @@ function __subir_archivo_plano(files, callback) {
  */
 var productosSinDisponible = [];
 var productosDisponibles = [];
-PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
+PedidosCliente.prototype.validarDisponibilidad = function (req, res) {
 
     var that = this;
-    var args = req.body.data;    
+    var args = req.body.data;
     productosSinDisponible = [];
-    
+
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
         return;
@@ -3572,7 +4099,7 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
         return;
     }
 
-     if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
+    if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacÃ­os', 404, {}));
         return;
     }
@@ -3595,7 +4122,7 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
     var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
     var bodega = args.pedidos_clientes.bodega_id;
     var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
-    
+
     var filtro = {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
@@ -3605,7 +4132,7 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
         filtro_producto: 1
     };
 
-     var filtroAvanzado = {
+    var filtroAvanzado = {
         molecula: args.pedidos_clientes.molecula,
         laboratorio_id: args.pedidos_clientes.laboratorio_id,
         codigoProducto: args.pedidos_clientes.codigoProducto,
@@ -3618,30 +4145,30 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
 
     var filtros = args.pedidos_clientes.filtro;
     var pagina = args.pedidos_clientes.pagina_actual;
-    
-    var parametros = {empresa_id:empresa_id,
-        centro_utilidad:centro_utilidad,
-        bodega:bodega,
-        contrato_cliente:contrato_cliente,
-        filtro:filtro,
-        pagina:pagina,
-        filtros:filtros, 
-        filtroAvanzado:filtroAvanzado
-    };
-   
-      var productos = args.pedidos_clientes.productos;
-      
-    G.Q.nfcall(__disponibilidadProductos,that,0,productos,parametros).then(function(resultado){
 
-        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto:resultado}}));
+    var parametros = {empresa_id: empresa_id,
+        centro_utilidad: centro_utilidad,
+        bodega: bodega,
+        contrato_cliente: contrato_cliente,
+        filtro: filtro,
+        pagina: pagina,
+        filtros: filtros,
+        filtroAvanzado: filtroAvanzado
+    };
+
+    var productos = args.pedidos_clientes.productos;
+
+    G.Q.nfcall(__disponibilidadProductos, that, 0, productos, parametros).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {producto: resultado}}));
 
         //console.log("resultado (Sin disponibles)", resultado);
-        
-    }).fail(function(err) {
+
+    }).fail(function (err) {
 
         res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_clientes: []}));
     }).done();
-      
+
 };
 
 /**
@@ -3651,77 +4178,79 @@ PedidosCliente.prototype.validarDisponibilidad = function(req, res) {
  * @fecha 2016-08-01
  * @Funcion local
  */
-function __disponibilidadProductos(that, index, productos,parametros, callback) {
-   
-    var producto = productos[index];   
-    var def = G.Q.defer();   
+function __disponibilidadProductos(that, index, productos, parametros, callback) {
+
+    var producto = productos[index];
+    var def = G.Q.defer();
     var productoUnidadMedida = "";
-    if (!producto) {       
-        
-        callback(false,productosSinDisponible);//rowCount  
-        return;                     
-    }  
-   
-     parametros.filtro.termino_busqueda =  producto.codigo_producto;           
-    
-     G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
-        parametros.empresa_id,
-        parametros.centro_utilidad,
-        parametros.bodega,
-        parametros.contrato_cliente,                          
-        parametros.filtro,
-        parametros.pagina,
-        parametros.filtros, 
-        parametros.filtroAvanzado)
-        .then(function(resultado){
-             
-            if(producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0){   
-                productoUnidadMedida = resultado[0];
-                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
-                productosSinDisponible.push(resultado[0]);           
-                def.resolve();     
-            }else{
-                resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
-                productoUnidadMedida = resultado[0];
-                
-                return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
+    if (!producto) {
 
-            }
-            
-            
-        }).then(function(resultado){
-            
-            console.log("resultado [__disponibilidadProductos]: ", resultado);
-            index++;  
-        
-            if(!resultado){
+        callback(false, productosSinDisponible);//rowCount  
+        return;
+    }
 
-                setTimeout(function() {
-                    __disponibilidadProductos(that, index, productos,parametros, callback);
-                }, 0);
+    parametros.filtro.termino_busqueda = producto.codigo_producto;
 
-            } else if (resultado.length > 0 && resultado[0].valido === '1') {
-                console.log("resultado [productosSinDisponible]: ", resultado);               
-                productosDisponibles.push(productoUnidadMedida);
-                setTimeout(function() {
-                    __disponibilidadProductos(that, index, productos,parametros, callback);
-                }, 0);
+    G.Q.ninvoke(that.m_pedidos_clientes, 'listar_productos',
+            parametros.empresa_id,
+            parametros.centro_utilidad,
+            parametros.bodega,
+            parametros.contrato_cliente,
+            parametros.filtro,
+            parametros.pagina,
+            parametros.filtros,
+            parametros.filtroAvanzado)
+            .then(function (resultado) {
 
-            } else { 
-                console.log("resultado [productosDisponibles]: ", resultado);
-                producto.mensajeError = "La cantidad ingresada no es valida para el producto";
-                producto.cantidadValida = false;
-                productosSinDisponible.push(productoUnidadMedida);
 
-                setTimeout(function() {
-                    __disponibilidadProductos(that, index, productos,parametros, callback);
-                }, 0);
-            }
+                if (producto.cantidad_solicitada > resultado[0].cantidad_disponible || resultado[0].cantidad_disponible === 0) {
+                    productoUnidadMedida = resultado[0];
+                    resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                    productosSinDisponible.push(resultado[0]);
+                    def.resolve();
+                } else {
+                    resultado[0].cantidad_solicitada = producto.cantidad_solicitada;
+                    productoUnidadMedida = resultado[0];
 
-        }).fail(function(err){      
-       }).done(); 
-       
-};
+                    return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: parseInt(producto.cantidad_solicitada), codigo_producto: producto.codigo_producto});
+
+                }
+
+
+            }).then(function (resultado) {
+
+        //console.log("resultado [__disponibilidadProductos]: ", resultado);
+        index++;
+
+        if (!resultado) {
+
+            setTimeout(function () {
+                __disponibilidadProductos(that, index, productos, parametros, callback);
+            }, 0);
+
+        } else if (resultado.length > 0 && resultado[0].valido === '1') {
+            //console.log("resultado [productosSinDisponible]: ", resultado);               
+            productosDisponibles.push(productoUnidadMedida);
+            setTimeout(function () {
+                __disponibilidadProductos(that, index, productos, parametros, callback);
+            }, 0);
+
+        } else {
+            //console.log("resultado [productosDisponibles]: ", resultado);
+            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
+            producto.cantidadValida = false;
+            productosSinDisponible.push(productoUnidadMedida);
+
+            setTimeout(function () {
+                __disponibilidadProductos(that, index, productos, parametros, callback);
+            }, 0);
+        }
+
+    }).fail(function (err) {
+    }).done();
+
+}
+;
 
 /*
  * Autor : Eduar Garcia
@@ -3729,333 +4258,107 @@ function __disponibilidadProductos(that, index, productos,parametros, callback) 
  *
  */
 function __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback) {
- 
+
     var producto = filas[index];
-    if (!producto) {    
-       
-        callback(false,productosValidos, productosInvalidos);
+    if (!producto) {
+
+        callback(false, productosValidos, productosInvalidos);
         return;
     }
-     
+
     /**
      * +Descripcion Funcion encargada de modificar el detalle del pedido
      */
-    G.Q.ninvoke(that.m_productos, 'validar_producto',producto.codigo).then(function(resultado) {
-        
+    G.Q.ninvoke(that.m_productos, 'validar_producto', producto.codigo).then(function (resultado) {
+
         var productoValidos = {codigo_producto: producto.codigo, cantidad_solicitada: producto.cantidad};
 
-            if (resultado.length > 0 && producto.cantidad > 0) {
+        if (resultado.length > 0 && producto.cantidad > 0) {
 
-                productoValidos.tipoProductoId = resultado[0].tipo_producto_id;
-                productoValidos.descripcion = resultado[0].descripcion_producto;
-                productoValidos.cantidadSolicitada = producto.cantidad;
-                productosValidos.push(productoValidos);
+            productoValidos.tipoProductoId = resultado[0].tipo_producto_id;
+            productoValidos.descripcion = resultado[0].descripcion_producto;
+            productoValidos.cantidadSolicitada = producto.cantidad;
+            productoValidos.totalSolicitado = 0;
+            productoValidos.totalDisponible = 0;
+            productosValidos.push(productoValidos);
 
-            } else {
-                productoValidos.mensajeError = "No existe en inventario";
-                productoValidos.existeInventario = false;
-                productosInvalidos.push(productoValidos);
+        } else {
+            productoValidos.mensajeError = "No existe en inventario";
+            productoValidos.existeInventario = false;
+            productosInvalidos.push(productoValidos);
 
-            }
-        
-      
-    }).fail(function(error) {
+        }
+
+
+    }).fail(function (error) {
 
         callback(error);
     });
-        index++;
-        setTimeout(function() {           
-            __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback);
+    index++;
+    setTimeout(function () {
+        __validar_productos_archivo_plano(that, index, filas, productosValidos, productosInvalidos, callback);
     }, 300);
- };
+}
+;
 
 
 
-/*
- * Autor : Eduar garcia
- * Descripcion : Validar que los datos de los productos esten correctos, completos y que el valor de venta
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Funcion encargada se obtener todo el detalle de los productos
+ *              del archivo plano
+ * @fecha 07/03/2017 DD/MM/YYYY         
  */
-function __validar_datos_productos_archivo_plano2(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback) {
-// G.Q.ninvoke(that, "__listarProductosClientes",args).then(function(lista_productos){
-     
-    var producto = productos[index];
-    var productoUnidadMedida = "";
-    var def = G.Q.defer();
-    if (!producto) {
-          
-        callback(false,productos_validos, productos_invalidos);
-        return;
-    }
-    
-     /**
-     * +Descripcion Parametros exclusivos para consultar la disponibilidad 
-     *              que tiene el producto
-     */
-    var filtro = {
-        tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto,
-        termino_busqueda: producto.codigo_producto,
-        laboratorio_id: (cotizacion.laboratorio_id === undefined) ? '' : cotizacion.laboratorio_id,
-        numero_cotizacion: (cotizacion.numero_cotizacion === undefined) ? '' : cotizacion.numero_cotizacion,
-        numero_pedido: (cotizacion.numero_pedido === undefined) ? '' : cotizacion.numero_pedido,
-        filtro_producto: 0
-    };
-
-    var filtroAvanzado = {
-        molecula: cotizacion.molecula,
-        laboratorio_id: cotizacion.laboratorio_id,
-        codigoProducto: cotizacion.codigoProducto,
-        descripcionProducto: cotizacion.descripcionProducto,
-        concentracion: cotizacion.concentracion,
-        tipoBusqueda: 0,
-        tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto
-    };
-  
-    var filtros = '';
-    
-   /**
-     * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
-     *               siempre y cuando el pedido tenga el
-     *               estado (Estado del Pedido ) 1
-     *               estado_pedido (Estado de solicitud ) 0 pero anterior a esto
-     *               se validara de que el pedido al menos quede con un solo pro-
-     *               ducto
-     */
-    var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_id};
-    
-    G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
-        cotizacion.empresa_id,
-        cotizacion.centro_utilidad_id,
-        cotizacion.bodega_id,
-        cotizacion.cliente.contrato_id,
-        filtro,
-        1, filtros, filtroAvanzado).then(function(lista_productos){
-    
-        //index++;
-      
-        if (lista_productos.length === 0) {
-            productos_invalidos.push(producto);
-            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            return;
-        } else {
-
-           var _producto = lista_productos[0];
-            producto.codigo_producto = _producto.codigo_producto;
-            producto.iva = _producto.iva;
-            producto.precio_venta = _producto.precio_producto;
-            producto.tipo_producto = _producto.tipo_producto_id;
-            producto.empresaIdProducto = cotizacion.empresa_id;
-            producto.centroUtilidadProducto = cotizacion.centro_utilidad_id;
-            producto.bodegaProducto = cotizacion.bodega_id;
-            
-            return G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros)
-        
-        }
-    }).then(function(resultado){
-         
-        if(!resultado || resultado === undefined){
-            
-            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-                return;
-        } 
-        /**
-         * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
-        **/
-        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
-       
-        if(precioVenta.valido){
-            productoUnidadMedida = producto;
-            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
-
-        }else{
-            productoUnidadMedida = producto;
-            productos_invalidos.push(productoUnidadMedida);
-            def.resolve();
-        }
-       
-            __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-                return;
-            
-    }) .then(function(resultado) {
-        index++;
-         
-        if(!resultado){
-            
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-            
-        } else if (resultado.length > 0 && resultado[0].valido === '1') {
-            
-            productos_validos.push(productoUnidadMedida);
-
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-
-        }else{
-           
-            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
-            producto.cantidadValida = false;
-            productos_invalidos.push(productoUnidadMedida);
-
-            setTimeout(function() {
-                 __validar_datos_productos_archivo_plano(that, cotizacion, productos, productos_validos, productos_invalidos, index, callback);
-            }, 0);
-        } 
-    }).fail(function(err){  
-    console.log("error[__validar_datos_productos_archivo_plano]: ", err)    
-    }).done(); 
-};                                              
-
-
 function __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback) {
-  
+
     var producto = productos[index];
 
     if (!producto) {
-       // console.log("productos_validos ", productos_validos);
-       // console.log("productos_invalidos ", productos_invalidos);
-        callback(false,productos_validos, productos_invalidos);
+        //console.log("productos_validos ", productos_validos);
+        //console.log("productos_invalidos ", productos_invalidos);
+        callback(false, productos_validos, productos_invalidos);
         return;
     }
-     
-    obj.pedidos_clientes.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id; 
+
+    obj.pedidos_clientes.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id;
     obj.pedidos_clientes.codigoProducto = producto.codigo_producto;
     obj.pedidos_clientes.termino_busqueda = producto.codigo_producto;
-    obj.pedidos_clientes.filtro = {nombre:'Codigo', tipo_busqueda:2, numero: [null], tipo:2}
+    obj.pedidos_clientes.filtro = {nombre: 'Codigo', tipo_busqueda: 2, numero: [null], tipo: 1}
     obj.pedidos_clientes.tipoBusqueda = 0;
-   
+
     index++;
-    G.Q.ninvoke(that, "__listarProductosClientes",obj).then(function(lista_productos){      
-             
+    G.Q.ninvoke(that, "__listarProductosClientes", obj).then(function (lista_productos) {
+
+
         if (lista_productos.length === 0) {
-            console.log("lista_productos.length")
+
+
             productos_invalidos.push(lista_productos.data.productos.sort(dynamicSort("codigo_producto")));
+
+
             __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback);
             return;
         } else {
-            console.log("lista_productos.length SI HAY")
-           var _producto = lista_productos.data.productos.sort(dynamicSort("codigo_producto"));
-                producto.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id;
-           
-               //_producto.parametros = parametros;
-             return G.Q.nfcall(__productosSeleccionado,that, 0, _producto,[],[], producto);
-            
+
+            var _producto = lista_productos.data.productos.sort(dynamicSort("codigo_producto"));
+            producto.contrato_cliente_id = obj.pedidos_clientes.cotizacion.cliente.contrato_id;
+
+            productos_validos.push(_producto);
+
         }
-         
-    }).then(function(resultado){
+        __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback);
 
 
-        if(resultado[1].length > 0){
-            productos_invalidos.push(resultado[1]);
-        }else{
-            productos_validos.push(resultado[0]);
-        }
-      __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback); 
-            
-    }).fail(function(err){  
-    console.log("error[__validar_datos_productos_archivo_plano]: ", err)    
-    }).done(); 
-};                                              
+    }).fail(function (err) {
+
+        __validar_datos_productos_archivo_plano(that, obj, productos, productos_validos, productos_invalidos, index, callback);
+        console.log("error[__validar_datos_productos_archivo_plano]: ", err)
+    }).done();
+}
+;
 
 
-/***********************************SE VALIDA DE QUE BODEGA SACO EXISTENCIA ******************************/
-function __productosSeleccionado(that, index, productos,productosValidos,productosInvalidos,productoInicial,callback) {
-    
-    var producto = productos[index];
-     
-    var def = G.Q.defer();
-    if (!producto) {  
-       
-       //valido si en la primera no hubo existencia y en la segunda no ingreso o no habia producto
-        callback(false,productosValidos,productosInvalidos);
-        return; 
-    }  
-    
-    var parametros = {empresaId: producto.empresa_id, 
-                    codigoProducto: producto.codigo_producto, 
-                    contratoId: productoInicial.contrato_cliente_id};
-    
-    
-    producto.codigo_producto = producto.codigo_producto;
-    producto.iva = producto.iva;
-    producto.precio_venta = producto.precio_producto;
-    producto.tipo_producto = producto.tipo_producto_id;
-    producto.empresaIdProducto = producto.empresa_id;
-    producto.centroUtilidadProducto = producto.centro_utilidad;
-    producto.bodegaProducto = producto.bodega;
-    producto.cantidad_solicitada = productoInicial.cantidad_solicitada;
-            
-    
-     G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function(resultado){
-            
-        if(!resultado || resultado === undefined){
-            
-            setTimeout(function() {
-                __productosSeleccionado(that, index, productos,productosValidos,productosInvalidos,productoInicial,callback);
-            }, 300);
-            return;
-        } 
-        
-        
-        /**
-         * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
-        **/
-        var precioVenta = __validarPrecioVenta(producto, resultado, 0);
-            
-        if(precioVenta.valido){
-            productoUnidadMedida = producto;
-            return G.Q.nfcall(that.m_productos.validarUnidadMedidaProducto, {cantidad: producto.cantidad_solicitada, codigo_producto: producto.codigo_producto});
-
-        }else{    
-            productoUnidadMedida = producto;
-            productosInvalidos.push(productoUnidadMedida);
-            def.resolve();
-        }
-       
-            __productosSeleccionado(that, index, productos,productosValidos,productosInvalidos,productoInicial,callback);
-                return; 
-           
-     }).then(function(resultado) {
-        /*index++;
-         */
-        //console.log("resultado [validarUnidadMedidaProducto]: ", resultado);
-        if(!resultado){
-            
-            setTimeout(function() {
-                __productosSeleccionado(that, index, productos,productosValidos,productosInvalidos,productoInicial,callback);
-            }, 0);
-            
-        } else if (resultado.length > 0 && resultado[0].valido === '1') {
-            
-            productosValidos.push(productoUnidadMedida);
-
-            setTimeout(function() {
-                __productosSeleccionado(that, index, productos,productosValidos,productosInvalidos,productoInicial,callback);
-            }, 0);
-
-        }else{
-           
-            producto.mensajeError = "La cantidad ingresada no es valida para el producto";
-            producto.cantidadValida = false;
-            productosInvalidos.push(productoUnidadMedida);
-
-            setTimeout(function() {
-                __productosSeleccionado(that, index, productos,productosValidos,productosInvalidos,productoInicial,callback);
-            }, 0);
-        } 
-          
-    }).fail(function(err){  
-    console.log("error[__productosSeleccionado]: ", err)    
-    }).done(); 
-    
-    
-    index++;
-    setTimeout(function() {
-      __productosSeleccionado(that, index, productos,productosValidos,productosInvalidos,productoInicial,callback);
-   }, 300);
-       
-};
 
 
 
@@ -4109,6 +4412,11 @@ function __validarPrecioVenta(producto, resultado, tipo) {
         }
     }
 
+    if (precioVenta === 0) {
+        valido = false;
+        msj = "El precio de venta debe ser mayor a cero (0)";
+    }
+
     return {valido: valido, msj: msj}
 }
 
@@ -4117,39 +4425,16 @@ function __validarPrecioVenta(producto, resultado, tipo) {
  * @author Camilo Orozco
  * +Descripcion Separar productos segun sea su tipo ej. Normales, Alto Costo, Controlados etc.
  */
-function __agrupar_productos_por_tipo(productos,productosAgrupados,index, callback) {
+function __agrupar_productos_por_tipo(productos, productosAgrupados, index, callback) {
 
-    /*var producto = productos[index];
-     
-    if(!producto){       
-       
-        callback(false, productosAgrupados);
-    }
-    index++;
-    if(producto){ 
-        
-        if (productosAgrupados[producto.tipo_producto]) {
-            productosAgrupados[producto.tipo_producto].push(producto);
-        } else {
-            productosAgrupados[producto.tipo_producto] = [producto];
-        }
-        
-      
-  
-    setTimeout(function() {
-        __agrupar_productos_por_tipo(productos,productosAgrupados,index, callback)
-    }, 300); 
-    
-    }*/
-    
     var productosAgrupados = {};
-   
+
     if (productos.length === 0) {
         callback(productosAgrupados);
         return;
     }
 
-    productos.forEach(function(row) {
+    productos.forEach(function (row) {
         if (productosAgrupados[row.tipo_producto]) {
             productosAgrupados[row.tipo_producto].push(row);
         } else {
@@ -4157,10 +4442,10 @@ function __agrupar_productos_por_tipo(productos,productosAgrupados,index, callba
         }
     });
 
-    callback(false,productosAgrupados);
-    
-     
-    
+    callback(false, productosAgrupados);
+
+
+
 }
 
 
@@ -4187,14 +4472,14 @@ function _generar_reporte_cotizacion(rows, callback) {
             total_sin_iva: rows.total_sin_iva,
             total_con_iva: rows.total_con_iva
         }
-    }, function(err, response) {
+    }, function (err, response) {
 
-        response.body(function(body) {
+        response.body(function (body) {
 
             var fecha_actual = new Date();
             var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
 
-            G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function (err) {
 
                 if (err) {
                     console.log('=== Se ha generado un error generando el reporte de cotizaciones ====');
@@ -4231,14 +4516,14 @@ function _generar_reporte_pedido(rows, callback) {
             total_sin_iva: rows.total_sin_iva,
             total_con_iva: rows.total_con_iva
         }
-    }, function(err, response) {
+    }, function (err, response) {
 
-        response.body(function(body) {
+        response.body(function (body) {
 
             var fecha_actual = new Date();
             var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
 
-            G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function (err) {
 
                 if (err) {
                     console.log('=== Se ha generado un error generando el reporte de cotizaciones ====');
@@ -4280,7 +4565,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
         attachments: [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}]
     };
 
-    smtpTransport.sendMail(settings, function(error, response) {
+    smtpTransport.sendMail(settings, function (error, response) {
 
         if (error) {
             callback(false);
@@ -4317,14 +4602,14 @@ function __productosPedidos(parametros, callback) {
     /**
      * +Descripcion Funcion encargada de modificar el detalle del pedido
      */
-    G.Q.ninvoke(parametros.contexto.m_pedidos_clientes, 'modificar_detalle_pedido', parametros.pedido, resultado).then(function(resultado) {
+    G.Q.ninvoke(parametros.contexto.m_pedidos_clientes, 'modificar_detalle_pedido', parametros.pedido, resultado).then(function (resultado) {
 
-        setTimeout(function() {
+        setTimeout(function () {
             parametros.index++;
             __productosPedidos(parametros, callback);
         }, 0);
 
-    }).fail(function(error) {
+    }).fail(function (error) {
 
         callback(error);
     });
@@ -4341,43 +4626,46 @@ function __productosPedidos(parametros, callback) {
  * @fecha 30/01/2017
  * @author Cristian Ardila 
  */
-function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, productos, productos_validos,productos_invalidos, callback) {
-     
+function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, productos, productos_validos, productos_invalidos, callback) {
+
     var producto = productos[index];
-       
-    if (!producto) {   
-       
-        callback(false,productos_validos,productos_invalidos);
-        return; 
-    }                
-     
+
+    if (!producto) {
+
+        callback(false, productos_validos, productos_invalidos);
+        return;
+    }
+
     index++;
     var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_cliente_id};
-      G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function(resultado){
-     
+    G.Q.ninvoke(that.m_productos, 'consultarPrecioReguladoProducto', parametros).then(function (resultado) {
+
         /**
          * +Descripcion: Se invoca la funcion con un object {valido=boolean, msj = string}
-        **/
+         **/
         var precioVenta = __validarPrecioVenta(producto, resultado, 0);
-       
-        if(precioVenta.valido){
-            productos_validos.push(producto);  
-        }else{
-            
+
+        if (precioVenta.valido) {
+            productos_validos.push(producto);
+        } else {
+
             producto.mensajeError = precioVenta.msj;
             productos_invalidos.push(producto);
-            
+
         }
-             
-    }).fail(function(err){
-         console.log("err (/fail) [__validarProductosPedidosBodegaFarmacia]: ", err);
+        setTimeout(function () {
+            __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, productos, productos_validos, productos_invalidos, callback);
+        }, 0);
+
+    }).fail(function (err) {
+        callback({msj: 'Error al consultar el precio regulado de cada producto', status: 500, pedidos_clientes: ''});
+        console.log("err (/fail) [__validarProductosPedidosBodegaFarmacia]: ", err);
     }).done();
-    
-    
-     setTimeout(function() {
-            __validarProductosPedidosBodegaFarmacia(that,index, cotizacion, productos, productos_validos, productos_invalidos, callback);
-    }, 300);      
-};
+
+
+
+}
+;
 
 
 /**
@@ -4386,46 +4674,49 @@ function __validarProductosPedidosBodegaFarmacia(that, index, cotizacion, produc
  * @author Cristian Ardila 
  */
 function __insertarProductosFarmaciaCotizacion(that, index, cotizacion, productos, callback) {
-    
-    console.log("*******__insertarProductosFarmaciaCotizacion**************");
-    
+
     var producto = productos[index];
-        //console.log("producto ", producto);
-    if (!producto) {   
+    //console.log("producto ", producto);
+    if (!producto) {
         callback(false);
-        return; 
-    }  
-     
-   G.Q.ninvoke(that.m_pedidos_clientes,'insertar_detalle_cotizacion',cotizacion,producto).then(function(resultado){
-      
-    }).fail(function(err){
-         console.log("err (/fail) [__insertarProductosFarmaciaCotizacion]: ", err);
-    }).done();              
-      
-    index++;     
-  
-    setTimeout(function() {
-        __insertarProductosFarmaciaCotizacion(that, index,cotizacion, productos, callback);
-    }, 300);   
-};
+        return;
+    }
+
+    G.Q.ninvoke(that.m_pedidos_clientes, 'insertar_detalle_cotizacion', cotizacion, producto).then(function (resultado) {
+
+        setTimeout(function () {
+            __insertarProductosFarmaciaCotizacion(that, index, cotizacion, productos, callback);
+        }, 300);
+
+    }).fail(function (err) {
+        callback({msj: 'Error al insertar los productos en la cotizacion', status: 500, pedidos_clientes: ''});
+        console.log("err (/fail) [__insertarProductosFarmaciaCotizacion]: ", err);
+    }).done();
+
+    index++;
+
+
+}
+;
 
 
 
 
-function __precioVentaProductos(that, index, cotizacion, callback){
-    
+function __precioVentaProductos(that, index, cotizacion, callback) {
+
+    var productosInvalidos = [];
     var producto = cotizacion.productos[index];
-       
-    if (!producto) {   
-        callback(false,cotizacion);
-        return; 
-    }                
-     
+
+    if (!producto) {
+        callback(false, cotizacion);
+        return;
+    }
+
     index++;
     /**
-    * +Descripcion Parametros exclusivos para consultar la disponibilidad 
-    *              que tiene el producto
-    */
+     * +Descripcion Parametros exclusivos para consultar la disponibilidad 
+     *              que tiene el producto
+     */
     var filtro = {
         tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto,
         termino_busqueda: producto.codigo_producto,
@@ -4444,10 +4735,10 @@ function __precioVentaProductos(that, index, cotizacion, callback){
         tipoBusqueda: 0,
         tipo_producto: (cotizacion.tipo_producto === undefined) ? '' : cotizacion.tipo_producto
     };
-  
+
     var filtros = '';
-    
-   /**
+
+    /**
      * +Descripcion: Se permitira ejecutar la accion de eliminarProductoPedido
      *               siempre y cuando el pedido tenga el
      *               estado (Estado del Pedido ) 1
@@ -4456,36 +4747,40 @@ function __precioVentaProductos(that, index, cotizacion, callback){
      *               ducto
      */
     var parametros = {empresaId: cotizacion.empresa_id, codigoProducto: producto.codigo_producto, contratoId: cotizacion.cliente.contrato_cliente_id};
-    
-    G.Q.ninvoke(that.m_pedidos_clientes,'listar_productos',
-        cotizacion.empresa_id,
-        cotizacion.centro_utilidad_id,
-        cotizacion.bodega_id,
-        cotizacion.cliente.contrato_cliente_id,
-        filtro,
-        1, filtros, filtroAvanzado).then(function(lista_productos){
-    
-        //index++;
-       
 
-           var _producto = lista_productos[0];
-            producto.codigo_producto = _producto.codigo_producto;
-            producto.iva = _producto.iva;
-            producto.precio_venta = _producto.precio_producto;
-            producto.tipo_producto = _producto.tipo_producto_id;
-            producto.precioVentaIva = _producto.precio_producto;
-             
-            
-            
-        setTimeout(function() {
-               __precioVentaProductos(that,index, cotizacion, callback);
-       }, 300); 
-        
-    }).fail(function(err){
-         console.log("err (/fail) [__precioVentaProductos]: ", err);
+
+
+    G.Q.ninvoke(that.m_pedidos_clientes, 'listar_productos',
+            cotizacion.empresa_id,
+            cotizacion.centro_utilidad_id,
+            cotizacion.bodega_id,
+            cotizacion.cliente.contrato_cliente_id,
+            filtro,
+            1, filtros, filtroAvanzado).then(function (lista_productos) {
+
+        var _producto = lista_productos[0];
+        producto.codigo_producto = _producto.codigo_producto;
+        producto.iva = _producto.iva;
+        producto.precio_venta = _producto.precio_producto;
+        producto.tipo_producto = _producto.tipo_producto_id;
+        producto.precioVentaIva = _producto.precio_producto;
+        producto.sumaCantidadTotalSolicitadaBodega = 0;
+        producto.sumaCantidadTotalDisponibleBodega = 0;
+
+        setTimeout(function () {
+            __precioVentaProductos(that, index, cotizacion, callback);
+        }, 300);
+
+    }).fail(function (err) {
+        producto.mensajeError = 'No se encuentra en la bodega el producto ';
+        productosInvalidos.push(producto)
+        callback({msj: 'El producto no se encuentra en la bodega', status: 403, pedidos_clientes: {productos_invalidos: productosInvalidos}});
+        //callback({ msj:'Error al consultar el producto',  status:500,  pedidos_clientes:''});
+        console.log("err (/fail) [__precioVentaProductos]: ", err);
     }).done();
-    
-};
+
+}
+;
 
 
 /**
@@ -4495,15 +4790,16 @@ function __precioVentaProductos(that, index, cotizacion, callback){
  *              de cartera
  * @fecha 01/02/2017 (DD/MM/YYYY)
  */
-PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
-    
-    console.log("***********PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
-    console.log("***********PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
-    console.log("***********PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
-    
+PedidosCliente.prototype.generarPedidoBodegaFarmacia = function (req, res) {
+
     var that = this;
     var args = req.body.data;
-     
+
+console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
+console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
+console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
+console.log("************PedidosCliente.prototype.generarPedidoBodegaFarmacia*******************");
+
     // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
@@ -4573,91 +4869,243 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
 
     cotizacion.usuario_id = req.session.user.usuario_id;
     var obj = {
-        "tipo_id_tercero":cotizacion.cliente.tipo_id_tercero,
-        "tercero_id":cotizacion.cliente.id
+        "tipo_id_tercero": cotizacion.cliente.tipo_id_tercero,
+        "tercero_id": cotizacion.cliente.id
     };
-    var pedidoGenerado;  
-    
-    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function(tercero){
-        
-        if(tercero.length > 0){
-            if(tercero[0].tipo_bloqueo_id !== '1'){
+    var def = G.Q.defer();
+
+
+    G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj).then(function (tercero) {
+
+        if (tercero.length > 0) {
+            if (tercero[0].tipo_bloqueo_id !== '1') {
                 cotizacion.cliente.tipoBloqueoId = tercero[0].tipo_bloqueo_id;
-                throw {msj:"El cliente seleccionado se encuentra bloqueado o inactivo", status:404,pedidos_clientes:{}};
+                throw {msj: "El cliente seleccionado se encuentra bloqueado o inactivo", status: 404, pedidos_clientes: {}};
             } else {
                 return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
             }
-        }else{
-            throw {msj:"El tercero no se encuentra registrado", status:404,pedidos_clientes:{}};
+        } else {
+            throw {msj: "El tercero no se encuentra registrado", status: 404, pedidos_clientes: {}};
         }
-        
-    }).then(function(resultado){
-        
-        if(resultado.length > 0){
-            if(resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0'){
+
+
+
+    }).then(function (resultado) {
+console.log("resultado ",resultado);
+        if (resultado.length > 0) {
+            if (resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0') {
                 cotizacion.cliente.contrado_id = resultado[0].contrato_cliente_id;
                 cotizacion.cliente.contrato_cliente_id = resultado[0].contrato_cliente_id;
-                return G.Q.nfcall(__precioVentaProductos,that,0, cotizacion);
-            }else{
-                throw {msj:"La farmacia no esta permitida para generar pedidos", status:404,pedidos_clientes:{}};
+                return G.Q.nfcall(__precioVentaProductos, that, 0, cotizacion);
+            } else {
+                throw {msj: "La farmacia no esta permitida para generar pedidos", status: 404, pedidos_clientes: {}};
             }
-        }else{
-            throw {msj:"El cliente no se encuentra registrado en la tabla de contratos", status:404,pedidos_clientes:{}};
+        } else {
+            throw {msj: "El cliente no se encuentra registrado en la tabla de contratos", status: 404, pedidos_clientes: {}};
         }
-        
-     }).then(function(resultado){
-     
-        return G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that,0, cotizacion,cotizacion.productos,[],[])
-        
-    }).then(function(productos){
-         
-         
-         if(productos[1].length > 0){
-             throw {msj:"Lista de productos no validos", status:403, pedidos_clientes:{productos_invalidos: productos[1]}}; 
-            
+
+    }).then(function (resultado) {
+
+        return G.Q.nfcall(__validarProductosPedidosBodegaFarmacia, that, 0, cotizacion, cotizacion.productos, [], [])
+
+    }).then(function (productos) {
+
+        if (productos[1].length > 0) {
+            throw {msj: "Lista de productos no validos", status: 403, pedidos_clientes: {productos_invalidos: productos[1]}};
+
             return;
         }
-        
-        return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
-        
-    }).then(function(resultado){
-      
-        cotizacion.numero_cotizacion =  resultado.pedidos_clientes.numero_cotizacion;
-        return G.Q.nfcall(__insertarProductosFarmaciaCotizacion,that,0,cotizacion, cotizacion.productos);
-         
-    
-    }).then(function(resultado){
-        
-        cotizacion.total = __totalNuevoPrecioVenta(cotizacion);  
-        
-        var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion,  cotizacion.productos, cotizacion.usuario_id, "Se solicita aprobacion", cotizacion.total, 0, 0);
-        return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logTrazabilidadVentas', paramLogCliente);
-        
-    }).then(function(resultado){    
-        
-        var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, "APROBADO AUTOMATICAMENTE", cotizacion.total, 0, 1);
+        console.log("*************VLAIDANDO EL CLIENTE AUTORIZADO ******************************");
+        console.log("cotizacion.cliente_autorizado ", cotizacion.cliente_autorizado);
+        if (cotizacion.cliente_autorizado) {
 
+            def.resolve();
+        } else {
+            return G.Q.ninvoke(that, "__insertarCotizacion", obj, cotizacion);
+
+        }
+
+    }).then(function (resultado) {
+
+        console.log("*************DEFER VLAIDANDO EL CLIENTE AUTORIZADO ******************************");
+        console.log("resultado ", resultado);
+        if (!resultado) {
+            cotizacion.numero_cotizacion = cotizacion.cliente_autorizado;
+            def.resolve();
+        } else {
+            cotizacion.numero_cotizacion = resultado.pedidos_clientes.numero_cotizacion;
+            return G.Q.nfcall(__insertarProductosFarmaciaCotizacion, that, 0, cotizacion, cotizacion.productos);
+
+        }
+
+    }).then(function (resultado) {
+
+        cotizacion.total = __totalNuevoPrecioVenta(cotizacion);
+
+        var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, "Se solicita aprobacion", cotizacion.total, 0, 0);
+        return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logTrazabilidadVentas', paramLogCliente);
+
+    }).then(function (resultado) {
+
+        var paramLogCliente = __parametrosLogs(cotizacion.numero_cotizacion, cotizacion.productos, cotizacion.usuario_id, "APROBADO AUTOMATICAMENTE", cotizacion.total, 0, 1);
         return G.Q.ninvoke(that.m_pedidos_clientes_log, 'logAprobacionCotizacion', paramLogCliente);
- 
-    }).then(function(resultado){
-          
+
+    }).then(function (resultado) {
+        cotizacion.empresa_id = '03';
+        cotizacion.centro_utilidad_id = '1';
+        cotizacion.bodega_id = '03';
         return G.Q.ninvoke(that.m_pedidos_clientes, 'generar_pedido_cliente', cotizacion);
-         
-    }).then(function(resultado){
-         
-        return G.Q.ninvoke(that, "__asignarResponsablesPedidos",cotizacion, resultado);
-        
-    }).then(function(resultado){
-        console.log("ESTOS SON LOS PRODUCTOS INVALIDOS OK resultado ", resultado);
-        res.send(G.utils.r(req.url, resultado.msj,resultado.status, resultado.data));
-    }).fail(function(err){
-         console.log("generarPedidoBodegaFarmacia ", err);
-       res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+
+    }).then(function (resultado) {
+
+        return G.Q.ninvoke(that, "__asignarResponsablesPedidos", cotizacion, resultado);
+
+    }).then(function (resultado) {
+
+        res.send(G.utils.r(req.url, resultado.msj, resultado.status, resultado.data));
+
+    }).fail(function (err) {
+        console.log("err [generarPedidoBodegaFarmacia]: ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
     });
-  
+
 };
 
 
+
+
+PedidosCliente.prototype.consultarEstadoAutorizacion = function (req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Cliente
+    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cliente === '') {
+        res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
+        return;
+    }
+
+
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+
+    var obj = {
+        "tipo_id_tercero": cotizacion.cliente.tipo_id_tercero,
+        "tercero_id": cotizacion.cliente.id
+    };
+
+
+    G.Q.ninvoke(that.m_pedidos_clientes, 'consultarExistenciaPedidoCotizacion', cotizacion.numero_cotizacion).then(function (resultado) {
+
+        if (resultado.length > 0) {
+
+            throw {msj: 'La cotizacion ya se encuentra con un pedido asignado', status: 404, pedidos_clientes: {}};
+            return;
+        } else {
+
+            return G.Q.ninvoke(that.terceros_clientes_model, "obtenterClientePorId", obj);
+
+        }
+
+    }).then(function (tercero) {
+
+        if (tercero.length > 0) {
+            if (tercero[0].tipo_bloqueo_id !== '1') {
+                cotizacion.cliente.tipoBloqueoId = tercero[0].tipo_bloqueo_id;
+                throw {msj: "El cliente seleccionado se encuentra bloqueado o inactivo", status: 404, pedidos_clientes: {}};
+            } else {
+                return G.Q.ninvoke(that.m_pedidos_clientes, 'consultarEstadoAutorizacionCliente', obj);
+            }
+        } else {
+            throw {msj: "El tercero no se encuentra registrado", status: 404, pedidos_clientes: {}};
+        }
+
+    }).then(function (resultado) {
+
+        if (resultado.length > 0) {
+            if (resultado[0].sw_facturacion_agrupada === '1' && resultado[0].sw_autorizacion === '0') {
+                return res.send(G.utils.r(req.url, 'La farmacia esta autorizada', 200, {pedidos_clientes: []}));
+            } else {
+                throw {msj: "El Cliente no esta autorizado para realizar el Pedido", status: 404, pedidos_clientes: {}};
+            }
+        } else {
+            throw {msj: "El cliente no se encuentra registrado en la tabla de contratos", status: 404, pedidos_clientes: {}};
+        }
+    }).fail(function (err) {
+        console.log("err [consultarEstadoAutorizacion]: ", err);
+        res.send(G.utils.r(req.url, err.msj, err.status, {pedidos_clientes: err.pedidos_clientes}));
+    });
+
+
+
+}
+
+
+
+
+PedidosCliente.prototype.actualizarProductoCotizacionBodegaCosmitet = function (req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+    var productos = args.pedidos_clientes.productos;
+
+
+    G.Q.nfcall(__actualizarProductoCotizacionBodegaCosmitet, that, 0, productos).then(function (rows) {
+
+        res.send(G.utils.r(req.url, 'Producto actualizado satisfactoriamente', 200, {pedidos_clientes: rows}));
+
+    }).fail(function (err) {
+
+        res.send(G.utils.r(req.url, "Error Interno", 500, {pedidos_clientes: []}));
+
+    }).done();
+
+};
+
+function __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback) {
+
+    var producto = productos[index];
+
+    if (!producto) {
+
+        callback(false);
+        return;
+    }
+    index++;
+
+    console.log("producto ", producto);
+
+
+    G.Q.ninvoke(that.m_pedidos_clientes, "actualizarProductoCotizacionBodegaCosmitet", producto).then(function (rows) {
+
+        setTimeout(function () {
+            __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback);
+        }, 0);
+
+    }).fail(function (err) {
+
+        setTimeout(function () {
+            __actualizarProductoCotizacionBodegaCosmitet(that, index, productos, callback);
+        }, 0);
+    }).done();
+
+
+
+}
+;
 /**
  * @author Cristian Manuel Ardila Troches
  * +Descripcion Metodo encargado de asignar el responsable del pedido, actualizar
@@ -4665,71 +5113,71 @@ PedidosCliente.prototype.generarPedidoBodegaFarmacia = function(req, res) {
  *              proximos a autorizar
  * @fecha 03/02/2017 (DD/MM/YYYY)
  */
-PedidosCliente.prototype.__asignarResponsablesPedidos = function(cotizacion,pedidoGenerado, callback){
-     
+PedidosCliente.prototype.__asignarResponsablesPedidos = function (cotizacion, pedidoGenerado, callback) {
+
     var that = this;
     that.pedidoGenerado = pedidoGenerado;
     var autorizacion = {};
-    
+
     console.log("cotizacion ", cotizacion);
     console.log("pedidoGenerado ", pedidoGenerado);
-    
-    G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', pedidoGenerado.numero_pedido, pedidoGenerado.estado, null, cotizacion.usuario_id)
-   
-    .then(function(resultado) {
-         
-         console.log("resultado [asignar_responsables_pedidos]: ", resultado)
-        if (resultado.length > 0) {
-            return G.Q.ninvoke(that.m_pedidos_clientes, 'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado], '1');
-        } else {
-            throw {msj:'Se ha Generado un Error en la Asignacion de Responsables', status:401, pedidos_clientes:{}};           
-        }
 
-    }).then(function(resultado) {
-         
-         console.log("resultado [terminar_estado_pedido]", resultado)
+    G.Q.ninvoke(that.m_pedidos_clientes, 'asignar_responsables_pedidos', pedidoGenerado.numero_pedido, pedidoGenerado.estado, null, cotizacion.usuario_id)
+
+            .then(function (resultado) {
+
+                console.log("resultado [asignar_responsables_pedidos]: ", resultado)
+                if (resultado.length > 0) {
+                    return G.Q.ninvoke(that.m_pedidos_clientes, 'terminar_estado_pedido', that.pedidoGenerado.numero_pedido, [that.pedidoGenerado.estado], '1');
+                } else {
+                    throw {msj: 'Se ha Generado un Error en la Asignacion de Responsables', status: 401, pedidos_clientes: {}};
+                }
+
+            }).then(function (resultado) {
+
+        console.log("resultado [terminar_estado_pedido]", resultado)
         if (resultado.rowCount > 0) {
-            
-            var cliente = 0;             
+
+            var cliente = 0;
             autorizacion.farmacia = cliente;
             autorizacion.empresa_id = cotizacion.empresa_id;
             autorizacion.numero_pedido = that.pedidoGenerado.numero_pedido;
-             
+
             return G.Q.nfcall(__guardarAutorizacion, that, autorizacion);
-        }else {
-            throw {msj:'Error finalizando el estado del pedido', status:401, pedidos_clientes:{}};          
+        } else {
+            throw {msj: 'Error finalizando el estado del pedido', status: 401, pedidos_clientes: {}};
         }
-                                
-    }).then(function(resultado) {    
+
+    }).then(function (resultado) {
         console.log("resultado ", resultado)
         var notificacion = {
-                aliasModulo: 'productos_en_pedidos',
-                opcionModulo: "sw_ver_notificaciones",
-                titulo: "Autorizaciones Pedidos Clientes",
-                mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
-            };
-         
-        if(resultado){
+            aliasModulo: 'productos_en_pedidos',
+            opcionModulo: "sw_ver_notificaciones",
+            titulo: "Autorizaciones Pedidos Clientes",
+            mensaje: "El pedido No. " + autorizacion.numero_pedido + " requiere autorizacion"
+        };
+
+        if (resultado) {
             that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: that.pedidoGenerado.numero_pedido});
-            G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);                
+            G.eventEmitter.emit("onRealizarNotificacionWeb", notificacion);
         }
-            
+
         that.e_pedidos_clientes.onNotificarEstadoCotizacion(cotizacion.numero_cotizacion);
-          callback(false, {status:200, msj:'Pedido Generado Correctamente No . ' + that.pedidoGenerado.numero_pedido, data:{pedidos_clientes:that.pedidoGenerado}});
-         
-        }).fail(function(err){
-            var msj = "Erro Interno";
-            var status = 500;
+        callback(false, {status: 200, msj: 'Pedido Generado Correctamente No . ' + that.pedidoGenerado.numero_pedido, data: {pedidos_clientes: that.pedidoGenerado}});
 
-            if(err.status){
-                msj = err.msj;
-                status = err.status;    
-            }
+    }).fail(function (err) {
+        var msj = "Erro Interno";
+        var status = 500;
 
-            callback(err, {status:status, msj:msj});
-       
-    }).done(); 
-    
+        if (err.status) {
+            msj = err.msj;
+            status = err.status;
+        }
+
+        callback(err, {status: status, msj: msj});
+
+    }).done();
+
 };
 
 

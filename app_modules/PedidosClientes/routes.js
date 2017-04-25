@@ -182,8 +182,7 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/insertarCantidadProductoDetallePedido', function(req, res) {
         c_pedidos_clientes.insertarCantidadProductoDetallePedido(req, res);
     });
-    
-    
+     
     /**
      * @author Cristian Ardila
      * +Descripcion: Servicio para insertar la cantidad en un producto
@@ -191,8 +190,7 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/enviarNotificacionPedidosClientes', function(req, res) {
         c_pedidos_clientes.enviarNotificacionPedidosClientes(req, res);
     });
-    
-    
+     
     /**
      * @author Cristian Ardila
      * +Descripcion: Servicio para insertar la cantidad en un producto
@@ -200,20 +198,14 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/validarDisponibilidad', function(req, res) {
         c_pedidos_clientes.validarDisponibilidad(req, res);
     });
-    
-    
-    
-    
-    /**
-    * @author Cristian Ardila
-    * +Descripcion: Servicio para consultar la factura fiscal de un pedido
-    */
+     
+     /**
+     * @author Cristian Ardila
+     * +Descripcion: Servicio para consultar la factura fiscal de un pedido
+     */
     app.post('/api/PedidosClientes/listarFacturasPedido', function(req, res) {
         c_pedidos_clientes.listarFacturasPedido(req, res);
     });
-    
-    
-    
     
     /**
     * @author Cristian Ardila
@@ -224,4 +216,27 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/generarPedidoBodegaFarmacia', function(req, res) {
         c_pedidos_clientes.generarPedidoBodegaFarmacia(req, res);
     });
+    
+    
+    
+    /**
+    * @author Cristian Ardila
+    * +Descripcion: Servicio encargado de actualizar el producto temporal que con
+    *               el cual se realizo un pedido para cosmitet
+    */
+    app.post('/api/PedidosClientes/actualizarProductoCotizacionBodegaCosmitet', function(req, res) {
+        c_pedidos_clientes.actualizarProductoCotizacionBodegaCosmitet(req, res);
+    });
+    
+    
+    /**
+     *@author Cristian Ardila
+     * +Descripcion: Servicio encargado de consultar el estado de autorizacion
+     *               de un cliente
+    */
+    app.post('/api/PedidosClientes/consultarEstadoAutorizacion', function(req, res) {
+        c_pedidos_clientes.consultarEstadoAutorizacion(req, res);
+    });
+    
+     
 };

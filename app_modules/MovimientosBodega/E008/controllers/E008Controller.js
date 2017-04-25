@@ -1878,6 +1878,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
     var bodega = args.documento_temporal.bodega;
     var pedido;
     var documentoGenerado = true;
+    var detallePedido = [];
     
     
     G.Q.ninvoke(that.m_pedidos_farmacias, "consultar_pedido", numero_pedido).then(function(resultado){
@@ -1946,6 +1947,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
        
     }).then(function(detalle_pedido){
         var cantidad_pendiente = 0;
+        
         //temporalmente el pedido queda con estados despachado o despachado con pendientes al terminar de auditar
         estado = "2";
 
@@ -1954,7 +1956,9 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
             cantidad_pendiente += producto_pedido.cantidad_pendiente_real;
 
         });
-
+        
+        detallePedido = detalle_pedido;
+        
         if (cantidad_pendiente > 0) {
             estado = "8";
         }
@@ -1970,6 +1974,35 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, 
                            {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
+                           
+        
+        if(pedido.empresa_id === '03' && pedido.bodega_id === '03'){       
+               
+            return G.Q.ninvoke(that.m_e008, "obtenerTotalDetalleDespacho", {empresa: pedido.empresa_id, prefijoDocumento: prefijo_documento , numeroDocumento:numero_documento});
+            
+        }
+
+    }).then(function(detalleDocumento){
+        
+        if(detalleDocumento && detalleDocumento.length > 0){       
+            
+            var parametros = {
+                ordenes_compras:{
+                    usuario_id :  req.session.user.usuario_id,
+                    unidad_negocio : '4',
+                    codigo_proveedor : 55,
+                    empresa_id : pedido.empresa_id,
+                    observacion : "Orden Generada por documento: " + prefijo_documento + " - " + numero_documento,
+                    empresa_pedido : pedido.empresa_id,
+                    centro_utilidad_pedido : pedido.centro_utilidad,
+                    bodega_pedido : pedido.bodega_id,
+                    productos : detalleDocumento
+                }
+            };
+            console.log("enviando parametros onGenerarOrdenDeCompra ", parametros);
+            G.eventEmitter.emit("onGenerarOrdenDeCompra",parametros);                
+        };
+        
         
     }).fail(function(err){
         console.log("se ha generado un error en el documento ", err);

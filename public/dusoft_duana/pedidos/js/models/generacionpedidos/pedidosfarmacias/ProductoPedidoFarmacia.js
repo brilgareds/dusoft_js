@@ -30,7 +30,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
         ProductoPedidoFarmacia.prototype = Object.create(Producto.getClass().prototype);
         
-        ProductoPedidoFarmacia.prototype.setSwVende = function(lotswVendee) {
+        ProductoPedidoFarmacia.prototype.setSwVende = function(swVende) {
             this.swVende = swVende;
             return this;
         };

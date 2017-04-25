@@ -204,9 +204,12 @@
                                    
                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar 
                                     </button>                                
-                                    <button class="btn btn-default" ng-click="gestionar_pedido()" ng-if="Pedido.get_numero_cotizacion() > 0 && Pedido.get_aprobado_cartera() === '1'" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
+                                    <!--<button class="btn btn-default" ng-click="gestionar_pedido()" ng-if="Pedido.get_numero_cotizacion() > 0 && Pedido.get_aprobado_cartera() === '1'" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
                                         <span class="glyphicon glyphicon-ok" ></span> Generar Pedido
-                                    </button>                                
+                                    </button>                    //-->
+                                     <button class="btn btn-default" ng-click="generarPedidoAutomaticoCliente()" ng-if="Pedido.get_numero_cotizacion() > 0 " ng-disabled="Pedido.get_estado_cotizacion() == '0'">
+                                        <span class="glyphicon glyphicon-ok" ></span> Generar Pedido
+                                    </button>    
                                 </div> 
                                 
                                 <div class="modal-footer col-md-12" ng-if="datos_view.cartera">                                                             

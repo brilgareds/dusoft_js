@@ -457,11 +457,13 @@ define(["angular", "js/controllers",
                         mensaje = datos.msj;
                         if(self.generarPedidoFarmacia){
                         self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
-                           mensaje+="\n Pedido Farmacia No. "+ numero_pedido_farmacia;
+
+                           mensaje+=" Pedido Farmacia No. "+ numero_pedido_farmacia+'\n';
                            AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         });
                         }else{
                           mensaje+="\n No se genera Pedido en Farmacia. ";
+                          AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                           self.eliminarPedidoTemporal();
                           AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         }
@@ -474,26 +476,28 @@ define(["angular", "js/controllers",
                         mensaje = datos.msj;
                         AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                     }
+                     
                     if (datos.status === 403) {
                         datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
-                            mensaje += producto.mensajeError + " para el Codigo (" + producto.codigo_producto + ") Precio venta (" + producto.precio_venta + ") \n";
-                        });    
-                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
-                    }
-                                     
+
+                            var msjPrecioVenta = producto.precio_venta === undefined ? "" :  ") Precio venta (" + producto.precio_venta + ") \n";
+                            var msjProducto = producto.precio_venta === undefined ? "" : " para el Codigo ("; 
+                            mensaje += producto.mensajeError + msjProducto + producto.codigo_producto + msjPrecioVenta;
+                            AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
+                        });                       
+                    }      
+
                 });
             } else {
                 self.generarPedido(0);
             }
-           self.prubapedidodeclientes();           
-//              console.log(nuevosDatos);
+
+
         }; 
        
         
-              
-        
-             
-            
+
+           
           /*
              * @Author: andres
              * +Descripcion: funcion de prueba para crear pedidos de farmacia automaticos
@@ -520,7 +524,7 @@ define(["angular", "js/controllers",
                         //observacion(quemado)
                         observacion: 'PEDIDO DESDE EL MODULO DE CLIENTE',
                         //lista de productos que se van a pedir a Cosmitet
-                        productos: [{codigo: '199L0162820', cantidad: 100}, {codigo: '168A0010028', cantidad: 100}],
+                        productos: [{codigo: '168D0501607', cantidad: 4759}, {codigo: '199A0010047', cantidad: 10}],
                         //(quemado) va en 0        
                         pedidoCliente: 0
                     }
@@ -528,12 +532,24 @@ define(["angular", "js/controllers",
             };
 
             Request.realizarRequest(url, "POST", obj, function(data) {
-                console.log("data    ", data);
+
+                 console.log("data.status", data.msj);
+                 console.log("data.status", data);
                 if (data.status === 200) {
                     console.log("data.status", data.msj);
                     AlertService.mostrarMensaje("warning", data.msj + " Numero " + data.obj.pedido_farmacia.pedido);
-                } else {
-                    AlertService.mostrarMensaje("warning", " "+ data.msj);
+                } if (data.status === 500) {
+                    //AlertService.mostrarMensaje("warning", data.msj + " Numero " + data.obj.pedido_farmacia.msj);
+                    self.consultarDetallePedidoTemporal(function(){
+                        console.log("data.obj.pedido_farmacia.productosInvalidos.length ",data.obj.pedido_farmacia.productosInvalidos);
+                         if(data.obj.pedido_farmacia.productosInvalidos.length > 0){
+                            
+                            self.mostrarProductosNoValidos(data.obj.pedido_farmacia.productosInvalidos);
+                        }
+                        $scope.rootPedidoFarmaciaTemporal.tabListaPedidos = true;
+                    });
+                }else {
+                    AlertService.mostrarMensaje("warning", "NO se creó el pedido en farmacia");
                 }
             });
         };

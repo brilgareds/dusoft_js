@@ -1227,8 +1227,8 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
     });
 };
 
-// Autor:      : Alexander López
-// Descripcion : Calcula la cantidad TOTAL de un producto que está reservada en pedidos temporales de Farmacia
+// Autor:      : Alexander LÃ³pez
+// Descripcion : Calcula la cantidad TOTAL de un producto que estÃ¡ reservada en pedidos temporales de Farmacia
 // Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 //               
 
@@ -1246,7 +1246,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
 
 
 // Autor:      : Eduar Garcia
-// Descripcion : Calcula la cantidad TOTAL de un producto que está reservada en pedidos temporales de Farmacia por fecha de registro
+// Descripcion : Calcula la cantidad TOTAL de un producto que estÃ¡ reservada en pedidos temporales de Farmacia por fecha de registro
 // Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
 //               
 
@@ -1270,7 +1270,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
  * @apiGroup PedidosFarmacias (sql)
  * @apiDescription se actualiza la cantidad pendiente del pedido al genear el despacho
  * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
+ * Requiere que el usuario estÃ© autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {Function} callback Funcion de retorno de informacion.
@@ -1451,7 +1451,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
         parametros['8']=  filtro.pedidosNoIncluirDisponibilidad.join(); 
         noIncluir=" and a.solicitud_prod_a_bod_ppal_id not in( :8 ) ";
      }
-     
+
      if(filtro.existenciaCero===true){
        sql_filtro +=" and a.existencia > 0 ";  
      }
@@ -1518,22 +1518,21 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
                 inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
                 left join (\
-		    select aa.empresa_id, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
+		    select aa.empresa_id, aa.codigo_producto, aa.bodega, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
                     from(\
-                          select a.empresa_destino as empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente\
-                          from solicitud_productos_a_bodega_principal a\
-                          inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
-                          where b.cantidad_pendiente > 0 "+ noIncluir+" \
-                          group by 1, 2\
+                            select a.empresa_destino as empresa_id, b.codigo_producto,a.bodega_destino as bodega, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 1\
+                            from solicitud_productos_a_bodega_principal a \
+                            inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
+                            where b.cantidad_pendiente > 0  "+ noIncluir+"  \
+                            group by 1,2,3\
                           union\
-                          SELECT\
-                          a.empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
-                          FROM ventas_ordenes_pedidos a\
-                          inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                          where (b.numero_unidades - b.cantidad_despachada) > 0 and a.estado = '1'  \
-                          GROUP BY 1, 2\
-                       ) aa group by 1,2\
-		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto \
+                            select a.empresa_id, b.codigo_producto, a.bodega_destino as bodega, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 2\
+                            from ventas_ordenes_pedidos a\
+                            inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
+                            where (b.numero_unidades - b.cantidad_despachada) > 0  and a.estado='1' \
+                            group by 1,2,3\
+                       ) aa group by 1,2,3\
+		) h on (a.empresa_id = h.empresa_id)  and (a.bodega =h.bodega)  and c.codigo_producto = h.codigo_producto \
                 left join(\
                    SELECT aa.empresa_id, aa.codigo_producto, aa.bodega_origen_producto, SUM(aa.total_reservado) as total_solicitado FROM(\
                         select b.codigo_producto, a.empresa_destino as empresa_id,b.bodega_origen_producto ,SUM(cantidad_solic)::integer as total_reservado\

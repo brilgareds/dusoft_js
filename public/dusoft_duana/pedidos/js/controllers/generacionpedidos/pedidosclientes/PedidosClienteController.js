@@ -441,8 +441,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             // Vendedores
             that.buscar_vendedores = function (callback) {
-                
-                console.log(" ********that.buscar_vendedores********** ");
+                 
                 var obj = {
                     session: $scope.session,
                     data: {}
@@ -2075,8 +2074,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var productos = $scope.Pedido.get_productos();
                 
                 that.consultarDetalleProductosCotizacion('3','03',function (estado, resultado) {
-                   console.log("productos [consultarDetalleProductosCotizacion]: ", resultado);
-                   console.log("estado [consultarDetalleProductosCotizacion]: ", estado);
+                  
                    if(estado){
                        
                     //if (productos.length > 0) {
@@ -2112,8 +2110,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 }
                             }
                         };
-                        console.log("cotizacions ", cotizacions);
-
+                       
                         Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA, "POST", obj, function (datos) {
 
                             var mensaje = '';
@@ -2145,10 +2142,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         });
 
                     } else {
+                        
+                        var paramActEstadoCotizacion = {
+                            session: $scope.session,
+                            data: {
+                                pedidos_clientes: {
+                                    cotizacion: {
+                                        numero_cotizacion:$scope.Pedido.get_numero_cotizacion(), 
+                                        estado: 0
+                                    }
+                                }
+                            }
+                        };
+                        Request.realizarRequest(API.PEDIDOS.CLIENTES.ACTUALIZAR_ESTADO_COTIZACION, "POST", paramActEstadoCotizacion, function (datos) {
+                            
+                            if (datos.status === 200) {
+                                $state.go('ListarPedidosClientes');
+                            }
+                        });
                         /*
                          * +Descripcion Se regresa a la pantalla principal
                          */
-                        $state.go('ListarPedidosClientes');
+                        
                         //AlertService.mostrarVentanaAlerta("Mensaje del Sistema", "No se han seleccionado productos");
                     }
                     

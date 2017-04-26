@@ -22,7 +22,7 @@ define(["angular", "js/controllers",
                 Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
-            console.log("************gestionar_productos_clientesCompleto*******************");
+            
             //that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
@@ -315,7 +315,7 @@ define(["angular", "js/controllers",
                              $scope.Pedido.set_bodega_id(pedidoFiltroBodega.bodega_pedido_id);
                         }
                     }
-                    //console.log("pedidoFiltroBodega ", pedidoFiltroBodega)
+                    
                 if ($scope.datos_form.tipoBusqueda === 1) {
 
                     obj = {                                 

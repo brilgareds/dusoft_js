@@ -174,7 +174,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if ($scope.Pedido.get_numero_cotizacion() > 0)
                         that.render_clientes(clientes);
-                    that.buscar_vendedores(function () {
+                   // that.buscar_vendedores(function () {
 
                         if ($scope.Pedido.get_numero_cotizacion() > 0) {
 
@@ -183,7 +183,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 that.buscar_detalle_cotizacion();
                             });
                         }
-                    });
+                   // });
                 });
             };
             // Consultas Pedidos
@@ -193,7 +193,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if ($scope.Pedido.get_numero_pedido() > 0)
                         that.render_clientes(clientes);
-                    that.buscar_vendedores(function () {
+                    //that.buscar_vendedores(function () {
 
                         if ($scope.Pedido.get_numero_pedido() > 0) {
 
@@ -201,7 +201,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                 that.buscar_detalle_pedido();
                             });
                         }
-                    });
+                    //});
                 });
             };
             // Cotizacion
@@ -441,8 +441,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
             // Vendedores
             that.buscar_vendedores = function (callback) {
-
-
+                
+                console.log(" ********that.buscar_vendedores********** ");
                 var obj = {
                     session: $scope.session,
                     data: {}
@@ -567,12 +567,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
                 $scope.$emit('gestionar_productos_clientes');
             };
+            
             $scope.cerrar_busqueda_productos = function () {
 
                 $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});
-                that.gestionar_consultas_cotizaciones();
+                //that.gestionar_consultas_cotizaciones();
                 that.init();
             };
+            
             $scope.habilitar_modificacion_producto = function () {
 
                 // Pedido
@@ -1996,8 +1998,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             
             that.generarPedidoModuloCliente = function(funcion,resultado,aprobado, denegar){
-                
-                
+                                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -2019,7 +2020,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_MODULO_CLIENTE;
-
+                     
                 Request.realizarRequest(url, "POST", obj, function (data) {
 
                     if (data.status === 200) {
@@ -2144,8 +2145,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         });
 
                     } else {
-
-                        AlertService.mostrarVentanaAlerta("Mensaje del Sistema", "No se han seleccionado productos");
+                        /*
+                         * +Descripcion Se regresa a la pantalla principal
+                         */
+                        $state.go('ListarPedidosClientes');
+                        //AlertService.mostrarVentanaAlerta("Mensaje del Sistema", "No se han seleccionado productos");
                     }
                     
                     

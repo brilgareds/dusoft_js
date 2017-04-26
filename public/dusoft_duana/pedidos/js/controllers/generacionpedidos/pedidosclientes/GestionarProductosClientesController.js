@@ -22,6 +22,7 @@ define(["angular", "js/controllers",
                 Laboratorio, Producto, Sesion, Molecula, $sce) {
 
             var that = this;
+            console.log("************gestionar_productos_clientesCompleto*******************");
             //that.estadoMultipleCotizacion = localStorageService.get("multiple_pedido");
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
@@ -29,7 +30,14 @@ define(["angular", "js/controllers",
                  * +Descripcion Menu desplegable para filtar en la busqueda de
                  *              un producto
                  */
-                $scope.rootSeleccionProducto = {};
+                
+
+                //$scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
+                //that.buscar_laboratorios();
+                $scope.Empresa.limpiar_productos();
+            });
+            
+            $scope.rootSeleccionProducto = {};
                 $scope.rootSeleccionProducto.filtros = [
                     {nombre: "Descripcion", tipo_busqueda: 0},
                     {nombre: "Molecula", tipo_busqueda: 1},
@@ -58,12 +66,7 @@ define(["angular", "js/controllers",
                     concentracionProductoAvanzado: '',
                     tipoBusqueda: 0
                 };
-
-                //$scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
-                that.buscar_laboratorios();
-                $scope.Empresa.limpiar_productos();
-            });
-
+                
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
                 $scope.$$watchers = null;
             });

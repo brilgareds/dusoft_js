@@ -1210,7 +1210,7 @@ DocuemntoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
      
      var sql = "SELECT\
                     a.*,\
-                    to_char(a.fecha_vencimiento, 'YYYY-MM-DD') AS fecha_vencimiento_producto,\
+                    to_char(a.fecha_vencimiento, 'YYYY-MM-DD 11:59:00') AS fecha_vencimiento_producto,\
                     b.descripcion,\
                     b.unidad_id,\
 		    b.contenido_unidad_venta,\

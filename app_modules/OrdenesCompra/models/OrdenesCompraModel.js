@@ -561,7 +561,11 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
     var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado, lote_temp, fecha_vencimiento_temp)\
                 VALUES ( :1, :2, :3, :4, :5, 1, :6, :7 );";
     
-    var query = G.knex.raw(sql, {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva, 6:lote || null, 7:fecha_vencimiento || null});
+    var parametros = {1:numero_orden, 2:codigo_producto, 3:cantidad_solicitada, 4:valor, 5:iva, 6:lote || null, 7:fecha_vencimiento || null};
+    
+    console.log("insertar detalle de la orden de compra ", numero_orden, " parametros ", parametros);
+    
+    var query = G.knex.raw(sql, parametros);
     
     if(transaccion) query.transacting(transaccion);
     
@@ -1630,7 +1634,7 @@ function __gestionarDetalleOrdenesAgrupadas(params, callback){
                              producto.costo || producto.valor_unitario, 
                              producto.iva, 
                              producto.lote,
-                             producto.fecha_vencimiento,
+                             producto.fecha_vencimiento_producto || producto.fecha_vencimiento,
                              params.transaccion);
       }
                    

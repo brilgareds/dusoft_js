@@ -86,10 +86,34 @@ OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_proveedor_id estan vacias', 404, {}));
         return;
     }
+    
+    if (args.ordenes_compras.bloquearEstados === undefined) {
+        args.ordenes_compras.bloquearEstados=false;
+    }
+    
+    if (args.ordenes_compras.empresaId === undefined) {
+        args.ordenes_compras.empresaId = "";
+    }
+    
+    if (args.ordenes_compras.centroUtilidad === undefined) {
+        args.ordenes_compras.centroUtilidad = "";
+    }
+    
+    if (args.ordenes_compras.bodega === undefined) {
+        args.ordenes_compras.bodega = "";
+    }
 
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
+    var bloquearestado = args.ordenes_compras.bloquearEstados;
+    var paremetros = {
+                codigo_proveedor_id : codigo_proveedor_id,
+                bloquearestado : bloquearestado,
+                empresaId : args.ordenes_compras.empresaId,
+                centroUtilidad : args.ordenes_compras.centroUtilidad,
+                bodega : args.ordenes_compras.bodega
+            };
 
-    that.m_ordenes_compra.listar_ordenes_compra_proveedor(codigo_proveedor_id, function(err, lista_ordenes_compras) {
+    that.m_ordenes_compra.listar_ordenes_compra_proveedor(paremetros, function(err, lista_ordenes_compras) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
@@ -140,7 +164,7 @@ OrdenesCompra.prototype.consultarDetalleOrdenCompra = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-
+    var filtro='';
     if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
         res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
         return;
@@ -160,12 +184,21 @@ OrdenesCompra.prototype.consultarDetalleOrdenCompra = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
-
+    
+    if (args.ordenes_compras.filtro !== undefined || args.ordenes_compras.filtro !== '') {
+        filtro=args.ordenes_compras.filtro;
+    }
+         
     var numero_orden = args.ordenes_compras.numero_orden;
     var termino_busqueda = args.ordenes_compras.termino_busqueda;
     var pagina_actual = args.ordenes_compras.pagina_actual;
-
-    that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, termino_busqueda, pagina_actual, function(err, lista_productos) {
+    var parametros = {
+                      numero_orden:numero_orden,
+                      termino_busqueda:termino_busqueda,
+                      pagina_actual:pagina_actual,
+                      filtro:filtro};
+    
+    that.m_ordenes_compra.consultar_detalle_orden_compra(parametros, function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
@@ -539,7 +572,10 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
         res.send(G.utils.r(req.url, 'cantidad_solicitada, valor o iva esta vacia', 404, {}));
         return;
     }
-
+    
+    if(args.ordenes_compras.estado_documento=== undefined){
+        args.ordenes_compras.estado_documento=false;
+    }
 
     var numero_orden = args.ordenes_compras.numero_orden;
     var codigo_producto = args.ordenes_compras.codigo_producto;
@@ -547,6 +583,8 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var valor = args.ordenes_compras.valor;
     var iva = args.ordenes_compras.iva;
     var modificar = args.ordenes_compras.modificar || false;
+    var entar;  
+    var item_id=''; 
 
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
@@ -559,7 +597,18 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
             orden_compra = orden_compra[0];
             
+
+//            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+//               entar=true; 
+//            }else{
+//               entar=args.ordenes_compras.estado_documento;                
+//               item_id=args.ordenes_compras.item_id;                
+//            }
+//            
+//            if (entar) {
+
             if (orden_compra.tiene_ingreso_temporal === 0 && (orden_compra.estado === '1' || orden_compra.estado === '3' || orden_compra.estado === '4' || orden_compra.estado === '6')) {
+
 
                 if (!modificar) {
 
@@ -569,8 +618,17 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
                             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
                             return;
                         } else {
-                            res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
-                            return;
+                            //se reutiliza esta funcion para el ingreso de productos al I002, se envia el item_id
+                            if (item_id!==undefined && item_id!=='' ) {
+                                console.log(item_id);
+                                that.m_ordenes_compra.modificar_detalle_orden_compra_item(numero_orden, codigo_producto, cantidad_solicitada, item_id, function(err, rows, result) {
+                                    res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
+                                    return;
+                                });  
+                            }else{
+                                res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
+                                return;
+                            }
                         }
                     });
 
@@ -581,8 +639,9 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
                             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
                             return;
                         } else {
-                            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
-                            return;
+                           
+                                res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
+                                return;
                         }
                     });
                 }
@@ -1026,8 +1085,8 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
             return;
         } else {
-
-            that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, '', 0, function(err, lista_productos) {
+            var parametros={numero_orden:numero_orden,termino_busqueda:'',pagina_actual:0,filtro:''};  
+            that.m_ordenes_compra.consultar_detalle_orden_compra(parametros, function(err, lista_productos) {
 
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
@@ -1246,9 +1305,9 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
             // Notificacion Real Time de las Ordenes que fueron actualizadas
             var numero_orden = recepcion_mercancia.orden_compra.numero_orden_compra;
             that.e_ordenes_compra.onNotificarOrdenesComprasActualizados({numero_orden: numero_orden});
-
+            var parametros={numero_orden:recepcion_mercancia.orden_compra.numero_orden_compra,termino_busqueda:'',pagina_actual:0,filtro:''}; 
             //Insertar productos de la OC a la Recepcion de la Mercancia
-            that.m_ordenes_compra.consultar_detalle_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, '', '', function(err, lista_productos) {
+            that.m_ordenes_compra.consultar_detalle_orden_compra(parametros, function(err, lista_productos) {
 
                 if (err || lista_productos.length === 0) {
                     res.send(G.utils.r(req.url, 'Error consultando la orden de compra', 500, {lista_productos: []}));
@@ -1624,7 +1683,7 @@ OrdenesCompra.prototype.ingresarBodegaMovimientoTmpOrden = function(req, res) {
         return;
     }
 
-    G.Q.ninvoke(that.m_ordenes_compra, 'ingresarBodegaMovimientoTmp', args).then(function(result) {
+    G.Q.ninvoke(that.m_ordenes_compra, 'ingresarBodegaMovimientoTmpProducto', args).then(function(result) {
         res.send(G.utils.r(req.url, 'Insercion bodega movimiento TMP Correctamente', 200, {ordenes_compras: result}));
     }).fail(function(err) {
         res.send(G.utils.r(req.url, 'Error Insertar a la tabla bodega movimiento TMP', 500, {ordenes_compras: []}));

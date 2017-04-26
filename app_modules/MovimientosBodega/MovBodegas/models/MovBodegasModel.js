@@ -120,16 +120,32 @@ MovimientosBodegasModel.prototype.eliminar_detalle_movimiento_bodega_temporal = 
 };
 
 // Eliminar Producto del Documento Temporal
-MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal = function(item_id, callback) {
+MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal = function(parametros, callback) {
 
-   var sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE item_id = ? ; ";
+    G.knex("inv_bodegas_movimiento_tmp_d").
+    where('item_id', parametros.item_id).
+    del().
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    }); 
 
-   G.knex.raw(sql, [item_id]).
-   then(function(resultado){
-       callback(false, resultado.rows);
-   }).catch(function(err){
-       callback(err);
-   });
+};
+
+// 
+MovimientosBodegasModel.prototype.eliminar_compras_ordenes_pedidos_productosfoc = function(parametros, callback) {
+
+    G.knex("compras_ordenes_pedidos_productosfoc").
+    where('item_id', parametros.item_id).
+    del().
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    }); 
 
 };
 
@@ -446,6 +462,7 @@ MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = functio
                 b.codigo_cum,\
                 fc_descripcion_producto(b.codigo_producto) as nombre,\
                 a.porcentaje_gravamen,\
+                a.total_costo,\
                 (a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
                 (a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
                 ((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
@@ -541,6 +558,387 @@ MovimientosBodegasModel.prototype.darFormatoTituloAdicionesDocumento = function(
     return obj;
 };
 
+MovimientosBodegasModel.prototype.isExistenciaBodega = function(parametros, callback){
+    
+    var columna = [
+                   "c.empresa_id",
+                   "c.centro_utilidad",
+                   "c.bodega",
+                   "c.codigo_producto"
+                  ];
+         
+            var query  = G.knex.select(columna)
+                        .from("inv_bodegas_movimiento_tmp as a")
+                        .innerJoin("inv_bodegas_documentos as b",
+                        function() {
+                            this.on("a.bodegas_doc_id", "b.bodegas_doc_id")
+                        })
+                        .innerJoin("existencias_bodegas as c",
+                        function() {
+                            this.on("c.empresa_id", "b.empresa_id")
+                                .on("c.centro_utilidad", "b.centro_utilidad")
+                                .on("c.bodega", "b.bodega")
+                        })
+                        .where('a.usuario_id', parametros.usuarioId)
+                        .andWhere('a.doc_tmp_id', parametros.docTmpId)
+                        .andWhere('c.codigo_producto', parametros.codProucto);
+
+                query.then(function(resultado) {
+                    callback(false, resultado);
+                }). catch (function(error) {
+                    console.log("error [isExistenciaBodega]:::::: ", error,parametros);
+                    callback(error);
+                });
+};
+    
+MovimientosBodegasModel.prototype.isBodegaDestino = function(parametros, callback){
+    
+    var columna = [
+        "a.bodega_destino"
+    ];
+
+    var query = G.knex.select(columna)
+                .from("inv_bodegas_movimiento_tmp_traslados as a")
+                .where('a.usuario_id', parametros.usuarioId)
+                .andWhere('a.doc_tmp_id', parametros.docTmpId);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [isBodegaDestino]: ", error);
+        console.log("error [isBodegaDestino]: ", parametros);
+        callback(error);
+    });
+};
+
+MovimientosBodegasModel.prototype.isTrasladosTmp = function(parametros, callback){
+
+    var sql=" SELECT a.descripcion as dBodega, \
+                     b.descripcion as dProducto \
+              FROM   bodegas as a, \
+                     inventarios_productos b \
+              WHERE  a.bodega = :1 \
+                     AND b.codigo_producto = :2 ";
+     G.knex.raw(sql, {1:parametros.bodega, 2:parametros.codProucto}).
+    then(function(resultado){
+       callback(false, resultado.rows, resultado);
+    }).catch(function(error){
+       console.log("error [isTrasladosTmp]: ", error);
+       callback(error);
+    });
+};
+
+MovimientosBodegasModel.prototype.isExistenciaEnBodega = function(parametros, callback){
+    
+    var columna = [
+                   "a.codigo_producto"
+                  ];
+
+       var subQuery = G.knex.select(columna)
+               .from("existencias_bodegas as a")
+               .as("a");
+
+       var query = G.knex(G.knex.raw("a.*")).from(subQuery)
+                   .where('a.codigo_producto', parametros.codProucto)
+                   .andWhere('a.bodega', parametros.bodegaDestino);
+
+       query.then(function(resultado) {
+           callback(false, resultado);
+       }). catch (function(error) {
+           console.log("error [isExistenciaEnBodega]: ", error);
+           callback(error);
+       });
+};
+
+MovimientosBodegasModel.prototype.isExistenciaEnBodegaDestino = function(parametros, callback){
+  
+       G.knex.select('*').from("existencias_bodegas as a")
+        .where('a.codigo_producto', parametros.codigoProducto)
+        .andWhere('a.empresa_id', parametros.empresaId)
+        .andWhere('a.centro_utilidad', parametros.centroUtilidad)
+        .andWhere('a.bodega', parametros.bodega)
+        .then(function(resultado){
+    console.log("resultado:: ",resultado);
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("error sql",err);
+            callback(err);       
+        });
+};
+
+MovimientosBodegasModel.prototype.ordenTercero = function(parametros, callback){
+
+       var columna = [
+                        G.knex.raw("a.orden_pedido_id as orden"),
+                        G.knex.raw("d.tipo_id_tercero || ' ' || d.tercero_id || ' : '|| d.nombre_tercero as proveedor")
+                     ];
+                     
+       G.knex.select(columna).from("inv_bodegas_movimiento_ordenes_compra as a")
+        .innerJoin("compras_ordenes_pedidos as b",
+                        function() {
+                            this.on("b.orden_pedido_id", "a.orden_pedido_id")
+         })
+        .innerJoin("terceros_proveedores as c",
+                        function() {
+                            this.on("c.codigo_proveedor_id", "b.codigo_proveedor_id")
+         })
+        .innerJoin("terceros as d",
+                        function() {
+                            this.on("d.tipo_id_tercero", "c.tipo_id_tercero")
+                                .on("d.tercero_id", "c.tercero_id")
+         })
+        .where('a.empresa_id', parametros.empresaId)
+        .andWhere('a.prefijo', parametros.prefijoDocumento)
+        .andWhere('a.numero', parametros.numeracionDocumento)
+        .then(function(resultado){
+    console.log("resultado:: ",resultado);
+            callback(false, resultado);
+        }).catch(function(err){
+            console.log("error sql",err);
+            callback(err);       
+        });
+};
+
+MovimientosBodegasModel.prototype.getItemId = function(callback){
+    var sql=" SELECT nextval('inv_bodegas_movimiento_tmp_d_item_id_seq'::regclass); ";
+     G.knex.raw(sql).
+    then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(error){
+       console.log("error [getItemId]: ", error);
+       callback(error);
+    });
+};
+
+MovimientosBodegasModel.prototype.lokTableDocumetos = function(parametros,transaccion,callback){
+    var sql ="LOCK TABLE documentos IN ROW EXCLUSIVE MODE;";
+        sql+="SELECT prefijo,numeracion FROM documentos";
+        sql+="WHERE documento_id = :1 AND empresa_id = :2 ;";
+         
+    var query = G.knex.raw(sql, {1:parametros.documentoId, 2:parametros.empresaId});
+    
+    if(transaccion) query.transacting(transaccion);
+            
+    query.then(function(resultado){
+        callback(false, resultado.rows);
+    }).catch(function(err){
+        callback(err);
+    });
+};
+
+MovimientosBodegasModel.prototype.consultarDocumentoBodegaTemporal = function(documentoTemporalId, usuarioId,callback){
+  __consultar_documento_bodega_temporal(documentoTemporalId, usuarioId,function(err, resultado){
+      if (err || resultado === null) {
+            console.log('Se ha generado un error o el docuemnto está vacío.');
+            callback(err);
+            return;
+        } else {
+            callback(false,resultado);  
+        }
+  });
+};
+
+
+
+MovimientosBodegasModel.prototype.getDoc = function(parametros, callback){
+
+    var sql="select\
+                y.documento_id,	y.empresa_id,	y.centro_utilidad,	y.bodega,	y.prefijo,	y.numero,\
+                y.observacion,	y.sw_estado,	y.usuario_id,	y.fecha_registro,	y.total_costo, y.abreviatura,\
+                y.empresa_destino,	y.sw_verificado,	y.porcentaje_rtf,	y.porcentaje_ica,	y.porcentaje_reteiva,	y.tipo_movimiento,	\
+                y.tipo_doc_bodega_id,	y.tipo_clase_documento,	y.descripcion,	list(y.obs_pedido) as obs_pedido,\
+                e.razon_social,c.descripcion as centro_utilidad ,f.descripcion as bodega, nombre\
+                from(\
+                (\
+                        SELECT\
+                        m.*,\
+                        c.inv_tipo_movimiento as tipo_movimiento,\
+                        b.tipo_doc_general_id as tipo_doc_bodega_id,\
+                        c.descripcion as tipo_clase_documento,\
+                        b.descripcion,\
+                        vop.observacion as obs_pedido\
+                        FROM\
+                        inv_bodegas_movimiento as m\
+                        JOIN inv_bodegas_documentos as a ON a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad AND a.bodega = m.bodega\
+                        JOIN documentos as b ON b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id\
+                        JOIN tipos_doc_generales as c ON c.tipo_doc_general_id = b.tipo_doc_general_id\
+                        left join inv_bodegas_movimiento_despachos_clientes as dc ON m.empresa_id = dc.empresa_id AND m.prefijo = dc.prefijo AND m.numero = dc.numero\
+                        Left JOIN ventas_ordenes_pedidos vop ON dc.pedido_cliente_id = vop.pedido_cliente_id\
+                        WHERE \
+                        m.empresa_id = :1 \
+                        AND m.prefijo = :2 \
+                        AND m.numero = :3 \
+                )\
+                UNION\
+                (\
+                        SELECT\
+                        m.*,\
+                        c.inv_tipo_movimiento as tipo_movimiento,\
+                        b.tipo_doc_general_id as tipo_doc_bodega_id,\
+                        c.descripcion as tipo_clase_documento,\
+                        b.descripcion,\
+                        sp.observacion as obs_pedido\
+                        FROM\
+                        inv_bodegas_movimiento as m\
+                        JOIN inv_bodegas_documentos as a ON a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad AND a.bodega = m.bodega\
+                        JOIN documentos as b ON b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id \
+                        JOIN tipos_doc_generales as c ON c.tipo_doc_general_id = b.tipo_doc_general_id\
+                        Left join inv_bodegas_movimiento_despachos_farmacias as df on m.empresa_id = df.empresa_id AND m.prefijo = df.prefijo AND m.numero = df.numero\
+                        left JOIN public.solicitud_productos_a_bodega_principal as sp\
+                        ON  df.solicitud_prod_a_bod_ppal_id = sp.solicitud_prod_a_bod_ppal_id\
+                        WHERE \
+                        m.empresa_id = :1 \
+                        AND m.prefijo = :2 \
+                        AND m.numero = :3 \
+                )\
+                                 ) as y\
+                inner join empresas as e on (y.empresa_id=e.empresa_id)\
+                inner join centros_utilidad as c on (c.empresa_id=y.empresa_id and c.centro_utilidad=y.centro_utilidad )\
+                inner join bodegas as f on (y.empresa_id=f.empresa_id and y.centro_utilidad=f.centro_utilidad and f.bodega=y.bodega)\
+                inner join system_usuarios k on (k.usuario_id=y.usuario_id)\
+                group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,24,25,26; ";
+    
+     G.knex.raw(sql, {1:parametros.empresaId, 2:parametros.prefijoDocumento , 3:parametros.numeracionDocumento}).
+    then(function(resultado){
+       callback(false, resultado.rows);
+    }).catch(function(error){
+       console.log("error [getDoc]: ", error);
+       callback(error);
+    });
+};
+
+
+MovimientosBodegasModel.prototype.obtenerDocumetosTemporales = function(parametro, callback) {
+    var inner='';
+    var select="''";
+    var where="";
+    if(parametro.tipoDocGeneralId==='I002'){
+     select=" cop.codigo_proveedor_id, oc.orden_pedido_id ";   
+     inner  =" join inv_bodegas_movimiento_tmp_ordenes_compra as oc on (t.usuario_id=oc.usuario_id and t.doc_tmp_id=oc.doc_tmp_id) ";     
+     inner +=" join compras_ordenes_pedidos as cop on (oc.orden_pedido_id=cop.orden_pedido_id)";     
+    }
+    if(parametro.numeroDocumento !== ''){
+      where = " AND t.doc_tmp_id ilike '%"+parametro.numeroDocumento+"%'";
+    }
+    var sql = "  \
+		t.*, \
+		c.inv_tipo_movimiento AS tipo_movimiento, \
+		b.tipo_doc_general_id AS tipo_doc_bodega_id, \
+		c.descripcion AS tipo_clase_documento, \
+		b.prefijo, \
+		b.descripcion, \
+		a.empresa_id, \
+		a.centro_utilidad, \
+		a.bodega, \
+		SU.nombre, \
+                "+select+" as orden\
+		FROM inv_bodegas_movimiento_tmp t \
+		JOIN inv_bodegas_documentos as a ON (t.bodegas_doc_id = a.bodegas_doc_id) \
+		JOIN documentos as b  ON (a.documento_id = b.documento_id)\
+		AND (a.empresa_id = b.empresa_id)\
+		JOIN tipos_doc_generales as c ON (b.tipo_doc_general_id = c.tipo_doc_general_id) \
+		JOIN system_usuarios as SU ON (t.usuario_id = SU.usuario_id) \
+                "+inner+"\
+		WHERE TRUE AND a.empresa_id = :1 AND a.centro_utilidad = :2 AND a.bodega = :3 AND b.tipo_doc_general_id = :4 AND c.inv_tipo_movimiento = :5 "+where;
+    console.log("as",sql);
+    var datos ={1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento};
+    var query = G.knex.select(G.knex.raw(sql, datos)).
+    limit(G.settings.limit).
+    offset((parametro.paginaActual - 1) * G.settings.limit).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });
+};
+
+MovimientosBodegasModel.prototype.getDocumentosBodegaUsuario = function(parametro, callback) {
+    var where="";
+    if(parametro.numeroDocumento !== ''){
+       where=" WHERE numero_doc ilike '%"+parametro.numeroDocumento+"%' ";  
+    }
+    
+    var sql = "  * from (\
+                        select \
+                            m.*,\
+                            m.prefijo||'-'||m.numero as numero_doc,\
+                            c.inv_tipo_movimiento as tipo_movimiento, \
+                            b.tipo_doc_general_id as tipo_doc_bodega_id, \
+                            c.descripcion as tipo_clase_documento,\
+                            b.descripcion \
+                        FROM\
+                            inv_bodegas_movimiento as m \
+                            inner join inv_bodegas_documentos as a on (a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad  AND a.bodega = m.bodega)\
+                            inner join documentos as b on (b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id AND b.tipo_doc_general_id = :4)\
+                            inner join tipos_doc_generales as c on (c.tipo_doc_general_id = b.tipo_doc_general_id AND c.inv_tipo_movimiento = :5 )\
+                        WHERE \
+                            m.empresa_id = :1 \
+                            AND m.centro_utilidad = :2 \
+                            AND m.bodega = :3 \
+                            ORDER BY m.fecha_registro DESC ) as a "+where;
+
+    var datos={1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.tipoDocGeneralId, 5: parametro.invTipoMovimiento}
+    
+    var query = G.knex.select(G.knex.raw(sql, datos)).
+    limit(G.settings.limit).
+    offset((parametro.paginaActual - 1) * G.settings.limit).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("error sql",err);
+        callback(err);       
+    });   
+    
+};
+
+MovimientosBodegasModel.prototype.getTiposDocumentosBodegaUsuario = function(parametro, callback) {
+    
+    var sql = "SELECT DISTINCT \
+                b.tipo_doc_general_id as tipo_doc_bodega_id,\
+                c.descripcion as tipo_clase_documento\
+                FROM\
+                inv_bodegas_movimiento as m\
+                inner join inv_bodegas_documentos as a on (a.documento_id = m.documento_id AND a.empresa_id = m.empresa_id AND a.centro_utilidad = m.centro_utilidad AND a.bodega = m.bodega)\
+                inner join documentos as b on (b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id)\
+                inner join tipos_doc_generales as c on (c.tipo_doc_general_id = b.tipo_doc_general_id AND c.inv_tipo_movimiento = :4 )\
+                WHERE\
+                m.empresa_id = :1 \
+                AND m.centro_utilidad = :2 \
+                AND m.bodega = :3 ;";
+   
+   G.knex.raw(sql, {1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.invTipoMovimiento}).
+   then(function(resultado){    
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       console.log("ERROR ",err);
+       callback(err);
+   });
+};
+
+
+MovimientosBodegasModel.prototype.getTiposDocumentosBodegaEmpresa = function(parametro, callback) {
+    
+    var sql = "SELECT DISTINCT \
+                b.tipo_doc_general_id as tipo_doc_bodega_id,\
+                c.descripcion as tipo_clase_documento\
+                FROM\
+                inv_bodegas_documentos as a\
+                inner join documentos as b on (b.documento_id = a.documento_id AND b.empresa_id = a.empresa_id)\
+                inner join tipos_doc_generales as c on (c.tipo_doc_general_id = b.tipo_doc_general_id AND c.inv_tipo_movimiento = :4 )\
+                WHERE\
+                a.empresa_id = :1 \
+                AND a.centro_utilidad = :2 \
+                AND a.bodega = :3 ;";
+   
+   G.knex.raw(sql, {1: parametro.empresaId, 2: parametro.centroUtilidadId, 3: parametro.bodegaId, 4: parametro.invTipoMovimiento}).
+   then(function(resultado){    
+       callback(false, resultado.rows);
+   }).catch(function(err){
+       console.log("ERROR ",err);
+       callback(err);
+   });
+};
 
 /*==================================================================================================================================================================
  * 

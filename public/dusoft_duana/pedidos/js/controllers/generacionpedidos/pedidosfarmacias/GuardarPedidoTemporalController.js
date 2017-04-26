@@ -457,6 +457,7 @@ define(["angular", "js/controllers",
                         mensaje = datos.msj;
                         if(self.generarPedidoFarmacia){
                         self.generarPedido(datos.obj.pedidos_clientes.numero_pedido,function(numero_pedido_farmacia){
+
                            mensaje+=" Pedido Farmacia No. "+ numero_pedido_farmacia+'\n';
                            AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         });
@@ -464,6 +465,7 @@ define(["angular", "js/controllers",
                           mensaje+="\n No se genera Pedido en Farmacia. ";
                           AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                           self.eliminarPedidoTemporal();
+                          AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         }
                     }
                     if (datos.status === 500) {
@@ -477,79 +479,25 @@ define(["angular", "js/controllers",
                      
                     if (datos.status === 403) {
                         datos.obj.pedidos_clientes.productos_invalidos.forEach(function(producto) {
+
                             var msjPrecioVenta = producto.precio_venta === undefined ? "" :  ") Precio venta (" + producto.precio_venta + ") \n";
                             var msjProducto = producto.precio_venta === undefined ? "" : " para el Codigo ("; 
                             mensaje += producto.mensajeError + msjProducto + producto.codigo_producto + msjPrecioVenta;
                             AlertService.mostrarVentanaAlerta("Mensaje del Sistema", mensaje);
                         });                       
                     }      
+
                 });
             } else {
                 self.generarPedido(0);
             }
+
+
         }; 
+       
         
-        self.prubapedidodecliente2 = function() {
-        var pedido =  {                 
-                    empresa_id: '03', 
-                    centro_utilidad_id: '1 ',
-                    bodega_id: '03',
-                    numero_cotizacion: 0,
-                    observacion: 'NUEVA PRUEBA ',
-                    productos: [
-                        {codigo_producto: '158M0213132', cantidad_solicitada: '100', empresaIdProducto: '03', centroUtilidadProducto: '1 ',bodegaProducto:'03'},
-                        {codigo_producto: '1142M0012997', cantidad_solicitada: '1.', empresaIdProducto: '03', centroUtilidadProducto: '1 ',bodegaProducto:'03'},
-                        
-                        /*{codigo_producto: '1101G0222238',cantidad_solicitada: '10'},
-                        {codigo_producto: '1101M0443248',cantidad_solicitada: '1'},	
-                        {codigo_producto: '1101D0471598',cantidad_solicitada: '1'},
-                        {codigo_producto: '1101E0381868',cantidad_solicitada: '1'} */                        
-                    ],
-                    tipo_producto: '1',                  
-                    observacion_cartera: '',
-                    aprobado_cartera: '0',
-                    estado_cotizacion: '',                   
-                    estado: '0',
-                    vendedor: {tipo_id_tercero: 'CC ',id: '67039648'},
-                    cliente: {
-                        tipo_id_tercero: 'NIT',
-                        id: '800024390',
-                        contrato_id: 301,
-                        tipoBloqueoId: '1'
-                    },
-                    fecha_registro: '30/01/2017',
-                    usuario_id: 1350
-                }; 
+
            
-                var obj = {
-                    session: $scope.root.session,
-                    data: {
-                        pedidos_clientes: {
-                            cotizacion: pedido
-                        }
-                    }
-                };
-                
-                var mensaje = "";
-                var url = API.PEDIDOS.CLIENTES.GENERAR_PEDIDO_BODEGA_FARMACIA;
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                    
-                    if(data.status === 200){                       
-                        mensaje = data.msj;                       
-                    }
-                    
-                    if(data.status === 403){
-                        data.obj.pedidos_clientes.productos_invalidos.forEach(function(producto){
-                            mensaje += producto.mensajeError+ " para el codigo ("+ producto.codigo_producto+") Precio venta ("+producto.precio_venta+") \n";
-                        });
-                    }
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", mensaje);    
-                   
-                });
-        }
-        
-        
-                        
           /*
              * @Author: andres
              * +Descripcion: funcion de prueba para crear pedidos de farmacia automaticos
@@ -584,6 +532,7 @@ define(["angular", "js/controllers",
             };
 
             Request.realizarRequest(url, "POST", obj, function(data) {
+
                  console.log("data.status", data.msj);
                  console.log("data.status", data);
                 if (data.status === 200) {
@@ -604,7 +553,6 @@ define(["angular", "js/controllers",
                 }
             });
         };
-          
             
             /*
              * @Author: Eduar

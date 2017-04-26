@@ -2,10 +2,10 @@
     "module": "I002",
     "dependency": {
         "controllers": [{
-                "e008_controller": {
-                    "module": "MovimientosBodega/E008",
-                    "controller": "E008Controller",
-                    "alias": "c_e008"
+                "i002_controller": {
+                    "module": "MovimientosBodega/I002",
+                    "controller": "I002Controller",
+                    "alias": "c_i002"
                 }
             }],
         "models": [{
@@ -14,20 +14,10 @@
                     "model": "MovBodegasModel",
                     "alias": "m_movimientos_bodegas"
                 },
-                "E008_model": {
-                    "module": "MovimientosBodega/E008",
-                    "model": "DocBodegaE008",
-                    "alias": "m_e008"
-                },
-                "pedidos_clientes_model": {
-                    "module": "PedidosClientes",
-                    "model": "PedidosClienteModel",
-                    "alias": "m_pedidos_clientes"
-                },
-                "pedidos_farmacias_model": {
-                    "module": "PedidosFarmacias",
-                    "model": "PedidosFarmaciasModel",
-                    "alias": "m_pedidos_farmacias"
+                "I002_model": {
+                    "module": "MovimientosBodega/I002",
+                    "model": "DocBodegaI002",
+                    "alias": "m_i002"
                 },
                 "terceros_model": {
                     "module": "Terceros/OperariosBodega",
@@ -41,10 +31,10 @@
                 }
             }],
         "events": [{
-                "E008_events": {
-                    "module": "MovimientosBodega/E008",
-                    "event": "E008Events",
-                    "alias": "e_e008"
+                "I002_events": {
+                    "module": "MovimientosBodega/I002",
+                    "event": "I002Events",
+                    "alias": "e_i002"
                 },
                 "pedidos_clientes_events": {
                     "module": "PedidosClientes",

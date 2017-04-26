@@ -1,12 +1,12 @@
 
-var E008Controller = function(movimientos_bodegas, m_e008, e_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos) {
+var I002Controller = function(movimientos_bodegas, m_I002, e_I002, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos) {
 
-    console.log("Modulo E008 Cargado ");
+    console.log("Modulo I002 Cargado ");
 
     this.m_movimientos_bodegas = movimientos_bodegas;
 
-    this.m_e008 = m_e008;
-    this.e_e008 = e_e008;
+    this.m_I002 = m_I002;
+    this.e_I002 = e_I002;
 
     this.m_pedidos_clientes = pedidos_clientes;
     this.e_pedidos_clientes = eventos_pedidos_clientes;
@@ -18,8 +18,782 @@ var E008Controller = function(movimientos_bodegas, m_e008, e_e008, pedidos_clien
     this.m_pedidos = m_pedidos;
 };
 
+
+
+I002Controller.prototype.newDocTemporal = function(req, res) {
+    
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+    var orden_pedido_id = args.orden_pedido_id;
+    var bodegas_doc_id = args.bodegas_doc_id;
+    var observacion = args.observacion;
+    var movimiento_temporal_id;
+    
+    if (args.orden_pedido_id === undefined) {
+        res.send(G.utils.r(req.url, 'El Numero de Orden NO esta definida', 404, {}));
+        return;
+    }
+
+    if (args.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'La observacion NO esta definida', 404, {}));
+        return;
+    }
+    if (args.bodegas_doc_id === undefined) {
+        res.send(G.utils.r(req.url, 'La bodega NO esta definida', 404, {}));
+        return;
+    }
+
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "obtener_identificicador_movimiento_temporal", usuarioId).then(function(doc_tmp_id) {
+
+        movimiento_temporal_id = doc_tmp_id;  
+        
+        G.knex.transaction(function(transaccion) {
+            
+                G.Q.nfcall(that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal, 
+                            movimiento_temporal_id, usuarioId, bodegas_doc_id,observacion, transaccion).then(function() {
+
+                    var parametros = {
+                        usuario_id: usuarioId,
+                        doc_tmp_id: movimiento_temporal_id,
+                        orden_pedido_id: orden_pedido_id
+                    };
+                    return G.Q.nfcall(that.m_I002.insertarBodegasMovimientoOrdenesCompraTmp, parametros, transaccion);
+
+                }).then(function() {
+                    transaccion.commit(movimiento_temporal_id);
+                }).fail(function(err) {                   
+                    transaccion.rollback(err);
+                }).done();
+            
+        }).then(function(movimiento_temporal_id) {
+            res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {movimiento_temporal_id: movimiento_temporal_id}));
+        }).catch (function(err) {
+            res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
+        }).done();
+        
+     }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al insertar la cabecera del temporal', 500, {}));
+     }).done();
+};
+
+I002Controller.prototype.agregarItemFOC = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (args.empresaId === undefined || args.centroUtilidad === undefined || args.bodega === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos valores de la empresa no estan definidos', 404, {}));
+        return;
+    }
+    if (args.codigoProducto === undefined) {
+        res.send(G.utils.r(req.url, 'El codigo Producto no esta definida', 404, {}));
+        return;
+    }
+    if (args.cantidad === undefined) {
+        res.send(G.utils.r(req.url, 'La cantidad no esta definida', 404, {}));
+        return;
+    }
+    if (args.lote === undefined) {
+        res.send(G.utils.r(req.url, 'El lote no esta definida', 404, {}));
+        return;
+    }
+    if (args.fechaVencimiento === undefined) {
+        res.send(G.utils.r(req.url, 'La fecha vencimiento no esta definida', 404, {}));
+        return;
+    }
+    if (args.docTmpId === undefined) {
+        res.send(G.utils.r(req.url, 'El docTmpId no esta definida', 404, {}));
+        return;
+    }
+    if (args.porcentajeGravamen === undefined) {
+        res.send(G.utils.r(req.url, 'El porcentajeGravamen no esta definida', 404, {}));
+        return;
+    }
+    if (args.fechaIngreso === undefined) {
+        res.send(G.utils.r(req.url, 'La fechaIngreso no esta definida', 404, {}));
+        return;
+    }
+    if (args.justificacionIngreso === undefined) {
+        res.send(G.utils.r(req.url, 'La justificacionIngreso no esta definida', 404, {}));
+        return;
+    }
+    if (args.ordenPedidoId === undefined) {
+        res.send(G.utils.r(req.url, 'El ordenPedidoId no esta definida', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'El totalCosto no esta definida', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'El localProd no esta definida', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'El valorUnitarioCompra no esta definida', 404, {}));
+        return;
+    }
+    if (args.totalCosto === undefined) {
+        res.send(G.utils.r(req.url, 'El valorUnitarioFactura no esta definida', 404, {}));
+        return;
+    }
+
+
+    var parametros = {
+        empresaId: args.empresaId,
+        centroUtilidad: args.centroUtilidad,
+        bodega: args.bodega,
+        codigoProducto: args.codigoProducto,
+        cantidad: args.cantidad,
+        lote: args.lote,
+        fechaVencimiento: args.fechaVencimiento,
+        docTmpId: args.docTmpId,
+        porcentajeGravamen: args.porcentajeGravamen,
+        fechaIngreso: args.fechaIngreso,
+        justificacionIngreso: args.justificacionIngreso,
+        ordenPedidoId: args.ordenPedidoId,
+        totalCosto: args.totalCosto,
+        localProd: args.localProd,
+        usuarioId: args.usuarioId,
+        itemId: args.itemId,
+        valorUnitarioCompra: args.valorUnitarioCompra,
+        valorUnitarioFactura: args.valorUnitarioFactura,
+        usuarioId: usuarioId
+    };
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaEnBodegaDestino", parametros).then(function(resultado) {
+        if (resultado.length > 0) {
+            return G.Q.nfcall(that.m_I002.agregarItemFOC, parametros);
+        } else {
+            throw {msj: "El producto " + parametros.codigoProducto + " no se encuentra en bodegas_existencias.", status: 403};
+        }
+    }).then(function(resultado) {
+        res.send(G.utils.r(req.url, 'Temporal FOC guardado correctamente', 200, {agregarItemFOC: resultado}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, err.msj, err.status, {agregarItemFOC: []}));
+    }).done();
+
+};
+
+
+I002Controller.prototype.listarInvBodegasMovimientoTmpOrden = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (args.orden_pedido_id === undefined) {
+        res.send(G.utils.r(req.url, 'La orden_pedido_id NO esta definida', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        usuarioId: usuarioId,
+        orden_pedido_id: args.orden_pedido_id
+    };
+    G.Q.ninvoke(that.m_I002, "listarInvBodegasMovimientoTmpOrden", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Temporal guardado correctamente', 200, {listarInvBodegasMovimientoTmpOrden: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al listaInvBodegasMovimientoTmpOrden', 500, {}));
+    }).done();
+};
+
+I002Controller.prototype.listarProductosParaAsignar = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+//{1:parametro.numero_orden,2:parametro.empresa_id,3:parametro.centro_utilidad,4:parametro.bodega,5:parametro.doc_tmp_id,6:"%" + parametro.descripcion + "%",7:parametro.codigo_prducto}
+    if (args.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'La orden_pedido_id NO esta definida', 404, {}));
+        return;
+    }
+    if (args.fabricante_id === undefined  ||  args.fabricante_id === '') {
+        args.fabricante_id = "-1";
+    }
+
+    var parametros = {
+        numero_orden: args.numero_orden,
+        empresa_id:args.empresa_id,//Sesion.getUsuarioActual().getEmpresa().getCodigo()
+        centro_utilidad:args.centro_utilidad,
+        bodega:args.bodega,
+        doc_tmp_id:args.doc_tmp_id,
+        descripcion:args.descripcion,
+        tipoFiltro:args.tipoFiltro,                
+        fabricante_id:args.fabricante_id                
+    };
+
+    G.Q.ninvoke(that.m_I002, "listarProductosParaAsignar", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Listar Productos Para Asignar', 200, {listarProductosParaAsignar: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al Listar Productos Para Asignar', 500, {}));
+    }).done();
+};
+/* 
+ * @param {type} req: empresa_id,orden_pedido_id
+ * @param {type} res
+ * @returns lista de Productos por autorizar 
+ */
+I002Controller.prototype.listarProductosPorAutorizar = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
+        return;
+    }
+    
+    if (args.orden_pedido_id === undefined) {
+        res.send(G.utils.r(req.url, 'La orden_pedido_id no esta definida', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        empresa_id: args.empresa_id,
+        orden_pedido_id: args.orden_pedido_id
+    };
+    G.Q.ninvoke(that.m_I002, "listarProductosPorAutorizar", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Lista Productos Por Autorizar', 200, {listarProductosPorAutorizar: result}));
+    }).fail(function(err) {
+        console.log("listarProductosPorAutorizar ",err);
+        res.send(G.utils.r(req.url, 'Error al listar Productos Por Autorizar', 500, {}));
+    }).done();
+};
+
+I002Controller.prototype.listarParametrosRetencion = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'La empresa_id NO esta definida', 404, {}));
+        return;
+    }
+    var parametros = {empresa_id: args.empresa_id}; 
+    G.Q.ninvoke(that.m_I002, "listarParametrosRetencion", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Lista Parametros Retencion', 200, {listarParametrosRetencion: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al Listar Parametros de Retencion', 500, {}));
+    }).done();
+};
+
+I002Controller.prototype.listarGetItemsDocTemporal = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (usuarioId === undefined) {
+        res.send(G.utils.r(req.url, 'EL usuario_id NO esta definido', 404, {}));
+        return;
+    }
+    if (args.orden_pedido_id === undefined) {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id NO esta definido', 404, {}));
+        return;
+    }
+    var parametros = {usuario_id: usuarioId, orden_pedido_id: args.orden_pedido_id}; 
+    G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Lista Items Documento Temporal', 200, {listarGetItemsDocTemporal: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al Listar Items Documento Temporal', 500, {}));
+    }).done();
+};
+
+I002Controller.prototype.eliminarGetDocTemporal = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+    
+
+    if (usuarioId === undefined) {
+        res.send(G.utils.r(req.url, 'EL usuario_id NO esta definido', 404, {}));
+        return;
+    }
+    if (args.orden_pedido_id === undefined) {
+        res.send(G.utils.r(req.url, 'El orden_pedido_id NO esta definido', 404, {}));
+        return;
+    }
+    if (args.doc_tmp_id === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    
+    var docTmpId= args.doc_tmp_id;
+    var ordenPedidoId= args.orden_pedido_id;
+    var parametros={ordenPedidoId:ordenPedidoId,docTmpId:docTmpId,usuarioId:usuarioId};
+ 
+   
+ G.knex.transaction(function(transaccion) { 
+     
+        G.Q.ninvoke(that.m_I002, "eliminarOrdenPedidoProductosFoc", parametros, transaccion).then(function(result) {
+
+          parametros.usuario_id = usuarioId;
+          return G.Q.ninvoke(that.m_I002, "eliminar_documento_temporal", parametros, transaccion);
+
+        }).then(function(result) {
+            
+          transaccion.commit();
+           
+        }).fail(function(err) {
+
+          console.log("Error rollback ", err);
+          transaccion.rollback(err);
+
+        }).done();
+         
+    }).then(function(){
+        
+       res.send(G.utils.r(req.url, 'SE HA BORRADO EL DOCUMENTO EXITOSAMENTE', 200, {eliminarGetDocTemporal: parametros}));
+       
+    }).catch(function(err){
+        
+        console.log("err>>>>",err);
+        res.send(G.utils.r(req.url, 'ERROR AL BORRAR EL DOCUMENTO', 500, {err:err}));
+         
+    }).done();
+};
+
+I002Controller.prototype.listarGetDocTemporal = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var usuarioId = req.session.user.usuario_id;
+
+    if (usuarioId === undefined) {
+        res.send(G.utils.r(req.url, 'EL usuario_id NO esta definido', 404, {}));
+        return;
+    }
+    if (args.orden_pedido_id === undefined) {
+        res.send(G.utils.r(req.url, 'El orden_pedido_id NO esta definido', 404, {}));
+        return;
+    }
+    var parametros = {usuario_id: usuarioId, orden_pedido_id: args.orden_pedido_id}; 
+    G.Q.ninvoke(that.m_I002, "listarGetDocTemporal", parametros).then(function(result) {
+        res.send(G.utils.r(req.url, 'Lista Documento Temporal', 200, {listarGetDocTemporal: result}));
+    }).fail(function(err) {
+        res.send(G.utils.r(req.url, 'Error al Listar Documento Temporal', 500, {err:err}));
+    }).done();
+};
+
+
+I002Controller.prototype.execCrearDocumento=function(req,res){
+   var that = this;
+   var args = req.body.data;
+   var usuarioId;
+   var parametros={};
+  
+
+    if (args.movimientos_bodegas.doc_tmp_id === '') {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.movimientos_bodegas.orden_pedido_id === '') {
+        res.send(G.utils.r(req.url, 'El orden_pedido_id esta vacío', 404, {}));
+        return;
+    }
+    
+    if (args.movimientos_bodegas.usuario_id === '') {
+       usuarioId = req.session.user.usuario_id;
+    }else{
+       usuarioId = args.movimientos_bodegas.usuario_id;
+    }
+    
+    var ordenPedidoId=args.movimientos_bodegas.orden_pedido_id;
+    
+    var docTmpId= args.movimientos_bodegas.doc_tmp_id;
+    var resultadoProducto;   
+    parametros.ordenPedidoId=ordenPedidoId;
+    parametros.usuarioId=usuarioId;
+    parametros.docTmpId=docTmpId;
+    var cabecera=[];
+    var detalle=[];
+    var consulta=[];
+    var impuesto=[];
+    G.knex.transaction(function(transaccion) {  
+
+            G.Q.ninvoke(that.m_movimientos_bodegas, "crear_documento", docTmpId, usuarioId, transaccion).then(function(result) {
+
+                parametros.empresaId = result.empresa_id;
+                parametros.empresa_id = result.empresa_id;
+                parametros.prefijoDocumento = result.prefijo_documento;
+                parametros.numeracionDocumento = result.numeracion_documento;
+                parametros.orden_pedido_id = parametros.ordenPedidoId;
+
+                return G.Q.ninvoke(that.m_I002, "agregarBodegasMovimientoOrdenesCompras", parametros, transaccion);
+
+            }).then(function(result) {
+                
+                if(result.rowCount>=1){
+                   return G.Q.ninvoke(that.m_I002, "listarInvBodegasMovimientoTmpOrden", parametros);
+                }else{
+                   throw 'agregarBodegasMovimientoOrdenesCompras Fallo';
+                }
+                
+            }).then(function(result) {
+
+                parametros.porcentaje_rtf = result[0].porcentaje_rtf;
+                parametros.porcentaje_ica = result[0].porcentaje_ica;
+                parametros.porcentaje_cree = 0;
+                parametros.porcentaje_reteiva = result[0].porcentaje_reteiva;
+
+                return G.Q.ninvoke(that.m_I002, "updateInvBodegasMovimiento", parametros, transaccion);
+
+            }).then(function(result) {
+                
+                if(result >= 1){
+                    return G.Q.ninvoke(that.m_I002, "eliminarOrdenPedidoProductosFoc", parametros, transaccion);
+                }else{
+                   throw 'updateInvBodegasMovimiento Fallo';
+                }
+
+            }).then(function(result) {
+
+                parametros.usuario_id = usuarioId;
+                return G.Q.ninvoke(that.m_I002, "listarGetItemsDocTemporal", parametros);
+
+            }).then(function(result) {
+       
+                resultadoProducto = result;
+                return G.Q.ninvoke(that.m_I002, "eliminar_documento_temporal", parametros, transaccion);
+                
+            }).then(function(result) {
+                
+               if(result.rowCount >= 1){
+                    return G.Q.ninvoke(that.m_I002, "fecha_ingreso_orden_compra", parametros, transaccion);
+                }else{
+                    throw 'eliminar_documento_temporal Fallo';
+                }
+                
+            }).then(function(result) {
+                
+                if(result >= 1){
+                    return G.Q.nfcall(__modificarComprasOrdenesPedidosDetalle, that, 0, resultadoProducto, 0 ,transaccion);
+                }else{
+                    throw 'fecha_ingreso_orden_compra Fallo';
+                }
+
+            }).then(function(result) {
+                
+              if(result >= 1){
+                transaccion.commit(); 
+                return false;
+              }else{
+                throw '__modificarComprasOrdenesPedidosDetalle Fallo';
+              }
+               
+            }).fail(function(err) {
+
+                console.log("Error rollback ", err);
+                transaccion.rollback(err);
+               
+            }).done();
+    
+    }).then(function(){
+        
+        return G.Q.ninvoke(that.m_movimientos_bodegas,"getDoc", parametros);
+            
+    }).then(function(resultado) {
+        
+        cabecera=resultado;
+        if(resultado.length > 0){ 
+            return G.Q.ninvoke(that.m_movimientos_bodegas,"consultar_detalle_documento_despacho",parametros.numeracionDocumento, parametros.prefijoDocumento, parametros.empresaId);
+        }else{
+            throw 'Consulta sin resultados';
+        }
+        
+    }).then(function(resultado) {
+        
+       detalle=resultado;
+       if(resultado.length > 0){ 
+            return G.Q.ninvoke(that.m_movimientos_bodegas,"ordenTercero",parametros);
+       }else{
+            throw 'Consulta sin resultados';
+        }
+        
+    }).then(function(resultado) {
+        
+        consulta = resultado;
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_I002, "listarParametrosRetencion", parametros);
+        } else {
+            throw 'Consulta ordenTercero sin resultados';
+        } 
+        
+    }).then(function(resultado) {
+        
+        impuesto = resultado;
+        if (resultado.length > 0) {
+            var valores = {
+                valorTotal: 0,
+                porc_iva: 0,
+                ValorSubTotal: 0,
+                IvaProducto: 0,
+                IvaTotal: 0,
+                subtotal: 0
+            };
+            return G.Q.nfcall(__impuestos, that, 0, detalle[0], impuesto[0], valores, cabecera[0]);
+
+        } else {
+            throw 'Consulta listarParametrosRetencion sin resultados';
+        }    
+        
+    }).then(function(resultado) {
+            
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+                     
+        if(resultado.length > 0){
+            
+            cabecera[0].fecha_registro=cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS');
+            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: detalle[0],
+                orden: consulta[0],
+                impresion: impresion,
+                impuestos: resultado[0],
+                archivoHtml: 'documentoI002.html',
+                reporte: "documentoI002"}, function(nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            throw 'Consulta listarParametrosRetencion sin resultados';
+        }
+
+    }).catch(function(err){
+        
+        console.log("err>>>>",err);
+        res.send(G.utils.r(req.url, 'Error al Crear el Documento', 500, {err:err}));
+         
+    }).done();
+};
+
+I002Controller.prototype.crearHtmlDocumento = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var cabecera = [];
+    var detalle = [];
+    var consulta = [];
+    var impuesto = [];
+
+
+    if (args.empresaId === '' || args.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'El empresa_id esta vacío', 404, {}));
+        return;
+    }
+    if (args.prefijo === '' || args.prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'El prefijo esta vacío', 404, {}));
+        return;
+    }
+    if (args.numeracion === '' || args.numeracion === undefined) {
+        res.send(G.utils.r(req.url, 'El numeracion esta vacío', 404, {}));
+        return;
+    }
+
+    var parametros = {
+        empresaId: args.empresaId,
+        empresa_id: args.empresaId,
+        prefijoDocumento: args.prefijo,
+        numeracionDocumento: args.numeracion
+    };
+
+    try {
+        var nomb_pdf = "documentoI002" + parametros.prefijoDocumento + parametros.numeracionDocumento + ".html";
+        if (G.fs.readFileSync("public/reports/" + nomb_pdf)) {
+            res.send(G.utils.r(req.url, 'SE HA ENCONTRADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nomb_pdf, prefijo: parametros.prefijoDocumento, numero: parametros.numeracionDocumento}));
+            return;
+        }
+    } catch (e) {
+        console.log("NO EXISTE ARCHIVO  ");
+    }
+
+    G.Q.ninvoke(that.m_movimientos_bodegas, "getDoc", parametros).then(function(result) {
+        cabecera = result;
+
+        if (result.length > 0) {
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "consultar_detalle_documento_despacho", parametros.numeracionDocumento, parametros.prefijoDocumento, parametros.empresaId);
+        } else {
+            throw 'Consulta getDoc sin resultados';
+        }
+    }).then(function(resultado) {
+        detalle = resultado;
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_movimientos_bodegas, "ordenTercero", parametros);
+        } else {
+            throw 'Consulta consultar_detalle_documento_despacho sin resultados';
+        }
+    }).then(function(resultado) {
+        consulta = resultado;
+        if (resultado.length > 0) {
+            return G.Q.ninvoke(that.m_I002, "listarParametrosRetencion", parametros);
+        } else {
+            throw 'Consulta ordenTercero sin resultados';
+        }
+    }).then(function(resultado) {
+        impuesto = resultado;
+
+        if (resultado.length > 0) {
+            var valores = {
+                valorTotal: 0,
+                porc_iva: 0,
+                ValorSubTotal: 0,
+                IvaProducto: 0,
+                IvaTotal: 0,
+                subtotal: 0
+            };
+            return G.Q.nfcall(__impuestos, that, 0, detalle[0], impuesto[0], valores, cabecera[0]);
+
+        } else {
+            console.log("Consulta listarParametrosRetencion sin resultados ");
+            throw 'Consulta listarParametrosRetencion sin resultados';
+        }
+
+    }).then(function(resultado) {
+        var fecha = new Date();
+        var formatoFecha = fecha.toFormat('DD-MM-YYYY');
+        var usuario = req.session.user.usuario_id + ' - ' + req.session.user.nombre_usuario;
+        var impresion = {usuarioId: usuario, formatoFecha: formatoFecha};
+
+        if (resultado.length > 0) {
+           cabecera[0].fecha_registro=cabecera[0].fecha_registro.toFormat('DD/MM/YYYY HH24:MI:SS'); 
+            __generarPdf({serverUrl: req.protocol + '://' + req.get('host') + "/",
+                cabecerae: cabecera[0],
+                detalle: detalle[0],
+                orden: consulta[0],
+                impresion: impresion,
+                impuestos: resultado[0],
+                archivoHtml: 'documentoI002.html',
+                reporte: "documentoI002"}, function(nombre_pdf) {
+                res.send(G.utils.r(req.url, 'SE HA CREADO EL DOCUMENTO EXITOSAMENTE', 200, {nomb_pdf: nombre_pdf, prefijo: cabecera[0].prefijo, numero: cabecera[0].numero}));
+            });
+        } else {
+            console.log("Consulta listarParametrosRetencion sin resultados ");
+            throw 'Consulta listarParametrosRetencion sin resultados';
+        }
+        
+    }). catch (function(err) {
+        console.log("err>>>>", err);
+        res.send(G.utils.r(req.url, 'Error al Crear el html del Documento', 500, {err: err}));
+    }).done();
+};
+
+function __impuestos(that, index, productos, impuesto, resultado, cabecera, callback) {
+
+    var producto = productos[index];
+    if (!producto) {
+
+        if (impuesto.sw_rtf === '2' || impuesto.sw_rtf === '3')
+            if (resultado.subtotal >= parseInt(impuesto.base_rtf)) {
+                resultado.valorRetFte = Math.round(resultado.subtotal * (cabecera.valorRetFte / 100));
+            } else {
+                resultado.valorRetFte = 0;
+            }
+
+        if (impuesto.sw_ica === '2' || impuesto.sw_ica === '3')
+            if (resultado.subtotal >= parseInt(impuesto.base_ica)) {
+                resultado.valorRetIca = Math.round(resultado.subtotal * (cabecera.valorRetIca / 1000));
+            } else {
+                resultado.valorRetIca = 0;
+            }
+        if (impuesto.sw_reteiva === '2' || impuesto.sw_reteiva === '3')
+            if (resultado.subtotal >= parseInt(impuesto.base_reteiva)) {
+                resultado.valorRetIva = Math.round(resultado.IvaTotal * (cabecera.valorRetIva / 100));
+            } else {
+                resultado.valorRetIva = 0;
+            }
+
+        resultado.total = Math.round(((((resultado.subtotal + resultado.IvaTotal) - resultado.valorRetFte) - resultado.valorRetIca) - resultado.valorRetIva));
+
+        callback(false, [resultado]);
+        return;
+    }
+
+    index++;
+    resultado.valorTotal += parseInt(producto.valor_total_1);
+
+    resultado.porc_iva = (producto.porcentaje_gravamen / 100) + 1;
+    resultado.ValorSubTotal = (producto.total_costo / resultado.porc_iva);
+    resultado.IvaProducto = producto.total_costo - resultado.ValorSubTotal;
+    resultado.IvaTotal = Math.round(resultado.IvaTotal + (resultado.IvaProducto));
+    resultado.subtotal += parseInt(resultado.ValorSubTotal);
+
+    setTimeout(function() {
+        __impuestos(that, index, productos, impuesto, resultado, cabecera, callback);
+    }, 3);
+
+};
+
+function __modificarComprasOrdenesPedidosDetalle(that, index, parametros,resultado,transaccion, callback) {
+
+    var productos = parametros[index];
+    
+    if (!productos) {
+        callback(false,resultado);
+        return;
+    }
+
+   G.Q.ninvoke(that.m_I002,"updateComprasOrdenesPedidosDetalle",productos, transaccion).then(function(result){
+
+     index++;
+     
+        setTimeout(function() {
+            resultado+=result.rowCount;
+            __modificarComprasOrdenesPedidosDetalle(that, index, parametros,resultado, transaccion, callback);
+        }, 3);   
+               
+    }).fail(function(err){
+        consol.log("__modificarComprasOrdenesPedidosDetalle:::::::",err);
+        callback(true, err);
+        return;
+    }).done();
+}
+
+
+function __generarPdf(datos, callback) {  
+   
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/reportes/'+datos.archivoHtml, 'utf8'),
+            recipe: "html",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width: '700px'
+            }
+        },
+        data: datos
+    }, function(err, response) {
+        
+        response.body(function(body) {
+           var fecha = new Date();
+          
+           var nombreTmp = datos.reporte + datos.cabecerae.prefijo + datos.cabecerae.numero + ".html";
+   
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                    console.log("err [__generarPdf]: ", err);
+                   callback(true, err);
+                   return;
+                } else {
+                        
+                         callback(nombreTmp);
+                         return;                  
+                }
+            });            
+        });
+    });
+}
+
+//I002Controller.prototype.ingresarMovimientoOrdenCompraTmporal=function(){
+//  var that = this;
+//   G.Q.ninvoke(that.m_movimientos_bodegas,"obtener_identificicador_movimiento_temporal",usuarioId).then(function(){
+//      res.send(G.utils.r(req.url, 'Listado de Productos Bloqueados Clientes!!!!', 200, {listarProductosBloqueados: listarProductosBloqueados}));
+//    }).fail(function(err) {
+//      res.send(G.utils.r(req.url, err.mensaje, err.estado, {}));
+//    }).done();
+//};
+
+/*
 // Generar Cabecera del Documento Temporal de CLIENTES
-E008Controller.prototype.documentoTemporalClientes = function(req, res) {
+I002Controller.prototype.documentoTemporalClientes = function(req, res) {
 
     var that = this;
 
@@ -46,16 +820,12 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
     __validar_responsable_pedidos_clientes(that, numero_pedido, usuario_id, '1', function(err, continuar) {
 
         if (continuar) {
-            that.m_e008.ingresar_despacho_clientes_temporal(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, function(err, doc_tmp_id) {
+            that.m_I002.ingresar_despacho_clientes_temporal(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, function(err, doc_tmp_id) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
                     return;
                 } else {
-                    /* ===============================================*/
-                    // Emitir Evento para restringir:
-                    // - La modificacion del pedido
-                    // - La reasignacion.
-                    /* ===============================================*/
+                 
                     that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
                     res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
                     return;
@@ -71,7 +841,7 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
 };
 
 // Finalizar Documento Temporal Clientes
-E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res) {
+I002Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res) {
 
     var that = this;
 
@@ -111,14 +881,14 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
                 }
 
 
-                that.m_e008.actualizar_estado_documento_temporal_clientes(numero_pedido, '1', function(err, rows, result) {
+                that.m_I002.actualizar_estado_documento_temporal_clientes(numero_pedido, '1', function(err, rows, result) {
                     if (err || result.rowCount === 0) {
                         res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
                         return;
                     } else {
 
                         // Emitir evento para actualizar la lista de Documentos Temporales
-                        that.e_e008.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});
+                        that.e_I002.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});
                         that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                         res.send(G.utils.r(req.url, 'Documento Temporal Clientes Finalizado Correctamente', 200, {documento_temporal: {}}));
@@ -138,7 +908,7 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
 };
 
 // Generar Cabecera del Documento Temporal de FARMACIAS
-E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
+I002Controller.prototype.documentoTemporalFarmacias = function(req, res) {
 
 
     var that = this;
@@ -167,18 +937,13 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
 
         if (continuar) {
 
-            that.m_e008.ingresar_despacho_farmacias_temporal(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, function(err, doc_tmp_id, resultado) {
+            that.m_I002.ingresar_despacho_farmacias_temporal(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, function(err, doc_tmp_id, resultado) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
                     return;
                 } else {
 
-                    /* ===============================================*/
-                    // Emitir Evento para restringir:
-                    // - La modificacion del pedido
-                    // - La reasignacion.
-                    /* ===============================================*/
-
+                   
                     that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                     res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
@@ -194,7 +959,7 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
 };
 
 // Finalizar Documento Temporal Clientes
-E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res) {
+I002Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res) {
 
     var that = this;
 
@@ -235,7 +1000,7 @@ E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res
                     return;
                 }
 
-                that.m_e008.actualizar_estado_documento_temporal_farmacias(numero_pedido, '1', function(err, rows) {
+                that.m_I002.actualizar_estado_documento_temporal_farmacias(numero_pedido, '1', function(err, rows) {
                     if (err) {
                         res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
                         return;
@@ -244,7 +1009,7 @@ E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res
                         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                         // Emitir evento para actualizar la lista de Documentos Temporales
-                        that.e_e008.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});
+                        that.e_I002.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});
 
                         res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Finalizado Correctamente', 200, {documento_temporal: {}}));
                         return;
@@ -259,7 +1024,7 @@ E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res
 };
 
 // Ingresar el detalle del documento temporal CLIENTES / FARMACIAS 
-E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
+I002Controller.prototype.detalleDocumentoTemporal = function(req, res) {
 
     var that = this;
 
@@ -311,9 +1076,7 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
 };
 
 
-
-
-E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) {
+I002Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) {
     var that = this;
 
     var args = req.body.data;
@@ -398,7 +1161,7 @@ function __validarParametrosDetalleTemporal(args) {
 }
 
 // Consultar TODOS los documentos temporales de despacho clientes 
-E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, res) {
+I002Controller.prototype.consultarDocumentosTemporalesClientes = function(req, res) {
 
     var that = this;
 
@@ -423,7 +1186,7 @@ E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, r
     var pagina_actual = args.documento_temporal.pagina_actual;
     var filtro = args.documento_temporal.filtro;
 
-    that.m_e008.consultar_documentos_temporales_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
+    that.m_I002.consultar_documentos_temporales_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultado los documentos temporales de clientes', 500, {documentos_temporales: {}}));
             return;
@@ -449,7 +1212,7 @@ E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, r
 };
 
 // Consultar TODOS los documentos temporales de despacho farmacias 
-E008Controller.prototype.consultarDocumentosTemporalesFarmacias = function(req, res) {
+I002Controller.prototype.consultarDocumentosTemporalesFarmacias = function(req, res) {
 
     var that = this;
 
@@ -474,7 +1237,7 @@ E008Controller.prototype.consultarDocumentosTemporalesFarmacias = function(req, 
     var pagina_actual = args.documento_temporal.pagina_actual;
     var filtro = args.documento_temporal.filtro;
 
-    that.m_e008.consultar_documentos_temporales_farmacias(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
+    that.m_I002.consultar_documentos_temporales_farmacias(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultado los documentos temporales de farmacias', 500, {documentos_temporales: {}}));
             return;
@@ -501,7 +1264,7 @@ E008Controller.prototype.consultarDocumentosTemporalesFarmacias = function(req, 
 };
 
 // Consulta el Documento temporal de despacho CLIENTES por numero de pedido
-E008Controller.prototype.consultarDocumentoTemporalClientes = function(req, res) {
+I002Controller.prototype.consultarDocumentoTemporalClientes = function(req, res) {
 
     var that = this;
 
@@ -521,7 +1284,7 @@ E008Controller.prototype.consultarDocumentoTemporalClientes = function(req, res)
     var numero_pedido = args.documento_temporal.numero_pedido;
 
     // Consultamos el documento temporal de despacho
-    that.m_e008.consultar_documento_temporal_clientes(numero_pedido, function(err, documento_temporal) {
+    that.m_I002.consultar_documento_temporal_clientes(numero_pedido, function(err, documento_temporal) {
 
         //Si genera error la consulta
         if (err) {
@@ -577,7 +1340,7 @@ E008Controller.prototype.consultarDocumentoTemporalClientes = function(req, res)
 };
 
 // Consulta el Documento temporal de despacho FARMACIAS por numero de pedido
-E008Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res) {
+I002Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res) {
 
     var that = this;
 
@@ -595,7 +1358,7 @@ E008Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res
 
     var numero_pedido = args.documento_temporal.numero_pedido;
 
-    that.m_e008.consultar_documento_temporal_farmacias(numero_pedido, function(err, documento_temporal) {
+    that.m_I002.consultar_documento_temporal_farmacias(numero_pedido, function(err, documento_temporal) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Consultado el Documento Temporal ', 500, {}));
@@ -653,7 +1416,7 @@ E008Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res
 };
 
 // Eliminar Producto Documento Temporal CLIENTES / FARMACIAS
-E008Controller.prototype.eliminarProductoDocumentoTemporal = function(req, res) {
+I002Controller.prototype.eliminarProductoDocumentoTemporal = function(req, res) {
 
 
     var that = this;
@@ -688,7 +1451,7 @@ E008Controller.prototype.eliminarProductoDocumentoTemporal = function(req, res) 
             return;
         } else {
 
-            that.m_e008.eliminar_justificaciones_temporales_producto(doc_tmp_id, usuario_id, codigo_producto, function(err, rows) {
+            that.m_I002.eliminar_justificaciones_temporales_producto(doc_tmp_id, usuario_id, codigo_producto, function(err, rows) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado la justificacon del Producto', 500, {}));
                     return;
@@ -703,7 +1466,7 @@ E008Controller.prototype.eliminarProductoDocumentoTemporal = function(req, res) 
 };
 
 // Eliminar un definitivamente un documento temporal de CLIENTES 
-E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) {
+I002Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) {
 
     var that = this;
 
@@ -718,7 +1481,7 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
     }
 
     var numero_pedido = args.documento_temporal.numero_pedido;
-    that.m_e008.consultar_documento_temporal_clientes(numero_pedido, function(err, documento_temporal) {
+    that.m_I002.consultar_documento_temporal_clientes(numero_pedido, function(err, documento_temporal) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Clientes.', 500, {}));
@@ -735,7 +1498,7 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
             var documento_temporal_id = documento.documento_temporal_id;
             var usuario_id = documento.usuario_id;
 
-            that.m_e008.eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, rows) {
+            that.m_I002.eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, rows) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Clientes', 500, {}));
                     return;
@@ -750,7 +1513,7 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
 };
 
 // Eliminar un definiticamente un documento temporal de FARMACIAS
-E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res) {
+I002Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res) {
 
     var that = this;
 
@@ -766,7 +1529,7 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
     }
 
     var numero_pedido = args.documento_temporal.numero_pedido;
-    that.m_e008.consultar_documento_temporal_farmacias(numero_pedido, function(err, documento_temporal) {
+    that.m_I002.consultar_documento_temporal_farmacias(numero_pedido, function(err, documento_temporal) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Farmacias.', 500, {}));
@@ -783,7 +1546,7 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
             var documento_temporal_id = documento.documento_temporal_id;
             var usuario_id = documento.usuario_id;
 
-            that.m_e008.eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_id, function(err, rows) {
+            that.m_I002.eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_id, function(err, rows) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Farmacias', 500, {}));
                     return;
@@ -799,7 +1562,7 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
 };
 
 // Ingresar las justificaciones de los productos pendientes en el desapAcho de CLIENTES / FARMACIAS
-E008Controller.prototype.justificacionPendientes = function(req, res) {
+I002Controller.prototype.justificacionPendientes = function(req, res) {
     var that = this;
 
     var args = req.body.data;
@@ -837,7 +1600,7 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
     var existencia = args.documento_temporal.existencia;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
+    that.m_I002.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
@@ -850,7 +1613,7 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
 };
 
 // Actualizar bodegas_doc_id en documento temporal Clientes.
-E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req, res) {
+I002Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req, res) {
 
     var that = this;
 
@@ -924,7 +1687,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
                             return;
                         } else {
                             // Actualizar estado documento temporal a "En Auditoria"
-                            that.m_e008.actualizar_estado_documento_temporal_clientes(numero_pedido, estado, function(err, rows, result) {
+                            that.m_I002.actualizar_estado_documento_temporal_clientes(numero_pedido, estado, function(err, rows, result) {
 
                                 if (err || result.rowCount === 0) {
                                     res.send(G.utils.r(req.url, 'Error Actualizando el documento Temporal', 500, {movimientos_bodegas: {}}));
@@ -937,7 +1700,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
                                         that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                                         // Emitir evento para actualizar la lista de Documentos Temporales
-                                        that.e_e008.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});
+                                        that.e_I002.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});
 
                                         res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {}}));
                                     });
@@ -961,7 +1724,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
 
 //validar auditor
 // Actualizar bodegas_doc_id en documento temporal farmacias.
-E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req, res) {
+I002Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req, res) {
 
     var that = this;
 
@@ -1039,7 +1802,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
                         } else {
 
                             // Actualizar estado documento a "En Auditoria"
-                            that.m_e008.actualizar_estado_documento_temporal_farmacias(numero_pedido, estado, function(err, rows, result) {
+                            that.m_I002.actualizar_estado_documento_temporal_farmacias(numero_pedido, estado, function(err, rows, result) {
 
                                 if (err || result.rowCount === 0) {
                                     res.send(G.utils.r(req.url, 'Error Actualizando el documento Temporal', 500, {movimientos_bodegas: {}}));
@@ -1052,7 +1815,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
                                         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                                         // Emitir evento para actualizar la lista de Documentos Temporales
-                                        that.e_e008.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});
+                                        that.e_I002.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});
 
                                         res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {}}));
                                     });
@@ -1077,7 +1840,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
 };
 
 // Consultar productos Auditados
-E008Controller.prototype.consultarProductosAuditados = function(req, res) {
+I002Controller.prototype.consultarProductosAuditados = function(req, res) {
 
     var that = this;
 
@@ -1103,176 +1866,14 @@ E008Controller.prototype.consultarProductosAuditados = function(req, res) {
             res.send(G.utils.r(req.url, 'Error listando los productos auditados', 500, {movimientos_bodegas: {}}));
             return;
         } else {
-            /*detalle_documento_temporal.forEach(function(producto) {
-             if (producto.auditado === '1'){
-             lista_productos.push(producto);
-             }
-             });*/
+        
             res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: detalle_documento_temporal}}));
         }
     });
 
 };
 
-// Auditar Producto Documento Temporal
-E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
-
-    var that = this;
-
-    var args = req.body.data;
-
-
-    if (!args.documento_temporal.justificacionPendiente) {
-
-        if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined || args.documento_temporal.auditado === undefined || args.documento_temporal.numero_caja === undefined) {
-            res.send(G.utils.r(req.url, 'El item_id, numero_caja o auditado No Estan Definidos', 404, {}));
-            return;
-        }
-        if (args.documento_temporal.item_id === '' || args.documento_temporal.item_id === "0" || args.documento_temporal.auditado === '' || args.documento_temporal.numero_caja === '' | args.documento_temporal.numero_caja === '0') {
-            res.send(G.utils.r(req.url, 'El item_id o auditado  está vacio', 404, {}));
-            return;
-        }
-
-        if (args.documento_temporal.numero_caja === '') {
-            res.send(G.utils.r(req.url, 'El numero de caja esta vacio o es igual cero', 404, {}));
-            return;
-        }
-    }
-
-
-    // Datos requeridos para auditar con la justificacion
-    if (args.documento_temporal.justificacion !== undefined) {
-
-        console.log(args.documento_temporal.justificacion);
-
-        if (args.documento_temporal.justificacion.documento_temporal_id === undefined || args.documento_temporal.justificacion.usuario_id === undefined || args.documento_temporal.justificacion.codigo_producto === undefined) {
-            res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o codigo_producto no estan definidos', 404, {}));
-            return;
-        }
-
-        if (args.documento_temporal.justificacion.cantidad_pendiente === undefined || args.documento_temporal.justificacion.justificacion === undefined || args.documento_temporal.justificacion.existencia === undefined || args.documento_temporal.justificacion.justificacion_auditor === undefined) {
-            res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion, justificacion_auditor o existencia no estan definidos', 404, {}));
-            return;
-        }
-
-
-        if (args.documento_temporal.justificacion.documento_temporal_id === "" || args.documento_temporal.justificacion.usuario_id === '' || args.documento_temporal.justificacion.codigo_producto === "") {
-            res.send(G.utils.r(req.url, 'El doc_tmp_id, usuario_id o codigo_producto estan vacíos', 404, {}));
-            return;
-        }
-
-        if (args.documento_temporal.justificacion.cantidad_pendiente === "" || args.documento_temporal.justificacion.existencia === "" || args.documento_temporal.justificacion.justificacion_auditor === "") {
-            res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion_auditor o existencia estan vacíos', 404, {}));
-            return;
-        }
-
-        if (parseInt(args.documento_temporal.justificacion.cantidad_pendiente) <= 0) {
-            res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
-            return;
-        }
-
-    }
-
-
-    var item_id = args.documento_temporal.item_id || 0;
-    var auditado = args.documento_temporal.auditado;
-    var numero_caja = args.documento_temporal.numero_caja || 0;
-
-
-
-    if (args.documento_temporal.justificacion !== undefined) {
-        // Auditar con Justificacion.
-        var doc_tmp_id = args.documento_temporal.justificacion.documento_temporal_id;
-        var usuario_id = args.documento_temporal.justificacion.usuario_id;
-        var codigo_producto = args.documento_temporal.justificacion.codigo_producto;
-        var cantidad_pendiente = args.documento_temporal.justificacion.cantidad_pendiente;
-        var justificacion = args.documento_temporal.justificacion.justificacion;
-        var justificacion_auditor = args.documento_temporal.justificacion.justificacion_auditor;
-        var existencia = args.documento_temporal.justificacion.existencia;
-
-        that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
-            if (err || result.rowCount === 0) {
-                res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
-                return;
-            } else {
-
-                that.m_movimientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
-
-                    if (err /*|| result.rowCount === 0*/) {
-                        res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
-                        return;
-                    } else {
-
-                        var msj = " Producto Auditado Correctamente";
-                        if (!auditado) {
-                            msj = " Producto ya NO esta auditado";
-                        }
-
-                        if (/*result.rowCount === 0 &&*/ !auditado) {
-
-                            that.m_movimientos_bodegas.borrarJustificacionAuditor(usuario_id, doc_tmp_id, codigo_producto, function(err, rows, result) {
-
-                                if (err || result.rowCount === 0) {
-                                    res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
-                                    return;
-                                }
-
-                                res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
-                            });
-                        } else {
-                            res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
-                        }
-                    }
-                });
-            }
-        });
-    } else {
-
-
-
-        var usuario_id = args.documento_temporal.usuario_id;
-        var doc_tmp_id = args.documento_temporal.documento_temporal_id;
-        var codigo_producto = args.documento_temporal.codigo_producto;
-
-        // Auditar sin Justificar.
-        that.m_movimientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
-
-            if (err /*|| result.rowCount === 0*/) {
-                res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
-                return;
-            } else {
-
-                var msj = " Producto Auditado Correctamente";
-                if (!auditado)
-                    msj = " Producto ya NO esta auditado";
-
-                if (result.rowCount === 0 && !auditado) {
-
-                    if (args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined
-                            || args.documento_temporal.codigo_producto === undefined) {
-
-                        res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o codigo_producto no estan definidos', 404, {}));
-                        return;
-                    }
-
-                    that.m_movimientos_bodegas.borrarJustificacionAuditor(usuario_id, doc_tmp_id, codigo_producto, function(err, rows, result) {
-
-                        if (err || result.rowCount === 0) {
-                            res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
-                            return;
-                        }
-
-                        res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
-                    });
-                } else {
-                    res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
-                }
-            }
-        });
-    }
-};
-
-E008Controller.prototype.buscarItemsTemporal = function(req, res) {
+I002Controller.prototype.buscarItemsTemporal = function(req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -1306,7 +1907,7 @@ E008Controller.prototype.buscarItemsTemporal = function(req, res) {
 };
 
 // Buscar productos para auditar de Clientes 
-E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
+I002Controller.prototype.auditoriaProductosClientes = function(req, res) {
 
     var that = this;
 
@@ -1340,7 +1941,7 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
     var lista_productos = [];
 
     // Consultamos el documento temporal de despacho
-    that.m_e008.consultar_documento_temporal_clientes(numero_pedido, function(err, documento_temporal) {
+    that.m_I002.consultar_documento_temporal_clientes(numero_pedido, function(err, documento_temporal) {
 
         //Si genera error la consulta
         if (err) {
@@ -1382,7 +1983,7 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                 detalle_documento_temporal.forEach(function(detalle) {
 
                     // Consultar las justificaciones del producto
-                    that.m_e008.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
+                    that.m_I002.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
 
                         detalle.justificaciones = justificaciones;
 
@@ -1418,7 +2019,7 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
 };
 
 // Buscar productos para auditar de Farmacias 
-E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {   
+I002Controller.prototype.auditoriaProductosFarmacias = function(req, res) {   
 
     var that = this;
 
@@ -1452,7 +2053,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
     var lista_productos = [];
 
     // Consultamos el documento temporal de despacho
-    that.m_e008.consultar_documento_temporal_farmacias(numero_pedido, function(err, documento_temporal) {
+    that.m_I002.consultar_documento_temporal_farmacias(numero_pedido, function(err, documento_temporal) {
 
         //Si genera error la consulta
         if (err) {
@@ -1493,7 +2094,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                 detalle_documento_temporal.forEach(function(detalle) {
 
                     // Consultar las justificaciones del producto
-                    that.m_e008.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
+                    that.m_I002.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
 
                         detalle.justificaciones = justificaciones;
 
@@ -1527,8 +2128,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
     });
 };
 
-
-E008Controller.prototype.imprimirRotuloClientes = function(req, res) {
+I002Controller.prototype.imprimirRotuloClientes = function(req, res) {
 
     var that = this;
 
@@ -1571,10 +2171,7 @@ E008Controller.prototype.imprimirRotuloClientes = function(req, res) {
 
 };
 
-
-
-
-E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
+I002Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
 
     var that = this;
 
@@ -1621,8 +2218,8 @@ E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
 function _generarDocumentoRotulo(obj, callback) {
     G.jsreport.render({
         template: {
-            content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
-            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/javascripts/rotulos.js', 'utf8'),
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/I002/reports/rotulos.html', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/I002/reports/javascripts/rotulos.js', 'utf8'),
             recipe: "phantom-pdf",
             engine: 'jsrender'
         },
@@ -1648,10 +2245,8 @@ function _generarDocumentoRotulo(obj, callback) {
     });
 }
 
-
-
 // Generar Documento Despacho Clientes
-E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
+I002Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
 
 
     // Verificar Pendientes
@@ -1733,7 +2328,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                     return;
                                 }
 
-                                that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+                                that.m_I002.generar_documento_despacho_clientes(documento_temporal_id, numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
 
                                     if (err) {
                                         res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
@@ -1772,7 +2367,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                         that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado, auditor_id, req.session.user.usuario_id, function(err, rows) {
 
                                             that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
-                                                that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
+                                                that.m_I002.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
 
                                                     if (err) {
                                                         console.log("========================================== generar documento despacho clientes error generado ============================");
@@ -1809,7 +2404,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
 };
 
 // Generar Documento Despacho Farmacias
-E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) {
+I002Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) {
     // Verificar Pendientes
     // Ingresar Justificacion
     // Verificar Rotulos
@@ -1899,7 +2494,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                             }
 
 
-                            that.m_e008.generar_documento_despacho_farmacias(documento_temporal_id, numero_pedido, usuario_id, auditor_id,
+                            that.m_I002.generar_documento_despacho_farmacias(documento_temporal_id, numero_pedido, usuario_id, auditor_id,
                              function(err, empresa_id, prefijo_documento, numero_documento) {
 
                                 if (err) {
@@ -1940,7 +2535,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                                             req.session.user.usuario_id, function(err, rows) {
 
                                         that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
-                                            that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
+                                            that.m_I002.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
                                                 if (err) {
                                                     console.log("========================================== generar documento despacho clientes error generado ============================");
                                                     console.log(err);
@@ -1983,7 +2578,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 };
 
 // Validar que la caja este abierta
-E008Controller.prototype.validarCajaProducto = function(req, res) {
+I002Controller.prototype.validarCajaProducto = function(req, res) {
 
     var that = this;
 
@@ -2022,7 +2617,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     var tipo = args.documento_temporal.tipo;
 
-    that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
+    that.m_I002.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;
@@ -2035,7 +2630,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
             return;
         }
         
-        that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
+        that.m_I002.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                 return;
@@ -2059,7 +2654,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
                     return;
                 } else {
                     // Crear
-                    that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id,tipo, function(err, rotulo_caja) {
+                    that.m_I002.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id,tipo, function(err, rotulo_caja) {
                         if (err) {
                             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                             return;
@@ -2076,7 +2671,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
 };
 
 // Generar rotulos caja
-E008Controller.prototype.generarRotuloCaja = function(req, res) {
+I002Controller.prototype.generarRotuloCaja = function(req, res) {
 
     var that = this;
 
@@ -2101,7 +2696,7 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
     var tipo = args.documento_temporal.tipo;
     
 
-    that.m_e008.cerrar_caja(documento_temporal_id, numero_caja, tipo, function(err, rows, result) {
+    that.m_I002.cerrar_caja(documento_temporal_id, numero_caja, tipo, function(err, rows, result) {
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error cerrando la caja', 500, {documento_temporal: {}}));
             return;
@@ -2115,8 +2710,7 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
 
 };
 
-
-E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
+I002Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
     var that = this;
 
     var args = req.body.data;
@@ -2134,7 +2728,7 @@ E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
 
     temporales.forEach(function(temporal) {
 
-        that.m_e008.actualizarCajaDeTemporal(temporal, numero_caja, tipo, function(err, rows, result) {
+        that.m_I002.actualizarCajaDeTemporal(temporal, numero_caja, tipo, function(err, rows, result) {
 
             if (err || result.rowCount === 0) {
                 res.send(G.utils.r(req.url, 'Error actualizand  la caja', 500, {documento_temporal: {}}));
@@ -2152,7 +2746,7 @@ E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
 };
 
 
-E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
+I002Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
 
     var that = this;
     var args = req.body.data;
@@ -2175,7 +2769,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
     var empresa = args.movimientos_bodegas.empresa;
     var datos_documento = {};
 
-    that.m_e008.consultar_documento_despacho(numero, prefijo, empresa, req.session.user.usuario_id, function(err, rows) {
+    that.m_I002.consultar_documento_despacho(numero, prefijo, empresa, req.session.user.usuario_id, function(err, rows) {
 
         if (err || rows.length === 0) {
 
@@ -2213,13 +2807,6 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
     });
 
 };
-
-/*==================================================================================================================================================================
- * 
- *                                                          FUNCIONES PRIVADAS
- * 
- * ==================================================================================================================================================================*/
-
 
 // Valida que los productos con pendientes esten justificados
 // igualmente para los auditados
@@ -2384,7 +2971,7 @@ function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero
 
             detalle_documento_temporal.forEach(function(detalle) {
 
-                that.m_e008.consultar_rotulo_caja(documento_temporal_id, detalle.numero_caja, numero_pedido, function(err, caja_producto) {
+                that.m_I002.consultar_rotulo_caja(documento_temporal_id, detalle.numero_caja, numero_pedido, function(err, caja_producto) {
                     if (err) {
                         callback(err);
                         return;
@@ -2482,7 +3069,7 @@ function __generarPdfDespacho(datos, callback) {
 
     G.jsreport.render({
         template: {
-            content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/despacho.html', 'utf8'),
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/I002/reports/despacho.html', 'utf8'),
             recipe: "phantom-pdf",
             engine: 'jsrender',
             phantom: {
@@ -2508,10 +3095,10 @@ function __generarPdfDespacho(datos, callback) {
         });
     });
 }
+*/
 
 
 
+I002Controller.$inject = ["m_movimientos_bodegas", "m_i002", "e_i002", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos"];
 
-E008Controller.$inject = ["m_movimientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros", "m_pedidos"];
-
-module.exports = E008Controller;
+module.exports = I002Controller;

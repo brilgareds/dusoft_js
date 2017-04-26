@@ -47,6 +47,19 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.productos = [];
             };
             
+            // Laboratorios
+            EmpresaIngreso.set_laboratorios = function(laboratorio) {
+                this.laboratorios.push(laboratorio);
+            };
+
+            EmpresaIngreso.get_laboratorios = function() {
+                return this.laboratorios;
+            };
+
+            EmpresaIngreso.limpiar_laboratorios = function() {
+                this.laboratorios = [];
+            };
+            
 
             return EmpresaIngreso;
         }]);

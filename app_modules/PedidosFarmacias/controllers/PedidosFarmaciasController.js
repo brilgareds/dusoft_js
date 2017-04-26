@@ -1621,6 +1621,32 @@ PedidosFarmacias.prototype.generarPedidoModuloCliente = function(req, res) {
     var that = this;
     var args = req.body.data;
     var ok = false;
+    
+    if (args.pedidos_farmacias.empresa_destino_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_destino_id no están definidos', 404, {}));
+        return;
+    }
+    if (args.pedidos_farmacias.centro_utilidad_destino_id === undefined) {
+        res.send(G.utils.r(req.url, 'centro_utilidad_destino_id no están definidos', 404, {}));
+        return;
+    }
+    if (args.pedidos_farmacias.bodega_destino_id === undefined) {
+        res.send(G.utils.r(req.url, 'bodega_destino_id no están definidos', 404, {}));
+        return;
+    }
+    if (args.pedidos_farmacias.empresa_origen_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_origen_id no están definidos', 404, {}));
+        return;
+    }
+    if (args.pedidos_farmacias.centro_utilidad_origen_id === undefined) {
+        res.send(G.utils.r(req.url, 'centro_utilidad_origen_id no están definidos', 404, {}));
+        return;
+    }
+    if (args.pedidos_farmacias.bodega_origen_id === undefined) {
+        res.send(G.utils.r(req.url, 'bodega_origen_id no están definidos', 404, {}));
+        return;
+    }
+    
     G.Q.nfcall(__generarTemporalAutomatico, that, req).then(function(resultado) {
         console.log("generarPedidoModuloCliente ",resultado);
         ok = resultado;
@@ -1640,8 +1666,10 @@ PedidosFarmacias.prototype.generarPedidoModuloCliente = function(req, res) {
                 {pedido_farmacia: {pedido: resultados.numero_pedido}}));
         return;
     }).fail(function(err) {
-        res.send(G.utils.r(req.url, 'Pedido Farmacia', err.status, 
-                {pedido_farmacia: {productosInvalidos: err.productosInvalidos}}));
+
+        res.send(G.utils.r(req.url, 'Error '+err.msj, 500, {pedido_farmacia: err }));
+        return;
+
     }).done();
 };
 
@@ -1665,17 +1693,17 @@ function __generarPedidoAutomatico(that, req, callback) {
     }
 
     if (args.pedidos_farmacias.tipo_pedido === undefined) {
-        throw {msj:"tipo_pedido no estÃ¡ definido", status:403};
+        throw {msj:"tipo_pedido no está definido", status:403};
         return;
     }
 
     if (args.pedidos_farmacias.empresa_id === '' || args.pedidos_farmacias.centro_utilidad_id === '' || args.pedidos_farmacias.bodega_id === '') {
-         throw {msj:"empresa_id, centro_utilidad_id o bodega_id estÃ¡n vacios", status:403};
+         throw {msj:"empresa_id, centro_utilidad_id o bodega_id están vacios", status:403};
         return;
     }
 
     if (args.pedidos_farmacias.tipo_pedido === '') {
-        throw {msj:"tipo_pedido estÃ¡ vacio", status:403};
+        throw {msj:"tipo_pedido está vacio", status:403};
         return;
     }
 
@@ -1772,7 +1800,7 @@ function __generarPedidoAutomatico(that, req, callback) {
         return;
         
     }).fail(function(err) {
-       console.log("FAIL::::::::::: ",err);
+       console.log("FAIL ",err);
         var msj = "Error Interno";
         var status = 500;
         

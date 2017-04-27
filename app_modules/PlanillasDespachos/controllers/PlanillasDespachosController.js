@@ -898,12 +898,19 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
         return;
     }
     
-     if (args.planillas_despachos.cantidadLios === undefined || args.planillas_despachos.cantidadLios === '' || args.planillas_despachos.cantidadLios === '0') {
+    if (args.planillas_despachos.cantidadLios === undefined || args.planillas_despachos.cantidadLios === '' || args.planillas_despachos.cantidadLios === '0') {
         res.send(G.utils.r(req.url, 'la cantidad de lios debe estar definido y no puede estar en cero', 404, {}));
         return;
     }
+    
+    if (args.planillas_despachos.cantidadNeveras === undefined || args.planillas_despachos.cantidadNeveras === '' || args.planillas_despachos.cantidadNeveras === '0') {
+        res.send(G.utils.r(req.url, 'la cantidad de neveras debe estar definido y no puede estar en cero', 404, {}));
+        return;
+    }
+    
     args.planillas_despachos.usuario_id = req.session.user.usuario_id;
     var totalCajas = parseInt(args.planillas_despachos.totalCaja);
+    var totalNeveras = parseInt(args.planillas_despachos.cantidadNeveras);
     var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas  
     
     var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
@@ -916,15 +923,13 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
     }
     var status = {};
   
-    G.Q.ninvoke(that.m_planillas_despachos,'gestionarLios', args.planillas_despachos)
-           
-     .then(function(resultado){ 
+    G.Q.ninvoke(that.m_planillas_despachos,'gestionarLios', args.planillas_despachos).then(function(resultado){ 
  
-     
+        console.log("resultado ", resultado);
      
         var def = G.Q.defer();  
      
-        if(parseInt(resultado[0].totalcajas) === totalCajas){
+        if(parseInt(resultado[0].totalcajas) === totalCajas && parseInt(resultado[0].totalneveras) === totalNeveras){
              
              status.codigo = 200;
              status.mensaje = 'Se insertan satisfactoriamente los lios';
@@ -935,7 +940,7 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
          }else{
             
              status.codigo = 403;
-             status.mensaje = 'El número de cajas es diferente al auditado';
+             status.mensaje = 'El número de cajas o neveras es diferente al auditado';
              def.resolve();
         }
       //  return res.send(G.utils.r(req.url, 'cantidad de cajas', 200, {planillas_despachos: resultado}));
@@ -945,7 +950,7 @@ PlanillasDespachos.prototype.gestionarLios = function(req, res) {
          res.send(G.utils.r(req.url, status.mensaje, status.codigo, {planillas_despachos: resultado}));
          
      }).fail(function(err){ 
-       
+        console.log("err ", err);
          res.send(G.utils.r(req.url, 'Error interno', 500, {planillas_despachos: {}}));
        
     }).done();

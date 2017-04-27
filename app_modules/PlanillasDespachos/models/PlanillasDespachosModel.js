@@ -423,7 +423,7 @@ PlanillasDespachosModel.prototype.gestionarLios = function(obj, callback){
     };
         
   
-   var sql = "SELECT coalesce(sum(aa.cantidad_cajas),'0') as totalCajas\
+   var sql = "SELECT coalesce(sum(aa.cantidad_cajas),'0') as totalCajas, coalesce(sum(aa.cantidad_neveras),'0') as totalNeveras \
                FROM aprobacion_despacho_planillas aa\
                WHERE aa.empresa_id::varchar IN ("+vEmpresaId.toString()+") AND  aa.prefijo::varchar IN ("+vPrefijo.toString()+") AND aa.numero::varchar IN ("+vNumero.toString()+") ;";
     
@@ -503,8 +503,8 @@ function __insertarLioDocumento(obj, callback){
                 empresa_id,\
                 prefijo,\
                 numero,\
-                coalesce(max(numero_caja),'0') as totalCajas,\
-                0 as cantidad_neveras,\
+                "+obj.totalCaja+" as totalCajas,\
+                "+obj.cantidadNeveras+" as cantidad_neveras,\
                 0 as temperatura_neveras,\
                 "+observacion+" as observacion,\
                 "+parseInt(obj.usuario_id)+ " as usuario_id,\
@@ -536,7 +536,7 @@ function __insertarLioDocumento(obj, callback){
                 prefijo,\
                 numero,\
                 coalesce(max(cantidad_cajas),'0') as totalCajas,\
-                0 as cantidad_neveras,\
+                coalesce(max(cantidad_neveras),'0') as cantidad_neveras,\
                 0 as temperatura_neveras,\
                 "+observacion+" as observacion,\
                 "+parseInt(obj.usuario_id)+ " as usuario_id,\

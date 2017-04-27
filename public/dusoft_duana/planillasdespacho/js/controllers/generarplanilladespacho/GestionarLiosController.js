@@ -16,6 +16,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.root = {
                     cantidadCajas:0,
                     cantidadLios:0,
+                    cantidadNeveras:0,
                     observacion:""
                 };
                 
@@ -31,13 +32,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             self.validarLios = function(){
                 var cantidadCajas = parseInt($scope.root.cantidadCajas);
                 var cantidadLios = parseInt($scope.root.cantidadLios);
+                var cantidadNeveras = parseInt($scope.root.cantidadNeveras);
                 
                 //console.log("cantidad cajas ", cantidadCajas, " cantidadLios ", cantidadLios);
                 
-                if(isNaN(cantidadCajas) || isNaN(cantidadLios) || cantidadLios === 0 || cantidadCajas === 0 ){
+                if(isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
+                   || (cantidadCajas === 0 && cantidadNeveras === 0)){
                     //console.log("cantidad cajas ", isNaN(cantidadCajas), " cantidadLios ", cantidadLios);
                     return false;
-                } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) && (cantidadLios  > cantidadCajas)) {
+                } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) && (cantidadLios  > cantidadCajas || cantidadLios > cantidadNeveras)) {
                     return false;
                 }
                 
@@ -86,7 +89,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.onIngresarLios = function(){
                 
                 if(!self.validarLios()){
-                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "La cantidad de cajas o lios no son correctos");
+                    AlertService.mostrarVentanaAlerta("Alerta del sistema", "La cantidad de cajas, neveras o lios no son correctos");
                     
                     return;
                 }
@@ -98,6 +101,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             documentos: documentos,
                             totalCaja: $scope.root.cantidadCajas,
                             cantidadLios: $scope.root.cantidadLios,
+                            cantidadNeveras: $scope.root.cantidadNeveras,
                             tipo:tipo,
                             numeroGuia:numeroGuia,
                             observacion:$scope.root.observacion

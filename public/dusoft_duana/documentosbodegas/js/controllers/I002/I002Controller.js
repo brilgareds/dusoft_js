@@ -1211,7 +1211,7 @@ console.log("DocItemTemporal:: ",data);
                 }
                 
                 
-                if (productos.valor_unitario_ingresado > productos.valor_unitario || diferencia >= 0 && diferencia <= 45) {
+                if (productos.valor_unitario_ingresado > (productos.valor_unitario+0.999) || diferencia >= 0 && diferencia <= 45) {
                     var mensaje="";
                     var validacionprecio=false;
                     var validacionfecha=false;
@@ -1233,7 +1233,7 @@ console.log("DocItemTemporal:: ",data);
                     return;
                 }
 
-                var total_costo_ped = productos.cantidadActual * (productos.valor_unitario + (productos.valor_unitario * productos.iva) / 100);
+                var total_costo_ped = productos.cantidadActual * (productos.valor_unitario_ingresado + (productos.valor_unitario_ingresado * productos.iva) / 100);
                 var movimientos_bodegas = {
                     doc_tmp_id: $scope.doc_tmp_id,
                     bodegas_doc_id: datos_documento.bodegas_doc_id,
@@ -1283,13 +1283,9 @@ console.log("DocItemTemporal:: ",data);
                                             </p>\
                                         </div>'},
                     {field: 'nombre', displayName: 'Valor Unitario', width: "10%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"><input type="text" ng-model="row.entity.valor_unitario_ingresado" ng-disabled="validarTmp(row.entity)" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12"><input type="text" ng-model="row.entity.valor_unitario_ingresado" ng-disabled="validarTmp(row.entity)" validacion-numero-decimal class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "8%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                          <div ng-if="validarEstado(row.entity)">\
-                                            <button  class="btn btn-danger btn-xs" ng-disabled="validarEstado(row.entity)" ><span class="glyphicon glyphicon-lock"></span></button>\
-                                          </div>\
-                                          <div ng-if="!validarEstado(row.entity)">\
                                             <div ng-if="!validarAutorz(row.entity)">\
                                                 <button  class="btn btn-danger btn-xs" ng-disabled="validarTmp(row.entity)" ><span class="glyphicon glyphicon-time"></span></button>\
                                             </div>\
@@ -1309,7 +1305,6 @@ console.log("DocItemTemporal:: ",data);
                                                    <button class="btn btn-danger btn-xs" ng-disabled="validarTmp(row.entity)"><span class="glyphicon glyphicon-minus-sign"></span></button>\
                                                 </div>\
                                             </div>\
-                                          </div>\
                                         </div>'}
                 ]
             };
@@ -1406,9 +1401,9 @@ console.log("DocItemTemporal:: ",data);
                     disabled = true;
                 }
                 
-                if(producto.get_sw_estado() === false){
-                  disabled = true;
-                } 
+//                if(producto.get_sw_estado() === false){
+//                  disabled = true;
+//                } 
 
                 return disabled;
             };

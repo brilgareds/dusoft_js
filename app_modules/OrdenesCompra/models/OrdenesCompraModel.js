@@ -15,6 +15,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
     var columns = [
         "a.orden_pedido_id as numero_orden",
         "a.empresa_id",
+        G.knex.raw("to_char(fecha_ingreso, 'DD-MM-YYYY') as fecha_ingreso"),
         "d.tipo_id_tercero as tipo_id_empresa",
         "d.id as nit_empresa",
         "d.razon_social as nombre_empresa",

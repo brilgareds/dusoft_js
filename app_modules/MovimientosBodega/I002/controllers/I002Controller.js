@@ -406,6 +406,7 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
     var detalle=[];
     var consulta=[];
     var impuesto=[];
+    var comprasTemporal=[];
     G.knex.transaction(function(transaccion) {  
 
             G.Q.ninvoke(that.m_movimientos_bodegas, "crear_documento", docTmpId, usuarioId, transaccion).then(function(result) {
@@ -472,10 +473,53 @@ I002Controller.prototype.execCrearDocumento=function(req,res){
             }).then(function(result) {
                 
               if(result >= 1){
+                    return G.Q.ninvoke(that.m_I002, "listarDocumentoTempIngresoCompras", parametros);
+              }else{
+                    throw '__modificarComprasOrdenesPedidosDetalle Fallo';
+              }                
+                
+            }).then(function(result) {
+                comprasTemporal=result[0];
+              if(result.length >= 1){
+                   result[0].prefijo=parametros.prefijoDocumento;
+                   result[0].numero=parametros.numeracionDocumento;                   
+                   return G.Q.ninvoke(that.m_I002, "insertarRecepcionParcialCabecera", result[0], transaccion);
+              }else{
+                    throw 'listarDocumentoTempIngresoCompras Fallo';
+              }
+                
+            }).then(function(result) {
+                
+              if(result.length >= 1){
+                    resultadoProducto.recepcion_parcial_id=result[0];                
+                    return G.Q.nfcall(__insertarRecepcionParcialDetalle,that,0, resultadoProducto,0,transaccion);
+              }else{
+                    throw 'insertarRecepcionParcialCabecera Fallo';
+              }               
+                
+            }).then(function(result) {
+             
+               if(result >= 1){                            
+                     return G.Q.ninvoke(that.m_I002, "listarIngresosAutorizados", comprasTemporal);
+              }else{
+                    throw '__insertarRecepcionParcialDetalle Fallo';
+              }   
+                
+            }).then(function(result) {
+                if (result.length >= 1) {
+                result.prefijo = parametros.prefijoDocumento;
+                result.numero = parametros.numeracionDocumento;
+                return G.Q.nfcall(__ingresoAutorizacion, that, 0, result, 0, transaccion);
+                } else {
+                    return 1;
+                }
+            }).then(function(result) {
+                console.log("__ingresoAutorizacion ",result);
+              if(result >= 1){
                 transaccion.commit(); 
                 return false;
               }else{
-                throw '__modificarComprasOrdenesPedidosDetalle Fallo';
+                throw ' Fallo ';
               }
                
             }).fail(function(err) {
@@ -741,6 +785,59 @@ function __modificarComprasOrdenesPedidosDetalle(that, index, parametros,resulta
                
     }).fail(function(err){
         consol.log("__modificarComprasOrdenesPedidosDetalle:::::::",err);
+        callback(true, err);
+        return;
+    }).done();
+}
+
+function __insertarRecepcionParcialDetalle(that, index, parametros,resultado,transaccion, callback) {
+
+    var productos = parametros[index];
+    
+    if (!productos) {
+        callback(false,resultado);
+        return;
+    }
+   productos.recepcion_parcial_id=parametros.recepcion_parcial_id;
+   
+   G.Q.ninvoke(that.m_I002,"insertarRecepcionParcialDetalle",productos, transaccion).then(function(result){
+
+     index++;
+     
+        setTimeout(function() {
+            resultado+=result.rowCount;
+            __insertarRecepcionParcialDetalle(that, index, parametros,resultado, transaccion, callback);
+        }, 3);   
+               
+    }).fail(function(err){
+        consol.log("__insertarRecepcionParcialDetalle:::::::",err);
+        callback(true, err);
+        return;
+    }).done();
+}
+
+function __ingresoAutorizacion(that, index, parametros,resultado,transaccion, callback) {
+
+    var productos = parametros[index];
+    
+    if (!productos) {
+        callback(false,resultado);
+        return;
+    }
+   productos.numero=parametros.numero;
+   productos.prefijo=parametros.prefijo;
+   console.log("productos:::::::",productos);
+   G.Q.ninvoke(that.m_I002,"ingresoAutorizacion",productos, transaccion).then(function(result){
+
+     index++;
+     
+        setTimeout(function() {
+            resultado+=result.rowCount;
+            __ingresoAutorizacion(that, index, parametros,resultado, transaccion, callback);
+        }, 3);   
+               
+    }).fail(function(err){
+        console.log("__ingresoAutorizacion:::::::",err);
         callback(true, err);
         return;
     }).done();

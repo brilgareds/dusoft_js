@@ -25,6 +25,178 @@ DocumentoBodegaI002.prototype.insertarBodegasMovimientoOrdenesCompraTmp = functi
 
 };
 
+DocumentoBodegaI002.prototype.insertarRecepcionParcialCabecera = function(parametros, transaccion, callback) {
+
+    var query = G.knex("inv_recepciones_parciales").
+            insert({empresa_id: parametros.empresa_id, 
+                    bodega: parametros.bodega, 
+                    centro_utilidad: parametros.centro_utilidad,
+                    orden_pedido_id:parametros.orden_pedido_id,
+                    usuario_id:parametros.usuario_id,
+                    prefijo:parametros.prefijo,
+                    numero:parametros.numero}).
+                   returning("recepcion_parcial_id");
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("errerrerr ",err);
+        callback(err);
+    }).done();
+
+};
+
+DocumentoBodegaI002.prototype.insertarRecepcionParcialDetalle = function(parametros, transaccion, callback) {
+
+    var query = G.knex("inv_recepciones_parciales_d").
+            insert({cantidad: parametros.cantidad, 
+                    codigo_producto: parametros.codigo_producto, 
+                    fecha_vencimiento: parametros.fecha_vencimiento,
+                    lote:parametros.lote,
+                    porc_iva:parametros.porcentaje_gravamen,
+                    recepcion_parcial_id:parametros.recepcion_parcial_id,
+                    valor:(parametros.total_costo/parametros.cantidad)});
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("Error ",err);
+        callback(err);
+    }).done();
+
+};
+
+DocumentoBodegaI002.prototype.ingresoAutorizacion = function(parametros, transaccion, callback) {
+
+    var query = G.knex("inv_bodegas_movimiento_ordenes_compra_prod_autorizados").
+            insert({orden_pedido_id: parametros.orden_pedido_id, 
+                    codigo_producto: parametros.codigo_producto, 
+                    justificacion_ingreso: parametros.justificacion_ingreso,
+                    usuario_id_autorizador:parametros.usuario_id_autorizador,
+                    usuario_id_autorizador_2:parametros.usuario_id_autorizador_2,
+                    observacion_autorizacion:parametros.observacion_autorizacion,
+                    lote:parametros.lote,
+                    fecha_vencimiento:parametros.fecha_vencimiento,
+                    cantidad:parametros.cantidad,
+                    fecha_solicitud:parametros.fecha_ingreso,
+                    porcentaje_gravamen:parametros.porcentaje_gravamen,
+                    valor_unitario_compra:parametros.valor_unitario_compra,
+                    valor_unitario_factura:parametros.valor_unitario_factura,
+                    total_costo:parametros.total_costo,
+                    empresa_id:parametros.empresa_id,
+                    prefijo:parametros.prefijo,
+                    numero:parametros.numero});
+
+    if (transaccion)
+        query.transacting(transaccion);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(err) {
+        console.log("Error ",err);
+        callback(err);
+    }).done();
+
+};
+
+DocumentoBodegaI002.prototype.listarDocumentoTempIngresoCompras = function(parametros, callback) {
+console.log("*****parametros********",parametros);
+    var columna = [
+                    "a.usuario_id",
+                    "a.doc_tmp_id",
+                    "a.bodegas_doc_id",
+                    "a.observacion",
+                    "a.fecha_registro",
+                    "a.abreviatura",
+                    "a.empresa_destino",
+                    "a.porcentaje_rtf",
+                    "a.porcentaje_ica",
+                    "a.porcentaje_reteiva",
+                    "b.orden_pedido_id",
+                    "c.documento_id",
+                    "c.empresa_id",
+                    "c.centro_utilidad",
+                    "c.bodega"
+                ];
+
+    var subQuery = G.knex.select(columna)
+            .from("inv_bodegas_movimiento_tmp as a")
+            .innerJoin("inv_bodegas_documentos as c",
+            function() {
+                this.on("c.bodegas_doc_id", "a.bodegas_doc_id")
+            })
+            .leftJoin("inv_bodegas_movimiento_tmp_ordenes_compra as b",
+            function() {
+                this.on("b.usuario_id", "a.usuario_id")
+                    .on("b.doc_tmp_id", "a.doc_tmp_id")
+            }).as("a");
+            
+
+    var query = G.knex(G.knex.raw("a.*")).from(subQuery)
+                .where('usuario_id', parametros.usuarioId)
+                .andWhere('doc_tmp_id', parametros.docTmpId);
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [listarDocumentoTempIngresoCompras]: ", error);
+        callback(error);
+    });
+};
+
+DocumentoBodegaI002.prototype.listarIngresosAutorizados = function(parametros, callback) {
+console.log("*****parametros********",parametros);
+    var columna = [
+                    "orden_pedido_id",
+                    "codigo_producto",
+                    "usuario_id",
+                    "justificacion_ingreso",
+                    "fecha_ingreso",
+                    "sw_autorizado",
+                    "usuario_id_autorizador",
+                    "observacion_autorizacion",
+                    "doc_tmp_id",
+                    "empresa_id",
+                    "centro_utilidad",
+                    "bodega",
+                    "cantidad",
+                    "lote",
+                    "fecha_vencimiento",
+                    "porcentaje_gravamen",
+                    "total_costo",
+                    "local_prod",
+                    "item_id",
+                    "usuario_id_autorizador_2",
+                    "valor_unitario_compra",
+                    "valor_unitario_factura"
+                ];
+
+    var subQuery = G.knex.select(columna)
+            .from("compras_ordenes_pedidos_productosfoc")
+            .as("a");
+            
+    var query = G.knex(G.knex.raw("a.*")).from(subQuery)
+                .where('usuario_id', parametros.usuario_id)
+                .andWhere('doc_tmp_id', parametros.doc_tmp_id)
+                .andWhere('empresa_id', parametros.empresa_id)
+                .andWhere('centro_utilidad', parametros.centro_utilidad)
+                .andWhere('bodega', parametros.bodega)
+                .andWhere('orden_pedido_id', parametros.orden_pedido_id)
+                .andWhere('sw_autorizado', '1');
+
+    query.then(function(resultado) {
+        callback(false, resultado);
+    }). catch (function(error) {
+        console.log("error [listarIngresosAutorizados]: ", error);
+        callback(error);
+    });
+};
 
 DocumentoBodegaI002.prototype.listarProductosParaAsignar = function(parametro, callback) {
 

@@ -228,8 +228,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.prefijo,\
                     a.numero,\
                     b.solicitud_prod_a_bod_ppal_id as numero_pedido,\
-                    a.cantidad_cajas,\
-                    a.cantidad_neveras,\
+                    f.cantidad_cajas,\
+                    f.cantidad_neveras,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     a.usuario_id \
@@ -238,6 +238,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     inner join solicitud_productos_a_bodega_principal c on b.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
                     inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
                     inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad\
+                    inner join aprobacion_despacho_planillas f on f.numero = a.numero and f.prefijo = a.prefijo\
                     UNION \
                     select \
                     '1' as tipo,\
@@ -250,8 +251,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.prefijo,\
                     a.numero,\
                     b.pedido_cliente_id as numero_pedido,\
-                    a.cantidad_cajas,\
-                    a.cantidad_neveras,\
+                    e.cantidad_cajas,\
+                    e.cantidad_neveras,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     a.usuario_id\
@@ -259,6 +260,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     inner join inv_bodegas_movimiento_despachos_clientes b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
                     inner join ventas_ordenes_pedidos c on b.pedido_cliente_id = c.pedido_cliente_id\
                     inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id\
+                    inner join aprobacion_despacho_planillas e on e.numero = a.numero and e.prefijo = a.prefijo\
                     UNION\
                     select \
                     '2' as tipo,\
@@ -271,19 +273,20 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.prefijo,\
                     a.numero,\
                     0 as numero_pedido,\
-                    a.cantidad_cajas,\
-                    a.cantidad_neveras,\
+                    b.cantidad_cajas,\
+                    b.cantidad_neveras,\
                     a.temperatura_neveras,\
                     a.observacion,\
                     a.usuario_id\
                     from inv_planillas_detalle_empresas a\
+                    inner join aprobacion_despacho_planillas b on b.numero = a.numero and b.prefijo = a.prefijo\
                 ) as a where a.planilla_id = :1 and ( a.descripcion_destino "+G.constants.db().LIKE+" :2 );";
     
     G.knex.raw(sql, {1: planilla_id,2:'%'+termino_busqueda+'%'}).then(function(resultado){
        
         callback(false, resultado.rows);                
     }).catch(function(err) {
-        
+        console.log("error generado ", err);
         callback(err);
     });
   

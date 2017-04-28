@@ -34,13 +34,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var cantidadLios = parseInt($scope.root.cantidadLios);
                 var cantidadNeveras = parseInt($scope.root.cantidadNeveras);
                 
-                //console.log("cantidad cajas ", cantidadCajas, " cantidadLios ", cantidadLios);
+                console.log("cantidad cajas ", cantidadCajas, " cantidadLios ", cantidadLios, " neveras " , cantidadNeveras);
                 
                 if(isNaN(cantidadCajas) || isNaN(cantidadLios) || isNaN(cantidadNeveras) || cantidadLios === 0 || cantidadCajas < 0 || cantidadNeveras < 0
                    || (cantidadCajas === 0 && cantidadNeveras === 0)){
                     //console.log("cantidad cajas ", isNaN(cantidadCajas), " cantidadLios ", cantidadLios);
                     return false;
-                } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) && (cantidadLios  > cantidadCajas || cantidadLios > cantidadNeveras)) {
+                } else if(!isNaN(cantidadCajas) && !isNaN(cantidadLios) &&
+                         ((cantidadCajas > 0 && cantidadLios  > cantidadCajas) || (cantidadNeveras > 0 && cantidadLios > cantidadNeveras))) {
                     return false;
                 }
                 

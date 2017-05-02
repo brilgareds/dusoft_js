@@ -1,0 +1,21 @@
+{
+    "module": "FacturacionClientes",
+    "dependency": {
+        "controllers": [{
+                "facturacion_cliente_controller": {
+                    "module": "FacturacionClientes",
+                    "controller": "FacturacionClientesController",
+                    "alias": "c_facturacion_clientes"
+                }
+            }],
+        "models": [{
+                "facturacion_cliente_model": {
+                    "module": "FacturacionClientes",
+                    "model": "FacturacionClientesModel",
+                    "alias": "m_facturacion_clientes"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

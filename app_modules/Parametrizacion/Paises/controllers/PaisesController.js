@@ -11,12 +11,12 @@ Paises.prototype.listarPaises = function(req, res) {
 
     var that = this;
 
-    that.m_paises.listar_paises(function(err, lista_ciudades) {
+    that.m_paises.listar_paises(function(err, listaPaises) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error listando las ciudades', 500, {ciudades: {}}));
+            res.send(G.utils.r(req.url, 'Error listando los paises', 500, {ciudades: {}}));
         } else {
-            res.send(G.utils.r(req.url, 'Lista de ciudades', 200, {ciudades: lista_ciudades}));
+            res.send(G.utils.r(req.url, 'Lista de paises', 200, {ciudades: listaPaises}));
         }
     });
 };

@@ -6,20 +6,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 "$timeout",
                 "$filter",
                 "localStorageService",
-                "$state", "$modal", "socket", "facturacionClientesService","EmpresaDespacho",
+                "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho",
                 function ($scope, $rootScope, Request, API, AlertService, Usuario,
-                        $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService,EmpresaDespacho) {
+                        $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho) {
 
                     console.log("facturacionClientesController");
                     var that = this;
                     $scope.paginaactual = 1;
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                    var fecha_actual = new Date();
 
                     $scope.root = {
                         termino_busqueda_proveedores: "",
-                        fecha_inicial_aprobaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-                        fecha_final_aprobaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                         empresaSeleccionada: '',
                         termino_busqueda: '',
                         estadoSesion: true,
@@ -44,8 +41,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @returns {void}
                      */
                     that.init = function (empresa, callback) {
-                        
-                      
+
+
                         // that.cargar_permisos();
                         $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
                         $scope.session = {
@@ -67,7 +64,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     $scope.columnaSizeBusqueda = "col-md-3";
                     $scope.root.filtros = [
                         {tipo: 'Nombre', descripcion: "Nombre"}
-                        
+
                     ];
 
                     $scope.root.filtro = $scope.root.filtros[0];
@@ -92,37 +89,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
 
-                    /**
-                     * @author Cristian Ardila
-                     * @fecha 04/02/2016
-                     * +Descripcion Funcion que permitira desplegar el popup datePicker
-                     *               de la fecha iniciañ
-                     * @param {type} $event
-                     */
-                    $scope.abrir_fecha_inicial = function ($event) {
 
-                        $event.preventDefault();
-                        $event.stopPropagation();
-                        $scope.root.datepicker_fecha_inicial = true;
-                        $scope.root.datepicker_fecha_final = false;
-
-                    };
-
-                    /**
-                     * @author Cristian Ardila
-                     * @fecha 04/02/2016
-                     * +Descripcion Funcion que permitira desplegar el popup datePicker
-                     *               de la fecha final
-                     * @param {type} $event
-                     */
-                    $scope.abrir_fecha_final = function ($event) {
-                        $event.preventDefault();
-                        $event.stopPropagation();
-                        $scope.root.datepicker_fecha_inicial = false;
-                        $scope.root.datepicker_fecha_final = true;
-
-                    };
-                    
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara 
                      *              los tipos de terceros
@@ -140,19 +107,20 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 }
                             }
                         };
-                       
+
                         facturacionClientesService.listarTiposTerceros(obj, function (data) {
-                            
-                            if (data.status === 200) { 
+
+                            if (data.status === 200) {
+
                                 $scope.tipoTercero = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
 
                         });
-                        
+
                     };
-                    
+
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara 
                      *              los tipos de terceros
@@ -166,26 +134,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             session: $scope.session,
                             data: {
                                 listar_clientes: {
-                                    filtro:$scope.root.filtro,
-                                    terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
-                                    empresaId:$scope.root.empresaSeleccionada.getCodigo(),
-                                    paginaActual:$scope.paginaactual
+                                    filtro: $scope.root.filtro,
+                                    terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
+                                    empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                    paginaActual: $scope.paginaactual
                                 }
                             }
                         };
-                         
+
                         facturacionClientesService.listarClientes(obj, function (data) {
                             $scope.root.clientes = [];
-                            if (data.status === 200) { 
-                                 $scope.root.clientes  = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
+                            if (data.status === 200) {
+                                $scope.root.items = data.obj.listar_clientes.length;
+                                $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
-                          
+
                         });
-                        
+
                     };
-                    
+
                     /**
                      * +Descripcion Se visualiza la tabla con todos los clientes
                      */
@@ -197,12 +166,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableHighlighting: true,
                         columnDefs: [
 
-                            
-
                             {field: 'Identificacion', width: "15%", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
-                            
-                            {field: 'Cliente',  displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
-                            
+
+                            {field: 'Cliente', displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+
                             {field: 'Ubicacion', width: "15%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
 
                             {displayName: 'Direccion', width: "10%", cellTemplate: '<div class="col-xs-16 "><p class="text-lowercase">{{ row.entity.getDireccion() }}</p> </div>'},
@@ -210,6 +177,12 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             {displayName: 'Telefono', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.getTelefono()}}</p></div>'},
 
                             {displayName: 'Op', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}} - {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()}}</p></div>'},
+
+                            {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '<div class="btn-group">\
+                                       <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" title="Crear factura"><span class="glyphicon glyphicon-list"></span> Factura</button>\
+                                  </div>'
+                            },
                         ]
                     };
 
@@ -228,6 +201,27 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             that.listarClientes();
                         }
+                    };
+
+                    /*
+                     * funcion para paginar anterior
+                     * @returns {lista datos}
+                     */
+                    $scope.paginaAnterior = function () {
+                        if ($scope.paginaactual === 1)
+                            return;
+                        $scope.paginaactual--;
+                        that.listarClientes();
+                    };
+
+
+                    /*
+                     * funcion para paginar siguiente
+                     * @returns {lista datos}
+                     */
+                    $scope.paginaSiguiente = function () {
+                        $scope.paginaactual++;
+                        that.listarClientes();
                     };
                     /**
                      * +Descripcion Metodo principal, el cual cargara el modulo

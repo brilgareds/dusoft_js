@@ -685,39 +685,6 @@ define([
              * +Descripcion Metodo encargado de invocar el servicio que
              *              borra los DocTemporal
              */
-//            that.eliminarGetDocTemporal = function() {
-//               
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        orden_pedido_id: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
-//                        doc_tmp_id: $scope.doc_tmp_id
-//                    }
-//                };
-//
-//                Request.realizarRequest(API.I002.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function(data) {
-//
-//                    if (data.status === 200) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                        that.buscar_ordenes_compra();
-//                        that.refrescarVista();
-//                    }
-//
-//                    if (data.status === 404) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    }
-//
-//                    if (data.status === 500) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    }
-//                });
-//            };
-            /**
-             * @author Andres M. Gonzalez
-             * @fecha 25/04/2017
-             * +Descripcion Metodo encargado de invocar el servicio que
-             *              borra los DocTemporal
-             */
             that.eliminarGetDocTemporal = function() {
                 var obj = {
                     session: $scope.session,

@@ -1,24 +1,29 @@
-define(["angular","js/directive"], function(angular, directive){
-    
+define(["angular", "js/directive"], function(angular, directive) {
+
     directive.directive('cambiarFoco', function() {
-        return function($scope,elem,attrs) {
-            console.log(">>>>>>>>>>>> Cambio de Foco <<<<<<<<<<<<<<<");
-            elem.bind('keydown', function(e) {
-                console.log(">>>>>>>",e);
-                that = this;
-                var code = e.keyCode || e.which;
-                if (code === 13) {
-                    console.log(">>>>>>>>>>>> Cambio de Foco INTRO<<<<<<<<<<<<<<<");
-                    console.log("CODE: ", code);
-                    scope.$apply(function(){
-                        e.preventDefault();
-                        that.next().focus();
-                    });
-                    e.preventDefault();
+        return function($scope, elem, attrs, ctrls) {
+
+            elem.bind('focus', function(e) {
+
+                var input = $(this).find("input");
+                var button = $(this).find("button");
+
+                if (button.hasClass("btnClick")) {
+                    var button = $(this).find(".btnClick");
+                    button.focus();
+                }
+
+                if (input.hasClass("calendario")) {
+
+                    var button = $(this).find(".btnCalendario");
+                    button.trigger("click");
+
+                } else {
+                    input.focus();
                 }
             });
-        };
 
+        };
     });
 });
 

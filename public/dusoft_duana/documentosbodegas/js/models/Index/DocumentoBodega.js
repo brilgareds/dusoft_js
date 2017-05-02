@@ -3,7 +3,6 @@ define(["angular", "js/models", "includes/classes/Documento"], function(angular,
     models.factory('DocumentoBodega', ["Documento" , "$filter", function(Documento, $filter) {
 
             function DocumentoBodega(id, prefijo, numero, fecha_registro) {
-                console.log('== =here == ');
                 Documento.getClass().call(this, id, prefijo, numero, fecha_registro);
             }
             

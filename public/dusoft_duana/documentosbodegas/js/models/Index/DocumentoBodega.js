@@ -13,6 +13,22 @@ define(["angular", "js/models", "includes/classes/Documento"], function(angular,
                 return new DocumentoBodega(id, prefijo, numero, fecha_registro);
             };
             
+            DocumentoBodega.prototype.getArchivo = function() {
+               return this.archivo;
+            };
+
+            DocumentoBodega.prototype.setArchivo = function(archivo) {
+                this.archivo = archivo;
+            };
+            
+            DocumentoBodega.prototype.getPrefijoNumero = function() {
+               return this.prefijoNumero;
+            };
+
+            DocumentoBodega.prototype.setPrefijoNumero = function(prefijoNumero) {
+                this.prefijoNumero = prefijoNumero;
+            };
+            
             return this;
         }]);
 });

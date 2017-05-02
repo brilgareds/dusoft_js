@@ -184,6 +184,10 @@ define(["angular", "js/controllers",
                 orden_compra.set_estado_digitacion(orden.sw_orden_compra_finalizada, orden.estado_digitacion);
 
                 orden_compra.set_fechas_recepcion(orden.fecha_recibido, orden.fecha_verificado);
+                
+                orden_compra.setFechaIngreso(orden.fecha_ingreso);
+                
+                orden_compra.setNombreBodega(orden.nombre_bodega);
 
                 return orden_compra;
             };
@@ -206,13 +210,14 @@ define(["angular", "js/controllers",
                     {field: 'descripcion_estado', displayName: "Estado", cellClass: "txt-center", width:200,
                         cellTemplate: "<button type='button' ng-class='agregar_clase_btn(row.entity.estado)'>{{row.entity.descripcion_estado}} </button>"},
                     {field: 'observacion', displayName:"Observacion"},
+                    {field: 'getNombreBodega()', displayName:"Bodega"},
                     {field: 'estado_digitacion', displayName: "Digitacion", width:100},
                     {field: 'fecha_registro', displayName: "F. Registro", width: "80"},
                     {field: 'fecha_recibido', displayName: "F. Recibida", width: "7%",
                         cellTemplate: '<div class="ngCellText {{ agregar_indicador_fechas(row.entity) }}" ng-class="col.colIndex()">{{row.entity.fecha_recibido}}</div>'},
                     {field: 'fecha_verificacion', displayName: "F. Verificacion", width: "7%",
                         cellTemplate: '<div class="ngCellText {{ agregar_indicador_fechas(row.entity) }}" ng-class="col.colIndex()">{{row.entity.fecha_verificacion}}</div>'},
-                    {field: 'fecha_ingreso', displayName: "F. Ingreso", width: "7%"},
+                    {field: 'fechaIngreso', displayName: "F. Ingreso", width: "7%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button", width:80,
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\

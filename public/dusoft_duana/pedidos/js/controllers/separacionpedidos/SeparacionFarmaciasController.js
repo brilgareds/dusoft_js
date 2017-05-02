@@ -5,11 +5,11 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('SeparacionFarmaciasController', [
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal","PedidoAuditoria","Farmacia",
-        "SeparacionService","EmpresaPedido",
+        "SeparacionService","EmpresaPedido", "Usuario",
         function($scope, $rootScope, Request,
                 API, socket, AlertService, $modal, 
                 PedidoAuditoria, Farmacia, SeparacionService,
-                EmpresaPedido) {
+                EmpresaPedido, Usuario) {
 
 
             var self = this;
@@ -33,6 +33,13 @@ define(["angular", "js/controllers",
             self.traerPedidosAsignados = function(esTemporal, callback) {
                 var filtro = {};
                 filtro.estado = (esTemporal)? {temporales : true} : {asignados : true};
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                
+                filtro.empresa = {
+                    empresaId:empresa.getCodigo(),
+                    centroUtilidad:empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                    bodega:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                };
 
                 SeparacionService.traerPedidosAsignadosFarmacias($scope.root.session, filtro,
                 $scope.rootSeparacionFarmacias.paginaActual, $scope.rootSeparacionFarmacias.terminoBusqueda, function(pedidos){

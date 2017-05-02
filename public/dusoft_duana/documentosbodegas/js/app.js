@@ -4,29 +4,48 @@ define([
     "socketservice",
     "route",
     "bootstrap",
+    "bootstrapLib",
     "js/controllers",
     "js/models",
     "js/services",
     "js/directive",
     "nggrid",
-    "includes/validation/ValidacionNumero",
-    "includes/validation/ValidacionNumeroEntero",
-    "includes/widgets/InputCheck",
     "uiselect2",
     "loader",
-    "includes/menu/menucontroller",
     "url",
-    "includes/alert/Alert",
-    "includes/header/HeaderController",
     'storage',
     "httpinterceptor",
+    "dragndropfile",
+    'includes/slide/slideContent',
+    "includes/validation/ValidacionNumero",
+    "includes/validation/ValidacionNumeroEntero",
+    "includes/validation/ValidacionNumeroDecimal",
+    "includes/validation/CambiarFoco",
+    "includes/focus/NgFocus",
+    "includes/widgets/InputCheck",
+    "includes/menu/menucontroller",
+    "includes/alert/Alert",
+    "includes/header/HeaderController",
     "includes/classes/Usuario",
     "includes/http/Request",
-    "dragndropfile",
     "includes/helpersdirectives/visualizarReporte",
+    "includes/helpersdirectives/selectOnClick",
     "includes/validation/NgValidateEvents",
+    "models/I002/Laboratorio",
+    "models/I002/EmpresaIngreso",
+    "models/I002/ProductoIngreso",
+    "models/I002/OrdenCompraIngreso",
+    "models/I002/DocumentoIngreso",
+    "models/I002/ProveedorIngreso",
+    "models/Index/TipoDocumentos",
+    "models/Index/EmpresaDocumento",
+    "models/Index/DocumentoBodega",
     "controllers/indexController",
     "controllers/I002/I002Controller",
+    "controllers/I002/GestionarProductosController",
+    "webNotification",
+    "services/general/GeneralService",
+    
 ], function(angular) {
 
     /* App Module and its dependencies */
@@ -42,7 +61,8 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'flow'
+        'flow',
+        'angular-web-notification'
     ]);
 
     documentos_bodegas.urlRouterProvider;
@@ -83,7 +103,8 @@ define([
                     url: "/I002",
                     text: "Administración Documentos de Bodega [I002]",
                     templateUrl: "views/I002/index.html",
-                    parent_name : "DocumentosBodegas"
+                    parent_name : "DocumentosBodegas",
+                    controller: 'I002Controller'
                 });
 
 

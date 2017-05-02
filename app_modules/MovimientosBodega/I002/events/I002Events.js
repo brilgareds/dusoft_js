@@ -1,12 +1,12 @@
 
-var E008Events = function(socket, m_e008) {
-    console.log("Eventos E008 Cargado ");
+var I002Events = function(socket, m_i002) {
+    console.log("Eventos I002 Cargado ");
     this.io = socket;
-    this.m_e008 = m_e008;
+    this.m_i002 = m_i002;
 };
 
 // Consultar el tiempo de separacion del pedido de clientes
-E008Events.prototype.onObtenerTiempoSeparacionCliente = function(socket_id, datos) {
+I002Events.prototype.onObtenerTiempoSeparacionCliente = function(socket_id, datos) {
 
     var that = this;
 
@@ -16,7 +16,7 @@ E008Events.prototype.onObtenerTiempoSeparacionCliente = function(socket_id, dato
 
         var numero_pedido = datos.numero_pedido;
 
-        that.m_e008.consultar_documento_temporal_clientes(numero_pedido, function(err, rows) {
+        that.m_i002.consultar_documento_temporal_clientes(numero_pedido, function(err, rows) {
 
             if (!err && rows.length > 0) {
 
@@ -49,7 +49,7 @@ E008Events.prototype.onObtenerTiempoSeparacionCliente = function(socket_id, dato
 };
 
 // Consultar el tiempo de separacion de pedidos de farmacias 
-E008Events.prototype.onObtenerTiempoSeparacionFarmacias = function(socket_id, datos) {
+I002Events.prototype.onObtenerTiempoSeparacionFarmacias = function(socket_id, datos) {
 
     var that = this;
 
@@ -59,7 +59,7 @@ E008Events.prototype.onObtenerTiempoSeparacionFarmacias = function(socket_id, da
 
         var numero_pedido = datos.numero_pedido;
 
-        that.m_e008.consultar_documento_temporal_farmacias(numero_pedido, function(err, rows) {
+        that.m_i002.consultar_documento_temporal_farmacias(numero_pedido, function(err, rows) {
 
             if (!err && rows.length > 0) {
 
@@ -89,11 +89,11 @@ E008Events.prototype.onObtenerTiempoSeparacionFarmacias = function(socket_id, da
 };
 
 // Notificar Lista Documentos Temporales Clientes
-E008Events.prototype.onNotificarDocumentosTemporalesClientes = function(datos) {
+I002Events.prototype.onNotificarDocumentosTemporalesClientes = function(datos) {
 
     var that = this;
 
-    that.m_e008.consultar_documento_temporal_clientes(datos.numero_pedido, function(err, documento_temporal) {
+    that.m_i002.consultar_documento_temporal_clientes(datos.numero_pedido, function(err, documento_temporal) {
 
         var response = G.utils.r('onListarDocumentosTemporalesClientes', 'Lista Documentos Temporales Clientes', 200, {documento_temporal_clientes: documento_temporal});
 
@@ -102,11 +102,11 @@ E008Events.prototype.onNotificarDocumentosTemporalesClientes = function(datos) {
 };
 
 // Notificar Lista Documentos Temporales Farmacias
-E008Events.prototype.onNotificarDocumentosTemporalesFarmacias = function(datos) {
+I002Events.prototype.onNotificarDocumentosTemporalesFarmacias = function(datos) {
     
     var that = this;
 
-    that.m_e008.consultar_documento_temporal_farmacias(datos.numero_pedido, function(err, documento_temporal) {
+    that.m_i002.consultar_documento_temporal_farmacias(datos.numero_pedido, function(err, documento_temporal) {
 
         var response = G.utils.r('onListarDocumentosTemporalesFarmacias', 'Lista Documentos Temporales Farmacias', 200, {documento_temporal_farmacias: documento_temporal});
 
@@ -115,6 +115,6 @@ E008Events.prototype.onNotificarDocumentosTemporalesFarmacias = function(datos) 
 };
 
 
-E008Events.$inject = ["socket", "m_e008"];
+I002Events.$inject = ["socket", "m_i002"];
 
-module.exports = E008Events;
+module.exports = I002Events;

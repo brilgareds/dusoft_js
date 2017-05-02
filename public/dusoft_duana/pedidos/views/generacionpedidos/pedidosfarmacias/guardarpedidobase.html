@@ -17,65 +17,69 @@
                         <h3 class="h4MarginTopBottom">Pedido N°: <span ng-bind="root.pedido.get_numero_pedido()"></span></h3>
                     </div>
                 </div>
-
+  
                 <div class="panel-body marginBottom0 paddingBottomZero marginRightZero"> <!--Div Panel Body-->
 
                     <div class="row col-sm-12 col-md-12 marginBottom0 paddingBottomZero paddingRightZero"> <!--Div Contenedor Principal-->
 
-                        <div class="col-sm-12 col-md-6 paddingRightZero paddingLeftZero marginBottom0 paddingBottomZero"> <!--Div Contenedor Izquierdo-->
+                        <div ng-if= '!root.bodegaMultiple.bools'>
+                            
+                            <div class="col-sm-12 col-md-6 paddingRightZero paddingLeftZero marginBottom0 paddingBottomZero"> <!--Div Contenedor Izquierdo-->
 
-                            <div class="marginBottom0 col-sm-12 col-md-12 paddingBottomtZero"> <!--Div Encabezado-->
-                                <h4><b><i>De</i></b></h4>
-                            </div> <!--/Div Encabezado-->
+                                <div class="marginBottom0 col-sm-12 col-md-12 paddingBottomtZero"> <!--Div Encabezado-->
+                                    <h4><b><i>De</i></b></h4>
+                                </div> <!--/Div Encabezado-->
 
-                            <div class="marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        </br>
-                                        <h4 class="h4MarginTopBottom">Empresa: </h4>
+                                <div class="marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                                        <ui-select ng-change="onEmpresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
-                                            <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
-                                            <ui-select-choices repeat="empresa in root.empresasOrigen | filter:$select.search">
-                                                <span ng-bind="empresa.getNombre()"></span>
-                                            </ui-select-choices>
-                                        </ui-select>
+                                            <ui-select ng-change="onEmpresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
+                                                <ui-select-match  placeholder="Seleccionar Farmacia"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
+                                                <ui-select-choices repeat="empresa in root.empresasOrigen | filter:$select.search">
+                                                    <span ng-bind="empresa.getNombre()"></span>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        </br>
-                                        <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
 
-                                        <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
-                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
-                                            <ui-select-choices repeat="centro in root.pedido.getFarmaciaOrigen().getCentrosUtilidad() | filter:$select.search">
-                                                <span ng-bind="centro.getNombre()"></span>
-                                            </ui-select-choices>
-                                        </ui-select>
+                                            <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
+                                                <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
+                                                <ui-select-choices repeat="centro in root.pedido.getFarmaciaOrigen().getCentrosUtilidad() | filter:$select.search">
+                                                    <span ng-bind="centro.getNombre()"></span>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        </br>
-                                        <h4 class="h4MarginTopBottom">Bodega: </h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
-                                            <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
-                                            <ui-select-choices repeat="bodega in root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
-                                                <span ng-bind="bodega.getNombre()"></span>
-                                            </ui-select-choices>
-                                        </ui-select>
+                                            <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
+                                                <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
+                                                <ui-select-choices repeat="bodega in root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
+                                                    <span ng-bind="bodega.getNombre()"></span>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </div>
                                     </div>
-                                </div>
 
-                            </div> <!--/Div Cuerpo-->
+                                </div> <!--/Div Cuerpo-->
 
-                        </div> <!--/Div Contenedor Izquierdo-->
-
+                            </div> <!--/Div Contenedor Izquierdo-->
+                            
+                        </div>
+                        
                         <div class="col-sm-12 col-md-6 paddingLeftZero paddingRightZero marginBottom0 paddingBottomZero"> <!--/Div Contenedor Derecho-->
 
                             <div class="marginBottom0 col-sm-12 col-md-12 paddingBottomZero"> <!--Div Encabezado-->
@@ -101,7 +105,7 @@
                                             <ui-select-choices repeat="empresa in root.empresasDestino | filter:$select.search">
                                                 <span ng-bind="empresa.getNombre()"></span>
                                             </ui-select-choices>
-                                        </ui-select>
+                                        </ui-select> 
 
                                     </div>
                                 </div>
@@ -126,7 +130,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="(deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3') || (!root.pedido.farmaciaOrigen.centroUtilidad.bodega)">
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="(deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3') || (!root.pedido.farmaciaOrigen.centroUtilidad.bodega && !root.bodegaMultiple.bools)">
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad"><span ng-bind="$select.selected.getNombre()"></span></ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 <span ng-bind="bodega.getNombre()"></span>
@@ -174,9 +178,9 @@
                     </tab-heading>
 
                     <div class="input-group navbar-form ">
-
-                        <div >
-                             <button type="button" ng-disabled="!root.pedido.getValido() || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnCrearPedido}}" ng-if="!root.pedido.get_numero_pedido()">
+<!--&& !root.bodegaMultiple.bools-->
+                        <div >                                 
+                             <button type="button" ng-disabled="(!root.pedido.getValido() ) || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnCrearPedido}}" ng-if="!root.pedido.get_numero_pedido()">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Productos
                             </button>
                             

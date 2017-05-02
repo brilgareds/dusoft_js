@@ -21,12 +21,16 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.enFarmaciaSeleccionada = false;
             this.cantidadPendiente = 0;
             this.cantidadIngresada = 0;
+            this.nombreBodega = "";
+            this.empresaOrigenProducto = "";
+            this.centroUtilidadOrigenProducto = "";
+            this.bodegaOrigenProducto = "";
             this.mensajeError = "";
         }
 
         ProductoPedidoFarmacia.prototype = Object.create(Producto.getClass().prototype);
         
-        ProductoPedidoFarmacia.prototype.setSwVende = function(lotswVendee) {
+        ProductoPedidoFarmacia.prototype.setSwVende = function(swVende) {
             this.swVende = swVende;
             return this;
         };
@@ -171,6 +175,41 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.enFarmaciaSeleccionada;
         };
         
+        ProductoPedidoFarmacia.prototype.setNombreBodega = function(nombreBodega) {
+            this.nombreBodega = nombreBodega;
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getNombreBodega = function() {
+            return this.nombreBodega;
+        };
+        //
+        ProductoPedidoFarmacia.prototype.setEmpresaOrigenProducto = function(empresaOrigenProducto) {
+            this.empresaOrigenProducto = empresaOrigenProducto;
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getEmpresaOrigenProducto = function() {
+            return this.empresaOrigenProducto;
+        };
+        ///
+       ProductoPedidoFarmacia.prototype.setCentroUtilidadOrigenProducto = function(centroUtilidadOrigenProducto) {
+            this.centroUtilidadOrigenProducto = centroUtilidadOrigenProducto;
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getCentroUtilidadOrigenProducto = function() {
+            return this.centroUtilidadOrigenProducto;
+        };
+        //
+        ProductoPedidoFarmacia.prototype.setBodegaOrigenProducto = function(bodegaOrigenProducto) {
+            this.bodegaOrigenProducto = bodegaOrigenProducto;
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getBodegaOrigenProducto = function() {
+            return this.bodegaOrigenProducto;
+        };
         
         this.get = function(codigo, nombre, existencia) {
             

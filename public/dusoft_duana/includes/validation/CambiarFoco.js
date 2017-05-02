@@ -4,6 +4,7 @@ define(["angular","js/directive"], function(angular, directive){
         return function($scope,elem,attrs) {
             console.log(">>>>>>>>>>>> Cambio de Foco <<<<<<<<<<<<<<<");
             elem.bind('keydown', function(e) {
+                console.log(">>>>>>>",e);
                 that = this;
                 var code = e.keyCode || e.which;
                 if (code === 13) {

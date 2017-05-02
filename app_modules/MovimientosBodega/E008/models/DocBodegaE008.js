@@ -334,7 +334,10 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(n
                      when a.estado = '1' then 'Separacion Finalizada' \
                      when a.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion,     \
                 c.fecha_registro,    \
-                b.fecha_registro as fecha_separacion_pedido \
+                b.fecha_registro as fecha_separacion_pedido, \
+                c.centro_destino,\
+                c.bodega_destino,\
+                c.empresa_id\
                 from inv_bodegas_movimiento_tmp_despachos_clientes a\
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join ventas_ordenes_pedidos c on a.pedido_cliente_id = c.pedido_cliente_id\
@@ -384,7 +387,10 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                      when a.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion,   \
                 c.fecha_registro,\
                 b.fecha_registro as fecha_separacion_pedido,\
-                h.descripcion as zona\
+                h.descripcion as zona,\
+                c.centro_destino,\
+                c.bodega_destino,\
+                c.empresa_destino\
                 from inv_bodegas_movimiento_tmp_despachos_farmacias a\
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
@@ -1204,7 +1210,7 @@ DocuemntoBodegaE008.prototype.obtenerTotalDetalleDespacho = function(obj, callba
      
      var sql = "SELECT\
                     a.*,\
-                    to_char(a.fecha_vencimiento, 'YYYY-MM-DD') AS fecha_vencimiento_producto,\
+                    to_char(a.fecha_vencimiento, 'YYYY-MM-DD 11:59:00') AS fecha_vencimiento_producto,\
                     b.descripcion,\
                     b.unidad_id,\
 		    b.contenido_unidad_venta,\

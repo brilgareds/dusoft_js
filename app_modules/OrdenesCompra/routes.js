@@ -155,6 +155,11 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.ingresarBodegaMovimientoTmpOrden(req, res);
     });
     
+    // Insertar tmp movimiento bodega productos
+    app.post('/api/OrdenesCompra/ingresarBodegaMovimientoTmpProducto', function(req, res) {
+        c_ordenes_compra.ingresarBodegaMovimientoTmpProducto(req, res);
+    });
+    
     app.post('/api/OrdenesCompra/guardarBodega', function(req, res) {
         c_ordenes_compra.guardarBodega(req, res);
     });
@@ -162,4 +167,16 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/subirArchivoOrdenes', function(req, res) {
         c_ordenes_compra.subirArchivoOrdenes(req, res);
     });
+    
+    
+    /**
+     * +Descripcion Generar orden de compra desde auditoria
+     */
+    /*app.post('/api/OrdenesCompra/generarOrdenDeCompraAuditado', function(req, res) {
+        c_ordenes_compra.generarOrdenDeCompraAuditado(req, res);
+    });*/
+    G.eventEmitter.on("onGenerarOrdenDeCompra",function(parametros){
+        c_ordenes_compra.generarOrdenDeCompraAuditado(parametros)
+    });
+    
 };

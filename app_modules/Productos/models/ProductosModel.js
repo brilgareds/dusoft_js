@@ -209,6 +209,8 @@ ProductosModel.prototype.validarUnidadMedidaProducto = function(obj, callback) {
    then(function(resultado){
        callback(false, resultado.rows);
    }).catch(function(err){
+       console.log("validarUnidadMedidaProducto obj.cantidad ",obj.cantidad);
+       console.log("validarUnidadMedidaProducto obj.cantidad ",obj.codigo_producto);
        callback(err);
    });
 };

@@ -613,6 +613,9 @@ define([
                     if (data.status === 404) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
+                    if (data.status === 403) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
                 });
             };
             

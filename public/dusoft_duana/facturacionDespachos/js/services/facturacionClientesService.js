@@ -2,11 +2,9 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('facturacionClientesService',
-            ['$rootScope', 'Request', 'API',
-                "Usuario", "TipoTerceros","localStorageService",
+            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho",
 
-                function ($rootScope, Request, API,
-                        Usuario,TipoTerceros, localStorageService) {
+                function (Request, API, Usuario,TipoTerceros,TerceroDespacho) {
 
                     var self = this;
 
@@ -18,17 +16,26 @@ define(["angular", "js/services"], function (angular, services) {
                      * +Descripcion Consulta todas las formulas
                      */
                     self.listarTiposTerceros = function (obj, callback) {
-                        console.log("self.listarClientes ***********************")
                         Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_TIPOS_TERCEROS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
-
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  21/05/2016 DD/MM/YYYYY
+                     * +Descripcion lista todos los clientes
+                     */
+                    self.listarClientes = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_CLIENTES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
                     /**
                      * @author Cristian Ardila
                      * +Descripcion Funcion encargada de serializar el resultado de la
-                     *              consulta que ontiene los tipos de documentos
-                     * @fecha 08/06/2016 DD/MM/YYYYY
+                     *              consulta que obtiene los tipos de documentos
+                     * @fecha 02/05/2017 DD/MM/YYYYY
                      */
                     self.renderListarTipoTerceros = function (tipoDocumento) {
                        
@@ -41,7 +48,33 @@ define(["angular", "js/services"], function (angular, services) {
                         return tipoDocumentos;
                     };
 
+                    
+                    /**
+                     * +Descripcion Metodo encargado de serializar el resultado de
+                     *              la consulta que obtiene los clientes
+                     * @param {type} tipoDocumento
+                     * @returns {Array|nm$_shim-array.exports}
+                     */
+                    self.renderTerceroDespacho = function (tipoDocumento) {
+                       
+                        var tercerosDespacho = [];
+                        for (var i in tipoDocumento) {
 
+                            var _terceroDespacho = TerceroDespacho.get(tipoDocumento[i].nombre_tercero, tipoDocumento[i].tipo_id_tercero, 
+                                                    tipoDocumento[i].tercero_id,
+                                                    tipoDocumento[i].direccion,
+                                                    tipoDocumento[i].telefono);
+                                _terceroDespacho.setEmail(tipoDocumento[i].email); 
+                                _terceroDespacho.setTipoBloqueoId(tipoDocumento[i].tipo_bloqueo_id); 
+                                _terceroDespacho.setMunicipio(tipoDocumento[i].municipio); 
+                                _terceroDespacho.setDepartamento(tipoDocumento[i].departamento); 
+                                _terceroDespacho.setPais(tipoDocumento[i].pais); 
+                          
+                            tercerosDespacho.push(_terceroDespacho);
+                        }
+                        return tercerosDespacho;
+                    };
+                    
                     return this;
                 }]);
 

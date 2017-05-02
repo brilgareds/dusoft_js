@@ -24,7 +24,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         termino_busqueda: '',
                         estadoSesion: true,
                         items: 0,
-                        afiliados: [],
+                        clientes: [],
                         estadoBotones: [
                             "btn btn-danger btn-xs",
                             "btn btn-primary btn-xs",
@@ -121,28 +121,29 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.datepicker_fecha_final = true;
 
                     };
-
+                    
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara 
+                     *              los tipos de terceros
+                     * @author Cristian Ardila
+                     * @fecha 02/05/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
                     that.listarTiposTerceros = function () {
 
                         var obj = {
                             session: $scope.session,
                             data: {
-                                listar_clientes_facturas: {
+                                listar_tipo_terceros: {
 
                                 }
                             }
                         };
                        
                         facturacionClientesService.listarTiposTerceros(obj, function (data) {
-                           
-                            console.log("data ", data.obj.listar_formulas)
-                            if (data.status === 200) {
-
-                                //$scope.root.items = data.obj.listar_formulas.length;
-                                $scope.tipoTercero = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_formulas);
-
-                                console.log("$scope.tipoTercero ", $scope.tipoTercero);
-
+                            
+                            if (data.status === 200) { 
+                                $scope.tipoTercero = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
@@ -150,6 +151,43 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         });
                         
                     };
+                    
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara 
+                     *              los tipos de terceros
+                     * @author Cristian Ardila
+                     * @fecha 02/05/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    that.listarClientes = function () {
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                               /* listar_tipo_terceros: {
+                                    filtro:parametro.filtro,
+                                    terminoBusqueda: parametro.evolucion,//$scope.root.numero,
+                                    empresaId:parametro.empresa,
+                                    fechaInicial: $filter('date')($filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"), "yyyy-MM-dd") + " 00:00:00",
+                                    fechaFinal:$filter('date')($filter('date')(fecha_actual, "yyyy-MM-dd"), "yyyy-MM-dd") + " 23:59:00",
+                                    paginaActual:1,
+                                    estadoFormula : parametro.estadoFormula
+                                }*/
+                            }
+                        };
+                       
+                        facturacionClientesService.listarClientes(obj, function (data) {
+                            $scope.root.afiliados = [];
+                            if (data.status === 200) { 
+                                 $scope.root.clientes  = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+                            console.log("$scope.root.afiliados ==== ", $scope.root.clientes);
+                        });
+                        
+                    };
+                    
                     /**
                      * +Descripcion Se visualiza la tabla con todos los clientes
                      */
@@ -161,15 +199,17 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableHighlighting: true,
                         columnDefs: [
 
-                            {field: 'Identificacion', width: "15%", displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].evolucionId}}</p></div>'},
+                            
 
-                            {field: 'Cliente', displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].numeroFormula}}</p></div>'},
+                            {field: 'Identificacion', width: "15%", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
+                            
+                            {field: 'Cliente',  displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+                            
+                            {field: 'Ubicacion', width: "15%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getTipoPaisId()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
 
-                            {field: 'Ubicacion', width: "15%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPacientes()[0].getTipoIdPaciente()}} {{ row.entity.mostrarPacientes()[0].getPacienteId()}}</p></div>'},
+                            {displayName: 'Direccion', width: "10%", cellTemplate: '<div class="col-xs-16 "><p class="text-lowercase">{{ row.entity.getDireccion() }}</p> </div>'},
 
-                            {displayName: 'Direccion', width: "10%", cellTemplate: '<div class="col-xs-16 "><p class="text-lowercase">{{ row.entity.mostrarPacientes()[0].getNombres() }} {{ row.entity.mostrarPacientes()[0].getApellidos() }}</p> </div>'},
-
-                            {displayName: 'Telefono', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getFechaFormulacion()}}</p></div>'},
+                            {displayName: 'Telefono', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.getTelefono()}}</p></div>'},
 
                             {displayName: 'Op', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}} - {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()}}</p></div>'},
                         ]
@@ -188,7 +228,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                         if (event.which === 13) {
 
-                            that.listarClientesFacturar();
+                            that.listarClientes();
                         }
                     };
                     /**
@@ -212,7 +252,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                                 } else {
                                     that.listarTiposTerceros();
-
+                                    that.listarClientes();
                                 }
                             }
                         }

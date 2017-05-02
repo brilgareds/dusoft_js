@@ -11,6 +11,7 @@ define(["angular"], function (angular) {
             'FACTURACIONCLIENTES':{
                 
                  "LISTAR_TIPOS_TERCEROS": BASE_URL + "/FacturacionClientes/listarTiposTerceros", 
+                 "LISTAR_CLIENTES": BASE_URL + "/FacturacionClientes/listarClientes", 
                 
 
             }

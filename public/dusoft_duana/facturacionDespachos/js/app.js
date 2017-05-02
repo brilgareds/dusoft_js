@@ -42,7 +42,8 @@ define([
     "models/UsuarioHc",
     "models/ModuloHc",
     "models/BodegaHc",*/
-     "models/TipoTerceros",
+    "models/TipoTerceros",
+    "models/TerceroDespacho",
     "controllers/facturacionClientesController",
    /* "controllers/facturacionClientesDetalleController",
     "controllers/dispensacionRealizarEntregaController",

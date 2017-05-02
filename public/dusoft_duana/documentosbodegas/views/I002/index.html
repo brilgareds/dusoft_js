@@ -57,12 +57,19 @@
                         </div>
                     </div>
                     <br> 
+                     <div class="modal-footer col-md-12">
+                         <button class="btn btn-default" ng-click="tabProductosOrden()">
+                             <span class="glyphicon glyphicon-refresh" ></span> Refrescar
+                         </button>
+                     </div>
                     <div class="row">  
                         <div class="col-md-12">
 
                             <tabset>
-                                <tab heading="Productos Ingresados">
-
+                                <tab >
+                                    <tab-heading ng-click="tabProductosOrden()">
+                                        Productos Ingresados
+                                    </tab-heading>
                                     <br>
                                     <div class="table-responsive" style="margin-top:3px;" >
                                         <div  style="height: 240px" class="defaultGrid grid-responsive" ng-grid="lista_productos_orden" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav class="grid" > </div>

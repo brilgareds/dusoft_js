@@ -788,7 +788,11 @@ console.log("DocItemTemporal:: ",data);
             };
 
             /*******************************************************************/
-
+            
+            $scope.tabProductosOrden=function(){
+                that.refrescarVista();
+            };
+            
             $scope.tabProductosPorAutorizar = function() {
                 that.listarProductosPorAutorizar(function(respuesta) {
                 });
@@ -1268,7 +1272,7 @@ console.log("DocItemTemporal:: ",data);
                     {displayName: 'Cant. Recibida', width: "7%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="validarTmp(row.entity)" value="{{row.entity.cantidad_solicitada}}" ng-model="row.entity.cantidadActual" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /></div>'},
                     {displayName: 'Lote', width: "7%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="validarTmp(row.entity)" ng-model="row.entity.lote" class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-focus ng-disabled="validarTmp(row.entity)"  ng-model="row.entity.lote" class="form-control grid-inline-input" name="lote" id="lote" /> </div>'},
                     {displayName: 'Localización', width: "5%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="validarTmp(row.entity)" ng-model="row.entity.localizacion" class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",

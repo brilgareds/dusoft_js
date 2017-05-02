@@ -65,12 +65,12 @@
                    <input ng-show="root.visibleBuscador" 
                            type="text" 
                            class="form-control" 
-                           ng-keypress="buscarFormulas($event,0);"  
+                           ng-keypress="buscarClientesFactura($event);"  
                            ng-model="root.termino_busqueda" 
                            placeholder="Buscar" name="" id="" />
                     <div class="input-group-btn" ng-show="root.visibleBotonBuscador" >
                        
-                       <button class="btn btn-default pull-right" type="submit" ng-click ="buscarFormulas($event,0)">
+                       <button class="btn btn-default pull-right" type="submit" ng-click ="buscarClientesFactura($event)">
                            <i class="glyphicon glyphicon-search"></i></button>
                        
                     </div>

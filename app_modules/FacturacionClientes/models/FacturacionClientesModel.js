@@ -22,7 +22,15 @@ FacturacionClientesModel.prototype.listarTiposTerceros = function (callback) {
 
 };
 
-FacturacionClientesModel.prototype.listarClientes = function (callback) {
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de listar los clientes
+ * @fecha 2017-02-05 YYYY-DD-MM
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionClientesModel.prototype.listarClientes = function (obj,callback) {
 
     var columnas = [G.knex.raw("DISTINCT a.tipo_id_tercero as tipo_id_tercero"),
         "a.tercero_id",
@@ -68,15 +76,23 @@ FacturacionClientesModel.prototype.listarClientes = function (callback) {
             "f.departamento",
             "municipio")
             .orderBy("a.nombre_tercero")
-            .where('b.empresa_id', '03');
-
-    query.limit(G.settings.limit).//obj.paginaActual
-            offset((10 - 1) * G.settings.limit).then(function (resultado) {
-
-        console.log("resultado ", resultado);
+            .where( function(){ 
+                
+                if((obj.filtro.tipo !== 'Nombre') && obj.terminoBusqueda !=="" ){
+                    this.andWhere(G.knex.raw("a.tercero_id  "+G.constants.db().LIKE+"'%" + obj.terminoBusqueda + "%'"))
+               } 
+               if((obj.filtro.tipo === 'Nombre') && obj.terminoBusqueda !=="" ){
+                    this.andWhere(G.knex.raw("a.nombre_tercero  "+G.constants.db().LIKE+"'%" + obj.terminoBusqueda + "%'"))                    
+               } 
+            }).andWhere('b.empresa_id',obj.empresaId);
+               
+    query.limit(G.settings.limit).
+            offset((obj.paginaActual - 1) * G.settings.limit)
+                    query.then(function (resultado) {
+ 
         callback(false, resultado)
     }).catch(function (err) {
-        console.log("err [consultarEvolucionFormula]:", err);
+        console.log("err [listarClientes]:", err);
         callback(err);
     });
 

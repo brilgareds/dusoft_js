@@ -6,9 +6,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 "$timeout",
                 "$filter",
                 "localStorageService",
-                "$state", "$modal", "socket", "facturacionClientesService",
+                "$state", "$modal", "socket", "facturacionClientesService","EmpresaDespacho",
                 function ($scope, $rootScope, Request, API, AlertService, Usuario,
-                        $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService) {
+                        $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService,EmpresaDespacho) {
 
                     console.log("facturacionClientesController");
                     var that = this;
@@ -44,9 +44,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @returns {void}
                      */
                     that.init = function (empresa, callback) {
-
+                        
+                      
                         // that.cargar_permisos();
-                        //$scope.root.empresaSeleccionada = EmpresaDispensacionHc.get("TODAS LAS EMPRESAS", -1);
+                        $scope.root.empresaSeleccionada = EmpresaDespacho.get(empresa.getNombre(), empresa.getCodigo());
                         $scope.session = {
                             usuario_id: Usuario.getUsuarioActual().getId(),
                             auth_token: Usuario.getUsuarioActual().getToken()
@@ -164,26 +165,23 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         var obj = {
                             session: $scope.session,
                             data: {
-                               /* listar_tipo_terceros: {
-                                    filtro:parametro.filtro,
-                                    terminoBusqueda: parametro.evolucion,//$scope.root.numero,
-                                    empresaId:parametro.empresa,
-                                    fechaInicial: $filter('date')($filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"), "yyyy-MM-dd") + " 00:00:00",
-                                    fechaFinal:$filter('date')($filter('date')(fecha_actual, "yyyy-MM-dd"), "yyyy-MM-dd") + " 23:59:00",
-                                    paginaActual:1,
-                                    estadoFormula : parametro.estadoFormula
-                                }*/
+                                listar_clientes: {
+                                    filtro:$scope.root.filtro,
+                                    terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
+                                    empresaId:$scope.root.empresaSeleccionada.getCodigo(),
+                                    paginaActual:$scope.paginaactual
+                                }
                             }
                         };
-                       
+                         
                         facturacionClientesService.listarClientes(obj, function (data) {
-                            $scope.root.afiliados = [];
+                            $scope.root.clientes = [];
                             if (data.status === 200) { 
                                  $scope.root.clientes  = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
-                            console.log("$scope.root.afiliados ==== ", $scope.root.clientes);
+                          
                         });
                         
                     };
@@ -205,7 +203,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             
                             {field: 'Cliente',  displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
                             
-                            {field: 'Ubicacion', width: "15%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getTipoPaisId()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
+                            {field: 'Ubicacion', width: "15%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
 
                             {displayName: 'Direccion', width: "10%", cellTemplate: '<div class="col-xs-16 "><p class="text-lowercase">{{ row.entity.getDireccion() }}</p> </div>'},
 
@@ -224,7 +222,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      *              (pendiente = 0 Formulas sin pendientes)
                      *              (pendiente = 1 Formulas con pendientes)
                      */
-                    $scope.buscarClientesFactura = function (event, pendiente) {
+                    $scope.buscarClientesFactura = function (event) {
 
                         if (event.which === 13) {
 

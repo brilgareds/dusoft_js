@@ -50,7 +50,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                     FROM compras_ordenes_pedidos_detalle aaa\
                     INNER JOIN novedades_ordenes_compras bbb ON aaa.item_id = bbb.item_id\
                     WHERE aaa.orden_pedido_id = a.orden_pedido_id) as total_novedades"),
-        "h.descripcion as nombre_bodega"
+        "h.descripcion as nombre_bodega", 
+        "i.id as recepcion_id"
     ];
     
     var query = G.knex.column(columns).
@@ -70,6 +71,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
         on("h.centro_utilidad", "a.centro_utilidad_pedido").
         on("h.bodega", "a.bodega_pedido");
     }).
+    leftJoin("recepcion_mercancia as i", "i.orden_pedido_id", "a.orden_pedido_id").
     whereBetween('a.fecha_orden', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
     where({
            "a.sw_unificada"  : '0'

@@ -188,6 +188,8 @@ define(["angular", "js/controllers",
                 orden_compra.setFechaIngreso(orden.fecha_ingreso);
                 
                 orden_compra.setNombreBodega(orden.nombre_bodega);
+                
+                orden_compra.setRecepcionId(orden.recepcion_id);
 
                 return orden_compra;
             };
@@ -270,22 +272,63 @@ define(["angular", "js/controllers",
 
             $scope.onMostrarPendientes = function(ordenCompra){
                 console.log("compra ", ordenCompra);
+                that.listarProductosRecepcion(ordenCompra,function(productos){
+                    that.mostrarVentanaPendientes(productos);
+                });
                 
-                that.mostrarVentanaPendientes(ordenCompra);
             };
             
-            that.mostrarVentanaPendientes = function(ordenCompra){
+            that.listarProductosRecepcion = function(ordenCompra, callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            recepcion_id: ordenCompra.getRecepcionId(),
+                            orden_compra:  ordenCompra
+                        }
+                    }
+                };
+                             
+                             
+                Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_PRODUCTOS_RECEPCION_MERCANCIA, "POST", obj, function(data) {
+                    console.log("recepcion >>>>>>>>>>", data);
+                    if (data.status === 200) {
+                        
+                        var productos = that.serializarProductos(data.obj.ordenes_compras.recepcion_mercancia);
+                        callback(productos);
+                    }
+                });
+            };
+            
+            that.serializarProductos = function(lista_productos) {
+                var productos = [];
+                lista_productos.forEach(function(data) {
+
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto);
+                    producto.set_cantidad_seleccionada(data.cantidad_solicitada);
+                    producto.set_cantidad_recibida(data.cantidad_recibida);
+                    producto.setCantidadPendiente(data.cantidad_pendiente);
+                    productos.push(producto);
+                   
+                });
+                
+                return productos;
+            };
+            
+            that.mostrarVentanaPendientes = function(productos){
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
                     keyboard: true,
+                    size: 'lg',
                     templateUrl: 'views/genererarordenes/listarPendientes.html',
                     scope: $scope,                  
                     controller: "ListaPendientesController",
                     resolve: {
-                        ordenCompra: function() {
-                            return ordenCompra;
+                        productos: function() {
+                            return productos;
                         }
                     }           
                 };

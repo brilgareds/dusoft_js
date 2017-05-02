@@ -17,6 +17,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 this.localizacion = '';
                 this.bodegaSeleccionada;
                 this.nombreBodega = "";
+                this.recepcionId = null;
             }
             
 
@@ -28,7 +29,15 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             OrdenCompraPedido.prototype.get_empresa = function() {
                 return this.empresa;
             };
+            
+            OrdenCompraPedido.prototype.setRecepcionId = function(recepcionId) {
+                this.recepcionId = recepcionId;
+            };
 
+            OrdenCompraPedido.prototype.getRecepcionId = function() {
+                return this.recepcionId;
+            };
+            
             // Proveedor
             OrdenCompraPedido.prototype.set_proveedor = function(proveedor) {
                 this.proveedor = proveedor;

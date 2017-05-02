@@ -1979,13 +1979,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     if (data.status === 200) {
 
                        that.consultarDetalleProductosCotizacion('1','03',function (estado, resultado) {
-                          
-                            if (estado) {
-                                
-                                that.generarPedidoModuloCliente(1,resultado,0,0)
-                                
+                              console.log("estado ", estado);                                  
+                              console.log("resultado ", resultado);                                  
+                            if (estado) {                                
+                                that.generarPedidoModuloCliente(1,resultado,0,0)                               
+                            }else{
+                                that.generarPedidoClientesAutorizados();
                             }  
-
+                              
                         });
 
                     } else {

@@ -245,7 +245,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     Request.realizarRequest(API.I002.CREAR_HTML_DOCUMENTO, "POST", obj, function(data) {  
                         if (data.status === 200) {
-                            console.log("QWERTY ",data);
                             callback(data);
                         }
                         if (data.status === 500) {
@@ -259,7 +258,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                  
                   that.crearHtmlDocumento(documentos,function(respuesta){
                       if(respuesta !== false){
-                        console.log("respuesta ",respuesta);
                         $scope.visualizarReporte("/reports/" + respuesta.obj.nomb_pdf, respuesta.obj.nomb_pdf, "_blank");
                       }                      
                   });  
@@ -288,7 +286,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     controller: function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
-                            console.log("datadatadatadata",data);
                             if(data.tipo_doc_bodega_id==="I002"){
                             that.eliminarGetDocTemporal(data);
                             }
@@ -366,7 +363,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                      var _tipoDocumento = TipoDocumentos.get(data.tipo_doc_bodega_id,data.tipo_clase_documento);
                      tipoDocumentos.push(_tipoDocumento);
                 });   
-                console.log("tipoDocumentos::",tipoDocumentos);
                 $scope.tipoDocumento = tipoDocumentos;
                 
             };

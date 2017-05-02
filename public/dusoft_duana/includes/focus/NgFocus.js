@@ -6,11 +6,9 @@
  * @fecha 18/11/2015
  */
 define(["angular", "js/directive"], function(angular, directive) {
-console.log("AAAAAAAAAAAAAAAAAAAAAAA");
+
     directive.directive('ngFocus', function() {
-console.log("BBBBBBBBBBBBBBBBBBBBBBB");
-var hijo = document.getElementById('lote');
-console.log("hijo",hijo);
+
         return {
             require: '?ngModel',
             link: function(scope, element, attrs, ngModelCtrl) {
@@ -38,16 +36,12 @@ console.log("hijo",hijo);
                 });
 
                 element.bind('keypress', function(event) {
-                    console.log("CCCCCCCCCCCCCCCCCCC",event);
                     var hijo = document.getElementById('lote');
                      document.getElementById("lote").focus();
                     hijo.focus();
-console.log("hijo",hijo);
- that = this;
+                    that = this;
                 var code = e.keyCode || e.which;
                     if (code === 13) {
-                    console.log(">>>>>>>>>>>> Cambio de Foco INTRO<<<<<<<<<<<<<<<");
-                    console.log("CODE: ", code);
                     scope.$apply(function(){
                         e.preventDefault();
                         that.next().focus();

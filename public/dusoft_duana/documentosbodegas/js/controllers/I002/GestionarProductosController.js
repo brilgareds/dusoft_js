@@ -19,7 +19,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     titulo : 'Buscar Productos'
                 };
                 
-//                console.log('======== gestionar_productosCompleto ======');
 
                  $scope.parametros = parametros;
     
@@ -102,6 +101,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     tipoFiltro:'0',                
                     fabricante_id:$scope.laboratorio_id               
                 };
+                if(event.which === 13)
                 that.listarProductosParaAsignar(parametros);
             };
             
@@ -133,7 +133,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $rootScope.$on('cerrar_gestion_productosCompleto', function(e, parametros) {
-                console.log("cerrar_gestion_productosCompleto",parametros);
                 $scope.$$watchers = null;
             });
 
@@ -260,28 +259,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "7%", enableCellEdit: false},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "30%", enableCellEdit: false},
                     {field: 'getCantidad() | number : "0" ', displayName: 'Cantidad', width: "8%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.cantidad_ingresada" validacion-numero-entero ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_valor_unit()', displayName: 'Valor Unitario', width: "10%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.valor_unit" validacion-numero-entero ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.valor_unit" validacion-numero-entero ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_iva()', displayName: 'IVA', width: "5%", enableCellEdit: false,
-                      cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.iva" validacion-numero-entero  ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
+                      cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.iva" validacion-numero-entero  ng-disabled="isTmp(row.entity)" class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_lote()', displayName: 'Lote', width: "5%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.lote" class="form-control grid-inline-input" ng-disabled="isTmp(row.entity)" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.lote" class="form-control grid-inline-input" ng-disabled="isTmp(row.entity)" name="" id="" /> </div>'},
                     {field: 'get_local_prod()', displayName: 'Localización', width: "8%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.localizacion" class="form-control grid-inline-input" ng-disabled="isTmp(row.entity)" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.localizacion" class="form-control grid-inline-input" ng-disabled="isTmp(row.entity)" name="" id="" /> </div>'},
                     {field: 'get_fecha_vencimiento()', displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",
-                        cellTemplate: ' <div class="col-xs-12">\
-                                            <p class="input-group">\
-                                                <input type="text" class="form-control grid-inline-input readonlyinput" name="" id="" \
+                        cellTemplate: ' <div class="col-xs-12" cambiar-foco >\
+                                            <p class="input-group" cambiar-foco >\
+                                                <input type="text" class="form-control grid-inline-input readonlyinput calendario"  \
                                                     datepicker-popup="{{format}}" ng-model="row.entity.fecha_vencimiento" is-open="row.entity.datepicker_fecha_inicial" \
                                                     min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="" show-weeks="false" toggle-weeks-text="#"/> \
                                                 <span class="input-group-btn">\
-                                                    <button class="btn btn-xs" style="margin-top: 3px;" ng-click="abrir_fecha_vencimiento(row.entity,$event);"><i class="glyphicon glyphicon-calendar"></i></button>\
+                                                    <button class="btn btn-xs btnCalendario" style="margin-top: 3px;" ng-click="abrir_fecha_vencimiento(row.entity,$event);"><i class="glyphicon glyphicon-calendar"></i></button>\
                                                 </span>\
                                             </p>\
                                         </div>'},                    
                     {field: 'get_justificacion()', displayName: 'Justificacion', width: "12%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.justificacion" ng-disabled="isTmp(row.entity)"  class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-model="row.entity.justificacion" ng-disabled="isTmp(row.entity)"  class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "5%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="guardarProducto(row.entity)" ng-disabled="isTmp(row.entity);habilitarCheck(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\

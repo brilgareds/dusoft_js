@@ -175,14 +175,14 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
                 };
     G.Q.ninvoke(that.m_movimientos_bodegas, "isExistenciaBodega", parametros).then(function(result) {
 
-        parametros.empresa=result[0].empresa_id;
-        parametros.centroUtilidad=result[0].centro_utilidad;
-        parametros.bodega=result[0].bodega;
+        
         
         if(result.length===0){
             throw {msj:"EL producto "+args.movimientos_bodegas.codigo_producto+" no esta relacionado en existencias_bodega.", status:403};        
         }else{
-          
+            parametros.empresa=result[0].empresa_id;
+            parametros.centroUtilidad=result[0].centro_utilidad;
+            parametros.bodega=result[0].bodega;
             return G.Q.ninvoke(that.m_movimientos_bodegas, "isBodegaDestino", parametros);            
         }
     }).then(function(result) {
@@ -194,8 +194,6 @@ MovBodegasController.prototype.addItemDocTemporal=function(req,res){
     }).then(function(result) {      
         return G.Q.ninvoke(that.m_ordenes_compra, "ingresarBodegaMovimientoTmpProducto", parametros);  
     }).then(function(result) { 
-        console.log("addddddd ",result[1]);
-        console.log("addddddd ",result[0]);
          res.send(G.utils.r(req.url, 'Guardado correctamente', 200, {addItemDocTemporal: result}));   
     }).fail(function(err) {
         console.log("addItemDocTemporal ",err);

@@ -20,7 +20,6 @@ define([
                 Empresa, Documento, Proveedor, OrdenCompra, Sesion, Producto, GeneralService) {
 
             var that = this;
-            console.log("EL CONTROLADOR CON EL $scope ", $scope);
             $scope.Empresa = Empresa;
             $scope.doc_tmp_id = "00000";
             $scope.valorRetFte = 0;
@@ -39,13 +38,8 @@ define([
             $scope.entrar = "";
             $scope.listarParametrosRetencion;
             $scope.totalPorAutorizar;
-            $scope.validarDesdeLink = false;
-            
-             
-            
-            console.log("********I002Controller************");
+            $scope.validarDesdeLink = false;            
             var datos_documento = localStorageService.get("documento_bodega_I002");
-            console.log("documento_bodega_I002>>>>>>>",datos_documento);
             
             $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
@@ -266,7 +260,6 @@ define([
                 $scope.valorRetIca = docTemporal[0].porcentaje_ica;
                 $scope.valorRetIva = docTemporal[0].porcentaje_reteiva;
                 $scope.doc_tmp_id = docTemporal[0].doc_tmp_id;
-                console.log("docTemporal",docTemporal);
                 callback(true);
             };
 
@@ -315,7 +308,6 @@ define([
                     producto.set_total_costo(data.total_costo);
                     producto.set_porcentaje_gravamen(data.porcentaje_gravamen);
                     $scope.DocumentoIngreso.get_orden_compra().set_productos_ingresados(producto);
-console.log("DocItemTemporal:: ",data);
                     $scope.gravamen += parseFloat(data.iva_total);
                     $scope.cantidadTotal += parseFloat(data.cantidad);
                     $scope.valorSubtotal += parseFloat(data.valor_total);
@@ -506,7 +498,6 @@ console.log("DocItemTemporal:: ",data);
                 Request.realizarRequest(API.I002.CONSULTAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        console.log("buscar_productos_orden_compra");
                         that.render_productos(data.obj.lista_productos);
 
                     }
@@ -524,7 +515,6 @@ console.log("DocItemTemporal:: ",data);
                 $scope.Empresa.limpiar_productos();
                 
                 productos.forEach(function(data) {
-                    console.log("render_productos:: ",data);
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, parseFloat(data.porc_iva).toFixed(2), data.valor, data.lote_temp,data.fecha_vencimiento_temp);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
                     producto.set_is_tmp(data.tmp);
@@ -623,6 +613,9 @@ console.log("DocItemTemporal:: ",data);
                     if (data.status === 404) {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
+                    if (data.status === 403) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
                 });
             };
             
@@ -686,39 +679,6 @@ console.log("DocItemTemporal:: ",data);
                 });
             };
 
-            /**
-             * @author Andres M. Gonzalez
-             * @fecha 25/04/2017
-             * +Descripcion Metodo encargado de invocar el servicio que
-             *              borra los DocTemporal
-             */
-//            that.eliminarGetDocTemporal = function() {
-//               
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        orden_pedido_id: $scope.DocumentoIngreso.get_orden_compra().get_numero_orden(),
-//                        doc_tmp_id: $scope.doc_tmp_id
-//                    }
-//                };
-//
-//                Request.realizarRequest(API.I002.ELIMINAR_GET_DOC_TEMPORAL, "POST", obj, function(data) {
-//
-//                    if (data.status === 200) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                        that.buscar_ordenes_compra();
-//                        that.refrescarVista();
-//                    }
-//
-//                    if (data.status === 404) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    }
-//
-//                    if (data.status === 500) {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    }
-//                });
-//            };
             /**
              * @author Andres M. Gonzalez
              * @fecha 25/04/2017
@@ -1176,7 +1136,6 @@ console.log("DocItemTemporal:: ",data);
             };
 
             $scope.ingresar_producto = function(productos) {
-                console.log("productos.....",productos);
                 
                 var fecha_actual = new Date();
                 fecha_actual = $filter('date')(new Date(fecha_actual), "dd/MM/yyyy");
@@ -1253,7 +1212,7 @@ console.log("DocItemTemporal:: ",data);
                     usuario_id: $scope.session.usuario_id,
                     item_id_compras: productos.item_id,
                 };
-                console.log("movimientos_bodegas  ", movimientos_bodegas);
+               
                 that.additemDocTemporal(movimientos_bodegas);
             };
 
@@ -1270,43 +1229,43 @@ console.log("DocItemTemporal:: ",data);
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "40%", enableCellEdit: false},
                     {field: 'get_cantidad_solicitada() | number : "0" ', displayName: 'Cantidad', width: "5%", enableCellEdit: false},
                     {displayName: 'Cant. Recibida', width: "7%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="validarTmp(row.entity)" value="{{row.entity.cantidad_solicitada}}" ng-model="row.entity.cantidadActual" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /></div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco> <input type="text" ng-disabled="validarTmp(row.entity)"  value="{{row.entity.cantidad_solicitada}}" ng-model="row.entity.cantidadActual" validacion-numero-entero class="form-control grid-inline-input" name="cantidad" id="cantidad" /></div>'},
                     {displayName: 'Lote', width: "7%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-focus ng-disabled="validarTmp(row.entity)"  ng-model="row.entity.lote" class="form-control grid-inline-input" name="lote" id="lote" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text"  ng-disabled="validarTmp(row.entity)"  ng-model="row.entity.lote" class="form-control grid-inline-input" name="lote" id="lote" /> </div>'},
                     {displayName: 'Localización', width: "5%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="validarTmp(row.entity)" ng-model="row.entity.localizacion" class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco > <input type="text" ng-disabled="validarTmp(row.entity)"  ng-model="row.entity.localizacion" class="form-control grid-inline-input" name="localizacion" id="localizacion" /> </div>'},
                     {displayName: 'Fecha. Vencimiento', width: "10%", enableCellEdit: false, cellClass: "dropdown-button",
-                        cellTemplate: ' <div class="col-xs-12">\
-                                            <p class="input-group">\
-                                                <input type="text" class="form-control grid-inline-input readonlyinput" name="" id="" \
+                        cellTemplate: ' <div class="col-xs-12" cambiar-foco >\
+                                            <p class="input-group" cambiar-foco  >\
+                                                <input type="text" class="form-control grid-inline-input readonlyinput calendario"  \
                                                     datepicker-popup="{{format}}" ng-model="row.entity.fecha_vencimiento" is-open="row.entity.datepicker_fecha_inicial" \
-                                                    min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="" show-weeks="false" toggle-weeks-text="#"/> \
+                                                    min="minDate"   readonly  close-text="Cerrar" clear-text="Borrar" current-text="Hoy" show-weeks="false" toggle-weeks-text="#"/> \
                                                 <span class="input-group-btn">\
-                                                    <button class="btn btn-xs" style="margin-top: 3px;" ng-disabled="validarTmp(row.entity)" ng-click="abrir_fecha_vencimiento(row.entity,$event);"><i class="glyphicon glyphicon-calendar"></i></button>\
+                                                    <button class="btn btn-xs btnCalendario" style="margin-top: 3px;" ng-disabled="validarTmp(row.entity)" ng-click="abrir_fecha_vencimiento(row.entity,$event);"><i class="glyphicon glyphicon-calendar"></i></button>\
                                                 </span>\
                                             </p>\
                                         </div>'},
                     {field: 'nombre', displayName: 'Valor Unitario', width: "10%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"><input type="text" ng-model="row.entity.valor_unitario_ingresado" ng-disabled="validarTmp(row.entity)" validacion-numero-decimal class="form-control grid-inline-input" name="" id="" /> </div>'},
+                        cellTemplate: '<div class="col-xs-12" cambiar-foco><input type="text" ng-model="row.entity.valor_unitario_ingresado" ng-disabled="validarTmp(row.entity)" validacion-numero-decimal class="form-control grid-inline-input" name="valorUnitario" id="valorUnitario" /> </div>'},
                     {width: "8%", displayName: "Opcion", cellClass: "txt-center",
-                        cellTemplate: '<div class="btn-group">\
-                                            <div ng-if="!validarAutorz(row.entity)">\
-                                                <button  class="btn btn-danger btn-xs" ng-disabled="validarTmp(row.entity)" ><span class="glyphicon glyphicon-time"></span></button>\
+                        cellTemplate: '<div class="btn-group" cambiar-foco >\
+                                            <div ng-if="!validarAutorz(row.entity)" cambiar-foco>\
+                                                <button  class="btn btn-danger btn-xs btnClick" ng-disabled="validarTmp(row.entity)"  ><span class="glyphicon glyphicon-time"></span></button>\
                                             </div>\
-                                            <div ng-if="validarAutorz(row.entity)">\
+                                            <div ng-if="validarAutorz(row.entity)"  cambiar-foco>\
                                                 <div ng-if="!validarTmp(row.entity)">\
-                                                  <div ng-if="!validarCantidadAdicion(row.entity)">\
-                                                     <button class="btn btn-default btn-xs" ng-disabled="habilitar_ingreso_producto(row.entity)" ng-click="ingresar_producto(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
-                                                     <button class="btn btn-success btn-xs" ng-disabled="habilitar_ingreso_lote(row.entity)" ng-click="btnAdicionarNuevoLote(row.entity)"><span class="glyphicon glyphicon-plus-sign"></span></button>\
+                                                  <div ng-if="!validarCantidadAdicion(row.entity)" cambiar-foco >\
+                                                     <button class="btn btn-default btn-xs btnClick" ng-disabled="habilitar_ingreso_producto(row.entity)" ng-click="ingresar_producto(row.entity)" id="ingreproducto"><span class="glyphicon glyphicon-ok"></span></button>\
+                                                     <button class="btn btn-success btn-xs " ng-disabled="habilitar_ingreso_lote(row.entity)" ng-click="btnAdicionarNuevoLote(row.entity)" id="agregarlote"><span class="glyphicon glyphicon-plus-sign"></span></button>\
                                                    </div>\
-                                                  <div ng-if="validarCantidadAdicion(row.entity)">\
-                                                     <button class="btn btn-default btn-xs" ng-disabled="habilitar_ingreso_producto(row.entity)" ng-click="ingresar_producto(row.entity)"><span class="glyphicon glyphicon-ok"></span></button>\
-                                                     <button class="btn btn-danger btn-xs" ng-disabled="validarTmp(row.entity)"><span class="glyphicon glyphicon-minus-sign"></span></button>\
+                                                  <div ng-if="validarCantidadAdicion(row.entity)" cambiar-foco >\
+                                                     <button class="btn btn-default btn-xs btnClick" ng-disabled="habilitar_ingreso_producto(row.entity)" ng-click="ingresar_producto(row.entity)" id="ingreproducto" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                                     <button class="btn btn-danger btn-xs " ng-disabled="validarTmp(row.entity)"  id="agregarlote"><span class="glyphicon glyphicon-minus-sign" ></span></button>\
                                                   </div>\
                                                 </div>\
-                                                <div ng-if="validarTmp(row.entity)">\
-                                                   <button class="btn btn-success btn-xs" ng-disabled="validarTmp(row.entity)"><span class="glyphicon glyphicon-ok red"></span></button>\
-                                                   <button class="btn btn-danger btn-xs" ng-disabled="validarTmp(row.entity)"><span class="glyphicon glyphicon-minus-sign"></span></button>\
+                                                <div ng-if="validarTmp(row.entity)" cambiar-foco>\
+                                                   <button class="btn btn-success btn-xs btnClick" ng-disabled="validarTmp(row.entity)" id="ingreproducto" ><span class="glyphicon glyphicon-ok red"></span></button>\
+                                                   <button class="btn btn-danger btn-xs " ng-disabled="validarTmp(row.entity)" id="agregarlote"><span class="glyphicon glyphicon-minus-sign" ></span></button>\
                                                 </div>\
                                             </div>\
                                         </div>'}
@@ -1501,9 +1460,7 @@ console.log("DocItemTemporal:: ",data);
             if(datos_documento.datosAdicionales !== undefined){
                 $scope.listar_proveedores(datos_documento.datosAdicionales.codigo_proveedor_id,false); 
                 $scope.validarDesdeLink=true;
-                console.log("Validacion 1");
             }else{
-                console.log("Validacion 2");
                 $scope.validarDesdeLink=false;
             }
             

@@ -21,7 +21,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         termino_busqueda: '',
                         estadoSesion: true,
                         items: 0,
+                        items_facturas_generadas: 0,
                         clientes: [],
+                        facturas_generadas: [],
                         estadoBotones: [
                             "btn btn-danger btn-xs",
                             "btn btn-primary btn-xs",
@@ -154,7 +156,42 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         });
 
                     };
+                    
+                    
+                    
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio que listara 
+                     *              las facturas generadas
+                     * @author Cristian Ardila
+                     * @fecha 03/05/2017 DD/MM/YYYY
+                     * @returns {undefined}
+                     */
+                    that.listarFacturasGeneradas = function () {
 
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listar_clientes: {
+                                    filtro: $scope.root.filtro,
+                                    terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
+                                    empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                    paginaActual: $scope.paginaactual
+                                }
+                            }
+                        };
+
+                        facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
+                            $scope.root.facturas_generadas = [];
+                            if (data.status === 200) {
+                                $scope.root.items_facturas_generadas = data.obj.listar_clientes.length;
+                                //$scope.root.clientes = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
+                            } else {
+                                AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                            }
+
+                        });
+
+                    };
                     /**
                      * +Descripcion Se visualiza la tabla con todos los clientes
                      */
@@ -176,8 +213,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             {displayName: 'Telefono', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.getTelefono()}}</p></div>'},
 
-                            {displayName: 'Op', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroEntregaActual()}} - {{row.entity.mostrarPacientes()[0].mostrarFormulas()[0].getNumeroTotalEntregas()}}</p></div>'},
-
                             {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                                 cellTemplate: '<div class="btn-group">\
                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" title="Crear factura"><span class="glyphicon glyphicon-list"></span> Factura</button>\
@@ -185,7 +220,51 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             },
                         ]
                     };
+                    
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * +Descripcion Se visualizan los registros con todas las facturas
+                     *              generadas
+                     * @fecha 03-05-2017 DD-MM-YYYY
+                     */
+                    $scope.listaFacturasGeneradas = {
+                        data: 'root.clientes',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        enableHighlighting: true,
+                        columnDefs: [
 
+                            {field: '#Factura', width: "8%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
+
+                            {field: 'Identificacion', width: "8%", displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+
+                            {field: 'Ubicacion', width: "8%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
+                            
+                            {field: 'Cliente', width: "8%", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
+
+                            {displayName: 'Direccion', width: "8%", cellTemplate: '<div class="col-xs-16 "><p class="text-lowercase">{{ row.entity.getDireccion() }}</p> </div>'},
+
+                            {displayName: 'Telefono', width: "8%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.getTelefono()}}</p></div>'},
+                            
+                            {field: 'Vendedor', width: "8%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
+
+                            {field: 'F.Factura', width: "8%", displayName: 'F.Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
+                            
+                            {field: 'F.Ven', width: "8%", displayName: 'F.Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
+                            
+                            {field: 'Valor/saldo', width: "8%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} / {{ row.entity.getDepartamento()}} </p></div>'},
+ 
+                            {field: 'Estado', width: "8%", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
+                            
+                            {displayName: "Opc",  cellClass: "txt-center dropdown-button",
+                                cellTemplate: '<div class="btn-group">\
+                                       <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" title="Crear factura"><span class="glyphicon glyphicon-list"></span> Factura</button>\
+                                  </div>'
+                            },
+                        ]
+                    };
                     /**
                      * @author Cristian Ardila
                      * @fecha 04/02/2016
@@ -245,6 +324,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 } else {
                                     that.listarTiposTerceros();
                                     that.listarClientes();
+                                    that.listarFacturasGeneradas();
                                 }
                             }
                         }

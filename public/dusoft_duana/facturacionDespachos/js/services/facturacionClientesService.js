@@ -12,7 +12,7 @@ define(["angular", "js/services"], function (angular, services) {
 
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2016 DD/MM/YYYYY
+                     * @fecha  21/05/2017 DD/MM/YYYYY
                      * +Descripcion Consulta todas las formulas
                      */
                     self.listarTiposTerceros = function (obj, callback) {
@@ -23,11 +23,22 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2016 DD/MM/YYYYY
+                     * @fecha  21/05/2017 DD/MM/YYYYY
                      * +Descripcion lista todos los clientes
                      */
                     self.listarClientes = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_CLIENTES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * +Descripcion lista todos los clientes
+                     */
+                    self.listarFacturasGeneradas = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_FACTURAS_GENERADAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

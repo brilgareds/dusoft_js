@@ -2,9 +2,9 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('facturacionClientesService',
-            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho",
+            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho",
 
-                function (Request, API, Usuario,TipoTerceros,TerceroDespacho) {
+                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho) {
 
                     var self = this;
 
@@ -86,8 +86,32 @@ define(["angular", "js/services"], function (angular, services) {
                         return tercerosDespacho;
                     };
                     
+                    self.renderDocumentosClientes = function (datos) {
+                       
+                        var tercerosDespacho = [];
+                        for (var i in datos) {
+
+                            var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
+                                                    datos[i].tercero_id,
+                                                    datos[i].direccion,
+                                                    datos[i].telefono);
+
+                                _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
+                                _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
+                                _terceroDespacho.setPais(datos[i].pais_empresa); 
+                            var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal, datos[i].fecha_registro);
+                                _documento.setValor(datos[i].valor_total);
+                                _documento.setSaldo(datos[i].saldo);
+                                _documento.setDescripcionEstado(datos[i].descripcion_estado);
+                                _terceroDespacho.agregarDocumentos(_documento);
+                            tercerosDespacho.push(_terceroDespacho);
+                        }
+                        return tercerosDespacho;
+                    };
+                    
                     return this;
                 }]);
+ 
 
 });
 

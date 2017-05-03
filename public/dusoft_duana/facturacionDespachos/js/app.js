@@ -45,6 +45,7 @@ define([
     "models/TipoTerceros",
     "models/TerceroDespacho",
     "models/EmpresaDespacho",
+    "models/DocumentoDespacho",
     "controllers/facturacionClientesController",
    /* "controllers/facturacionClientesDetalleController",
     "controllers/dispensacionRealizarEntregaController",

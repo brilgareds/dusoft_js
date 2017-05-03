@@ -184,7 +184,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                             $scope.root.facturas_generadas = [];
                             if (data.status === 200) {
                                 $scope.root.items_facturas_generadas = data.obj.listar_facturas_generadas.length;
-                                //$scope.root.clientes = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
+                                $scope.root.facturas_generadas = facturacionClientesService.renderDocumentosClientes(data.obj.listar_facturas_generadas);
+                                console.log("$scope.root.facturas_generadas ", $scope.root.facturas_generadas)
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                             }
@@ -205,7 +206,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             {field: 'Identificacion', width: "15%", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
 
-                            {field: 'Cliente', displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+                            {field: 'Cliente', displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
 
                             {field: 'Ubicacion', width: "15%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
 
@@ -229,25 +230,23 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      * @fecha 03-05-2017 DD-MM-YYYY
                      */
                     $scope.listaFacturasGeneradas = {
-                        data: 'root.clientes',
+                        data: 'root.facturas_generadas',
                         enableColumnResize: true,
                         enableRowSelection: false,
                         enableCellSelection: true,
                         enableHighlighting: true,
                         columnDefs: [
 
-                            {field: '#Factura', width: "8%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
+                            {field: '#Factura', width: "8%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturas()[0].get_prefijo()}}- {{row.entity.mostrarFacturas()[0].get_numero()}}</p></div>'},
 
-                            {field: 'Identificacion', width: "8%", displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
+                            {field: 'Identificacion', width: "15%", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
+
+                            {field: 'Cliente', displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
 
                             {field: 'Ubicacion', width: "8%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
                             
-                            {field: 'Cliente', width: "8%", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
-
-                            {displayName: 'Direccion', width: "8%", cellTemplate: '<div class="col-xs-16 "><p class="text-lowercase">{{ row.entity.getDireccion() }}</p> </div>'},
-
                             {displayName: 'Telefono', width: "8%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.getTelefono()}}</p></div>'},
-                            
+                        
                             {field: 'Vendedor', width: "8%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
 
                             {field: 'F.Factura', width: "8%", displayName: 'F.Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},

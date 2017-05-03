@@ -41,8 +41,8 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
    
     var that = this;
                
-                 
-    G.Q.ninvoke(that.m_facturacion_clientes,'listarFacturasGeneradas',{}).then(function(resultado){
+    var parametros = {numero:"52146",prefijo:'',tipoIdTercero:'',pedidoClienteId:'',terceroId:'900766903',nombreTercero:''};             
+    G.Q.ninvoke(that.m_facturacion_clientes,'listarFacturasGeneradas',parametros).then(function(resultado){
         
     if(resultado.length >0){
         res.send(G.utils.r(req.url, 'Consulta con formulas', 200, {listar_facturas_generadas:resultado}));

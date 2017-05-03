@@ -98,19 +98,9 @@ FacturacionClientesModel.prototype.listarClientes = function (obj,callback) {
 
 };
 
-
-/**
- * @author Cristian Ardila
- * +Descripcion Metodo encargado de listar los clientes
- * @fecha 2017-02-05 YYYY-DD-MM
- * @param {type} obj
- * @param {type} callback
- * @returns {undefined}
- */
-FacturacionClientesModel.prototype.listarFacturasGeneradas = function (obj,callback) {
+function __camposListaFacturasGeneradas(){
     
-    
-    var colSubQuery2 = [G.knex.raw("'0' as factura_agrupada"),
+     var colSubQuery2 = [
                 "a.empresa_id",
                 "a.factura_fiscal",
                 "a.prefijo",
@@ -127,13 +117,9 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (obj,callb
                 "c.telefono",
                 G.knex.raw("h.pais||'-'||g.departamento ||'-'||f.municipio as ubicacion"),
                 "a.fecha_registro",
-                "a.usuario_id",
-                "a.tipo_id_vendedor",
-                "a.vendedor_id",
-                "b.nombre",
+                "a.usuario_id",                
                 "a.valor_total",
                 "a.saldo",
-                "a.pedido_cliente_id",
                 "a.observaciones",
                 "a.fecha_vencimiento_factura",
                 "a.porcentaje_rtf",
@@ -149,31 +135,26 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (obj,callb
                 G.knex.raw("k.departamento as departamento_empresa"),
                 G.knex.raw("j.municipio as municipio_empresa"),
                 G.knex.raw("TO_CHAR(a.fecha_registro,'YYYY') as anio_factura"),
-                "m.subtotal",
-                "m.iva_total",
-                "pedi.observacion"];
+                 "m.subtotal",
+                 "m.iva_total",
+               
+            ];
     
-    var colSubQuery1 = ["a.empresa_id",  
-       "a.prefijo",  
-       "a.factura_fiscal",  
-       G.knex.raw("SUM((valor_unitario*cantidad)) as subtotal"),  
-       G.knex.raw("SUM(((valor_unitario*cantidad)*(porc_iva/100))) as iva_total")
-    ];
-   
-    var subQuery1 = G.knex.select(colSubQuery1).from("inv_facturas_despacho_d as a").groupBy("a.empresa_id","a.prefijo","a.factura_fiscal");
+    return colSubQuery2;
+};
+
+
+function __consultaAgrupada(tabla1,estado,columna,query,filtro){
     
-    var subQuery2 = G.knex.select(colSubQuery2)
-            .from("inv_facturas_despacho as a")
-            .join('vnts_vendedores as b', function () {
-                this.on("a.tipo_id_vendedor", "b.tipo_id_vendedor")
-                    .on("a.vendedor_id", "b.vendedor_id")
-            }).join('terceros as c', function () {
+    var consulta = G.knex.select(columna)
+            .from(tabla1)
+            .join('terceros as c', function () {
                 this.on("a.tipo_id_tercero", "c.tipo_id_tercero")
                     .on("a.tercero_id", "c.tercero_id")
             }).join('system_usuarios as d', function () {
                 this.on("a.usuario_id", "d.usuario_id")
                    
-            }).join('empresas as e', function () {
+            }) .join('empresas as e', function () {
                 this.on("a.empresa_id", "e.empresa_id")   
                 
             }).join('tipo_mpios as f', function () {
@@ -191,6 +172,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (obj,callb
             }).join('tipo_mpios as j', function () {
                 this.on("e.tipo_pais_id ", "j.tipo_pais_id")
                     .on("e.tipo_dpto_id", "j.tipo_dpto_id")
+                    .on("e.tipo_mpio_id", "j.tipo_mpio_id")
             }).join('tipo_dptos as k', function() {
                 this.on("j.tipo_pais_id","k.tipo_pais_id")
                     .on("j.tipo_dpto_id","k.tipo_dpto_id")
@@ -198,32 +180,138 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (obj,callb
             }).join('tipo_pais as l', function() {
                 this.on("k.tipo_pais_id","l.tipo_pais_id")
                    
-            }).join('ventas_ordenes_pedidos as pedi', function() {
+            }).join(query, function(){
+                
+                this.on("m.empresa_id","a.empresa_id")
+                        .on("m.prefijo","a.prefijo")
+                        .on("m.factura_fiscal","a.factura_fiscal")
+                
+            }).join('documentos as i', function(){
+                this.on("a.empresa_id","i.empresa_id")
+                    .on("a.documento_id","i.documento_id")
+            
+            }).where(function() {
+                    
+                    this.andWhere('a.empresa_id','03')
+                    .andWhere('c.nombre_tercero',G.constants.db().LIKE,"%"+ filtro.nombreTercero +"%") 
+                    .andWhere('a.tercero_id',G.constants.db().LIKE,"%"+ filtro.terceroId +"%") ;
+                    if(filtro.numero !=="" ){
+                        this.andWhere('a.factura_fiscal',filtro.numero);
+                    }
+                    if(filtro.prefijo !=="" ){
+                        this.andWhere('a.prefijo',filtro.prefijo);
+                    }
+                    if(filtro.tipoIdTercero !=="" ){
+                        this.andWhere('a.tipo_id_tercero',filtro.tipoIdTercero);
+                    }
+                    if(filtro.pedidoClienteId !=="" ){
+                        this.andWhere('a.pedido_cliente_id',filtro.tipoIdTercero);
+                    }
+                    
+        })
+             
+            
+            if(estado === 0){
+            
+            consulta.join('vnts_vendedores as b', function () {
+             this.on("a.tipo_id_vendedor", "b.tipo_id_vendedor")
+                 .on("a.vendedor_id", "b.vendedor_id")
+             });
+             
+            consulta.join('ventas_ordenes_pedidos as pedi', function() {
                 this.on("pedi.empresa_id","a.empresa_id")
                     .on("pedi.pedido_cliente_id","a.pedido_cliente_id")
                     .on("pedi.tercero_id","a.tercero_id")
                     .on("pedi.tipo_id_tercero","a.tipo_id_tercero")
                    
-            }).join('documentos as i', function(){
-                this.on("a.empresa_id","i.empresa_id")
-                    .on("a.documento_id","i.documento_id")
-            }).join(subQuery1, function(){
-                
-                this.on("m.empresa_id","a.empresa_id")
-                        .on("m.prefijo","a.prefijo")
-                        .on("m.factura_fiscal","a.factura_fiscal")
-            });
-                    
-     
-     
-     
-     
-     subQuery2.then(function(resultado){    
+            }).as("a");
+            
+            }
+    return consulta;
+    
+}
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de listar los clientes
+ * @fecha 2017-02-05 YYYY-DD-MM
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro,callback) {
+    
+    var colQuery = [G.knex.raw("a.*"),
+             "b.estado",
+            G.knex.raw("case when b.estado=0 then 'Sincronizado' else 'NO sincronizado' end as descripcion_estado"),
+            "b.mensaje" ];
+    
+    var colSubQuery2 = __camposListaFacturasGeneradas();
+        colSubQuery2.push(G.knex.raw("'0' as factura_agrupada"));
+        colSubQuery2.push("a.tipo_id_vendedor");
+        colSubQuery2.push("a.vendedor_id");
+        colSubQuery2.push("b.nombre");
+        colSubQuery2.push("pedi.observacion");
+        colSubQuery2.push("a.pedido_cliente_id");
+    
+    var colSubQuery2B = __camposListaFacturasGeneradas();
+        colSubQuery2B.push(G.knex.raw("'1' as factura_agrupada"));
+        colSubQuery2B.push(G.knex.raw("(SELECT bb.tipo_id_vendedor\
+                                        FROM inv_facturas_agrupadas_despacho_d bb \
+                                        WHERE  bb.empresa_id = a.empresa_id and bb.prefijo = a.prefijo \
+                                        AND bb.factura_fiscal = a.factura_fiscal limit 1 ) as tipo_id_vendedor"));               
+        colSubQuery2B.push(G.knex.raw("(SELECT cc.vendedor_id \
+                                        FROM inv_facturas_agrupadas_despacho_d cc \
+                                        WHERE cc.empresa_id = a.empresa_id \
+                                        AND cc.prefijo = a.prefijo \n\
+                                        AND cc.factura_fiscal = a.factura_fiscal limit 1 ) as vendedor_id"));                                        
+        colSubQuery2B.push(G.knex.raw("(SELECT ee.nombre\
+                                        FROM inv_facturas_agrupadas_despacho_d dd\
+                                        INNER JOIN vnts_vendedores ee on dd.tipo_id_vendedor = ee.tipo_id_vendedor and dd.vendedor_id = ee.vendedor_id\
+                                        WHERE dd.empresa_id = a.empresa_id and dd.prefijo = a.prefijo and dd.factura_fiscal = a.factura_fiscal limit 1 ) as nombre"));                                        
+        colSubQuery2B.push(G.knex.raw("'' as observacion"));
+        colSubQuery2B.push(G.knex.raw("0 as pedido_cliente_id")); 
+        
+    var colSubQuery1 = ["a.empresa_id",  
+       "a.prefijo",  
+       "a.factura_fiscal",  
+       G.knex.raw("SUM((valor_unitario*cantidad)) as subtotal"),  
+       G.knex.raw("SUM(((valor_unitario*cantidad)*(porc_iva/100))) as iva_total")
+    ];
+    
+   
+    
+    var subQuery1 = G.knex.column(colSubQuery1).select().from("inv_facturas_despacho_d as a").groupBy("a.empresa_id","a.prefijo","a.factura_fiscal").as("m");
+    
+    var subQuery1B = G.knex.column(colSubQuery1).select().from("inv_facturas_agrupadas_despacho_d as a").groupBy("a.empresa_id","a.prefijo","a.factura_fiscal").as("m");
+    
+    
+    var subQuery2 = __consultaAgrupada("inv_facturas_despacho as a",
+                    0,
+                    colSubQuery2,
+                    subQuery1,
+                    filtro)
+            .union( __consultaAgrupada("inv_facturas_agrupadas_despacho as a",
+                    1,
+                    colSubQuery2B,
+                    subQuery1B,
+                    filtro));
+ 
+     var query = G.knex.column(colQuery)
+            .from(subQuery2) 
+             .leftJoin("logs_facturacion_clientes_ws_fi as b ", function(){
+                this.on("a.prefijo","b.prefijo")
+                .on("a.factura_fiscal","b.factura_fiscal")
+                .on(G.knex.raw("b.prefijo_nota IS NULL"))
+            }).orderBy("fecha_registro","desc");
+ 
+     query.limit(G.settings.limit).
+            offset((1 - 1) * G.settings.limit) 
+     query.then(function(resultado){    
          console.log("resultado ", resultado)
             callback(false, resultado)
         }).catch(function(err){        
-            console.log("err [listarFacturasGeneradas] ", err);
-            callback(err);
+            //console.log("err [listarFacturasGeneradas] ", err);
+            callback(query.toSQL());
         });
 };
 

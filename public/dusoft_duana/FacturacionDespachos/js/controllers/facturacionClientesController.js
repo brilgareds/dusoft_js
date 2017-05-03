@@ -183,7 +183,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
                             $scope.root.facturas_generadas = [];
                             if (data.status === 200) {
-                                $scope.root.items_facturas_generadas = data.obj.listar_clientes.length;
+                                $scope.root.items_facturas_generadas = data.obj.listar_facturas_generadas.length;
                                 //$scope.root.clientes = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
                             } else {
                                 AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);

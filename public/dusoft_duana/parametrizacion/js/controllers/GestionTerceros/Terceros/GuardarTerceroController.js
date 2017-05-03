@@ -443,8 +443,9 @@ define(["angular",
                 
                 GestionTercerosService.submitformularioTerceros(parametros,function(respuesta){
                     if(respuesta.status === 200){
-                        localStorageService.set("accion", "1");
+                        localStorageService.set("accion", "0");
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema", "Se ha guardado el tercero correctamente");
+                        $state.go("Terceros");
                     } else {
                         AlertService.mostrarVentanaAlerta("Mensaje del sistema",respuesta.msj);
                     }

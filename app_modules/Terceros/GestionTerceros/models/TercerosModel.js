@@ -334,7 +334,8 @@ TercerosModel.prototype.obtenerTercero = function(parametros, callback){
         "l.id as tipo_correo_id",
         "l.descripcion as descripcion_tipo_correo",
         "m.id as tipo_red_social_id",
-        "m.descripcion as descripcion_red_social"
+        "m.descripcion as descripcion_red_social",
+        "n.descripcion as descripcion_tipo_organizacion"
     ];
     
     G.knex.column(columns).
@@ -358,6 +359,7 @@ TercerosModel.prototype.obtenerTercero = function(parametros, callback){
     leftJoin("nomenclatura_direccion as k", "a.nomenclatura_direccion2", "k.id").
     leftJoin("tipos_correo as l", "a.tipo_correo_id", "l.id").
     leftJoin("tipos_redes_sociales as m", "a.tipo_red_social_id", "m.id").
+    leftJoin("tipo_organizacion as n", "n.id", "a.tipo_organizacion_id").
     where("a.tipo_id_tercero", parametros.tercero.tipoDocumento.id).
     andWhere("a.tercero_id", parametros.tercero.id).
     then(function(resultado){

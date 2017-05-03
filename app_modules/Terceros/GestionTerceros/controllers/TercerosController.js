@@ -77,7 +77,7 @@ Terceros.prototype.listarTercerosCiudad = function(req, res) {
 
     var termino_busqueda = (args.terceros.termino_busqueda === undefined) ? '' : args.terceros.termino_busqueda;
 
-    that.m_terceros.listar_terceros_ciudad(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, function(err, listado_terceros) {
+    that.m_gestion_terceros.listar_terceros_ciudad(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, function(err, listado_terceros) {
         if (err)
             res.send(G.utils.r(req.url, 'Error consultando terceros', 500, {}));
         else
@@ -105,7 +105,7 @@ Terceros.prototype.consultarContratoCliente = function(req, res) {
     var tipo_id_cliente = args.contrato_cliente.tipo_id_cliente;
     var cliente_id = args.contrato_cliente.cliente_id;
 
-    this.m_terceros.consultar_contrato_cliente(tipo_id_cliente, cliente_id, function(err, contrato_cliente) {
+    this.m_gestion_terceros.consultar_contrato_cliente(tipo_id_cliente, cliente_id, function(err, contrato_cliente) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Consultando Contrato Terceros', 500, {}));
         else
@@ -314,6 +314,6 @@ Terceros.prototype.guardarFormularioTerceros = function(req, res){
     
 };
 
-Terceros.$inject = ["m_terceros"];
+Terceros.$inject = ["m_gestion_terceros"];
 
 module.exports = Terceros;

@@ -41,7 +41,8 @@
         <button type="button" class="btn btn-info btn-medium" ng-if="(root.tabs.length - 1) != root.tabActual"  ng-click="onBtnSiguiente()">
             Siguiente <span class="glyphicon glyphicon-chevron-right" ></span>
         </button>
-        <button type="button" class="btn btn-success btn-medium" ng-if="(root.tabs.length - 1) == root.tabActual"  ng-click="onBtnSiguiente(true)">
+        <button type="button" class="btn btn-success btn-medium" ng-if="(root.tabs.length - 1) == root.tabActual || 
+        (formularios.formularioUbicacion.$valid && formularios.formularioTerceros.$valid)"  ng-click="onBtnSiguiente(true)">
             Guardar <span class="glyphicon glyphicon glyphicon-floppy-save" ></span>
         </button>
     </div>

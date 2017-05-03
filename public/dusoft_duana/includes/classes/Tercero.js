@@ -63,6 +63,15 @@ define(["angular", "js/models"], function(angular, models) {
             return this;
         };
         
+        Tercero.prototype.getNombreComercial = function(){
+            return this.nombreComercial;
+        };
+        
+        Tercero.prototype.setNombreComercial = function(nombreComercial){
+            this.nombreComercial = nombreComercial;
+            return this;
+        };
+        
         Tercero.prototype.getTipoNaturaleza = function(){
             return this.tipoNaturaleza;
         };
@@ -299,6 +308,16 @@ define(["angular", "js/models"], function(angular, models) {
         Tercero.prototype.getTipoDocumento = function() {
             return this.tipoDocumento;
         };  
+        
+        
+        Tercero.prototype.setTipoOrganizacion = function(tipoOrganizacion) {
+            this.tipoOrganizacion = tipoOrganizacion;
+            return this;
+        };
+
+        Tercero.prototype.getTipoOrganizacion = function() {
+            return this.tipoOrganizacion;
+        }; 
         
         Tercero.prototype.setContacto = function(contacto) {
             this.contacto = contacto;

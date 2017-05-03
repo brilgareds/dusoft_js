@@ -12,7 +12,7 @@
                 "terceros_model": {
                     "module": "Terceros/GestionTerceros",
                     "model": "TercerosModel",
-                    "alias": "m_terceros"
+                    "alias": "m_gestion_terceros"
                 }
             }],
         "events": [],

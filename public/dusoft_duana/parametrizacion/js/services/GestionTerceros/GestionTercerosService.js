@@ -6,12 +6,12 @@ define(["angular", "js/services"], function(angular, services) {
      'TipoDocumento','EstadoCivil','TipoNacionalidad','TipoDireccion','Pais',
      'Departamento','Ciudad','NomenclaturaDireccion','TipoCorreo','TipoRedSocial',
      'Telefono', 'TipoTelefono','TipoLineaTelefonica','Contacto','TipoContacto',
-     'TipoNaturaleza',
+     'TipoNaturaleza', 'TipoOrganizacion',
     function($rootScope, Modulo, Request, API, Genero,
              TipoDocumento, EstadoCivil, TipoNacionalidad, TipoDireccion, Pais,
              Departamento, Ciudad, NomenclaturaDireccion, TipoCorreo, TipoRedSocial,
              Telefono, TipoTelefono, TipoLineaTelefonica, Contacto, TipoContacto,
-             TipoNaturaleza) {
+             TipoNaturaleza, TipoOrganizacion) {
         
         var self = this;
 
@@ -105,13 +105,15 @@ define(["angular", "js/services"], function(angular, services) {
             var tipoRedSocial = TipoRedSocial.get(data.tipo_red_social_id, data.descripcion_red_social);
             var naturaleza = TipoNaturaleza.get(data.sw_persona_juridica);
             naturaleza.setDescripcion((data.sw_persona_juridica === '0') ? "Natural":"Juridica");
+            var tipoOrganizacion = TipoOrganizacion.get(data.tipo_organizacion_id, data.descripcion_tipo_organizacion);
                         
             tercero.setPrimerNombre(data.nombre1).setSegundoNombre(data.nombre2).setPrimerApellido(data.apellido1).setSegundoApellido(data.apellido2).
             setGenero(genero).setTipoDocumento(tipoDocumento).setId(data.tercero_id).setFechaExpedicion(data.fecha_expedicion_documento).
             setFechaExpiracion(data.fecha_expiracion).setFechaNacimiento(data.fecha_nacimiento).setEstadoCivil(estadoCivil).
             setNacionalidad(tipoNacionalidad).setRazonSocial(data.razon_social).setDescripcion(data.descripcion).setTipoDireccion(tipoDireccion).
             setPais(pais).setNomenclaturaDireccion1(nomenclatura1).setNomenclaturaDireccion2(nomenclatura2).setNomenclaturaDescripcion1(data.nomenclatura_descripcion1).
-            setNomenclaturaDescripcion2(data.nomenclatura_descripcion2).setNumeroPredio(data.numero_predio).setBarrio(data.barrio).setTipoCorreo(tipoCorreo).setCorreo(data.email).
+            setNombreComercial(data.nombre_comercial).setNomenclaturaDescripcion2(data.nomenclatura_descripcion2).setNumeroPredio(data.numero_predio).
+            setBarrio(data.barrio).setTipoCorreo(tipoCorreo).setCorreo(data.email).setTipoOrganizacion(tipoOrganizacion).
             setTipoRedSocial(tipoRedSocial).setDescripcionRedSocial(data.descripcion_red_social).setTipoNaturaleza(naturaleza);
     
             for(var i in data.telefonos){

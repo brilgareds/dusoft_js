@@ -14,9 +14,11 @@ define(["angular"], function (angular) {
                  "LISTAR_PREFIJOS_FACTURAS": BASE_URL + "/FacturacionClientes/listarPrefijosFacturas", 
                  "LISTAR_CLIENTES": BASE_URL + "/FacturacionClientes/listarClientes", 
                  "LISTAR_FACTURAS_GENERADAS": BASE_URL + "/FacturacionClientes/listarFacturasGeneradas", 
-                
 
-            }
+            },
+            'FACTURACIONPROVEEDOR':{
+                 "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/FacturacionProveedores/listarOrdenesCompraProveedor", 
+            },
         }
 
     };

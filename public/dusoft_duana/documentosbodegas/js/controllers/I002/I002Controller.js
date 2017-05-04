@@ -516,7 +516,11 @@ define([
                 
                 productos.forEach(function(data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, parseFloat(data.porc_iva).toFixed(2), data.valor, data.lote_temp,data.fecha_vencimiento_temp);
+                    if(data.cantidadpendiente > 0){
+                    producto.set_cantidad_solicitada(data.cantidadpendiente);
+                    }else{
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                    }
                     producto.set_is_tmp(data.tmp);
                     producto.set_item_id(data.item_id);
                     producto.set_item_id_compras(data.item_id_compras);

@@ -43,9 +43,12 @@ define([
     "models/ModuloHc",
     "models/BodegaHc",*/
     "models/TipoTerceros",
+    "models/OrdenesComprasProveedores",
     "models/TerceroDespacho",
     "models/EmpresaDespacho",
     "controllers/facturacionClientesController",
+    "controllers/facturacionProveedor/facturacionProveedorController",
+    "controllers/facturacionProveedor/DetalleRecepcionParcialController",
    /* "controllers/facturacionClientesDetalleController",
     "controllers/dispensacionRealizarEntregaController",
     "controllers/dispensacionAutorizarDispensacion",
@@ -53,6 +56,7 @@ define([
     "controllers/descartarPendientesFormulaController",
     "controllers/dispensacionMovimientoFormulasPacienteController",*/
     "services/facturacionClientesService",
+    "services/facturacionProveedoresService",
     "webNotification"
 ], function(angular) { 
 
@@ -97,17 +101,19 @@ define([
                     text: "Facturacion Despacho", 
                     templateUrl: "views/facturacionClientes/index.html",
                     controller: "facturacionClientesController"
-                });/*.state('listarClientes', {
-                    url: "/listarClientes",
-                    text: "Lista de clientes",
-                    templateUrl: "views/facturacionClientes/dispensarFormulaDetalle.html",
-                    parent_name : "Facturacion"
-                }).state('DispensarFormulaPendientes',{
-                    url: "/DispensarFormulaPendientes",
-                    text: "Productos pendientes para dispensar",
-                    templateUrl: "views/facturacionClientes/dispensarFormulaPendiente.html",
-                    parent_name : "Facturacion"
-                });*/
+                }).state('FacturacionProveedores', {
+                    url: "/FacturacionProveedores",
+                    text: "Facturacion Proveedores", 
+                    templateUrl: "views/facturacionProveedores/index.html",
+                    parent_name: "Despacho",
+                    controller: "facturacionProveedorController"
+                }).state('DetalleRecepcionParcial', {
+                    url: "/DetalleRecepcionParcial",
+                    text: "Detalle Recepcion Parcial", 
+                    parent_name: "Despacho",
+                    templateUrl: "views/facturacionProveedores/detallePedidos.html",
+                    controller: "DetalleRecepcionParcialController"                        
+                });
                     
 
                 if ($location.path() === "")

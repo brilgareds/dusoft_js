@@ -1,10 +1,5 @@
 var FacturacionClientes = function(m_facturacion_clientes) {
     this.m_facturacion_clientes = m_facturacion_clientes;
-    /* m_facturacion_clientes, e_facturacion_clientes, m_usuarios
-    this.m_facturacion_clientes = m_facturacion_clientes;
-    this.e_facturacion_clientes = e_facturacion_clientes;
-    this.m_usuarios = m_usuarios;*/
-   
 };
 
 /*
@@ -21,7 +16,45 @@ FacturacionClientes.prototype.listarTiposTerceros = function(req, res){
     G.Q.ninvoke(that.m_facturacion_clientes,'listarTiposTerceros').then(function(resultado){
         
     if(resultado.length >0){
-        res.send(G.utils.r(req.url, 'Consulta con formulas', 200, {listar_tipo_terceros:resultado}));
+        res.send(G.utils.r(req.url, 'Consulta lista tipos terceros', 200, {listar_tipo_terceros:resultado}));
+    }else{
+        throw 'Consulta sin resultados';
+    }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+/*
+ * @author Cristian Ardila
+ * @fecha 02/05/2017
+ * +Descripcion Controlador encargado de listar los prefijos
+ *              
+ */
+FacturacionClientes.prototype.listarPrefijosFacturas = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;           
+    
+    if (args.listar_prefijos === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_prefijos: []}));
+        return;
+    }
+    
+    if (args.listar_prefijos.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {listar_prefijos: []}));
+        return;
+    }
+    
+    var parametros = {
+        empresaId:args.listar_prefijos.empresaId,
+        
+    }
+    G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros).then(function(resultado){
+        
+    if(resultado.length >0){
+        res.send(G.utils.r(req.url, 'Consulta lista de prefijos', 200, {listar_prefijos:resultado}));
     }else{
         throw 'Consulta sin resultados';
     }
@@ -92,14 +125,14 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
     var parametros = {
         empresaId:empresaId,
         numero:numero,
-        prefijo:'',
+        prefijo:prefijo.tipo,
         tipoIdTercero:filtro.tipo,
         pedidoClienteId:'',
         terceroId: terminoBusqueda,
-        nombreTercero: ' ',//nombreTercero,
+        nombreTercero: nombreTercero,//nombreTercero,
         paginaActual:paginaActual
     };       
-     console.log("parametros2 ", parametros)
+     
     G.Q.ninvoke(that.m_facturacion_clientes,'listarFacturasGeneradas',parametros).then(function(resultado){
         
     if(resultado.length >0){

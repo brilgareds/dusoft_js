@@ -13,10 +13,22 @@ define(["angular", "js/services"], function (angular, services) {
                     /**
                      * @author Cristian Ardila
                      * @fecha  21/05/2017 DD/MM/YYYYY
-                     * +Descripcion Consulta todas las formulas
+                     * +Descripcion Consulta todos los tipos de documentos
                      */
                     self.listarTiposTerceros = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_TIPOS_TERCEROS, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * +Descripcion Consulta los prefijos
+                     */
+                    self.listarPrefijosFacturas = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_PREFIJOS_FACTURAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

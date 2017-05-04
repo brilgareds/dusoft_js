@@ -24,6 +24,30 @@ FacturacionClientesModel.prototype.listarTiposTerceros = function (callback) {
 
 /**
  * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de listar los tipos de terceros
+ * @controller FacturacionClientes.prototype.listarTiposTerceros
+ */
+FacturacionClientesModel.prototype.listarPrefijosFacturas = function (obj,callback) {
+
+    G.knex.column([G.knex.raw('prefijo as id'),
+                G.knex.raw('prefijo as descripcion')])
+            .select()
+            .from('documentos')
+            .where("tipo_doc_general_id",'FV01')
+            .andWhere("empresa_id", obj.empresaId)
+            .then(function (resultado) {
+
+                callback(false, resultado)
+            }).catch(function (err) {
+        console.log("err [listarPrefijosFacturas]:", err);
+        callback(err);
+    });
+
+};
+
+/**
+ * @author Cristian Ardila
  * +Descripcion Metodo encargado de listar los clientes
  * @fecha 2017-02-05 YYYY-DD-MM
  * @param {type} obj
@@ -146,7 +170,7 @@ function __camposListaFacturasGeneradas() {
 
 
 function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
-
+console.log("parametros2 filtro ", filtro)
     var consulta = G.knex.select(columna)
             .from(tabla1)
             .join('terceros as c', function () {
@@ -195,7 +219,7 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
 
         this.andWhere('a.empresa_id', filtro.empresaId)
             .andWhere('c.nombre_tercero', G.constants.db().LIKE, "%" + filtro.nombreTercero + "%")
-            .andWhere('a.tercero_id', G.constants.db().LIKE, "%" + filtro.terceroId + "%");
+            .andWhere('a.tercero_id', G.constants.db().LIKE, "%" + filtro.terceroId + "%");//
         if (filtro.numero !== "") {
             this.andWhere('a.factura_fiscal', filtro.numero);
         }
@@ -209,7 +233,7 @@ function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
             this.andWhere('a.pedido_cliente_id', filtro.pedidoClienteId);
         }
 
-    })
+    });
 
 
     if (estado === 0) {
@@ -310,11 +334,11 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     query.limit(G.settings.limit).
             offset((filtro.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
-        // console.log("resultado ", resultado)
+       //console.log("resultado [query.toSQL()]:  ", query.toSQL());
         callback(false, resultado)
     }).catch(function (err) {
         //console.log("err [listarFacturasGeneradas] ", err);
-        callback(query.toSQL());
+        callback(err);
     });
 };
 

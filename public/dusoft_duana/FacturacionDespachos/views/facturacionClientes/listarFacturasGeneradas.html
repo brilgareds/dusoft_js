@@ -1,6 +1,4 @@
-<div class ="row">
- 
-        
+<div class ="row">        
          <div class="{{columnaSizeBusqueda}} pull-right">                                                                
                                                                  
                 <div class="input-group">
@@ -25,12 +23,12 @@
                    <input ng-show="root.visibleBuscador" 
                            type="text" 
                            class="form-control" 
-                           ng-keypress="buscarClientesFactura($event);"  
+                           ng-keypress="buscarFacturaGenerada($event);"  
                            ng-model="root.termino_busqueda" 
                            placeholder="Buscar" name="" id="" />
                     <div class="input-group-btn" ng-show="root.visibleBotonBuscador" >
                        
-                       <button class="btn btn-default pull-right" type="submit" ng-click ="buscarClientesFactura($event)">
+                       <button class="btn btn-default pull-right" type="submit" ng-click ="buscarFacturaGenerada($event)">
                            <i class="glyphicon glyphicon-search"></i></button>
                        
                     </div>

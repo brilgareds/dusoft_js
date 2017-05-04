@@ -8,7 +8,11 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 Documento.getClass().call(this, bodegas_doc_id, prefijo, numero, fecha_registro);
                 this.valor;
                 this.saldo;
+                this.estadoSincronizacion;
                 this.descripcionEstado;
+                this.vendedor = [];
+                this.fechaFactura;
+                this.fechaVencimientoFactura;
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
@@ -25,6 +29,18 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.descripcionEstado = descripcionEstado;
             };
             
+            DocumentoDespacho.prototype.setEstadoSincronizaciono = function(estadoSincronizacion){
+                this.estadoSincronizacion = estadoSincronizacion;
+            };
+            
+            DocumentoDespacho.prototype.setFechaFactura = function(fechaFactura){
+                this.fechaFactura = fechaFactura;
+            };
+            
+            DocumentoDespacho.prototype.setFechaVencimientoFactura = function(fechaVencimientoFactura){
+                this.fechaVencimientoFactura = fechaVencimientoFactura;
+            };
+            
             DocumentoDespacho.prototype.getValor = function(){
                 return this.valor;
             };
@@ -35,6 +51,30 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
             
             DocumentoDespacho.prototype.getDescripcionEstado = function(){
                 return this.descripcionEstado;
+            };
+            
+            DocumentoDespacho.prototype.getEstadoSincronizaciono = function(){
+                return this.estadoSincronizacion;
+            };
+            
+            DocumentoDespacho.prototype.getFechaFactura = function(){
+                return this.fechaFactura;
+            };
+            
+            DocumentoDespacho.prototype.getFechaVencimientoFactura = function(){
+                return this.fechaVencimientoFactura;
+            };
+            
+            DocumentoDespacho.prototype.agregarVendedor = function (vendedor) {
+                this.vendedor.push(vendedor);
+            };
+
+            DocumentoDespacho.prototype.vaciarVendedor = function () {
+                this.vendedor = [];
+            }
+
+            DocumentoDespacho.prototype.mostrarVendedor = function () {
+                return this.vendedor;
             };
 
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {

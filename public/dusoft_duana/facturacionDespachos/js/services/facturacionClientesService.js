@@ -2,9 +2,9 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('facturacionClientesService',
-            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho",
+            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho","VendedorDespacho",
 
-                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho) {
+                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho,VendedorDespacho) {
 
                     var self = this;
 
@@ -95,7 +95,13 @@ define(["angular", "js/services"], function (angular, services) {
                                                     datos[i].tercero_id,
                                                     datos[i].direccion,
                                                     datos[i].telefono);
-
+                            
+                            var _vendedorDespacho = VendedorDespacho.get(datos[i].nombre, datos[i].tipo_id_vendedor, 
+                                                    datos[i].vendedor_id,
+                                                    "",
+                                                    "");
+                            
+                            
                                 _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
                                 _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
                                 _terceroDespacho.setPais(datos[i].pais_empresa); 
@@ -103,6 +109,11 @@ define(["angular", "js/services"], function (angular, services) {
                                 _documento.setValor(datos[i].valor_total);
                                 _documento.setSaldo(datos[i].saldo);
                                 _documento.setDescripcionEstado(datos[i].descripcion_estado);
+                                _documento.setEstadoSincronizaciono(datos[i].estado);
+                                _documento.setFechaFactura(datos[i].fecha_registro);
+                                _documento.setFechaVencimientoFactura(datos[i].fecha_vencimiento_factura);
+                                //
+                                _documento.agregarVendedor(_vendedorDespacho);
                                 _terceroDespacho.agregarDocumentos(_documento);
                             tercerosDespacho.push(_terceroDespacho);
                         }

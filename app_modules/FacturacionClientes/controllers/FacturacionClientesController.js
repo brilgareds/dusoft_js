@@ -40,8 +40,66 @@ FacturacionClientes.prototype.listarTiposTerceros = function(req, res){
 FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
    
     var that = this;
-               
-    var parametros = {numero:"52146",prefijo:'',tipoIdTercero:'',pedidoClienteId:'',terceroId:'900766903',nombreTercero:''};             
+    var args = req.body.data;
+    
+    if (args.listar_facturas_generadas === undefined || args.listar_facturas_generadas.paginaActual === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_facturas_generadas: []}));
+        return;
+    }
+     
+    if (args.listar_facturas_generadas.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {listar_facturas_generadas: []}));
+        return;
+    }
+
+    if (args.listar_facturas_generadas.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {listar_facturas_generadas: []}));
+        return;
+    }
+    
+    if (!args.listar_facturas_generadas.filtro ) {
+        res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
+        return;
+    }
+    
+    
+    
+    
+    var empresaId = args.listar_facturas_generadas.empresaId;
+    var terminoBusqueda = args.listar_facturas_generadas.terminoBusqueda;
+    var paginaActual = args.listar_facturas_generadas.paginaActual;
+    var filtro = args.listar_facturas_generadas.filtro;
+    var prefijo = args.listar_facturas_generadas.prefijo;
+    var numero = args.listar_facturas_generadas.numero;
+    var usuario = req.session.user.usuario_id;
+    var nombreTercero = args.listar_facturas_generadas.nombreTercero;
+   
+   
+
+                
+   /* var parametros2 = {empresaId:empresaId,
+        numero:numero,
+        prefijo:prefijo,
+        tipoIdTercero:filtro.tipo,
+        pedidoClienteId:'',
+        terceroId:terminoBusqueda,
+        nombreTercero:'',
+        paginaActual: paginaActual,
+        usuario: usuario
+    };*/
+    
+   
+    var parametros = {
+        empresaId:empresaId,
+        numero:numero,
+        prefijo:'',
+        tipoIdTercero:filtro.tipo,
+        pedidoClienteId:'',
+        terceroId: terminoBusqueda,
+        nombreTercero: ' ',//nombreTercero,
+        paginaActual:paginaActual
+    };       
+     console.log("parametros2 ", parametros)
     G.Q.ninvoke(that.m_facturacion_clientes,'listarFacturasGeneradas',parametros).then(function(resultado){
         
     if(resultado.length >0){
@@ -100,7 +158,7 @@ FacturacionClientes.prototype.listarClientes = function(req, res){
                     paginaActual:paginaActual,
                     filtro: filtro,
                     usuarioId : usuario};
-    console.log("parametros ", parametros)           
+             
     G.Q.ninvoke(that.m_facturacion_clientes,'listarClientes',parametros).then(function(resultado){
         
     if(resultado.length >0){

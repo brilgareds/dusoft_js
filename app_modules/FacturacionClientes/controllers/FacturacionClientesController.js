@@ -9,7 +9,7 @@ var FacturacionClientes = function(m_facturacion_clientes) {
 
 /*
  * @author Cristian Ardila
- * @fecha 20/05/2016
+ * @fecha 02/05/2017
  * +Descripcion Controlador encargado de listar los tipos de terceros
  *              
  */
@@ -31,7 +31,36 @@ FacturacionClientes.prototype.listarTiposTerceros = function(req, res){
     }).done();
 };
 
+/*
+ * @author Cristian Ardila
+ * @fecha 02/05/2017
+ * +Descripcion Controlador encargado de listar las facturas generadas
+ *              
+ */
+FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
+   
+    var that = this;
+               
+    var parametros = {numero:"52146",prefijo:'',tipoIdTercero:'',pedidoClienteId:'',terceroId:'900766903',nombreTercero:''};             
+    G.Q.ninvoke(that.m_facturacion_clientes,'listarFacturasGeneradas',parametros).then(function(resultado){
+        
+    if(resultado.length >0){
+        res.send(G.utils.r(req.url, 'Consulta con formulas', 200, {listar_facturas_generadas:resultado}));
+    }else{
+        throw 'Consulta sin resultados';
+    }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
 
+/**
+ * 
+ * @param {type} req
+ * @param {type} res
+ * @returns {undefined}
+ */
 FacturacionClientes.prototype.listarClientes = function(req, res){
    
     var that = this;

@@ -2,9 +2,9 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('facturacionClientesService',
-            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho",
+            ['Request', 'API', "Usuario", "TipoTerceros","TerceroDespacho","DocumentoDespacho",
 
-                function (Request, API, Usuario,TipoTerceros,TerceroDespacho) {
+                function (Request, API, Usuario,TipoTerceros,TerceroDespacho,DocumentoDespacho) {
 
                     var self = this;
 
@@ -12,7 +12,7 @@ define(["angular", "js/services"], function (angular, services) {
 
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2016 DD/MM/YYYYY
+                     * @fecha  21/05/2017 DD/MM/YYYYY
                      * +Descripcion Consulta todas las formulas
                      */
                     self.listarTiposTerceros = function (obj, callback) {
@@ -23,11 +23,22 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2016 DD/MM/YYYYY
+                     * @fecha  21/05/2017 DD/MM/YYYYY
                      * +Descripcion lista todos los clientes
                      */
                     self.listarClientes = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_CLIENTES, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * +Descripcion lista todos los clientes
+                     */
+                    self.listarFacturasGeneradas = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.LISTAR_FACTURAS_GENERADAS, "POST", obj, function (data) {
                             callback(data);
                         });
                     };
@@ -75,8 +86,32 @@ define(["angular", "js/services"], function (angular, services) {
                         return tercerosDespacho;
                     };
                     
+                    self.renderDocumentosClientes = function (datos) {
+                       
+                        var tercerosDespacho = [];
+                        for (var i in datos) {
+
+                            var _terceroDespacho = TerceroDespacho.get(datos[i].nombre_tercero, datos[i].tipo_id_tercero, 
+                                                    datos[i].tercero_id,
+                                                    datos[i].direccion,
+                                                    datos[i].telefono);
+
+                                _terceroDespacho.setMunicipio(datos[i].municipio_empresa); 
+                                _terceroDespacho.setDepartamento(datos[i].departamento_empresa); 
+                                _terceroDespacho.setPais(datos[i].pais_empresa); 
+                            var _documento = DocumentoDespacho.get(datos[i].documento_id, datos[i].prefijo, datos[i].factura_fiscal, datos[i].fecha_registro);
+                                _documento.setValor(datos[i].valor_total);
+                                _documento.setSaldo(datos[i].saldo);
+                                _documento.setDescripcionEstado(datos[i].descripcion_estado);
+                                _terceroDespacho.agregarDocumentos(_documento);
+                            tercerosDespacho.push(_terceroDespacho);
+                        }
+                        return tercerosDespacho;
+                    };
+                    
                     return this;
                 }]);
+ 
 
 });
 

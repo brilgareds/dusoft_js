@@ -8,12 +8,13 @@ module.exports = function(app, di_container) {
        
         c_facturacion_clientes.listarTiposTerceros(req, res);
     });
-    
-    app.post('/api/FacturacionClientes/listarClientes', function(req, res) {
-       
+    // Listar los clientes
+    app.post('/api/FacturacionClientes/listarClientes', function(req, res) {       
         c_facturacion_clientes.listarClientes(req, res);
     });
     
-    
-    
+    //listar las facturas generadas
+    app.post('/api/FacturacionClientes/listarFacturasGeneradas', function(req, res) {       
+        c_facturacion_clientes.listarFacturasGeneradas(req, res);
+    });
 };

@@ -94,10 +94,7 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
         res.send(G.utils.r(req.url, 'Error en la lista de filtros de busqueda', 404, {}));
         return;
     }
-    
-    
-    
-    
+     
     var empresaId = args.listar_facturas_generadas.empresaId;
     var terminoBusqueda = args.listar_facturas_generadas.terminoBusqueda;
     var paginaActual = args.listar_facturas_generadas.paginaActual;
@@ -106,20 +103,6 @@ FacturacionClientes.prototype.listarFacturasGeneradas = function(req, res){
     var numero = args.listar_facturas_generadas.numero;
     var usuario = req.session.user.usuario_id;
     var nombreTercero = args.listar_facturas_generadas.nombreTercero;
-   
-   
-
-                
-   /* var parametros2 = {empresaId:empresaId,
-        numero:numero,
-        prefijo:prefijo,
-        tipoIdTercero:filtro.tipo,
-        pedidoClienteId:'',
-        terceroId:terminoBusqueda,
-        nombreTercero:'',
-        paginaActual: paginaActual,
-        usuario: usuario
-    };*/
     
    
     var parametros = {
@@ -196,6 +179,45 @@ FacturacionClientes.prototype.listarClientes = function(req, res){
         
     if(resultado.length >0){
         res.send(G.utils.r(req.url, 'Consulta con formulas', 200, {listar_clientes:resultado}));
+    }else{
+        throw 'Consulta sin resultados';
+    }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 02/05/2017
+ * +Descripcion Controlador encargado de listar los prefijos
+ *              
+ */
+FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;           
+    
+    if (args.listar_pedidos_clientes === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {listar_pedidos_clientes: []}));
+        return;
+    }
+    
+    if (args.listar_pedidos_clientes.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {listar_pedidos_clientes: []}));
+        return;
+    }
+    
+    var parametros = {
+        empresaId:args.listar_prefijos.empresaId,
+        
+    }
+    G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros).then(function(resultado){
+        
+    if(resultado.length >0){
+        res.send(G.utils.r(req.url, 'Consulta lista de pedidos clientes', 200, {listar_pedidos_clientes:resultado}));
     }else{
         throw 'Consulta sin resultados';
     }

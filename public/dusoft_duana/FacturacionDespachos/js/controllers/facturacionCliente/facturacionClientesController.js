@@ -232,10 +232,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
                 $scope.root.facturas_generadas = [];
                 if (data.status === 200) {
-                    console.log("listarFacturasGeneradas =  ", data)
+                  
                     $scope.root.items_facturas_generadas = data.obj.listar_facturas_generadas.length;
-                    $scope.root.facturas_generadas = facturacionClientesService.renderDocumentosClientes(data.obj.listar_facturas_generadas);
-                    
+                    $scope.root.facturas_generadas = facturacionClientesService.renderDocumentosClientes(data.obj.listar_facturas_generadas,0);
+                      console.log("listarFacturasGeneradas =  ", $scope.root.facturas_generadas)
                 } else {
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
@@ -309,7 +309,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             enableHighlighting: true,
             columnDefs: [
 
-                {field: '#Factura', width: "5%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturas()[0].get_prefijo()}}- {{row.entity.mostrarFacturas()[0].get_numero()}}</p></div>'},
+                {field: '#Factura', width: "5%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()}}- {{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero()}}</p></div>'},
 
                 {field: 'Identificacion', width: "8%", displayName: 'Identificacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
 
@@ -319,24 +319,24 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 {displayName: 'Telefono', width: "8%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.getTelefono()}}</p></div>'},
 
-                {field: 'Vendedor', width: "13%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarFacturas()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarFacturas()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarFacturas()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
+                {field: 'Vendedor', width: "13%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
-                {field: 'F.Factura', width: "10%", displayName: 'F.Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturas()[0].getFechaFactura()}} </p></div>'},
+                {field: 'F.Factura', width: "10%", displayName: 'F.Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getFechaFactura()}} </p></div>'},
 
-                {field: 'F.Ven', width: "5%", displayName: 'F.Ven', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturas()[0].getFechaVencimientoFactura()}} </p></div>'},
+                {field: 'F.Ven', width: "5%", displayName: 'F.Ven', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getFechaVencimientoFactura()}} </p></div>'},
 
-                {field: 'Valor/saldo', width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarFacturas()[0].getSaldo()}} </p></div>'},
+                {field: 'Valor/saldo', width: "12%", displayName: 'Valor/saldo', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getValor()}} / {{ row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getSaldo()}} </p></div>'},
 
-                {field: 'Estado', width: "8%", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
+                {field: 'Estado', width: "8%", displayName: 'Estado', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getDescripcionEstado()}}</p></div>'},
 
                 {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
-                                <li ng-if="row.entity.mostrarFacturas()[0].getEstadoSincronizaciono() > 0">\n\
+                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].getEstadoSincronizaciono() > 0">\n\
                                    <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" class= "glyphicon glyphicon-refresh"> Sincronizar </a>\
                                 </li>\
-                                <li ng-if="row.entity.mostrarFacturas()[0].get_numero() > 0 ">\
+                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
                                    <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir factura </a>\
                                 </li>\
                            </ul>\

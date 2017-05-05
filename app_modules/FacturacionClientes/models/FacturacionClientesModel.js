@@ -342,6 +342,65 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
     });
 };
 
+
+FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
+   
+   var columnQuery = [
+        "a.tipo_id_tercero",
+	"a.tercero_id",
+	"c.nombre_tercero",
+	"c.direccion",
+	"a.pedido_cliente_id",
+	"a.fecha_registro",
+	"a.tipo_id_vendedor",
+	"a.vendedor_id",
+	"a.empresa_id",
+	"d.nombre",
+	"a.observacion",
+        "b.prefijo",
+        G.knex.raw("b.numero as factura_fiscal")
+   ];
+   
+   
+   
+    var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id"),  "x.numero", "x.prefijo" ])
+           .select().from("inv_bodegas_movimiento_despachos_clientes as x")
+           .where("x.factura_gener",'0')
+           .andWhere("x.empresa_id",obj.empresaId).as("b"); //obj.empresaId
+    
+    var query = G.knex.select(columnQuery)
+            .from("ventas_ordenes_pedidos as a")
+            .join(subQuery1, function () {
+
+                this.on("a.pedido_cliente_id","b.pedido_cliente_id")
+
+            }).join("terceros as c", function(){      
+                this.on("a.tipo_id_tercero","c.tipo_id_tercero")
+                    .on("a.tercero_id","c.tercero_id")
+            }).join("vnts_vendedores as d", function(){
+                this.on("a.tipo_id_vendedor","d.tipo_id_vendedor")
+                    .on("a.vendedor_id","d.vendedor_id")
+            }).where(function () {
+
+                this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)//obj.tipoIdTercero
+                    .andWhere('a.tercero_id',obj.terceroId);//obj.terceroId
+                if (obj.pedidoClienteId !== "") {
+                    this.andWhere('x.pedido_cliente_id', obj.pedidoClienteId);
+                }
+                
+            });
+    
+    /*query.limit(G.settings.limit).
+            offset((10 - 1) * G.settings.limit) //filtro.paginaActual*/
+    query.then(function (resultado) {
+       
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [listarPedidosClientes] ", err);
+        callback(err);
+    });
+};
+
 FacturacionClientesModel.$inject = [];
 
 

@@ -197,6 +197,10 @@ FacturacionClientes.prototype.listarClientes = function(req, res){
  */
 FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
    
+   console.log("*********FacturacionClientes.prototype.listarPedidosClientes***************");
+   console.log("*********FacturacionClientes.prototype.listarPedidosClientes***************");
+   console.log("*********FacturacionClientes.prototype.listarPedidosClientes***************");
+   
     var that = this;
     var args = req.body.data;           
     
@@ -210,13 +214,27 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         return;
     }
     
-    var parametros = {
-        empresaId:args.listar_prefijos.empresaId,
-        
+    if (args.listar_pedidos_clientes.paginaActual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {listar_clientes: []}));
+        return;
     }
+    
+    var terminoBusqueda = args.listar_pedidos_clientes.terminoBusqueda;
+    var tipoIdTercero = args.listar_pedidos_clientes.tipoIdTercero;
+    var terceroId = args.listar_pedidos_clientes.terceroId;
+    var paginaActual = args.listar_pedidos_clientes.paginaActual;
+    var parametros = {
+        empresaId:'03',//args.listar_pedidos_clientes.empresaId,
+        tipoIdTercero:tipoIdTercero,
+        terceroId:terceroId,
+        pedidoClienteId: terminoBusqueda,
+        paginaActual: paginaActual
+    };
+    
     G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros).then(function(resultado){
         
     if(resultado.length >0){
+        
         res.send(G.utils.r(req.url, 'Consulta lista de pedidos clientes', 200, {listar_pedidos_clientes:resultado}));
     }else{
         throw 'Consulta sin resultados';

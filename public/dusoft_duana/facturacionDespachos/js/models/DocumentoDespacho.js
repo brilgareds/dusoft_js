@@ -9,8 +9,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.valor;
                 this.saldo;
                 this.estadoSincronizacion;
-                this.descripcionEstado;
-                this.vendedor = [];
+                this.descripcionEstado;    
                 this.fechaFactura;
                 this.fechaVencimientoFactura;
             }
@@ -65,18 +64,7 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 return this.fechaVencimientoFactura;
             };
             
-            DocumentoDespacho.prototype.agregarVendedor = function (vendedor) {
-                this.vendedor.push(vendedor);
-            };
-
-            DocumentoDespacho.prototype.vaciarVendedor = function () {
-                this.vendedor = [];
-            }
-
-            DocumentoDespacho.prototype.mostrarVendedor = function () {
-                return this.vendedor;
-            };
-
+            
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {
                 return new DocumentoDespacho(bodegas_doc_id, prefijo, numero, fecha_registro);
             };

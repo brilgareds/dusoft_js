@@ -17,18 +17,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
         
         $scope.root = {
-            termino_busqueda_proveedores: "",
-            termino_busqueda_pedido: "",
-            termino_busqueda_nombre: "",
-            termino_busqueda_prefijo: "",
             empresaSeleccionada: '',
             termino_busqueda: '',
-            termino_busqueda_fg: '',
             estadoSesion: true,
-            items: 0,
-            items_facturas_generadas: 0,
-            clientes: [],
-            facturas_generadas: [],
+            items_pedidos_clientes: 0,
+            pedidos_clientes: [],
             estadoBotones: [
                 "btn btn-danger btn-xs",
                 "btn btn-primary btn-xs",
@@ -73,15 +66,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
             {tipo: '', descripcion: "Todos"},
             {tipo: 'Nombre', descripcion: "Nombre"}
         ];
-        
-        $scope.root.filtrosPrefijos = [
-            {tipo: '', descripcion: "Todos"},
-            {tipo: 'Nombre', descripcion: "Nombre"}
-        ];
+
 
         $scope.root.filtro = $scope.root.filtros[0];
-        $scope.root.filtroPrefijo = $scope.root.filtrosPrefijos[0];
-        
         $scope.onColumnaSize = function (tipo) {
  
         };
@@ -99,30 +86,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
 
        
-
-        /**
-         * +Descripcion Metodo encargado de invocar el servicio que listara 
-         *              los tipos de terceros
-         * @author Cristian Ardila
-         * @fecha 02/05/2017 DD/MM/YYYY
-         * @returns {undefined}
-         */
-        that.listarTiposTerceros = function () {
-
-            var obj = {
-                session: $scope.session,
-                data: {listar_tipo_terceros:{}}
-            };
-
-            facturacionClientesService.listarTiposTerceros(obj, function (data) {
-
-                if (data.status === 200) {
-                    $scope.tipoTercero = facturacionClientesService.renderListarTipoTerceros(data.obj.listar_tipo_terceros);
-                } else {
-                    AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
-                }
-            });
-        };
+ 
         
         
      
@@ -133,25 +97,28 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * @fecha 02/05/2017 DD/MM/YYYY
          * @returns {undefined}
          */
-        that.listarClientes = function () {
+        that.listarPedidosClientes = function () {
 
             var obj = {
                 session: $scope.session,
                 data: {
-                    listar_clientes: {
-                        filtro: $scope.root.filtro,
+                    listar_pedidos_clientes: {
                         terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
                         empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-                        paginaActual: $scope.paginaactual
+                        paginaActual: $scope.paginaactual,
+                        tipoIdTercero:'NIT',
+                        terceroId:'900766903'
                     }
                 }
             };
 
-            facturacionClientesService.listarClientes(obj, function (data) {
-                $scope.root.clientes = [];
+            facturacionClientesService.listarPedidosClientes(obj, function (data) {
+                $scope.root.pedidos_clientes = [];
                 if (data.status === 200) {
-                    $scope.root.items = data.obj.listar_clientes.length;
-                    $scope.root.clientes = facturacionClientesService.renderTerceroDespacho(data.obj.listar_clientes);
+                    
+                    $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
+                    $scope.root.pedidos_clientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes,1);
+                    console.log("$scope.root.pedidos_clientes ", $scope.root.pedidos_clientes);
                 } else {
                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                 }
@@ -187,28 +154,38 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          * +Descripcion Se visualiza la tabla con todos los clientes
          */
         $scope.listaClientes = {
-            data: 'root.clientes',
+            data: 'root.pedidos_clientes',
             enableColumnResize: true,
             enableRowSelection: false,
             enableCellSelection: true,
             enableHighlighting: true,
             columnDefs: [
 
-                {field: 'Identificacion', width: "15%", displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getTipoId()}}- {{row.entity.getId()}}</p></div>'},
+                {field: '#Pedido', width: "15%", displayName: '#Pedido', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
+                
+                {field: 'Vendedor', width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
+                
+                {field: '#Fecha', width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
+                
+                {field: '#Documento', width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()}}- {{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero()}}</p></div>'},
 
-                {field: 'Cliente', displayName: 'Cliente', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.getNombre()}}</p></div>'},
-
-                {field: 'Ubicacion', width: "15%", displayName: 'Ubicacion', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{ row.entity.getPais()}} - {{ row.entity.getDepartamento()}} - {{ row.entity.getMunicipio()}}</p></div>'},
-
-                {displayName: 'Direccion', width: "10%", cellTemplate: '<div class="col-xs-16 "><p class="text-lowercase">{{ row.entity.getDireccion() }}</p> </div>'},
-
-                {displayName: 'Telefono', width: "10%", cellTemplate: '<div class="col-xs-12 "><p class="text-uppercase">{{row.entity.getTelefono()}}</p></div>'},
-
-                {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
+                
+                {displayName: "Opc",  cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
-                           <button ng-click="listarPedidosClientes()" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" title="Crear factura"><span class="glyphicon glyphicon-list"></span> Factura</button>\
+                           <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
+                           <ul class="dropdown-menu dropdown-options">\
+                                <li>\n\
+                                   <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
+                                </li>\
+                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                   <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
+                                </li>\
+                                <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
+                                   <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir documento </a>\
+                                </li>\
+                           </ul>\
                       </div>'
-                },
+                }, 
             ]
         };
 
@@ -276,7 +253,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega");
                     } else {
                        
-                        that.listarClientes();
+                        that.listarPedidosClientes();
                         
                     }
                 }

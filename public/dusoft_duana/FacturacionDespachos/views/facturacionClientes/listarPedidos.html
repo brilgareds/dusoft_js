@@ -8,7 +8,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     
-                                    <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-info" style="position: relative;">Generar factura agrupada</button>  
+                                    <button ng-click="generarFacturasAgrupadas()" ng-disabled='root.pedidosSeleccionados.length < 2' class="btn btn-xxs btn-info" style="position: relative;">Generar factura agrupada</button>  
                                 </div>                              
                             </div>
 

@@ -245,24 +245,14 @@ define(["angular", "js/controllers"], function (angular, controllers) {
         };
         
         
-        $scope.listarPedidosClientes = function() {
-
-           /* localStorageService.add("dispensarFormulaDetalle",{
-                evolucionId: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEvolucionId(),//'91671'
-                filtro:$scope.root.filtro,
-                terminoBusqueda: $scope.root.termino_busqueda,//$scope.root.numero,
-                empresaId:$scope.root.empresaSeleccionada,
-                fechaInicial: $filter('date')($scope.root.fecha_inicial_aprobaciones, "yyyy-MM-dd") + " 00:00:00",
-                fechaFinal:$filter('date')($scope.root.fecha_final_aprobaciones, "yyyy-MM-dd") + " 23:59:00",
-                paginaActual:$scope.paginaactual,
-                estadoFormula : $scope.root.estadoFormula,
-                pacienteId: dispensar.getAfiliadoId(),
-                tipoIdPaciente: dispensar.getAfiliadoTipoId(),
-                pendientes: pendientes,
-                tipoEstadoFormula: dispensar.mostrarPacientes()[0].mostrarFormulas()[0].getEstadoEntrega()
+        $scope.listarPedidosClientes = function(entity) {
+            
+             localStorageService.add("clientePedidoDespacho",{
+               tipoIdTercero: entity.getTipoId(),
+               terceroId: entity.getId()
 
             });
-*/              
+            
             $state.go('PedidosClientesDespacho');
         };
         /**
@@ -288,7 +278,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                 {displayName: "Opc", width: "6%", cellClass: "txt-center dropdown-button",
                     cellTemplate: '<div class="btn-group">\
-                           <button ng-click="listarPedidosClientes()" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" title="Crear factura"><span class="glyphicon glyphicon-list"></span> Factura</button>\
+                           <button ng-click="listarPedidosClientes(row.entity)" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" title="Crear factura"><span class="glyphicon glyphicon-list"></span> Factura</button>\
                       </div>'
                 },
             ]

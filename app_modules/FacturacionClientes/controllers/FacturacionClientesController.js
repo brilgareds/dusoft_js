@@ -197,9 +197,7 @@ FacturacionClientes.prototype.listarClientes = function(req, res){
  */
 FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
    
-   console.log("*********FacturacionClientes.prototype.listarPedidosClientes***************");
-   console.log("*********FacturacionClientes.prototype.listarPedidosClientes***************");
-   console.log("*********FacturacionClientes.prototype.listarPedidosClientes***************");
+   
    
     var that = this;
     var args = req.body.data;           
@@ -224,7 +222,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
     var terceroId = args.listar_pedidos_clientes.terceroId;
     var paginaActual = args.listar_pedidos_clientes.paginaActual;
     var parametros = {
-        empresaId:'03',//args.listar_pedidos_clientes.empresaId,
+        empresaId: args.listar_pedidos_clientes.empresaId,
         tipoIdTercero:tipoIdTercero,
         terceroId:terceroId,
         pedidoClienteId: terminoBusqueda,
@@ -237,7 +235,7 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         
         res.send(G.utils.r(req.url, 'Consulta lista de pedidos clientes', 200, {listar_pedidos_clientes:resultado}));
     }else{
-        throw 'Consulta sin resultados';
+        throw 'El cliente no tiene pedidos para facturar';
     }
         
     }).fail(function(err){      

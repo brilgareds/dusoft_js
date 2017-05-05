@@ -34,6 +34,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.fechaRegistro;
                 this.documento = [];
                 this.vendedor = [];
+                this.seleccionado;
             };
 
             PedidoDespacho.prototype = Object.create(Pedido.getClass().prototype);
@@ -46,6 +47,17 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
              PedidoDespacho.prototype.getFechaRegistro = function() {
                 return this.fechaRegistro;
             };
+            
+            
+            PedidoDespacho.prototype.setSeleccionado = function(seleccionado) {
+                this.seleccionado = seleccionado;
+                return this;
+            };
+            
+             PedidoDespacho.prototype.getSeleccionado = function() {
+                return this.seleccionado;
+            };
+            
             //Escribiendo el estado de solicitud del pedido
             PedidoDespacho.prototype.setEstadoSolicitud = function(estadoSolicitud) {
                 this.estadoSolicitud = estadoSolicitud;

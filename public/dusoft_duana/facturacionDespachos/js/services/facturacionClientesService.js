@@ -148,7 +148,8 @@ define(["angular", "js/services"], function (angular, services) {
                                 _pedido.set_numero_cotizacion(datos[i].pedido_cliente_id);
                             
                             if(estado === 1){
-                                _pedido.setFechaRegistro(datos[i].fecha_registro)
+                                _pedido.setFechaRegistro(datos[i].fecha_registro);
+                                _pedido.setSeleccionado(datos[i].seleccionado);
                             }
                              
                                 _pedido.agregarDocumentos(_documento);

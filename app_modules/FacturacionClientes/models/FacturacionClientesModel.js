@@ -358,7 +358,8 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
 	"d.nombre",
 	"a.observacion",
         "b.prefijo",
-        G.knex.raw("b.numero as factura_fiscal")
+        G.knex.raw("b.numero as factura_fiscal"),
+        G.knex.raw("true as seleccionado")
    ];
    
    
@@ -385,7 +386,7 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                 this.andWhere('a.tipo_id_tercero', obj.tipoIdTercero)//obj.tipoIdTercero
                     .andWhere('a.tercero_id',obj.terceroId);//obj.terceroId
                 if (obj.pedidoClienteId !== "") {
-                    this.andWhere('x.pedido_cliente_id', obj.pedidoClienteId);
+                    this.andWhere('a.pedido_cliente_id', obj.pedidoClienteId);
                 }
                 
             });

@@ -87,11 +87,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         $scope.root.termino_busqueda = '';
                     };
 
-
-
-                    
-
-
                     /**
                      * +Descripcion Metodo encargado de invocar el servicio que listara 
                      *              los tipos de terceros
@@ -226,11 +221,42 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
                     $scope.generarFacturasAgrupadas = function () {
-
+                          
                         if($scope.root.pedidosSeleccionados.length > 1){
-                            
-                        }else{
-                            AlertService.mostrarMensaje("warning", "Debe seleccionar mas de dos pedidos");
+                            var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
+
+                            if(resultadoStorage){
+                                var obj = {
+                                    session: $scope.session,
+                                    data: {
+                                        listar_pedidos_clientes: {
+                                            terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
+                                            empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                            paginaActual: $scope.paginaactual,
+                                            tipoIdTercero: resultadoStorage.tipoIdTercero,
+                                            terceroId: resultadoStorage.terceroId
+                                        }
+                                    }
+                                };
+
+                                facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
+                                    $scope.root.pedidos_clientes = [];
+                                    if (data.status === 200) {
+                                        
+                                        console.log("AQUI MIRA ", data)
+                                       // $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
+                                       // $scope.root.pedidos_clientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
+
+                                    } else {
+                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                    }
+
+                                }); 
+
+
+                            }else{
+                                AlertService.mostrarMensaje("warning", "Debe seleccionar mas de dos pedidos");
+                            }
                         }
 
                     };
@@ -245,10 +271,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                      */
                     $scope.buscarClientesFactura = function (event) {
 
-                        if (event.which === 13) {
+                        if (event.which === 13 || event.which === 1) {
 
                             that.listarPedidosClientes();
                         }
+                       
                     };
 
 

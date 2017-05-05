@@ -17,7 +17,7 @@ FacturacionClientesModel.prototype.listarTiposTerceros = function (callback) {
                 callback(false, resultado)
             }).catch(function (err) {
         console.log("err [listarTipoDocumento]:", err);
-        callback(err);
+        callback({err:err, msj: "Error al consultar la lista de los tipos de terceros"});   
     });
 
 };
@@ -41,7 +41,7 @@ FacturacionClientesModel.prototype.listarPrefijosFacturas = function (obj,callba
                 callback(false, resultado)
             }).catch(function (err) {
         console.log("err [listarPrefijosFacturas]:", err);
-        callback(err);
+        callback({err:err, msj: "Error al consultar la lista de los prefijos"});   
     });
 
 };
@@ -117,7 +117,7 @@ FacturacionClientesModel.prototype.listarClientes = function (obj, callback) {
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarClientes]:", err);
-        callback(err);
+       callback({err:err, msj: "Error al consultar la lista de los clientes"});   
     });
 
 };
@@ -338,7 +338,7 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
         callback(false, resultado)
     }).catch(function (err) {
         //console.log("err [listarFacturasGeneradas] ", err);
-        callback(err);
+        callback({err:err, msj: "Error al consultar la lista de las facturas generadas"});   
     });
 };
 
@@ -391,17 +391,78 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
                 
             });
     
-    /*query.limit(G.settings.limit).
-            offset((10 - 1) * G.settings.limit) //filtro.paginaActual*/
+    query.limit(G.settings.limit).
+            offset((obj.paginaActual - 1) * G.settings.limit)
     query.then(function (resultado) {
        
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [listarPedidosClientes] ", err);
-        callback(err);
+        callback({err:err, msj: "Error al consultar la lista de los pedidos"});   
     });
 };
 
+
+
+
+FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, callback) {
+   
+   var columnQuery = [
+        "a.tipo_id_tercero",
+        "a.tercero_id",
+        "e.nombre_tercero",
+        "e.direccion",
+        "e.telefono",
+        "a.observacion",
+        "a.tipo_cliente",
+        "a.cuenta_contable",
+        G.knex.raw("CASE WHEN a.sw_rtf = '1' THEN a.porcentaje_rtf ELSE 0 END as porcentaje_rtf"),
+        G.knex.raw("CASE  WHEN a.sw_ica = '1' THEN a.porcentaje_ica ELSE 0 END as porcentaje_ica"),
+        G.knex.raw("CASE WHEN a.sw_reteiva = '1' THEN a.porcentaje_reteiva ELSE 0 END as porcentaje_reteiva"),
+        G.knex.raw("CASE WHEN a.sw_cree = '1' THEN a.porcentaje_cree ELSE 0 END as porcentaje_cree"),
+        G.knex.raw("CASE WHEN c.condiciones_cliente IS NOT NULL THEN c.condiciones_cliente WHEN d.condiciones_cliente IS NOT NULL THEN d.condiciones_cliente\
+        ELSE (SELECT condiciones_cliente FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1' ) END as condiciones_cliente"),
+        G.knex.raw("CASE WHEN c.contrato_cliente_id IS NOT NULL THEN c.contrato_cliente_id WHEN d.contrato_cliente_id IS NOT NULL THEN d.contrato_cliente_id\
+        ELSE (SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')  END as contrato"),        
+        G.knex.raw("CASE WHEN c.contrato_cliente_id IS NOT NULL THEN 'Contrato: <b>TERCERO - CLIENTE</b>' WHEN d.contrato_cliente_id IS NOT NULL\
+        THEN 'Contrato: UNIDAD DE NEGOCIO: <b>'||b.descripcion||'</b>' ELSE 'Contrato: <b>GENERICO</b>' END as tipo_contrato"),
+        G.knex.raw("CASE WHEN c.vendedor_id IS NOT NULL THEN c.tipo_id_vendedor||'@'||c.vendedor_id WHEN d.vendedor_id IS NOT NULL\
+        THEN d.tipo_id_vendedor||'@'||d.vendedor_id END as vendedor_id"),        
+        "c.facturar_iva"
+   ];
+   
+   var query = G.knex.select(columnQuery)
+            .from("terceros_clientes as a")
+              .leftJoin("unidades_negocio as b", function () {
+                this.on("a.codigo_unidad_negocio","b.codigo_unidad_negocio")
+            }).leftJoin("vnts_contratos_clientes as c", function () {
+                this.on("a.tipo_id_tercero","c.tipo_id_tercero")
+                    .on("a.tercero_id","c.tercero_id")
+                    .on("a.empresa_id", "'" + obj.empresaId + "'")
+                    .on("c.estado",'1')
+            }).leftJoin("vnts_contratos_clientes as d", function () {
+                this.on("a.codigo_unidad_negocio","d.codigo_unidad_negocio")
+                    .on("d.empresa_id", "'" + obj.empresaId + "'")
+                    .on("d.estado",'1')
+            }).join("terceros as e", function(){
+                this.on("a.tipo_id_tercero","e.tipo_id_tercero")
+                    .on("a.empresa_id", "'" + obj.empresaId + "'")
+                    .on("a.tercero_id","e.tercero_id")
+            }).where(function(){
+                this.andWhere("a.tipo_id_tercero", "'"+obj.tipoIdTercero+"'")
+                    .andWhere("a.tercero_id", "'"+obj.terceroId+"'")
+            });
+   
+   
+   query.then(function (resultado) {
+       
+        callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [consultarTerceroContrato] ", err);
+         callback({err:err, msj: "Error al consultar el contrato de terceros"});   
+    });
+   
+}
 FacturacionClientesModel.$inject = [];
 
 

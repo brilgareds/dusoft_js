@@ -192,13 +192,12 @@ FacturacionClientes.prototype.listarClientes = function(req, res){
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017
- * +Descripcion Controlador encargado de listar los prefijos
+ * +Descripcion Controlador encargado de listar los pedidos de los clientes 
+ *              que se van a facturar
  *              
  */
 FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
-   
-   
-   
+    
     var that = this;
     var args = req.body.data;           
     
@@ -236,6 +235,48 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         res.send(G.utils.r(req.url, 'Consulta lista de pedidos clientes', 200, {listar_pedidos_clientes:resultado}));
     }else{
         throw 'El cliente no tiene pedidos para facturar';
+    }
+        
+    }).fail(function(err){      
+       res.send(G.utils.r(req.url, err, 500, {}));
+    }).done();
+};
+
+
+/*
+ * @author Cristian Ardila
+ * @fecha 02/05/2017
+ * +Descripcion Controlador encargado de listar los terceros
+ *              
+ */
+FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
+   
+    var that = this;
+    var args = req.body.data;           
+    
+    if (args.generar_factura_agrupada === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {generar_factura_agrupada: []}));
+        return;
+    }
+    
+    if (args.generar_factura_agrupada.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {generar_factura_agrupada: []}));
+        return;
+    }
+    
+    var parametros = {
+        empresaId: '03',//args.generar_factura_agrupada.empresaId,
+        tipoIdTercero: 'NIT',//args.generar_factura_agrupada.tipoIdTercero,
+        terceroId: '900766903'//args.generar_factura_agrupada.terceroId
+
+    };
+    
+    G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros).then(function(resultado){
+        
+    if(resultado.length >0){
+        res.send(G.utils.r(req.url, 'Consulta tercero contrato', 200, {generar_factura_agrupada:resultado}));
+    }else{
+        throw 'Consulta los terceros';
     }
         
     }).fail(function(err){      

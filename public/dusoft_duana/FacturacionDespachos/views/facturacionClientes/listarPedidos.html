@@ -18,32 +18,15 @@
         
          <div class="{{columnaSizeBusqueda}} pull-right">                                                                
                                                                  
-                <div class="input-group">
-                    <div class="input-group-btn">                                                                      
-                        <button type="button" class="btn btn-default dropdown-toggle" 
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
-                      <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtro.tipo)">
-                            <li ng-repeat="filtro in root.filtros">
-                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.descripcion}}</a>
-                            </li>
-                            <li role="separator" class="divider"></li>
-                           
-                            <li ng-repeat="tipoTercero in tipoTercero">
-                                <a href="javascript:void(0)" ng-click="onSeleccionFiltro(tipoTercero)">
-                                    {{tipoTercero.descripcion}}
-                                </a>
-                            </li>
-                        </ul>                                         
-                    </div> 
-                    
-                            
+                <!--<div class="input-group"> ///-->
+                      
                    <input ng-show="root.visibleBuscador" 
                            type="text" 
                            class="form-control" 
                            ng-keypress="buscarClientesFactura($event);"  
                            ng-model="root.termino_busqueda" 
                            placeholder="Buscar" name="" id="" />
-                    <div class="input-group-btn" ng-show="root.visibleBotonBuscador" >
+                  <!--  <div class="input-group-btn" ng-show="root.visibleBotonBuscador" >
                        
                        <button class="btn btn-default pull-right" type="submit" ng-click ="buscarClientesFactura($event)">
                            <i class="glyphicon glyphicon-search"></i></button>
@@ -52,7 +35,7 @@
                     
                    
                    
-                </div>   
+                </div>   //-->
      
             </div>
           

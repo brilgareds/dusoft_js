@@ -66,6 +66,20 @@ define(["angular", "js/services"], function (angular, services) {
                             callback(data);
                         });
                     };
+                    
+                    
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invicar el path para generar las facturas
+                     *              agrupadas
+                     */
+                    self.generarFacturaAgrupada = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_FACTURA_AGRUPADA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
                     /**
                      * @author Cristian Ardila
                      * +Descripcion Funcion encargada de serializar el resultado de la

@@ -343,10 +343,11 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          */
         $scope.buscarClientesFactura = function (event) {
 
-            if (event.which === 13) {
+            if (event.which === 13 || event.which === 1) {
 
                 that.listarClientes();
             }
+            
         };
 
 
@@ -358,7 +359,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
          *  @parametros ($event = eventos del teclado)
          */
         $scope.buscarFacturaGenerada = function (event) {
-            if (event.which === 13) {
+            if (event.which === 13 || event.which === 1) {
                 that.listarFacturasGeneradas();
             } 
            

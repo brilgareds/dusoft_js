@@ -13,6 +13,11 @@
                     "module": "FacturacionClientes",
                     "model": "FacturacionClientesModel",
                     "alias": "m_facturacion_clientes"
+                },
+                "dispensacion_hc_model": {
+                    "module": "DispensacionHc",
+                    "model": "DispensacionHcModel",
+                    "alias": "m_dispensacion_hc"
                 }
             }],
         "events": [],

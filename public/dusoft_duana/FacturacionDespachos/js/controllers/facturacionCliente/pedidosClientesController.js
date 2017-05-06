@@ -222,6 +222,10 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     $scope.generarFacturasAgrupadas = function () {
                           
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        
                         if($scope.root.pedidosSeleccionados.length > 1){
                             var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
 
@@ -229,7 +233,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                 var obj = {
                                     session: $scope.session,
                                     data: {
-                                        listar_pedidos_clientes: {
+                                        generar_factura_agrupada: {
                                             terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
                                             empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                                             paginaActual: $scope.paginaactual,
@@ -239,8 +243,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     }
                                 };
 
-                                facturacionClientesService.listarFacturasGeneradas(obj, function (data) {
-                                    $scope.root.pedidos_clientes = [];
+                                facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
+                                     
                                     if (data.status === 200) {
                                         
                                         console.log("AQUI MIRA ", data)

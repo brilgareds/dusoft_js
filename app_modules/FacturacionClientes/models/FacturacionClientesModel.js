@@ -34,8 +34,16 @@ FacturacionClientesModel.prototype.listarPrefijosFacturas = function (obj,callba
                 G.knex.raw('prefijo as descripcion')])
             .select()
             .from('documentos')
-            .where("tipo_doc_general_id",'FV01')
-            .andWhere("empresa_id", obj.empresaId)
+            .where(function () {
+                this.andWhere("tipo_doc_general_id",'FV01')
+                if(obj.estado ===0){
+                    this.andWhere("empresa_id", obj.empresaId);
+                }else{
+                    this.andWhere("documento_id", obj.documentoId);
+                }
+            })
+            /*.where("tipo_doc_general_id",'FV01')
+            .andWhere("empresa_id", obj.empresaId)*/
             .then(function (resultado) {
 
                 callback(false, resultado)
@@ -430,7 +438,7 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
         THEN d.tipo_id_vendedor||'@'||d.vendedor_id END as vendedor_id"),        
         "c.facturar_iva"
    ];
-   
+    
    var query = G.knex.select(columnQuery)
             .from("terceros_clientes as a")
               .leftJoin("unidades_negocio as b", function () {
@@ -438,24 +446,24 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
             }).leftJoin("vnts_contratos_clientes as c", function () {
                 this.on("a.tipo_id_tercero","c.tipo_id_tercero")
                     .on("a.tercero_id","c.tercero_id")
-                    .on("a.empresa_id", "'" + obj.empresaId + "'")
-                    .on("c.estado",'1')
+                    .on(G.knex.raw("a.empresa_id = '"+obj.empresaId+"' "))// + obj.empresaId
+                    .on(G.knex.raw("c.estado = '1'"))
             }).leftJoin("vnts_contratos_clientes as d", function () {
                 this.on("a.codigo_unidad_negocio","d.codigo_unidad_negocio")
-                    .on("d.empresa_id", "'" + obj.empresaId + "'")
-                    .on("d.estado",'1')
+                    .on(G.knex.raw("d.empresa_id = '"+obj.empresaId+"' "))//+ obj.empresaId
+                    .on(G.knex.raw("d.estado = '1'"))
             }).join("terceros as e", function(){
                 this.on("a.tipo_id_tercero","e.tipo_id_tercero")
-                    .on("a.empresa_id", "'" + obj.empresaId + "'")
+                    .on(G.knex.raw("a.empresa_id = '"+obj.empresaId+"' "))//
                     .on("a.tercero_id","e.tercero_id")
             }).where(function(){
-                this.andWhere("a.tipo_id_tercero", "'"+obj.tipoIdTercero+"'")
-                    .andWhere("a.tercero_id", "'"+obj.terceroId+"'")
+                this.andWhere("a.tipo_id_tercero", obj.tipoIdTercero)
+                    .andWhere("a.tercero_id", obj.terceroId)
             });
    
    
    query.then(function (resultado) {
-       
+       console.log("resultado [consultarTerceroContrato] ", resultado);
         callback(false, resultado)
     }).catch(function (err) {
         console.log("err [consultarTerceroContrato] ", err);

@@ -1,5 +1,6 @@
-var FacturacionClientes = function(m_facturacion_clientes) {
+var FacturacionClientes = function(m_facturacion_clientes,m_dispensacion_hc) {
     this.m_facturacion_clientes = m_facturacion_clientes;
+    this.m_dispensacion_hc = m_dispensacion_hc;
 };
 
 /*
@@ -49,7 +50,7 @@ FacturacionClientes.prototype.listarPrefijosFacturas = function(req, res){
     
     var parametros = {
         empresaId:args.listar_prefijos.empresaId,
-        
+        estado:0
     }
     G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros).then(function(resultado){
         
@@ -251,6 +252,10 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
  */
 FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
    
+   console.log("************FacturacionClientes.prototype.generarFacturasAgrupadas***************");
+   console.log("************FacturacionClientes.prototype.generarFacturasAgrupadas***************");
+   console.log("************FacturacionClientes.prototype.generarFacturasAgrupadas***************");
+   
     var that = this;
     var args = req.body.data;           
     
@@ -267,11 +272,31 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     var parametros = {
         empresaId: '03',//args.generar_factura_agrupada.empresaId,
         tipoIdTercero: 'NIT',//args.generar_factura_agrupada.tipoIdTercero,
-        terceroId: '900766903'//args.generar_factura_agrupada.terceroId
-
+        terceroId: '900766903',//args.generar_factura_agrupada.terceroId
+        documentoId:'',
+        estado:1
     };
+      
+    var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };
+     
+    G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
+        
+        parametros.documentoId = resultado[0].valor;
     
-    G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros).then(function(resultado){
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
+        }else{
+            throw 'Consulta sin resultados';
+        }
+         
+        
+    }).then(function(resultado){
+        
+        console.log("resultado [listarPrefijosFacturas]: ", resultado);
+        
+        G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros);
+        
+    }).then(function(resultado){
         
     if(resultado.length >0){
         res.send(G.utils.r(req.url, 'Consulta tercero contrato', 200, {generar_factura_agrupada:resultado}));
@@ -284,6 +309,6 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     }).done();
 };
 
-FacturacionClientes.$inject = ["m_facturacion_clientes"];
+FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc"];
 //, "e_facturacion_clientes", "m_usuarios"
 module.exports = FacturacionClientes;

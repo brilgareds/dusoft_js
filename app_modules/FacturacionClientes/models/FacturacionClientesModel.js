@@ -31,7 +31,10 @@ FacturacionClientesModel.prototype.listarTiposTerceros = function (callback) {
 FacturacionClientesModel.prototype.listarPrefijosFacturas = function (obj,callback) {
 
     G.knex.column([G.knex.raw('prefijo as id'),
-                G.knex.raw('prefijo as descripcion')])
+                G.knex.raw('prefijo as descripcion'),
+                "empresa_id",
+                "numeracion",
+                "documento_id"])
             .select()
             .from('documentos')
             .where(function () {
@@ -462,15 +465,213 @@ FacturacionClientesModel.prototype.consultarTerceroContrato = function (obj, cal
             });
    
    
-   query.then(function (resultado) {
-       console.log("resultado [consultarTerceroContrato] ", resultado);
-        callback(false, resultado)
+   query.then(function(resultado) {
+      
+        callback(false, resultado);
     }).catch(function (err) {
         console.log("err [consultarTerceroContrato] ", err);
-         callback({err:err, msj: "Error al consultar el contrato de terceros"});   
+        callback({err:err, msj: "Error al consultar el contrato de terceros"});   
     });
    
-}
+};
+
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de listar los tipos de terceros
+ * @controller FacturacionClientes.prototype.listarTiposTerceros
+ */
+FacturacionClientesModel.prototype.consultarParametrosRetencion = function (obj,callback) {
+
+    G.knex.select('*')
+        .from('vnts_bases_retenciones')
+        .where(function(){
+            this.andWhere("estado",'1')
+                .andWhere(G.knex.raw("anio = TO_CHAR(NOW(),'YYYY')"))
+                .andWhere("empresa_id", obj.empresaId)
+        })
+        .then(function (resultado) {
+
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarParametrosRetencion]:", err);
+        callback({err:err, msj: "Error al consultar los parametros de retencion"});   
+    });
+
+};
+
+ 
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de consultar la factura agrupada
+ * @controller FacturacionClientes.prototype.generarFacturaAgrupada
+ */
+FacturacionClientesModel.prototype.consultarFacturaAgrupada = function (obj,callback) {
+
+    G.knex.select('*')
+        .from('inv_facturas_agrupadas_despacho')
+        .where(function(){
+            this.andWhere("empresa_id",obj.empresa_id)
+                .andWhere("prefijo", obj.id)
+                .andWhere("factura_fiscal", obj.numeracion)
+        })
+        .then(function (resultado) {
+
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarFacturaAgrupada]:", err);
+        callback({err:err, msj: "Error al consultar la factura agrupada"});   
+    });
+
+};
+
+/**
+ * +Descripcion Funcion encarhada de consultar la ip autorizada para generar
+ *              facturas
+ * @fecha 2017-05-08
+ * @author Cristian Ardila
+ */
+FacturacionClientesModel.prototype.consultarDireccionIp = function(obj, callback){
+ 
+    G.knex.select('*')
+    .from('pc_crea_facturacion')
+    .where("ip", obj.direccionIp)
+    .then(function (resultado) {
+         callback(false, resultado)
+    }).catch(function (err) {
+        console.log("err [consultarDireccionIp]:", err);
+    callback({err:err, msj: "Error al consultar la direccion Ip"});   
+    });
+
+
+};
+
+/**
+ * +Descripcion Metodo encargado de registrar la direccion ip en el 
+ * @param {type} obj
+ * @param {type} transaccion
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionClientesModel.prototype.insertarPcFactura = function(obj,transaccion, callback){
+      
+    console.log("obj [insertarPcFactura]: ", obj);
+    var parametros = {ip: obj.direccion_ip,
+            prefijo: obj.parametros.documento_facturacion[0].id,
+            factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
+            sw_tipo_factura : obj.swTipoFactura,
+            fecha_registro: G.knex.raw('now()'),
+            empresa_id: obj.parametros.documento_facturacion[0].empresa_id
+            };
+         
+    var query = G.knex('pc_factura_clientes')
+     .insert(parametros);
+    
+    if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){
+            
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+            callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+    });
+};
+/**
+ * +Descripcion Metodo encargado de registrar la cabecera de la factura
+ *              agrupada
+ * @author Cristian Manuel Ardila Troches
+ * @fecha  2017-05-08
+ */
+FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transaccion, callback){
+      
+    var parametros = {empresa_id: obj.parametros.documento_facturacion[0].empresa_id,
+            tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
+            tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
+            factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
+            prefijo: obj.parametros.documento_facturacion[0].id,
+            documento_id: obj.parametros.documento_facturacion[0].documento_id,
+            usuario_id: obj.usuario,
+            observaciones: obj.parametros.consultar_tercero_contrato[0].condiciones_cliente,
+            porcentaje_rtf: obj.porcentaje_rtf,
+            porcentaje_ica: obj.porcentaje_ica,
+            porcentaje_reteiva: obj.porcentaje_reteiva,
+            porcentaje_cree: obj.porcentaje_cree,
+            tipo_pago_id: obj.tipoPago};
+         
+    var query = G.knex('inv_facturas_agrupadas_despacho')
+     .insert(parametros);
+    
+    if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){
+            
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+            callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+    });
+};
+
+/**
+ * +Descripcion Metodo encargado de generar las facturas agrupadas 
+ *              mediante la transaccion la cual ejecuta varios querys
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = function(obj, callback)
+{   
+    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas*************************");
+    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas*************************");
+    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas*************************");
+    
+    var that = this;
+    var def = G.Q.defer();
+    var porcentajeRtf = '0';
+    var porcentajeIca = '0';
+    var porcentajeReteiva = '0';
+    var porcentajeCree = obj.consultar_tercero_contrato[0].porcentaje_cree;
+    
+    
+    if (obj.consultar_parametros_retencion.sw_rtf === '1' || obj.consultar_parametros_retencion.sw_rtf === '3')
+        porcentajeRtf = obj.consultar_tercero_contrato[0].porcentaje_rtf;
+    if (obj.consultar_parametros_retencion.sw_ica === '1' || obj.consultar_parametros_retencion.sw_ica === '3')
+        porcentajeIca = obj.consultar_tercero_contrato[0].porcentaje_ica;
+    if (obj.consultar_parametros_retencion.sw_reteiva === '1' || obj.consultar_parametros_retencion.sw_reteiva === '3')
+        porcentajeReteiva = obj.consultar_tercero_contrato[0].porcentaje_reteiva;
+        
+    G.knex.transaction(function(transaccion) {  
+        
+        G.Q.ninvoke(that,'insertarFacturaAgrupada',
+        {parametros:obj,
+         porcentaje_rtf:porcentajeRtf,
+         porcentaje_ica: porcentajeIca,
+         porcentaje_reteiva: porcentajeReteiva,
+         porcentaje_cree: porcentajeCree,
+         usuario: obj.parametros.usuario,
+         tipoPago: obj.parametros.tipoPago
+         
+        }, transaccion).then(function(resultado){
+             
+            
+            return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1', direccion_ip:obj.direccion_ip}, transaccion);
+                                  
+        }).then(function(){  
+             
+            //transaccion.commit();            
+        }).fail(function(err){
+                console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
+                transaccion.rollback(err);
+        }).done();
+
+    }).then(function(){
+       callback(false);
+    }).catch(function(err){      
+       callback(err.msj);
+    }).done(); 
+    
+};
 FacturacionClientesModel.$inject = [];
 
 

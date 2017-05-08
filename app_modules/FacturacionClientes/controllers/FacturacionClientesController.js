@@ -257,8 +257,17 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
    console.log("************FacturacionClientes.prototype.generarFacturasAgrupadas***************");
    
     var that = this;
-    var args = req.body.data;           
-    
+    var args = req.body.data;    
+    /**
+     * +Descripcion Variable encargada de capturar la ip del cliente que se conecta
+     * @example '::ffff:10.0.2.158'
+     */
+    var ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+   
+   
     if (args.generar_factura_agrupada === undefined ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {generar_factura_agrupada: []}));
         return;
@@ -269,16 +278,27 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         return;
     }
     
+    if (args.generar_factura_agrupada.tipoPago === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_agrupada: []}));
+        return;
+    }
+    var usuario = req.session.user.usuario_id;
     var parametros = {
-        empresaId: '03',//args.generar_factura_agrupada.empresaId,
-        tipoIdTercero: 'NIT',//args.generar_factura_agrupada.tipoIdTercero,
-        terceroId: '900766903',//args.generar_factura_agrupada.terceroId
+        empresaId: args.generar_factura_agrupada.empresaId,
+        tipoIdTercero: args.generar_factura_agrupada.tipoIdTercero,
+        terceroId: args.generar_factura_agrupada.terceroId,
         documentoId:'',
-        estado:1
+        estado:1,
+        tipoPago: args.generar_factura_agrupada.tipoPago,
+        usuario:usuario
     };
-      
-    var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };
      
+    var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };
+    
+    var documentoFacturacion;
+    var consultarTerceroContrato;
+    var consultarParametrosRetencion;
+    var def = G.Q.defer(); 
     G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
         
         parametros.documentoId = resultado[0].valor;
@@ -286,26 +306,79 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         if(resultado.length >0){
             return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
         }else{
-            throw 'Consulta sin resultados';
+            throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
         }
          
         
     }).then(function(resultado){
-        
-        console.log("resultado [listarPrefijosFacturas]: ", resultado);
-        
-        G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros);
+        documentoFacturacion = resultado;
+        //console.log("resultado [listarPrefijosFacturas]: ", resultado);
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros);
+        }else{
+            throw {msj:'[listarPrefijosFacturas]: Consulta sin resultados', status: 404}; 
+        }
         
     }).then(function(resultado){
+        consultarTerceroContrato = resultado;
+        //console.log("resultado [consultarTerceroContrato]: ", resultado);
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',parametros);       
+        }else{
+            throw {msj:'[consultarTerceroContrato]: Consulta sin resultados', status: 404}; 
+        }
+
+    }).then(function(resultado){
+        consultarParametrosRetencion = resultado;   
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarFacturaAgrupada',documentoFacturacion[0]);       
+        }else{
+            throw {msj:'[consultarParametrosRetencion]: Consulta sin resultados', status: 404}; 
+        }
+
+    }).then(function(resultado){  
+        console.log("resultado [consultarParametrosRetencion]: ",resultado)
+        if(resultado.length > 0){
+            
+            throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};   
+
+        }else{           
+            
+            if(ip.substr(0, 6) === '::ffff'){               
+                return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
+            }else{                
+                def.resolve();                
+            }              
+        }
+         
+    }).then(function(resultado){
+       
+        if(!resultado || resultado.length > 0){
+            
+            return G.Q.ninvoke(that.m_facturacion_clientes,'transaccionGenerarFacturasAgrupadas',
+            {documento_facturacion:documentoFacturacion,
+             consultar_tercero_contrato:consultarTerceroContrato,
+             consultar_parametros_retencion:consultarParametrosRetencion,
+             parametros:parametros,
+             direcion_ip: ip
+             });
+        }else{
+            throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
+        }
+            
+    }).then(function(resultado){
         
-    if(resultado.length >0){
-        res.send(G.utils.r(req.url, 'Consulta tercero contrato', 200, {generar_factura_agrupada:resultado}));
-    }else{
-        throw 'Consulta los terceros';
-    }
+        console.log("resultado [transaccionGenerarFacturasAgrupadas]: ", resultado);
         
-    }).fail(function(err){      
-       res.send(G.utils.r(req.url, err, 500, {}));
+    }).fail(function(err){  
+        
+        console.log("err ", err);
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
     }).done();
 };
 

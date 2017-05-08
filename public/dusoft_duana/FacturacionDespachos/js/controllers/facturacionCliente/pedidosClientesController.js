@@ -9,8 +9,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                 "$state", "$modal", "socket", "facturacionClientesService", "EmpresaDespacho",
                 function ($scope, $rootScope, Request, API, AlertService, Usuario,
                         $timeout, $filter, localStorageService, $state, $modal, socket, facturacionClientesService, EmpresaDespacho) {
-
-                    console.log("pedidosClientesController");
+ 
                     var that = this;
                     $scope.paginaactual = 1;
                     $scope.paginaactualFacturasGeneradas = 1;
@@ -138,13 +137,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         enableHighlighting: true,
                         columnDefs: [
 
-                            {field: '#Pedido', width: "15%", displayName: '#Pedido', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
+                            {field: '#Pedido', cellClass: "ngCellText", width: "15%", displayName: '#Pedido', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].get_numero_cotizacion()}}</p></div>'},
 
-                            {field: 'Vendedor', width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
+                            {field: 'Vendedor', cellClass: "ngCellText", width: "25%", displayName: 'Vendedor', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getTipoId()}}- {{row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getId()}}: {{ row.entity.mostrarPedidos()[0].mostrarVendedor()[0].getNombre()}}</p></div>'},
 
-                            {field: '#Fecha', width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
+                            {field: '#Fecha', cellClass: "ngCellText", width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
 
-                            {field: '#Documento', width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()}}- {{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero()}}</p></div>'},
+                            {field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()}}- {{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero()}}</p></div>'},
 
                             {displayName: "Opc", cellClass: "txt-center dropdown-button",
                                 cellTemplate: '<div class="btn-group">\
@@ -205,7 +204,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     };
 
 
-
+                    
                     $scope.buscarSeleccion = function (row) {
                         var pedido = row.entity;
                         for (var i in $scope.pedidosSeleccionados) {
@@ -219,7 +218,13 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         row.selected = false;
                         return false;
                     };
-
+                    
+                    /**
+                     * +Descripcion Metodo encargado de invocar el servicio
+                     *              que generara las facturas agrupadas
+                     * @author Cristian Ardila
+                     * @fecha 2017-08-05
+                     */
                     $scope.generarFacturasAgrupadas = function () {
                           
                         console.log("**********$scope.generarFacturasAgrupadas***************00");
@@ -238,21 +243,26 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             empresaId: $scope.root.empresaSeleccionada.getCodigo(),
                                             paginaActual: $scope.paginaactual,
                                             tipoIdTercero: resultadoStorage.tipoIdTercero,
-                                            terceroId: resultadoStorage.terceroId
+                                            terceroId: resultadoStorage.terceroId,
+                                            tipoPago: $scope.tipoPagoFactura
                                         }
                                     }
                                 };
 
                                 facturacionClientesService.generarFacturaAgrupada(obj, function (data) {
-                                     
+                                     console.log("AQUI MIRA ", data)
                                     if (data.status === 200) {
                                         
-                                        console.log("AQUI MIRA ", data)
+                                        
                                        // $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
                                        // $scope.root.pedidos_clientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
 
-                                    } else {
-                                        AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
+                                    }
+                                    if(data.status === 404){
+                                        AlertService.mostrarMensaje("warning", data.msj);
+                                    }
+                                    if(data.status === 409){
+                                        AlertService.mostrarMensaje("danger", data.msj);
                                     }
 
                                 }); 
@@ -265,7 +275,9 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                     };
 
-
+                    $scope.seleccionarTipoPago = function(tipoPago){
+                        $scope.tipoPagoFactura = tipoPago;
+                    };
                     /**
                      * @author Cristian Ardila
                      * @fecha 04/02/2016

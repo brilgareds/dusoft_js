@@ -573,7 +573,7 @@ FacturacionClientesModel.prototype.insertarPcFactura = function(obj,transaccion,
             console.log("resultado [insertarPcFactura]", resultado);
             callback(false, resultado);
         }).catch(function(err){
-            console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+            console.log("err (/catch) [insertarPcFactura]: ", err);     
             callback({err:err, msj: "Error al guardar la factura agrupada]"});   
         });
 };
@@ -612,6 +612,42 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transa
 };
 
 /**
+ * +Descripcion Metodo encargado de registrar la cabecera de la factura
+ *              agrupada
+ * @author Cristian Manuel Ardila Troches
+ * @fecha  2017-05-08
+ */
+FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,transaccion, callback){
+                     
+    var parametros = {empresa_id: obj.parametros.documento_facturacion[0].empresa_id,
+            tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
+            tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
+            factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
+            prefijo: obj.parametros.documento_facturacion[0].id,
+            documento_id: obj.parametros.documento_facturacion[0].documento_id,
+            usuario_id: obj.usuario,
+            /*tipo_id_vendedor, 
+            vendedor_id, 
+            pedido_cliente_id,*/
+            observaciones: obj.parametros.consultar_tercero_contrato[0].condiciones_cliente,
+            porcentaje_rtf: obj.porcentaje_rtf,
+            porcentaje_ica: obj.porcentaje_ica,
+            porcentaje_reteiva: obj.porcentaje_reteiva,
+            porcentaje_cree: obj.porcentaje_cree,
+            tipo_pago_id: obj.tipoPago};
+         
+    var query = G.knex('inv_facturas_despacho').insert(parametros);     
+    
+    if(transaccion) query.transacting(transaccion);     
+        query.then(function(resultado){
+            console.log("resultado [insertarFacturaAgrupada]", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
+            callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+    });
+};
+/**
  * +Descripcion Metodo encargado de actualizar la numeracion del documento
  * @author Cristian Ardila
  * @fecha 2017-09-05
@@ -631,6 +667,7 @@ FacturacionClientesModel.prototype.actualizarNumeracion = function(obj,transacci
         callback({err:err, msj: "Error al actualizar la numeracion del documento"});   
     });  
 };
+
 /**
  * +Descripcion Metodo encargado de generar las facturas agrupadas 
  *              mediante la transaccion la cual ejecuta varios querys
@@ -786,6 +823,75 @@ function __detallePedidosClientes(that, index, pedidos,transaccion, callback) {
     }, 300);
    
 };
+
+
+
+
+/**
+ * +Descripcion Metodo encargado de generar las facturas agrupadas 
+ *              mediante la transaccion la cual ejecuta varios querys
+ * @param {type} obj
+ * @param {type} callback
+ * @returns {undefined}
+ */
+FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = function(obj, callback)
+{   
+    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
+    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
+    console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
+    
+    console.log("PARAMETROS OK ", obj);
+    var that = this;
+    var def = G.Q.defer();
+    var porcentajeRtf = '0';
+    var porcentajeIca = '0';
+    var porcentajeReteiva = '0';
+    var porcentajeCree = obj.consultar_tercero_contrato[0].porcentaje_cree;
+    
+    
+    if (obj.consultar_parametros_retencion.sw_rtf === '1' || obj.consultar_parametros_retencion.sw_rtf === '3')
+        porcentajeRtf = obj.consultar_tercero_contrato[0].porcentaje_rtf;
+    if (obj.consultar_parametros_retencion.sw_ica === '1' || obj.consultar_parametros_retencion.sw_ica === '3')
+        porcentajeIca = obj.consultar_tercero_contrato[0].porcentaje_ica;
+    if (obj.consultar_parametros_retencion.sw_reteiva === '1' || obj.consultar_parametros_retencion.sw_reteiva === '3')
+        porcentajeReteiva = obj.consultar_tercero_contrato[0].porcentaje_reteiva;
+        
+    G.knex.transaction(function(transaccion) {  
+        
+        G.Q.ninvoke(that,'insertarFacturaIndividual',
+        {parametros:obj,
+         porcentaje_rtf:porcentajeRtf,
+         porcentaje_ica: porcentajeIca,
+         porcentaje_reteiva: porcentajeReteiva,
+         porcentaje_cree: porcentajeCree,
+         usuario: obj.parametros.usuario,
+         tipoPago: obj.parametros.tipoPago
+         
+        },transaccion).then(function(resultado){            
+            return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);                                  
+        }).then(function(){
+            
+            return G.Q.nfcall(__detallePedidosClientes,that,0, obj.parametros.pedidos,transaccion);
+            
+        }).then(function(){              
+            return G.Q.ninvoke(that,'actualizarNumeracion',{parametros:obj}, transaccion);                             
+        }).then(function(){
+            
+            console.log("AQUI VA OK OKo OK");
+            //transaccion.commit();    
+        }).fail(function(err){
+                console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
+                transaccion.rollback(err);
+        }).done();
+
+    }).then(function(){
+       callback(false);
+    }).catch(function(err){      
+       callback(err.msj);
+    }).done(); 
+    
+};
+
 FacturacionClientesModel.$inject = [];
 
 

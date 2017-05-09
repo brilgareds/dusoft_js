@@ -29,8 +29,13 @@ module.exports = function(app, di_container) {
         c_facturacion_clientes.listarPedidosClientes(req, res);
     });
     
-    //listar los terceros
+    //Generar la facturacion agrupada
     app.post('/api/FacturacionClientes/generarFacturasAgrupadas', function(req, res) {       
         c_facturacion_clientes.generarFacturasAgrupadas(req, res);
+    });
+    
+    
+    app.post('/api/FacturacionClientes/generarFacturaIndividual', function(req, res) {       
+        c_facturacion_clientes.generarFacturaIndividual(req, res);
     });
 };

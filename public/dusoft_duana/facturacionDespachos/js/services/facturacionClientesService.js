@@ -12,7 +12,7 @@ define(["angular", "js/services"], function (angular, services) {
 
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * @fecha  05/05/2017 DD/MM/YYYYY
                      * +Descripcion Consulta todos los tipos de documentos
                      */
                     self.listarTiposTerceros = function (obj, callback) {
@@ -24,7 +24,7 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * @fecha  02/05/2017 DD/MM/YYYYY
                      * +Descripcion Consulta los prefijos
                      */
                     self.listarPrefijosFacturas = function (obj, callback) {
@@ -35,7 +35,7 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * @fecha  03/05/2017 DD/MM/YYYYY
                      * +Descripcion lista todos los clientes
                      */
                     self.listarClientes = function (obj, callback) {
@@ -46,7 +46,7 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * @fecha  02/05/2017 DD/MM/YYYYY
                      * +Descripcion lista todos los clientes
                      */
                     self.listarFacturasGeneradas = function (obj, callback) {
@@ -58,7 +58,7 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * @fecha  02/05/2017 DD/MM/YYYYY
                      * +Descripcion lista todos los clientes
                      */
                     self.listarPedidosClientes = function (obj, callback) {
@@ -71,12 +71,26 @@ define(["angular", "js/services"], function (angular, services) {
                     
                     /**
                      * @author Cristian Ardila
-                     * @fecha  21/05/2017 DD/MM/YYYYY
+                     * @fecha  02/05/2017 DD/MM/YYYYY
                      * +Descripcion Metodo encargado del Invicar el path para generar las facturas
                      *              agrupadas
                      */
                     self.generarFacturaAgrupada = function (obj, callback) {
                         Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_FACTURA_AGRUPADA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    
+                    
+                    /**
+                     * @author Cristian Ardila
+                     * @fecha  09/05/2017 DD/MM/YYYYY
+                     * +Descripcion Metodo encargado del Invicar el path para generar las facturas
+                     *              agrupadas
+                     */
+                    self.generarFacturaIndividual = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONCLIENTES.GENERAR_FACTURA_INDIVIDUAL, "POST", obj, function (data) {
                             callback(data);
                         });
                     };

@@ -150,7 +150,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\
                            <ul class="dropdown-menu dropdown-options">\
                                 <li>\n\
-                                   <a href="javascript:void(0);" ng-click="dispensacionFormula(row.entity,0)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
+                                   <a href="javascript:void(0);" ng-click="generarFacturaIndividual(row.entity)" class= "glyphicon glyphicon-refresh"> Generar factura individual </a>\
                                 </li>\
                                 <li ng-if="row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero() > 0 ">\
                                    <a href="javascript:void(0);" ng-click="listarTodoMedicamentosDispensados(row.entity)" class = "glyphicon glyphicon-print"> Imprimir pedido </a>\
@@ -269,14 +269,71 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                                 }); 
 
-
+                                }
+                                
                             }else{
                                 AlertService.mostrarMensaje("warning", "Debe seleccionar mas de dos pedidos");
                             }
-                        }
-
+                        
                     };
+                    
+                    
+                     
+                    /**
+                     * @author Cristian Ardila
+                     * +Descripcion Metodo encargado de generar una factura individual
+                     * @fecha 2017-05-09
+                     */
+                    $scope.generarFacturaIndividual = function (pedido) {
+                          
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        console.log("**********$scope.generarFacturasAgrupadas***************00");
+                        
+                        var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
 
+                        if(resultadoStorage){                           
+                            AlertService.mostrarVentanaAlerta("Generar factura individual",  "Confirma que realizar la facturacion ",
+                                function(estadoConfirm){                
+                                    if(estadoConfirm){
+
+                                        var obj = {
+                                            session: $scope.session,
+                                            data: {
+                                                generar_factura_individual: {
+                                                    terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
+                                                    empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                                    paginaActual: $scope.paginaactual,
+                                                    tipoIdTercero: resultadoStorage.tipoIdTercero,
+                                                    terceroId: resultadoStorage.terceroId,
+                                                    tipoPago: $scope.tipoPagoFactura,
+                                                    documentos: pedido
+                                                }
+                                            }
+                                        };
+
+                                        facturacionClientesService.generarFacturaIndividual(obj, function (data) {
+                                             console.log("AQUI MIRA ", data)
+                                            if (data.status === 200) {
+
+
+                                               // $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
+                                               // $scope.root.pedidos_clientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
+
+                                            }
+                                            if(data.status === 404){
+                                                AlertService.mostrarMensaje("warning", data.msj);
+                                            }
+                                            if(data.status === 409){
+                                                AlertService.mostrarMensaje("danger", data.msj);
+                                            }
+                                        });                                                         
+                                    }
+                                }
+                            );
+                        }                              
+                    };
+                   
                     $scope.seleccionarTipoPago = function(tipoPago){
                         $scope.tipoPagoFactura = tipoPago;
                     };

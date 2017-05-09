@@ -394,6 +394,151 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     }).done();
 };
 
+
+/*
+ * @author Cristian Ardila
+ * @fecha 02/05/2017
+ * +Descripcion Controlador encargado de listar los terceros
+ *              
+ */
+FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
+   
+   console.log("************FacturacionClientes.prototype.generarFacturaIndividual***************");
+   console.log("************FacturacionClientes.prototype.generarFacturaIndividual***************");
+   console.log("************FacturacionClientes.prototype.generarFacturaIndividual***************");
+   
+    var that = this;
+    var args = req.body.data;
+    
+     /**
+     * +Descripcion Variable encargada de capturar la ip del cliente que se conecta
+     * @example '::ffff:10.0.2.158'
+     */
+    var ip = req.headers['x-forwarded-for'] || 
+     req.connection.remoteAddress || 
+     req.socket.remoteAddress ||
+     req.connection.socket.remoteAddress;
+   
+    
+    if (args.generar_factura_individual === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {generar_factura_individual: []}));
+        return;
+    }
+    
+    if (args.generar_factura_individual.empresaId === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {generar_factura_individual: []}));
+        return;
+    }
+    
+    if (args.generar_factura_individual.tipoPago === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_individual: []}));
+        return;
+    }
+    
+    if (args.generar_factura_individual.tipoPago === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_individual: []}));
+        return;
+    }
+    
+    console.log("args.generar_factura_individual.documentos ", args.generar_factura_individual.documentos)
+    var usuario = req.session.user.usuario_id;
+    var parametros = {
+        empresaId: args.generar_factura_individual.empresaId,
+        tipoIdTercero: args.generar_factura_individual.tipoIdTercero,
+        terceroId: args.generar_factura_individual.terceroId,
+        documentoId:'',
+        estado:1,
+        tipoPago: args.generar_factura_individual.tipoPago,
+        usuario:usuario,
+        direccion_ip: '',
+        pedido: args.generar_factura_individual.documentos
+    };    
+    var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };    
+    var documentoFacturacion;
+    var consultarTerceroContrato;
+    var consultarParametrosRetencion;
+    var def = G.Q.defer(); 
+    
+    
+    G.Q.ninvoke(that.m_dispensacion_hc,'estadoParametrizacionReformular',parametroBodegaDocId).then(function(resultado){
+        
+        console.log("resultado [estadoParametrizacionReformular]: ", resultado);
+        parametros.documentoId = resultado[0].valor;
+    
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'listarPrefijosFacturas',parametros)
+        }else{
+            throw {msj:'[estadoParametrizacionReformular]: Consulta sin resultados', status: 404}; 
+        }
+         
+        
+    }).then(function(resultado){
+        
+        console.log("resultado [listarPrefijosFacturas]: ", resultado);
+        documentoFacturacion = resultado;
+        //console.log("resultado [listarPrefijosFacturas]: ", resultado);
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarTerceroContrato',parametros);
+        }else{
+            throw {msj:'[listarPrefijosFacturas]: Consulta sin resultados', status: 404}; 
+        }
+        
+    }).then(function(resultado){
+        
+        console.log("resultado [consultarTerceroContrato]: ", resultado);
+        consultarTerceroContrato = resultado;
+        //console.log("resultado [consultarTerceroContrato]: ", resultado);
+        if(resultado.length >0){
+            return G.Q.ninvoke(that.m_facturacion_clientes,'consultarParametrosRetencion',parametros);       
+        }else{
+            throw {msj:'[consultarTerceroContrato]: Consulta sin resultados', status: 404}; 
+        }
+
+    } .then(function(resultado){  
+       consultarParametrosRetencion = resultado;
+        if(resultado.length > 0){
+            
+            throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};   
+
+        }else{           
+            
+            if(ip.substr(0, 6) === '::ffff'){               
+                return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
+            }else{                
+                def.resolve();                
+            }              
+        }
+         
+    }).then(function(resultado){
+       
+        if(!resultado || resultado.length > 0){
+            parametros.direccion_ip = ip;
+            return G.Q.ninvoke(that.m_facturacion_clientes,'transaccionGenerarFacturaIndividual',
+            {documento_facturacion:documentoFacturacion,
+             consultar_tercero_contrato:consultarTerceroContrato,
+             consultar_parametros_retencion:consultarParametrosRetencion,
+             parametros:parametros
+             });
+        }else{
+            throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 
+        }
+            
+    }).then(function(resultado){
+        
+        console.log("resultado [transaccionGenerarFacturasAgrupadas]: ", resultado);
+        
+    }).fail(function(err){  
+        
+        console.log("err ", err);
+        if(!err.status){
+            err = {};
+            err.status = 500;
+            err.msj = "Se ha generado un error..";
+        }
+       res.send(G.utils.r(req.url, err.msj, err.status, {}));
+    }).done();
+    
+}
 FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc"];
 //, "e_facturacion_clientes", "m_usuarios"
 module.exports = FacturacionClientes;

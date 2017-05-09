@@ -232,6 +232,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         console.log("**********$scope.generarFacturasAgrupadas***************00");
                         
                         if($scope.root.pedidosSeleccionados.length > 1){
+                            
                             var resultadoStorage = localStorageService.get("clientePedidoDespacho"); 
 
                             if(resultadoStorage){
@@ -244,7 +245,8 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                             paginaActual: $scope.paginaactual,
                                             tipoIdTercero: resultadoStorage.tipoIdTercero,
                                             terceroId: resultadoStorage.terceroId,
-                                            tipoPago: $scope.tipoPagoFactura
+                                            tipoPago: $scope.tipoPagoFactura,
+                                            documentos: $scope.root.pedidosSeleccionados
                                         }
                                     }
                                 };

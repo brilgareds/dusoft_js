@@ -267,7 +267,7 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
      req.socket.remoteAddress ||
      req.connection.socket.remoteAddress;
    
-   
+    console.log("ip [connection]: ", ip)
     if (args.generar_factura_agrupada === undefined ) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {generar_factura_agrupada: []}));
         return;
@@ -282,6 +282,17 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_agrupada: []}));
         return;
     }
+    
+    if (args.generar_factura_agrupada.tipoPago === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el tipo de pago', 404, {generar_factura_agrupada: []}));
+        return;
+    }
+    
+    if (args.generar_factura_agrupada.documentos === undefined || args.generar_factura_agrupada.documentos.length < 2) {
+        res.send(G.utils.r(req.url, 'Debe seleccionar los pedidos', 404, {generar_factura_agrupada: []}));
+        return;
+    }
+    
     var usuario = req.session.user.usuario_id;
     var parametros = {
         empresaId: args.generar_factura_agrupada.empresaId,
@@ -290,7 +301,9 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
         documentoId:'',
         estado:1,
         tipoPago: args.generar_factura_agrupada.tipoPago,
-        usuario:usuario
+        usuario:usuario,
+        direccion_ip: '',
+        pedidos: args.generar_factura_agrupada.documentos
     };
      
     var parametroBodegaDocId = {variable:"documento_factura_"+parametros.empresaId, tipoVariable:1, modulo:'FacturasDespacho' };
@@ -354,13 +367,12 @@ FacturacionClientes.prototype.generarFacturasAgrupadas = function(req, res){
     }).then(function(resultado){
        
         if(!resultado || resultado.length > 0){
-            
+            parametros.direccion_ip = ip;
             return G.Q.ninvoke(that.m_facturacion_clientes,'transaccionGenerarFacturasAgrupadas',
             {documento_facturacion:documentoFacturacion,
              consultar_tercero_contrato:consultarTerceroContrato,
              consultar_parametros_retencion:consultarParametrosRetencion,
-             parametros:parametros,
-             direcion_ip: ip
+             parametros:parametros
              });
         }else{
             throw {msj:'La Ip #'+ ip.substr(7, ip.length) +' No tiene permisos para realizar la peticion', status: 409}; 

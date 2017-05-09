@@ -556,27 +556,26 @@ FacturacionClientesModel.prototype.consultarDireccionIp = function(obj, callback
  * @returns {undefined}
  */
 FacturacionClientesModel.prototype.insertarPcFactura = function(obj,transaccion, callback){
-      
-    console.log("obj [insertarPcFactura]: ", obj);
-    var parametros = {ip: obj.direccion_ip,
+   
+    var parametros = {ip: obj.parametros.parametros.direccion_ip,
             prefijo: obj.parametros.documento_facturacion[0].id,
             factura_fiscal: obj.parametros.documento_facturacion[0].numeracion,
             sw_tipo_factura : obj.swTipoFactura,
             fecha_registro: G.knex.raw('now()'),
             empresa_id: obj.parametros.documento_facturacion[0].empresa_id
             };
-         
-    var query = G.knex('pc_factura_clientes')
-     .insert(parametros);
+        
+    var query = G.knex('pc_factura_clientes').insert(parametros);
     
-    if(transaccion) query.transacting(transaccion);     
-        query.then(function(resultado){
-            
+    if(transaccion)
+        query.transacting(transaccion);     
+        query.then(function(resultado){   
+            console.log("resultado [insertarPcFactura]", resultado);
             callback(false, resultado);
-    }).catch(function(err){
+        }).catch(function(err){
             console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
             callback({err:err, msj: "Error al guardar la factura agrupada]"});   
-    });
+        });
 };
 /**
  * +Descripcion Metodo encargado de registrar la cabecera de la factura
@@ -600,12 +599,11 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transa
             porcentaje_cree: obj.porcentaje_cree,
             tipo_pago_id: obj.tipoPago};
          
-    var query = G.knex('inv_facturas_agrupadas_despacho')
-     .insert(parametros);
+    var query = G.knex('inv_facturas_agrupadas_despacho').insert(parametros);     
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){
-            
+            console.log("resultado [insertarFacturaAgrupada]", resultado);
             callback(false, resultado);
     }).catch(function(err){
             console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
@@ -613,6 +611,26 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transa
     });
 };
 
+/**
+ * +Descripcion Metodo encargado de actualizar la numeracion del documento
+ * @author Cristian Ardila
+ * @fecha 2017-09-05
+ */
+FacturacionClientesModel.prototype.actualizarNumeracion = function(obj,transaccion, callback){
+    var parametros = {empresa_id:obj.parametros.documento_facturacion[0].empresa_id,
+                    documento_id:obj.parametros.documento_facturacion[0].documento_id,
+                    tipo_doc_general_id: 'FV01'
+            };
+    var query = G.knex('documentos').where(parametros).increment('numeracion', '1' );         
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){    
+            console.log("resultado [actualizarNumeracion]:", resultado);
+            callback(false, resultado);
+    }).catch(function(err){
+            console.log("err (/catch) [actualizarNumeracion]: ", err);       
+        callback({err:err, msj: "Error al actualizar la numeracion del documento"});   
+    });  
+};
 /**
  * +Descripcion Metodo encargado de generar las facturas agrupadas 
  *              mediante la transaccion la cual ejecuta varios querys
@@ -652,14 +670,18 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
          usuario: obj.parametros.usuario,
          tipoPago: obj.parametros.tipoPago
          
-        }, transaccion).then(function(resultado){
-             
+        },transaccion).then(function(resultado){            
+            return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1'}, transaccion);                                  
+        }).then(function(){
             
-            return G.Q.ninvoke(that,'insertarPcFactura',{parametros:obj,swTipoFactura: '1', direccion_ip:obj.direccion_ip}, transaccion);
-                                  
-        }).then(function(){  
-             
-            //transaccion.commit();            
+            return G.Q.nfcall(__detallePedidosClientes,that,0, obj.parametros.pedidos,transaccion);
+            
+        }).then(function(){              
+            return G.Q.ninvoke(that,'actualizarNumeracion',{parametros:obj}, transaccion);                             
+        }).then(function(){
+            
+            console.log("AQUI VA OK OKo OK");
+            //transaccion.commit();    
         }).fail(function(err){
                 console.log("err (/fail) [generarDispensacionFormulaPendientes]: ", err);
                 transaccion.rollback(err);
@@ -671,6 +693,98 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturasAgrupadas = functio
        callback(err.msj);
     }).done(); 
     
+};
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de actualizar el movimiento de despacho
+ *              de  los clientes
+ * @fecha 2017-09-05
+ */
+function __actualizarDespacho(obj,transaccion,callback) {
+    
+    var parametros = {empresa_id:obj.empresa_id,
+                    prefijo:obj.prefijo,
+                    numero: obj.numero                   
+                    };
+
+    var query = G.knex('inv_bodegas_movimiento_despachos_clientes')
+                 .where(parametros).update({factura_gener: '1'});
+
+
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){ 
+        console.log("resultado [__actualizarDespacho]: ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        console.log("err (/catch) [__actualizarDespacho]: ", err);
+        callback({err:err, msj: "Error al actualizar el movimiento del despacho del cliente"});   
+    });  
+};
+
+
+function __detallePedidosClientes(that, index, pedidos,transaccion, callback) {
+   
+    var pedido = pedidos[index];   
+    
+    if (!pedido) {       
+         
+        callback(false);  
+        return;                     
+    }  
+    
+    //console.log("pedidos ----->>> ", pedido.pedidos[0]);
+    /*console.log("Tipo Id tercero ", pedido.pedidos[0].vendedor[0].tipo_id_tercero);
+    console.log("Tercero Id ", pedido.pedidos[0].vendedor[0].id);
+    console.log("#Pedido ", pedido.pedidos[0].numero_cotizacion);
+    console.log("Empresa Id ", pedido.pedidos[0].empresa_id);
+    console.log("Prefijo ", pedido.pedidos[0].documento[0].prefijo);
+    console.log("Numero ", pedido.pedidos[0].documento[0].numero);*/
+    
+   /* if(parseInt(producto.total) > 0){      
+        G.Q.ninvoke(that,'insertarPendientesPorDispensar',producto, transaccion).then(function(resultado){
+            rowCount = 1;
+            
+         }).fail(function(err){      
+       }).done();   
+    }*/
+    
+    index++;
+    G.Q.nfcall(__actualizarDespacho, {empresa_id:pedido.pedidos[0].empresa_id,prefijo:pedido.pedidos[0].documento[0].prefijo,numero: pedido.pedidos[0].documento[0].numero},transaccion)
+            .then(function(resultado){    
+       
+       /* if(resultado >= 1){      
+            return  G.Q.nfcall(__actualizarExistenciasBodegas, producto, transaccion);      
+        }else{
+            throw 'Error al actualizar las existencias de los lotes por que no pueden ser menores a 0'
+        }*/
+         
+    })/*.then(function(resultado){
+        
+       if(resultado >= 1){      
+            return G.Q.nfcall(__insertarBodegasDocumentosDetalle,producto,parametros.bodegasDocId, parametros.numeracion, parametros.planId,transaccion);
+        }else{
+            throw 'Error al actualizar las existencias de bodega por que no pueden ser menores a 0'
+        }
+        
+    
+    }).then(function(resultado){
+        
+        console.log("A QUI [__insertarBodegasDocumentosDetalle] ", resultado)
+        setTimeout(function() {
+            __guardarBodegasDocumentosDetalle(that, index, parametros,transaccion, callback);
+        }, 300);
+        
+    })*/.fail(function(err){ 
+        console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
+        callback(err);            
+    }).done();
+    
+    
+    setTimeout(function() {
+            __detallePedidosClientes(that, index, pedidos,transaccion, callback);
+    }, 300);
+   
 };
 FacturacionClientesModel.$inject = [];
 

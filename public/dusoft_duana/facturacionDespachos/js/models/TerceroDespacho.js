@@ -8,7 +8,7 @@ define(["angular", "js/models", "includes/classes/Tercero"], function (angular, 
                 Tercero.getClass().call(this, nombre, tipo_id_tercero, id, direccion, telefono);
                 this.email;
                 this.tipoBloqueoId;
-                this.documento = [];
+                this.pedidos = [];
             }
 
             TerceroDespacho.prototype = Object.create(Tercero.getClass().prototype);
@@ -28,19 +28,18 @@ define(["angular", "js/models", "includes/classes/Tercero"], function (angular, 
             TerceroDespacho.prototype.getTipoBloqueoId = function () {
                 return this.tipoBloqueoId;
             };
-
-            TerceroDespacho.prototype.agregarDocumentos = function (documento) {
-                this.documento.push(documento);
+            
+            TerceroDespacho.prototype.agregarPedidos = function (pedidos) {
+                this.pedidos.push(pedidos);
             };
 
-            TerceroDespacho.prototype.vaciarDocumentos = function () {
-                this.documento = [];
+            TerceroDespacho.prototype.vaciarPedidos = function () {
+                this.pedidos = [];
             }
 
-            TerceroDespacho.prototype.mostrarFacturas = function () {
-                return this.documento;
+            TerceroDespacho.prototype.mostrarPedidos = function () {
+                return this.pedidos;
             };
-
 
             this.get = function (nombre, tipo_id_tercero, id, direccion, telefono) {
                 return new TerceroDespacho(nombre, tipo_id_tercero, id, direccion, telefono);

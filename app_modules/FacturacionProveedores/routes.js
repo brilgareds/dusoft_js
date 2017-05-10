@@ -10,6 +10,16 @@ module.exports = function(app, di_container) {
         c_facturacion_proveedores.listarOrdenesCompraProveedor(req, res);
     });
     
+    app.post('/api/FacturacionProveedores/detalleRecepcionParcial', function(req, res) {
+       
+        c_facturacion_proveedores.detalleRecepcionParcial(req, res);
+    });
+    
+    app.post('/api/FacturacionProveedores/ingresarFactura', function(req, res) {
+       
+        c_facturacion_proveedores.ingresarFactura(req, res);
+    });
+    
     
     
 };

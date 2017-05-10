@@ -17,6 +17,8 @@ define(["angular"], function (angular) {
             },
             'FACTURACIONPROVEEDOR':{
                  "LISTAR_ORDENES_COMPRA_PROVEEDORES": BASE_URL + "/FacturacionProveedores/listarOrdenesCompraProveedor", 
+                 "DETALLE_RECEPCION_PARCIAL": BASE_URL + "/FacturacionProveedores/detalleRecepcionParcial", 
+                 "INSERTAR_FACTURA": BASE_URL + "/FacturacionProveedores/ingresarFactura", 
             },
         }
 

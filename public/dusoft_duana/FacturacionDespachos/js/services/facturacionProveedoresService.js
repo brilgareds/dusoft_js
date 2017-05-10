@@ -2,13 +2,84 @@ define(["angular", "js/services"], function (angular, services) {
 
 
     services.factory('facturacionProveedoresService',
-            ['Request', 'API', "OrdenesComprasProveedores",
+            ['Request', 'API', "OrdenesComprasProveedores","ProductoRecepcion","Totales",
 
-                function (Request, API, OrdenesComprasProveedores) {
+                function (Request, API, OrdenesComprasProveedores,ProductoRecepcion,Totales) {
 
                     var self = this;
 
 
+                    
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  08/05/2017 DD/MM/YYYYY
+                     * +Descripcion insertar factura proveedor
+                     */
+                    self.insertarFactura = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONPROVEEDOR.INSERTAR_FACTURA, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * @fecha  02/05/2017 DD/MM/YYYYY
+                     * +Descripcion lista todas las ordenes de compra proveedores
+                     */
+                    self.detalleRecepcion = function (obj, callback) {
+                        Request.realizarRequest(API.FACTURACIONPROVEEDOR.DETALLE_RECEPCION_PARCIAL, "POST", obj, function (data) {
+                            callback(data);
+                        });
+                    };
+                    
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * +Descripcion Funcion encargada de serializar el resultado de la
+                     *              consulta que obtiene las ordenes de compra de proveedores
+                     * @fecha 02/05/2017 DD/MM/YYYYY
+                     */
+                    self.renderProductosRecepcion = function (productosRecepcion) {
+                      
+                        var productos = [];
+                        
+                        productosRecepcion[1].forEach(function(data) { 
+                                var productoRecp = ProductoRecepcion.get(data.codigo_producto,data.descripcion,data.porc_iva,data.valor,data.lote,data.fecha_vencimiento);
+                                productoRecp.set_cantidad_solicitada(data.cantidad);
+                                productos.push(productoRecp);
+                                
+                            });
+
+                        
+                        return productos;
+                    };
+                    /**
+                     * @author Andres Mauricio Gonzalez
+                     * +Descripcion Funcion encargada de serializar el resultado de la
+                     *              consulta que obtiene las ordenes de compra de proveedores
+                     * @fecha 02/05/2017 DD/MM/YYYYY
+                     */
+                    self.renderTotales = function (productosRecepcion) {
+                      
+                        var total = [];
+                                            
+                        var totales = Totales.get();
+                        productosRecepcion[0].forEach(function(data) {                            
+                            totales.setIva(data.Iva);
+                            totales.setSubTotal(data.subTotal);
+                            totales.setTotal(data.Total);
+                            totales.setImpuestoCree(data.impuesto_cree);
+                            totales.setValorRetFte(data.valorRetFte);
+                            totales.setValorRetIca(data.valorRetIca);
+                            totales.setValorRetIva(data.valorRetIva);
+                            totales.set_iva(data._iva);
+                            totales.set_subTotal(data._subTotal);
+                            totales.setCantidad(data.Cantidad);
+                            total.push(totales);
+                        });
+
+                        
+                        return total[0];
+                    };
                     
                     /**
                      * @author Andres Mauricio Gonzalez
@@ -30,9 +101,7 @@ define(["angular", "js/services"], function (angular, services) {
                     self.renderOrdenesComprasProveedores = function (comprasProveedores) {
                       
                         var compras = [];
-                        
-                        comprasProveedores.forEach(function(data) { 
-                                                                                       
+                        comprasProveedores.forEach(function(data) {  
                                 var ordenComp = OrdenesComprasProveedores.get(data.orden_pedido_id,data.estado,data.observacion,data.fecha_orden);
                                 ordenComp.set_empresa(data.empresa_id);
                                 ordenComp.set_proveedor(data.codigo_proveedor_id);
@@ -43,7 +112,12 @@ define(["angular", "js/services"], function (angular, services) {
                                 ordenComp.set_nombre_proveedor(data.nombre_tercero);
                                 ordenComp.set_prefijo(data.prefijo);
                                 ordenComp.set_numero(data.numero);
-                                ordenComp.set_recepcion_parcial(data.recepcion_parcial_id);
+                                ordenComp.set_recepcion_parcial(data.recepcion_parcial_id);                                
+                                ordenComp.set_porcentaje_cree(data.porcentaje_cree);
+                                ordenComp.set_porcentaje_rtf(data.porcentaje_rtf);
+                                ordenComp.set_porcentaje_ica(data.porcentaje_ica);
+                                ordenComp.set_porcentaje_reteiva(data.porcentaje_reteiva);
+                                ordenComp.setNumeroRecepciones(parseInt(data.tiene_recepciones));
                                 compras.push(ordenComp);
                                 
                             });

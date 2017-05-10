@@ -181,7 +181,7 @@ function __camposListaFacturasGeneradas() {
 
 
 function __consultaAgrupada(tabla1, estado, columna, query, filtro) {
-console.log("parametros2 filtro ", filtro)
+ 
     var consulta = G.knex.select(columna)
             .from(tabla1)
             .join('terceros as c', function () {
@@ -354,6 +354,40 @@ FacturacionClientesModel.prototype.listarFacturasGeneradas = function (filtro, c
 };
 
 
+
+/**
+ * @author Cristian Ardila
+ * @fecha 20/05/2016
+ * +Descripcion Modelo encargado de listar los tipos de terceros
+ * @controller FacturacionClientes.prototype.listarTiposTerceros
+ */
+FacturacionClientesModel.prototype.consultarDocumentosPedidos = function(obj,callback) {
+
+    var query = G.knex.column([G.knex.raw(" x.pedido_cliente_id"),  "x.numero", "x.prefijo"])
+           .select().from("inv_bodegas_movimiento_despachos_clientes as x")
+           .where("x.factura_gener",'0')
+           .andWhere("x.empresa_id",obj.empresaId)
+           .andWhere("x.pedido_cliente_id",obj.pedidoClienteId)
+           .as("b");                        
+   
+        query.then(function (resultado) {
+            callback(false, resultado)
+        }).catch(function (err) {
+        console.log("err [consultarDocumentosPedidos]:", err);
+        callback({err:err, msj: "Error al consultar la lista de documentos"});   
+    });
+                  
+};
+
+
+
+
+/**
+ * @author Cristian Ardila
+ * +Descripcion Metodo encargado de listar los pedidos para generar la factura
+ *              correspondiente
+ * @fecha 2017-10-05
+ */
 FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callback) {
    
    var columnQuery = [
@@ -368,14 +402,14 @@ FacturacionClientesModel.prototype.listarPedidosClientes = function (obj, callba
 	"a.empresa_id",
 	"d.nombre",
 	"a.observacion",
-        "b.prefijo",
-        G.knex.raw("b.numero as factura_fiscal"),
+        /*"b.prefijo",
+        G.knex.raw("b.numero as factura_fiscal"),*/
         G.knex.raw("true as seleccionado")
    ];
    
    
    
-    var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id"),  "x.numero", "x.prefijo" ])
+    var subQuery1 = G.knex.column([G.knex.raw("DISTINCT x.pedido_cliente_id")/*,  "x.numero", "x.prefijo"*/ ])
            .select().from("inv_bodegas_movimiento_despachos_clientes as x")
            .where("x.factura_gener",'0')
            .andWhere("x.empresa_id",obj.empresaId).as("b"); //obj.empresaId
@@ -618,7 +652,8 @@ FacturacionClientesModel.prototype.insertarFacturaAgrupada = function(obj,transa
  * @fecha  2017-05-08
  */
 FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,transaccion, callback){
-                     
+    
+   
     var parametros = {empresa_id: obj.parametros.documento_facturacion[0].empresa_id,
             tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
             tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
@@ -626,27 +661,28 @@ FacturacionClientesModel.prototype.insertarFacturaIndividual = function(obj,tran
             prefijo: obj.parametros.documento_facturacion[0].id,
             documento_id: obj.parametros.documento_facturacion[0].documento_id,
             usuario_id: obj.usuario,
-            /*tipo_id_vendedor, 
-            vendedor_id, 
-            pedido_cliente_id,*/
+            tipo_id_vendedor:obj.parametros.parametros.pedido.pedidos[0].vendedor[0].tipo_id_tercero, 
+            vendedor_id: obj.parametros.parametros.pedido.pedidos[0].vendedor[0].id, 
+            pedido_cliente_id: obj.parametros.parametros.pedido.pedidos[0].numero_cotizacion, 
             observaciones: obj.parametros.consultar_tercero_contrato[0].condiciones_cliente,
             porcentaje_rtf: obj.porcentaje_rtf,
             porcentaje_ica: obj.porcentaje_ica,
             porcentaje_reteiva: obj.porcentaje_reteiva,
             porcentaje_cree: obj.porcentaje_cree,
             tipo_pago_id: obj.tipoPago};
-         
+     
     var query = G.knex('inv_facturas_despacho').insert(parametros);     
     
     if(transaccion) query.transacting(transaccion);     
         query.then(function(resultado){
-            console.log("resultado [insertarFacturaAgrupada]", resultado);
+            console.log("resultado [insertarFacturaIndividual]", resultado);
             callback(false, resultado);
     }).catch(function(err){
-            console.log("err (/catch) [insertarFacturaAgrupada]: ", err);     
-            callback({err:err, msj: "Error al guardar la factura agrupada]"});   
+            console.log("err (/catch) [insertarFacturaIndividual]: ", err);     
+            callback({err:err, msj: "Error al guardar la factura individual]"});   
     });
 };
+
 /**
  * +Descripcion Metodo encargado de actualizar la numeracion del documento
  * @author Cristian Ardila
@@ -666,6 +702,35 @@ FacturacionClientesModel.prototype.actualizarNumeracion = function(obj,transacci
             console.log("err (/catch) [actualizarNumeracion]: ", err);       
         callback({err:err, msj: "Error al actualizar la numeracion del documento"});   
     });  
+};
+
+/**
+ * +Descripcion Funcion encargada de actualizar en la tabla donde se almacenan
+ *	        los pedidos el campo estado_factura_fiscal en 1 para identificar
+ *		que el pedido ya ha sido facturado
+ * @author Cristian Ardila
+ * @fecha 2017-09-05
+ */
+FacturacionClientesModel.prototype.actualizarEstadoFacturaPedido = function(obj,transaccion, callback){
+    
+    var parametros = { 
+            tipo_id_tercero: obj.parametros.consultar_tercero_contrato[0].tipo_id_tercero,
+            tercero_id: obj.parametros.consultar_tercero_contrato[0].tercero_id,
+            tipo_id_vendedor:obj.parametros.parametros.pedido.pedidos[0].vendedor[0].tipo_id_tercero, 
+            vendedor_id: obj.parametros.parametros.pedido.pedidos[0].vendedor[0].id
+        };
+        
+    var query = G.knex("hc_despacho_medicamentos_eventos")
+                .where(parametros)            
+                .update({pedido_cliente_id: '0'});
+    
+    if(transaccion) query.transacting(transaccion);    
+        query.then(function(resultado){          
+            callback(false, resultado);
+    }).catch(function(err){   
+            console.log("err (/catch) [actualizarEstadoFacturaPedido]: ", err);        
+            callback({err:err, msj: "Error al actualizar el estado de factura del pedido"});
+    });    
 };
 
 /**
@@ -840,7 +905,7 @@ FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual = functio
     console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
     console.log("***********FacturacionClientesModel.prototype.transaccionGenerarFacturaIndividual*************************");
     
-    console.log("PARAMETROS OK ", obj);
+    //console.log("PARAMETROS OK ", obj);
     var that = this;
     var def = G.Q.defer();
     var porcentajeRtf = '0';

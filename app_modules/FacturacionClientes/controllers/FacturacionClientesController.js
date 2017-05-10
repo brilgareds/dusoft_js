@@ -229,21 +229,63 @@ FacturacionClientes.prototype.listarPedidosClientes = function(req, res){
         paginaActual: paginaActual
     };
     
+    var listaPedidosClientes;
+    var listaPrefijos;
     G.Q.ninvoke(that.m_facturacion_clientes,'listarPedidosClientes',parametros).then(function(resultado){
+       
+       
+      console.log("resultado [listarPedidosClientes]: ", resultado.length)
+        if(resultado.length >0){
+            listaPedidosClientes = resultado;
+            return G.Q.nfcall(__listarDocumentosPedidos,that,0, resultado,parametros.empresaId,[]);
+
+        }else{
+            throw 'El cliente no tiene pedidos para facturar';
+        }
         
-    if(resultado.length >0){
+    }).then(function(resultado){
         
-        res.send(G.utils.r(req.url, 'Consulta lista de pedidos clientes', 200, {listar_pedidos_clientes:resultado}));
-    }else{
-        throw 'El cliente no tiene pedidos para facturar';
-    }
+        if(resultado.length >0){
+            
+            return res.send(G.utils.r(req.url, 'Consulta lista de pedidos clientes', 200, {listar_pedidos_clientes:listaPedidosClientes, lista_prefijos:resultado}));
         
+        }else{
+            throw 'El cliente no tiene pedidos para facturar';
+        }
     }).fail(function(err){      
        res.send(G.utils.r(req.url, err, 500, {}));
     }).done();
 };
 
 
+function __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, callback) {
+   //console.log("**********__listarDocumentosPedidos*****************");
+    var pedido = pedidos[index];   
+    
+    if (!pedido) {       
+         
+        callback(false,documentos);  
+        return;                     
+    }  
+    // console.log("pedido ", pedido)
+    index++;
+     G.Q.ninvoke(that.m_facturacion_clientes,'consultarDocumentosPedidos', {empresaId:empresaId,pedidoClienteId:pedido.pedido_cliente_id})
+            .then(function(resultado){ 
+                if(resultado.length > 0){
+                    documentos.push(resultado);
+            }
+               
+    }) .fail(function(err){ 
+        console.log("err (/fail) [__guardarBodegasDocumentosDetalle]: ", err);
+        callback(err);            
+    }).done(); 
+    
+    
+    setTimeout(function() {
+            __listarDocumentosPedidos(that, index, pedidos,empresaId,documentos, callback);
+    }, 300);
+   
+};
 /*
  * @author Cristian Ardila
  * @fecha 02/05/2017
@@ -440,8 +482,8 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
         return;
     }
     
-    console.log("args.generar_factura_individual.documentos ", args.generar_factura_individual.documentos)
-    var usuario = req.session.user.usuario_id;
+    console.log("PEDIDOS DOCUMENTOS FACTURAR ", args.generar_factura_individual.documentos.pedidos[0])
+    /*var usuario = req.session.user.usuario_id;
     var parametros = {
         empresaId: args.generar_factura_individual.empresaId,
         tipoIdTercero: args.generar_factura_individual.tipoIdTercero,
@@ -494,19 +536,18 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             throw {msj:'[consultarTerceroContrato]: Consulta sin resultados', status: 404}; 
         }
 
-    } .then(function(resultado){  
-       consultarParametrosRetencion = resultado;
-        if(resultado.length > 0){
-            
-            throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};   
-
-        }else{           
-            
+    }).then(function(resultado){  
+       
+        consultarParametrosRetencion = resultado;
+       
+        if(resultado.length > 0){           
             if(ip.substr(0, 6) === '::ffff'){               
                 return G.Q.ninvoke(that.m_facturacion_clientes,'consultarDireccionIp',{direccionIp:ip.substr(7, ip.length)});              
             }else{                
                 def.resolve();                
-            }              
+            }  
+        }else{   
+            throw {msj:'Se ha generado un error (Duplicate-key) Al crear la factura ['+ documentoFacturacion[0].id +"-" + documentoFacturacion[0].numeracion+"]", status: 409};                       
         }
          
     }).then(function(resultado){
@@ -536,7 +577,7 @@ FacturacionClientes.prototype.generarFacturaIndividual = function(req, res){
             err.msj = "Se ha generado un error..";
         }
        res.send(G.utils.r(req.url, err.msj, err.status, {}));
-    }).done();
+    }).done();*/
     
 }
 FacturacionClientes.$inject = ["m_facturacion_clientes","m_dispensacion_hc"];

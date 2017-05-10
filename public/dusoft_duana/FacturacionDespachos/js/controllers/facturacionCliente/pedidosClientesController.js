@@ -100,7 +100,7 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                         if(resultadoStorage){
                             var obj = {
                                 session: $scope.session,
-                                data: {
+                                data: {                               
                                     listar_pedidos_clientes: {
                                         terminoBusqueda: $scope.root.termino_busqueda, //$scope.root.numero,
                                         empresaId: $scope.root.empresaSeleccionada.getCodigo(),
@@ -113,11 +113,48 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             facturacionClientesService.listarPedidosClientes(obj, function (data) {
                                 $scope.root.pedidos_clientes = [];
+                                var prefijosDocumentos = [];
+                                var pedidoClientes = [];
+                                var prefijo = [{pedido:57751,prefijo:'EFC',numeracion:145706},{pedido:57751,prefijo:'EFC',numeracion:145707}]
                                 if (data.status === 200) {
 
                                     $scope.root.items_pedidos_clientes = data.obj.listar_pedidos_clientes.length;
-                                    $scope.root.pedidos_clientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
-
+                                    pedidoClientes = facturacionClientesService.renderDocumentosClientes(data.obj.listar_pedidos_clientes, 1);
+                                    
+                                    /**
+                                     * +Descripcion Se recorren los prefijos y se
+                                     *              almacenan en un arreglo
+                                     */
+                                    data.obj.lista_prefijos.forEach(function(rowPrefijos){
+                                        
+                                        rowPrefijos.forEach(function(rowPrefijosB){
+                                            prefijosDocumentos.push(rowPrefijosB)
+                                        
+                                        });
+                                      
+                                    }) 
+                                    
+                                    /**
+                                     * +Descripcion
+                                     */
+                                    prefijosDocumentos.forEach(function(resultado){
+                                          
+                                        pedidoClientes.forEach(function(row){                                                                                                
+                                            if(resultado.pedido_cliente_id === row.pedidos[0].numero_cotizacion){
+                                                //console.log("row ", row.pedidos[0]);
+                                                row.pedidos[0].prefijoNumero += " ( " + resultado.prefijo+" - "+ resultado.numero +")";
+                                                 row.pedidos[0].agregarDocumentos(facturacionClientesService.renderDocumentosPrefijosClientes(
+                                                    row.pedidos[0].bodega_id, 
+                                                    resultado.prefijo,
+                                                    resultado.numero,
+                                                    row.pedidos[0].fechaRegistro))
+                                            }                                             
+                                        });                                        
+                                    });
+                                    
+                                    $scope.root.pedidos_clientes = pedidoClientes;
+                                   console.log("pedidoCliente ", $scope.root.pedidos_clientes );
+                                    
                                 } else {
                                     AlertService.mostrarVentanaAlerta("Mensaje del sistema", data.msj);
                                 }
@@ -143,8 +180,30 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
                             {field: '#Fecha', cellClass: "ngCellText", width: "15%", displayName: '#Fecha', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getFechaRegistro()}}</p></div>'},
 
-                            {field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_prefijo()}}- {{row.entity.mostrarPedidos()[0].mostrarFacturas()[0].get_numero()}}</p></div>'},
-
+                            //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].getPrefijoNumero()}}</p></div>'},
+                            //{field: '#Documento',  cellClass: "ngCellText", width: "25%", displayName: '#Factura', cellTemplate: '<div class="col-xs-16 "><p class="text-uppercase">{{row.entity.mostrarPedidos()[0].mostrarFacturas()}}</p></div>'},
+                            
+                            {filed: 'PRUEBA', 
+                                cellClass: "ngCellText", 
+                                width: "25%", 
+                                displayName: '#Factura',
+                                cellTemplate: '<ul >\
+                                    <li class="listaPrefijos" ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()">\
+                                      <input type="checkbox" ng-checked="item.checked"> {{item.prefijo}} - {{item.numero}} <br> \
+                                    </li>\
+                                  </ul>'},
+                                /*cellTemplate: '<select ng-model="SimpleSelectedData" >\
+                                                    <option ng-repeat="item in row.entity.mostrarPedidos()[0].mostrarFacturas()"\
+                                                        value="{{item.numero}}">{{item.prefijo}}-{{item.numero}}\
+                                                        \
+                                                    </option>\
+                                                </select>'},*/
+                                /*cellTemplate:'<div class="col-xs-16 "><table>\
+<tr ng-repeat="x in row.entity.mostrarPedidos()[0].mostrarFacturas()">\
+    <td>{{ x.prefijo }} - {{ x.numero }}</td>\
+  </tr>\
+</table></div>'},*///row.entity.mostrarPedidos()[0].mostrarFacturas()}
+                            
                             {displayName: "Opc", cellClass: "txt-center dropdown-button",
                                 cellTemplate: '<div class="btn-group">\
                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Accion<span class="caret"></span></button>\

@@ -12,10 +12,16 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 this.descripcionEstado;    
                 this.fechaFactura;
                 this.fechaVencimientoFactura;
+                this.prefijoNumero;
             }
 
             DocumentoDespacho.prototype = Object.create(Documento.getClass().prototype);
-
+            
+            
+            DocumentoDespacho.prototype.setPrefijoNumero = function(prefijoNumero){
+                this.prefijoNumero = prefijoNumero;
+            };
+            
             DocumentoDespacho.prototype.setValor = function(valor){
                 this.valor = valor;
             };
@@ -64,6 +70,9 @@ define(["angular", "js/models", "includes/classes/Documento"], function (angular
                 return this.fechaVencimientoFactura;
             };
             
+            DocumentoDespacho.prototype.getPrefijoNumero = function(){
+                return this.prefijoNumero;
+            };
             
             this.get = function (bodegas_doc_id, prefijo, numero, fecha_registro) {
                 return new DocumentoDespacho(bodegas_doc_id, prefijo, numero, fecha_registro);

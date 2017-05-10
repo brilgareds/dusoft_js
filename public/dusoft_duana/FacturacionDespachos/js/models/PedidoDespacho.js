@@ -35,9 +35,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.documento = [];
                 this.vendedor = [];
                 this.seleccionado;
+                this.prefijoNumero = "";
             };
 
             PedidoDespacho.prototype = Object.create(Pedido.getClass().prototype);
+            
+            PedidoDespacho.prototype.setPrefijoNumero = function(prefijoNumero) {
+                this.prefijoNumero = prefijoNumero;
+                return this;
+            };
             
             PedidoDespacho.prototype.setFechaRegistro = function(fechaRegistro) {
                 this.fechaRegistro = fechaRegistro;
@@ -356,6 +362,12 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 
             PedidoDespacho.prototype.getFiltroEstadoFacturado = function() {
                 return this.filtroEstadoFacturado;
+            };
+            
+            
+            PedidoDespacho.prototype.getPrefijoNumero = function() {
+                return this.prefijoNumero;
+               
             };
             
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {

@@ -44,8 +44,11 @@ define([
     "models/BodegaHc",*/
     "models/TipoTerceros",
     "models/OrdenesComprasProveedores",
+    "models/Totales",
     "models/TerceroDespacho",
     "models/EmpresaDespacho",
+    "models/FacturaProveedores",
+    "models/ProductoRecepcion",
     "models/DocumentoDespacho",
     "models/VendedorDespacho",
     "models/PedidoDespacho",

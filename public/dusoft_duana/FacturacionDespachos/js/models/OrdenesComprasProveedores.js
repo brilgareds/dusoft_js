@@ -167,6 +167,49 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 this.fecha_verificacion;
             };
             
+            OrdenesComprasProveedores.prototype.set_porcentaje_cree = function(porcentaje_cree) {
+                this.porcentaje_cree = porcentaje_cree;
+                return this;
+            };
+
+            OrdenesComprasProveedores.prototype.get_porcentaje_cree = function() {
+                return this.porcentaje_cree;
+            };
+            
+            OrdenesComprasProveedores.prototype.set_porcentaje_rtf = function(porcentaje_rtf) {
+                this.porcentaje_rtf = porcentaje_rtf;
+                return this;
+            };
+
+            OrdenesComprasProveedores.prototype.get_porcentaje_rtf = function() {
+                return this.porcentaje_rtf;
+            };
+            OrdenesComprasProveedores.prototype.set_porcentaje_ica = function(porcentaje_ica) {
+                this.porcentaje_ica = porcentaje_ica;
+                return this;
+            };
+
+            OrdenesComprasProveedores.prototype.get_porcentaje_ica = function() {
+                return this.porcentaje_ica;
+            };
+            OrdenesComprasProveedores.prototype.set_porcentaje_reteiva = function(porcentaje_reteiva) {
+                this.porcentaje_reteiva = porcentaje_reteiva;
+                return this;
+            };
+
+            OrdenesComprasProveedores.prototype.get_porcentaje_reteiva = function() {
+                return this.porcentaje_reteiva;
+            };
+            
+            OrdenesComprasProveedores.prototype.setNumeroRecepciones = function(numeroRecepciones) {
+                this.numeroRecepciones = numeroRecepciones;
+                return this;
+            };
+
+            OrdenesComprasProveedores.prototype.getNumeroRecepciones = function() {
+                return this.numeroRecepciones;
+            };
+            
             // Instancia
             this.get = function(numero_orden, estado, observacion, fecha_registro, observacion_contrato) {
                 return new OrdenesComprasProveedores(numero_orden, estado, observacion, fecha_registro, observacion_contrato);

@@ -1,9 +1,89 @@
 <div class ="row">
 
+     <div class="col-md-2">
+        <p class="input-group">
+            <input type="text" class="form-control readonlyinput" 
+                   datepicker-popup="{{format}}" 
+                   ng-model="root.fecha_inicial_facturas" 
+                   is-open="root.datepicker_fecha_inicial" 
+                   min="minDate"   
+                   readonly  close-text="Cerrar" 
+                   ng-change="" 
+                   clear-text="Borrar" 
+                   current-text="Hoy" 
+                   placeholder="Fecha Inicial" 
+                   show-weeks="false" 
+                   toggle-weeks-text="#"  />
+            <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
+        </p>
+    </div>
+    
     <div class="col-md-2">
         <p class="input-group">
-            wwwwwwwwwwwwwwww
+            <input type="text" class="form-control readonlyinput" 
+                   datepicker-popup="{{format}}" 
+                   ng-model="root.fecha_final_facturas" 
+                   is-open="root.datepicker_fecha_final" 
+                   min="root.fecha_inicial"  
+                   readonly  close-text="Cerrar"
+                   clear-text="Borrar"  
+                   placeholder="Fecha Final" 
+                   current-text="Hoy" 
+                   show-weeks="false" 
+                   toggle-weeks-text="#" />
+            <span class="input-group-btn">
+                <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+            </span>
         </p>
     </div>
 
+    <div class="{{columnaSizeBusqueda}} pull-right">                                                                
+
+        <div class="input-group">
+            <div class="input-group-btn">                                                                      
+                <button type="button" class="btn btn-default dropdown-toggle" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{root.filtro.descripcion}} <span class="caret"></span></button>
+                <ul class="dropdown-menu" ng-selected="onColumnaSize(root.filtro.tipo)">
+                    <li ng-repeat="filtro in root.filtros">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.descripcion}}</a>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li ng-repeat="tipoTercero in tipoTercero">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(tipoTercero)">
+                            {{tipoTercero.descripcion}}
+                        </a>
+                    </li>
+                </ul>                                         
+            </div> 
+            <input ng-show="root.visibleBuscador" 
+                   type="text" 
+                   class="form-control" 
+                   ng-keypress="buscarProveedoresFactura($event);"  
+                   ng-model="root.termino_busqueda_factura" 
+                   placeholder="Buscar" name="" id="" />
+            <div class="input-group-btn" ng-show="root.visibleBotonBuscador" >
+                <button class="btn btn-default pull-right" type="submit" ng-click ="buscarProveedoresFactura($event)">
+                    <i class="glyphicon glyphicon-search"></i></button>
+            </div>
+        </div>   
+    </div>
 </div>
+<br>
+<div class="table-responsive" style="clear:both; height: 500 px;">
+    <div class="defaultGrid grid-responsive" ng-grid="listaFacturasProveedores" ></div>
+</div>  
+<br />
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="root.items <25" ng-click="paginaSiguiente()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>
+  <div class="input-group-btn" >
+                <button class="btn btn-default pull-right" type="submit" ng-click ="onFacturas()">
+                    Facturar <i class="glyphicon glyphicon-floppy-disk"></i></button>
+ </div>
